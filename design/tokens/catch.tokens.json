@@ -2780,6 +2780,14 @@
     "controlOverlayHover": {
       "$description": "Ink tint over a row or control on hover: CatchOpacity.controlOverlayHover.",
       "$value": 0.04
+    },
+    "activityArtworkPattern": {
+      "$description": "Pattern marks over activity artwork: the EventBackdropImage.patternOpacity default in lib/core/widgets/event_backdrop_image.dart.",
+      "$value": 0.22
+    },
+    "activityArtworkGlyph": {
+      "$description": "Activity glyph over activity artwork: the EventBackdropImage.iconOpacity default in lib/core/widgets/event_backdrop_image.dart.",
+      "$value": 0.2
     }
   },
   "field": {
