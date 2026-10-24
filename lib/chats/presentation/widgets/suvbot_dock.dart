@@ -368,9 +368,10 @@ class SuvbotResetActionRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  CatchText(
                     action.label,
-                    style: CatchTextStyles.fieldRowTitle(context, color: tone),
+                    variant: CatchTextVariant.bodyLead,
+                    color: tone,
                   ),
                   gapH4,
                   CatchText(

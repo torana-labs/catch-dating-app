@@ -102,12 +102,13 @@ class CompanionPaperNavigationRow extends StatelessWidget {
             ),
             gapW8,
             Expanded(
-              child: Text(
+              child: CatchText(
                 context
                     .l10n
                     .eventSuccessEventSuccessCompanionSharedTextEventCompanion,
+                variant: CatchTextVariant.bodyLead,
+                color: CatchTokens.of(context).ink,
                 textAlign: TextAlign.center,
-                style: CatchTextStyles.fieldRowTitle(context),
               ),
             ),
             gapW8,

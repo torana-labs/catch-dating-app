@@ -113,11 +113,11 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
                 style: CatchTextStyles.monoLabel(context, color: dark.ink2),
               ),
               gapH6,
-              Text(
+              CatchText(
                 nextStepTitle,
+                variant: CatchTextVariant.bodyLead,
+                color: dark.ink,
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.fieldRowTitle(context, color: dark.ink),
               ),
             ],
           ),

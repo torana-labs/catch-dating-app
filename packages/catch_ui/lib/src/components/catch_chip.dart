@@ -322,7 +322,7 @@ class _CatchChipState extends State<CatchChip> {
         border = Colors.transparent;
         shadow = CatchElevation.none;
         leading = Icon(data.icon);
-        textStyle = CatchTextStyles.fieldRowTitle(context, color: foreground);
+        textStyle = CatchTextStyles.bodyLead(context, color: foreground);
         padding = const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s4,
           vertical: CatchSpacing.micro10,

@@ -421,7 +421,7 @@ class EventDetailFactList extends StatelessWidget {
                           children: [
                             TextSpan(
                               text: _inlineFactLead(row.title),
-                              style: CatchTextStyles.fieldRowTitle(
+                              style: CatchTextStyles.bodyLead(
                                 context,
                                 color: resolvedTitleColor,
                               ),
@@ -433,12 +433,10 @@ class EventDetailFactList extends StatelessWidget {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          CatchText(
                             row.title,
-                            style: CatchTextStyles.fieldRowTitle(
-                              context,
-                              color: resolvedTitleColor,
-                            ),
+                            variant: CatchTextVariant.bodyLead,
+                            color: resolvedTitleColor,
                           ),
                           gapH2,
                           CatchText(

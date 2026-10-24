@@ -4,11 +4,7 @@
   "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-7--cross-framework-conformance-react",
   "files": {
     "lib/auth/presentation/otp_step.dart": {
-      "fieldRowTitle": 2,
       "monoLabel": 1
-    },
-    "lib/auth/presentation/phone_step.dart": {
-      "fieldRowTitle": 1
     },
     "lib/chats/presentation/event_chat_screen.dart": {
       "headlineS": 2
@@ -18,9 +14,6 @@
     },
     "lib/chats/presentation/widgets/event_profile_identity_section.dart": {
       "headlineS": 1
-    },
-    "lib/chats/presentation/widgets/suvbot_dock.dart": {
-      "fieldRowTitle": 1
     },
     "lib/clubs/presentation/detail/widgets/club_host_section.dart": {
       "monoLabel": 1
@@ -54,14 +47,10 @@
     "lib/dashboard/presentation/widgets/activity_section.dart": {
       "monoLabelS": 1
     },
-    "lib/dashboard/presentation/widgets/club_posts_home_section.dart": {
-      "fieldRowTitle": 1
-    },
     "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart": {
       "labelL": 2
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart": {
-      "fieldRowTitle": 1,
       "labelL": 1
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart": {
@@ -78,7 +67,6 @@
     },
     "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart": {
       "consoleTitle": 1,
-      "fieldRowTitle": 1,
       "monoLabel": 2
     },
     "lib/event_success/presentation/reveal/event_success_countdown_text.dart": {
@@ -96,7 +84,6 @@
       "numericLarge": 1
     },
     "lib/events/presentation/widgets/event_detail_fact_list.dart": {
-      "fieldRowTitle": 1,
       "hint": 1,
       "labelL": 1,
       "monoLabelS": 3,
@@ -104,9 +91,6 @@
     },
     "lib/events/presentation/widgets/event_detail_hero_top_bar.dart": {
       "monoLabel": 2
-    },
-    "lib/events/presentation/widgets/event_detail_itinerary_row.dart": {
-      "fieldRowTitle": 1
     },
     "lib/events/presentation/widgets/who_is_going_section.dart": {
       "labelL": 1
@@ -142,14 +126,7 @@
       "labelL": 1
     },
     "lib/hosts/presentation/host_operations/host_club_team_screen.dart": {
-      "fieldRowTitle": 1,
       "headlineS": 1
-    },
-    "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart": {
-      "fieldRowTitle": 2
-    },
-    "lib/hosts/presentation/inbox/host_campaign_editor.dart": {
-      "fieldRowTitle": 2
     },
     "lib/hosts/presentation/inbox/host_person_conversation_page_body.dart": {
       "labelL": 1

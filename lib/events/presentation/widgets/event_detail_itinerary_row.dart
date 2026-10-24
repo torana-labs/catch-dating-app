@@ -94,12 +94,10 @@ class ItineraryRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  CatchText(
                     step.title,
-                    style: CatchTextStyles.fieldRowTitle(
-                      context,
-                      color: titleColor,
-                    ),
+                    variant: CatchTextVariant.bodyLead,
+                    color: (titleColor) ?? CatchTokens.of(context).ink,
                   ),
                   if (step.detail case final detail?) ...[
                     const SizedBox(height: CatchSpacing.micro2),
