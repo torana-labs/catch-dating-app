@@ -22,7 +22,10 @@ class AvatarChip extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       label: context.l10n.clubsAvatarChipLabelOpenNameClub(name: club.name),
-      child: GestureDetector(
+      child: CatchSurface(
+        tone: CatchSurfaceTone.transparent,
+        radius: CatchRadius.none,
+        duration: Duration.zero,
         onTap: onTap,
         child: SizedBox(
           width: _avatarChipColumnWidth,

@@ -213,7 +213,16 @@ class ClubProfileImageTile extends StatelessWidget {
     } else if (existingImageUrl case final imageUrl?) {
       content = CatchNetworkImage(
         imageUrl,
-        errorBuilder: (_, _, _) => Container(color: t.raised),
+        errorBuilder: (_, _, _) => CatchSurface(
+          backgroundColor: t.raised,
+          radius: CatchRadius.none,
+          duration: Duration.zero,
+          child: const LimitedBox(
+            maxWidth: 0,
+            maxHeight: 0,
+            child: SizedBox.expand(),
+          ),
+        ),
       );
     } else {
       content = CatchSurface(
@@ -253,6 +262,7 @@ class ClubProfileImageTile extends StatelessWidget {
     final tile = SizedBox.square(
       dimension: size,
       child: CatchSurface(
+        onTap: onTap,
         tone: CatchSurfaceTone.raised,
         radius: CatchRadius.md,
         borderRole: CatchBorderRole.boundary,
@@ -277,7 +287,7 @@ class ClubProfileImageTile extends StatelessWidget {
       label: hasImage
           ? context.l10n.hostsCreateClubPhotosPickerLabelChangeClubProfileImage
           : context.l10n.hostsCreateClubPhotosPickerLabelAddClubProfileImage,
-      child: GestureDetector(onTap: onTap, child: tile),
+      child: tile,
     );
   }
 }

@@ -602,10 +602,13 @@ class RecapProfilePhoto extends StatelessWidget {
   Widget build(BuildContext context) {
     final photoUrl = profile?.primaryPhotoThumbnailUrl;
     if (photoUrl == null) {
-      return Container(
-        color: CatchTokens.of(context).primarySoft,
-        alignment: Alignment.center,
-        child: Icon(CatchIcons.personRounded, size: CatchIcon.fallbackAvatar),
+      return CatchSurface(
+        backgroundColor: CatchTokens.of(context).primarySoft,
+        radius: CatchRadius.none,
+        duration: Duration.zero,
+        child: Align(
+          child: Icon(CatchIcons.personRounded, size: CatchIcon.fallbackAvatar),
+        ),
       );
     }
     return CatchNetworkImage(photoUrl);
