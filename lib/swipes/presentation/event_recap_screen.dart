@@ -423,14 +423,12 @@ class RecapHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             state.kicker,
-            style: CatchTextStyles.statusLabel(
-              context,
-              color: t.surface.withValues(
-                alpha: CatchOpacity.eventRecapHeroKicker,
-              ),
-            ).copyWith(fontWeight: FontWeight.w800),
+            variant: CatchTextVariant.statusLabel,
+            color: t.surface.withValues(
+              alpha: CatchOpacity.eventRecapHeroKicker,
+            ),
           ),
           gapH10,
           CatchText(

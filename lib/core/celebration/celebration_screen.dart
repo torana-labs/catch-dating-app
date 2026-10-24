@@ -149,12 +149,10 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
                       ),
                       gapH24,
                       if (widget.eyebrow != null) ...[
-                        Text(
+                        CatchText(
                           widget.eyebrow!.toUpperCase(),
-                          style: CatchTextStyles.statusLabel(
-                            context,
-                            color: _celebrationCream.withValues(alpha: 0.9),
-                          ).copyWith(fontWeight: FontWeight.w800),
+                          variant: CatchTextVariant.statusLabel,
+                          color: _celebrationCream.withValues(alpha: 0.9),
                         ),
                         gapH8,
                       ],
@@ -306,13 +304,11 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   ),
                   if (eyebrow != null) ...[
                     gapH16,
-                    Text(
+                    CatchText(
                       eyebrow!.toUpperCase(),
+                      variant: CatchTextVariant.statusLabel,
+                      color: t.primary,
                       textAlign: TextAlign.center,
-                      style: CatchTextStyles.statusLabel(
-                        context,
-                        color: t.primary,
-                      ).copyWith(fontWeight: FontWeight.w800),
                     ),
                   ],
                   gapH8,

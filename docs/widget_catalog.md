@@ -317,7 +317,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ChatInput</code> | <code>lib/chats/presentation/widgets/chat_input.dart:14</code> | <code>Input</code> | — | Canonical chat composer. Also called: <code>ChatInputBar</code>, <code>MessageInput</code>, <code>MessageComposer</code>, <code>ChatComposer</code>. |
 | <code>ChatMessageList</code> | <code>lib/chats/presentation/widgets/chat_message_list.dart:15</code> | — | — | No class documentation or registry summary. |
 | <code>ChatShareCard</code> | <code>lib/chats/presentation/widgets/chat_share_card.dart:49</code> | — | — | No class documentation or registry summary. |
-| <code>ShareCardBubble</code> | <code>lib/chats/presentation/widgets/chat_share_card.dart:171</code> | — | — | No class documentation or registry summary. |
+| <code>ShareCardBubble</code> | <code>lib/chats/presentation/widgets/chat_share_card.dart:168</code> | — | — | No class documentation or registry summary. |
 | <code>ShareCardHeader</code> | <code>lib/chats/presentation/widgets/chat_share_card.dart:114</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatEntrySection</code> | <code>lib/chats/presentation/widgets/event_chat_entry_section.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>EventChatMessageTile</code> | <code>lib/chats/presentation/widgets/event_chat_message_tile.dart:8</code> | — | — | No class documentation or registry summary. |
@@ -360,14 +360,14 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ClubTagList</code> | <code>lib/clubs/shared/club_host_identity_row.dart:36</code> | — | — | No class documentation or registry summary. |
 | <code>ClubPlaceholderCover</code> | <code>lib/clubs/shared/club_placeholder_cover.dart:8</code> | <code>Cover</code> | <code>catch.organizer_poster</code> | Deterministic no-photo organizer artwork used by poster and compact cover states. |
 | <code>CatchConsumerBootstrap</code> | <code>lib/consumer_bootstrap.dart:25</code> | — | — | Consumer-only process bootstrap. |
-| <code>CelebrationDetailRow</code> | <code>lib/core/celebration/celebration_screen.dart:545</code> | — | — | No class documentation or registry summary. |
-| <code>CelebrationDetailsCard</code> | <code>lib/core/celebration/celebration_screen.dart:505</code> | — | — | No class documentation or registry summary. |
-| <code>CelebrationIcon</code> | <code>lib/core/celebration/celebration_screen.dart:486</code> | — | — | No class documentation or registry summary. |
-| <code>CelebrationNote</code> | <code>lib/core/celebration/celebration_screen.dart:584</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationDetailRow</code> | <code>lib/core/celebration/celebration_screen.dart:446</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationDetailsCard</code> | <code>lib/core/celebration/celebration_screen.dart:412</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationIcon</code> | <code>lib/core/celebration/celebration_screen.dart:391</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationScaffold</code> | <code>lib/core/celebration/celebration_screen.dart:233</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationDetailRow</code> | <code>lib/core/celebration/celebration_screen.dart:541</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationDetailsCard</code> | <code>lib/core/celebration/celebration_screen.dart:501</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationIcon</code> | <code>lib/core/celebration/celebration_screen.dart:482</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationNote</code> | <code>lib/core/celebration/celebration_screen.dart:580</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationDetailRow</code> | <code>lib/core/celebration/celebration_screen.dart:442</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationDetailsCard</code> | <code>lib/core/celebration/celebration_screen.dart:408</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationIcon</code> | <code>lib/core/celebration/celebration_screen.dart:387</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationScaffold</code> | <code>lib/core/celebration/celebration_screen.dart:231</code> | — | — | No class documentation or registry summary. |
 | <code>AdaptiveTabScaffold</code> | <code>lib/core/presentation/adaptive_tab_scaffold.dart:12</code> | — | — | Shared adaptive placement contract for consumer and host tab shells. |
 | <code>AppShell</code> | <code>lib/core/presentation/app_shell.dart:55</code> | — | — | No class documentation or registry summary. |
 | <code>AppShellNavigationBar</code> | <code>lib/core/presentation/app_shell.dart:209</code> | — | — | No class documentation or registry summary. |
@@ -1166,12 +1166,12 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventRecapReadyBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:135</code> | — | — | No class documentation or registry summary. |
 | <code>RecapHeader</code> | <code>lib/swipes/presentation/event_recap_screen.dart:411</code> | — | — | No class documentation or registry summary. |
 | <code>RecapHeaderSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:318</code> | — | — | No class documentation or registry summary. |
-| <code>RecapProfilePhoto</code> | <code>lib/swipes/presentation/event_recap_screen.dart:596</code> | — | — | No class documentation or registry summary. |
-| <code>RecapStatTile</code> | <code>lib/swipes/presentation/event_recap_screen.dart:470</code> | — | — | No class documentation or registry summary. |
+| <code>RecapProfilePhoto</code> | <code>lib/swipes/presentation/event_recap_screen.dart:594</code> | — | — | No class documentation or registry summary. |
+| <code>RecapStatTile</code> | <code>lib/swipes/presentation/event_recap_screen.dart:468</code> | — | — | No class documentation or registry summary. |
 | <code>RecapStatTileSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:350</code> | — | — | No class documentation or registry summary. |
 | <code>VibeGrid</code> | <code>lib/swipes/presentation/event_recap_screen.dart:215</code> | — | — | No class documentation or registry summary. |
 | <code>VibeGridSkeleton</code> | <code>lib/swipes/presentation/event_recap_screen.dart:369</code> | — | — | No class documentation or registry summary. |
-| <code>VibeTile</code> | <code>lib/swipes/presentation/event_recap_screen.dart:506</code> | — | — | No class documentation or registry summary. |
+| <code>VibeTile</code> | <code>lib/swipes/presentation/event_recap_screen.dart:504</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersBody</code> | <code>lib/swipes/presentation/filters_screen.dart:218</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersSection</code> | <code>lib/swipes/presentation/filters_screen.dart:363</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersValueText</code> | <code>lib/swipes/presentation/filters_screen.dart:391</code> | — | — | No class documentation or registry summary. |
