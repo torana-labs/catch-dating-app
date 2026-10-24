@@ -366,7 +366,6 @@
   gap: 10px;
 }
 
-.submitted-panel,
 .host-application__submitted {
   display: flex;
   gap: 16px;
@@ -456,10 +455,6 @@
 }
 
 @media (min-width: 760px) {
-  .directory-claim-pressure {
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.55fr);
-    align-items: start;
-  }
 
   .claim-flow__hero {
     grid-template-columns: minmax(0, 1fr) 340px;
@@ -502,71 +497,9 @@
     width: 100%;
   }
 
-  .directory-claim-pressure__list a {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .directory-claim-pressure__list .status-badge {
-    grid-column: 1 / -1;
-  }
-
-  .home-discovery {
-    width: min(calc(100vw - 64px), var(--website-content));
-    padding: 56px 0 64px;
-  }
-
   .public-search {
     grid-template-columns: 1fr;
     min-height: 0;
-  }
-
-  .public-search__city,
-  .public-search__go {
-    width: 100%;
-    min-height: 50px;
-    min-width: 0;
-  }
-
-  .public-search__city {
-    border-right: 0;
-    border-bottom: 1px solid var(--website-line);
-    border-radius: var(--catch-radius-md) var(--catch-radius-md) 0 0;
-  }
-
-  .public-search__go {
-    border-top: 1px solid var(--website-line);
-    border-left: 0;
-    border-radius: 0 0 var(--catch-radius-md) var(--catch-radius-md);
-  }
-
-  .public-search__input {
-    min-height: 58px;
-  }
-
-  .public-search__results {
-    position: static;
-    margin-top: 10px;
-    box-shadow: none;
-  }
-
-  .public-search__results a {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-
-  .public-search__results em {
-    display: none;
-  }
-
-  .public-event-card {
-    grid-template-columns: 1fr;
-  }
-
-  .public-event-card__art {
-    min-height: 120px;
-  }
-
-  .public-event-card h3 {
-    font-size: 26px;
   }
 
   .claim-flow {
