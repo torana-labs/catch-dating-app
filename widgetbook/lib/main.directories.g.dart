@@ -371,8 +371,6 @@ import 'package:widgetbook_workspace/onboarding/catalog/steps.dart'
     as _widgetbook_workspace_onboarding_catalog_steps;
 import 'package:widgetbook_workspace/onboarding/catalog/welcome.dart'
     as _widgetbook_workspace_onboarding_catalog_welcome;
-import 'package:widgetbook_workspace/onboarding/catalog/welcome_text.dart'
-    as _widgetbook_workspace_onboarding_catalog_welcome_text;
 import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
     as _widgetbook_workspace_primitives_analytics_kit_use_cases;
 import 'package:widgetbook_workspace/primitives/avatar_use_cases.dart'
@@ -473,6 +471,8 @@ import 'package:widgetbook_workspace/primitives/contracts/toolbar.dart'
     as _widgetbook_workspace_primitives_contracts_toolbar;
 import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
     as _widgetbook_workspace_primitives_contracts_typography;
+import 'package:widgetbook_workspace/primitives/contracts/welcome_text.dart'
+    as _widgetbook_workspace_primitives_contracts_welcome_text;
 import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
     as _widgetbook_workspace_primitives_distance_ring_use_cases;
 import 'package:widgetbook_workspace/primitives/error_feedback_use_cases.dart'
@@ -15663,7 +15663,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder: _widgetbook_workspace_onboarding_catalog_welcome_text
+                builder: _widgetbook_workspace_primitives_contracts_welcome_text
                     .catchWelcomeTextContractStates,
               ),
             ],
