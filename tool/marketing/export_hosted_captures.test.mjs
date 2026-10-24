@@ -49,8 +49,8 @@ function fixture(t, {web = false} = {}) {
     "tool/design/lib/new_widget_inventory_declarations.mjs", "tool/design/lib/production_widget_roots.mjs",
     "design/components/catch.components.schema.json",
     "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/capture_seeds.mjs",
-    "tool/marketing/lib/web_capture_inputs.mjs", "tool/marketing/export_web_captures.mjs",
-    "tool/marketing/web_capture_screen.mjs",
+    "tool/marketing/lib/web_capture_inputs.mjs", "tool/marketing/lib/web_capture_render.mjs",
+    "tool/marketing/lib/web_capture_screen.mjs",
     "tool/ci/wait_main_marketing_validation.mjs",
     "tool/marketing/sync_website_media.mjs", "tool/ci/toolchain.env"]) {
     write(file, fs.readFileSync(fromRepo(file)));

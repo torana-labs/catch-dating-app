@@ -206,7 +206,7 @@ async function updateExports(staleOnly = false) {
   if (webCaptures.length > 0) {
     const inputHashes = new Map(webCaptures.map(capture => [capture.id, captureInputHash(capture)]));
     // Loaded only when rendering: Playwright is installed for this step alone.
-    const {renderWebCaptures} = await import("./export_web_captures.mjs");
+    const {renderWebCaptures} = await import("./lib/web_capture_render.mjs");
     await renderWebCaptures(webCaptures, {storybook: valueAfter("--storybook") ?? undefined,
       playwrightDir: valueAfter("--playwright-dir") ?? undefined});
     for (const capture of webCaptures) {

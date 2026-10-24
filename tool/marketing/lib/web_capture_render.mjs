@@ -8,7 +8,7 @@ import http from "node:http";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {pathToFileURL} from "node:url";
-import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {fromRepo, repoRoot} from "../../lib/repo_paths.mjs";
 import {safariScreen, safariScreenHtml, safariViewport} from "./web_capture_screen.mjs";
 
 const defaultStorybook = "website/storybook-static";

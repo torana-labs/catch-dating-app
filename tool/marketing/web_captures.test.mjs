@@ -20,7 +20,7 @@ function fixture(t) {
     return file;
   };
   for (const name of ["tool/lib/repo_paths.mjs", "tool/marketing/export_app_screenshots.mjs",
-    "tool/marketing/export_web_captures.mjs", "tool/marketing/web_capture_screen.mjs",
+    "tool/marketing/lib/web_capture_render.mjs", "tool/marketing/lib/web_capture_screen.mjs",
     "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/web_capture_inputs.mjs"]) {
     write(name, fs.readFileSync(fromRepo(name)));
   }
