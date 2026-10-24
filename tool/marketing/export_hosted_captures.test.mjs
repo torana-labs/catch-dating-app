@@ -916,7 +916,7 @@ test("an app-only Linux render plan prepares web tools for a native-font change 
   const webTools = webStubs(directory);
   exportHostedCaptures({...f.options, ...webTools});
   f.git("add", ".");
-  f.git("commit", "-qm", "preserve rendered captures");
+  f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "preserve rendered captures");
   const request = async endpoint => endpoint === "repos/owner/repo" ? {id: 1} :
     endpoint.endsWith("/workflows/ci.yml") ? {id: 7} : {workflow_runs: []};
   const plan = () => planHostedCaptures({sourceDir: f.root, sourceSha: f.git("rev-parse", "HEAD"),
@@ -925,7 +925,7 @@ test("an app-only Linux render plan prepares web tools for a native-font change 
   assert.deepEqual([fresh.render, fresh.webRender], [false, false], "reuse needs no web tooling");
   f.write("lib/leaf.dart", "const title = 'Updated app';\n");
   f.git("add", "lib/leaf.dart");
-  f.git("commit", "-qm", "change only app capture inputs");
+  f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "change only app capture inputs");
   const appOnly = await plan();
   assert.ok(appOnly.renderIds.length > 0);
   assert.ok(!appOnly.renderIds.includes("guest-join-phone"));
