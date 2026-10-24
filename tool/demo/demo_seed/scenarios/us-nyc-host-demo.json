@@ -710,7 +710,7 @@
           "personId": "p01",
           "rating": 5,
           "comment": "The host kept the night moving without making it feel forced. Easy arrivals, good prompts, and useful follow-up after.",
-          "createdAt": "2026-05-30T19:10:00",
+          "createdAt": "2026-05-30T22:30:00",
           "anonymous": false
         },
         {
@@ -724,7 +724,7 @@
           "personId": "p09",
           "rating": 4,
           "comment": "Good crowd and clear structure. I liked that the host could adjust the live flow when the group changed.",
-          "createdAt": "2026-05-30T22:30:00",
+          "createdAt": "2026-05-30T19:10:00",
           "anonymous": true
         }
       ]

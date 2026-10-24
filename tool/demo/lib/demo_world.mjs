@@ -63,6 +63,38 @@ export function eventOutcomesAt(world, eventId, moment) {
   };
 }
 
+/** The UTC instant of a civil date-time ("2026-05-31T05:00:00") in an IANA
+ * time zone. Two passes settle the offset on either side of a DST change. */
+export function civilInstant(timeZone, civil) {
+  const asUtc = Date.parse(`${civil}Z`);
+  let instant = asUtc - zoneOffsetMs(timeZone, asUtc);
+  instant = asUtc - zoneOffsetMs(timeZone, instant);
+  return new Date(instant);
+}
+
+function zoneOffsetMs(timeZone, instant) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", {
+    timeZone, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit",
+  }).formatToParts(new Date(instant)).map((part) => [part.type, part.value]));
+  const wall = Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day),
+    Number(parts.hour), Number(parts.minute), Number(parts.second));
+  return wall - instant;
+}
+
+/** The catalog persona a world person is cast as. */
+export function personaForPerson(world, personId) {
+  const person = world.people.find((item) => item.id === personId);
+  if (!person) throw new Error(`${world.id} has no person ${personId}.`);
+  return personasById().get(person.personaId);
+}
+
+/** Every persona a world casts, host included, in catalog order. */
+export function castPersonas(world) {
+  const cast = new Set([world.host.personaId, ...world.people.map((person) => person.personaId)]);
+  return [...personasById().values()].filter((persona) => cast.has(persona.id));
+}
+
 /** The values website copy may quote about an event at a moment. */
 export function demoWorldFacts(world, eventId, moment) {
   const event = requireEvent(world, eventId);
