@@ -403,12 +403,7 @@ class WelcomeSceneLayout extends StatelessWidget {
   }
 }
 
-/// The fixed grammatical focus slot shared by the Consumer boot handoff and
-/// the moving Welcome reel.
-///
-/// `Catch` and the active phrase are painted as one line with a literal space,
-/// so their alphabetic baseline cannot drift. The underline is positioned from
-/// the measured phrase glyph box and never participates in the text baseline.
+/// Localized binding for the library-owned welcome focus lockup.
 class WelcomeFocusText extends StatelessWidget {
   const WelcomeFocusText({
     super.key,
@@ -422,10 +417,8 @@ class WelcomeFocusText extends StatelessWidget {
          phrase == null || (phraseColor != null && underlineColor != null),
        );
 
-  static const textKey = ValueKey<String>('welcome-focus-lockup-text');
-  static const underlineKey = ValueKey<String>(
-    'welcome-focus-lockup-underline',
-  );
+  static const textKey = CatchWelcomeText.textKey;
+  static const underlineKey = CatchWelcomeText.underlineKey;
 
   final String? phrase;
   final Color catchColor;
@@ -435,121 +428,14 @@ class WelcomeFocusText extends StatelessWidget {
   final bool showBrandUnderscore;
 
   @override
-  Widget build(BuildContext context) {
-    final style = CatchTextStyles.welcomeReelHeadline(
-      context,
-      color: catchColor,
-    );
-    final textDirection = Directionality.of(context);
-    final textScaler = _welcomeReelTextScaler(context);
-    final catchLabel = context.l10n.onboardingWelcomePageTextCatch;
-    final phraseText = phrase == null ? null : '$phrase.';
-    final children = <InlineSpan>[
-      TextSpan(text: catchLabel, style: style),
-      if (showBrandUnderscore)
-        TextSpan(
-          text: '_',
-          style: style.copyWith(color: CatchWelcomeColors.wordmarkBlank),
-        ),
-      if (phraseText != null) ...[
-        TextSpan(text: ' ', style: style),
-        TextSpan(
-          text: phraseText,
-          style: style.copyWith(color: phraseColor),
-        ),
-      ],
-    ];
-    final lockupSpan = TextSpan(children: children);
-    final painter = TextPainter(
-      text: lockupSpan,
-      textDirection: textDirection,
-      textScaler: textScaler,
-      maxLines: 1,
-    )..layout();
-    final phraseStart = phraseText == null ? null : catchLabel.length + 1;
-    final phraseBoxes = phraseStart == null
-        ? const <TextBox>[]
-        : painter.getBoxesForSelection(
-            TextSelection(
-              baseOffset: phraseStart,
-              // Keep the rule under the phrase glyphs, not the terminal period.
-              extentOffset: phraseStart + phrase!.length,
-            ),
-          );
-    final phraseBox = phraseBoxes.isEmpty ? null : phraseBoxes.first;
-    final underlineTop =
-        painter.height + CatchWelcomeTokens.welcomeReelUnderlineGap;
-    final contentHeight = phraseBox == null
-        ? painter.height
-        : math.max(
-            painter.height,
-            underlineTop + CatchWelcomeTokens.welcomeReelUnderlineThickness,
-          );
-
-    final fitScale = painter.width <= 0
-        ? 1.0
-        : math.min(1.0, maxWidth / painter.width);
-    final fittedWidth = painter.width * fitScale;
-    final fittedHeight = contentHeight * fitScale;
-    final semanticLabel = phraseText == null
-        ? catchLabel
-        : '$catchLabel $phraseText';
-
-    return Semantics(
-      label: semanticLabel,
-      excludeSemantics: true,
-      child: SizedBox(
-        width: fittedWidth,
-        height: fittedHeight,
-        child: OverflowBox(
-          alignment: Alignment.topLeft,
-          minWidth: painter.width,
-          maxWidth: painter.width,
-          minHeight: contentHeight,
-          maxHeight: contentHeight,
-          child: Transform.scale(
-            scale: fitScale,
-            alignment: Alignment.topLeft,
-            child: SizedBox(
-              width: painter.width,
-              height: contentHeight,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Text.rich(
-                    key: WelcomeFocusText.textKey,
-                    lockupSpan,
-                    style: style,
-                    maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.visible,
-                    textScaler: textScaler,
-                  ),
-                  if (phraseBox != null)
-                    Positioned(
-                      left: phraseBox.left,
-                      top: underlineTop,
-                      width: phraseBox.right - phraseBox.left,
-                      height: CatchWelcomeTokens.welcomeReelUnderlineThickness,
-                      child: ColoredBox(
-                        key: WelcomeFocusText.underlineKey,
-                        color: underlineColor!,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-TextScaler _welcomeReelTextScaler(BuildContext context) {
-  final requestedScale = MediaQuery.textScalerOf(context).scale(1);
-  return TextScaler.linear(
-    requestedScale.clamp(1.0, CatchWelcomeTokens.welcomeReelMaxTextScale),
+  Widget build(BuildContext context) => CatchWelcomeText.focus(
+    brandLabel: context.l10n.onboardingWelcomePageTextCatch,
+    catchColor: catchColor,
+    maxWidth: maxWidth,
+    phrase: phrase,
+    phraseColor: phraseColor,
+    underlineColor: underlineColor,
+    showBrandUnderscore: showBrandUnderscore,
   );
 }
 
@@ -648,9 +534,7 @@ class WelcomeReelRow extends StatelessWidget {
   static const focusedPhraseKey = ValueKey<String>(
     'welcome-reel-focused-phrase',
   );
-  static const focusedUnderlineKey = ValueKey<String>(
-    'welcome-reel-focused-underline',
-  );
+  static const focusedUnderlineKey = CatchWelcomeText.reelUnderlineKey;
 
   final double viewportWidth;
   final WelcomePhrase phrase;
@@ -702,10 +586,6 @@ class WelcomeReelRow extends StatelessWidget {
         ? dimOpacity * (1 - nonFocusFade)
         : dimOpacity;
     final periodOpacity = inFocus && !hideWhenFocused ? 1.0 : 0.0;
-    final style = CatchTextStyles.welcomeReelHeadline(
-      context,
-      color: textColor,
-    );
 
     final effectiveOpacity = hideWhenFocused && inFocus ? 0.0 : rowOpacity;
 
@@ -722,40 +602,12 @@ class WelcomeReelRow extends StatelessWidget {
           ),
           child: Align(
             alignment: Alignment.topLeft,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Text.rich(
-                  key: inFocus ? focusedPhraseKey : null,
-                  TextSpan(
-                    children: [
-                      TextSpan(text: phrase.object),
-                      TextSpan(
-                        text: '.',
-                        style: style.copyWith(
-                          color: textColor.withValues(alpha: periodOpacity),
-                        ),
-                      ),
-                    ],
-                  ),
-                  style: style,
-                  maxLines: 2,
-                  overflow: TextOverflow.clip,
-                  softWrap: true,
-                  textScaler: _welcomeReelTextScaler(context),
-                ),
-                if (inFocus && !hideWhenFocused)
-                  Positioned(
-                    key: focusedUnderlineKey,
-                    left: 0,
-                    right: 0,
-                    bottom:
-                        -CatchWelcomeTokens.welcomeReelUnderlineGap -
-                        CatchWelcomeTokens.welcomeReelUnderlineThickness,
-                    height: CatchWelcomeTokens.welcomeReelUnderlineThickness,
-                    child: ColoredBox(color: pigment),
-                  ),
-              ],
+            child: CatchWelcomeText.reel(
+              key: inFocus ? focusedPhraseKey : null,
+              phrase: phrase.object,
+              phraseColor: textColor,
+              periodColor: textColor.withValues(alpha: periodOpacity),
+              underlineColor: inFocus && !hideWhenFocused ? pigment : null,
             ),
           ),
         ),

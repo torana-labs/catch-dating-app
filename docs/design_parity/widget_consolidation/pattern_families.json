@@ -4094,6 +4094,41 @@
           "rationale": "Retain pending-count copy and navigation intent; delegate all section anatomy."
         }
       ]
+    },
+    {
+      "id": "welcome-text-material",
+      "title": "Welcome text material",
+      "intent": "Move welcome rich paint and measured lockup geometry into the approved library material while features keep copy, colors and animation bindings.",
+      "priority": "P1",
+      "status": "implemented",
+      "targetContract": "catch.welcome_text",
+      "qualityReference": "CatchWelcomeText",
+      "decisionSource": "CAT-236 comment 22a3daa7-9274-4c45-99a8-1629a0db61fc; owner+claude approval",
+      "acceptedVisualDelta": [
+        "Preserve the existing measured focus and reel recipes; the user-directed ratchet-first pass does not require an exhaustive pixel comparison."
+      ],
+      "members": [
+        {
+          "symbol": "CatchWelcomeText",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Approved .focus and .reel material with localized String and Color presentation inputs."
+        },
+        {
+          "symbol": "WelcomeFocusText",
+          "disposition": "unify",
+          "target": "CatchWelcomeText",
+          "preview": "required",
+          "rationale": "Retain a thin localization binding; delegate all focus drawing."
+        },
+        {
+          "symbol": "WelcomeReelRow",
+          "disposition": "unify",
+          "target": "CatchWelcomeText",
+          "preview": "required",
+          "rationale": "Retain activity colors, row placement and animation calculations; delegate rich text/underline drawing."
+        }
+      ]
     }
   ]
 }

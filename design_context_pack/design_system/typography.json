@@ -21,14 +21,14 @@
   },
   "rules": {
     "familyRoles": "Archivo is display/brand voice; platform system is prose, user content, and UI; IBM Plex Mono is data.",
-    "tracking": "Zero by default. Caps-only mono roles own 0.08-0.18em; welcomeReelHeadline owns the -0.5px display exception.",
+    "tracking": "Zero by default. Caps-only mono roles own 0.08-0.18em; CatchWelcomeText owns the internal -0.5px display exception.",
     "uppercase": "Use uppercase-enforcing owners with kicker, monoCapsLabel, and badgeCaps.",
     "displayVoice": "Archivo is roman-only at the locked 78% width and is centralized through CatchFonts.",
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 54,
-    "covered": 52,
+    "publicStaticTextStyleMethods": 53,
+    "covered": 51,
     "excluded": 2
   },
   "excluded": {
@@ -168,30 +168,6 @@
       "weight": 600,
       "lineHeight": 1.1,
       "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 600.0
-        },
-        {
-          "axis": "wdth",
-          "value": 78.0
-        }
-      ],
-      "casePolicy": "mixed"
-    },
-    "welcomeReelHeadline": {
-      "role": "voice",
-      "family": "Archivo",
-      "size": 36.0,
-      "weight": 600,
-      "lineHeight": 1.02,
-      "tracking": -0.5,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",

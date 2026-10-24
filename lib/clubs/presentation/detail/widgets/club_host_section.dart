@@ -182,8 +182,10 @@ class ClubHostRow extends StatelessWidget {
     );
 
     if (onTap == null) return row;
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return CatchSurface(
+      duration: Duration.zero,
+      tone: CatchSurfaceTone.transparent,
+      radius: CatchRadius.none,
       onTap: onTap,
       child: row,
     );

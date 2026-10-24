@@ -160,7 +160,7 @@ imported through `package:catch_tokens/catch_tokens.dart`. Shared theme wiring, 
   completed earlier.
 - **Dramatic scale jumps** — a large display over a small mono kicker; avoid many mid sizes.
 - **Zero tracking by default.** Only explicit uppercase kicker/mono/badge roles add
-  tracking. `welcomeReelHeadline` owns the ratified `-0.5px` welcome exception.
+  tracking. `CatchWelcomeText` owns the ratified `-0.5px` welcome exception inside its package-internal paint recipe.
 - **Near-1.0 display leading** and **generous body leading (~1.5–1.6)**.
 - **Archivo is roman-only in the app.** Do not request Archivo italics or add ignored
   `fontStyle` parameters.
