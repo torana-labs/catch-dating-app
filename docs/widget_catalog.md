@@ -1031,7 +1031,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostTodayEmptyState</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:94</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayHeader</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:77</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayEventMetadataRow</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:127</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayEventMetricTile</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:157</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayEventMetricTile</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:162</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayEventSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_section.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayAttentionSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:166</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayOverview</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:16</code> | — | — | No class documentation or registry summary. |
@@ -1092,19 +1092,19 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramCreatePageBody</code> | <code>lib/programs/presentation/program_create_screen.dart:226</code> | — | — | Rendering and Flutter field mechanics only. Validation, pending commands, receipt recovery, and list confirmation belong to the injected controller. |
 | <code>ProgramDispatchGroupTile</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:225</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDispatchSheet</code> | <code>lib/programs/presentation/program_dispatch_screen.dart:296</code> | — | — | Plate capture + vendor + class override. The dispatch write is queued through the operations outbox so a dead zone cannot lose a departure. |
-| <code>ProgramDoorAttendanceBadge</code> | <code>lib/programs/presentation/program_door_screen.dart:574</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramDoorAttendanceBadge</code> | <code>lib/programs/presentation/program_door_screen.dart:571</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDoorGuestRow</code> | <code>lib/programs/presentation/program_door_screen.dart:465</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramDoorPageBody</code> | <code>lib/programs/presentation/program_door_screen.dart:193</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramDoorPartySizeSheet</code> | <code>lib/programs/presentation/program_door_screen.dart:598</code> | — | — | Numeric sheet for `partySizeAdjust`; the controller only enqueues when the sheet returns a new value. |
+| <code>ProgramDoorPartySizeSheet</code> | <code>lib/programs/presentation/program_door_screen.dart:595</code> | — | — | Numeric sheet for `partySizeAdjust`; the controller only enqueues when the sheet returns a new value. |
 | <code>ProgramEventsRow</code> | <code>lib/programs/presentation/program_events_row.dart:10</code> | — | — | One identifiable program destination. Its constituent events remain in the program workspace rather than appearing as unrelated timeline duplicates. |
 | <code>ProgramGuestEditDialog</code> | <code>lib/programs/presentation/program_guest_edit_dialog.dart:19</code> | — | — | Edits one guest's contact details, household, and group selections. |
 | <code>ProgramGuestGroupEditDialog</code> | <code>lib/programs/presentation/program_guest_group_edit_dialog.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramGuestsFunctionRow</code> | <code>lib/programs/presentation/program_guests_screen.dart:637</code> | — | — | One guest row: per-function status chips for the whole program plus the RSVP editor for the currently selected function. |
 | <code>ProgramGuestsPageBody</code> | <code>lib/programs/presentation/program_guests_screen.dart:201</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramHotelInboundTripTile</code> | <code>lib/programs/presentation/program_hotel_desk_screen.dart:250</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramRoomBlockRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:291</code> | — | — | A reserved room block with live capacity — read-only on the desk board. |
-| <code>ProgramStayRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:219</code> | — | — | One stay row: guest, room, block, lifecycle status; tap to manage. |
-| <code>ProgramStaySheet</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:340</code> | — | — | Assign or manage one guest's stay: block, room label, lifecycle status, and the desk's room-ready / guest-arrived marks. |
+| <code>ProgramRoomBlockRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:288</code> | — | — | A reserved room block with live capacity — read-only on the desk board. |
+| <code>ProgramStayRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:216</code> | — | — | One stay row: guest, room, block, lifecycle status; tap to manage. |
+| <code>ProgramStaySheet</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:337</code> | — | — | Assign or manage one guest's stay: block, room label, lifecycle status, and the desk's room-ready / guest-arrived marks. |
 | <code>ProgramUnplacedGuestRow</code> | <code>lib/programs/presentation/program_hotel_rooms_screen.dart:165</code> | — | — | A routed guest with no live stay — tap to assign block and room. |
 | <code>ProgramImportResultSection</code> | <code>lib/programs/presentation/program_import_screen.dart:311</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramLodgingFloorLayout</code> | <code>lib/programs/presentation/program_lodging_layout.dart:262</code> | — | — | No class documentation or registry summary. |
@@ -1129,9 +1129,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgramWorkspaceFunctionTile</code> | <code>lib/programs/presentation/program_workspace_screen.dart:470</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramWorkspacePageBody</code> | <code>lib/programs/presentation/program_workspace_screen.dart:73</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramFunctionEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:24</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramHotelEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:563</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramPickupPointEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:381</code> | — | — | No class documentation or registry summary. |
-| <code>ProgramWorkspaceHotelTile</code> | <code>lib/programs/presentation/program_workspace_surface.dart:290</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramHotelEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:557</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramPickupPointEditDialog</code> | <code>lib/programs/presentation/program_workspace_surface.dart:375</code> | — | — | No class documentation or registry summary. |
+| <code>ProgramWorkspaceHotelTile</code> | <code>lib/programs/presentation/program_workspace_surface.dart:287</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramWorkspaceStationTile</code> | <code>lib/programs/presentation/program_workspace_surface.dart:202</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileBody</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:226</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileReportReasonTile</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:332</code> | — | — | No class documentation or registry summary. |

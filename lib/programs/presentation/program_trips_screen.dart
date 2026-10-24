@@ -318,9 +318,9 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
           Row(
             children: [
               Expanded(
-                child: Text(
+                child: CatchText(
                   trip.plateDisplay,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  variant: CatchTextVariant.sectionTitle,
                 ),
               ),
               CatchBadge.functional(
@@ -339,9 +339,9 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
             ),
           ),
           if (trip.manifestSource == TransportManifestSource.currentRecords)
-            Text(
+            CatchText(
               context.l10n.programsTripCurrentNames,
-              style: Theme.of(context).textTheme.bodySmall,
+              variant: CatchTextVariant.bodyS,
             ),
           CatchMetaRow(
             icon: CatchIcons.clock,

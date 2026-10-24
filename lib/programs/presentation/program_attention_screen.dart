@@ -120,7 +120,7 @@ class ProgramAttentionRow extends StatelessWidget {
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(item.title, style: Theme.of(context).textTheme.titleMedium),
+        CatchText(item.title, variant: CatchTextVariant.sectionTitle),
         gapH4,
         Wrap(
           spacing: CatchSpacing.s2,

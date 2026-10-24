@@ -409,9 +409,9 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                         Row(
                           children: [
                             Expanded(
-                              child: Text(
+                              child: CatchText(
                                 householdById[householdId]!.label,
-                                style: Theme.of(context).textTheme.titleSmall,
+                                variant: CatchTextVariant.supportingStrong,
                               ),
                             ),
                             if (widget.canShareRsvpLinks)
@@ -444,9 +444,9 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CatchText(
                           context.l10n.programsGuestsNoHousehold,
-                          style: Theme.of(context).textTheme.titleSmall,
+                          variant: CatchTextVariant.supportingStrong,
                         ),
                         gapH8,
                         for (final member in unaffiliated)
@@ -486,18 +486,18 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                     body: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CatchText(
                           group.label,
-                          style: Theme.of(context).textTheme.titleMedium,
+                          variant: CatchTextVariant.sectionTitle,
                         ),
                         const SizedBox(height: CatchSpacing.s1),
-                        Text(
+                        CatchText(
                           '${group.dimension} · '
                           '${context.l10n.programsGuestsGroupMembers(count: group.memberCount)}',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          variant: CatchTextVariant.bodyS,
                         ),
                         if (group.hotelId != null)
-                          Text(
+                          CatchText(
                             context.l10n.programsGuestsGroupHotelSummary(
                               hotel:
                                   widget.hotels
@@ -509,7 +509,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                                       ?.name ??
                                   context.l10n.programsGuestsHotelUnavailable,
                             ),
-                            style: Theme.of(context).textTheme.bodySmall,
+                            variant: CatchTextVariant.bodyS,
                           ),
                       ],
                     ),
@@ -663,10 +663,7 @@ class ProgramGuestsFunctionRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            guest.displayName,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          CatchText(guest.displayName, variant: CatchTextVariant.sectionTitle),
           const SizedBox(height: CatchSpacing.s2),
           Wrap(
             spacing: CatchSpacing.s1,
