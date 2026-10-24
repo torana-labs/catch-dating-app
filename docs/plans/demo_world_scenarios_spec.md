@@ -1,6 +1,6 @@
 ---
 doc_id: demo_world_scenarios_spec
-version: 0.2.0
+version: 0.2.1
 updated: 2026-10-24
 owner: marketing_website
 status: active
@@ -150,9 +150,10 @@ scenario first needs them, with the same rule: timestamps in, counts derived.
    captures render pixel-identical to the same commit before the change.
 2. Add India personas (names first, photos later) and swap the story's host and
    roster to them. Captures change on purpose here and get reviewed. **Done:**
-   `india_core_sales_personas.draft.json` and its planned profile projection;
+   `india_core_sales_personas.draft.json` (capture fixtures build profiles from
+   the catalogs directly, with no generated projection);
    `host-marketing-india` casts Meher Bhatia as host and 20 Mumbai plus 4 Pune
-   guests; capture fixtures load every cohort projection.
+   guests; capture fixtures load every cohort catalog.
 3. Add the TypeScript reader and point the guest-page Storybook stories at the
    world.
 4. Write one world per launch format, each its own small PR that can run in

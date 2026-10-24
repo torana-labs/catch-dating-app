@@ -22,8 +22,11 @@ class ClubPhotoRail extends StatelessWidget {
               Expanded(
                 child: AspectRatio(
                   aspectRatio: 1,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(CatchRadius.infoTile),
+                  child: CatchSurface(
+                    duration: Duration.zero,
+                    tone: CatchSurfaceTone.transparent,
+                    radius: CatchRadius.infoTile,
+                    clipBehavior: Clip.antiAlias,
                     child: ColoredBox(
                       color: t.primarySoft,
                       child: CatchNetworkImage(

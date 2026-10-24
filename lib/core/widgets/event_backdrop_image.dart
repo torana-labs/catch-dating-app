@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Activity-pigment backdrop art for event media: duotone ground, pattern and glyph.
@@ -28,18 +29,19 @@ class EventBackdropImage extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              // Confident mid-tone duotone (pigment → deep), not a pastel sweep.
-              colors: dense
-                  ? [visual.accent, visual.deep, visual.accent]
-                  : [visual.accent, visual.deep],
-              stops: dense ? const [0, 0.6, 1] : null,
-            ),
+        CatchSurface(
+          duration: Duration.zero,
+          radius: CatchRadius.none,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            // Confident mid-tone duotone (pigment → deep), not a pastel sweep.
+            colors: dense
+                ? [visual.accent, visual.deep, visual.accent]
+                : [visual.accent, visual.deep],
+            stops: dense ? const [0, 0.6, 1] : null,
           ),
+          child: const SizedBox.expand(),
         ),
         CustomPaint(
           painter: _ActivityPatternPainter(

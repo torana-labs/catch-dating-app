@@ -101,7 +101,7 @@ void main() {
     expect(renderer.visited.toSet().length, registered);
     // Pin the reviewed designation inventory, including toolbar inheritance.
     // Exact visitation below also rejects missing or duplicate registrations.
-    expect(coreGoldenIds, hasLength(316));
+    expect(coreGoldenIds, hasLength(317));
     expect(renderer.selected, unorderedEquals(coreGoldenIds));
     expect(
       coreGoldenIds.map(_corpusStem).toSet(),

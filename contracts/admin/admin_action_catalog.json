@@ -515,6 +515,66 @@
       }
     },
     {
+      "actionId": "organizer-intake.list-listing-reviews",
+      "callable": "adminListOrganizerListingReviews",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_organizer_listing_reviews_payload.schema.json",
+      "summary": "List one page of Supply Intake listings awaiting approval, newest first, with what a reviewer needs to approve each.",
+      "example": {
+        "limit": 10,
+        "cursor": null
+      }
+    },
+    {
+      "actionId": "organizer-intake.approve-listing",
+      "callable": "adminApproveOrganizerListing",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "listingWorkItemId",
+      "requestSchema": "contracts/callables/admin_approve_organizer_listing_payload.schema.json",
+      "summary": "Approve one Supply Intake listing: publish its organizer page unclaimed and noindex, hidden in the app, record the review, and open its Sales account, opportunity, tasks and activity.",
+      "example": {
+        "requestId": "example-approval-001",
+        "listingWorkItemId": "example-listing-work-item",
+        "contentHash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "name": "Example organizer",
+        "publicSlug": "example-organizer",
+        "marketId": "in-mh-mumbai",
+        "organizerType": "community",
+        "checklist": {
+          "identityReviewed": true,
+          "surfaceInventoryReviewed": true,
+          "ownerSafeCopyReviewed": true,
+          "marketScopeReviewed": true,
+          "mediaRightsReviewed": true,
+          "crawlDisabledReviewed": true,
+          "claimTargetReviewed": true,
+          "takedownPathReviewed": true,
+          "impersonationReviewed": true
+        },
+        "note": "Fixture approval; do not apply to production."
+      }
+    },
+    {
       "actionId": "organizer-intake.create-organizer-draft",
       "callable": "adminCreateOrganizerDraftFromCandidate",
       "workflowIds": [
@@ -3255,6 +3315,8 @@
       "label": "Organizer Intake",
       "guiPath": "/intake/organizers",
       "actions": [
+        "organizer-intake.list-listing-reviews",
+        "organizer-intake.approve-listing",
         "organizer-intake.create-organizer-draft",
         "organizer-intake.record-curation",
         "organizer-intake.resolve-location",
