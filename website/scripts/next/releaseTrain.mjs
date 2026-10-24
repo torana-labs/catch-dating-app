@@ -9,7 +9,7 @@ import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_
 import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 import {currentReleaseLineage} from "./previewRelease.mjs";
 
-// The website release train. After main CI succeeds (or on the hourly
+// The website release train. After main CI completes (or on the hourly
 // fallback), it previews main's head through the existing preview workflow,
 // waits for a person to approve the preview in the protected environment,
 // then runs the existing promotion workflow on that exact preview. It never
@@ -37,7 +37,9 @@ export function planDecision({event, eventSha, eventConclusion, mainSha, validat
   // Without required reviewers the environment would not wait for anyone, so
   // the train refuses rather than promote unapproved.
   assert.ok(reviewers.length > 0, `The ${APPROVAL_ENVIRONMENT} environment must require a reviewer before production`);
-  if (event === "workflow_run" && eventConclusion !== "success") return skip("ci_unsuccessful");
+  // A newer merge cancels main's push run of a commit; the merge queue run that
+  // tested the same commit still validates it, so only a failure stops here.
+  if (event === "workflow_run" && !["success", "cancelled"].includes(eventConclusion)) return skip("ci_unsuccessful");
   if (event === "workflow_run" && eventSha !== mainSha) return skip("superseded_by_newer_main");
   if (!validation?.validated || !validation.captureBinding) return skip("no_website_validation_for_main_head");
   if (lineage.alreadyLive) return skip("already_live");

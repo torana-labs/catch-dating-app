@@ -48,7 +48,7 @@ class _ProductionInteractionTransitionPageState
           const SizedBox(height: CatchSpacing.s2),
           Text(
             'Press, hold, release, select, and close each real field. There is no prototype timeline: the two samples execute the production motion and geometry directly.',
-            style: CatchTextStyles.proseM(context, color: t.ink2),
+            style: CatchTextStyles.bodyM(context, color: t.ink2),
           ),
           const SizedBox(height: CatchSpacing.s6),
           CatchSectionList.responsive(

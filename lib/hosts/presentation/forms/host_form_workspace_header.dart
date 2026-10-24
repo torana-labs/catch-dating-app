@@ -21,18 +21,18 @@ class HostFormWorkspaceHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final form = state.editor.form;
     if (selected == HostFormWorkspaceView.settings) {
-      return Text(
+      return CatchText(
         state.editor.definition.title,
-        style: CatchTextStyles.supporting(context),
+        variant: CatchTextVariant.supporting,
       );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           state.editor.definition.title,
           key: const ValueKey('host-form-command-center-title'),
-          style: CatchTextStyles.titleL(context),
+          variant: CatchTextVariant.titleL,
         ),
         gapH8,
         Wrap(
@@ -46,14 +46,14 @@ class HostFormWorkspaceHeader extends StatelessWidget {
                   ? CatchBadgeTone.success
                   : CatchBadgeTone.neutral,
             ),
-            Text(
+            CatchText(
               form.activeVersionId == null
                   ? hostFormSaveLabel(context, state)
                   : context.l10n.hostAudienceFormVersionContext(
                       purpose: hostFormPurposeLabel(context, form.purpose),
                       version: form.publishedVersion,
                     ),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ],
         ),

@@ -155,7 +155,11 @@ class _FormProfileReviewPageBodyState extends State<FormProfileReviewPageBody> {
             variant: CatchTextVariant.sectionTitle,
           ),
           gapH8,
-          Text(widget.review.formTitle, style: CatchTextStyles.proseM(context)),
+          CatchText(
+            widget.review.formTitle,
+            variant: CatchTextVariant.bodyM,
+            color: CatchTokens.of(context).ink,
+          ),
           gapH16,
           CatchText(
             l10n.formProfileReviewDescription,

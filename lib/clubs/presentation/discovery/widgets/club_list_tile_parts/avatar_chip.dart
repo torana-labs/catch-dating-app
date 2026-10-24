@@ -43,21 +43,21 @@ class AvatarChip extends StatelessWidget {
                 ),
               ),
               gapH6,
-              Text(
+              CatchText(
                 club.name,
-                style: CatchTextStyles.labelM(context, color: t.ink),
+                variant: CatchTextVariant.statusLabel,
+                color: t.ink,
                 textAlign: TextAlign.center,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
               if (showLiveBadge) ...[
                 gapH2,
-                Text(
+                CatchText(
                   context.l10n.clubsAvatarChipTextEventSoon,
-                  style: CatchTextStyles.labelS(context, color: t.primary),
+                  variant: CatchTextVariant.statusLabel,
+                  color: t.primary,
                   textAlign: TextAlign.center,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ],

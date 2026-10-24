@@ -58,12 +58,13 @@ class EventSuccessRoomSummarySection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          CatchText(
             context.l10n.eventSuccessRoomWorkspaceCapacitySummary(
               units: _eventSuccessRoomUnitCountLabel(context, layout),
               seats: seatCount,
             ),
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           gapH16,
           if (largeText)

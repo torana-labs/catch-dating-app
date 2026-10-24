@@ -22,6 +22,8 @@ import 'package:catch_ui/src/patterns/catch_navigation_viewport.dart';
 import 'package:catch_ui/src/patterns/catch_workspace_back_scope.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
+import 'package:catch_ui/src/primitives/catch_text.dart';
+import 'package:catch_ui/src/primitives/catch_text_variant.dart';
 import 'package:flutter/material.dart';
 
 part 'catch_top_bar_workspace_geometry.dart';
@@ -231,7 +233,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
           _WorkspaceTopBarGeometry._textHeight(
             context,
             subtitle!,
-            CatchTextStyles.appBarSubtitle(context),
+            CatchTextStyles.bodyS(context),
             laneWidth,
             maxLines: _lines(context),
           );
@@ -468,11 +470,12 @@ class _CatchTopBarState extends State<CatchTopBar> {
           body,
         if (widget.subtitle?.isNotEmpty ?? false) ...[
           const SizedBox(height: CatchGaps.headerTitleToSubtitle),
-          Text(
+          CatchText(
             widget.subtitle!,
             maxLines: CatchTopBar._lines(context),
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.appBarSubtitle(context, color: t.ink2),
+
+            variant: CatchTextVariant.bodyS,
+            color: t.ink2,
           ),
         ],
       ],

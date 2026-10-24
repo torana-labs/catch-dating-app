@@ -242,11 +242,12 @@ class PaymentHistoryTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(eventTitle, style: CatchTextStyles.sectionTitle(context)),
+                CatchText(eventTitle, variant: CatchTextVariant.sectionTitle),
                 gapH4,
-                Text(
+                CatchText(
                   AppTimeFormatters.dateTime(payment.createdAt),
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                 ),
                 gapH8,
                 Wrap(
@@ -269,9 +270,10 @@ class PaymentHistoryTile extends StatelessWidget {
                 ),
                 if (statusPresentation.detail case final detail?) ...[
                   gapH4,
-                  Text(
+                  CatchText(
                     detail,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                    variant: CatchTextVariant.supporting,
+                    color: t.ink2,
                   ),
                 ],
               ],
@@ -350,12 +352,12 @@ class PaymentReceiptSheet extends StatelessWidget {
                       label: statusPresentation.label,
                       tone: statusPresentation.tone,
                     ),
-                    Text(
+                    CatchText(
                       EventFormatters.priceInPaise(
                         payment.amount,
                         currencyCode: payment.currency,
                       ),
-                      style: CatchTextStyles.titleL(context),
+                      variant: CatchTextVariant.titleL,
                     ),
                   ],
                 ),

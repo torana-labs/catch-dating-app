@@ -65,11 +65,11 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
           Row(
             children: [
               Expanded(
-                child: Text(
+                child: CatchText(
                   context
                       .l10n
                       .eventSuccessEventSuccessCompanionWingmanTextAskTheHostFor,
-                  style: CatchTextStyles.titleL(context),
+                  variant: CatchTextVariant.titleL,
                 ),
               ),
               CatchPrivacyBadge(
@@ -79,11 +79,12 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
             ],
           ),
           gapH4,
-          Text(
+          CatchText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionWingmanTextTellTheHostWho,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           if (requestedTargetUid != null) ...[
             gapH12,
@@ -91,7 +92,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(
+                    child: CatchText(
                       context.l10n
                           .eventSuccessEventSuccessCompanionWingmanTextRequestSentForValue1(
                             value1:
@@ -100,7 +101,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
                                     .l10n
                                     .eventSuccessEventSuccessCompanionWingmanTextThisAttendee,
                           ),
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                   ),
                   gapW8,
@@ -136,11 +137,11 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
           ),
           gapH12,
           if (widget.candidates.isEmpty)
-            Text(
+            CatchText(
               context
                   .l10n
                   .eventSuccessEventSuccessCompanionWingmanTextNoCheckedInAttendees,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             )
           else
             CatchSection.containedRows(

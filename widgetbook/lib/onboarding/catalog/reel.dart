@@ -219,7 +219,7 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
               order: 0,
               child: Text(
                 'Show up to something you would do anyway.',
-                style: CatchTextStyles.proseM(
+                style: CatchTextStyles.bodyM(
                   context,
                   color: CatchTokens.editorialWhite,
                 ),

@@ -57,12 +57,10 @@ class CreateClubPhotosPicker extends StatelessWidget {
                   mode: CatchFieldLabelTextMode.optional,
                 ),
                 gapH4,
-                Text(
+                CatchText(
                   context.l10n.hostsCreateClubPhotosPickerTextDragToReorderThe,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).ink3,
-                  ),
+                  variant: CatchTextVariant.supporting,
+                  color: CatchTokens.of(context).ink3,
                 ),
               ],
             ),
@@ -86,12 +84,10 @@ class CreateClubPhotosPicker extends StatelessWidget {
       children: [
         picker,
         gapH12,
-        Text(
+        CatchText(
           context.l10n.hostsCreateClubPhotosPickerTextDragToReorderThe,
-          style: CatchTextStyles.supporting(
-            context,
-            color: CatchTokens.of(context).ink3,
-          ),
+          variant: CatchTextVariant.supporting,
+          color: CatchTokens.of(context).ink3,
         ),
       ],
     );
@@ -137,9 +133,10 @@ class CreateClubProfileImagePicker extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              CatchText(
                 context.l10n.hostsCreateClubPhotosPickerTextASquareLogoShown,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+                variant: CatchTextVariant.supporting,
+                color: t.ink2,
               ),
               gapH8,
               Wrap(
@@ -238,9 +235,10 @@ class ClubProfileImageTile extends StatelessWidget {
               gapH8,
               Padding(
                 padding: CatchInsets.inlineHorizontal,
-                child: Text(
+                child: CatchText(
                   context.l10n.hostsCreateClubPhotosPickerTextAddImage,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                   textAlign: TextAlign.center,
                 ),
               ),

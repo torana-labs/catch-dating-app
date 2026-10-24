@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 106,
-  "updated": "2026-10-20",
+  "version": 107,
+  "updated": "2026-10-24",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -98,18 +98,18 @@
       "exportName": "PublicSiteFooter",
       "css": [
         "website/src/styles/site-shell.css",
-        "website/src/styles/site-footer.css"
+        "website/src/styles/site-footer.css",
+        "website/src/styles/consumer-home.css"
       ],
       "storybook": {
         "status": "ready",
         "story": "website/src/stories/PublicSiteChrome.stories.tsx",
         "exportName": "PublicSiteFooterStory",
         "states": [
-          "global-links",
-          "context-links"
+          "global-links"
         ]
       },
-      "notes": "Canonical public chrome. Route links and actions remain secondary; transactional/private route shells do not use this owner."
+      "notes": "Canonical public chrome: the one header and footer every public route renders. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells do not use this owner."
     },
     {
       "id": "shared_public_site_header",
@@ -135,18 +135,18 @@
       "exportName": "PublicSiteHeader",
       "css": [
         "website/src/styles/site-shell.css",
-        "website/src/styles/site-footer.css"
+        "website/src/styles/site-footer.css",
+        "website/src/styles/consumer-home.css"
       ],
       "storybook": {
         "status": "ready",
         "story": "website/src/stories/PublicSiteChrome.stories.tsx",
         "exportName": "PublicSiteHeaderStory",
         "states": [
-          "global-navigation",
-          "secondary-navigation"
+          "global-navigation"
         ]
       },
-      "notes": "Canonical public chrome. Route links and actions remain secondary; transactional/private route shells do not use this owner.",
+      "notes": "Canonical public chrome: the one header and footer every public route renders. Route-specific links live in the page (for example the Host section navigation row); transactional/private route shells do not use this owner.",
       "comparedWith": [
         "catch.step_header"
       ],
@@ -520,31 +520,6 @@
       "notes": "Host landing page balances business workflows and guest participation, with five interactive before/during/after format examples, audience insights, flexible adoption and selected pilot access. Existing retired-route anchors remain. Application lives at /host/apply/. Includes selectable adoption circles and participation/privacy guidance."
     },
     {
-      "id": "host_apply_section",
-      "kind": "section",
-      "routeIds": [
-        "host_apply"
-      ],
-      "owner": "features/host/sections",
-      "source": "website/src/features/host/sections/HostPageSections.tsx",
-      "exportName": "HostApplySection",
-      "css": [
-        "website/src/styles/host.css",
-        "website/src/styles/flows.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/HostSections.stories.tsx",
-        "exportName": "HostApplySectionStory",
-        "states": [
-          "initial",
-          "interactive-steps"
-        ]
-      },
-      "notes": "Host route application section wrapper around HostApplicationFlow."
-    },
-    {
       "id": "route_organizer_search",
       "kind": "route",
       "routeIds": [
@@ -831,7 +806,7 @@
       "exportName": "HostApplicationFlow",
       "css": [
         "website/src/styles/flows.css",
-        "website/src/styles/host.css",
+        "website/src/styles/host-landing.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
@@ -1897,33 +1872,6 @@
         "catch.form_step_list"
       ],
       "comparisonReason": "Layout container with no heading, state or row anatomy of its own; the matched contracts own different responsibilities, including CatchFormStepList's step selection and completion status."
-    },
-    {
-      "id": "shared_waitlist_section",
-      "kind": "supporting-component",
-      "routeIds": [
-        "home",
-        "host",
-        "visitor_discovery"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/forms.tsx",
-      "exportName": "WaitlistSection",
-      "css": [
-        "website/src/styles/home.css",
-        "website/src/styles/host.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/LayoutPrimitives.stories.tsx",
-        "exportName": "WaitlistSectionStory",
-        "states": [
-          "member",
-          "host"
-        ]
-      },
-      "notes": "Shared website waitlist/application section primitive for member waitlist and host application shells; raw waitlist-section and waitlist__intro shells are blocked by web:react-component-governance."
     },
     {
       "id": "shared_listing_success_metric_grid",
@@ -3372,7 +3320,7 @@
       "source": "website/src/features/host/HostApplicationPage.tsx",
       "exportName": "HostApplicationPage",
       "css": [
-        "website/src/styles/host.css",
+        "website/src/styles/host-landing.css",
         "website/src/styles/flows.css"
       ],
       "storybook": {
@@ -3383,7 +3331,7 @@
           "initial"
         ]
       },
-      "notes": "The sole Host pilot intake page, using the existing application controller."
+      "notes": "The sole Host pilot intake page: the Host page chrome and section row, one heading, then the existing application controller."
     },
     {
       "id": "listing_profile_information",

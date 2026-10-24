@@ -197,9 +197,10 @@ class HostTodayEventMetricTile extends StatelessWidget {
         ),
         if (supporting != null) ...[
           gapH2,
-          Text(
+          CatchText(
             supporting!,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
         ],
       ],

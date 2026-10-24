@@ -91,7 +91,7 @@ class _WordmarkTile extends StatelessWidget {
                       child: Align(child: child),
                     ),
                     gapH10,
-                    Text(label, style: CatchTextStyles.labelM(context)),
+                    Text(label, style: CatchTextStyles.statusLabel(context)),
                   ],
                 ),
               ),

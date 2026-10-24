@@ -65,14 +65,16 @@ class HostCrmAudienceCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (loading)
-                Text(
+                CatchText(
                   context.l10n.hostsHostOrganizerCrmLoading,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                 )
               else if (hasError || data == null) ...[
-                Text(
+                CatchText(
                   context.l10n.hostsHostOrganizerCrmUnavailable,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                 ),
                 gapH12,
                 CatchButton(
@@ -109,9 +111,10 @@ class HostCrmAudienceCard extends StatelessWidget {
                 ),
                 if (data.truncated) ...[
                   gapH12,
-                  Text(
+                  CatchText(
                     context.l10n.hostsHostOrganizerCrmTruncated,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                    variant: CatchTextVariant.supporting,
+                    color: t.ink2,
                   ),
                 ],
               ],
@@ -182,7 +185,7 @@ class HostCrmChannelRow extends StatelessWidget {
           style: CatchTextStyles.labelL(context, color: t.ink),
         ),
         gapH4,
-        Text(status, style: CatchTextStyles.supporting(context, color: t.ink2)),
+        CatchText(status, variant: CatchTextVariant.supporting, color: t.ink2),
       ],
     );
   }

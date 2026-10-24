@@ -276,17 +276,18 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
             if (_photos.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
-                child: Text(
+                child: CatchText(
                   context.l10n.coreOrderedPhotoPickerBodyCoverPhoto,
-                  style: CatchTextStyles.supporting(context, color: t.ink3),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink3,
                 ),
               ),
             Row(
               children: [
                 Expanded(
-                  child: Text(
+                  child: CatchText(
                     context.l10n.coreOrderedPhotoPickerTitleGallery,
-                    style: CatchTextStyles.sectionTitle(context),
+                    variant: CatchTextVariant.sectionTitle,
                   ),
                 ),
                 CatchButton.text(
@@ -752,12 +753,12 @@ class OrderedPhotoAddTile extends StatelessWidget {
                     ),
                     if (showLabel) ...[
                       gapH8,
-                      Text(
+                      CatchText(
                         label,
-                        style: CatchTextStyles.bodyLead(context, color: t.ink2),
+                        variant: CatchTextVariant.bodyLead,
+                        color: t.ink2,
                         textAlign: TextAlign.center,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ],

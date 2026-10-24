@@ -436,12 +436,10 @@ class EventDetailFactList extends StatelessWidget {
                             ),
                           ),
                           gapH2,
-                          Text(
+                          CatchText(
                             row.body,
-                            style: CatchTextStyles.supporting(
-                              context,
-                              color: resolvedBodyColor,
-                            ),
+                            variant: CatchTextVariant.supporting,
+                            color: resolvedBodyColor,
                           ),
                         ],
                       ),

@@ -43,13 +43,11 @@ class EventSuccessCountdownText extends StatelessWidget {
               ),
             ),
             gapH4,
-            Text(
+            CatchText(
               caption,
-              style: CatchTextStyles.labelS(
-                context,
-                color: t.surface.withValues(
-                  alpha: CatchOpacity.revealMutedForeground,
-                ),
+              variant: CatchTextVariant.statusLabel,
+              color: t.surface.withValues(
+                alpha: CatchOpacity.revealMutedForeground,
               ),
             ),
           ],

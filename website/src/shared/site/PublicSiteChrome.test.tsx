@@ -1,58 +1,33 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {getMarketingConsent, setMarketingConsent} from "../../analytics";
-import {publicSiteCopy, siteFooterLegalLinks} from "../../content/site";
+import {publicSiteCopy} from "../../content/site";
 import {Button, MarketingConsentBannerShell} from "../ui/primitives";
 import {PublicSiteFooter, PublicSiteHeader} from "./PublicSiteChrome";
 
 vi.mock("./siteTracking", () => ({slugForTracking: (value: string) => value, trackSiteCtaClick: vi.fn()}));
 beforeEach(() => {localStorage.clear(); window.dataLayer = [];});
 afterEach(() => {cleanup(); document.body.style.overflow = "";});
-const globalLabels = ["Find events", "Organisers", "Catch Host", "Pricing and access"];
+const globalLabels = ["Find events", "Organisers", "For organisers"];
+const destinations = ["/explore/", "/organizers/", "/host/"];
 
 describe("canonical public chrome", () => {
-  it("uses root destinations and honest claim actions while keeping profile sections local", () => {
-    render(<PublicSiteHeader localNav={[{href: "#events", label: "Events"},
-      {href: "#about", label: "About"}, {href: "#reviews", label: "Reviews"}]}
-      localActions={[{href: "/claim/example/", label: "Claim listing"}]} />);
+  it("renders one header for every route: root brand, global destinations, no route actions", () => {
+    render(<PublicSiteHeader />);
     const primary = screen.getByRole("navigation", {name: "Primary"});
     expect(within(primary).getAllByRole("link").map((link) => link.textContent)).toEqual(globalLabels);
-    expect(within(primary).getAllByRole("link").map((link) => link.getAttribute("href")))
-      .toEqual(["/explore/", "/organizers/", "/host/", "/host/#pricing"]);
+    expect(within(primary).getAllByRole("link").map((link) => link.getAttribute("href"))).toEqual(destinations);
     expect(screen.getByRole("link", {name: "Catch home"}).getAttribute("href")).toBe("/");
-    const local = screen.getByRole("navigation", {name: "On this page"});
-    expect(within(local).getAllByRole("link").map((link) => link.getAttribute("href")))
-      .toEqual(["#events", "#about", "#reviews", "/claim/example/"]);
-    for (const [name, href] of [["Claim your page", "/claim/"], ["Apply for a pilot", "/host/apply/"]]) {
-      expect(within(screen.getByRole("banner")).getByRole("link", {name}).getAttribute("href")).toBe(href);
-    }
-  });
-
-  it("omits empty or repeated global secondary navigation on the root", () => {
-    render(<PublicSiteHeader localNav={[{href: "/host/", label: "Catch Host"}]} />);
+    expect(primary.closest(".consumer-home")).toBeTruthy();
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
+    expect(within(screen.getByRole("banner")).queryByRole("link", {name: "Claim your page"})).toBeNull();
   });
 
-  it("owns global/footer/legal links once and retains contextual copy, labels and anchors", () => {
-    render(<PublicSiteFooter body="Existing page description" links={[
-      ...publicSiteCopy.nav, ...siteFooterLegalLinks,
-      {href: "/host/#pricing", label: "Pricing and access"},
-      {href: "#about", label: "About this organiser"},
-      {href: "/host/", label: "For hosts"},
-      {href: "/host/", label: "For hosts"},
-    ]} />);
-    const global = screen.getByRole("navigation", {name: "Footer"});
-    expect(within(global).getAllByRole("link").map((link) => link.textContent))
+  it("renders one footer with the global and legal links and the operator credit once", () => {
+    render(<PublicSiteFooter />);
+    const footer = screen.getByRole("navigation", {name: "Footer"});
+    expect(within(footer).getAllByRole("link").map((link) => link.textContent))
       .toEqual([...globalLabels, "Privacy", "Terms", "Help"]);
-    expect(within(screen.getByRole("navigation", {name: "Related links"}))
-      .getAllByRole("link").map((link) => link.getAttribute("href")))
-      .toEqual(["#about", "/host/"]);
-    expect(screen.getByText("Existing page description")).toBeTruthy();
-    expect(screen.getAllByText(publicSiteCopy.footerOperator)).toHaveLength(1);
-  });
-
-  it("does not repeat the published operator fact on legal pages", () => {
-    render(<PublicSiteFooter body={publicSiteCopy.footerOperator} />);
     expect(screen.getAllByText(publicSiteCopy.footerOperator)).toHaveLength(1);
     expect(screen.queryByRole("navigation", {name: "Related links"})).toBeNull();
   });
@@ -70,8 +45,8 @@ describe("canonical public chrome", () => {
     expect(document.body.style.overflow).toBe("hidden");
     expect(dialog.hasAttribute("inert")).toBe(false);
     const mobile = within(dialog as HTMLElement);
-    expect(mobile.getAllByRole("link").slice(0, 4).map((link) => link.textContent)).toEqual(globalLabels);
-    const last = mobile.getByRole("link", {name: "Apply for a pilot"});
+    expect(mobile.getAllByRole("link").map((link) => link.textContent)).toEqual(globalLabels);
+    const last = mobile.getByRole("link", {name: "For organisers"});
     fireEvent.keyDown(document, {key: "Tab", shiftKey: true});
     expect(document.activeElement).toBe(last);
     fireEvent.keyDown(document, {key: "Tab"});
@@ -81,14 +56,14 @@ describe("canonical public chrome", () => {
     expect(menu.getAttribute("aria-expanded")).toBe("false");
     expect(document.body.style.overflow).toBe("auto");
     fireEvent.click(menu);
-    fireEvent.click(mobile.getByRole("link", {name: "Catch Host"}));
+    fireEvent.click(mobile.getByRole("link", {name: "Organisers"}));
     expect(menu.getAttribute("aria-expanded")).toBe("false");
     expect(document.activeElement).toBe(menu);
     document.body.style.overflow = "";
   });
 
   const consentStates = [null, "essential", "analytics", "accepted"] as const;
-  const exits = ["Escape", "Close", "Claim your page", "Apply for a pilot"] as const;
+  const exits = ["Escape", "Close", "Organisers", "For organisers"] as const;
   it.each(consentStates.flatMap((choice) => exits.map((exit) => ({choice, exit}))))(
     "preserves $choice consent through menu focus ownership and $exit, then returns access to choices",
     ({choice, exit}) => {
@@ -116,7 +91,7 @@ describe("canonical public chrome", () => {
       const dialog = screen.getByRole("dialog");
       const mobile = within(dialog);
       const close = mobile.getByRole("button", {name: "Close"});
-      const last = mobile.getByRole("link", {name: "Apply for a pilot"});
+      const last = mobile.getByRole("link", {name: "For organisers"});
       expect(document.activeElement).toBe(close);
       expect(document.body.style.overflow).toBe("hidden");
       fireEvent.keyDown(document, {key: "Tab", shiftKey: true});
@@ -155,22 +130,10 @@ describe("canonical public chrome", () => {
   );
 });
 
-it("guest chrome keeps event navigation and legal links without host claim prompts", () => {
-  render(<><PublicSiteHeader audience="guest" localNav={[{href: "/organizers/", label: "Organizers"}]}
-    localActions={[{href: "/organizers/host/", label: "View organizer"}]} />
-    <PublicSiteFooter audience="guest" body="Find your people." /></>);
-  expect(screen.queryByRole("link", {name: "Apply for a pilot"})).toBeNull();
-  expect(screen.queryByRole("link", {name: "Claim your page"})).toBeNull();
-  expect(screen.getByRole("link", {name: "Privacy"})).toBeTruthy();
-  expect(screen.getByRole("navigation", {name: "Primary"}).textContent).toBe("Organizers");
-});
-
-it("uses the same consumer links in the header, mobile menu and footer", () => {
-  const {container} = render(<><PublicSiteHeader audience="consumer" /><PublicSiteFooter audience="consumer" /></>);
-  const destinations = ["/explore/", "/organizers/", "/host/"];
+it("uses the same links in the header, mobile menu and footer", () => {
+  const {container} = render(<><PublicSiteHeader /><PublicSiteFooter /></>);
   const primary = screen.getByRole("navigation", {name: "Primary"});
   expect(within(primary).getAllByRole("link").map(item => item.getAttribute("href"))).toEqual(destinations);
-  expect(primary.closest(".consumer-home")).toBeTruthy();
   fireEvent.click(screen.getByRole("button", {name: "Menu"}));
   const dialog = screen.getByRole("dialog");
   expect(within(dialog).getAllByRole("link").map(item => item.getAttribute("href"))).toEqual(destinations);

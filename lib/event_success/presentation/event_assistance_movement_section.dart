@@ -35,9 +35,9 @@ class _EventAssistanceMovementSectionState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          CatchText(
             l10n.eventAssistanceMovementBody,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           gapH12,
           if (widget.groups.length > 1) ...[

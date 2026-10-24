@@ -9,10 +9,21 @@ const workflowPath = ".github/workflows/ci.yml";
 const positive = value => Number.isSafeInteger(value) && value > 0;
 const terminalFailures = new Set(["failure", "cancelled", "timed_out", "action_required", "stale", "neutral"]);
 
-export function selectSameSourceRun({runs, canonical, repository, sourceSha}) {
+const mergeQueueBranch = /^gh-readonly-queue\/main\/pr-[1-9][0-9]*-[0-9a-f]{40}$/u;
+
+/**
+ * CI that ran a commit on its way to main: main's own push run, or the merge
+ * queue run that tested the exact commit main then received.
+ */
+export function isMainCiSource(run) {
+  return (run?.event === "push" && run.head_branch === "main") ||
+    (run?.event === "merge_group" && mergeQueueBranch.test(run.head_branch ?? ""));
+}
+
+export function selectSameSourceRun({runs, canonical, repository, sourceSha, event = "push"}) {
   assert.ok(positive(canonical?.id) && canonical.path === workflowPath, "Canonical CI workflow identity is invalid.");
   assert.ok(Array.isArray(runs), "Missing canonical CI run list.");
-  const candidates = runs.filter(run => run.head_sha === sourceSha && run.event === "push" && run.head_branch === "main");
+  const candidates = runs.filter(run => run.head_sha === sourceSha && run.event === event && isMainCiSource(run));
   for (const run of candidates) {
     assert.ok(positive(run.id) && positive(run.run_attempt) && positive(run.run_number) &&
       run.workflow_id === canonical.id && run.path?.split("@")[0] === workflowPath && run.name === "CI" &&
@@ -83,7 +94,7 @@ export function selectCaptureBinding({artifacts, run, canonical, repository, sou
   assert.equal(matches.length, 1, "The exact CI attempt must own one canonical capture artifact.");
   const artifact = matches[0];
   const binding = {repository, sourceSha,
-    workflowRef: `${repository}/${workflowPath}@refs/heads/main`,
+    workflowRef: `${repository}/${workflowPath}@refs/heads/${run.head_branch}`,
     workflowSha: sourceSha, workflowDefinitionSha: sourceSha,
     eventSha: sourceSha, runHeadSha: sourceSha,
     runId: String(run.id), runAttempt: String(run.run_attempt),
@@ -99,47 +110,71 @@ export async function waitMainMarketingValidation({repository, sourceSha, reques
   assert.match(repository ?? "", /^[\w.-]+\/[\w.-]+$/u);
   assert.match(sourceSha ?? "", /^[0-9a-f]{40}$/u);
   const canonical = await request(`repos/${repository}/actions/workflows/ci.yml`);
-  const endpoint = `repos/${repository}/actions/workflows/${canonical.id}/runs?branch=main&event=push&head_sha=${sourceSha}&per_page=100`;
+  const runs = `repos/${repository}/actions/workflows/${canonical.id}/runs`;
+  const endpoints = {push: `${runs}?branch=main&event=push&head_sha=${sourceSha}&per_page=100`,
+    merge_group: `${runs}?event=merge_group&head_sha=${sourceSha}&per_page=100`};
+  const latestRun = async event => selectSameSourceRun({runs: (await request(endpoints[event])).workflow_runs,
+    canonical, repository, sourceSha, event});
+  // Jobs a cancelled run cancelled produced no evidence; jobs that already
+  // succeeded still do.
+  const inspect = async (run, cancelled) => {
+    const attempt = await request(`repos/${repository}/actions/runs/${run.id}/attempts/${run.run_attempt}`);
+    assert.equal(attempt.id, run.id, "Wrong validation attempt run.");
+    assert.equal(attempt.run_attempt, run.run_attempt, "Wrong validation attempt.");
+    assert.equal(attempt.head_sha, sourceSha, "Wrong validation attempt source.");
+    assert.ok(Number.isFinite(Date.parse(attempt.run_started_at)), "Missing validation attempt start time.");
+    const pages = await request(`repos/${repository}/actions/runs/${run.id}/attempts/${run.run_attempt}/jobs?per_page=100`, {paginate: true});
+    assert.ok(Array.isArray(pages) && pages.length > 0 && pages.every(page => Array.isArray(page.jobs)), "Malformed same-attempt job pages.");
+    const allJobs = pages.flatMap(page => page.jobs);
+    const jobs = cancelled ? allJobs.filter(job => job.conclusion !== "cancelled") : allJobs;
+    return {allJobs, decision: inspectMarketingValidation({run: {...run, run_started_at: attempt.run_started_at}, jobs, sourceSha})};
+  };
+  const bindingFor = async (run, allJobs) => {
+    const artifactPages = await request(`repos/${repository}/actions/runs/${run.id}/artifacts?per_page=100`, {paginate: true});
+    assert.ok(Array.isArray(artifactPages) && artifactPages.length > 0 && artifactPages.every(page => Array.isArray(page.artifacts)), "Malformed capture artifact pages.");
+    return selectCaptureBinding({artifacts: artifactPages.flatMap(page => page.artifacts), run, canonical, repository, sourceSha, jobs: allJobs});
+  };
+  const result = (run, decision, captureBinding) => ({...decision, ...(captureBinding ? {captureBinding} : {}), sourceSha,
+    sourceCiWorkflowId: canonical.id, sourceCiRunId: run.id, sourceCiRunAttempt: run.run_attempt, sourceCiEvent: run.event,
+    authority: decision.validated ? "same-source-marketing-and-capture-jobs" : "standalone-validation-required", node: process.version});
+  // The merge queue tested this exact commit before main received it, and no
+  // later merge cancels that run; main's own push run of it usually is.
+  // Callers therefore agree on one completed run. Main's push run remains the
+  // evidence for a commit that reached main without the queue.
+  const queueEvidence = async () => {
+    const run = await latestRun("merge_group");
+    if (run?.status !== "completed" || run.conclusion !== "success") return null;
+    const {allJobs, decision} = await inspect(run, false);
+    if (!decision?.validated && !decision?.captureProduced) return null;
+    const captureBinding = decision.captureProduced ? await bindingFor(run, allJobs) : undefined;
+    const current = await latestRun("merge_group");
+    assert.ok(current?.id === run.id && current.run_attempt === run.run_attempt && current.conclusion === "success",
+      "Merge queue validation changed during inspection.");
+    return result(run, decision, captureBinding);
+  };
   const started = now(); let previous = "";
   while (true) {
-    const listing = await request(endpoint);
-    const run = selectSameSourceRun({runs: listing.workflow_runs, canonical, repository, sourceSha});
+    const queued = await queueEvidence();
+    if (queued) return queued;
+    const run = await latestRun("push");
     if (run) {
-      // A newer merge to main cancels this run (ci.yml concurrency). Jobs it
-      // cancelled produced no evidence; jobs that already succeeded still do.
+      // A newer merge to main cancels this run (ci.yml concurrency).
       const cancelled = run.status === "completed" && run.conclusion === "cancelled";
       assert.ok(cancelled || !terminalFailures.has(run.conclusion), `Canonical same-source CI ended ${run.conclusion}; no validation reuse.`);
-      const attempt = await request(`repos/${repository}/actions/runs/${run.id}/attempts/${run.run_attempt}`);
-      assert.equal(attempt.id, run.id, "Wrong validation attempt run.");
-      assert.equal(attempt.run_attempt, run.run_attempt, "Wrong validation attempt.");
-      assert.equal(attempt.head_sha, sourceSha, "Wrong validation attempt source.");
-      assert.ok(Number.isFinite(Date.parse(attempt.run_started_at)), "Missing validation attempt start time.");
-      const pages = await request(`repos/${repository}/actions/runs/${run.id}/attempts/${run.run_attempt}/jobs?per_page=100`, {paginate: true});
-      assert.ok(Array.isArray(pages) && pages.length > 0 && pages.every(page => Array.isArray(page.jobs)), "Malformed same-attempt job pages.");
-      const allJobs = pages.flatMap(page => page.jobs);
-      const jobs = cancelled ? allJobs.filter(job => job.conclusion !== "cancelled") : allJobs;
-      const decision = inspectMarketingValidation({run: {...run, run_started_at: attempt.run_started_at}, jobs, sourceSha});
+      const {allJobs, decision} = await inspect(run, cancelled);
       if (cancelled && !decision) {
         // Marketing Website then captures and validates this exact source itself.
         return {validated: false, captureProduced: false, jobIds: [], sourceSha, sourceCiWorkflowId: canonical.id,
-          sourceCiRunId: run.id, sourceCiRunAttempt: run.run_attempt,
+          sourceCiRunId: run.id, sourceCiRunAttempt: run.run_attempt, sourceCiEvent: run.event,
           authority: "standalone-validation-required", reason: "source-ci-cancelled-before-evidence", node: process.version};
       }
       if (decision) {
-        let captureBinding;
-        if (decision.captureProduced) {
-          const artifactPages = await request(`repos/${repository}/actions/runs/${run.id}/artifacts?per_page=100`, {paginate: true});
-          assert.ok(Array.isArray(artifactPages) && artifactPages.length > 0 && artifactPages.every(page => Array.isArray(page.artifacts)), "Malformed capture artifact pages.");
-          captureBinding = selectCaptureBinding({artifacts: artifactPages.flatMap(page => page.artifacts), run, canonical, repository, sourceSha, jobs: allJobs});
-        }
-        const latest = await request(endpoint);
-        const current = selectSameSourceRun({runs: latest.workflow_runs, canonical, repository, sourceSha});
+        const captureBinding = decision.captureProduced ? await bindingFor(run, allJobs) : undefined;
+        const current = await latestRun("push");
         if (current?.id === run.id && current.run_attempt === run.run_attempt) {
           assert.ok(current.conclusion === "cancelled" || !terminalFailures.has(current.conclusion),
             "Validation attempt failed during inspection.");
-          return {...decision, ...(captureBinding ? {captureBinding} : {}), sourceSha, sourceCiWorkflowId: canonical.id,
-            sourceCiRunId: run.id, sourceCiRunAttempt: run.run_attempt,
-            authority: decision.validated ? "same-source-marketing-and-capture-jobs" : "standalone-validation-required", node: process.version};
+          return result(run, decision, captureBinding);
         }
       }
       assert.ok(run.status !== "completed" || decision,

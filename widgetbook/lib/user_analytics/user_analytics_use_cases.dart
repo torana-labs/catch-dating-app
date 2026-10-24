@@ -360,7 +360,10 @@ class _StateCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: CatchTextStyles.labelM(context, color: t.ink2)),
+          Text(
+            label,
+            style: CatchTextStyles.statusLabel(context, color: t.ink2),
+          ),
           gapH8,
           child,
         ],

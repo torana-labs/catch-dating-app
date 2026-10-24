@@ -257,7 +257,7 @@ Widget catchNoticeOverlayCatalogStates(BuildContext context) {
               child: Center(
                 child: Text(
                   'App content under ambient notices',
-                  style: CatchTextStyles.proseM(context),
+                  style: CatchTextStyles.bodyM(context),
                 ),
               ),
             ),

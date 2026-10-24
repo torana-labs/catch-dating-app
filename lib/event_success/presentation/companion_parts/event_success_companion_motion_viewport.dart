@@ -116,11 +116,12 @@ class CompanionBouncyChip extends StatelessWidget {
         backgroundColor: background,
         borderRole: active ? null : CatchBorderRole.boundary,
         padding: _companionStagePillPadding,
-        child: Text(
+        child: CatchText(
           label,
           maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.sectionTitle(context, color: foreground),
+
+          variant: CatchTextVariant.sectionTitle,
+          color: foreground,
         ),
       ),
     );

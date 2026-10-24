@@ -276,7 +276,7 @@ class CatchPosterHeader extends StatelessWidget {
               taglineText,
               maxLines: compact ? 3 : 2,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.proseM(context, color: colors.ink2),
+              style: CatchTextStyles.bodyM(context, color: colors.ink2),
             ),
           ],
           if (metaText != null && metaText.isNotEmpty) ...[

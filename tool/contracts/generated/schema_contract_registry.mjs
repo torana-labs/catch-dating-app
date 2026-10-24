@@ -30820,7 +30820,8 @@ export const supplyIntakeRequestSchema = {
     "market",
     "seed",
     "submittedBy",
-    "submittedAt"
+    "submittedAt",
+    "origin"
   ],
   "properties": {
     "schemaVersion": {
@@ -30889,18 +30890,20 @@ export const supplyIntakeRequestSchema = {
           }
         }
       },
-      "anyOf": [
+      "allOf": [
         {
-          "properties": {
-            "name": {
-              "type": "string"
+          "if": {
+            "properties": {
+              "name": {
+                "type": "null"
+              }
             }
-          }
-        },
-        {
-          "properties": {
-            "urls": {
-              "minItems": 1
+          },
+          "then": {
+            "properties": {
+              "urls": {
+                "minItems": 1
+              }
             }
           }
         }
@@ -30945,6 +30948,36 @@ export const supplyIntakeRequestSchema = {
     "submittedAt": {
       "type": "string",
       "format": "date-time"
+    },
+    "origin": {
+      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "admin_nomination",
+                "sales_inbound_intent",
+                "discovery_run"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+            }
+          }
+        }
+      ]
     }
   },
   "allOf": [
@@ -31097,7 +31130,8 @@ export const supplyIntakeRequestsDocumentSchema = {
         "market",
         "seed",
         "submittedBy",
-        "submittedAt"
+        "submittedAt",
+        "origin"
       ],
       "properties": {
         "schemaVersion": {
@@ -31166,18 +31200,20 @@ export const supplyIntakeRequestsDocumentSchema = {
               }
             }
           },
-          "anyOf": [
+          "allOf": [
             {
-              "properties": {
-                "name": {
-                  "type": "string"
+              "if": {
+                "properties": {
+                  "name": {
+                    "type": "null"
+                  }
                 }
-              }
-            },
-            {
-              "properties": {
-                "urls": {
-                  "minItems": 1
+              },
+              "then": {
+                "properties": {
+                  "urls": {
+                    "minItems": 1
+                  }
                 }
               }
             }
@@ -31222,6 +31258,36 @@ export const supplyIntakeRequestsDocumentSchema = {
         "submittedAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "origin": {
+          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "id"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "admin_nomination",
+                    "sales_inbound_intent",
+                    "discovery_run"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+                }
+              }
+            }
+          ]
         }
       },
       "allOf": [
@@ -248947,6 +249013,116 @@ export const adminDecideOrganizerEventCandidateCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 1000
+    }
+  }
+};
+
+export const adminNominateOrganizerCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_nominate_organizer_payload.schema.json",
+  "title": "AdminNominateOrganizerCallablePayload",
+  "description": "A Catch sales associate nominates an organizer. Supply Intake builds the listing from the name and links; nothing is published until staff review it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "name",
+    "market",
+    "urls",
+    "notes",
+    "categories"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "market": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "urls": {
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000,
+        "pattern": "^https?://"
+      }
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "categories": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{0,59}$"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "type": "null"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "urls": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "x-callable-aliases": [
+    "adminNominateOrganizer"
+  ]
+};
+
+export const adminNominateOrganizerCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_nominate_organizer_response.schema.json",
+  "title": "AdminNominateOrganizerCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "created",
+    "status"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^nom-[a-f0-9]{40}$"
+    },
+    "created": {
+      "type": "boolean"
+    },
+    "status": {
+      "const": "queued"
     }
   }
 };

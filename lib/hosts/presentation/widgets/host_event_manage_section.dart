@@ -325,7 +325,7 @@ class HostPublicRegistrationField extends StatelessWidget {
               ),
             ),
             gapH8,
-            Text(
+            CatchText(
               !supportsStandaloneRegistration
                   ? context.l10n.hostsHostPublicRegistrationBodyUnsupported
                   : organizerPublished
@@ -333,10 +333,8 @@ class HostPublicRegistrationField extends StatelessWidget {
                         ? context.l10n.hostsHostPublicRegistrationBodyPaid
                         : context.l10n.hostsHostPublicRegistrationBodyPublished
                   : context.l10n.hostsHostPublicRegistrationBodyNeedsPage,
-              style: CatchTextStyles.supporting(
-                context,
-                color: CatchTokens.of(context).ink2,
-              ),
+              variant: CatchTextVariant.supporting,
+              color: CatchTokens.of(context).ink2,
             ),
             gapH12,
             CatchButton(
@@ -446,11 +444,12 @@ class HostEventSummaryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final iconWidget = Icon(icon, color: t.ink2, size: CatchIcon.md);
-    final labelText = Text(
+    final labelText = CatchText(
       label,
       maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: CatchTextStyles.supporting(context, color: t.ink2),
+
+      variant: CatchTextVariant.supporting,
+      color: t.ink2,
     );
 
     return Column(

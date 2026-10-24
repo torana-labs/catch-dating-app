@@ -28,9 +28,9 @@ class HostCustomerSourcesSection extends StatelessWidget {
                     label: l10n.hostCustomersReviewDuplicates,
                     onPressed: onReviewDuplicates,
                   ),
-            child: Text(
+            child: CatchText(
               l10n.hostCustomersCustomerProvenanceUnavailable,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           )
         else
@@ -71,9 +71,10 @@ class HostCustomerSourcesSection extends StatelessWidget {
           ),
         if (customer.originsTruncated)
           CatchSection.content(
-            child: Text(
+            child: CatchText(
               l10n.hostCustomersSourcesTruncated,
-              style: CatchTextStyles.recordContext(context),
+              variant: CatchTextVariant.bodyS,
+              color: CatchTokens.of(context).ink2,
             ),
           ),
       ],

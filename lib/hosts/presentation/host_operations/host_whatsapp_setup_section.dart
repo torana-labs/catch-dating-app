@@ -57,12 +57,10 @@ class _HostWhatsappSetupSectionState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   context.l10n.hostsHostAudienceWhatsappOwnedSender,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).ink2,
-                  ),
+                  variant: CatchTextVariant.supporting,
+                  color: CatchTokens.of(context).ink2,
                 ),
                 gapH12,
                 if (connection == null)

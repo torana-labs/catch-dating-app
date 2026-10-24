@@ -113,13 +113,14 @@ class HostFormSettingsSectionList extends StatelessWidget {
       gapH20,
       CatchSection.fieldRows(
         title: context.l10n.hostFormMessagingTitle,
-        footer: Text(
+        footer: CatchText(
           definition.usesPurposeMessaging
               ? context.l10n.hostFormMessagingPurposeHelp
-              : definition.identityPolicy == HostFormIdentityPolicy.phoneVerified
+              : definition.identityPolicy ==
+                    HostFormIdentityPolicy.phoneVerified
               ? context.l10n.hostFormMessagingHelp
               : context.l10n.hostFormMessagingPhoneRequired,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         children: [
           if (!definition.usesPurposeMessaging) ...[
@@ -148,9 +149,8 @@ class HostFormSettingsSectionList extends StatelessWidget {
                   definition.identityPolicy ==
                           HostFormIdentityPolicy.phoneVerified ||
                       definition.offersCatchWhatsapp
-                  ? (value) => notifier.updateMessagingConsent(
-                      catchWhatsapp: value,
-                    )
+                  ? (value) =>
+                        notifier.updateMessagingConsent(catchWhatsapp: value)
                   : null,
             ),
           ],
@@ -161,7 +161,8 @@ class HostFormSettingsSectionList extends StatelessWidget {
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionMessagingConsentOrganizerOperationsWhatsapp,
             onChanged: (value) => notifier.updateMessagingConsent(
-              organizerOperationsWhatsapp: value),
+              organizerOperationsWhatsapp: value,
+            ),
           ),
           CatchField.toggle(
             copy: catchFieldCopy(context.l10n),
@@ -170,7 +171,8 @@ class HostFormSettingsSectionList extends StatelessWidget {
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionMessagingConsentOrganizerMarketingWhatsapp,
             onChanged: (value) => notifier.updateMessagingConsent(
-              organizerMarketingWhatsapp: value),
+              organizerMarketingWhatsapp: value,
+            ),
           ),
           CatchField.toggle(
             copy: catchFieldCopy(context.l10n),
@@ -178,8 +180,8 @@ class HostFormSettingsSectionList extends StatelessWidget {
             value: definition.offersCatchMarketingWhatsapp,
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionMessagingConsentCatchMarketingWhatsapp,
-            onChanged: (value) => notifier.updateMessagingConsent(
-              catchMarketingWhatsapp: value),
+            onChanged: (value) =>
+                notifier.updateMessagingConsent(catchMarketingWhatsapp: value),
           ),
         ],
       ),
@@ -406,9 +408,9 @@ class HostFormSettingsSectionList extends StatelessWidget {
       gapH20,
       CatchSection.fieldRows(
         title: context.l10n.hostFormLogic,
-        footer: Text(
+        footer: CatchText(
           context.l10n.hostFormLogicHelp,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         children: [
           for (final ruleEntry in definition.logicRules.indexed)

@@ -98,12 +98,10 @@ class ItineraryRow extends StatelessWidget {
                   ),
                   if (step.detail case final detail?) ...[
                     const SizedBox(height: CatchSpacing.micro2),
-                    Text(
+                    CatchText(
                       detail,
-                      style: CatchTextStyles.supporting(
-                        context,
-                        color: detailColor,
-                      ),
+                      variant: CatchTextVariant.supporting,
+                      color: detailColor,
                     ),
                   ],
                 ],

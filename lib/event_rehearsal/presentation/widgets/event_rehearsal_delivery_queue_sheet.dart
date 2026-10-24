@@ -75,9 +75,9 @@ class _EventRehearsalDeliveryQueueSheetState
             builder: (_, session) {
               final queue = session.snapshot.deliveryReviews;
               if (queue == null) {
-                return Text(
+                return CatchText(
                   context.l10n.eventAssistanceDeliveryMissing,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 );
               }
               return EventAssistanceDeliveryQueueSection(

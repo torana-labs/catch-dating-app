@@ -11,30 +11,9 @@ export const siteFooterLegalLinks = [
   {href: "/help/", label: "Help"},
 ] as const;
 
-// One authored owner for public marketing chrome across route families.
+// One authored owner for the public header and footer on every route.
 export const publicSiteCopy = {
-  menu: {
-    dialogLabel: "Site menu", openLabel: "Menu", closeLabel: "Close",
-    kicker: "Catch · For organisers", hint: "Presence, guests, and the live event", navLabel: "Mobile",
-  },
-  nav: [
-    {href: "/explore/", label: "Find events"},
-    {href: "/organizers/", label: "Organisers"},
-    {href: "/host/", label: "Catch Host"},
-    {href: "/host/#pricing", label: "Pricing and access"},
-  ],
-  actions: [
-    {href: "/claim/", label: "Claim your page", variant: "secondary"},
-    {href: "/host/apply/", label: "Apply for a pilot", variant: "primary"},
-  ],
-  footerBody: "Catch for organisers: public discovery, guest coordination, and a supported live-event pilot.",
-  footerOperator: legalDocument.ui.footerBody,
-  localNavLabel: "On this page",
-  relatedLinksLabel: "Related links",
-} as const;
-
-export const consumerSiteCopy = {
   menu: {dialogLabel: "Site menu", openLabel: "Menu", closeLabel: "Close", kicker: "Catch", hint: "Find something worth showing up for.", navLabel: "Mobile"},
   nav: [{href: "/explore/", label: "Find events"}, {href: "/organizers/", label: "Organisers"}, {href: "/host/", label: "For organisers"}],
-  footer: "Discover events, share interests, and spend time with people.",
+  footerOperator: legalDocument.ui.footerBody,
 } as const;

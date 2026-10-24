@@ -182,7 +182,7 @@ class _HostResponseQueryEditorSectionState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(copy.title, style: CatchTextStyles.sectionTitle(context)),
+          CatchText(copy.title, variant: CatchTextVariant.sectionTitle),
           gapH16,
           if (widget.fields.isNotEmpty)
             HostResponseGroupSection(
@@ -197,9 +197,9 @@ class _HostResponseQueryEditorSectionState
               onSetMatch: _setMatch,
             ),
           if (widget.fields.isEmpty)
-            Text(
+            CatchText(
               copy.invalidCondition,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           gapH16,
           Row(

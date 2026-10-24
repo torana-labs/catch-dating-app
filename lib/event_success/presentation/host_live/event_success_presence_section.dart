@@ -51,17 +51,17 @@ class EventSuccessPresenceSection extends StatelessWidget {
           ],
           if (likelyDeparted.isNotEmpty) ...[
             gapH12,
-            Text(
+            CatchText(
               context.l10n
                   .eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft(
                     count: likelyDeparted.length,
                   ),
-              style: CatchTextStyles.sectionTitle(context),
+              variant: CatchTextVariant.sectionTitle,
             ),
             gapH4,
-            Text(
+            CatchText(
               likelyDeparted.map((entry) => entry.displayName).join(', '),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
             gapH10,
             CatchButton(
@@ -77,9 +77,9 @@ class EventSuccessPresenceSection extends StatelessWidget {
           ],
           if (lateArrivals.isNotEmpty) ...[
             gapH16,
-            Text(
+            CatchText(
               context.l10n.eventSuccessEventSuccessHostLiveTitleLateArrivals,
-              style: CatchTextStyles.sectionTitle(context),
+              variant: CatchTextVariant.sectionTitle,
             ),
             gapH4,
             ...lateArrivals.map(

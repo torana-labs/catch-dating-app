@@ -81,9 +81,9 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      CatchText(
                         context.l10n.hostInboxChoosePerson,
-                        style: CatchTextStyles.supporting(context),
+                        variant: CatchTextVariant.supporting,
                       ),
                       gapH12,
                       CatchSearchField.expanded(
@@ -146,9 +146,9 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
                 if (page.contacts.isEmpty)
                   SliverToBoxAdapter(
                     child: CatchSection.content(
-                      child: Text(
+                      child: CatchText(
                         context.l10n.hostCustomersNoResults,
-                        style: CatchTextStyles.supporting(context),
+                        variant: CatchTextVariant.supporting,
                       ),
                     ),
                   ),
@@ -378,9 +378,9 @@ class HostNewMessageRouteSection extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   context.l10n.hostInboxPartialSources,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 ),
                 if (whatsappPage?.nextCursor != null)
                   CatchButton(
@@ -407,9 +407,9 @@ class HostNewMessageRouteSection extends ConsumerWidget {
           ),
         if (valid && !catchAvailable && whatsapp == null && whatsappComplete)
           CatchSection.content(
-            child: Text(
+            child: CatchText(
               context.l10n.hostInboxNewMessageUnavailable,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
       ],

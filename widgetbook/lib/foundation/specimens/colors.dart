@@ -115,7 +115,7 @@ class _ActivityColorTile extends StatelessWidget {
                   children: [
                     Text(
                       activity.label,
-                      style: CatchTextStyles.labelM(context),
+                      style: CatchTextStyles.statusLabel(context),
                     ),
                     gapH2,
                     Text(

@@ -407,12 +407,6 @@
   background: transparent;
 }
 
-.host-application__panel {
-  background:
-    linear-gradient(135deg, color-mix(in srgb, var(--catch-activity-dinner-accent) 12%, transparent), transparent 44%),
-    var(--website-surface);
-}
-
 .choice-chip-grid {
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }

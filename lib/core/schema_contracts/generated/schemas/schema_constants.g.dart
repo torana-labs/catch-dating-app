@@ -103,6 +103,8 @@ export 'admin_list_sales_opportunities_callable_payload.g.dart';
 export 'admin_list_sales_outreach_drafts_request.g.dart';
 export 'admin_list_sales_outreach_drafts_response.g.dart';
 export 'admin_list_sales_tasks_callable_payload.g.dart';
+export 'admin_nominate_organizer_callable_payload.g.dart';
+export 'admin_nominate_organizer_callable_response.g.dart';
 export 'admin_preview_sales_import_callable_payload.g.dart';
 export 'admin_preview_sales_import_compensation_response.g.dart';
 export 'admin_preview_sales_import_history_payload.g.dart';

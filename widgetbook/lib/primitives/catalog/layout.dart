@@ -307,7 +307,7 @@ Widget catchTicketHeroCatalogStates(BuildContext context) {
           child: CatchSurface.card(
             child: Text(
               'Ticket surface keeps the shared Hero tag and flight behavior.',
-              style: CatchTextStyles.proseM(context),
+              style: CatchTextStyles.bodyM(context),
             ),
           ),
         ),
@@ -341,7 +341,7 @@ Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
                   child: Center(
                     child: Text(
                       'Native map remains stationary below the veil.',
-                      style: CatchTextStyles.proseM(context),
+                      style: CatchTextStyles.bodyM(context),
                       textAlign: TextAlign.center,
                     ),
                   ),

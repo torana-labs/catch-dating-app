@@ -30,11 +30,11 @@ class _EventCheckInQrScannerSheetState
                 Icon(CatchIcons.qrCodeScannerRounded, color: t.primary),
                 gapW10,
                 Expanded(
-                  child: Text(
+                  child: CatchText(
                     context
                         .l10n
                         .eventSuccessEventSuccessCompanionLiveCardsTextScanHostQr,
-                    style: CatchTextStyles.sectionTitle(context),
+                    variant: CatchTextVariant.sectionTitle,
                   ),
                 ),
                 Tooltip(
@@ -85,12 +85,10 @@ class _EventCheckInQrScannerSheetState
                             alpha: CatchOpacity.eventSuccessQrErrorFill,
                           ),
                           radius: CatchRadius.none,
-                          child: Text(
+                          child: CatchText(
                             _errorText!,
-                            style: CatchTextStyles.supporting(
-                              context,
-                              color: CatchTokens.editorialWhite,
-                            ),
+                            variant: CatchTextVariant.supporting,
+                            color: CatchTokens.editorialWhite,
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -100,11 +98,12 @@ class _EventCheckInQrScannerSheetState
               ),
             ),
             gapH10,
-            Text(
+            CatchText(
               context
                   .l10n
                   .eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
           ],
         ),

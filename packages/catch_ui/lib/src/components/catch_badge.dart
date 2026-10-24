@@ -397,7 +397,8 @@ class _BadgeMetrics {
         textStyle: functional
             ? (context, color) =>
                   CatchTextStyles.badgeCaps(context, color: color)
-            : (context, color) => CatchTextStyles.labelS(context, color: color),
+            : (context, color) =>
+                  CatchTextStyles.statusLabel(context, color: color),
       ),
       CatchBadgeSize.md => _BadgeMetrics(
         padding: const EdgeInsets.symmetric(

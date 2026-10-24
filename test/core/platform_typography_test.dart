@@ -26,12 +26,8 @@ void main() {
                     CatchTextStyles.sectionTitle(context),
                     profile.name,
                   ),
-                  ('proseL', CatchTextStyles.proseL(context), profile.body),
-                  (
-                    'proseM',
-                    CatchTextStyles.proseM(context),
-                    profile.secondary,
-                  ),
+                  ('bodyL', CatchTextStyles.bodyL(context), profile.body),
+                  ('bodyM', CatchTextStyles.bodyM(context), profile.secondary),
                   (
                     'bodyLead',
                     CatchTextStyles.bodyLead(context),
@@ -39,11 +35,19 @@ void main() {
                   ),
                   (
                     'menuSupporting',
-                    CatchTextStyles.menuSupporting(context),
+                    CatchTextStyles.bodyS(context),
                     profile.context,
                   ),
-                  ('labelM', CatchTextStyles.labelM(context), profile.status),
-                  ('labelS', CatchTextStyles.labelS(context), profile.status),
+                  (
+                    'labelM',
+                    CatchTextStyles.statusLabel(context),
+                    profile.status,
+                  ),
+                  (
+                    'labelS',
+                    CatchTextStyles.statusLabel(context),
+                    profile.status,
+                  ),
                   (
                     'navigationLabel',
                     CatchTextStyles.navigationLabel(context),
@@ -208,7 +212,7 @@ void main() {
                       ),
                       Text(
                         'Long form description with multiple clauses and a readable last word.',
-                        style: CatchTextStyles.proseL(context),
+                        style: CatchTextStyles.bodyL(context),
                       ),
                     ],
                   ),

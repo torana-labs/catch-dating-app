@@ -6,13 +6,12 @@ import {CatchPageBody} from "./CatchPageBody";
 import {CatchSectionList} from "./CatchSectionList";
 import {CatchText, type CatchTextVariant} from "./CatchText";
 
-type FoundationStoryArgs = ComponentProps<typeof CatchText> & {recordAndProse: boolean};
+type FoundationStoryArgs = ComponentProps<typeof CatchText>;
 
 const meta = {
   title: "Web UI/Foundations",
   component: CatchText,
-  args: {children: "Catch", variant: "bodyM", recordAndProse: false},
-  argTypes: {recordAndProse: {control: "boolean"}},
+  args: {children: "Catch", variant: "bodyM"},
 } satisfies Meta<FoundationStoryArgs>;
 
 export default meta;
@@ -32,13 +31,6 @@ const textVariants: readonly CatchTextVariant[] = [
   "fieldLabel",
   "statusLabel",
   "metric",
-];
-
-const recordAndProseVariants: readonly CatchTextVariant[] = [
-  "recordContext",
-  "recordBody",
-  "proseL",
-  "proseM",
 ];
 
 const gapSizes: readonly CatchGapSize[] = [
@@ -65,8 +57,8 @@ const insetPaddings: readonly CatchInsetPadding[] = [
   "pageHorizontal",
 ];
 
-function TextRoles({recordAndProse}: {recordAndProse: boolean}) {
-  const variants = recordAndProse ? recordAndProseVariants : textVariants;
+function TextRoles() {
+  const variants = textVariants;
   return (
     <CatchGap size="related">
       {variants.map((variant) => (
@@ -80,11 +72,11 @@ function TextRoles({recordAndProse}: {recordAndProse: boolean}) {
 
 /** catch.text: every role in both themes, then the per-instance overrides. */
 export const Text: Story = {
-  render: ({recordAndProse}) => (
+  render: () => (
     <>
       <CatchPageBody>
         <CatchGap size="majorSection">
-          <TextRoles recordAndProse={recordAndProse} />
+          <TextRoles />
           <CatchGap size="related">
             <CatchText as="h2" variant="titleL">Heading element</CatchText>
             <CatchText color="danger" variant="supporting">Danger color</CatchText>
@@ -101,7 +93,7 @@ export const Text: Story = {
       </CatchPageBody>
       <div data-catch-theme="dark" style={{background: "var(--catch-theme-bg)"}}>
         <CatchPageBody>
-          <TextRoles recordAndProse={recordAndProse} />
+          <TextRoles />
         </CatchPageBody>
       </div>
     </>

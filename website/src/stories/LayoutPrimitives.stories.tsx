@@ -1,9 +1,7 @@
-import {CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import type {FormEvent} from "react";
 import {useState} from "react";
 import {SectionHeader} from "../shared/site/SectionHeader";
-import {ActionGroup, Button, ButtonLink, Form, ChoiceCard, ChoiceChip, ChoiceChipGrid, ContentGrid, ListingSuccessMetricGrid, PanelShell, StepRail, UiLabel, VerificationMethodGrid, WaitlistSection} from "../shared/ui/primitives";
+import {ActionGroup, Button, ButtonLink, ChoiceCard, ChoiceChip, ChoiceChipGrid, ContentGrid, ListingSuccessMetricGrid, PanelShell, StepRail, UiLabel, VerificationMethodGrid} from "../shared/ui/primitives";
 
 const meta = {
   title: "Marketing Website/Shared/Layout And Form Primitives",
@@ -137,43 +135,6 @@ export const ChoiceCardControlsStory: Story = {
   render: () => <ChoiceCardControlsDemo />,
 };
 
-export const WaitlistSectionStory: Story = {
-  name: "Waitlist section",
-  parameters: {
-    catchComponent: {
-      id: "shared_waitlist_section",
-      routeIds: ["home", "host"],
-      states: ["member", "host"],
-    },
-  },
-  render: () => (
-    <WaitlistSection
-      title="Join the member waitlist"
-      titleId="storybook-waitlist-section-title"
-      body="Waitlist sections own the intro and form slot while route sections configure copy."
-    >
-      <Form onSubmit={preventSubmit}>
-        <CatchField
-          recipe="input"
-          id="storybook-waitlist-name"
-          title="Full name"
-          name="fullName"
-          required
-        />
-        <CatchField
-          recipe="input"
-          id="storybook-waitlist-email"
-          title="Email"
-          name="email"
-          required
-          keyboardType="emailAddress"
-        />
-        <Button type="submit">Join the list</Button>
-      </Form>
-    </WaitlistSection>
-  ),
-};
-
 export const ContentGridStory: Story = {
   name: "Content grids",
   parameters: {
@@ -248,10 +209,6 @@ export const ListingSuccessMetricGridStory: Story = {
     />
   ),
 };
-
-function preventSubmit(event: FormEvent<HTMLFormElement>) {
-  event.preventDefault();
-}
 
 function StepRailDemo() {
   const [activeId, setActiveId] = useState("proof");

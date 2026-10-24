@@ -67,31 +67,31 @@ class _EventSuccessOutcomeSectionState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             context.l10n.eventSuccessLiveControlRecordRoundTitle(
               roundNumber: widget.nextRoundIndex + 1,
             ),
-            style: CatchTextStyles.sectionTitle(context, color: t.surface),
+            variant: CatchTextVariant.sectionTitle,
+            color: t.surface,
           ),
           gapH6,
-          Text(
+          CatchText(
             isRank
                 ? context.l10n.eventSuccessLiveControlRankEntryInstructions
                 : context.l10n.eventSuccessLiveControlScoreEntryInstructions,
-            style: CatchTextStyles.supporting(
-              context,
-              color: t.surface.withValues(
-                alpha: CatchOpacity.revealMutedForeground,
-              ),
+            variant: CatchTextVariant.supporting,
+            color: t.surface.withValues(
+              alpha: CatchOpacity.revealMutedForeground,
             ),
           ),
           gapH12,
           if (widget.units.isEmpty)
-            Text(
+            CatchText(
               isRank
                   ? context.l10n.eventSuccessLiveControlEmptyUnitsMessage
                   : context.l10n.eventSuccessLiveControlEmptyScoreTeamsMessage,
-              style: CatchTextStyles.supporting(context, color: t.surface),
+              variant: CatchTextVariant.supporting,
+              color: t.surface,
             )
           else
             CatchSection.fieldRows(
@@ -120,13 +120,14 @@ class _EventSuccessOutcomeSectionState
             ),
           if (widget.actionState.error != null) ...[
             gapH10,
-            Text(
+            CatchText(
               appErrorMessage(
                 widget.actionState.error!,
                 l10n: context.l10n,
                 context: AppErrorContext.event,
               ),
-              style: CatchTextStyles.supporting(context, color: t.surface),
+              variant: CatchTextVariant.supporting,
+              color: t.surface,
             ),
           ],
           gapH12,

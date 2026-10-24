@@ -188,12 +188,12 @@ class HostFormPublishText extends StatelessWidget {
         const CatchDivider.section(),
         Padding(
           padding: CatchInsets.contentVerticalMedium,
-          child: Text(
+          child: CatchText(
             '${context.l10n.hostFormQuestionCount(count: questionCount)} · '
             '${context.l10n.hostFormPublishPrompt}',
             key: const ValueKey('host-form-readiness-summary'),
             textAlign: TextAlign.center,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ),
       ],

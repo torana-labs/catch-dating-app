@@ -660,9 +660,10 @@ class _RehearsalCoachDock extends StatelessWidget {
           Icon(CatchIcons.scienceOutlined, color: t.danger),
           gapW8,
           Expanded(
-            child: Text(
+            child: CatchText(
               context.l10n.hostEventRehearsalCoachCollapsed,
-              style: CatchTextStyles.labelM(context),
+              variant: CatchTextVariant.statusLabel,
+              color: CatchTokens.of(context).ink2,
             ),
           ),
         ],

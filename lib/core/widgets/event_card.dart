@@ -145,11 +145,12 @@ class EventCard extends StatelessWidget {
               ),
             ),
             gapH6,
-            Text(
+            CatchText(
               subtitle,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
             gapH12,
             CatchMetadataText(capacityLabel, color: t.ink2),

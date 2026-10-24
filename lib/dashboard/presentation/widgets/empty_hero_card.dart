@@ -84,20 +84,16 @@ class EmptyHeroBody extends StatelessWidget {
           ),
         ),
         gapH10,
-        Text(
+        CatchText(
           context.l10n.dashboardEmptyHeroCardTextYourCatchesUnlockAfter,
-          style: CatchTextStyles.headline(
-            context,
-            color: CatchTokens.editorialWhite,
-          ),
+          variant: CatchTextVariant.headline,
+          color: CatchTokens.editorialWhite,
         ),
         gapH8,
-        Text(
+        CatchText(
           context.l10n.dashboardEmptyHeroCardTextTheDatingAppWhere,
-          style: CatchTextStyles.supporting(
-            context,
-            color: CatchTokens.editorialWhite,
-          ),
+          variant: CatchTextVariant.supporting,
+          color: CatchTokens.editorialWhite,
         ),
         gapH16,
         Semantics(

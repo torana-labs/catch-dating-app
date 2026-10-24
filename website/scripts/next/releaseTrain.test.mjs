@@ -18,7 +18,7 @@ test("the train releases main's validated head when it is newer than live", () =
 test("the train skips what it should not release", () => {
   for (const [label, change, reason] of [
     ["unsuccessful CI", {eventConclusion: "failure"}, "ci_unsuccessful"],
-    ["cancelled CI", {eventConclusion: "cancelled"}, "ci_unsuccessful"],
+    ["timed-out CI", {eventConclusion: "timed_out"}, "ci_unsuccessful"],
     ["a newer merge", {eventSha: "c".repeat(40)}, "superseded_by_newer_main"],
     ["no website validation", {validation: null}, "no_website_validation_for_main_head"],
     ["validation without captures", {validation: {validated: true, captureBinding: null}}, "no_website_validation_for_main_head"],
@@ -27,6 +27,12 @@ test("the train skips what it should not release", () => {
     assert.deepEqual([planDecision({...base, ...change}).release, planDecision({...base, ...change}).reason],
       [false, reason], label);
   }
+});
+
+test("a newer merge cancelling main's push run leaves the decision to the merge queue evidence", () => {
+  assert.equal(planDecision({...base, eventConclusion: "cancelled"}).release, true);
+  assert.equal(planDecision({...base, eventConclusion: "cancelled", validation: null}).reason,
+    "no_website_validation_for_main_head");
 });
 
 test("the train refuses to run when production approval would not wait for anyone", () => {

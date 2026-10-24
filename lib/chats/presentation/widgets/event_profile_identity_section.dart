@@ -81,13 +81,17 @@ class _EventProfileIdentitySectionState
           ],
         ),
         gapH12,
-        Text(
+        CatchText(
           l.eventProfileSharedHere,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (profile.introduction case final introduction?) ...[
           gapH12,
-          Text(introduction, style: CatchTextStyles.recordBody(context)),
+          CatchText(
+            introduction,
+            variant: CatchTextVariant.bodyL,
+            color: CatchTokens.of(context).ink,
+          ),
         ],
         gapH24,
         if (profile.coreFields.isEmpty &&

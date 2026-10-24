@@ -141,14 +141,12 @@ class EventDateRailCard extends StatelessWidget {
                     if (effectiveSupporting != null &&
                         effectiveSupporting.isNotEmpty) ...[
                       gapH4,
-                      Text(
+                      CatchText(
                         effectiveSupporting,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
+
+                        variant: CatchTextVariant.supporting,
+                        color: t.ink2,
                       ),
                     ],
                     if (showAttendeeSignal && event.signedUpCount > 0) ...[

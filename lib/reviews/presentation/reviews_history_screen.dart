@@ -172,9 +172,10 @@ class ReviewHistoryRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        CatchText(
           row.contextLabel,
-          style: CatchTextStyles.labelS(context, color: t.ink2),
+          variant: CatchTextVariant.statusLabel,
+          color: t.ink2,
         ),
         gapH8,
         ReviewCard(

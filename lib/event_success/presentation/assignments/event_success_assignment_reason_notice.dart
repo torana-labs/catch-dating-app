@@ -30,11 +30,12 @@ class EventSuccessAssignmentReasonNotice extends StatelessWidget {
               color: t.ink2,
             ),
             gapW6,
-            Text(
+            CatchText(
               context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesTextAssignmentNotes,
-              style: CatchTextStyles.labelM(context, color: t.ink2),
+              variant: CatchTextVariant.statusLabel,
+              color: t.ink2,
             ),
           ],
         ),
@@ -42,9 +43,10 @@ class EventSuccessAssignmentReasonNotice extends StatelessWidget {
         for (final reason in reasons)
           Padding(
             padding: _hostLaunchIssueGap,
-            child: Text(
+            child: CatchText(
               reason,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
           ),
       ],

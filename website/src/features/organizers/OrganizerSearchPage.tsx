@@ -9,12 +9,12 @@ import {useOrganizerDirectoryController} from "./useOrganizerDirectoryController
 export function OrganizerSearchPage({listings}: {listings?: readonly HostListing[]} = {}) {
   const controller = useOrganizerDirectoryController(listings);
   return <OrganiserDirectory>
-    <PublicSiteHeader audience="consumer" />
+    <PublicSiteHeader />
     <WebsitePageMain id="top">
       <OrganizerSearchHeroSection controller={controller} />
       <OrganizerResultsSection appearanceContext={controller.appearanceContext} clearFilters={controller.clearFilters} queryTerms={controller.queryTerms} results={controller.results} phase={controller.phase} />
       <DirectoryHostInvite><div><h2>{copy.hostTitle}</h2><p>{copy.hostBody}</p><ButtonLink href="/host/">{copy.hostAction}</ButtonLink></div><div><p>{copy.claimNote}</p><ButtonLink href="/claim/" variant="ghost">{copy.claimAction}</ButtonLink></div></DirectoryHostInvite>
     </WebsitePageMain>
-    <PublicSiteFooter audience="consumer" />
+    <PublicSiteFooter />
   </OrganiserDirectory>;
 }

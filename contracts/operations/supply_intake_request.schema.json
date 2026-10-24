@@ -5,7 +5,7 @@
   "description": "One request to build an organizer listing and collect that organizer's events. Every front door (a sales associate or partner nomination, an organizer's own submission, or an Admin-started discovery run) creates one; Supply Intake gathers, reviews and stages the result for staff.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "requestId", "kind", "market", "seed", "submittedBy", "submittedAt"],
+  "required": ["schemaVersion", "requestId", "kind", "market", "seed", "submittedBy", "submittedAt", "origin"],
   "properties": {
     "schemaVersion": {"type": "integer", "const": 1},
     "requestId": {"type": "string", "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,159}$"},
@@ -31,9 +31,11 @@
           "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,59}$"}
         }
       },
-      "anyOf": [
-        {"properties": {"name": {"type": "string"}}},
-        {"properties": {"urls": {"minItems": 1}}}
+      "allOf": [
+        {
+          "if": {"properties": {"name": {"type": "null"}}},
+          "then": {"properties": {"urls": {"minItems": 1}}}
+        }
       ]
     },
     "submittedBy": {
@@ -46,7 +48,22 @@
         "partnerId": {"type": ["string", "null"], "minLength": 1, "maxLength": 128}
       }
     },
-    "submittedAt": {"type": "string", "format": "date-time"}
+    "submittedAt": {"type": "string", "format": "date-time"},
+    "origin": {
+      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.",
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "id"],
+          "properties": {
+            "kind": {"type": "string", "enum": ["admin_nomination", "sales_inbound_intent", "discovery_run"]},
+            "id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"}
+          }
+        }
+      ]
+    }
   },
   "allOf": [
     {

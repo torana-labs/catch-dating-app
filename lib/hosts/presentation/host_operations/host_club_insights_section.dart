@@ -316,29 +316,25 @@ class _HostAnalyticsReportBodyState extends State<HostAnalyticsReportBody> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              CatchText(
                 context.l10n.hostsHostAnalyticsTextUpdatedRelative(
                   relative: AppTimeFormatters.compactRelativeTime(
                     widget.report.generatedAt,
                     now: widget.now,
                   ),
                 ),
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: CatchTokens.of(context).ink3,
-                ),
+                variant: CatchTextVariant.supporting,
+                color: CatchTokens.of(context).ink3,
               ),
               if (showSyncFootnote) ...[
                 gapH4,
-                Text(
+                CatchText(
                   context
                       .l10n
                       .hostsHostAnalyticsTextSomeDataIsStillSyncingNumbersMayUpdate,
                   key: const ValueKey('host-analytics-sync-footnote'),
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).warning,
-                  ),
+                  variant: CatchTextVariant.supporting,
+                  color: CatchTokens.of(context).warning,
                 ),
               ],
             ],

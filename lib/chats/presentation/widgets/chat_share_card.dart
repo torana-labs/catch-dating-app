@@ -147,17 +147,18 @@ class ShareCardHeader extends StatelessWidget {
                 chatContextStampFor(event),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.labelM(
+                style: CatchTextStyles.statusLabel(
                   context,
                   color: accent,
                 ).copyWith(fontWeight: FontWeight.w800),
               ),
               gapH3,
-              Text(
+              CatchText(
                 chatShareCardTitleFor(event),
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.titleL(context, color: t.ink),
+
+                variant: CatchTextVariant.titleL,
+                color: t.ink,
               ),
             ],
           ),

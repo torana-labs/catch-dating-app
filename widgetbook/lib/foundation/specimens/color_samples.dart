@@ -49,7 +49,7 @@ class _ColorTile extends StatelessWidget {
                 ),
               ),
               gapH8,
-              Text(spec.name, style: CatchTextStyles.labelM(context)),
+              Text(spec.name, style: CatchTextStyles.statusLabel(context)),
               gapH2,
               Text(
                 widgetbookFoundationColorHex(spec.color),

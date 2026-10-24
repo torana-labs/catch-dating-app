@@ -38,19 +38,20 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
             ],
           ),
           gapH10,
-          Text(
+          CatchText(
             context.l10n
                 .eventSuccessEventSuccessCompanionAfterglowTextYourNightAtTitle(
                   title: event.title,
                 ),
-            style: CatchTextStyles.titleL(context),
+            variant: CatchTextVariant.titleL,
           ),
           gapH4,
-          Text(
+          CatchText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionAfterglowTextASmallRecapFor,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           gapH14,
           AfterglowBeatGrid._(
@@ -124,11 +125,12 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
                 ),
                 gapW8,
                 Expanded(
-                  child: Text(
+                  child: CatchText(
                     context
                         .l10n
                         .eventSuccessEventSuccessCompanionAfterglowTextOnlyYouSeeThis,
-                    style: CatchTextStyles.supporting(context, color: t.ink),
+                    variant: CatchTextVariant.supporting,
+                    color: t.ink,
                   ),
                 ),
               ],
@@ -270,17 +272,15 @@ class _AfterglowBeatRowState extends State<AfterglowBeatRow>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CatchText(
                           beat.label,
-                          style: CatchTextStyles.sectionTitle(context),
+                          variant: CatchTextVariant.sectionTitle,
                         ),
                         gapH2,
-                        Text(
+                        CatchText(
                           _animatedValueString(beat),
-                          style: CatchTextStyles.supporting(
-                            context,
-                            color: t.ink2,
-                          ),
+                          variant: CatchTextVariant.supporting,
+                          color: t.ink2,
                         ),
                       ],
                     ),

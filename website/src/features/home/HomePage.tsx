@@ -17,17 +17,17 @@ import {
 export function VisitorDiscoveryPage({routeState, onFiltersChange}: {captures: Record<string, CaptureRecord>; routeState?: ExploreFilters; onFiltersChange?: (filters: ExploreFilters) => void}) {
   const explore = useExploreController(routeState, onFiltersChange);
   return <ExplorePageLayout>
-    <PublicSiteHeader audience="consumer" />
+    <PublicSiteHeader />
     <WebsitePageMain id="top">{renderExploreDiscovery(explore)}</WebsitePageMain>
-    <PublicSiteFooter audience="consumer" />
+    <PublicSiteFooter />
   </ExplorePageLayout>;
 }
 
 export function HomePage({routeState}: {captures: Record<string, CaptureRecord>; routeState?: HomeRouteState}) {
   const home = useConsumerHomeController(routeState?.city, routeState?.category);
   return <ConsumerHome >
-    <PublicSiteHeader audience="consumer" />
+    <PublicSiteHeader />
     <WebsitePageMain id="top">{renderConsumerHero(home)}{renderConsumerEvents(home)}{renderConsumerStory(home)}</WebsitePageMain>
-    <PublicSiteFooter audience="consumer" />
+    <PublicSiteFooter />
   </ConsumerHome>;
 }

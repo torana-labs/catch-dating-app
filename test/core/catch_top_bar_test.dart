@@ -163,7 +163,7 @@ void main() {
       final titleContext = tester.element(find.text('Sunday Evening Run'));
       expect(
         tester.widget<Text>(find.text('Sunday Evening Run')).style,
-        CatchTextStyles.appBarSubtitle(
+        CatchTextStyles.bodyS(
           titleContext,
           color: CatchTokens.of(titleContext).ink2,
         ),

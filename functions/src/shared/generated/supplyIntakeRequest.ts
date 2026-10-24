@@ -12,21 +12,20 @@ export type SupplyIntakeRequest = {
   requestId: string;
   kind: "nomination" | "self_submission" | "discovery";
   market: string;
-  seed:
-    | {
-        name?: string;
-        [k: string]: unknown;
-      }
-    | {
-        urls?: {
-          [k: string]: unknown;
-        };
-        [k: string]: unknown;
-      };
+  seed: {
+    [k: string]: unknown;
+  };
   submittedBy: {
     role: "associate" | "partner" | "organizer" | "system";
     uid: string | null;
     partnerId: string | null;
   };
   submittedAt: string;
+  /**
+   * What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.
+   */
+  origin: null | {
+    kind: "admin_nomination" | "sales_inbound_intent" | "discovery_run";
+    id: string;
+  };
 };

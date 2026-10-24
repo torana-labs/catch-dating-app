@@ -130,12 +130,10 @@ class HostCustomerFilterSummarySection extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             children: [
               if (campaignBlocker case final String blocker)
-                Text(
+                CatchText(
                   hostCampaignBlockerLabel(context, blocker),
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).warning,
-                  ),
+                  variant: CatchTextVariant.supporting,
+                  color: CatchTokens.of(context).warning,
                 ),
               if (onMessage case final message?)
                 CatchButton(

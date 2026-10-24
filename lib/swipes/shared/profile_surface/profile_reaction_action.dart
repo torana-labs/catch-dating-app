@@ -176,11 +176,11 @@ class _ProfileReactionCommentSheetState
             backgroundColor: t.raised,
             borderRole: CatchBorderRole.separator,
             padding: CatchInsets.contentDense,
-            child: Text(
+            child: CatchText(
               widget.target.preview,
-              style: CatchTextStyles.bodyLead(context, color: t.ink2),
+              variant: CatchTextVariant.bodyLead,
+              color: t.ink2,
               maxLines: 3,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
           gapH14,

@@ -363,9 +363,9 @@ class ParticipantTable extends StatelessWidget {
                         ),
                         if (emptyMessage != null) ...[
                           const SizedBox(height: CatchSpacing.s1),
-                          Text(
+                          CatchText(
                             emptyMessage!,
-                            style: CatchTextStyles.supporting(context),
+                            variant: CatchTextVariant.supporting,
                           ),
                         ],
                       ],
