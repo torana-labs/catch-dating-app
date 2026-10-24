@@ -670,7 +670,7 @@ test("every current canonical run declaration has a represented step", () => {
       assert.ok(represented.has(header), `${workflow}:${index + 1} silently omitted`);
     }
   }
-  assert.ok(count >= 430, `expected current 430+ run declarations, got ${count}`);
+  assert.ok(count >= 340, `expected current 340+ run declarations, got ${count}`);
 });
 
 

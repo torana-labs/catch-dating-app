@@ -3,6 +3,7 @@ library;
 
 export 'generated/catch_design_tokens.g.dart';
 export 'src/components/catch_artwork_colors.dart';
+export 'src/components/catch_button_tokens.dart';
 export 'src/components/catch_field_tokens.dart';
 export 'src/components/catch_form_workspace_tokens.dart';
 export 'src/components/catch_record_tokens.dart';

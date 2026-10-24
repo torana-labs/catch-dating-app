@@ -5,6 +5,7 @@ import {readPublicContact} from "./publicContact";
 import {isLegalPageKey, pageMeta, pageMetaForHostPath, pageMetaForListing, pageMetaForEvent, type PageKey} from "../app/pageMeta";
 import {getHostListingRouteForPath} from "../features/organizers/routing";
 import {previewCardFor, previewCardImage} from "./previewCards";
+import {generatedPreviewCardFor, generatedPreviewCardImage} from "./generatedPreviewCards";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/events/eventDetailModel";
 import type {Metadata} from "next";
 export const resolvePublicRoute = cache(async (pathname: string) => {
@@ -22,7 +23,9 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
   const contact = isLegalPageKey(page) ? await readPublicContact() : null;
   const meta = listingRoute ? pageMetaForListing(listingRoute.listing) : event ? pageMetaForEvent(event) :
     pageMetaForHostPath(pathname) ?? pageMeta[page as keyof typeof pageMeta];
-  const image = previewCardImage(previewCardFor(meta.canonicalPath));
+  // Organiser and event pages draw their own card from the record they render.
+  const generated = generatedPreviewCardFor({listingRoute, event});
+  const image = generated ? generatedPreviewCardImage(generated) : previewCardImage(previewCardFor(meta.canonicalPath));
   const metadata: Metadata = {title: meta.title, description: meta.description,
     alternates: {canonical: `https://catchdates.com${meta.canonicalPath}`},
     robots: productionIndexing() ? meta.robots ?? "index, follow" : "noindex, follow", openGraph: {title: meta.title, description: meta.description,

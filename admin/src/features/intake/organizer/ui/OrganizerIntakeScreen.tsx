@@ -19,6 +19,9 @@ import {
   useOrganizerIntakeController,
 } from "../controllers/useOrganizerIntakeController";
 import {organizerIntakeWorkbench} from "./organizerIntakeWorkbench";
+import {useOrganizerListingReviewController} from
+  "../controllers/useOrganizerListingReviewController";
+import {renderOrganizerListingReview} from "./organizerListingReviewPanels";
 
 const LazyOrganizerIntakeDiagnostics = lazy(async () => {
   const module = await import("./organizerIntakeDiagnostics");
@@ -57,7 +60,13 @@ function OrganizerIntakeLoadedScreen() {
     onOrganizerDraftCreated: (organizerId) =>
       navigate(`/organizers/${encodeURIComponent(organizerId)}`),
   });
-  return <OrganizerIntakeWorkspace controller={controller} />;
+  const listingReview = useOrganizerListingReviewController({onError, onNotice});
+  return (
+    <>
+      {renderOrganizerListingReview(listingReview)}
+      <OrganizerIntakeWorkspace controller={controller} />
+    </>
+  );
 }
 
 export function OrganizerIntakeWorkspace({

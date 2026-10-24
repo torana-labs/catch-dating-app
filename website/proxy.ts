@@ -16,9 +16,11 @@ async function handleRequest(request: NextRequest) {
   const asset = /^\/(_next\/|_legacy\/|assets\/|fonts\/|\.well-known\/)/.test(url.pathname) ||
     ["/favicon.ico", "/form-embed-resize.js", "/organizer-tracking-runtime.js", "/organizer-tracking-runtime.html"].includes(url.pathname);
   const api = url.pathname.startsWith("/api/");
+  // Link-preview cards draw public organiser and event records, so like those pages they render only on Catch hosts.
+  const card = url.pathname.startsWith("/og/");
   const hostname = websiteRequestHostname(request.headers, process.env.K_SERVICE);
   const allowedHost = hostname && (isCatchWebsiteHost(hostname) || hostname === process.env.CATCH_PREVIEW_HOST);
-  if ((!allowedHost && !asset && !api) || privateFamily) {
+  if ((!allowedHost && !asset && !api && !card) || privateFamily) {
     const shell = url.clone(); shell.pathname = "/private-shell"; shell.search = "";
     if (privateFamily) shell.searchParams.set("surface", privateFamily);
     const response = NextResponse.rewrite(shell);
@@ -27,14 +29,14 @@ async function handleRequest(request: NextRequest) {
     response.headers.set("Referrer-Policy", "no-referrer");
     return response;
   }
-  if (!allowedHost && api && url.pathname !== "/api/form-domain") {
+  if (!allowedHost && (card || api && url.pathname !== "/api/form-domain")) {
     return new NextResponse(null, {status: 404, headers: {"Cache-Control": "no-store"}});
   }
   const publicOrigin = hostname && isCatchWebsiteHost(hostname) &&
     !["localhost", "127.0.0.1", "[::1]"].includes(hostname) ? `https://${hostname}` : url.origin;
   const destination = retiredMarketingDestination({pathname: url.pathname, search: url.search, hash: ""});
   if (destination) return NextResponse.redirect(new URL(destination, publicOrigin), 301);
-  if (!asset && !api && !["/robots.txt", "/sitemap.xml", "/private-shell"].includes(url.pathname)) {
+  if (!asset && !api && !card && !["/robots.txt", "/sitemap.xml", "/private-shell"].includes(url.pathname)) {
     try {
       const pathname = url.pathname.replace(/\/+$/, "") + "/";
       const route = await resolvePublicRoute(pathname);

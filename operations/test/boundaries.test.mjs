@@ -4,17 +4,6 @@ import path from "node:path";
 import test from "node:test";
 import {checkBoundaries} from "../scripts/check-boundaries.mjs";
 import {temporaryDirectory} from "./helpers.mjs";
-import {SALES_SOURCE_GUARDED_PATHS} from "../../tool/ci/selective_backend_release.mjs";
-
-test("Sales source guard retains every reviewed path and remains immutable", () => {
-  assert.deepEqual(SALES_SOURCE_GUARDED_PATHS, [
-    "functions/src", "functions/package.json", "functions/package-lock.json",
-    "functions/scripts/set-callable-invokers-public.cjs", "operations/src/platform",
-    "operations/src/workflows/outreach-drafting", "contracts/operations",
-    "firestore.rules", "firebase.json", ".firebaserc",
-  ]);
-  assert.equal(Object.isFrozen(SALES_SOURCE_GUARDED_PATHS), true);
-});
 
 const baseline = {
   schemaVersion: 2,

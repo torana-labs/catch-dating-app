@@ -1,16 +1,17 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
+import {
+  suvbotWorldBundlePath,
+  suvbotWorldBundleSource,
+} from "../../functions/scripts/generate-suvbot-worlds.mjs";
 import {
   buildCheckInEventPlan,
   buildDemoChecklist,
   buildHostAccountPlan,
   buildLaunchCleanupPlan,
-  buildMarkAttendedPlan,
-  buildMatchPhonePlan,
-  buildResetUserDemoStatePlan,
   buildStaleEventCleanupPlan,
   buildValidateDemoStateReport,
-  buildWarmUserPlan,
   isDemoOwned,
   matchIdFor,
   normalizePhone,
@@ -39,201 +40,6 @@ test("matchIdFor is deterministic and rejects self matches", () => {
   assert.throws(() => matchIdFor("a", "a"), /distinct/);
 });
 
-test("buildMatchPhonePlan creates a deterministic direct demo match", async () => {
-  const db = fakeFirestore({
-    users: {
-      uid_a: {phoneNumber: "+910000000001", displayName: "Asha"},
-      uid_b: {phoneNumber: "+910000000002", displayName: "Ben"},
-    },
-    publicProfiles: {
-      uid_a: {name: "Asha"},
-      uid_b: {name: "Ben"},
-    },
-    eventParticipations: {
-      run_1_uid_a: {uid: "uid_a", eventId: "run_1", status: "attended"},
-      run_1_uid_b: {uid: "uid_b", eventId: "run_1", status: "attended"},
-    },
-  });
-
-  const plan = await buildMatchPhonePlan({
-    db,
-    admin: fakeAdmin,
-    phoneA: "+910000000001",
-    phoneB: "+910000000002",
-    now: new Date("2026-05-08T12:00:00.000Z"),
-  });
-
-  assert.equal(plan.matchId, "uid_a_uid_b");
-  assert.equal(plan.eventId, "run_1");
-  const matchDoc = plan.docs.find((doc) => doc.path === "matches/uid_a_uid_b");
-  assert.equal(matchDoc.data.status, "active");
-  assert.equal(matchDoc.data.demoOpsEntityType, "matchThread");
-  assert.equal(matchDoc.data.demoOpsDisposalPolicy, "deleteThreadWithMessages");
-  assert.equal(plan.docs.filter((doc) => doc.path.includes("/messages/")).length, 0);
-  assert.equal(plan.docs.filter((doc) => doc.path.startsWith("notifications/")).length, 2);
-});
-
-test("buildMatchPhonePlan creates starter messages only when requested", async () => {
-  const db = fakeFirestore({
-    users: {
-      uid_a: {phoneNumber: "+910000000001", displayName: "Asha"},
-      uid_b: {phoneNumber: "+910000000002", displayName: "Ben"},
-    },
-    publicProfiles: {
-      uid_a: {name: "Asha"},
-      uid_b: {name: "Ben"},
-    },
-    eventParticipations: {
-      run_1_uid_a: {uid: "uid_a", eventId: "run_1", status: "attended"},
-      run_1_uid_b: {uid: "uid_b", eventId: "run_1", status: "attended"},
-    },
-  });
-
-  const plan = await buildMatchPhonePlan({
-    db,
-    admin: fakeAdmin,
-    phoneA: "+910000000001",
-    phoneB: "+910000000002",
-    withMessages: true,
-    now: new Date("2026-05-08T12:00:00.000Z"),
-  });
-
-  assert.equal(plan.docs.filter((doc) => doc.path.includes("/messages/")).length, 3);
-  assert.deepEqual(
-    plan.docs
-      .filter((doc) => doc.path.includes("/messages/"))
-      .map((doc) => doc.data.sentAt.iso),
-    [
-      "2026-05-08T11:48:00.000Z",
-      "2026-05-08T11:52:00.000Z",
-      "2026-05-08T11:56:00.000Z",
-    ]
-  );
-});
-
-test("buildMatchPhonePlan can write reciprocal swipe docs", async () => {
-  const db = fakeFirestore({
-    users: {
-      uid_a: {phoneNumber: "+910000000001"},
-      uid_b: {phoneNumber: "+910000000002"},
-    },
-    publicProfiles: {
-      uid_a: {name: "Asha"},
-      uid_b: {name: "Ben"},
-    },
-    eventParticipations: {
-      run_1_uid_a: {uid: "uid_a", eventId: "run_1", status: "attended"},
-      run_1_uid_b: {uid: "uid_b", eventId: "run_1", status: "attended"},
-    },
-  });
-
-  const plan = await buildMatchPhonePlan({
-    db,
-    admin: fakeAdmin,
-    phoneA: "+910000000001",
-    phoneB: "+910000000002",
-    viaSwipes: true,
-    direct: false,
-    withMessages: false,
-    now: new Date("2026-05-08T12:00:00.000Z"),
-  });
-
-  assert.deepEqual(
-    plan.docs.map((doc) => doc.path).sort(),
-    [
-      "profileDecisions/uid_a/outgoing/uid_b",
-      "profileDecisions/uid_b/outgoing/uid_a",
-    ]
-  );
-});
-
-test("reset-user-demo-state deletes only demo-owned relationship docs", async () => {
-  const db = fakeFirestore({
-    users: {
-      uid_a: {phoneNumber: "+910000000001"},
-    },
-    eventParticipations: {
-      demo_run_uid_a: {uid: "uid_a", synthetic: true},
-      real_run_uid_a: {uid: "uid_a"},
-    },
-    savedEvents: {
-      demo_saved: {uid: "uid_a", demoOps: true},
-      from_manifest: {uid: "uid_a"},
-    },
-    demoOpsEvents: {
-      op_1: {
-        users: ["uid_a"],
-        paths: [
-          "savedEvents/from_manifest",
-          "matches/suvbot_uid_a",
-          "matches/suvbot_uid_a/messages/suvbot_welcome",
-          "demoSelfServiceAccess/uid_a",
-        ],
-      },
-    },
-    payments: {
-      demo_payment: {userId: "uid_a", seedPrefix: "demo_ops_2026"},
-    },
-    matches: {
-      match_1: {
-        participantIds: ["uid_a", "uid_b"],
-        demoOps: true,
-        messages: {
-          demo_message: {demoOps: true},
-          dogfood_message: {text: "real message inside disposable match"},
-        },
-      },
-      match_2: {participantIds: ["uid_a", "uid_c"]},
-      suvbot_uid_a: {
-        participantIds: ["suvbot", "uid_a"],
-        demoOps: true,
-        messages: {
-          suvbot_welcome: {demoOps: true},
-        },
-      },
-    },
-    profileDecisions: {
-      uid_a: {
-        outgoing: {
-          uid_b: {targetId: "uid_b", synthetic: true},
-          uid_c: {targetId: "uid_c"},
-        },
-      },
-      uid_b: {
-        outgoing: {
-          uid_a: {targetId: "uid_a", synthetic: true},
-        },
-      },
-    },
-    notifications: {
-      uid_a: {
-        items: {
-          demo: {demoOps: true},
-          trigger_owned: {matchId: "match_1"},
-          real: {},
-        },
-      },
-    },
-  });
-
-  const plan = await buildResetUserDemoStatePlan({db, phone: "+910000000001"});
-
-  assert.deepEqual([...plan.paths].sort(), [
-    "demoOpsEvents/op_1",
-    "eventParticipations/demo_run_uid_a",
-    "matches/match_1",
-    "matches/match_1/messages/demo_message",
-    "matches/match_1/messages/dogfood_message",
-    "notifications/uid_a/items/demo",
-    "notifications/uid_a/items/trigger_owned",
-    "payments/demo_payment",
-    "savedEvents/demo_saved",
-    "savedEvents/from_manifest",
-    "profileDecisions/uid_a/outgoing/uid_b",
-    "profileDecisions/uid_b/outgoing/uid_a",
-  ].sort());
-});
-
 test("validate report surfaces demo readiness gaps", async () => {
   const db = fakeFirestore({
     users: {
@@ -254,37 +60,6 @@ test("validate report surfaces demo readiness gaps", async () => {
 
   assert.equal(report.demoReady, false);
   assert.match(report.issues.join(" "), /Fewer than 3 active matches/);
-});
-
-test("buildMarkAttendedPlan creates attended edge for one real user", async () => {
-  const db = fakeFirestore({
-    users: {
-      uid_a: {phoneNumber: "+910000000001", gender: "woman"},
-    },
-    events: {
-      run_1: {
-        clubId: "club_1",
-        startTime: new Date("2026-05-08T13:00:00.000Z"),
-        endTime: new Date("2026-05-08T14:00:00.000Z"),
-      },
-    },
-  });
-
-  const plan = await buildMarkAttendedPlan({
-    db,
-    admin: fakeAdmin,
-    phone: "+910000000001",
-    eventId: "run_1",
-    now: new Date("2026-05-08T12:00:00.000Z"),
-  });
-
-  assert.equal(plan.docs[0].path, "eventParticipations/run_1_uid_a");
-  assert.equal(plan.docs[0].data.status, "attended");
-  assert.equal(plan.docs[0].data.genderAtSignup, "woman");
-  assert.equal(
-    plan.docs.filter((doc) => doc.path.startsWith("userEventScheduleLocks/")).length,
-    60
-  );
 });
 
 test("buildDemoChecklist converts validation counts into capabilities", async () => {
@@ -342,82 +117,6 @@ test("buildDemoChecklist converts validation counts into capabilities", async ()
   assert(checklist.canDemo.includes("event map pins"));
   assert(checklist.canDemo.includes("location-gated self check-in"));
   assert.equal(checklist.gaps.length, 0);
-});
-
-test("buildWarmUserPlan prefers events in the user's city", async () => {
-  const db = fakeFirestore({
-    users: {
-      uid_a: {
-        phoneNumber: "+910000000001",
-        city: "in-dl-delhi-ncr",
-        gender: "woman",
-      },
-    },
-    publicProfiles: {
-      uid_a: {name: "Asha"},
-    },
-    clubs: {
-      club_mumbai: {location: "in-mh-mumbai"},
-      club_delhi: {location: "in-dl-delhi-ncr"},
-    },
-    events: {
-      mumbai_soon: {
-        clubId: "club_mumbai",
-        status: "active",
-        startTime: "2026-05-13T06:00:00.000Z",
-        endTime: "2026-05-13T07:00:00.000Z",
-        priceInPaise: 0,
-      },
-      delhi_soon: {
-        clubId: "club_delhi",
-        status: "active",
-        startTime: "2026-05-13T07:00:00.000Z",
-        endTime: "2026-05-13T08:00:00.000Z",
-        priceInPaise: 0,
-      },
-      delhi_waitlist: {
-        clubId: "club_delhi",
-        status: "active",
-        startTime: "2026-05-14T07:00:00.000Z",
-        endTime: "2026-05-14T08:00:00.000Z",
-        priceInPaise: 29900,
-      },
-      delhi_past: {
-        clubId: "club_delhi",
-        status: "active",
-        startTime: "2026-05-10T07:00:00.000Z",
-        endTime: "2026-05-10T08:00:00.000Z",
-        priceInPaise: 0,
-      },
-    },
-    eventParticipations: {},
-  });
-  for (const event of Object.values(db.data.events)) {
-    event.startTime = fakeTimestamp(event.startTime);
-    event.endTime = fakeTimestamp(event.endTime);
-  }
-
-  const plan = await buildWarmUserPlan({
-    db,
-    admin: fakeAdmin,
-    phone: "+910000000001",
-    syntheticMatchCount: 0,
-    now: new Date("2026-05-12T12:00:00.000Z"),
-  });
-
-  const participationPaths = plan.docs
-    .map((doc) => doc.path)
-    .filter((path) => path.startsWith("eventParticipations/"))
-    .sort();
-  assert.deepEqual(participationPaths, [
-    "eventParticipations/delhi_past_uid_a",
-    "eventParticipations/delhi_soon_uid_a",
-    "eventParticipations/delhi_waitlist_uid_a",
-  ]);
-  assert.equal(
-    plan.docs.some((doc) => doc.path === "eventParticipations/mumbai_soon_uid_a"),
-    false
-  );
 });
 
 test("buildLaunchCleanupPlan finds demo-owned top-level and nested docs", async () => {
@@ -867,3 +566,13 @@ function cloneValue(value) {
     return value;
   }
 }
+
+// Suvbot starts demo worlds from a copy bundled into Functions. A world or
+// persona change must regenerate it, or Suvbot would start a stale world.
+test("the Suvbot world bundle matches the scenario and persona files", async () => {
+  assert.equal(
+    fs.readFileSync(suvbotWorldBundlePath, "utf8"),
+    await suvbotWorldBundleSource(),
+    "Run: node functions/scripts/generate-suvbot-worlds.mjs"
+  );
+});

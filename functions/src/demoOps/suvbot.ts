@@ -5,20 +5,39 @@ import * as logger from "firebase-functions/logger";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
+import type {DemoWorld} from "./demoWorld";
+import {assertValidSuvbotDocument} from "./suvbotDocValidation";
+import type {DemoDocWrite} from "./suvbotDocValidation";
 import {
-  schemaProfileDecisionCollectionPath,
-  schemaProfileDecisionOutgoingSubcollectionPath,
-} from "../shared/generated/schemaPaths";
+  DEFAULT_DEMO_SEED_PREFIX,
+  ResetScope,
+  SUVBOT_ACCESS_COLLECTION,
+  SUVBOT_UID,
+  applyDeletePlan,
+  applyWritePlan,
+  buildResetPlan,
+  isDemoOwned,
+  latestWorldManifest,
+  repairDemoEventAggregates,
+  summarizeDemoState,
+  suvbotMatchId,
+  writeDemoManifest,
+} from "./suvbotState";
+import type {DemoSummary} from "./suvbotState";
+import {
+  SUVBOT_DEMO_MOMENTS,
+  SuvbotDemoMoment,
+  SuvbotWorldPlan,
+  buildSuvbotWorldPlan,
+  homeDemoWorld,
+  parseDemoWorldRequest,
+  suvbotDemoWorldChoices,
+} from "./suvbotWorld";
 
-export const SUVBOT_UID = "suvbot";
+export {SUVBOT_ACCESS_COLLECTION, SUVBOT_UID, suvbotMatchId};
 export const SUVBOT_DISPLAY_NAME = "Suvbot";
-export const SUVBOT_ACCESS_COLLECTION = "demoSelfServiceAccess";
 export const SUVBOT_REQUEST_COLLECTION = "demoOpsRequests";
-const DEMO_MANIFEST_COLLECTION = "demoOpsEvents";
 const SUVBOT_CONFIRMATION_COLLECTION = "demoOpsConfirmations";
-const DEFAULT_DEMO_SEED_PREFIX = "suvbot_2026";
-const MAX_SYNTHETIC_MATCHES = 3;
-const MAX_BATCH_WRITES = 450;
 const CONFIRMATION_WINDOW_MS = 2 * 60 * 1000;
 
 export type SuvbotAction =
@@ -26,6 +45,7 @@ export type SuvbotAction =
   | "help"
   | "message"
   | "checkDemoState"
+  | "startDemoWorld"
   | "refreshDemoState"
   | "clearDemoState"
   | "warmSignupState"
@@ -37,9 +57,6 @@ export type SuvbotAction =
   | "resetNotifications"
   | "matchTesterByPhone";
 
-type ResetScope = "all" | "bookings" | "chats" | "notifications";
-type WarmMode = "full" | "signup" | "postEvent" | "chat" | "payment";
-
 export interface SuvbotActionDescriptor {
   id: SuvbotAction;
   label: string;
@@ -47,32 +64,6 @@ export interface SuvbotActionDescriptor {
   icon: string;
   destructive?: boolean;
   requiresText?: boolean;
-}
-
-interface DemoDocWrite {
-  path: string;
-  data: FirebaseFirestore.DocumentData;
-}
-
-interface DeletePlan {
-  paths: string[];
-  eventIds: Set<string>;
-  clubIds: Set<string>;
-  matchIds: Set<string>;
-}
-
-interface WarmPlan {
-  docs: DemoDocWrite[];
-  eventIds: Set<string>;
-}
-
-interface DemoSummary {
-  savedEvents: number;
-  activeEventParticipations: number;
-  attendedEvents: number;
-  demoMatches: number;
-  payments: number;
-  unreadSuvbotMessages: number;
 }
 
 export interface SuvbotDeps {
@@ -110,9 +101,18 @@ const defaultDeps: SuvbotDeps = {
 
 const SUVBOT_ACTION_CATALOG: readonly SuvbotActionDescriptor[] = [
   {
+    id: "startDemoWorld",
+    label: "Start a demo",
+    description:
+      "Pick a demo world and a moment; I build a fresh copy just for you.",
+    icon: "event",
+    requiresText: true,
+  },
+  {
     id: "refreshDemoState",
     label: "Refresh demo state",
-    description: "Clear demo-owned state and warm everything again.",
+    description:
+      "Clear demo state and start your city's world after the event.",
     icon: "refresh",
     destructive: true,
   },
@@ -126,25 +126,25 @@ const SUVBOT_ACTION_CATALOG: readonly SuvbotActionDescriptor[] = [
   {
     id: "warmSignupState",
     label: "Warm signups",
-    description: "Create saved, signed-up, and waitlisted demo events.",
+    description: "Start your city's demo world on event day, booked.",
     icon: "event",
   },
   {
     id: "warmPostEventState",
     label: "Warm post-event",
-    description: "Create attended-event state for recap and swipe testing.",
+    description: "Start your city's demo world after the event, catches open.",
     icon: "flag",
   },
   {
     id: "warmChatState",
     label: "Warm chats",
-    description: "Create seeded match threads for chat testing.",
+    description: "Start your city's world after the event with catches.",
     icon: "chat",
   },
   {
     id: "warmPaymentState",
     label: "Warm payments",
-    description: "Create demo payment history for a paid demo event.",
+    description: "Start a paid demo world on event day, paid and booked.",
     icon: "payment",
   },
   {
@@ -178,7 +178,7 @@ const SUVBOT_ACTION_CATALOG: readonly SuvbotActionDescriptor[] = [
   {
     id: "checkDemoState",
     label: "Check setup",
-    description: "Show what seeded state is ready right now.",
+    description: "Show what demo state is ready right now.",
     icon: "check",
   },
   {
@@ -188,6 +188,20 @@ const SUVBOT_ACTION_CATALOG: readonly SuvbotActionDescriptor[] = [
     icon: "help",
   },
 ];
+
+// The warm chips predate demo worlds. They now start the tester's home world
+// at a fixed moment, so app builds that only know these ids keep working.
+const WARM_PRESETS: Record<
+  "warmSignupState" | "warmPostEventState" | "warmChatState" |
+    "warmPaymentState" | "refreshDemoState",
+  {moment: SuvbotDemoMoment; matchThreads: boolean; paid?: boolean}
+> = {
+  warmSignupState: {moment: "today", matchThreads: false},
+  warmPostEventState: {moment: "after", matchThreads: false},
+  warmChatState: {moment: "after", matchThreads: true},
+  warmPaymentState: {moment: "today", matchThreads: false, paid: true},
+  refreshDemoState: {moment: "after", matchThreads: true},
+};
 
 /**
  * Callable entry point for button-driven Suvbot demo operations.
@@ -281,19 +295,17 @@ export async function runSuvbotDemoOperationForUser({
   if (action === "message" && text) {
     await writeConversationMessage({
       db,
-      matchId,
+      uid,
       senderId: uid,
-      recipientId: SUVBOT_UID,
       text,
       deps,
     });
   } else if (action !== "message" && action !== "listActions") {
     await writeConversationMessage({
       db,
-      matchId,
+      uid,
       senderId: uid,
-      recipientId: SUVBOT_UID,
-      text: userFacingActionText(action),
+      text: userFacingActionText(action, text),
       deps,
     });
   }
@@ -313,9 +325,8 @@ export async function runSuvbotDemoOperationForUser({
     if (reply) {
       await writeConversationMessage({
         db,
-        matchId,
+        uid,
         senderId: SUVBOT_UID,
-        recipientId: uid,
         text: reply,
         deps,
       });
@@ -329,9 +340,8 @@ export async function runSuvbotDemoOperationForUser({
     logger.error("Suvbot operation failed", {uid, action, error});
     await writeConversationMessage({
       db,
-      matchId,
+      uid,
       senderId: SUVBOT_UID,
-      recipientId: uid,
       text: [
         "I could not finish that.",
         "Try again in a minute, or send this chat to Suvrat.",
@@ -419,47 +429,40 @@ export async function ensureSuvbotThread(
   const matchId = suvbotMatchId(uid);
   const matchRef = db.collection("matches").doc(matchId);
   const matchSnap = await matchRef.get();
-  const batch = db.batch();
-
-  batch.set(
-    db.collection("publicProfiles").doc(SUVBOT_UID),
-    suvbotPublicProfileDoc(),
-    {merge: true}
-  );
+  const now = deps.timestampFromDate(deps.now());
+  const docs: DemoDocWrite[] = [
+    {path: `publicProfiles/${SUVBOT_UID}`, data: suvbotPublicProfileDoc()},
+  ];
 
   if (!matchSnap.exists) {
     const welcomeText =
-      "I can refresh your seeded demo state or check what is ready to test.";
-    const messageRef = matchRef.collection("messages").doc("suvbot_welcome");
-    batch.set(matchRef, {
-      demoOps: true,
-      demoOpsCommand: "suvbot-thread",
-      seedPrefix: DEFAULT_DEMO_SEED_PREFIX,
-      user1Id: SUVBOT_UID,
-      user2Id: uid,
-      eventIds: ["suvbot"],
-      createdAt: deps.serverTimestamp(),
-      lastMessageAt: deps.serverTimestamp(),
-      lastMessagePreview: welcomeText,
-      lastMessageSenderId: SUVBOT_UID,
-      unreadCounts: {[SUVBOT_UID]: 0, [uid]: 1},
-      status: "active",
-      blockedBy: null,
-      blockedAt: null,
-      participantIds: [SUVBOT_UID, uid],
+      "I can start a fresh demo world for you or check what is ready.";
+    docs.push({
+      path: `matches/${matchId}`,
+      data: suvbotThreadDoc({
+        uid,
+        createdAt: now,
+        lastMessageAt: now,
+        lastMessagePreview: welcomeText,
+        lastMessageSenderId: SUVBOT_UID,
+        unreadForUser: 1,
+      }),
     });
-    batch.set(messageRef, {
-      demoOps: true,
-      demoOpsCommand: "suvbot-thread",
-      seedPrefix: DEFAULT_DEMO_SEED_PREFIX,
-      senderId: SUVBOT_UID,
-      text: welcomeText,
-      imageUrl: null,
-      sentAt: deps.serverTimestamp(),
+    docs.push({
+      path: `matches/${matchId}/messages/suvbot_welcome`,
+      data: {
+        demoOps: true,
+        demoOpsCommand: "suvbot-thread",
+        seedPrefix: DEFAULT_DEMO_SEED_PREFIX,
+        senderId: SUVBOT_UID,
+        text: welcomeText,
+        imageUrl: null,
+        sentAt: now,
+      },
     });
   }
 
-  await batch.commit();
+  await applyWritePlan(db, docs);
   return {matchId, created: !matchSnap.exists};
 }
 
@@ -496,150 +499,64 @@ async function runSuvbotAction({
     return text ?
       runTextCommandOrRespond({db, uid, text, operationId, deps, options}) :
       helpText();
-  case "checkDemoState": {
-    const summary = await summarizeDemoState(db, uid);
-    return summaryText(summary);
+  case "checkDemoState":
+    return summaryText(await summarizeDemoState(db, uid));
+  case "startDemoWorld": {
+    const request = parseDemoWorldRequest(text);
+    if (!request) return worldMenuText();
+    return startWorld({
+      db, uid, operationId, deps,
+      world: request.world,
+      moment: request.moment,
+      matchThreads: request.moment === "after",
+      command: "suvbot-start-world",
+    });
   }
   case "refreshDemoState": {
     const confirmation = await requireConfirmation({
-      db,
-      uid,
-      action,
-      deps,
-      skip: options.skipConfirmation === true,
+      db, uid, action, deps, skip: options.skipConfirmation === true,
     });
     if (confirmation) return confirmation;
-    const result = await refreshDemoState({db, uid, operationId, deps});
-    return [
-      "Done. I refreshed your seeded demo state.",
-      `${result.deletedCount} old demo docs removed.`,
-      `${result.writtenCount} fresh demo docs written.`,
-      "Reopen Dashboard, Catches, and Chats if a screen was already loaded.",
-    ].join("\n");
+    const cleared = await resetScopedDemoState({
+      db, uid, operationId, deps, scope: "all",
+    });
+    const reply = await startPreset({
+      db, uid, operationId, deps, action, preset: WARM_PRESETS[action],
+    });
+    return `${cleared.deletedCount} old demo docs removed.\n${reply}`;
   }
+  case "warmSignupState":
+  case "warmPostEventState":
+  case "warmChatState":
+  case "warmPaymentState":
+    return startPreset({
+      db, uid, operationId, deps, action, preset: WARM_PRESETS[action],
+    });
   case "clearDemoState": {
     const confirmation = await requireConfirmation({
-      db,
-      uid,
-      action,
-      deps,
-      skip: options.skipConfirmation === true,
+      db, uid, action, deps, skip: options.skipConfirmation === true,
     });
     if (confirmation) return confirmation;
-    const result = await clearDemoState({db, uid, operationId, deps});
+    const result = await resetScopedDemoState({
+      db, uid, operationId, deps, scope: "all",
+    });
     return `Done. I removed ${result.deletedCount} demo-owned docs.`;
   }
-  case "warmSignupState": {
-    const result = await warmDemoState({
-      db,
-      uid,
-      operationId,
-      deps,
-      mode: "signup",
-    });
-    if (result.writtenCount === 0) {
-      return "I could not find upcoming seeded demo events for your city.";
-    }
-    return `Done. I warmed signup testing with ${result.writtenCount} docs.`;
-  }
-  case "warmPostEventState": {
-    const result = await warmDemoState({
-      db,
-      uid,
-      operationId,
-      deps,
-      mode: "postEvent",
-    });
-    if (result.writtenCount === 0) {
-      return "I could not find a past seeded demo event for your city.";
-    }
-    return [
-      "Done. I warmed post-event testing.",
-      `${result.writtenCount} demo docs written.`,
-    ].join("\n");
-  }
-  case "warmChatState": {
-    const result = await warmDemoState({
-      db,
-      uid,
-      operationId,
-      deps,
-      mode: "chat",
-    });
-    if (result.writtenCount === 0) {
-      return [
-        "I could not create chat test data yet.",
-        "You need a seeded past event and synthetic profiles in your city.",
-      ].join(" ");
-    }
-    return `Done. I warmed chat testing with ${result.writtenCount} docs.`;
-  }
-  case "warmPaymentState": {
-    const result = await warmDemoState({
-      db,
-      uid,
-      operationId,
-      deps,
-      mode: "payment",
-    });
-    if (result.writtenCount === 0) {
-      return "I could not find a paid seeded demo event for your city.";
-    }
-    return `Done. I warmed payment history with ${result.writtenCount} docs.`;
-  }
-  case "resetChats": {
-    const confirmation = await requireConfirmation({
-      db,
-      uid,
-      action,
-      deps,
-      skip: options.skipConfirmation === true,
-    });
-    if (confirmation) return confirmation;
-    const result = await resetScopedDemoState({
-      db,
-      uid,
-      operationId,
-      deps,
-      scope: "chats",
-    });
-    return `Done. I removed ${result.deletedCount} demo chat docs.`;
-  }
-  case "resetBookings": {
-    const confirmation = await requireConfirmation({
-      db,
-      uid,
-      action,
-      deps,
-      skip: options.skipConfirmation === true,
-    });
-    if (confirmation) return confirmation;
-    const result = await resetScopedDemoState({
-      db,
-      uid,
-      operationId,
-      deps,
-      scope: "bookings",
-    });
-    return `Done. I removed ${result.deletedCount} demo booking docs.`;
-  }
+  case "resetChats":
+  case "resetBookings":
   case "resetNotifications": {
     const confirmation = await requireConfirmation({
-      db,
-      uid,
-      action,
-      deps,
-      skip: options.skipConfirmation === true,
+      db, uid, action, deps, skip: options.skipConfirmation === true,
     });
     if (confirmation) return confirmation;
+    const scope: ResetScope = action === "resetChats" ? "chats" :
+      action === "resetBookings" ? "bookings" : "notifications";
     const result = await resetScopedDemoState({
-      db,
-      uid,
-      operationId,
-      deps,
-      scope: "notifications",
+      db, uid, operationId, deps, scope,
     });
-    return `Done. I removed ${result.deletedCount} demo alerts.`;
+    const noun = scope === "chats" ? "chat" :
+      scope === "bookings" ? "booking" : "alert";
+    return `Done. I removed ${result.deletedCount} demo ${noun} docs.`;
   }
   case "matchTesterByPhone":
     return matchTesterByPhone({
@@ -655,73 +572,94 @@ async function runSuvbotAction({
 }
 
 /**
- * Deletes prior demo-owned state for one user and writes a fresh warm state.
- * @param {object} params Refresh parameters.
- * @return {Promise<{deletedCount: number, writtenCount: number}>} Counts.
+ * Starts the tester's home world (or a paid one) at a preset moment.
+ * @param {object} params Preset parameters.
+ * @return {Promise<string>} Bot reply.
  */
-async function refreshDemoState({
+async function startPreset({
   db,
   uid,
   operationId,
   deps,
+  action,
+  preset,
 }: {
   db: FirebaseFirestore.Firestore;
   uid: string;
   operationId: string;
   deps: SuvbotDeps;
-}): Promise<{deletedCount: number; writtenCount: number}> {
-  const deletePlan = await buildResetPlan(db, uid, "all");
-  await applyDeletePlan(db, deletePlan.paths);
-
-  const marker = demoMarker({operationId, command: "suvbot-refresh", deps});
-  const warmPlan = await buildWarmPlan({db, uid, marker, deps, mode: "full"});
-  await applyWritePlan(db, warmPlan.docs);
-
-  const eventIds = new Set([...deletePlan.eventIds, ...warmPlan.eventIds]);
-  await repairEventAggregates(db, eventIds);
-  await writeDemoManifest({
-    db,
-    uid,
-    operationId,
-    command: "suvbot-refresh",
-    paths: [...deletePlan.paths, ...warmPlan.docs.map((doc) => doc.path)],
-    deps,
+  action: SuvbotAction;
+  preset: {moment: SuvbotDemoMoment; matchThreads: boolean; paid?: boolean};
+}): Promise<string> {
+  const user = await requireUser(db, uid);
+  const world = homeDemoWorld(user.city, (candidate) =>
+    !preset.paid ||
+      candidate.events.some((event) => event.priceInPaise > 0));
+  if (!world) {
+    return preset.paid ?
+      "No paid demo world is bundled yet." :
+      "No demo world is bundled yet.";
+  }
+  return startWorld({
+    db, uid, operationId, deps, world,
+    moment: preset.moment,
+    matchThreads: preset.matchThreads,
+    command: `suvbot-${action}`,
   });
-
-  return {
-    deletedCount: deletePlan.paths.length,
-    writtenCount: warmPlan.docs.length,
-  };
 }
 
 /**
- * Deletes all demo-owned state for one user without warming fresh data.
- * @param {object} params Clear parameters.
- * @return {Promise<{deletedCount: number}>} Delete count.
+ * Replaces the tester's demo world with a fresh copy of one world at one
+ * moment. Every document is validated before anything is deleted or written.
+ * @param {object} params World parameters.
+ * @return {Promise<string>} Bot reply.
  */
-async function clearDemoState({
+async function startWorld({
   db,
   uid,
   operationId,
   deps,
+  world,
+  moment,
+  matchThreads,
+  command,
 }: {
   db: FirebaseFirestore.Firestore;
   uid: string;
   operationId: string;
   deps: SuvbotDeps;
-}): Promise<{deletedCount: number}> {
-  const deletePlan = await buildResetPlan(db, uid, "all");
-  await applyDeletePlan(db, deletePlan.paths);
-  await repairEventAggregates(db, deletePlan.eventIds);
+  world: DemoWorld;
+  moment: SuvbotDemoMoment;
+  matchThreads: boolean;
+  command: string;
+}): Promise<string> {
+  const user = await requireUser(db, uid);
+  const now = deps.now();
+  const plan = buildSuvbotWorldPlan({
+    uid,
+    user,
+    world,
+    moment,
+    now,
+    operationId,
+    command,
+    timestamp: deps.timestampFromDate,
+    matchThreads,
+  });
+  const newPaths = new Set(plan.docs.map((doc) => doc.path));
+  const previous = await buildResetPlan(db, uid, "world", newPaths);
+  await applyWritePlan(db, plan.docs);
+  await applyDeletePlan(db, previous.paths);
   await writeDemoManifest({
     db,
     uid,
     operationId,
-    command: "suvbot-clear",
-    paths: deletePlan.paths,
-    deps,
+    command,
+    paths: plan.docs.map((doc) => doc.path),
+    createdAt: deps.timestampFromDate(now),
+    world: plan,
   });
-  return {deletedCount: deletePlan.paths.length};
+  return worldStartedText(plan);
 }
 
 /**
@@ -744,974 +682,89 @@ async function resetScopedDemoState({
 }): Promise<{deletedCount: number}> {
   const deletePlan = await buildResetPlan(db, uid, scope);
   await applyDeletePlan(db, deletePlan.paths);
-  await repairEventAggregates(db, deletePlan.eventIds);
+  await repairDemoEventAggregates(db, deletePlan.eventIds);
   await writeDemoManifest({
     db,
     uid,
     operationId,
     command: `suvbot-reset-${scope}`,
     paths: deletePlan.paths,
-    deps,
+    createdAt: deps.timestampFromDate(deps.now()),
   });
   return {deletedCount: deletePlan.paths.length};
 }
 
 /**
- * Writes one scoped family of demo-owned docs for a user.
- * @param {object} params Warm parameters.
- * @return {Promise<{writtenCount: number}>} Write count.
- */
-async function warmDemoState({
-  db,
-  uid,
-  operationId,
-  deps,
-  mode,
-}: {
-  db: FirebaseFirestore.Firestore;
-  uid: string;
-  operationId: string;
-  deps: SuvbotDeps;
-  mode: WarmMode;
-}): Promise<{writtenCount: number}> {
-  const marker = demoMarker({
-    operationId,
-    command: `suvbot-warm-${mode}`,
-    deps,
-  });
-  const warmPlan = await buildWarmPlan({db, uid, marker, deps, mode});
-  await applyWritePlan(db, warmPlan.docs);
-  await repairEventAggregates(db, warmPlan.eventIds);
-  await writeDemoManifest({
-    db,
-    uid,
-    operationId,
-    command: `suvbot-warm-${mode}`,
-    paths: warmPlan.docs.map((doc) => doc.path),
-    deps,
-  });
-  return {writtenCount: warmPlan.docs.length};
-}
-
-/**
- * Builds the reset delete list for one user's demo-owned state.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} uid User id.
- * @param {ResetScope} scope Reset scope.
- * @return {Promise<DeletePlan>} Delete plan.
- */
-async function buildResetPlan(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-  scope: ResetScope = "all"
-): Promise<DeletePlan> {
-  const paths = new Set<string>();
-  const eventIds = new Set<string>();
-  const clubIds = new Set<string>();
-  const matchIds = new Set<string>();
-
-  const collectPath = (
-    snap: FirebaseFirestore.QueryDocumentSnapshot,
-    data = snap.data()
-  ) => {
-    if (!isDemoOwned(data)) return;
-    paths.add(snap.ref.path);
-    collectString(data.eventId, eventIds);
-    collectString(data.clubId, clubIds);
-  };
-
-  if (scope === "all") {
-    const manifestSnap = await db.collection(DEMO_MANIFEST_COLLECTION)
-      .where("users", "array-contains", uid)
-      .get();
-    for (const doc of manifestSnap.docs) {
-      const data = doc.data();
-      for (const path of Array.isArray(data.paths) ? data.paths : []) {
-        if (typeof path === "string" && !isSuvbotPath(path, uid)) {
-          paths.add(path);
-        }
-      }
-      if (!isSuvbotPath(doc.ref.path, uid)) paths.add(doc.ref.path);
-    }
-  }
-
-  if (scope === "all") {
-    await collectTopLevelQuery(db, "clubMemberships", "uid", uid, collectPath);
-  }
-  if (scope === "all" || scope === "bookings") {
-    await collectTopLevelQuery(
-      db,
-      "eventParticipations",
-      "uid",
-      uid,
-      collectPath
-    );
-    await collectTopLevelQuery(
-      db,
-      "userEventScheduleLocks",
-      "uid",
-      uid,
-      collectPath
-    );
-    await collectTopLevelQuery(db, "savedEvents", "uid", uid, collectPath);
-    await collectTopLevelQuery(db, "payments", "userId", uid, collectPath);
-  }
-  if (scope === "all" || scope === "chats") {
-    await collectDemoMatches(db, uid, paths, matchIds, eventIds);
-    await collectOutgoingSwipes(db, uid, paths, eventIds);
-    await collectIncomingSwipes(db, uid, paths, eventIds);
-  }
-  if (scope === "all" || scope === "chats" || scope === "notifications") {
-    await collectNotifications(db, uid, paths, matchIds);
-  }
-
-  return {
-    paths: [...paths].filter((path) => !isSuvbotPath(path, uid)).sort(),
-    eventIds,
-    clubIds,
-    matchIds,
-  };
-}
-
-/**
- * Builds fresh demo-owned docs around the signed-in user's existing profile.
- * @param {object} params Build parameters.
- * @return {Promise<WarmPlan>} Write plan.
- */
-async function buildWarmPlan({
-  db,
-  uid,
-  marker,
-  deps,
-  mode = "full",
-}: {
-  db: FirebaseFirestore.Firestore;
-  uid: string;
-  marker: FirebaseFirestore.DocumentData;
-  deps: SuvbotDeps;
-  mode?: WarmMode;
-}): Promise<WarmPlan> {
-  const userSnap = await db.collection("users").doc(uid).get();
-  const user = userSnap.data();
-  if (!user) {
-    throw new HttpsError("failed-precondition", "Complete onboarding first.");
-  }
-
-  const now = deps.now();
-  const docs: DemoDocWrite[] = [];
-  const eventIds = new Set<string>();
-  const {upcoming, past} = await findDemoEvents(db, user.city, now);
-  const signedUpEvent = upcoming[0];
-  const waitlistedEvent = upcoming[1];
-  const attendedEvent = past[0];
-  const paidEvent = upcoming.find((event) =>
-    Number(event.data.priceInPaise ?? 0) > 0
-  );
-
-  if (mode === "full" || mode === "signup") {
-    for (const event of upcoming.slice(0, 3)) {
-      await pushDemoDoc(db, docs, {
-        path: `savedEvents/${uid}_${event.id}`,
-        data: {
-          ...marker,
-          uid,
-          eventId: event.id,
-          savedAt: deps.timestampFromDate(offsetDate(now, {hours: -2})),
-        },
-      });
-    }
-  }
-
-  const eventStates: Array<[DemoEvent | undefined, string]> = [];
-  if (mode === "full" || mode === "signup") {
-    eventStates.push([signedUpEvent, "signedUp"]);
-    eventStates.push([waitlistedEvent, "waitlisted"]);
-  }
-  if (mode === "full" || mode === "postEvent") {
-    eventStates.push([attendedEvent, "attended"]);
-  }
-  for (const [event, status] of eventStates) {
-    if (!event) continue;
-    eventIds.add(event.id);
-    await pushDemoDoc(db, docs, {
-      path: `eventParticipations/${event.id}_${uid}`,
-      data: participationDoc({
-        uid,
-        event,
-        status,
-        genderAtSignup: typeof user.gender === "string" ?
-          user.gender :
-          "other",
-        marker,
-        now,
-        deps,
-      }),
-    });
-  }
-
-  if (mode === "full" || mode === "signup" || mode === "postEvent") {
-    docs.push(...notificationDocs({
-      uid,
-      marker,
-      signedUpEvent: mode === "postEvent" ? undefined : signedUpEvent,
-      waitlistedEvent: mode === "postEvent" ? undefined : waitlistedEvent,
-      attendedEvent: mode === "signup" ? undefined : attendedEvent,
-      now,
-      deps,
-    }));
-  }
-
-  if ((mode === "full" || mode === "chat" || mode === "postEvent") &&
-      attendedEvent) {
-    const targets = await findSyntheticTargets(db, user.city, uid);
-    for (const [index, target] of targets.entries()) {
-      docs.push(...syntheticMatchDocs({
-        uid,
-        target,
-        event: attendedEvent,
-        marker,
-        now,
-        offsetMinutes: index * 8,
-        deps,
-      }));
-    }
-  }
-
-  if ((mode === "full" || mode === "payment") && paidEvent) {
-    docs.push(...paymentDemoDocs({
-      uid,
-      event: paidEvent,
-      marker,
-      user,
-      now,
-      deps,
-    }));
-    eventIds.add(paidEvent.id);
-  }
-
-  await ensureSuvbotThread(db, uid, deps);
-  return {docs: uniqueDocsByPath(docs), eventIds};
-}
-
-/**
- * Writes one chat message and updates match preview metadata immediately.
+ * Writes one Suvbot thread message and the matching thread preview.
  * @param {object} params Message parameters.
  */
 async function writeConversationMessage({
   db,
-  matchId,
+  uid,
   senderId,
-  recipientId,
   text,
   deps,
 }: {
   db: FirebaseFirestore.Firestore;
-  matchId: string;
+  uid: string;
   senderId: string;
-  recipientId: string;
   text: string;
   deps: SuvbotDeps;
 }): Promise<void> {
-  const matchRef = db.collection("matches").doc(matchId);
-  const messageRef = matchRef.collection("messages").doc();
-  const preview = previewText(text);
-  const batch = db.batch();
-  batch.set(messageRef, {
-    senderId,
-    text,
-    imageUrl: null,
-    sentAt: deps.serverTimestamp(),
-  });
-  batch.update(matchRef, {
-    lastMessageAt: deps.serverTimestamp(),
-    lastMessagePreview: preview,
-    lastMessageSenderId: senderId,
-    [`unreadCounts.${senderId}`]: 0,
-    [`unreadCounts.${recipientId}`]: senderId === SUVBOT_UID ? 1 : 0,
-  });
-  await batch.commit();
-}
-
-interface DemoEvent {
-  id: string;
-  data: FirebaseFirestore.DocumentData;
-}
-
-/**
- * Finds seeded/demo-owned events in the user's city.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {unknown} city User city.
- * @param {Date} now Current time.
- * @return {Promise<{upcoming: DemoEvent[], past: DemoEvent[]}>} Events.
- */
-async function findDemoEvents(
-  db: FirebaseFirestore.Firestore,
-  city: unknown,
-  now: Date
-): Promise<{upcoming: DemoEvent[]; past: DemoEvent[]}> {
-  const snap = await db.collection("events")
-    .where("status", "==", "active")
-    .limit(200)
-    .get();
-  const cityName = typeof city === "string" ? city : null;
-  const events = snap.docs
-    .map((doc) => ({id: doc.id, data: doc.data()}))
-    .filter((event) => isDemoOwned(event.data))
-    .filter((event) => !cityName || event.data.city === cityName);
-  const upcoming = events
-    .filter((event) => dateFromTimestamp(event.data.startTime) > now)
-    .sort((a, b) =>
-      dateFromTimestamp(a.data.startTime).getTime() -
-      dateFromTimestamp(b.data.startTime).getTime()
-    );
-  const past = events
-    .filter((event) => dateFromTimestamp(event.data.endTime) < now)
-    .sort((a, b) =>
-      dateFromTimestamp(b.data.endTime).getTime() -
-      dateFromTimestamp(a.data.endTime).getTime()
-    );
-  return {upcoming, past};
-}
-
-/**
- * Finds synthetic public profiles for seeded match warmup.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {unknown} city User city.
- * @param {string} uid Current user id.
- * @return {Promise<Array<{uid: string, data: FirebaseFirestore.DocumentData}>>}
- * Synthetic targets.
- */
-async function findSyntheticTargets(
-  db: FirebaseFirestore.Firestore,
-  city: unknown,
-  uid: string
-): Promise<Array<{uid: string; data: FirebaseFirestore.DocumentData}>> {
-  const snap = await db.collection("publicProfiles")
-    .where("synthetic", "==", true)
-    .limit(24)
-    .get();
-  const cityName = typeof city === "string" ? city : null;
-  return snap.docs
-    .map((doc) => ({uid: doc.id, data: doc.data()}))
-    .filter((target) => target.uid !== uid)
-    .filter((target) => !cityName || target.data.city === cityName)
-    .slice(0, MAX_SYNTHETIC_MATCHES);
-}
-
-/**
- * Returns one demo participation document.
- * @param {object} params Participation parameters.
- * @return {FirebaseFirestore.DocumentData} Firestore data.
- */
-function participationDoc({
-  uid,
-  event,
-  status,
-  genderAtSignup,
-  paymentId,
-  marker,
-  now,
-  deps,
-}: {
-  uid: string;
-  event: DemoEvent;
-  status: string;
-  genderAtSignup: string;
-  paymentId?: string;
-  marker: FirebaseFirestore.DocumentData;
-  now: Date;
-  deps: SuvbotDeps;
-}): FirebaseFirestore.DocumentData {
-  const createdAt = offsetDate(now, {days: status === "attended" ? -10 : -1});
-  const attendedAt = status === "attended" ?
-    dateFromTimestamp(event.data.endTime) :
-    null;
-  return {
-    ...marker,
-    eventId: event.id,
-    clubId: event.data.clubId,
-    uid,
-    status,
-    createdAt: deps.timestampFromDate(createdAt),
-    updatedAt: deps.timestampFromDate(now),
-    signedUpAt: ["signedUp", "attended"].includes(status) ?
-      deps.timestampFromDate(createdAt) :
-      null,
-    waitlistedAt: status === "waitlisted" ?
-      deps.timestampFromDate(createdAt) :
-      null,
-    attendedAt: attendedAt ? deps.timestampFromDate(attendedAt) : null,
-    cancelledAt: null,
-    deletedAt: null,
-    genderAtSignup,
-    paymentId: paymentId ?? null,
+  const matchRef = db.collection("matches").doc(suvbotMatchId(uid));
+  const current = (await matchRef.get()).data();
+  const sentAt = deps.timestampFromDate(deps.now());
+  const createdAt = current?.createdAt as FirebaseFirestore.Timestamp |
+    undefined;
+  const message: DemoDocWrite = {
+    path: matchRef.collection("messages").doc().path,
+    data: {senderId, text, imageUrl: null, sentAt},
   };
-}
-
-/**
- * Builds Suvbot warmup notifications.
- * @param {object} params Notification parameters.
- * @return {DemoDocWrite[]} Notification docs.
- */
-function notificationDocs({
-  uid,
-  marker,
-  signedUpEvent,
-  waitlistedEvent,
-  attendedEvent,
-  now,
-  deps,
-}: {
-  uid: string;
-  marker: FirebaseFirestore.DocumentData;
-  signedUpEvent?: DemoEvent;
-  waitlistedEvent?: DemoEvent;
-  attendedEvent?: DemoEvent;
-  now: Date;
-  deps: SuvbotDeps;
-}): DemoDocWrite[] {
-  const docs: DemoDocWrite[] = [];
-  if (signedUpEvent) {
-    docs.push({
-      path: `notifications/${uid}/items/suvbot_signup_${signedUpEvent.id}`,
-      data: {
-        ...marker,
-        uid,
-        type: "eventSignup",
-        title: "Demo event ready",
-        body: "You have a seeded upcoming event to test.",
-        createdAt: deps.timestampFromDate(offsetDate(now, {minutes: -55})),
-        readAt: null,
-        eventId: signedUpEvent.id,
-        clubId: signedUpEvent.data.clubId,
-      },
-    });
-  }
-  if (waitlistedEvent) {
-    docs.push({
-      path: `notifications/${uid}/items/suvbot_waitlist_${waitlistedEvent.id}`,
-      data: {
-        ...marker,
-        uid,
-        type: "waitlistPromotion",
-        title: "Waitlist state seeded",
-        body: "You have a seeded waitlist state to test.",
-        createdAt: deps.timestampFromDate(offsetDate(now, {minutes: -40})),
-        readAt: null,
-        eventId: waitlistedEvent.id,
-        clubId: waitlistedEvent.data.clubId,
-      },
-    });
-  }
-  if (attendedEvent) {
-    docs.push({
-      path: `notifications/${uid}/items/suvbot_attended_${attendedEvent.id}`,
-      data: {
-        ...marker,
-        uid,
-        type: "match",
-        title: "Catches are ready",
-        body: "Your seeded attended event can unlock recap and swipe testing.",
-        createdAt: deps.timestampFromDate(offsetDate(now, {minutes: -25})),
-        readAt: null,
-        eventId: attendedEvent.id,
-        clubId: attendedEvent.data.clubId,
-      },
-    });
-  }
-  return docs;
-}
-
-/**
- * Builds a demo payment record and linked signup for payment-history testing.
- * @param {object} params Payment parameters.
- * @return {DemoDocWrite[]} Demo payment docs.
- */
-function paymentDemoDocs({
-  uid,
-  event,
-  marker,
-  user,
-  now,
-  deps,
-}: {
-  uid: string;
-  event: DemoEvent;
-  marker: FirebaseFirestore.DocumentData;
-  user: FirebaseFirestore.DocumentData;
-  now: Date;
-  deps: SuvbotDeps;
-}): DemoDocWrite[] {
-  const paymentId = `${DEFAULT_DEMO_SEED_PREFIX}_payment_${event.id}_${uid}`;
-  return [
-    {
-      path: `payments/${paymentId}`,
-      data: {
-        ...marker,
-        userId: uid,
-        orderId: `${DEFAULT_DEMO_SEED_PREFIX}_order_${event.id}_${uid}`,
-        paymentId,
-        eventId: event.id,
-        amount: Number(event.data.priceInPaise ?? 29900) || 29900,
-        currency: "INR",
-        status: "completed",
-        signUpFailed: false,
-        createdAt: deps.timestampFromDate(offsetDate(now, {days: -1})),
-      },
-    },
-    {
-      path: `eventParticipations/${event.id}_${uid}`,
-      data: participationDoc({
-        uid,
-        event,
-        status: "signedUp",
-        genderAtSignup: typeof user.gender === "string" ?
-          user.gender :
-          "other",
-        paymentId,
-        marker,
-        now,
-        deps,
-      }),
-    },
-    {
-      path: `notifications/${uid}/items/suvbot_payment_${event.id}`,
-      data: {
-        ...marker,
-        uid,
-        type: "payment",
-        title: "Payment history seeded",
-        body: "You have a completed demo payment to inspect.",
-        createdAt: deps.timestampFromDate(offsetDate(now, {minutes: -30})),
-        readAt: null,
-        eventId: event.id,
-        clubId: event.data.clubId,
-      },
-    },
-  ];
-}
-
-/**
- * Builds one synthetic match thread with starter messages.
- * @param {object} params Match parameters.
- * @return {DemoDocWrite[]} Match and message docs.
- */
-function syntheticMatchDocs({
-  uid,
-  target,
-  event,
-  marker,
-  now,
-  offsetMinutes,
-  deps,
-}: {
-  uid: string;
-  target: {uid: string; data: FirebaseFirestore.DocumentData};
-  event: DemoEvent;
-  marker: FirebaseFirestore.DocumentData;
-  now: Date;
-  offsetMinutes: number;
-  deps: SuvbotDeps;
-}): DemoDocWrite[] {
-  const [user1Id, user2Id] = [uid, target.uid].sort();
-  const matchId = `${user1Id}_${user2Id}`;
-  const targetName = typeof target.data.name === "string" ?
-    target.data.name :
-    "A seeded runner";
-  const texts = [
-    {
-      senderId: target.uid,
-      text: [
-        `That ${event.data.title ?? "demo event"} was fun.`,
-        "Same pace next time?",
-      ].join(" "),
-    },
-    {senderId: uid, text: "Absolutely. I wanted to test this chat too."},
-    {senderId: target.uid, text: "Perfect. Suvbot just refreshed this thread."},
-  ];
-  const docs: DemoDocWrite[] = [];
-  const unreadCounts: Record<string, number> = {[user1Id]: 0, [user2Id]: 0};
-  let lastMessagePreview: string | null = null;
-  let lastMessageSenderId: string | null = null;
-  let lastMessageAt: FirebaseFirestore.Timestamp | null = null;
-
-  for (const [index, message] of texts.entries()) {
-    const sentAt = deps.timestampFromDate(
-      offsetDate(now, {minutes: -30 + offsetMinutes + index * 6})
-    );
-    lastMessageAt = sentAt;
-    lastMessagePreview = previewText(message.text);
-    lastMessageSenderId = message.senderId;
-    const recipientId = message.senderId === user1Id ? user2Id : user1Id;
-    unreadCounts[message.senderId] = 0;
-    unreadCounts[recipientId] = message.senderId === target.uid ? 1 : 0;
-    docs.push({
-      path: `matches/${matchId}/messages/suvbot_${index + 1}`,
-      data: {
-        ...marker,
-        senderId: message.senderId,
-        text: message.text,
-        imageUrl: null,
-        sentAt,
-      },
-    });
-  }
-
-  docs.push({
-    path: `matches/${matchId}`,
-    data: {
-      ...marker,
-      demoOpsEntityType: "matchThread",
-      demoOpsDisposalPolicy: "deleteThreadWithMessages",
-      user1Id,
-      user2Id,
-      eventIds: [event.id],
-      createdAt: deps.timestampFromDate(offsetDate(now, {minutes: -35})),
-      lastMessageAt,
-      lastMessagePreview,
-      lastMessageSenderId,
-      unreadCounts,
-      status: "active",
-      blockedBy: null,
-      blockedAt: null,
-      participantIds: [user1Id, user2Id],
-    },
-  });
-
-  docs.push({
-    path: `notifications/${uid}/items/suvbot_match_${matchId}`,
-    data: {
-      ...marker,
+  const thread: DemoDocWrite = {
+    path: matchRef.path,
+    data: suvbotThreadDoc({
       uid,
-      type: "match",
-      title: "It's a catch",
-      body: `You and ${targetName} have a seeded chat to test.`,
-      createdAt: deps.timestampFromDate(offsetDate(now, {minutes: -20})),
-      readAt: null,
-      matchId,
-      eventId: event.id,
-      actorUid: target.uid,
-      actorName: targetName,
-    },
-  });
-
-  return docs;
-}
-
-/**
- * Summarizes the current user's seeded demo readiness.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} uid User id.
- * @return {Promise<DemoSummary>} Demo summary.
- */
-async function summarizeDemoState(
-  db: FirebaseFirestore.Firestore,
-  uid: string
-): Promise<DemoSummary> {
-  const [saved, participations, matches, payments, suvbot] = await Promise.all([
-    db.collection("savedEvents").where("uid", "==", uid).get(),
-    db.collection("eventParticipations").where("uid", "==", uid).get(),
-    db.collection("matches").where("participantIds", "array-contains", uid)
-      .get(),
-    db.collection("payments").where("userId", "==", uid).get(),
-    db.collection("matches").doc(suvbotMatchId(uid)).get(),
-  ]);
-  const activeParticipations = participations.docs
-    .map((doc) => doc.data())
-    .filter((data) => ["signedUp", "waitlisted", "attended"]
-      .includes(data.status));
-  return {
-    savedEvents: saved.docs.filter((doc) => isDemoOwned(doc.data())).length,
-    activeEventParticipations: activeParticipations
-      .filter((data) => isDemoOwned(data))
-      .length,
-    attendedEvents: activeParticipations
-      .filter((data) => data.status === "attended" && isDemoOwned(data))
-      .length,
-    demoMatches: matches.docs
-      .filter((doc) => doc.id !== suvbotMatchId(uid))
-      .filter((doc) => isDemoOwned(doc.data()))
-      .length,
-    payments: payments.docs.filter((doc) => isDemoOwned(doc.data())).length,
-    unreadSuvbotMessages: Number(
-      suvbot.data()?.unreadCounts?.[uid] ?? 0
-    ) || 0,
+      createdAt: typeof createdAt?.toMillis === "function" ?
+        createdAt :
+        sentAt,
+      lastMessageAt: sentAt,
+      lastMessagePreview: previewText(text),
+      lastMessageSenderId: senderId,
+      unreadForUser: senderId === SUVBOT_UID ? 1 : 0,
+    }),
   };
+  await applyWritePlan(db, [message, thread]);
 }
 
 /**
- * Recomputes aggregate fields for touched events.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {Set<string>} eventIds Touched event ids.
+ * The Suvbot control thread document.
+ * @param {object} params Thread fields.
+ * @return {FirebaseFirestore.DocumentData} Match document.
  */
-async function repairEventAggregates(
-  db: FirebaseFirestore.Firestore,
-  eventIds: Set<string>
-): Promise<void> {
-  for (const eventId of eventIds) {
-    const [eventSnap, participationsSnap] = await Promise.all([
-      db.collection("events").doc(eventId).get(),
-      db.collection("eventParticipations").where("eventId", "==", eventId)
-        .get(),
-    ]);
-    if (!eventSnap.exists) continue;
-    const aggregate = {
-      bookedCount: 0,
-      checkedInCount: 0,
-      waitlistedCount: 0,
-      genderCounts: {} as Record<string, number>,
-    };
-    for (const doc of participationsSnap.docs) {
-      const data = doc.data();
-      if (data.status === "signedUp" || data.status === "attended") {
-        aggregate.bookedCount += 1;
-        if (typeof data.genderAtSignup === "string") {
-          aggregate.genderCounts[data.genderAtSignup] =
-            (aggregate.genderCounts[data.genderAtSignup] ?? 0) + 1;
-        }
-      }
-      if (data.status === "attended") aggregate.checkedInCount += 1;
-      if (data.status === "waitlisted") aggregate.waitlistedCount += 1;
-    }
-    await eventSnap.ref.update(aggregate);
-  }
-}
-
-/**
- * Writes a demo-operation manifest for cleanup and audit.
- * @param {object} params Manifest parameters.
- */
-async function writeDemoManifest({
-  db,
-  uid,
-  operationId,
-  command,
-  paths,
-  deps,
-}: {
-  db: FirebaseFirestore.Firestore;
+function suvbotThreadDoc(params: {
   uid: string;
-  operationId: string;
-  command: string;
-  paths: string[];
-  deps: SuvbotDeps;
-}): Promise<void> {
-  await db.collection(DEMO_MANIFEST_COLLECTION).doc(operationId).set({
-    demoOps: true,
-    demoOpsId: operationId,
-    demoOpsCommand: command,
-    seedPrefix: DEFAULT_DEMO_SEED_PREFIX,
-    command,
-    operationId,
-    applied: true,
-    createdAt: deps.serverTimestamp(),
-    users: [uid],
-    phones: [],
-    paths: [...new Set(paths)].sort(),
-    pathCount: new Set(paths).size,
-  });
-}
-
-/**
- * Applies set writes in Firestore batch chunks.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {DemoDocWrite[]} docs Docs to write.
- */
-async function applyWritePlan(
-  db: FirebaseFirestore.Firestore,
-  docs: DemoDocWrite[]
-): Promise<void> {
-  for (const chunk of chunks(docs, MAX_BATCH_WRITES)) {
-    const batch = db.batch();
-    for (const doc of chunk) {
-      batch.set(db.doc(doc.path), doc.data);
-    }
-    await batch.commit();
-  }
-}
-
-/**
- * Applies delete writes in Firestore batch chunks.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string[]} paths Docs to delete.
- */
-async function applyDeletePlan(
-  db: FirebaseFirestore.Firestore,
-  paths: string[]
-): Promise<void> {
-  for (const chunk of chunks(paths, MAX_BATCH_WRITES)) {
-    const batch = db.batch();
-    for (const path of chunk) batch.delete(db.doc(path));
-    await batch.commit();
-  }
-}
-
-/**
- * Adds a write if it would not overwrite a non-demo document.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {DemoDocWrite[]} docs Mutable docs array.
- * @param {DemoDocWrite} doc Candidate doc.
- */
-async function pushDemoDoc(
-  db: FirebaseFirestore.Firestore,
-  docs: DemoDocWrite[],
-  doc: DemoDocWrite
-): Promise<void> {
-  const snap = await db.doc(doc.path).get();
-  if (snap.exists && !isDemoOwned(snap.data())) return;
-  docs.push(doc);
-}
-
-/**
- * Collects top-level query docs through a callback.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} collection Collection name.
- * @param {string} field Query field.
- * @param {string} value Query value.
- * @param {Function} collect Callback.
- */
-async function collectTopLevelQuery(
-  db: FirebaseFirestore.Firestore,
-  collection: string,
-  field: string,
-  value: string,
-  collect: (snap: FirebaseFirestore.QueryDocumentSnapshot) => void
-): Promise<void> {
-  const snap = await db.collection(collection).where(field, "==", value).get();
-  for (const doc of snap.docs) collect(doc);
-}
-
-/**
- * Collects demo-owned matches involving the user.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} uid User id.
- * @param {Set<string>} paths Mutable path set.
- * @param {Set<string>} matchIds Mutable match id set.
- * @param {Set<string>} eventIds Mutable event id set.
- */
-async function collectDemoMatches(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-  paths: Set<string>,
-  matchIds: Set<string>,
-  eventIds: Set<string>
-): Promise<void> {
-  const snap = await db.collection("matches")
-    .where("participantIds", "array-contains", uid)
-    .get();
-  for (const doc of snap.docs) {
-    const data = doc.data();
-    if (doc.id === suvbotMatchId(uid) || !isDemoOwned(data)) continue;
-    matchIds.add(doc.id);
-    for (const eventId of Array.isArray(data.eventIds) ? data.eventIds : []) {
-      collectString(eventId, eventIds);
-    }
-    const messages = await doc.ref.collection("messages").get();
-    for (const message of messages.docs) paths.add(message.ref.path);
-    paths.add(doc.ref.path);
-  }
-}
-
-/**
- * Collects outgoing demo-owned swipes.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} uid User id.
- * @param {Set<string>} paths Mutable path set.
- * @param {Set<string>} eventIds Mutable event id set.
- */
-async function collectOutgoingSwipes(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-  paths: Set<string>,
-  eventIds: Set<string>
-): Promise<void> {
-  const snap = await db
-    .collection(schemaProfileDecisionCollectionPath)
-    .doc(uid)
-    .collection(schemaProfileDecisionOutgoingSubcollectionPath)
-    .get();
-  for (const doc of snap.docs) {
-    const data = doc.data();
-    if (!isDemoOwned(data)) continue;
-    paths.add(doc.ref.path);
-    collectString(data.eventId, eventIds);
-  }
-}
-
-/**
- * Collects incoming demo-owned swipes by scanning beta-sized swipe roots.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} uid User id.
- * @param {Set<string>} paths Mutable path set.
- * @param {Set<string>} eventIds Mutable event id set.
- */
-async function collectIncomingSwipes(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-  paths: Set<string>,
-  eventIds: Set<string>
-): Promise<void> {
-  const swipers = await db
-    .collection(schemaProfileDecisionCollectionPath)
-    .get();
-  for (const swiperDoc of swipers.docs) {
-    if (swiperDoc.id === uid) continue;
-    const outgoing = await swiperDoc.ref
-      .collection(schemaProfileDecisionOutgoingSubcollectionPath)
-      .get();
-    for (const doc of outgoing.docs) {
-      const data = doc.data();
-      if (data.targetId !== uid || !isDemoOwned(data)) continue;
-      paths.add(doc.ref.path);
-      collectString(data.eventId, eventIds);
-    }
-  }
-}
-
-/**
- * Collects demo-owned notifications for a user.
- * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} uid User id.
- * @param {Set<string>} paths Mutable path set.
- * @param {Set<string>} matchIds Demo match ids.
- */
-async function collectNotifications(
-  db: FirebaseFirestore.Firestore,
-  uid: string,
-  paths: Set<string>,
-  matchIds: Set<string>
-): Promise<void> {
-  const snap = await db.collection("notifications").doc(uid)
-    .collection("items")
-    .get();
-  for (const doc of snap.docs) {
-    const data = doc.data();
-    if (isDemoOwned(data) || matchIds.has(data.matchId)) {
-      paths.add(doc.ref.path);
-    }
-  }
-}
-
-/**
- * Builds the common demo metadata marker.
- * @param {object} params Marker parameters.
- * @return {FirebaseFirestore.DocumentData} Marker fields.
- */
-function demoMarker({
-  operationId,
-  command,
-  deps,
-}: {
-  operationId: string;
-  command: string;
-  deps: SuvbotDeps;
+  createdAt: FirebaseFirestore.Timestamp;
+  lastMessageAt: FirebaseFirestore.Timestamp;
+  lastMessagePreview: string;
+  lastMessageSenderId: string;
+  unreadForUser: number;
 }): FirebaseFirestore.DocumentData {
   return {
     demoOps: true,
-    demoOpsId: operationId,
-    demoOpsCommand: command,
+    demoOpsCommand: "suvbot-thread",
     seedPrefix: DEFAULT_DEMO_SEED_PREFIX,
-    createdAt: deps.serverTimestamp(),
+    user1Id: SUVBOT_UID,
+    user2Id: params.uid,
+    eventIds: ["suvbot"],
+    createdAt: params.createdAt,
+    lastMessageAt: params.lastMessageAt,
+    lastMessagePreview: params.lastMessagePreview,
+    lastMessageSenderId: params.lastMessageSenderId,
+    unreadCounts: {[SUVBOT_UID]: 0, [params.uid]: params.unreadForUser},
+    status: "active",
+    blockedBy: null,
+    blockedAt: null,
+    participantIds: [SUVBOT_UID, params.uid],
   };
 }
 
@@ -1741,41 +794,6 @@ function suvbotPublicProfileDoc(): FirebaseFirestore.DocumentData {
       },
     },
   };
-}
-
-/**
- * Returns the deterministic Suvbot match id for one user.
- * @param {string} uid User id.
- * @return {string} Match id.
- */
-export function suvbotMatchId(uid: string): string {
-  return `${SUVBOT_UID}_${uid.replace(/\//g, "_")}`;
-}
-
-/**
- * Returns whether a path belongs to the Suvbot control thread.
- * @param {string} path Firestore path.
- * @param {string} uid User id.
- * @return {boolean} True for Suvbot paths.
- */
-function isSuvbotPath(path: string, uid: string): boolean {
-  return path === `matches/${suvbotMatchId(uid)}` ||
-    path.startsWith(`matches/${suvbotMatchId(uid)}/`) ||
-    path === `publicProfiles/${SUVBOT_UID}` ||
-    path === `${SUVBOT_ACCESS_COLLECTION}/${uid}`;
-}
-
-/**
- * Returns whether a document is owned by seed/demo tooling.
- * @param {FirebaseFirestore.DocumentData | undefined} data Firestore data.
- * @return {boolean} True when demo-owned.
- */
-function isDemoOwned(
-  data: FirebaseFirestore.DocumentData | undefined
-): boolean {
-  return data?.demoOps === true ||
-    data?.synthetic === true ||
-    typeof data?.seedPrefix === "string";
 }
 
 /**
@@ -1875,6 +893,9 @@ function parseTypedCommand(
   if (phone && /(match|connect|tester|friend)/u.test(normalized)) {
     return {action: "matchTesterByPhone", targetPhone: phone};
   }
+  if (parseDemoWorldRequest(text) || /(start|demo|world)/u.test(normalized)) {
+    return {action: "startDemoWorld"};
+  }
   if (/(fresh start|clear)/u.test(normalized)) {
     return {action: "clearDemoState"};
   }
@@ -1947,24 +968,30 @@ async function matchTesterByPhone({
     );
   }
   const matchId = matchIdFor(uid, target.uid);
-  const matchRef = db.collection("matches").doc(matchId);
-  const existing = await matchRef.get();
+  const existing = await db.collection("matches").doc(matchId).get();
   if (existing.exists && !isDemoOwned(existing.data())) {
     return "You already have a real chat with that tester. I left it alone.";
   }
-  const marker = demoMarker({
-    operationId,
-    command: "suvbot-match-tester",
-    deps,
-  });
-  const event = await findContextEventForMatch(db, uid, deps.now());
+  const marker = {
+    demoOps: true,
+    demoOpsId: operationId,
+    demoOpsCommand: "suvbot-match-tester",
+    seedPrefix: DEFAULT_DEMO_SEED_PREFIX,
+  };
+  // A match between testers is anchored to the requester's current world
+  // event, when one is still there.
+  const world = await latestWorldManifest(db, uid);
+  const eventId = world?.primaryEventId &&
+    (await db.collection("events").doc(world.primaryEventId).get()).exists ?
+    world.primaryEventId :
+    null;
   const docs = testerMatchDocs({
     uid,
     targetUid: target.uid,
     targetName: target.name,
-    event,
+    eventId,
     marker,
-    deps,
+    now: deps.timestampFromDate(deps.now()),
   });
   await applyWritePlan(db, docs);
   await writeDemoManifest({
@@ -1973,7 +1000,7 @@ async function matchTesterByPhone({
     operationId,
     command: "suvbot-match-tester",
     paths: docs.map((doc) => doc.path),
-    deps,
+    createdAt: deps.timestampFromDate(deps.now()),
   });
   return `Done. I matched you with ${target.name}.`;
 }
@@ -2013,20 +1040,19 @@ function testerMatchDocs({
   uid,
   targetUid,
   targetName,
-  event,
+  eventId,
   marker,
-  deps,
+  now,
 }: {
   uid: string;
   targetUid: string;
   targetName: string;
-  event?: DemoEvent;
+  eventId: string | null;
   marker: FirebaseFirestore.DocumentData;
-  deps: SuvbotDeps;
+  now: FirebaseFirestore.Timestamp;
 }): DemoDocWrite[] {
   const [user1Id, user2Id] = [uid, targetUid].sort();
   const matchId = matchIdFor(uid, targetUid);
-  const now = deps.now();
   const unreadCounts = {[user1Id]: 0, [user2Id]: 0};
   unreadCounts[targetUid] = 1;
   return [
@@ -2034,20 +1060,19 @@ function testerMatchDocs({
       path: `matches/${matchId}`,
       data: {
         ...marker,
-        demoOpsEntityType: "matchThread",
-        demoOpsDisposalPolicy: "deleteThreadWithMessages",
         user1Id,
         user2Id,
         participantIds: [user1Id, user2Id],
-        eventIds: event ? [event.id] : [],
-        createdAt: deps.timestampFromDate(now),
-        lastMessageAt: deps.timestampFromDate(now),
+        eventIds: eventId ? [eventId] : [],
+        createdAt: now,
+        lastMessageAt: now,
         lastMessagePreview: "Suvbot created this seeded tester match.",
         lastMessageSenderId: SUVBOT_UID,
         unreadCounts,
         status: "active",
         blockedBy: null,
         blockedAt: null,
+        conversationType: "match",
       },
     },
     {
@@ -2057,7 +1082,7 @@ function testerMatchDocs({
         senderId: SUVBOT_UID,
         text: `Suvbot matched you with ${targetName} for beta testing.`,
         imageUrl: null,
-        sentAt: deps.timestampFromDate(now),
+        sentAt: now,
       },
     },
     {
@@ -2068,10 +1093,10 @@ function testerMatchDocs({
         type: "match",
         title: "Seeded tester match",
         body: "Suvbot created a beta test chat.",
-        createdAt: deps.timestampFromDate(now),
+        createdAt: now,
         readAt: null,
         matchId,
-        eventId: event?.id ?? null,
+        eventId,
         actorUid: uid,
         actorName: "A beta tester",
       },
@@ -2080,20 +1105,19 @@ function testerMatchDocs({
 }
 
 /**
- * Finds an optional event context for a tester match.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} uid Current user id.
- * @param {Date} now Current time.
- * @return {Promise<DemoEvent | undefined>} Event context.
+ * @param {string} uid User id.
+ * @return {Promise<FirebaseFirestore.DocumentData>} Profile.
  */
-async function findContextEventForMatch(
+async function requireUser(
   db: FirebaseFirestore.Firestore,
-  uid: string,
-  now: Date
-): Promise<DemoEvent | undefined> {
+  uid: string
+): Promise<FirebaseFirestore.DocumentData> {
   const user = (await db.collection("users").doc(uid).get()).data();
-  const {upcoming, past} = await findDemoEvents(db, user?.city, now);
-  return past[0] ?? upcoming[0];
+  if (!user) {
+    throw new HttpsError("failed-precondition", "Complete onboarding first.");
+  }
+  return user;
 }
 
 /**
@@ -2156,12 +1180,14 @@ function actionDefinition(
 /**
  * Builds the user-visible message for a tapped action.
  * @param {SuvbotAction} action Suvbot action.
+ * @param {string} text Optional action text.
  * @return {string} Message text.
  */
-function userFacingActionText(action: SuvbotAction): string {
+function userFacingActionText(action: SuvbotAction, text?: string): string {
   if (action === "message") return "Message";
   if (action === "listActions") return "List Suvbot actions";
-  return actionDefinition(action)?.label ?? action;
+  const label = actionDefinition(action)?.label ?? action;
+  return action === "startDemoWorld" && text ? `${label}: ${text}` : label;
 }
 
 /**
@@ -2175,10 +1201,58 @@ function helpText(): string {
   return [
     "I can run safe beta-demo actions for your account.",
     "The chips below are loaded from the backend.",
-    "We can add actions without an app update.",
     ...actionLines,
+    worldMenuText(),
     "You can also type shortcuts like `match +919999999999`.",
   ].join("\n");
+}
+
+/**
+ * Lists the worlds and moments Start a demo accepts.
+ * @return {string} Menu text.
+ */
+function worldMenuText(): string {
+  const moments = SUVBOT_DEMO_MOMENTS
+    .map((moment) => `${moment.id} (${moment.description})`)
+    .join("; ");
+  const worlds = suvbotDemoWorldChoices().map(({world, moments}) =>
+    `- ${world.id}: ${world.events[0].name}, ${world.organizer.name}, ` +
+      `${world.organizer.area} (${moments.join(", ")})`);
+  return [
+    "Start a demo with a world and a moment, like " +
+      "`host-marketing-india live`.",
+    `Moments: ${moments}.`,
+    "Worlds:",
+    ...worlds,
+  ].join("\n");
+}
+
+/**
+ * Formats a started world for chat.
+ * @param {SuvbotWorldPlan} plan Started world.
+ * @return {string} Bot reply.
+ */
+function worldStartedText(plan: SuvbotWorldPlan): string {
+  const {summary} = plan;
+  const moment = SUVBOT_DEMO_MOMENTS
+    .find((item) => item.id === summary.moment);
+  const lines = [
+    `Done. ${summary.eventName} is ready at "${moment?.label}".`,
+    moment?.description ?? "",
+    `${summary.booked} of ${summary.capacity} booked, ` +
+      `${summary.checkedIn} checked in, you included.`,
+  ];
+  if (summary.paidInPaise > 0) lines.push("Your payment is in your history.");
+  if (summary.savedEventCount > 0) {
+    lines.push(`${summary.savedEventCount} upcoming event(s) saved for you.`);
+  }
+  if (summary.matchThreadCount > 0) {
+    lines.push(`Catches: ${summary.matchNames.join(", ")}.`);
+  } else if (summary.moment === "after") {
+    lines.push("Swipe on the guests in Catches.");
+  }
+  lines.push("Reopen Dashboard, Catches and Chats if they were already open.");
+  return lines.filter(Boolean).join("\n");
 }
 
 /**
@@ -2198,7 +1272,7 @@ function responseForFreeText(text: string): string {
     ].join(" ");
   }
   if (normalized.includes("check") || normalized.includes("status")) {
-    return "Tap Check setup and I will inspect your seeded state.";
+    return "Tap Check setup and I will inspect your demo state.";
   }
   return helpText();
 }
@@ -2209,12 +1283,20 @@ function responseForFreeText(text: string): string {
  * @return {string} Bot reply.
  */
 function summaryText(summary: DemoSummary): string {
+  const world = summary.world ?
+    suvbotDemoWorldChoices().find((choice) =>
+      choice.world.id === summary.world?.worldId)?.world :
+    undefined;
   return [
-    "Here is your seeded setup right now:",
+    "Here is your demo setup right now:",
+    world && summary.world ?
+      `World: ${world.events[0].name} (${world.id}), ` +
+        `started at "${summary.world.moment}".` :
+      "No demo world started yet. Tap Start a demo.",
     `${summary.savedEvents} saved demo events.`,
     `${summary.activeEventParticipations} active demo event states.`,
     `${summary.attendedEvents} attended demo events for recap/swipes.`,
-    `${summary.demoMatches} seeded match threads.`,
+    `${summary.demoMatches} demo match threads.`,
     `${summary.payments} demo payment records.`,
   ].join("\n");
 }
@@ -2229,24 +1311,6 @@ function previewText(text: string): string {
 }
 
 /**
- * Adds an offset to a date.
- * @param {Date} date Base date.
- * @param {object} offset Offset fields.
- * @return {Date} Offset date.
- */
-function offsetDate(
-  date: Date,
-  offset: {days?: number; hours?: number; minutes?: number}
-): Date {
-  return new Date(
-    date.getTime() +
-    (offset.days ?? 0) * 24 * 60 * 60 * 1000 +
-    (offset.hours ?? 0) * 60 * 60 * 1000 +
-    (offset.minutes ?? 0) * 60 * 1000
-  );
-}
-
-/**
  * Converts Firestore-like timestamps to Dates.
  * @param {unknown} value Timestamp-like value.
  * @return {Date} Date or epoch fallback.
@@ -2257,39 +1321,6 @@ function dateFromTimestamp(value: unknown): Date {
     if (typeof toDate === "function") return toDate.call(value);
   }
   return new Date(0);
-}
-
-/**
- * Adds a string value to a set when present.
- * @param {unknown} value Candidate value.
- * @param {Set<string>} target Target set.
- */
-function collectString(value: unknown, target: Set<string>): void {
-  if (typeof value === "string" && value.length > 0) target.add(value);
-}
-
-/**
- * Deduplicates docs by path.
- * @param {DemoDocWrite[]} docs Docs.
- * @return {DemoDocWrite[]} Unique docs.
- */
-function uniqueDocsByPath(docs: DemoDocWrite[]): DemoDocWrite[] {
-  return [...new Map(docs.map((doc) => [doc.path, doc])).values()]
-    .sort((a, b) => a.path.localeCompare(b.path));
-}
-
-/**
- * Splits an array into chunks.
- * @param {Array<*>} items Items.
- * @param {number} size Chunk size.
- * @return {Array<Array<*>>} Chunks.
- */
-function chunks<T>(items: T[], size: number): T[][] {
-  const result: T[][] = [];
-  for (let i = 0; i < items.length; i += size) {
-    result.push(items.slice(i, i + size));
-  }
-  return result;
 }
 
 /**
@@ -2310,6 +1341,15 @@ export function isSuvbotAction(action: string): action is SuvbotAction {
   return action === "listActions" ||
     action === "message" ||
     SUVBOT_ACTION_CATALOG.some((item) => item.id === action);
+}
+
+/**
+ * Validates one document Suvbot writes. Exported for tooling that writes
+ * Suvbot-owned documents outside an operation (demo_ops.mjs suvbot-enable).
+ * @param {DemoDocWrite} doc Candidate write.
+ */
+export function assertSuvbotWrite(doc: DemoDocWrite): void {
+  assertValidSuvbotDocument(doc);
 }
 
 export const listSuvbotDemoActions = onCall(

@@ -71,8 +71,9 @@ function setup(stored: Record<string, unknown> = {}) {
 
 test("a queued request becomes a reviewable listing in Firestore, once", async () => {
   const {db, writer, deps} = setup();
-  assert.equal(await processSupplyIntakeRequest(deps, "nom-afterfly-1"), "completed");
+  const outcome = await processSupplyIntakeRequest(deps, "nom-afterfly-1");
   const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+  assert.equal(outcome, "completed", JSON.stringify(stored.failure));
   assert.equal(validateSupplyIntakeRequestsDocument(stored), true,
     JSON.stringify(validateSupplyIntakeRequestsDocument.errors));
   assert.equal(stored.status, "completed");
@@ -126,8 +127,9 @@ test("a request for a city discovery has not mapped still becomes a listing", as
   // "unassigned" is how a front door records a city it could not place.
   for (const market of ["unassigned", "kolkata"]) {
     const {db, writer, deps} = setup({request: request({market})});
-    assert.equal(await processSupplyIntakeRequest(deps, "nom-afterfly-1"), "completed", market);
+    const outcome = await processSupplyIntakeRequest(deps, "nom-afterfly-1");
     const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+    assert.equal(outcome, "completed", `${market}: ${JSON.stringify(stored.failure)}`);
     const listing = writer.items.get(stored.result.listingWorkItemId)!;
     assert.equal((listing.normalizedPayload as {intake?: {recordType?: string}}).intake?.recordType,
       "organizer_listing_draft", market);

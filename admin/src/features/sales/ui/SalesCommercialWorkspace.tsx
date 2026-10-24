@@ -278,9 +278,9 @@ function PilotEditor({organizerId, opportunityId, record, evidence, saving, save
         }}
         {...selectOptions(evidenceOptions(evidence))}
       /> : null}
-      {changed ? <p role="alert">Pilot changed since you opened this form.
+      {changed ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">Pilot changed since you opened this form.
         Compare it before saving. <AdminButton type="button" onClick={refresh}>
-          Use latest pilot</AdminButton></p> : null}
+          Use latest pilot</AdminButton></CatchText> : null}
       {localError ? <CatchText as="p" variant="supporting" role="alert">{localError}</CatchText> : null}
       <AdminButton type="submit" disabled={saving || changed}>Save pilot plan</AdminButton>
     </AdminForm>
@@ -411,9 +411,9 @@ function QuoteEditor({organizerId, opportunityId, record, evidence, saving, save
         row.evidenceId === id)?.sourceRef ?? "Recorded evidence"} value={
         <AdminButton type="button" onClick={() => {setFacts((ids) => ids.filter(
           (value) => value !== id)); setDirty(true);}}>Remove</AdminButton>} />)}
-      {changed ? <p role="alert">Quote changed since you opened this form.
+      {changed ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">Quote changed since you opened this form.
         Compare it before saving. <AdminButton type="button" onClick={refresh}>
-          Use latest quote</AdminButton></p> : null}
+          Use latest quote</AdminButton></CatchText> : null}
       {localError ? <CatchText as="p" variant="supporting" role="alert">{localError}</CatchText> : null}
       <AdminButton type="submit" disabled={saving || changed ||
         quote?.status === "accepted_reviewed"}>Record new quote version</AdminButton>

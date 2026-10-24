@@ -2,6 +2,7 @@ import {ConsumerEventPage} from "../shared/ui/primitives/consumerEvent";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {EventDetailHeroSection, EventDetailFactsSection} from "../features/events/sections/EventDetailSections";
 import {catchEventDetailFixture} from "./fixtures/eventDetails";
+import {demoEventId} from "./fixtures/demoWorld";
 import {GuestEventEntryView} from "../features/events/GuestEventEntry";
 const noop = () => undefined;
 const controller = {user: null, phone: "", setPhone: noop, code: "", setCode: noop,
@@ -12,7 +13,7 @@ const controller = {user: null, phone: "", setPhone: noop, code: "", setCode: no
 const meta = {title: "Events/Guest entry", component: GuestEventEntryView,
   decorators: [(Story) => <ConsumerEventPage><Story /></ConsumerEventPage>],
   parameters: {a11y: {test: "error"}},
-  args: {eventId: "preview-event", controller},
+  args: {eventId: demoEventId, controller},
 } satisfies Meta<typeof GuestEventEntryView>;
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -32,7 +33,7 @@ function invitationState(action?: string, extra = {}) {
   const value = action ? {...controller, user: {uid: "preview", phoneNumber: "+919000000000"},
     viewer: {guest: {action, expiresAtMillis: 9e12, ...extra}}} as typeof controller : controller;
   return <><EventDetailHeroSection event={catchEventDetailFixture}
-    guestEntry={<GuestEventEntryView eventId="preview-event" controller={value} invitation={invitation} />} />
+    guestEntry={<GuestEventEntryView eventId={demoEventId} controller={value} invitation={invitation} />} />
     <EventDetailFactsSection event={catchEventDetailFixture} /></>;
 }
 export const Invitation: Story = {render: () => invitationState()};
