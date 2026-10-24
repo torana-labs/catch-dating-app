@@ -100,8 +100,11 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
     final secondaryAction = widget.secondaryAction;
     final showCloseButton = widget.showCloseButton ?? widget.onClose != null;
 
-    final body = DecoratedBox(
-      decoration: BoxDecoration(gradient: t.heroGrad),
+    final body = CatchSurface(
+      tone: CatchSurfaceTone.transparent,
+      gradient: t.heroGrad,
+      radius: CatchRadius.none,
+      duration: Duration.zero,
       child: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -394,11 +397,14 @@ class PaperCelebrationIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Container(
-      width: CatchSpacing.s16,
-      height: CatchSpacing.s16,
-      decoration: BoxDecoration(color: t.primarySoft, shape: BoxShape.circle),
-      child: Icon(icon, color: t.primary, size: 30),
+    return CatchIconTile(
+      icon: icon,
+      iconColor: t.primary,
+      backgroundColor: t.primarySoft,
+      borderColor: Colors.transparent,
+      size: CatchSpacing.s16,
+      iconSize: 30,
+      radius: CatchRadius.pill,
     );
   }
 }
@@ -412,12 +418,15 @@ class PaperCelebrationDetailsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        border: Border.all(color: t.line),
+    return CatchSurface(
+      backgroundColor: t.surface,
+      borderRadius: BorderRadius.circular(CatchRadius.md),
+      borderSpec: CatchBorderSpec(
+        role: CatchBorderRole.boundary,
+        color: t.line,
+        width: CatchStroke.hairline,
       ),
+      duration: Duration.zero,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
         child: Column(
@@ -480,15 +489,14 @@ class CelebrationIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: CatchLayout.celebrationIconExtent,
-      height: CatchLayout.celebrationIconExtent,
-      decoration: BoxDecoration(
-        color: _celebrationCream.withValues(alpha: 0.22),
-        shape: BoxShape.circle,
-        border: Border.all(color: _celebrationCream.withValues(alpha: 0.28)),
-      ),
-      child: Icon(icon, color: _celebrationInk, size: 40),
+    return CatchIconTile(
+      icon: icon,
+      iconColor: _celebrationInk,
+      backgroundColor: _celebrationCream.withValues(alpha: 0.22),
+      borderColor: _celebrationCream.withValues(alpha: 0.28),
+      size: CatchLayout.celebrationIconExtent,
+      iconSize: 40,
+      radius: CatchRadius.pill,
     );
   }
 }
@@ -500,12 +508,15 @@ class CelebrationDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _celebrationCream.withValues(alpha: 0.28),
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
-        border: Border.all(color: _celebrationCream.withValues(alpha: 0.34)),
+    return CatchSurface(
+      backgroundColor: _celebrationCream.withValues(alpha: 0.28),
+      borderRadius: BorderRadius.circular(CatchRadius.lg),
+      borderSpec: CatchBorderSpec(
+        role: CatchBorderRole.boundary,
+        color: _celebrationCream.withValues(alpha: 0.34),
+        width: CatchStroke.hairline,
       ),
+      duration: Duration.zero,
       child: Padding(
         padding: const EdgeInsets.all(CatchSpacing.s4),
         child: Column(
@@ -576,12 +587,15 @@ class CelebrationNote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: _celebrationCream.withValues(alpha: 0.20),
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
-        border: Border.all(color: _celebrationCream.withValues(alpha: 0.28)),
+    return CatchSurface(
+      backgroundColor: _celebrationCream.withValues(alpha: 0.20),
+      borderRadius: BorderRadius.circular(CatchRadius.lg),
+      borderSpec: CatchBorderSpec(
+        role: CatchBorderRole.boundary,
+        color: _celebrationCream.withValues(alpha: 0.28),
+        width: CatchStroke.hairline,
       ),
+      duration: Duration.zero,
       child: Padding(
         padding: const EdgeInsets.all(CatchSpacing.s4),
         child: Row(

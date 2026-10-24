@@ -319,11 +319,10 @@ class ProfileCompatibilitySection extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: CatchSpacing.s1),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: markColor,
-                      borderRadius: BorderRadius.circular(CatchRadius.pill),
-                    ),
+                  child: CatchSurface(
+                    backgroundColor: markColor,
+                    borderRadius: BorderRadius.circular(CatchRadius.pill),
+                    duration: Duration.zero,
                     child: const SizedBox.square(
                       dimension: CatchSpacing.micro6,
                     ),
