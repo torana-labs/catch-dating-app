@@ -75,36 +75,36 @@ class _HostInboxScopeMenuState extends State<HostInboxScopeMenu> {
             label: context.l10n.hostsHostInboxScreenLabelInboxScope,
             value: selectedLabel,
             hint: context.l10n.hostsHostInboxScreenVisiblecopySelectAnEventOr,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: () =>
-                    controller.isOpen ? controller.close() : controller.open(),
-                child: SizedBox(
-                  height: CatchLayout.hostInboxScopeSelectorHeight,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            selectedLabel.toUpperCase(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: CatchTextStyles.monoLabel(
-                              context,
-                              color: labelColor,
-                            ).copyWith(fontWeight: FontWeight.w700),
-                          ),
+            child: CatchSurface(
+              duration: Duration.zero,
+              tone: CatchSurfaceTone.transparent,
+              radius: CatchRadius.none,
+              onTap: () =>
+                  controller.isOpen ? controller.close() : controller.open(),
+              child: SizedBox(
+                height: CatchLayout.hostInboxScopeSelectorHeight,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          selectedLabel.toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.monoLabel(
+                            context,
+                            color: labelColor,
+                          ).copyWith(fontWeight: FontWeight.w700),
                         ),
-                        gapW8,
-                        Icon(
-                          CatchIcons.expandMoreRounded,
-                          size: CatchIcon.sm,
-                          color: t.ink3,
-                        ),
-                      ],
-                    ),
+                      ),
+                      gapW8,
+                      Icon(
+                        CatchIcons.expandMoreRounded,
+                        size: CatchIcon.sm,
+                        color: t.ink3,
+                      ),
+                    ],
                   ),
                 ),
               ),

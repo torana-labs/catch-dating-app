@@ -56,11 +56,7 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'Dress rehearsal',
                 CatchTextStyles.titleL(context),
               ),
-              _TypeSpec(
-                'welcomeReelHeadline',
-                'Catch someone real.',
-                CatchTextStyles.welcomeReelHeadline(context),
-              ),
+
               _TypeSpec(
                 'welcomeIntroBody',
                 'Show up to something you would do anyway.',
