@@ -147,7 +147,9 @@ review/export remains available below. Never manually stamp old PNGs.
 `og:image` cards in `website/public/assets/og/` with Playwright from the site's
 own Archivo font, light colour tokens, the Catch and Catch Host splash marks,
 page copy from `website/src/content/meta.json` and, for the Host cards, an app
-capture from this pipeline. The home card lists the event formats from
+capture from this pipeline. Every card keeps its words and capture inside the
+centre 630px square, because WhatsApp crops small previews to it. The home
+card lists the event formats from
 `src/content/consumerHome.ts` instead of a capture. It writes
 `website/src/content/previewCards.json` with each card's path, alt text and
 input hash. `src/server/previewCards.ts` maps `/` and `/explore/` to the home

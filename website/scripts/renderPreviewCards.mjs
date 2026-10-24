@@ -199,30 +199,31 @@ async function updateCards() {
   console.log(`Rendered ${cards.length} preview cards into ${outputDir}.`);
 }
 
+// WhatsApp crops small previews to the centre square, so everything a card
+// says sits inside the middle 630px; the sides are margin.
 function cardHtml({content, tokens, font, mark, capture}) {
   const escape = (value) => value.replace(/[&<>"']/g, (character) => `&#${character.charCodeAt(0)};`);
-  const aside = Boolean(capture || content.chips.length);
+  const headlineSize = capture ? 52 : content.headline.length <= 24 ? 80 : 64;
   return `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face { font-family: "Archivo"; src: url(data:font/woff2;base64,${font}) format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; }
 * { box-sizing: border-box; }
 html, body { margin: 0; width: ${cardWidth}px; height: ${cardHeight}px; overflow: hidden; }
 body { background: ${tokens.bg}; color: ${tokens.ink}; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-.card { position: relative; width: 100%; height: 100%; padding: 64px 72px; border-bottom: 10px solid ${tokens.ink}; }
-.mark { display: block; height: 46px; width: auto; }
-.copy { max-width: ${aside ? 640 : 960}px; }
-h1 { margin: 52px 0 0; font-family: "Archivo", sans-serif; font-stretch: 78%; font-variation-settings: "wdth" 78; font-weight: 760; letter-spacing: -0.035em; word-spacing: 0.08em; font-size: ${aside ? 68 : 84}px; line-height: 1.02; text-wrap: balance; }
-p { margin: 26px 0 0; max-width: 760px; font-size: 26px; line-height: 1.42; color: ${tokens.ink2}; }
-.url { position: absolute; left: 72px; bottom: 52px; font-size: 20px; font-weight: 600; letter-spacing: 0.02em; }
-.capture { position: absolute; right: 64px; top: 48px; width: 300px; filter: drop-shadow(0 18px 36px rgba(22, 20, 15, 0.18)); }
-.chips { position: absolute; right: 72px; top: 0; bottom: 10px; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 16px; }
-.chips li { padding: 10px 26px 12px; border: 3px solid ${tokens.ink}; border-radius: 999px; font-family: "Archivo", sans-serif; font-stretch: 78%; font-variation-settings: "wdth" 78; font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: -0.01em; }
-</style></head><body><main class="card">
-<img class="mark" alt="" src="${mark}">
-<div class="copy"><h1>${escape(content.headline)}</h1><p>${escape(content.body)}</p></div>
+.card { position: relative; width: 100%; height: 100%; border-bottom: 10px solid ${tokens.ink}; display: flex; align-items: center; justify-content: center; padding-bottom: 36px; }
+.safe { width: ${cardHeight - 30}px; display: flex; align-items: center; gap: 32px; }
+.copy { flex: 1; min-width: 0; text-align: ${capture ? "left" : "center"}; }
+.mark { display: inline-block; height: 40px; width: auto; }
+h1 { margin: 30px 0 0; font-family: "Archivo", sans-serif; font-stretch: 78%; font-variation-settings: "wdth" 78; font-weight: 760; letter-spacing: -0.035em; word-spacing: 0.08em; font-size: ${headlineSize}px; line-height: 1.02; text-wrap: balance; }
+p { margin: 20px 0 0; font-size: 23px; line-height: 1.4; color: ${tokens.ink2}; text-wrap: pretty; }
+.url { position: absolute; left: 0; right: 0; bottom: 34px; text-align: center; font-size: 18px; font-weight: 600; letter-spacing: 0.02em; }
+.capture { flex: none; width: 220px; filter: drop-shadow(0 18px 36px rgba(22, 20, 15, 0.18)); }
+.chips { margin: 26px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.chips li { padding: 7px 18px 9px; border: 2px solid ${tokens.ink}; border-radius: 999px; font-family: "Archivo", sans-serif; font-stretch: 78%; font-variation-settings: "wdth" 78; font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: -0.01em; }
+</style></head><body><main class="card"><div class="safe">
+<div class="copy"><img class="mark" alt="" src="${mark}"><h1>${escape(content.headline)}</h1><p>${escape(content.body)}</p>
+${content.chips.length ? `<ul class="chips">${content.chips.map((chip) => `<li>${escape(chip)}</li>`).join("")}</ul>` : ""}</div>
 ${capture ? `<img class="capture" alt="" src="${capture}">` : ""}
-${content.chips.length ? `<ul class="chips">${content.chips.map((chip) => `<li>${escape(chip)}</li>`).join("")}</ul>` : ""}
-<div class="url">catchdates.com</div>
-</main></body></html>`;
+</div><div class="url">catchdates.com</div></main></body></html>`;
 }
 
 function trimmedMark(file) {
