@@ -97,20 +97,6 @@ export function AdminOverviewMainGrid({
   );
 }
 
-export function AdminOverviewQueueColumns({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("queue-columns", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function AdminOverviewAnalyticsClearButton({
   className = "",
   ...props
@@ -122,42 +108,6 @@ export function AdminOverviewAnalyticsClearButton({
       {...props}
       className={classNames("analytics-clear", className)}
     />
-  );
-}
-
-export function AdminOverviewQueueList({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("queue-list", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function AdminOverviewQueueHeading({
-  count,
-  owner,
-  title,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  count: ReactNode;
-  owner?: ReactNode;
-  title: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("queue-heading", className)}>
-      <span className="queue-heading-copy">
-        <span>{title}</span>
-        {owner ? <small>owned by {owner}</small> : null}
-      </span>
-      <strong>{count}</strong>
-    </div>
   );
 }
 
@@ -210,14 +160,6 @@ export function AdminOverviewQueueRowActions({
   );
 }
 
-export function AdminOverviewQueueActionHint({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  return <AdminTag tone="muted">{children}</AdminTag>;
-}
-
 export function AdminOverviewQueueDecisionButton({
   className = "",
   ...props
@@ -243,144 +185,5 @@ export function AdminOverviewQueueDetailPanel({
     <section {...props} className={classNames("queue-detail-panel", className)}>
       {children}
     </section>
-  );
-}
-
-export function AdminOverviewLineChart({
-  ariaLabel = "Trend chart",
-  emptyLabel,
-  points,
-}: {
-  ariaLabel?: string;
-  emptyLabel: ReactNode;
-  points: Array<{label: string; value: number}>;
-}) {
-  if (points.length === 0) {
-    return (
-      <EmptyState className="empty-panel">
-        {emptyLabel}
-      </EmptyState>
-    );
-  }
-  const path = points.map((point, index) => {
-    const x = points.length === 1 ? 50 : (index / (points.length - 1)) * 100;
-    const y = 100 - Math.max(0, Math.min(100, point.value));
-    return `${index === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
-  }).join(" ");
-  return (
-    <figure aria-label={ariaLabel} className="line-chart">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-        <path className="line-area" d={`${path} L 100 100 L 0 100 Z`} />
-        <path className="line-stroke" d={path} />
-      </svg>
-      <figcaption className="chart-labels">
-        {points.map((point) => (
-          <span key={point.label}>
-            <span>{point.label}</span>
-            <strong>{point.value}</strong>
-          </span>
-        ))}
-      </figcaption>
-    </figure>
-  );
-}
-
-export function AdminOverviewBarChart({
-  ariaLabel = "Category chart",
-  emptyLabel,
-  points,
-}: {
-  ariaLabel?: string;
-  emptyLabel: ReactNode;
-  points: Array<{label: string; value: number}>;
-}) {
-  if (points.length === 0) {
-    return (
-      <EmptyState className="empty-panel">
-        {emptyLabel}
-      </EmptyState>
-    );
-  }
-  const max = Math.max(1, ...points.map((point) => point.value));
-  return (
-    <figure aria-label={ariaLabel} className="bar-chart">
-      {points.map((point) => (
-        <div className="bar-column" key={point.label}>
-          <div
-            aria-hidden="true"
-            className="bar"
-            style={{height: point.value <= 0 ? "0%" : `${(point.value / max) * 100}%`}}
-          />
-          <span>
-            <span>{point.label}</span>
-            <strong>{point.value}</strong>
-          </span>
-        </div>
-      ))}
-    </figure>
-  );
-}
-
-export function AdminOverviewValueSignals({
-  signals,
-}: {
-  signals: Array<{
-    label: string;
-    tone: AdminOverviewSignalTone;
-    value: number;
-  }>;
-}) {
-  return (
-    <AdminSignalBars
-      ariaLabel="User value signals"
-      maxValue={100}
-      signals={signals}
-    />
-  );
-}
-
-export function AdminSignalBars({
-  ariaLabel,
-  eyebrow,
-  maxValue,
-  signals,
-}: {
-  ariaLabel: string;
-  eyebrow?: ReactNode;
-  maxValue?: number;
-  signals: Array<{
-    label: string;
-    tone: AdminSignalTone;
-    value: number;
-  }>;
-}) {
-  const scale = Math.max(
-    1,
-    maxValue ?? Math.max(0, ...signals.map((signal) => signal.value))
-  );
-  return (
-    <div aria-label={ariaLabel} className="signals" role="list">
-      {eyebrow ? <AdminEyebrow>{eyebrow}</AdminEyebrow> : null}
-      {signals.map((signal) => {
-        const width = Math.max(
-          0,
-          Math.min(100, (signal.value / scale) * 100)
-        );
-        return (
-          <div className="signal-row" key={signal.label} role="listitem">
-            <div>
-              <span>{signal.label}</span>
-              <strong>{signal.value}</strong>
-            </div>
-            <div aria-hidden="true" className="signal-track">
-              <div
-                className={classNames("signal-fill", signal.tone)}
-                style={{width: `${width}%`}}
-              />
-            </div>
-          </div>
-        );
-      })}
-    </div>
   );
 }

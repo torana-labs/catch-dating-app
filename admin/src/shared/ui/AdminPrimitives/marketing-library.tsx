@@ -265,20 +265,6 @@ export function AdminMarketingStackedSections({
   );
 }
 
-export function AdminMarketingGrid({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("marketing-grid", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function AdminMarketingPanel({
   className = "",
   ...props
@@ -336,20 +322,6 @@ export function AdminMarketingSectionHeader({
       <CatchText as="h3" variant="sectionTitle">{title}</CatchText>
       {meta ? <span>{meta}</span> : null}
     </header>
-  );
-}
-
-export function AdminMarketingEditGrid({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("marketing-edit-grid", className)}>
-      {children}
-    </div>
   );
 }
 
