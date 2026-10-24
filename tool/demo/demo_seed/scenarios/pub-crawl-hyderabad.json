@@ -128,9 +128,7 @@
         "selectedModuleIds": [
           "host_script",
           "micro_pods",
-          "social_missions",
-          "wingman_requests",
-          "decomposed_feedback"
+          "social_missions"
         ],
         "hostGoal": "Keep each group together between stops, so everyone has talked with their whole group before the last stop."
       },
