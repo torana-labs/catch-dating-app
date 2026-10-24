@@ -497,11 +497,6 @@
     width: 100%;
   }
 
-  .public-search {
-    grid-template-columns: 1fr;
-    min-height: 0;
-  }
-
   .claim-flow {
     padding-top: 96px;
   }

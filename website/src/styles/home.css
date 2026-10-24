@@ -121,20 +121,6 @@ h3 {
 
 /* ----------------------------------------------------- discovery/explore */
 
-.public-search {
-  position: relative;
-  z-index: 4;
-  display: grid;
-  max-width: 880px;
-  min-height: var(--catch-space-s16);
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: stretch;
-  border: var(--catch-stroke-hairline) solid var(--website-line-strong);
-  border-radius: var(--catch-radius-pill);
-  background: var(--website-surface);
-  box-shadow: var(--catch-elevation-card);
-}
-
 /* Event tickets: the app's signature material. */
 .public-event-grid {
   display: grid;
@@ -505,12 +491,6 @@ h3 {
 @media (min-width: 1180px) {
   .format-grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 639px) {
-  .public-search {
-    grid-template-columns: minmax(0, 1fr) auto;
   }
 }
 

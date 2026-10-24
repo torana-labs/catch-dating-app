@@ -11,7 +11,7 @@ import {usePendingRequestNavigationBlocked} from "../../pendingRequest";
 import {LiveStatus} from "./feedback";
 import {classNames} from "@catch/web-ui";
 
-export type SearchFormVariant = "organizer" | "public";
+export type SearchFormVariant = "organizer";
 
 export function ListingFormatRow({
   children,
@@ -140,5 +140,4 @@ export const ClaimRequestForm = forwardRef<
 
 export const searchFormClassNames: Record<SearchFormVariant, string> = {
   organizer: "organizer-search-form",
-  public: "public-search",
 };
