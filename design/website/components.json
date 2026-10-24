@@ -3416,6 +3416,107 @@
         "catch.network_image"
       ],
       "comparisonReason": "Shows a pre-rendered app capture whose PNG carries its own device frame, at its intrinsic size with a caption. catch.detail_media is an edge-to-edge hero photo with grading and a scrim; catch.graded_image and catch.network_image load and grade remote photos; catch.text only sets the caption's type roles."
+    },
+    {
+      "id": "shared_event_backdrop_image",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/media",
+      "source": "packages/web-ui/src/components/EventBackdropImage.tsx",
+      "exportName": "EventBackdropImage",
+      "css": [
+        "packages/web-ui/src/components/EventBackdropImage.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/EventBackdropImage.stories.tsx",
+        "exportName": "AllActivities",
+        "states": [
+          "activity-pigment",
+          "full-artwork",
+          "dense"
+        ]
+      },
+      "notes": "Website T4 under D18 (G6 activity cover). Twin of the Flutter member catch.event_card.activity_backdrop (Flutter EventBackdropImage): the activity's duotone ground and line pattern, drawn at its rendered size. Pure geometry and the server-side SVG live in activityArtwork.ts (@catch/web-ui/artwork); activityArtworkParity.test.ts pins both to the Flutter painter. Search aliases: ActivityCover, ActivityArtwork, EventCover, FallbackImage, PatternCover."
+    },
+    {
+      "id": "shared_event_thumbnail",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/media",
+      "source": "packages/web-ui/src/components/EventThumbnail.tsx",
+      "exportName": "EventThumbnail",
+      "css": [
+        "packages/web-ui/src/components/EventThumbnail.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/EventThumbnail.stories.tsx",
+        "exportName": "Photo",
+        "states": [
+          "photo",
+          "activity-fallback"
+        ]
+      },
+      "notes": "Website T4 under D18. Twin of the Flutter member catch.event_card.thumbnail (Flutter EventThumbnail): the event's uploaded photo, or EventBackdropImage when there is none or it fails to load. Never a stand-in photo. Search aliases: EventImage, EventMedia, EventPhoto, PosterImage."
+    },
+    {
+      "id": "shared_club_placeholder_cover",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "organizer_listing_canonical"
+      ],
+      "owner": "shared/media",
+      "source": "packages/web-ui/src/components/ClubPlaceholderCover.tsx",
+      "exportName": "ClubPlaceholderCover",
+      "css": [
+        "packages/web-ui/src/components/ClubPlaceholderCover.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/ClubPlaceholderCover.stories.tsx",
+        "exportName": "Card",
+        "states": [
+          "card",
+          "hero",
+          "long-name",
+          "compact"
+        ]
+      },
+      "notes": "Website T4 under D18 (G7 typographic organiser cover). Twin of the Flutter member catch.organizer_poster.artwork (Flutter ClubPlaceholderCover): the organiser's name and city over its activity artwork, initials when compact; deterministic per organiser. The Flutter artwork does not set type yet; converging it on this recipe is a follow-up. Search aliases: OrganizerCover, OrganiserCover, TypographicCover, ClubFallback, Monogram."
+    },
+    {
+      "id": "shared_club_cover",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "organizer_listing_canonical"
+      ],
+      "owner": "shared/media",
+      "source": "packages/web-ui/src/components/ClubCover.tsx",
+      "exportName": "ClubCover",
+      "css": [
+        "packages/web-ui/src/components/EventThumbnail.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/ClubCover.stories.tsx",
+        "exportName": "Photo",
+        "states": [
+          "photo",
+          "fallback"
+        ]
+      },
+      "notes": "Website T4 under D18. Same symbol as Flutter ClubCover (catch.club_cover); becomes its react record when that registry is free: the organiser's photo, or ClubPlaceholderCover when there is none or it fails to load. Never a stand-in photo or a grey box. Flutter binds a Club; the website binds the public listing's name, city and activity. Search aliases: OrganizerCover, OrganizerImage, ClubImage."
     }
   ]
 }
