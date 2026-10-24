@@ -61,9 +61,10 @@ selective rendering) are CAT-239, owned separately.
    content imports facts instead of typing numbers.
 6. **People come from cohorts.** Guests and hosts reference personas by id from
    the reviewed catalogs in `tool/demo/demo_seed/personas/*_personas.draft.json`.
-   India stories cast from `india-core-sales-personas-v1` (36 people, 18 women and
-   18 men; 21 in Mumbai, 4 each in Pune, Bangalore and Delhi, 2 in Hyderabad, 1 in
-   Indore). Names are fictional, and phone numbers use the reserved demo range
+   India stories cast from `india-core-sales-personas-v1` (68 people, 34 women and
+   34 men; 21 in Mumbai, 12 each in Pune, Bangalore and Delhi including Gurugram,
+   10 in Hyderabad, 1 in Indore), so each launch-format world can cast 10-14
+   locals. Names are fictional, and phone numbers use the reserved demo range
    `+91 90000 0xxxx`. Photos are planned slots until generated and uploaded, so
    captures show initials meanwhile.
 

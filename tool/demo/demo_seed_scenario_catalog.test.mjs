@@ -3,8 +3,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import {loadScenarioConfig} from "./demo_seed_scenario_catalog.mjs";
-import {demoWorldFacts, eventStateAt, validateDemoWorld} from "./lib/demo_world.mjs";
+import {listScenarioConfigs, loadScenarioConfig} from "./demo_seed_scenario_catalog.mjs";
+import {demoWorldFacts, eventStateAt, isDemoWorld, validateDemoWorld} from "./lib/demo_world.mjs";
 
 test("host demo scenario declares host sales proof coverage", () => {
   const scenario = loadScenarioConfig("host-demo");
@@ -56,6 +56,12 @@ test("scenario catalog rejects malformed proof coverage", () => {
 });
 
 // Demo world scenarios (schemaVersion 2): docs/plans/demo_world_scenarios_spec.md
+
+test("every demo world in the scenarios folder validates", () => {
+  // Loading validates each schemaVersion 2 world; a new world needs no test of its own.
+  const worlds = listScenarioConfigs().filter(isDemoWorld);
+  assert.ok(worlds.some((world) => world.id === "host-marketing-india"));
+});
 
 const trivia = loadScenarioConfig("host-marketing-india");
 const triviaEvent = "event-host-trivia-store-demo";
