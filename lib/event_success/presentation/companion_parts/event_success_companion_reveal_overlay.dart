@@ -245,8 +245,11 @@ class EventSuccessMarqueeImage extends StatelessWidget {
                     child: Transform.rotate(
                       alignment: Alignment.bottomCenter,
                       angle: angle,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(CatchRadius.pill),
+                      child: CatchSurface(
+                        duration: Duration.zero,
+                        tone: CatchSurfaceTone.transparent,
+                        radius: CatchRadius.pill,
+                        clipBehavior: Clip.antiAlias,
                         child: ColoredBox(
                           color: accent.withValues(
                             alpha: (0.32 + anticipation * 0.48) * spokeFade,

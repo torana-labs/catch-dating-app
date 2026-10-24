@@ -1,4 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class EventSuccessRevealProgressIndicator extends StatelessWidget {
@@ -12,8 +13,11 @@ class EventSuccessRevealProgressIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(CatchRadius.pill),
+    return CatchSurface(
+      duration: Duration.zero,
+      tone: CatchSurfaceTone.transparent,
+      radius: CatchRadius.pill,
+      clipBehavior: Clip.antiAlias,
       child: LinearProgressIndicator(
         minHeight: 7,
         value: progress.clamp(0, 1).toDouble(),

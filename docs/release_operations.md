@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.14.1
-updated: 2026-10-23
+version: 2.14.2
+updated: 2026-10-25
 owner: recursive_audit_loop
 status: active
 ---
@@ -67,11 +67,11 @@ before removing resources or claiming savings from the invoice.
 
 ## Firebase Environment Readiness
 
-The reusable backend Firebase promotion workflow installs its pinned source
-parser without lifecycle scripts and verifies affected targets before cloud
-authentication. The target-aware metadata preflight then runs after OIDC
-authentication and before Functions runtime dependency installation, Firebase
-CLI installation, or any backend mutation.
+The Deploy backend workflow installs its pinned source parser without lifecycle
+scripts and verifies affected targets before cloud authentication. Its deploy
+job builds Functions, replans after approval, authenticates, installs the cloud
+CLIs and materializes parameters. The target-aware metadata preflight then
+runs before any backend mutation.
 Hosting and explicit Remote Config/Extensions operations have separate owners:
 
 ```sh
@@ -83,9 +83,8 @@ node tool/firebase/check_environment_readiness.mjs \
 
 `tool/firebase/environment_readiness.json` owns required secret bindings, direct
 readers and Firestore TTL policies. Offline checks reconcile source declarations,
-consumers and binding intent. The command above inspects deployed state; Delivery
-first produces an approved-source candidate receipt and later compares it with
-deployed metadata. Projects resolve only through `.firebaserc`. Metadata commands
+consumers and binding intent. The command above inspects deployed state; `Deploy backend`
+runs it before each deploy. Projects resolve only through `.firebaserc`. Metadata commands
 describe projects and exact secret versions, project allowlisted Function fields,
 and read secret IAM/TTL policies; identity-specific checks also read IAM metadata.
 There is no apply mode or secret-payload access. See
@@ -96,8 +95,8 @@ Confirmed missing state exits `1`; authentication, authorization, unavailable
 tooling, or malformed metadata exits `2`; invalid invocation exits `64`. All
 non-zero results block deployment. Add a requirement in the same change that
 introduces a new `defineSecret`, TTL-dependent capability, or deploy-time
-project prerequisite. A missing prerequisite must fail before Functions runtime
-dependency installation; do not move this gate into Firebase predeploy hooks.
+project prerequisite. A missing or indeterminate prerequisite must fail before
+deployment; do not move this gate into Firebase predeploy hooks.
 
 ## Firebase Functions Deployment Parity
 
@@ -150,16 +149,6 @@ corresponding live workload, define its environment scope and monthly budget,
 run its focused Functions tests, deploy dev then staging then production, and
 verify both the Function and Scheduler job after each environment. Do not use a
 bare Firebase CLI deployment to bypass this gate.
-
-Delivery can still encounter an immutable CI package created before a Function
-became dormant. Package verification accepts only one of two exact target sets:
-all exports recorded by that historical source, or the same exports reduced by
-the current dormant policy. It then returns the reduced set for readiness and
-the current executor excludes the named dormant targets before batching;
-promotion may further narrow that authorized set using verified source dependencies.
-Every other missing, added, or unknown exact Function target remains a hard
-failure. This lets the queue drain without rebuilding an old artifact or
-recreating recurring infrastructure.
 
 ## Firebase Rules Deployment Drift
 
@@ -290,8 +279,8 @@ path, and invokes reusable validation workflows only for affected targets.
 Pull requests, merge queues, main pushes, and nightly full validation use the
 explicit `pr`, `merge_group`, `main`, and `nightly` graph modes respectively.
 Changes to the shared Harness control plane intentionally run every declared
-target. The graph explicitly owns backend-only Delivery, staging, rebaseline,
-package-verifier and source-review files: those changes run Functions,
+target. The graph explicitly owns the `Deploy backend` workflows and the
+backend package verifier: those changes run Functions,
 contracts, rules, policy and the affected Tools check closure without compiling
 unrelated clients. Files PR validation never executes run only their own Tools
 checks and policy: harness and CI tests, release, deploy and operations
@@ -342,8 +331,7 @@ incompatible proof fails before publication. Only this final plan receives the
 existing delivery artifact name, and Firebase packaging consumes its deploy
 groups and the same attempt's tested Functions build. Failed predecessors keep
 the earlier successful base; successful ones advance it. Required CI includes
-finalization, preserving the existing immutable delivery cursor chain while
-allowing test execution to overlap. Pull requests and nightly runs retain their
+finalization while allowing test execution to overlap. Pull requests and nightly runs retain their
 existing validation flow.
 
 Root Flutter unit/widget tests are selected by
@@ -539,15 +527,8 @@ they do not authorize a Firebase mutation. Only directly owned Functions,
 rules, index, or Storage-rules sources may emit their bounded deploy group;
 contract and Firebase configuration changes alone never grant mutation. After
 every selected validation lane passes, CI packages those explicit groups once,
-and Delivery promotes that exact SHA-, run-attempt-, and checksum-bound package
-instead of inferring deployment from validation lanes or rebuilding it.
-The Delivery workflow and its deploy helpers execute from the immutable
-`github.workflow_sha` control-plane commit. The older CI-approved source is
-checked out separately and is used only to verify the package's source-bound
-exports and configuration. Recovery therefore keeps the application payload
-byte-identical while still receiving reviewed fixes to the delivery machinery;
-checking out an old application commit must never reactivate its obsolete CI
-or deploy helpers.
+but no workflow promotes that package: `Deploy backend` deploys the exact
+`main` commit instead (see Deploy Backend).
 
 The app package-graph gate must also work in a clean checkout before
 `flutter pub get`. It validates governed native-package declarations directly
@@ -566,8 +547,8 @@ The current workflows are:
 | `.github/workflows/contracts-ci.yml` | Validates the `contracts/` schema source of truth: source validity, generated-output freshness, schema/type boundaries, path literals, and rules semantics. |
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
-| `.github/workflows/delivery.yml` | Ordered backend delivery entrypoint. Authorizes a successful same-repository `main` CI run and promotes its exact package through dev and policy-selected production. |
-| `.github/workflows/_firebase-promote.yml` | Reusable environment adapter that verifies provenance before authentication, resumes ordered stages, and waits for deployed Firestore indexes to become ready before dependent stages continue. |
+| `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod after one `prod` approval, staging monthly. See Deploy Backend. |
+| `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the `deployed/<env>` tag, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, rules drift check, then the tag moves forward. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
 | `.github/workflows/_web-hosting-promote.yml` | Downloads one Hosting artifact by immutable id, installs the pinned Firebase CLI before credentials, verifies the GitHub digest and every packaged byte, then promotes without installing source dependencies, rebuilding frontend bytes, or rematerializing organizer data. |
@@ -725,9 +706,9 @@ only mobile signing, Maps, App Store Connect, and Play-publisher credentials.
 The producer has a matching fail-closed ref guard. Store mutation is isolated in
 the exact promoter, whose four role/platform targets each have their own bounded
 non-cancelling queue. Every authorized iOS target is dispatched automatically;
-manual dispatch remains a recovery surface. `prod-backend` is main-only and
-accepts only the reusable Firebase promoter called by the automatic Delivery
-workflow. Its OIDC provider binds the immutable repository and owner IDs, ref,
+manual dispatch remains a recovery surface. `prod-backend` served only the
+retired Delivery workflow and is now unused; `Deploy backend` deploys prod
+through reviewer-protected `prod`. The `prod-backend` OIDC provider binds the immutable repository and owner IDs, ref,
 environment, caller workflow, reusable workflow, and automatic event type; both
 workflow paths are compared with the token's own repository name, never a
 hardcoded one. It reuses the existing deployment identity; it does not add
@@ -750,29 +731,8 @@ approval. Non-no-op Functions source now retains protected `prod` review after
 dev delivery, including older source whose historical approvals cannot satisfy
 the unchanged helper's current reviewer-protection check.
 
-For Functions-only packages, `tool/ci/backend_source_review.mjs` verifies the
-merged PR, successful pre-merge CI, required-reviewer approval history, completed
-review job, and equality of the reviewed PR tree with the exact packaged source
-tree. Delivery and the promoter independently repeat this read-only verification
-before authentication. The client pins REST API `2022-11-28` because this proof
-requires the exact `merge_commit_sha` field. GitHub's
-[2026 API contract removes that field from all PR responses](https://docs.github.com/en/rest/about-the-rest-api/breaking-changes?apiVersion=2026-03-10).
-The CLI regression exercises version-sensitive HTTP responses; API upgrades
-must preserve exact merge identity before changing this pin.
-Evidence that is missing, expired, unavailable or bound
-to different source retains `prod` review. Source pattern matching cannot prove
-that business logic is free of permission changes and is not used as approval.
-Verified Functions no-ops need no runtime approval. `backend-review` retains no
-secrets, variables or cloud federation. Historical GitHub approval records do
-not bypass the helper's current environment protections. Delivery and the
-promoter keep that safeguard; removing the PR source gate does not authorize
-automated CI to select `prod-backend` for a runtime mutation.
-Both production approval paths keep the same `firebase-prod` lock and production
-cursor. Dev and production drain independently: dev release B may run while
-production release A is waiting for review or deploying. Each environment still
-runs one rollout at a time and applies every pending source in order. Production
-requires the exact source attempt and package that completed dev; advancing dev
-never changes the package awaiting production.
+Every `Deploy backend` prod run waits for a `prod` reviewer. Dev and prod run
+independently, one deploy per environment at a time.
 
 During cutover, reviewer-protected `prod` may still hold duplicate mobile
 secrets as rollback material. The mobile workflow does not read them. Delete
@@ -934,7 +894,7 @@ the normal release process. The selected environment must have exactly one
 There is no fallback to the production site when dev/staging are unmapped.
 Set the non-secret GitHub environment variable `FORM_DOMAIN_CNAME_TARGET` to
 that site's `<site-id>.web.app` in every environment that promotes its backend
-(`prod` and `prod-backend` for production). The promotion provenance and deploy
+(`prod` for production). The promotion provenance and deploy
 copy both receive this value; blank keeps manager-callable reservations disabled.
 This command does not change GitHub variables or deploy anything.
 
@@ -1019,8 +979,7 @@ reservation and DNS proof after coordinating remaining provider/DNS ownership.
 
 `ALGOLIA_APPLICATION_ID` and `RAZORPAY_PUBLIC_KEY_ID` identify the provider
 account; they are plain Firebase `defineString` parameters. Store them as
-GitHub environment variables for `dev`, `staging`, `prod`, and `prod-backend`
-(the last two use the same production values). The backend workflow writes
+GitHub environment variables for `dev`, `staging` and `prod`. `Deploy backend` writes
 validated values into the disposable Functions `.env.<project-id>` before
 Firebase discovers its parameters. Missing or invalid IDs fail deployment.
 
@@ -1329,6 +1288,9 @@ When it runs:
 - **Prod:** deploys the same commit after a `prod` environment reviewer
   approves, but only when prod has something to receive. A merge with nothing
   to deploy never asks for approval.
+- **Staging:** refreshes on the first of each month at 02:17 UTC. Like a push,
+  a scheduled run skips an environment without a deployed tag; only a manual
+  dispatch may bootstrap it.
 - **One deploy per environment at a time.** Newer runs wait, and GitHub keeps
   only the newest waiting run. Each run deploys everything since the tag, so
   skipping intermediate commits loses nothing.
@@ -1341,192 +1303,37 @@ The next run redeploys whatever changed since the tag, which is safe. Recovery
 is fix-forward: merge the fix or re-run the workflow. Rollback follows the
 target-specific steps in this document; the job never reverses remote state.
 
-`Delivery`, `Backend Rebaseline`, `Backend Staging Refresh` and the one-off
-backend release workflows are superseded by this job:
+Function selection works at module granularity:
+- Each exported Function redeploys when any module it transitively imports
+  changes. Several Functions defined in one file therefore move together.
+- Whole-declaration `import type`/`export type` edges are ignored, because
+  TypeScript erases them; inline type specifiers stay conservative.
+- Generated validators import individual schema modules, so a schema change
+  selects only its consumers.
+- Changes to runtime dependencies, build configuration, global initialization or
+  runtime assets, and any analysis the planner cannot complete, select every
+  Function.
 
-- `selective-backend-release`
-- `host-acquisition-release`
-- `host-deletion-release`
-- `host-deletion-indexes`
-- `host-store-rules-release`
-- `wedding-phone-import-release`
-- `website-review-index`
-- the CAT151 receipt release
+Index deploys never receive `--force`, so live composite indexes that are not in
+`firestore.indexes.json` are never deleted. Prod keeps 28 such earlier indexes.
+Out-of-band drift is repaired with a manual `full` run, not assumed fixed by an
+incremental one.
 
-Do not dispatch them. They and their sections below are deleted after the first
-successful prod run of `Deploy backend`.
+`Deploy backend` replaced several older paths, which were deleted on
+2026-10-24 after its first successful prod run (`deployed/prod` at `bd52e13cd`):
+- the artifact-cursor `Delivery` pipeline;
+- `Backend Rebaseline`;
+- `Backend Staging Refresh`;
+- the one-off backend release workflows: selective release, Host acquisition,
+  Host deletion and its indexes, Host store rules, wedding phone import, website
+  review index, and the CAT151 receipt release.
+
+Their source and runbook sections remain in Git history before that deletion.
 
 ## CD Policy
 
-Staging is refreshed independently on the first day of each month at 02:17 UTC
-(07:47 IST), or manually through `Backend Staging Refresh`. That main-only
-workflow validates a full current snapshot with the Functions, contract/index,
-and rules lanes, then promotes their exact tested package only to staging.
-It does not write the production cursor or block routine releases. Its separate
-workflow lock and the shared per-environment promotion lock prevent overlapping
-staging mutations. Start a fresh refresh instead of partially rerunning it.
-
-> Superseded by [Deploy Backend](#deploy-backend); kept until the old
-> workflows are deleted.
-
-Firebase backend delivery is one ordered promotion chain. After a successful
-same-repository `main` push, CI packages only the backend groups authorized by
-the exact impact plan. `Delivery` verifies that CI-produced package and promotes
-the same bytes through `dev`, then production; production waits for dev to
-finish. The source review policy described under GitHub Environments And
-Auth selects `prod-backend` for explicitly reviewed Functions-only source and
-verified Functions no-ops, or reviewer-protected `prod` for the remaining changes. Neither
-path rebuilds or changes the approved artifact.
-
-Functions packages retain their full immutable CI-authorized target set. Before
-promotion, the current control plane derives an execution subset from the exact
-base/source Git objects using TypeScript imports and re-exports. A changed
-module selects each exported function that transitively depends on it; new or
-retargeted entrypoint exports are included. Selection is at module granularity,
-so multiple functions implemented in one file move together. Test-only changes
-can produce a verified Functions no-op without invoking Firebase with an empty
-or broad selector. Every execution plan is recomputed before mutation.
-
-Whole-declaration `import type`, `export type`, and type-only import-equals
-edges are excluded because TypeScript erases them. Inline type specifiers stay
-conservative because compiler settings can preserve module evaluation.
-Generated Functions validators import individual schema modules; runtime
-imports of aggregate schema inventories are rejected by the contract boundary
-check. A schema change therefore selects its actual consuming modules. The
-shared validation engine remains a real dependency of all its consumers.
-
-Changes to runtime/dependency/build configuration, global initialization or its
-dependencies, runtime assets, and uncertain module analysis keep the full
-CI-authorized set. Bootstrap, rebaseline, and monthly staging snapshots are
-always full. Dormant targets remain excluded, historical package bytes remain
-unchanged, and the ordered cursor continues to establish the deployed base.
-Out-of-band drift is repaired with an explicit full snapshot, not assumed fixed
-by an incremental release. The job log reports the selected targets and reason.
-
-The backend stages inside each environment are ordered
-`firestore-indexes` → `functions` → `firestore-rules` → `storage-rules`, omitting
-groups the impact plan did not authorize. The index stage is not complete until
-every packaged composite index reaches `READY`. Normal delivery is therefore
-ordered from dev through policy-selected production. Store, Hosting, and app
-releases retain their independent owners.
-
-Manual `Delivery` dispatch is bounded recovery, not an arbitrary deploy path.
-
-The one-time `One-Time Selective Backend PROD Release` workflow is a separate
-operator path for the audited CAT52 source `656f093d1910afdbe4d93d31565d1782c39aab63`.
-It requires a main-branch dispatch with that exact SHA, an operator reason, and
-the explicit four-Function/five-index confirmation. Its promotion job uses the
-reviewer-protected `prod` environment and existing GitHub OIDC deploy identity.
-The protected job requires a recorded approval by a configured human reviewer;
-an admin bypass without that approval is insufficient.
-It verifies the successful CI producer, immutable package and its historical
-base SHA, the accepted PROD checkpoint, unchanged live serving identities, and
-the additive composite-index and unchanged field-override/TTL contract before
-mutation. Read-only PROD metadata on 2026-10-05 showed all 307 accepted
-composite indexes and 23 source field overrides present, plus 28 earlier
-composite indexes and one TTL override outside the source file. The verifier
-pins those retained configurations by names-only hashes and requires them
-unchanged before and after; the index deploy runs without `--force`, so they
-are not deleted. The execution selector contains
-only `getOrganizerFormResponseDetail`, `listOrganizerAttentionItems`,
-`listOrganizerFormResponses`, and `submitOrganizerFormResponse`, after the five
-new composite indexes. The final receipt records four candidate deployments
-and 574 retained baseline deployments. It does not publish a full-source cursor,
-claim that all Functions moved, or synthesize a DEV completion receipt. If the
-live baseline or index inventory has drifted, stop and review that state; do
-not broaden the selector. This workflow's OIDC identity is independent of
-local Firebase CLI login state.
-
-The manual `Delivery` recovery dispatch selects `environment=dev|prod` and accepts only the id and full SHA of that
-environment's oldest pending successful same-repository `main` CI attempt plus
-a terminal non-success Delivery run id and attempt. Production recovery also
-requires that exact attempt's completed dev receipt. If dev has not completed,
-recover dev first and then repeat the protected production recovery; an automatic
-wakeup cannot replace the operator's recovery authorization. An initial cutover
-fence fails a manual request visibly so it can be retried after the older worker
-completes. The prior run must contain a source-, base-, package-, and
-provenance-digest-bound recovery authorization written before promotion. It
-restores a matching checkpoint when present and restarts that same verified
-package at stage one when the terminal attempt ended before checkpoint
-publication. It cannot rebuild a branch, borrow an unrelated failed run,
-broaden the authorized targets, or substitute newer workspace contents.
-The original package and its pristine extracted tree remain byte-verified and
-immutable. A separate deploy copy may remove a non-vector one-field composite
-index that Firestore cannot create, and only after the current control plane no
-longer declares that exact index. It may also retain only the first occurrence
-of a repeated complete index definition whose serialized object is identical,
-preserving every property, field order and field override. Narrow field-only
-signatures cannot authorize this removal. These deterministic normalizations
-change no query capability: built-in single-field indexes own the obsolete
-shape, and one retained composite provides the repeated definition. All other
-packaged bytes and stages remain bound to the original CI authority.
-
-Before each stage, artifact promotion refreshes main and verifies both the
-pinned control-plane commit and package source remain ancestors of it. Ordinary
-ordered artifacts and independent staging snapshots then use the executor's
-explicit older-ref option: an unrelated newer main commit must not interrupt
-an already authorized immutable package. Rebaseline additionally requires exact
-current-main equality at every stage and does not enable that option. Direct
-local deployment keeps the default stale-checkout refusal. This does not permit
-queue skipping, package substitution, or source outside main history.
-
-`Backend Rebaseline` is the exceptional cumulative-snapshot lane for an
-explicitly approved stale-queue recovery. It is manual-only. Its wrapper holds
-both `backend-delivery` (production) and `backend-delivery-dev` from authorization
-through snapshot completion, so neither queue can select work against a partially
-applied baseline. It accepts only the exact current `main` SHA plus a single-line operator reason and an affirmative all-backend
-confirmation. It restores the latest verified v4 cursor, binds the current
-successful `main` CI authority, and uses the required Harness graph to select
-exactly Functions, Firestore indexes, Firestore rules, and Storage rules. It
-then reruns the Functions, contract/index, and rules validation lanes and
-packages their exact tested output in the rebaseline run; it does not borrow
-or rebuild an older pending backend package.
-
-The `target_environment` input defaults to `dev`, including reusable calls that
-omit it. Authorization validates `dev|prod` and binds the selected target to
-its outputs and immutable rebaseline plan. A DEV-only request promotes the full
-snapshot to `catchdates-dev`, then finishes: both the production job and the
-cursor/drain finalizer are ineligible regardless of live environment review
-settings. Its run result, immutable package provenance, and DEV checkpoint are
-deployment evidence; it does not publish an ordinary DEV completion receipt,
-advance either delivery cursor, or drain the pending queue. Do not treat a
-successful DEV-only snapshot as a production baseline or enable queue draining
-on that basis.
-
-Only an explicitly approved `target_environment: prod` request follows the
-ordinary ordered promotion path through `dev` and protected `prod`. Later
-production approval requires a new explicit production-scoped request with
-fresh exact-current-main authority and validation; rerunning a DEV-only request
-cannot expand its scope. Existing production review requirements remain in place.
-Every environment additionally
-requires the package source to remain the exact live `main` head. Only a
-successful production promotion may publish a normal v4 delivery cursor for
-the current successful `main` CI authority; that cursor supersedes the covered
-pending CI window without deleting its artifacts. Dev resumes from the greater
-verified source position of this production cursor or its own completed dev
-receipt. Rebaseline does not delete
-Firestore documents, Storage objects, Extension-owned Functions, or
-environment-only Functions. Legacy data and API retirement remains a separate
-contract migration with its own read, write, rules, and deletion sequence.
-
-When no verified baseline exists, automatic dev selection has a separate,
-fail-closed bootstrap rule: it may select only the latest successful immutable
-CI authority whose source SHA is the live `main` head, and that authority must
-contain an actual backend package. A no-op current head, a successful ancestor,
-a branch artifact, or selection while a baseline exists cannot use this rule.
-The first successful dev completion explicitly marks this bootstrap. Production
-must promote that exact receipt and package, even if main or dev has advanced
-since then; it cannot select a newer bootstrap independently. A missing or
-expired original bootstrap receipt fails visibly. After production publishes its
-baseline, ordinary oldest-pending production order applies.
-
-The promotion process also supplies a fixed disabled profile for the
-non-secret Meta WhatsApp parameters during Functions discovery. This lets an
-older verified package deploy non-interactively without inventing live Meta
-credentials: both identifier values contain only whitespace, which the
-source-owned configuration check trims to empty, the graph version remains
-`v23.0`, and the newer explicit gate remains `false`. Secret values still come
-only from Secret Manager, and the recovery path never enables the provider.
+Backend promotion follows [Deploy Backend](#deploy-backend). Store, Hosting
+and app releases keep their own owners and workflows.
 
 ### WhatsApp provider activation
 
@@ -1858,7 +1665,7 @@ the exact production bytes, and `_web-hosting-promote.yml` downloads that
 artifact by id and digest without rebuilding it. Keep only Hosting/OIDC
 variables in that environment; App Store
 Connect and mobile signing secrets are owned by `prod-mobile`; backend
-production uses the bounded `prod-backend` path or reviewer-protected `prod`.
+production deploys through reviewer-protected `prod`.
 Temporary mobile
 rollback duplicates in `prod` follow the cutover cleanup above.
 
@@ -1893,7 +1700,7 @@ event-scoped registration callable; verify its reCAPTCHA/App Check exchange and
 phone-provider state independently. Creating the Hosting site does not prove
 any of these console or DNS gates.
 
-Backend `Delivery` never deploys Hosting or forwards Vite variables. The
+`Deploy backend` never deploys Hosting or forwards Vite variables. The
 marketing, Host, and admin workflows own their production Hosting builds and the
 `prod-hosting` environment described above. `VITE_GTM_ID` remains optional
 until the production GTM container exists; paid-acquisition readiness still
@@ -1916,28 +1723,11 @@ fails unless that exact current attempt owns its planner artifact and, when
 applicable, backend package. Use **Re-run all jobs** so the successful attempt
 publishes a complete immutable artifact set.
 
-If backend delivery ends in `failure`, `cancelled`, `timed_out`, `stale`,
-`action_required`, or `startup_failure`, do not use GitHub's re-run-job or
-re-run-failed-jobs controls: they may reuse successful prerequisite outputs from
-an older attempt.
-Start a fresh manual `Delivery` dispatch from `main` with the exact oldest
-pending successful CI run id and SHA plus that terminal non-success Delivery run
-id and attempt. The fresh run re-authorizes queue position and verifies the
-prior run's exact source/package authorization. When the prior run stopped
-before publishing its first checkpoint, recovery starts the same verified
-package at stage one; otherwise it restores the matching environment/project
-checkpoint. Successful, neutral, skipped, or nonterminal runs cannot authorize
-recovery. A source fix needs a new PR, CI run, and package; do not use recovery
-to rebuild or redeploy mutable workspace state. The logical `functions` target
-still expands to explicit deployment-eligible Function names so non-interactive
-promotion does not prompt to delete unrelated legacy live functions or recreate
-a dormant scheduled Function.
+If a `Deploy backend` run fails, fix forward: merge the fix or re-run the
+workflow. The `deployed/<env>` tag only moves after success, so the next run
+redeploys everything since the last successful deploy.
 
 ## Exact-Artifact Promotion And Resume
-
-> For the Firebase backend this is superseded by
-> [Deploy Backend](#deploy-backend), which deploys from an exact commit instead
-> of a CI artifact.
 
 Validation and deployment are separate trust decisions. A green CI run proves
 the source and checks that ran in that job; it does not prove that bytes rebuilt
@@ -1952,17 +1742,13 @@ The reusable delivery contract binds:
 - artifact basename, byte length, and SHA-256 digest; and
 - the ordered stages permitted for that artifact.
 
-The Firebase adapter additionally binds the Harness plan's base SHA and exact
-deploy groups so the packaged stage order cannot differ from the plan CI
-validated.
-
 The final `Required CI` step publishes `catch.ci-delivery-authority/v3` only
 after that exact attempt owns its planner artifact and, when deployment is
 needed, backend package. The authority binds the numeric CI workflow id,
 workflow-scoped run number, run id, attempt, source SHA, and each referenced
-artifact's immutable id, name, and GitHub SHA-256 digest. Delivery downloads
-the referenced plan and package by artifact id and independently verifies the
-downloaded archive digest before extraction.
+artifact's immutable id, name, and GitHub SHA-256 digest. A consuming release
+workflow downloads the referenced artifacts by id and independently verifies
+the downloaded archive digest before extraction.
 
 Before using deployment credentials or mutating remote state, a consuming job
 must receive the expected source SHA, run id, and run attempt from trusted queue
@@ -1973,101 +1759,17 @@ run by itself is not artifact identity.
 
 Multi-stage delivery uses an ephemeral checkpoint bound to the provenance
 manifest digest, source SHA, source run and attempt, artifact digest, and an
-immutable target scope. Firebase scopes include the environment and project id,
-so a dev checkpoint cannot authorize staging or production. Checkpoints form an
+immutable target scope, which includes the environment, so a dev checkpoint
+cannot authorize staging or production. Checkpoints form an
 ordered prefix of the manifest's stages. A stage is complete only after its
 documented remote postcondition passes. On retry, the consumer verifies the
 same artifact and checkpoint binding, identifies the first incomplete stage,
 and resumes there. It cannot skip ahead; replay of an already-passed stage is
 idempotent and does not rewrite prior proof.
 
-Before any selected backend stage mutates, the Firebase adapter preflights the
-whole plan's local Functions helper protocol and runtime imports, project aliases,
-permission-sync command, source export/secret parsing, and exact deployment
-batches. Historical packages retain their original supported callable scope.
-
-Functions deployment and postconditions are separate subphases. Every exact
-Firebase batch must return success before the adapter records deployment proof;
-callable IAM sync and source-bound live parity must still pass before the
-Functions stage is complete. A batch failure stops later batches and cannot be
-converted into success by logging or a subsequent shell command.
-
-The portable `catch.delivery-checkpoints/v2` file remains unchanged. Its existing
-checkpoint artifact may also contain `functions-deployment.json` with schema
-`catch.firebase-functions-deployment/v1`. This companion binds the package and
-source attempt, environment/project scope, base SHA, exact target set, and a
-SHA-256 hash of the materialized project params file. It records every selected
-Function's ACTIVE generation-two deployment: latest successful build, resolved
-Storage source generation, update time, service, and revision. An independent
-Cloud Run read must show the same service UID/generation, fully observed ready
-state, latest created/ready revision, and all untagged traffic on that revision.
-The companion stores hashes and deployment identities, never params or tokens.
-
-Explicit recovery independently verifies the historical Delivery attempt,
-artifact id, name and archive digest, and both allowlisted JSON entries before
-writing either restored file. It never extracts archive paths. At the first
-incomplete Functions stage, the adapter compares the companion to the current
-verified package, exact materialized inputs and fresh Functions/Cloud Run state.
-Only an exact match permits `--functions-postconditions-only`, avoiding another
-Cloud Build while repeating IAM sync and parity. This local executor option does
-not itself authorize recovery; the verified workflow owns that decision.
-
-An older v2 checkpoint with no companion replays the full Functions stage. A
-missing target, partial deployment, changed source/configuration, or unexpected
-live deployment/serving drift fails explicitly before permissions or deployment
-mutate. Do not synthesize a companion from logs or delete a mismatching proof to
-bypass this stop. Resolve the mismatch through an exact source-bound recovery
-review. The companion has the checkpoint's existing retention and does not
-advance either environment's delivery position or replace successful dev proof.
-
-Provenance, source-bound recovery authorizations, completion receipts, cursors,
-and checkpoints are CI or bounded recovery artifacts, not tracked repository
-state. Writes must be atomic so interruption cannot publish partial proof.
-Production retains the `catch.backend-delivery-cursor/v4` contract. Dev publishes
-`catch.backend-dev-completion/v1` only after the whole dev promoter succeeds, or
-a verified true no-op is authorized. The receipt binds the exact CI authority,
-plan, package, raw provenance digest, source attempt, base SHA and successful dev
-worker. Production selection and the credential-bearing promoter independently
-verify that receipt against historical CI and dev jobs before authentication.
-A newer CI rerun cannot substitute different bytes for the completed dev attempt.
-
-Historical run identity uses the exact repository, workflow path and numeric
-workflow id, run id and attempt; GitHub's custom run title is not an identity
-field. Cursor and recovery readers share the same verifier. Only the two
-explicit cursor-producing workflow paths are eligible, and recovery accepts
-Delivery alone. Pausing or renaming a workflow does not invalidate its proof;
-deleting and recreating it changes its numeric generation and is rejected.
-
-The dev selector uses the greater verified dev or production source position;
-the production selector advances only from its own cursor. Per-environment drain
-locks cover selection, deployment and completion publication. The existing
-`firebase-dev` and `firebase-prod` locks also cover all reusable promoters. Before
-the first dev receipt exists, dev waits for older nonterminal legacy Delivery
-workers and any rebaseline. An older independent production worker is exempt
-only after its exact referenced control-plane source proves the split protocol;
-its display title alone is insufficient. Once this first-dev fence clears,
-selection checks the production cursor catalogue again. A legacy snapshot that
-finished during the check causes one fresh, independently verified selection;
-repeated change stops visibly instead of deploying from a stale base.
-
-A verified completion remains authoritative if its later wakeup dispatch fails
-or the originating run is subsequently rerun. One artifact-catalogue snapshot
-selects the greatest cursor and oldest pending CI authority within the exact CI
-workflow id; only selected artifacts and historical attempts are downloaded and
-verified. Dev completion wakes both lanes, while a lane waiting for its peer may
-send one bounded wakeup; peer wakeups cannot repeat without progress. An expired
-intermediate dev receipt fails visibly when later verified dev progress exists.
-The selected plan's base SHA must equal that environment's prior source SHA, so
-missing or expired intermediate authority also fails rather than skipping work.
-
-CI workflow ids define queue generations because GitHub run numbers restart if
-a workflow is deleted and recreated. A cursor from another or legacy generation
-causes a hard stop. Review the intended backend baseline and explicitly remove
-or migrate the old cursor artifacts before restarting; never compare run numbers
-across workflow ids.
-Backend plans, packages, authorizations, dev completions, cursors, and checkpoints retain for 90
-days, covering GitHub's 30-day approval and rerun window without turning source
-control into a delivery-state database.
+Provenance, checkpoints and recovery authorizations are CI or bounded recovery
+artifacts, not tracked repository state. Writes must be atomic so interruption
+cannot publish partial proof.
 
 Resume is not rollback. Resume continues promotion of the same verified bytes.
 Rollback follows the target-specific instructions in this runbook and may use
@@ -2080,8 +1782,8 @@ The shared delivery primitive verifies identity, integrity, order, and resume
 state. Each release owner still supplies environment readiness, credentials,
 approval, concurrency, stage postconditions, smoke tests, and mutation policy.
 Production permission is never inferred from a valid digest. The Firebase
-backend consumes this contract through `delivery.yml` and
-`_firebase-promote.yml`. Admin and Marketing Hosting consume it through
+backend no longer uses this contract: `Deploy backend` deploys an exact
+commit (see Deploy Backend). Admin and Marketing Hosting consume it through
 `_web-hosting-build.yml` and `_web-hosting-promote.yml`. Mobile release routing,
 signed package production, and store promotion use separate exact-target
 producer and promoter workflows; the promoter cannot rebuild or resign.
@@ -2318,8 +2020,8 @@ complete for each target environment (`dev`, `staging`, and `prod`):
   real Razorpay webhooks. As of 2026-06-26, `dev`, `staging`, and `prod` each
   have an enabled placeholder Secret Manager version so unrelated Functions
   deploys are not blocked while Razorpay account approval is pending.
-- [ ] Merge the backend change and require `Delivery` to promote the exact
-  CI-produced package; do not use a local rebuild for the normal rollout.
+- [ ] Merge the backend change and let `Deploy backend` deploy it, approving
+  the prod run; do not use a local deploy for the normal rollout.
 - [ ] Confirm packaged indexes reached `READY`, then confirm the Functions phase
   and its automatic callable-invoker sync passed before Firestore or Storage
   rules advanced.
@@ -2353,7 +2055,7 @@ Wedding phone import remains held in production by
 access use this gate. Dev and staging retain the native review flow for
 validation. Remove the production hold only in a reviewed follow-on after:
 
-1. Ordered Delivery proves the merged membership, guest-source authority and
+1. `Deploy backend` proves the merged membership, guest-source authority and
    manifest-import Functions and Firestore rules in dev and production.
 2. A synthetic wedding proves current work access, native-selected contact
    preview and request-bound commit/replay against the deployed contract,
@@ -2361,7 +2063,7 @@ validation. Remove the production hold only in a reviewed follow-on after:
 3. The release owner accepts that exact backend compatibility evidence before
    enabling phone import in a production Host binary.
 
-Production backend baseline/rebaseline, data migrations or resets, provider
+Production full backend deploys, data migrations or resets, provider
 activation, and real contact/message operations require their own approval;
 merging the held client does not authorize those actions. Callable reachability
 alone does not prove the manifest-import wire contract is compatible.
@@ -2549,7 +2251,7 @@ only the legacy `events` indexes (`status/startTime` and `clubId/startTime`).
 Deploy `firestore:indexes` and wait for every discovery index to become
 `READY` before enabling an app build that relies on the direct event query.
 
-Require Delivery to promote indexes and then Functions before applying any
+Let `Deploy backend` deploy indexes and then Functions before applying any
 backfill. Apply the backfill only after the index stage reports `READY`, the
 Functions stage passes, and the dry-run counts for that environment are
 reviewed. The direct helper below is for bounded operator recovery only:
@@ -3368,186 +3070,3 @@ programs; allowed-HTTPS proxy placeholders cannot supply a compile-time SDK key.
 Do not distribute PROD secrets to developer VMs or publish a key-used filesystem.
 Changes to saved setup configuration require separate coordination; source helper
 changes must first pass offline fake-input tests.
-
-## Immutable PR596 Intake release
-
-The existing selective backend caller supports `intake-pr596` with explicit
-`confirm_intake_pr596` and a single-line reason. It binds accepted source
-`ceab9d8abf5de7ad383260739032e0e1603d45ff`, successful main CI37777899024
-attempt1, artifact11551444925 and its fixed ZIP/provenance digests. The reusable
-promoter's separate Intake job retains the `backend-delivery` caller lock,
-non-cancelling `firebase-prod` lock, protected `prod` environment and recorded
-approval by a configured human reviewer before cloud authentication.
-
-The job verifies the complete immutable package, exact reviewed backend source
-compatibility, parameter coverage and target readiness. It invokes the checked
-Firebase wrapper once for `functions:adminListIntakeOperations`. It has no force,
-retry, IAM-repair, restore, DEV-eligibility, cursor or full-baseline route.
-Read-only snapshots bind every retained Function and Extension, indexes, field
-overrides, rules, flags and project IAM. Completion requires selected runtime,
-configuration and public invocation proof plus an empty unauthenticated401
-probe. Existing-authority authenticated Admin pagination remains a separate
-acceptance check; this route grants no new user, import, send or data-repair
-authority. Any failed metadata or postcondition stops the job and retains its
-isolated selected-only evidence. Source drift requires a new reviewed profile.
-
-## Immutable CAT151 booking writer release
-
-The selective backend caller's `cat151-booking` profile pins PR621 source
-`24eab314944b20ce3035756bb5d08cfbf3007f4d`, successful main CI38895481991
-attempt1 and artifact12044213158. The executable profile names fourteen existing
-Functions that reach the shared booking writer. It excludes dormant targets,
-indexes, rules, IAM repairs, flags, provider activation and application data.
-This fixed release does not use the generic fingerprint selector: the candidate
-contains a known unresolved dynamic Operations import. The reviewed fixed list
-is the scope authority; this is not proof of a full backend baseline or permission
-to drain the disabled Delivery queue. Source/package hashes and observed predecessor
-identities are enforced by `tool/ci/cat151_booking_release.mjs`. Current-main
-compatibility permits only the exact reviewed PR622 Sales catalog/test blobs;
-other backend source drift requires a new reviewed profile.
-
-DEV must finish first. PROD consumes the exact DEV receipt and requires approval
-by a configured human reviewer in `prod` before cloud authentication. Both stages
-retain the existing outer backend-delivery lock and per-environment Firebase lock.
-The job verifies the immutable package twice, preserves selected runtime settings,
-provider parameters and numeric secret bindings (including PROD webhook secret
-version2), and snapshots all unselected Functions, Extensions, indexes, field
-overrides, rules, Remote Config and project IAM. Any drift stops the job; it has
-no force, automatic deployment retry, rollback, broad deployment or full-baseline/cursor route.
-
-A completed deployment receipt is source/serving proof only. Booking and refund
-acceptance still requires a separately budgeted synthetic TEST transaction and
-readback demonstrating schema-valid booking, verified payment and full refund
-without manual field or refund reconciliation. Existing refunded transactions
-and earlier webhook delivery evidence do not prove that new booking flow.
-
-The `cat151-booking-prod-recovery` profile is limited to the predeployment
-Firebase CLI installation failure in run38910329785 attempt1. Before cloud
-authentication it verifies that exact failed run and its skipped deployment,
-then validates the pinned successful DEV artifact12051195096 and receipt bytes.
-It does not redeploy DEV, relax PROD predecessor checks, or accept arbitrary
-recovery runs. A new configured human `prod` approval is required. Only Firebase
-CLI installation has bounded retries; the Function deployment command remains
-single-shot. This recovery cannot resume a partial or completed PROD deployment.
-
-### Bounded CAT151 order receipt follow-up
-
-The `cat151-order-receipt` profile deploys only `createRazorpayOrder` from
-PR626 source `bbff52defd3c0dfb8df7c78c336c6549af7df47a`, successful main CI
-38931076239 attempt1 and artifact12059462962. The provider rejected
-long event receipts before order creation; the source fix bounds them to forty
-ASCII characters while retaining the full booking ownership notes.
-The package delivery baseline is `6817b248294ccb8e0084e7d3cac9161d058fe70d`,
-read from its verified `delivery-plan.json`; it is distinct from the source
-commit parent. Package verification and deployment proof bind that same baseline.
-
-`tool/ci/cat151_receipt_release.mjs` pins the immutable package and exact
-predecessors. `_cat151-receipt-promote.yml` runs DEV first and binds its receipt
-to the same run's human-reviewed PROD job. Choose this release kind with every
-other scope confirmation false and no recovery run. The profile admits no
-backend drift, arbitrary source/target inputs, recovery, deployment retry or
-baseline cursor. It preserves all unselected Functions, the completed booking
-schema deployment, webhook configuration, provider parameters, numeric secret
-versions, IAM, rules, indexes and flags through full before/after comparisons.
-The separately approved replacement native TEST checkout and full refund remain
-required acceptance; the rejected attempt is retained and is not reset.
-
-## Protected CAT165 program-only rollout profile
-
-The `cat165` choice in the existing selective backend caller prepares an exact
-62-Function projection and one additive index. Source preparation is not deploy
-authority or full CAT165 privacy acceptance. The source owner remains accountable
-for the implementation, the existing runtime owner for rollout, and the serial
-integration coordinator for merging. Do not use this profile as a manual
-fallback, full backend baseline, token rotation or migration.
-
-The fixed candidate is `25c8454c9f3a2f35dc3bc4d2f16da6b95b84123a`, historical
-package base `08f2cf44b1a28180dcc6757ac57d0bbceebeb5f2`, successful main
-CI38778849364 attempt1 and artifact11995458204. The verifier pins ZIP, backend
-archive and provenance hashes. The sorted `functions:`-prefixed newline manifest
-hash is `e3504acd685e899c82a55ee0fc3126340c87ffaf31588d411ef6fab0ac7acecb`;
-`CAT165_RELEASE.targets` owns all 62 names. Inputs cannot override names, package,
-project or region. Current-main compatibility includes backend source, Operations
-assets, contracts, dependency locks and the protected deployment helpers.
-
-The original immutable package stays unchanged. Only the execution plan narrows.
-The single index is `organizerPrograms`, COLLECTION scope, ordered
-`organizerId ASC / createdBy ASC / startsAt DESC`. A separate exact-index document
-controls readiness, and a single explicit create command cannot reconcile or
-remove other indexes or field overrides. Its absence is required at the captured
-pre-state; an already-present index or a partial failed attempt requires owner
-review, not rerunning this one-time profile. It must reach READY before Functions.
-
-The workflow retains both non-cancelling production locks, recorded approval by
-a configured human PROD reviewer, exact current control-plane and successful
-producer checks, backend source review, immutable package verification, parameter
-coverage, selected secret readiness and read-only full metadata preservation.
-It checks all selected non-secret parameter values against the captured serving
-configuration before index creation; provider/credential changes fail closed.
-There is one index invocation and one exact Functions invocation, with no force,
-automatic retry, recovery input, IAM repair, rollback, DEV receipt or full-source
-cursor publication. Failure artifacts are isolated selected-only evidence.
-
-The eleven live exclusions remain **impacted/deferred**, not package-equivalent:
-`createOrganizerFormAutomation`, `createOrganizerProgram`, `flightAlertWebhook`,
-`getProgramHouseholdRsvpView`, `listOrganizerFormAutomationRuns`,
-`onEventAssistanceWhatsappEventCreated`, `programHouseholdItineraryIcs`,
-`refreshProgramFlightStatuses`, `setOrganizerFormAutomationState`,
-`submitProgramHouseholdRsvp`, and `upsertTransportVendor`.
-`anonymizeDueProgramsSweep` remains dormant and excluded. Preserve every retained
-Function's actual serving identity, including Extensions and mixed-source
-cohorts. Selected before/after identities are captured individually; no whole
-project source-equivalence claim follows from the selected release.
-
-The runtime owner reproduced a retained limitation with synthetic data against
-actual packaged code: previously minted household bearer tokens can still read
-the household projection and submit RSVP/consent until expiry. Selecting the
-unchanged bearer consumers would not remove this behavior. The completion receipt
-therefore always records `privacyAcceptanceComplete: false` and the limitation.
-Original creator/collaborator positive access, same-organizer-other-program and
-unrelated-organizer negative access, consent and read/query/sharing acceptance
-remain separate. This profile grants no live fixture, provider activation or
-human approval action. Do not mark CAT165 complete from source merge, index
-readiness or selected runtime deployment alone.
-
-The profile resolves SecretParam versions again immediately before each mutation
-boundary and rejects any difference from serving bindings; it never approves an
-implicit `latest` rotation. Every selected callable must already have the public
-invoker policy declared by the candidate. Event and scheduled Functions retain
-their existing IAM. Both preflights preserve the original provider parameters.
-
-The initial snapshot must match the 73 historical serving identities published
-in [the independent predecessor review](https://github.com/suvratgarg/catch-dating-app/pull/617#issuecomment-6203197509).
-The fixed in-code evidence pins every selected/deferred Function's name, revision,
-build and complete resolved storage source (bucket, object and generation).
-The 647/137 cohorts are receipt-backed for all these fields; the 6f08 Programs
-receipt covers revision/generation, with build/bucket/object separately pinned to
-the reviewed 15 October metadata observation. This historical expectation is not
-a fresh live observation. Fresh metadata must match before the initial snapshot
-can be persisted, and the original subsequent drift checks remain required.
-Missing, duplicate, misassigned or changed predecessors and the appearance of
-the dormant anonymization Function fail closed; investigate rather than rebase
-the expectation automatically. Snapshot schema v2 includes all 73 independently
-validated Cloud Run serving identities so deferred identities are explicit.
-
-The branch refresh after PR626 preserves this historical profile without widening
-its source or predecessor authority. The newer backend changes on main are
-rejected by its source-compatibility check; a separately reviewed runtime-owner
-disposition is required before this historical package could be used.
-
-## Website organiser-review index release
-
-`Website Review Index` is a bounded, main-only manual release of one additive
-production Firestore index: `reviews`, collection scope, `organizerId ASC` then
-`createdAt DESC`. It requires the exact checked-in definition and successful
-current-main CI, with a fresh source check after protected `prod` approval and
-again immediately before creation. The existing human review and OIDC identity
-remain required. It holds `backend-delivery` and `firebase-prod`; it never enables
-the paused ordinary Delivery queue, advances a cursor or deploys Functions/rules.
-
-The helper lists actual index metadata, creates only the missing exact index,
-waits for `READY` and verifies the other index identities/definitions remain.
-Failed/ambiguous indexes and failed/unknown creation outcomes stop without an
-automatic retry or deletion. Source authority, creation outcome and before/after
-metadata are retained as artifacts. Next website promotion separately requires
-this index to be ready. This scope does not establish a full backend baseline.

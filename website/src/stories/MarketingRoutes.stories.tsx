@@ -27,6 +27,7 @@ import {
   completePastEventDetailFixture,
   externalEventDetailFixture,
 } from "./fixtures/eventDetails";
+import {demoEventId, demoEventName, eventTimesMillis, venueLabel} from "./fixtures/demoWorld";
 import type {EventDetailRecord} from "../features/events/eventDetailModel";
 import {eventRuntimeCopy} from "../content/eventRuntime";
 import {
@@ -153,7 +154,7 @@ export const EventRuntime: Story = {
       <EventRuntimeFrame
         brandLabel={eventRuntimeCopy.brand}
         brandWord={eventRuntimeCopy.brandWord}
-        eventTitle={eventRuntimeCopy.demoEventTitle}
+        eventTitle={demoEventName}
       >
         <EventRuntimePanel
           body={eventRuntimeCopy.phoneBody}
@@ -250,13 +251,13 @@ export const EventInvite: Story = {
     <MemoryRouter initialEntries={["/invite/v2_story_abcdefghijklmnopqrstuvwxyz12345678901234567/"]}>
       <EventInvitePage initialLanding={{
         destinationKind: "externalBooking",
-        destinationUrl: "https://luma.com/courtyard-social?catch_ref=story",
-        endTimeMillis: Date.parse("2026-08-18T16:00:00.000Z"),
-        eventId: "event-story",
-        locationName: "The Courtyard",
+        destinationUrl: `https://luma.com/${demoEventName.toLowerCase().replaceAll(" ", "-")}?catch_ref=story`,
+        endTimeMillis: eventTimesMillis(demoEventId).endMillis,
+        eventId: demoEventId,
+        locationName: venueLabel(demoEventId),
         sourceLabel: "Luma",
-        startTimeMillis: Date.parse("2026-08-18T13:30:00.000Z"),
-        title: "Courtyard Social",
+        startTimeMillis: eventTimesMillis(demoEventId).startMillis,
+        title: demoEventName,
       }} />
     </MemoryRouter>
   ),

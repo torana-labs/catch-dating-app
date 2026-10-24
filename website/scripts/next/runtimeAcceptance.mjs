@@ -45,7 +45,23 @@ try {
   await check("/claim/", 200, "Next proof organizer");
   const listing = await check("/organizers/next-proof/", 200, "Next proof organizer");
   assert(listing.text.includes('application/ld+json'));
-  await check("/events/next-native-event/", 200, "Next proof event");
+  const event = await check("/events/next-native-event/", 200, "Next proof event");
+  // Organiser and event pages link a card drawn from their own record; others keep the brand card.
+  const ogImage = text => new URL(/<meta property="og:image" content="([^"]+)"/.exec(text)[1].replaceAll("&amp;", "&"));
+  for (const [path, text] of [["/organizers/next-proof/", listing.text], ["/events/next-native-event/", event.text]]) {
+    const image = ogImage(text);
+    assert.equal(image.pathname, `/og${path}card.png`);
+    const card = await fetch(origin + image.pathname + image.search);
+    assert.equal(card.status, 200, image.pathname);
+    assert.equal(card.headers.get("content-type"), "image/png");
+    assert.match(card.headers.get("cache-control"), /s-maxage=3600/);
+    const png = Buffer.from(await card.arrayBuffer());
+    assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1200, 630]);
+    results.push({path: image.pathname, status: card.status});
+  }
+  const unpublishedCard = await fetch(origin + "/og/events/not-published/card.png", {redirect: "manual"});
+  assert.equal(unpublishedCard.status, 302);
+  assert.match(unpublishedCard.headers.get("location"), /^\/assets\/og\/default\.png\?v=/);
   await check(`/events/${external.eventId}/`, 200, "Takeoff: Run + Rave");
   await check("/missing-route-proof/", 404);
   const missingRsc = await fetch(origin + "/missing-route-proof/?_rsc", {headers: {RSC: "1"}});
@@ -61,6 +77,7 @@ try {
     assert(!text.includes("private-proof-token") && !text.includes("private-proof-grant") && !text.includes("self.__next_f"));
     assert.match(response.headers.get("x-robots-tag"), /noindex/);
     assert(text.includes(`rel="canonical" href="https://catchdates.com/${family}/"`), `Missing generic ${family} canonical`);
+    assert(text.includes('property="og:image" content="https://catchdates.com/assets/og/') && !text.includes("catchdates.com/og/"), `${family} must keep a static card`);
   }
   await check("/offer/?grant=private-proof-grant", 200);
   for (const asset of ["/form-embed-resize.js", "/organizer-tracking-runtime.js"]) {
@@ -73,6 +90,7 @@ try {
   assert(!customBody.includes("Next proof organizer") && !customBody.includes("self.__next_f"));
   assert.match(custom.headers["cache-control"], /no-store/);
   assert.equal((await customHostRequest("/api/public-catalog")).status, 404);
+  assert.equal((await customHostRequest("/og/organizers/next-proof/card.png")).status, 404);
   browser = await chromium.launch({headless: true});
   const nojs = await browser.newContext({javaScriptEnabled: false, viewport: {width: 1440, height: 1000}});
   const nojsPage = await nojs.newPage();

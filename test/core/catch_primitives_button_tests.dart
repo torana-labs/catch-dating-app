@@ -1,7 +1,7 @@
 part of 'catch_primitives_test.dart';
 
 void _registerCatchPrimitivesButtonTests() {
-  testWidgets('CatchButton exposes named rounded editorial geometry', (
+  testWidgets('CatchButton draws D20 4px corners in rounded mode', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -23,7 +23,7 @@ void _registerCatchPrimitivesButtonTests() {
     );
     expect(
       (decoration.decoration as BoxDecoration).borderRadius,
-      BorderRadius.circular(CatchRadius.md),
+      BorderRadius.circular(CatchButtonTokens.radius),
     );
   });
 

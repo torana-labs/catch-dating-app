@@ -146,20 +146,6 @@ export function AdminForm({
   );
 }
 
-export function AdminPublishingFormShell({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("publishing-form", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function AdminEditorSection({
   children,
   className = "",

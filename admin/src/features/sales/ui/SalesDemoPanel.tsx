@@ -214,9 +214,9 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
     {!sourceCurrent && <CatchText as="p" variant="supporting">Current example access is being checked or was denied. Refresh to review it.</CatchText>}
     {sourceCurrent && <>
     <CatchText as="h3" variant="sectionTitle">Saved examples</CatchText>
-    {controller.blueprintList.isError ? <p role="alert">Saved examples could not be
+    {controller.blueprintList.isError ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">Saved examples could not be
       loaded. <AdminButton onClick={() => void controller.blueprintList.refetch()}>
-        Try again</AdminButton></p> : null}
+        Try again</AdminButton></CatchText> : null}
     {controller.blueprintList.data?.rows.map((item) =>
       <StateRow key={item.blueprintId} label={item.preview.headline}
         value={<>{item.state} · revision {item.revision}{" "}
@@ -307,9 +307,9 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
       </> : null}
       <CatchText as="h3" variant="sectionTitle">Invitations</CatchText>
       {controller.invitationList.isPending ? <CatchText as="p" variant="supporting">Loading invitations…</CatchText> : null}
-      {controller.invitationList.isError ? <p role="alert">Invitations could not
+      {controller.invitationList.isError ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">Invitations could not
         be loaded. <AdminButton onClick={() => void controller.invitationList.refetch()}>
-          Try again</AdminButton></p> : null}
+          Try again</AdminButton></CatchText> : null}
       {controller.invitationList.data?.rows.map((item) =>
         <StateRow key={item.invitationId} label={item.revoked ?
           "Revoked invitation" : "Active invitation"} value={<>

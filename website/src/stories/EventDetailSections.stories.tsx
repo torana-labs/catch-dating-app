@@ -9,8 +9,11 @@ import {
 } from "../features/events/sections/EventDetailSections";
 import {
   catchEventDetailFixture,
+  completePastEventDetailFixture,
   externalEventDetailFixture,
+  reviewerName,
 } from "./fixtures/eventDetails";
+import {demoEventId, guestsAt, momentMillis} from "./fixtures/demoWorld";
 
 const meta = {
   title: "Marketing Website/Events/Event Detail Sections",
@@ -117,11 +120,11 @@ export const EventDetailReviews: Story = {
   },
   render: () => (
     <EventDetailRevealStory routeKey="reviews">
-      <EventDetailReviewsSection event={{...catchEventDetailFixture, eventReviews: [{
-        id: "preview-verified-review", eventId: catchEventDetailFixture.eventId,
-        reviewerName: "Preview attendee", rating: 5,
-        comment: "A welcoming host and a lovely evening around the table.",
-        createdAt: "2026-07-20T10:00:00.000Z", verificationStatus: "verified",
+      <EventDetailReviewsSection event={{...completePastEventDetailFixture, eventReviews: [{
+        id: "preview-verified-review", eventId: demoEventId,
+        reviewerName: reviewerName(guestsAt(demoEventId, "followUp").find((guest) => guest.checkedIn)!), rating: 5,
+        comment: "A welcoming host and a lovely evening of trivia.",
+        createdAt: new Date(momentMillis("followUp")).toISOString(), verificationStatus: "verified",
         source: "catchEvent", isAnonymous: false, ownerResponse: null,
       }]}} />
     </EventDetailRevealStory>

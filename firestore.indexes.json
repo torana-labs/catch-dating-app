@@ -9,6 +9,24 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "approval",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "updatedAt",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "supplyIntakeRequests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "leaseUntil",
           "order": "ASCENDING"
         }
