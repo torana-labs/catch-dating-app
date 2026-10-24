@@ -109,7 +109,9 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
     }
   }
   const renderIds = eventName === "schedule" ? captures.map(capture => capture.id) : [...stale()];
-  return {sourceSha, render: renderIds.length > 0, renderIds,
+  // A web capture renders from a Storybook the plan's caller builds on Linux.
+  const webRender = captures.some(capture => capture.kind === "web-capture" && renderIds.includes(capture.id));
+  return {sourceSha, render: renderIds.length > 0, renderIds, webRender,
     seeds, seedIds: [...seeds.keys()], seedSources: sources};
 }
 
@@ -134,7 +136,7 @@ export async function planHostedCapturesForJob({request, env = process.env}) {
     fs.mkdirSync(path.dirname(destination), {recursive: true});
     fs.writeFileSync(destination, png, {flag: "wx"});
   }
-  fs.appendFileSync(env.GITHUB_OUTPUT, `render=${plan.render}\nseeded=${plan.seedIds.length > 0}\n`);
+  fs.appendFileSync(env.GITHUB_OUTPUT, `render=${plan.render}\nweb_render=${plan.webRender}\nseeded=${plan.seedIds.length > 0}\n`);
   fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `Render: ${plan.renderIds.join(", ") || "none"}\n\n` +
     `Reused from earlier CI bundles: ${plan.seedIds.join(", ") || "none"}\n`);
   const {seeds: _seeds, ...summary} = plan;

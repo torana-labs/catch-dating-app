@@ -49,6 +49,8 @@ function fixture(t) {
     "tool/design/lib/new_widget_inventory_declarations.mjs", "tool/design/lib/production_widget_roots.mjs",
     "design/components/catch.components.schema.json",
     "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/capture_seeds.mjs",
+    "tool/marketing/lib/web_capture_inputs.mjs", "tool/marketing/export_web_captures.mjs",
+    "tool/marketing/web_capture_screen.mjs",
     "tool/ci/wait_main_marketing_validation.mjs",
     "tool/marketing/sync_website_media.mjs", "tool/ci/toolchain.env"]) {
     write(file, fs.readFileSync(fromRepo(file)));
@@ -247,17 +249,31 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
   assert.match(source, /runs-on: macos-26\n/u);
   assert.match(source, /timeout-minutes: 45\n/u);
   const steps = extractSteps(source);
-  // Plan, render and reuse each check out the controller and then the source.
-  assert.equal(steps.filter(s => s.uses?.startsWith("actions/checkout@")).length, 6);
-  assert.equal(source.match(/persist-credentials: false/gu)?.length, 6);
+  // Plan, Storybook, render and reuse each check out the controller and then the source.
+  assert.equal(steps.filter(s => s.uses?.startsWith("actions/checkout@")).length, 8);
+  assert.equal(source.match(/persist-credentials: false/gu)?.length, 8);
   // Only the Linux plan reads earlier bundles; it never renders or uploads a bundle.
-  const jobNames = ["plan", "export", "reuse"];
-  const [plan, render, reuse] = jobNames.map((name, index) => source.slice(source.indexOf(`\n  ${name}:\n`),
+  const jobNames = ["plan", "storybook", "export", "reuse"];
+  const [plan, storybook, render, reuse] = jobNames.map((name, index) => source.slice(source.indexOf(`\n  ${name}:\n`),
     index + 1 < jobNames.length ? source.indexOf(`\n  ${jobNames[index + 1]}:\n`) : source.length));
   assert.match(plan, /runs-on: ubuntu-24\.04\n/u);
   assert.match(plan, /permissions:\n      actions: read\n      contents: read\n/u);
-  assert.doesNotMatch(render + reuse, /actions: read/u);
-  assert.match(render, /needs: plan\n    if: \$\{\{ needs\.plan\.outputs\.render == 'true' \}\}\n/u);
+  assert.match(plan, /web_render: \$\{\{ steps\.plan\.outputs\.web_render \}\}\n/u);
+  assert.doesNotMatch(storybook + render + reuse, /actions: read/u);
+  // Web captures: Linux builds the Storybook only when one is stale; the Mac
+  // installs just the pinned Playwright and WebKit, and reuse installs nothing.
+  assert.match(storybook, /needs: plan\n[^]*?if: \$\{\{ needs\.plan\.outputs\.web_render == 'true' \}\}\n/u);
+  assert.match(storybook, /runs-on: ubuntu-24\.04\n/u);
+  assert.match(storybook, /run: npm ci\n[^]*?run: npm --workspace website run build:storybook\n[^]*?name: capture-storybook-/u);
+  assert.match(storybook, /retention-days: 1\n/u);
+  assert.match(render, /needs: \[plan, storybook\]\n    if: \$\{\{ !cancelled\(\) && needs\.plan\.outputs\.render == 'true' && \(needs\.storybook\.result == 'success' \|\| needs\.storybook\.result == 'skipped'\) \}\}\n/u);
+  assert.doesNotMatch(render + reuse, /npm ci|build:storybook/u);
+  assert.match(render, /npm install --no-save --no-package-lock --ignore-scripts --prefix "\$RUNNER_TEMP\/playwright" "playwright@\$PLAYWRIGHT_VERSION"\n/u);
+  assert.match(render, /playwright" install webkit\n/u);
+  for (const step of ["Receive the website Storybook", "Resolve the source's Playwright pin", "Cache Playwright WebKit", "Install only Playwright and WebKit"]) {
+    assert.equal(steps.find(s => s.name === step)?.if, "${{ needs.plan.outputs.web_render == 'true' }}", step);
+  }
+  assert.doesNotMatch(reuse, /playwright|storybook/iu);
   assert.match(reuse, /needs: plan\n    if: \$\{\{ needs\.plan\.outputs\.render == 'false' \}\}\n/u);
   assert.match(reuse, /runs-on: ubuntu-24\.04\n/u);
   assert.match(reuse, /run: node tool\/marketing\/export_hosted_captures\.mjs --reuse\n/u);
@@ -845,7 +861,7 @@ test("the plan command runs end to end as the workflow calls it", t => {
   });
   assert.equal(result.status, 0, result.stderr);
   // No earlier bundle holds these inputs, so every capture goes to the renderer.
-  assert.equal(fs.readFileSync(outputs, "utf8"), "render=true\nseeded=false\n");
+  assert.equal(fs.readFileSync(outputs, "utf8"), "render=true\nweb_render=false\nseeded=false\n");
   assert.deepEqual(JSON.parse(result.stdout).renderIds.sort(), f.manifest.captures.map(c => c.id).sort());
   assert.match(fs.readFileSync(summary, "utf8"), /Reused from earlier CI bundles: none/);
 });
