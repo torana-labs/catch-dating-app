@@ -10,7 +10,7 @@ const run = {id: 10, run_number: 9, run_attempt: 2, workflow_id: 7,
 const job = (id, name, conclusion = "success") => ({id, name, conclusion,
   run_id: run.id, run_attempt: run.run_attempt, head_sha: sourceSha, status: "completed", started_at: "2026-10-17T01:01:00Z", completed_at: "2026-10-17T01:02:00Z"});
 const jobs = [job(20, "marketing / Validate marketing website"),
-  job(21, "capture-freshness / Render and validate 12 canonical iPhone captures")];
+  job(21, "capture-freshness / Render and validate canonical iPhone captures")];
 
 const artifact = {id: 40, expired: false, created_at: "2026-10-17T01:01:30Z", name: `canonical-marketing-${sourceSha}-${run.id}-${run.run_attempt}`,
   digest: `sha256:${"d".repeat(64)}`, workflow_run: {id: run.id, repository_id: 1, head_repository_id: 1, head_sha: sourceSha}};
@@ -239,4 +239,18 @@ test("main's push run and its merge queue run are both CI for a commit on main",
   for (const change of [{event: "pull_request"}, {event: "merge_group", head_branch: "main"}, {event: "push", head_branch: queueBranch}]) {
     assert.equal(isMainCiSource({...run, ...change}), false, JSON.stringify(change));
   }
+});
+
+test("either capture producer is the evidence; the plan runs one and skips the other", async () => {
+  const render = "capture-freshness / Render and validate canonical iPhone captures";
+  const reuse = "capture-freshness / Reuse validated canonical iPhone captures";
+  const plan = job(24, "capture-freshness / Plan canonical iPhone captures");
+  const reused = await waitMainMarketingValidation(fixture({results: [jobs[0], plan, job(25, render, "skipped"), job(26, reuse)]}));
+  assert.deepEqual([reused.validated, reused.jobIds], [true, [20, 26]]);
+  const rendered = await waitMainMarketingValidation(fixture({results: [jobs[0], plan, job(25, render), job(26, reuse, "skipped")]}));
+  assert.deepEqual(rendered.jobIds, [20, 25]);
+  await assert.rejects(() => waitMainMarketingValidation(fixture({results: [jobs[0], plan, job(25, render), job(26, reuse)]})),
+    /Both capture producers/);
+  await assert.rejects(() => waitMainMarketingValidation(fixture({results: [jobs[0], job(24, plan.name, "failure"),
+    job(25, render, "skipped"), job(26, reuse, "skipped")]})), /did not succeed/);
 });

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
-import {selectCaptureProducerJob, verifyArtifactMetadata} from "../marketing/import_hosted_captures.mjs";
+import {CAPTURE_PRODUCER_JOBS, selectCaptureProducerJob, verifyArtifactMetadata} from "../marketing/import_hosted_captures.mjs";
 
 const workflowPath = ".github/workflows/ci.yml";
 const positive = value => Number.isSafeInteger(value) && value > 0;
@@ -59,7 +59,14 @@ export function inspectMarketingValidation({run, jobs, sourceSha}) {
   const marketing = named("marketing / Validate marketing website");
   const skipped = named("marketing");
   assert.ok(!(marketing && skipped), "Marketing has conflicting executed and skipped job records.");
-  const capture = named("capture-freshness / Render and validate 12 canonical iPhone captures");
+  // The capture plan runs one producer, rendering or reusing; the other is
+  // skipped. A failed plan fails its own record before any producer exists.
+  named("capture-freshness / Plan canonical iPhone captures");
+  const records = CAPTURE_PRODUCER_JOBS.map(name => named(`capture-freshness / ${name}`)).filter(Boolean);
+  const producers = records.filter(job => job.conclusion !== "skipped");
+  assert.ok(producers.length <= 1, "Both capture producers ran in one attempt.");
+  // With no producer run, a skipped record is the capture that did not execute.
+  const capture = producers[0] ?? records[0] ?? null;
   const captureSkipped = named("capture-freshness");
   assert.ok(!(capture && captureSkipped), "Capture has conflicting executed and skipped job records.");
   if (marketing?.status === "completed") {
