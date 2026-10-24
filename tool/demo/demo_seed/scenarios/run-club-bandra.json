@@ -113,11 +113,9 @@
         "admissionPreset": "openCapacity",
         "playbookId": "social_run_light",
         "selectedModuleIds": [
-          "qr_check_in",
-          "micro_pods",
           "host_script",
-          "social_missions",
-          "safety_controls"
+          "micro_pods",
+          "social_missions"
         ],
         "hostGoal": "Put every runner in a pace pod so nobody runs alone, and have each of them talking to two new people by breakfast."
       },
@@ -198,11 +196,9 @@
         "admissionPreset": "openCapacity",
         "playbookId": "social_run_light",
         "selectedModuleIds": [
-          "qr_check_in",
-          "micro_pods",
           "host_script",
-          "social_missions",
-          "safety_controls"
+          "micro_pods",
+          "social_missions"
         ],
         "hostGoal": "Put every runner in a pace pod so nobody runs alone, and have each of them talking to two new people by breakfast."
       },
