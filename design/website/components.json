@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 107,
+  "version": 108,
   "updated": "2026-10-24",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -3385,6 +3385,37 @@
         ]
       },
       "notes": "Passive BadgeControl adapter for events that actively guide guest participation. Covered in Explore and populated event-detail route previews; ordinary booking-only events omit the badge."
+    },
+    {
+      "id": "shared_app_capture_image",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "host"
+      ],
+      "owner": "shared/media",
+      "source": "packages/web-ui/src/components/CatchAppCaptureImage.tsx",
+      "exportName": "CatchAppCaptureImage",
+      "css": [
+        "packages/web-ui/src/components/CatchAppCaptureImage.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchAppCaptureImage.stories.tsx",
+        "exportName": "WithCaption",
+        "states": [
+          "caption",
+          "image-only"
+        ]
+      },
+      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption; website/src/shared/media/MediaSlot.tsx binds a tool/marketing/capture_manifest.json slot id to it. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame.",
+      "comparedWith": [
+        "catch.text",
+        "catch.detail_media",
+        "catch.graded_image",
+        "catch.network_image"
+      ],
+      "comparisonReason": "Shows a pre-rendered app capture whose PNG carries its own device frame, at its intrinsic size with a caption. catch.detail_media is an edge-to-edge hero photo with grading and a scrim; catch.graded_image and catch.network_image load and grade remote photos; catch.text only sets the caption's type roles."
     }
   ]
 }

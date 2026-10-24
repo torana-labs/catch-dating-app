@@ -43,6 +43,4 @@ export function ConsumerHostCopy(props: ComponentProps<"div">) { return <div {..
 export function ConsumerEyebrow(props: ComponentProps<"span">) { return <span {...props} className="consumer-eyebrow" />; }
 export function ConsumerHostAudience(props: ComponentProps<"p">) { return <p {...props} className="consumer-host__audience" />; }
 export function ConsumerHostMedia(props: ComponentProps<"div">) { return <div {...props} className="consumer-host__media" />; }
-export function ConsumerGuestList(props: ComponentProps<"div">) { return <div {...props} className="consumer-guest-list" />; }
-export function ConsumerGuestStatus({checkedIn, ...props}: ComponentProps<"span"> & {checkedIn: boolean}) { return <span {...props} className={checkedIn ? "is-checked-in" : "is-confirmed"} />; }
 export function ConsumerClosingSection(props: ComponentProps<"section">) { return <section {...props} className="consumer-section consumer-close" />; }

@@ -1,0 +1,20 @@
+/* The capture PNG carries its own device frame and shadow; this only lays it out. */
+.capture {
+  display: grid;
+  justify-items: center;
+  gap: var(--catch-space-s3);
+  min-width: 0;
+  margin: 0;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.caption {
+  display: grid;
+  gap: var(--catch-space-s1);
+  text-align: center;
+}
