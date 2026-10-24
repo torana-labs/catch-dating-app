@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.30.0
+version: 1.30.1
 updated: 2026-10-24
 owner: app_architecture
 status: active
@@ -882,8 +882,11 @@ source:
 2. **Variants.**
    - **Primary** has an ink fill. It keeps its activity-accent option, and
      React gains the same prop.
-   - **Secondary** has no fill and a 1px border at 42% ink, which turns full
-     ink on hover.
+   - **Secondary** has no fill and a 1px border in the shared control border
+     colour, which turns full ink on hover. That colour already outlines
+     every other control and clears the 3:1 guideline for control edges
+     (about 3.2:1 on paper); the website's 42% ink gave only about 2.7:1
+     (amended 2026-10-24 in the Flutter D20 change).
    - **Quiet** is text only.
    - **Danger** has a red fill. It is only for the confirming action of a
      destructive flow.

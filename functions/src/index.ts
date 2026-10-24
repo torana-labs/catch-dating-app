@@ -568,6 +568,9 @@ export {
   adminApproveOrganizerListing,
 } from "./admin/organizerListingApproval";
 export {
+  adminListOrganizerListingReviews,
+} from "./admin/organizerListingReviewQueue";
+export {
   adminRecordEventIntakeReviewDecision,
 } from "./admin/eventIntakeReview";
 export {

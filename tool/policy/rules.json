@@ -782,9 +782,9 @@
         "storage.rules",
         "firebase.json",
         "tool/firebase/check_rules_deployment_drift.mjs",
-        ".github/workflows/_firebase-promote.yml"
+        ".github/workflows/_backend-deploy.yml"
       ],
-      "instruction": "Compare the active Firestore and Storage Rules releases with the exact committed sources after authenticated backend promotion. Missing credentials may skip local or untrusted CI checks; present but insufficient credentials, missing releases, and normalized-content drift fail closed.",
+      "instruction": "Compare the active Firestore and Storage Rules releases with the exact committed sources after every Deploy backend run. Missing credentials may skip local or untrusted CI checks; present but insufficient credentials, missing releases, and normalized-content drift fail closed.",
       "sunset_when": [
         "Firebase deployment natively proves the active release source against the exact CI-approved repository source"
       ],

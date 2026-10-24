@@ -178,15 +178,10 @@ test("production protection follows the resolved project even for a dev alias", 
 });
 
 
-test("every promotion parameter provenance and materialization step forwards the domain target", () => {
-  let matched = 0;
-  for (const filename of ["_firebase-promote.yml", "_cat151-receipt-promote.yml"]) {
-    const source = fs.readFileSync(new URL(`../../.github/workflows/${filename}`, import.meta.url), "utf8");
-    for (const step of source.split(/(?=^      - )/mu)) {
-      if (!step.includes("node tool/firebase/prepare_functions_params_for_deploy.mjs")) continue;
-      matched++;
-      assert.match(step, /^          FORM_DOMAIN_CNAME_TARGET: \$\{\{ vars\.FORM_DOMAIN_CNAME_TARGET \}\}$/mu, filename);
-    }
-  }
-  assert.equal(matched, 10);
+test("Deploy backend forwards every environment variable, including the domain target, to parameter materialization", () => {
+  const source = fs.readFileSync(new URL("../../.github/workflows/_backend-deploy.yml", import.meta.url), "utf8");
+  const steps = source.split(/(?=^      - )/mu)
+    .filter((step) => step.includes("tool/firebase/prepare_functions_params_for_deploy.mjs"));
+  assert.equal(steps.length, 1);
+  assert.match(steps[0], /^          ENVIRONMENT_VARIABLES: \$\{\{ toJSON\(vars\) \}\}$/mu);
 });

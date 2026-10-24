@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.38.0
+version: 0.38.1
 updated: 2026-10-24
 owner: web_platform
 status: active
@@ -124,20 +124,13 @@ identities are retained as workflow artifacts for browser and host-forwarding
 acceptance. A successful preview deployment is not production cutover or proof
 of authenticated/payment flows; the existing cutover gates above still apply.
 
-### Bounded organiser-review index release
+### Organiser-review index
 
-The public organiser review query needs the additive `reviews` collection index
-`organizerId ASC / createdAt DESC`. `Website Review Index` releases only that
-checked-in definition from current main after successful CI. It preserves the
-existing `prod` human-review environment and both `backend-delivery` and
-`firebase-prod` locks. A post-approval source check runs before OIDC, and another
-check immediately precedes creation. It creates only when missing, waits for
-`READY`, rejects failed or ambiguous index metadata and preserves unselected
-index identities/definitions in before/after evidence. It does not deploy
-Functions/rules, change data/IAM, advance a backend cursor or enable the general
-Delivery workflow. A partial/unknown creation result stops; a new dispatch must
-reinspect current metadata. Next production promotion reads this exact index and
-refuses to proceed until it is ready.
+The public organiser review query needs the `reviews` collection index
+`organizerId ASC / createdAt DESC`. It is checked in to `firestore.indexes.json`,
+so Deploy backend creates it with the other indexes and waits for `READY`
+([release operations](release_operations.md#deploy-backend)). Next production
+promotion reads this exact index and refuses to proceed until it is ready.
 
 ### Exact-container production promotion
 

@@ -70,9 +70,10 @@ async function harness({submittedBy = {role: "associate", uid: "associate-1", pa
     createdAt: NOW, updatedAt: NOW});
   if (origin && intent) db.write(`salesInboundIntents/${origin.id}`, intent);
   const writer = new MemoryWriter();
-  assert.equal(await processSupplyIntakeRequest({db: db as unknown as Firestore, now: () => new Date(NOW),
-    projectionWriter: writer, putSnapshot: async () => "supply-intake/snapshots/x.json"}, requestId), "completed");
-  const stored = db.read(`${supplyIntakeCollections.requests}/${requestId}`) as {result: {listingWorkItemId: string}};
+  const outcome = await processSupplyIntakeRequest({db: db as unknown as Firestore, now: () => new Date(NOW),
+    projectionWriter: writer, putSnapshot: async () => "supply-intake/snapshots/x.json"}, requestId);
+  const stored = db.read(`${supplyIntakeCollections.requests}/${requestId}`) as {result: {listingWorkItemId: string}, failure: unknown};
+  assert.equal(outcome, "completed", JSON.stringify(stored.failure));
   const workItem = structuredClone(writer.items.get(stored.result.listingWorkItemId)!);
   const listing = (workItem.normalizedPayload.intake as {listing: Record<string, any>}).listing; // eslint-disable-line @typescript-eslint/no-explicit-any
   listing.organizer.description = "Weekly social nights for people who would rather meet in person.";

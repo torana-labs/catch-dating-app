@@ -6,6 +6,7 @@ import type {Meta, StoryObj} from "@storybook/react-vite";
 import {EventSmsPreferenceCard} from "../features/eventMessaging/EventSmsPreferencePanel";
 import type {SmsPreferenceState, SmsPreferenceView} from "../features/eventMessaging/smsPreferenceModel";
 import {EventRuntimeFrame, EventRuntimePanel} from "../shared/ui/primitives";
+import {demoEventName} from "./fixtures/demoWorld";
 
 const meta = {title: "Marketing Website/Event text preferences",
   parameters: {catchComponentRegistry: {path: "design/website/components.json"}},
@@ -41,7 +42,7 @@ function Preview({initial}: {initial: SmsPreferenceState}) {
   const save = (preference: "enabled" | "disabled") => setState({...ready,
     view: {...view, preference, revision: 1, expiresAt: 2000}, notice: preference === "enabled" ?
       "Event texts are now on." : "Event texts are now off."});
-  return <EventRuntimeFrame brandLabel="Catch events" brandWord="Catch"><EventRuntimePanel kicker="Courtyard Social"
+  return <EventRuntimeFrame brandLabel="Catch events" brandWord="Catch"><EventRuntimePanel kicker={demoEventName}
     title="You’re registered" body="Your place on the guest list is confirmed.">
     <EventSmsPreferenceCard state={state} navigation={{earlier: false, showEarlier: false,
       showCurrent: false, showPrevious: false, showNext: false, busy: state.kind === "ready" && (state.pending || state.uncertain)}}
