@@ -65,9 +65,22 @@ test("an explicitly skipped Marketing lane requests standalone validation, never
 for (const conclusion of ["failure", "cancelled", "timed_out", "neutral", "skipped"]) {
   for (const index of [0, 1]) test(`${jobs[index].name}=${conclusion} cannot authorize packaging`, async () => {
     const bad = structuredClone(jobs); bad[index].conclusion = conclusion;
-    await assert.rejects(() => waitMainMarketingValidation(fixture({results: bad})), /did not succeed|did not execute successfully/);
+    // A cancelled job in an unfinished run is a cancellation in progress: the
+    // lookup keeps waiting rather than failing, and authorizes nothing.
+    await assert.rejects(() => waitMainMarketingValidation(fixture({results: bad})),
+      conclusion === "cancelled" ? /Timed out/ : /did not succeed|did not execute successfully/);
   });
 }
+
+test("a run whose jobs a newer merge cancelled is read once the run itself completes", async () => {
+  const results = [job(20, jobs[0].name, "cancelled"), jobs[1]];
+  const waits = [];
+  const result = await waitMainMarketingValidation({...fixture({results, listings: [[run], [cancelledRun]]}),
+    maxWaitMs: 50, onWait: message => waits.push(message)});
+  assert.equal(waits.length, 1, "it waited for the cancellation instead of failing");
+  // Marketing never ran to completion, so Marketing Website validates this source itself.
+  assert.deepEqual([result.validated, result.reason], [false, "source-ci-cancelled-before-evidence"]);
+});
 
 const cancelledRun = {...run, status: "completed", conclusion: "cancelled"};
 

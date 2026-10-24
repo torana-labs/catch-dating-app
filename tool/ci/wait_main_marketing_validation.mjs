@@ -126,6 +126,12 @@ export async function waitMainMarketingValidation({repository, sourceSha, reques
     const pages = await request(`repos/${repository}/actions/runs/${run.id}/attempts/${run.run_attempt}/jobs?per_page=100`, {paginate: true});
     assert.ok(Array.isArray(pages) && pages.length > 0 && pages.every(page => Array.isArray(page.jobs)), "Malformed same-attempt job pages.");
     const allJobs = pages.flatMap(page => page.jobs);
+    // A newer merge cancels a run's jobs before the run itself completes. Until
+    // it completes, the run is being cancelled, not failing: keep waiting, then
+    // read it as a cancelled run.
+    if (!cancelled && run.status !== "completed" && allJobs.some(job => job.conclusion === "cancelled")) {
+      return {allJobs, decision: null};
+    }
     const jobs = cancelled ? allJobs.filter(job => job.conclusion !== "cancelled") : allJobs;
     return {allJobs, decision: inspectMarketingValidation({run: {...run, run_started_at: attempt.run_started_at}, jobs, sourceSha})};
   };
