@@ -525,8 +525,10 @@ class OrderedPhotoTile extends StatelessWidget {
               else
                 CatchNetworkImage(
                   photo.imageUrl!,
-                  errorBuilder: (_, _, _) => ColoredBox(
-                    color: t.raised,
+                  errorBuilder: (_, _, _) => CatchSurface(
+                    duration: Duration.zero,
+                    radius: CatchRadius.none,
+                    backgroundColor: t.raised,
                     child: Center(
                       child: Icon(
                         CatchIcons.brokenImageOutlined,

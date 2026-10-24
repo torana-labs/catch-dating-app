@@ -52,8 +52,10 @@ class ClubDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return ColoredBox(
-      color: t.bg,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: t.bg,
       child: CustomScrollView(
         slivers: [
           ClubDetailSliverBody(

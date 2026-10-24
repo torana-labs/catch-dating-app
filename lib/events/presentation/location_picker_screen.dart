@@ -150,7 +150,12 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             onMapCreated: (controller) => _mapController = controller,
             onTap: _setSelectedPoint,
           )
-        : ColoredBox(color: t.bg);
+        : CatchSurface(
+            duration: Duration.zero,
+            radius: CatchRadius.none,
+            backgroundColor: t.bg,
+            child: const SizedBox.shrink(),
+          );
 
     return CatchScaffold.workspace(
       body: Stack(

@@ -67,8 +67,10 @@ class PhotoSlotTile extends StatelessWidget {
           url!,
           width: double.infinity,
           height: double.infinity,
-          errorBuilder: (context, error, stackTrace) => ColoredBox(
-            color: t.raised,
+          errorBuilder: (context, error, stackTrace) => CatchSurface(
+            duration: Duration.zero,
+            radius: CatchRadius.none,
+            backgroundColor: t.raised,
             child: Center(
               child: Icon(
                 CatchIcons.brokenImageOutlined,
@@ -119,8 +121,10 @@ class PhotoSlotTile extends StatelessWidget {
             children: [
               content,
               if (isLoading)
-                ColoredBox(
-                  color: CatchTokens.editorialBlack.withValues(
+                CatchSurface(
+                  duration: Duration.zero,
+                  radius: CatchRadius.none,
+                  backgroundColor: CatchTokens.editorialBlack.withValues(
                     alpha: CatchOpacity.photoUploadLoadingScrim,
                   ),
                   child: const Center(

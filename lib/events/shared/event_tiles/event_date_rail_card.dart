@@ -542,7 +542,12 @@ class DateRail extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          ColoredBox(color: color),
+          CatchSurface(
+            duration: Duration.zero,
+            radius: CatchRadius.none,
+            backgroundColor: color,
+            child: const SizedBox.shrink(),
+          ),
           Positioned(
             left: -CatchSpacing.s2,
             bottom: -CatchSpacing.micro10,

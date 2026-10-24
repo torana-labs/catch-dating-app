@@ -255,8 +255,10 @@ class PublicProfileBody extends StatelessWidget {
         ),
         if (submitting)
           Positioned.fill(
-            child: ColoredBox(
-              color: t.overlay,
+            child: CatchSurface(
+              duration: Duration.zero,
+              radius: CatchRadius.none,
+              backgroundColor: t.overlay,
               child: const CatchLoadingIndicator(),
             ),
           ),

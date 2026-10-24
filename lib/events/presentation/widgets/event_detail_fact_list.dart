@@ -32,8 +32,10 @@ class EventDetailTicketStubRow extends StatelessWidget {
     final t = CatchTokens.of(context);
     final cells = _ticketStubCells(event, context.l10n);
 
-    return ColoredBox(
-      color: t.surface,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: t.surface,
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           minHeight: CatchLayout.eventDetailTicketStubBandHeight,
@@ -224,8 +226,11 @@ class EventDetailMapCard extends StatelessWidget {
               border: Border.all(color: borderColor ?? t.line),
               borderRadius: BorderRadius.circular(CatchRadius.md),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(CatchRadius.md - 1),
+            child: CatchSurface(
+              duration: Duration.zero,
+              tone: CatchSurfaceTone.transparent,
+              radius: CatchRadius.md - 1,
+              clipBehavior: Clip.antiAlias,
               child: Column(
                 children: [
                   Expanded(
@@ -564,16 +569,23 @@ class EventDetailPhotoTile extends StatelessWidget {
     return SizedBox(
       key: ValueKey('event-photo-strip-tile-$index'),
       height: CatchLayout.eventDetailPhotoStripTileHeight,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(CatchRadius.infoTile),
+      child: CatchSurface(
+        duration: Duration.zero,
+        tone: CatchSurfaceTone.transparent,
+        radius: CatchRadius.infoTile,
+        clipBehavior: Clip.antiAlias,
         child: photo == null
-            ? ColoredBox(
+            ? CatchSurface(
                 key: ValueKey('event-photo-strip-placeholder-$index'),
-                color: backgroundColor,
+                duration: Duration.zero,
+                radius: CatchRadius.none,
+                backgroundColor: backgroundColor,
                 child: Icon(icon, color: iconColor, size: CatchIcon.lg),
               )
-            : ColoredBox(
-                color: backgroundColor,
+            : CatchSurface(
+                duration: Duration.zero,
+                radius: CatchRadius.none,
+                backgroundColor: backgroundColor,
                 child: CatchNetworkImage(
                   photo!.thumbnailOrUrl,
                   key: ValueKey('event-photo-strip-image-$index'),

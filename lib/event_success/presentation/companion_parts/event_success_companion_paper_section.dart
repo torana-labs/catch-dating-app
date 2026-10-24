@@ -200,8 +200,11 @@ class CompanionPaperTicket extends StatelessWidget {
           backgroundColor: t.surface,
           borderRole: CatchBorderRole.separator,
           boxShadow: CatchElevation.card,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(CatchRadius.md),
+          child: CatchSurface(
+            duration: Duration.zero,
+            tone: CatchSurfaceTone.transparent,
+            radius: CatchRadius.md,
+            clipBehavior: Clip.antiAlias,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

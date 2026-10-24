@@ -216,8 +216,10 @@ class ClubProfileImageTile extends StatelessWidget {
         errorBuilder: (_, _, _) => Container(color: t.raised),
       );
     } else {
-      content = ColoredBox(
-        color: t.raised,
+      content = CatchSurface(
+        duration: Duration.zero,
+        radius: CatchRadius.none,
+        backgroundColor: t.raised,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

@@ -199,8 +199,10 @@ class EventShareCard extends StatelessWidget {
             ),
             Expanded(
               flex: 4,
-              child: ColoredBox(
-                color: t.surface,
+              child: CatchSurface(
+                duration: Duration.zero,
+                radius: CatchRadius.none,
+                backgroundColor: t.surface,
                 child: Padding(
                   padding: CatchInsets.contentRelaxed,
                   child: Column(

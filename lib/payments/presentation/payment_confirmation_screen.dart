@@ -159,8 +159,13 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
         children: [
           Positioned.fill(child: PaymentCheckoutHeader(event: event)),
           Positioned.fill(
-            child: ColoredBox(
-              color: t.ink.withValues(alpha: CatchOpacity.paymentCheckoutScrim),
+            child: CatchSurface(
+              duration: Duration.zero,
+              radius: CatchRadius.none,
+              backgroundColor: t.ink.withValues(
+                alpha: CatchOpacity.paymentCheckoutScrim,
+              ),
+              child: const SizedBox.shrink(),
             ),
           ),
           Align(
@@ -327,8 +332,10 @@ class PaymentCheckoutSheet extends StatelessWidget {
               child: SizedBox(
                 width: CatchLayout.paymentCheckoutMedallionExtent,
                 height: CatchLayout.paymentCheckoutMedallionExtent,
-                child: ColoredBox(
-                  color: medallionFill,
+                child: CatchSurface(
+                  duration: Duration.zero,
+                  radius: CatchRadius.none,
+                  backgroundColor: medallionFill,
                   child: Icon(
                     failed
                         ? CatchIcons.errorOutlineRounded

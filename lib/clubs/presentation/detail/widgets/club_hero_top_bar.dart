@@ -296,9 +296,11 @@ class ClubHeroHeader extends StatelessWidget {
       ClubHeroVariant.full => _buildFull(context),
     };
 
-    return ColoredBox(
+    return CatchSurface(
       key: const ValueKey('club-detail-hero-module'),
-      color: t.surface,
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: t.surface,
       child: module,
     );
   }
@@ -420,8 +422,10 @@ class ClubHeroHeader extends StatelessWidget {
             viewportTopRadius: viewportTopRadius,
             cornerRadius: CatchRadius.lg,
           ),
-          child: ColoredBox(
-            color: t.surface,
+          child: CatchSurface(
+            duration: Duration.zero,
+            radius: CatchRadius.none,
+            backgroundColor: t.surface,
             child: Padding(
               key: const ValueKey('club-detail-hero-padding'),
               padding: clubInteractionMediaPadding,

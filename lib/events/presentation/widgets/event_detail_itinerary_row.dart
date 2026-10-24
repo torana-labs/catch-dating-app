@@ -75,7 +75,12 @@ class ItineraryRow extends StatelessWidget {
                       ),
                       child: SizedBox(
                         width: CatchStroke.underline,
-                        child: ColoredBox(color: railColor),
+                        child: CatchSurface(
+                          duration: Duration.zero,
+                          radius: CatchRadius.none,
+                          backgroundColor: railColor,
+                          child: const SizedBox.shrink(),
+                        ),
                       ),
                     ),
                   ),

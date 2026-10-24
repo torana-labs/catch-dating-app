@@ -37,8 +37,11 @@ class AvatarChip extends StatelessWidget {
                     ? CatchBorder.resolve(t, CatchBorderRole.selected)
                     : CatchBorder.resolve(t, CatchBorderRole.boundary),
                 padding: CatchInsets.iconChipContentTight,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
+                child: CatchSurface(
+                  duration: Duration.zero,
+                  tone: CatchSurfaceTone.transparent,
+                  radius: CatchRadius.pill,
+                  clipBehavior: Clip.antiAlias,
                   child: ClubImage(club: club, preferProfileImage: true),
                 ),
               ),

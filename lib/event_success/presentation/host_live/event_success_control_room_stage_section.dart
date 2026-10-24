@@ -46,8 +46,10 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
       ],
     );
     final syncPill = EventSuccessControlRoomSyncBadge(state: syncState);
-    return ColoredBox(
-      color: CatchTokens.editorialBlack,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: CatchTokens.editorialBlack,
       child: SafeArea(
         top: false,
         bottom: false,

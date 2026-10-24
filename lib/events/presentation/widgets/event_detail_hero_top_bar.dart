@@ -282,8 +282,10 @@ class EventDetailTicketSurface extends StatelessWidget {
         : t.ink2;
     final lineColor = isSpotlight ? d.line : t.line2;
 
-    return ColoredBox(
-      color: bodyColor,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: bodyColor,
       child: CatchTicket.hero(
         lineColor: lineColor,
         mediaBuilder: (context, compact) => Stack(
