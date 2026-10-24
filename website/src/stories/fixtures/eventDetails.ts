@@ -2,12 +2,10 @@ import {
   buildPublicEventDetailRecords,
   type EventDetailRecord,
 } from "../../features/events/eventDetailModel";
-import type {HostListing} from "../../features/organizers/types";
+import type {HostListing, HostListingReview} from "../../features/organizers/types";
+import {demoEventId, demoHost, eventDetailAt, guestsAt, momentMillis, type DemoGuest} from "./demoWorld";
 import {hostListings} from "./hostListings";
 
-const appCreatedListing = withReadableReviews(
-  requireListing("club-sales-sunday-table")
-);
 const afterflyListing = withClaimCapability({
   ...requireListing("afterfly"),
   externalEvents: [{
@@ -34,41 +32,39 @@ const afterflyListing = withClaimCapability({
 });
 
 const records = buildPublicEventDetailRecords(
-  [appCreatedListing, afterflyListing],
+  [afterflyListing],
   Date.parse("2026-07-24T00:00:00.000Z")
 );
 
-export const catchEventDetailFixture: EventDetailRecord = {
-  ...requireEvent("event-host-post-report", records),
-  title: "A table for strangers.", activityKind: "dinner",
-  listing: {...appCreatedListing, city: "Mumbai", country: "India"},
-  photoUrl: "/assets/events/dinner-invitation-preview.png",
-  date: "Saturday, October 24, 2026 · 7:00–10:00 PM", timezone: "Asia/Kolkata",
-  startTime: "2026-10-24T13:30:00.000Z", endTime: "2026-10-24T16:30:00.000Z",
-  summary: "Good food. New faces. A few unexpected connections. Join us for a relaxed evening around one table, with a host to get the conversation started.",
-  location: "Bandra, Mumbai", locationDetails: "Exact address shared after booking",
-  priceLabel: "₹1,500", eventReviews: [],
+// The Mumbai demo world's trivia night as a visitor sees it before anyone
+// books. The world has no run of show yet, so itineraries here are
+// story-only, timed to the world event.
+export const catchEventDetailFixture: EventDetailRecord = withReadableReviews({
+  ...eventDetailAt(demoEventId, "planning"),
   itinerary: [
-    {id: "arrive", kind: "gather", offsetMinutes: 0, title: "Settle in", description: "Meet your host and find your place at the table."},
-    {id: "dinner", kind: "activity", offsetMinutes: 30, title: "Dinner & conversation"},
-    {id: "finish", kind: "finish", offsetMinutes: 180, title: "One last goodbye"},
+    {id: "arrive", kind: "gather", offsetMinutes: 0, title: "Settle in", description: `Meet ${demoHost.firstName}, your host, and find a team.`},
+    {id: "rounds", kind: "activity", offsetMinutes: 20, title: "Trivia rounds"},
+    {id: "finish", kind: "finish", offsetMinutes: 120, title: "Final scores"},
   ],
-};
+});
 export const externalEventDetailFixture = requireEvent(
   "external-afterfly-takeoff-run-rave",
   records
 );
 
-function withReadableReviews(listing: HostListing): HostListing {
+function withReadableReviews(event: EventDetailRecord): EventDetailRecord {
   return {
-    ...listing,
-    capabilities: {
-      ...listing.capabilities,
-      publicReviews: {
-        targetState: "enabled",
-        readState: "enabled",
-        writeState: "disabled",
-        reason: "Story fixture exposes read-only event review records.",
+    ...event,
+    listing: {
+      ...event.listing,
+      capabilities: {
+        ...event.listing.capabilities,
+        publicReviews: {
+          targetState: "enabled",
+          readState: "enabled",
+          writeState: "disabled",
+          reason: "Story fixture exposes read-only event review records.",
+        },
       },
     },
   };
@@ -102,41 +98,48 @@ function requireEvent(
   return event;
 }
 
+/** "Ananya K." */
+export function reviewerName(guest: DemoGuest): string {
+  return `${guest.firstName} ${guest.lastName[0]}.`;
+}
+
 // Explicit component-review fixtures, never imported by the public catalogue.
-// The upcoming state has no event reviews; a separate completed event exercises reviews.
+// The upcoming state has no event reviews; the same event after it ends exercises reviews.
+const storyOnlyDetails: Partial<EventDetailRecord> = {
+  requirements: `18+ · Come on your own or with friends: ${demoHost.firstName} sorts everyone into teams on arrival. No trivia expertise needed.`,
+  accessibility: "Illustrative venue information: step-free entrance, lift access and an accessible toilet. Seating is provided throughout. Contact the organiser before booking if you need a quieter table or other support.",
+  summary: "An evening for people who enjoy a good question and meeting someone new. Arrive on your own or bring a friend: your host will welcome you, put you in a team and run the quiz. There is no dating requirement, networking pitch or pressure to take part.",
+  catchExperienceActivities: ["introductions", "sharedActivities", "rotations"],
+  itinerary: [
+    {id: "arrive", kind: "gather", offsetMinutes: 0, durationMinutes: 20, title: "Arrive & find a team", description: `${demoHost.firstName} welcomes you. Come alone and you will be seated with a team.`},
+    {id: "first-half", kind: "activity", offsetMinutes: 20, durationMinutes: 40, title: "First half: four rounds", description: "General knowledge, Mumbai, music and a picture round, answered together."},
+    {id: "new-teams", kind: "transition", offsetMinutes: 60, durationMinutes: 10, title: "New teams for the second half", description: "An optional shuffle introduces you to more people. Your host can adapt the plan."},
+    {id: "second-half", kind: "activity", offsetMinutes: 70, durationMinutes: 50, title: "Second half & the final round", description: "Keep playing with your new team, or join a conversation at the bar."},
+    {id: "close", kind: "finish", offsetMinutes: 120, title: "Final scores, then goodnight", description: "An optional feedback prompt helps the host improve the next night."},
+  ],
+};
 export const completeEventDetailFixture: EventDetailRecord = {
   ...catchEventDetailFixture,
-  requirements: "18+ · Come on your own or with a friend. Let the host know about dietary requirements before booking. A three-course vegetarian dinner and a welcome drink are included; additional drinks are separate.",
-  accessibility: "Illustrative venue information: step-free entrance, lift access and an accessible toilet. Seating is provided throughout. Contact the organiser before booking if you need a quieter seat or other support.",
-  summary: "An evening for people who enjoy good food and meeting someone new. Arrive on your own or bring a friend: your host will welcome you, help everyone settle in and start the conversation. There is no dating requirement, networking pitch or pressure to take part. Dinner, a welcome drink and a hosted evening are included.",
-  catchExperienceActivities: ["introductions", "sharedActivities", "rotations"],
-  locationDetails: "Bandra West · Exact venue address is shared with confirmed guests. Please arrive 10 minutes before the start.",
-  capacityLimit: 24, remainingCapacity: 6,
-  registrationMode: "paid", registrationState: "webOtp", paidBookingAvailable: true,
-  listing: {...catchEventDetailFixture.listing,
-    metrics: {...catchEventDetailFixture.listing.metrics, rating: 4.8, reviewCount: 29, memberCount: 76}},
-  itinerary: [
-    {id: "arrive", kind: "gather", offsetMinutes: 0, durationMinutes: 20, title: "Arrive & say hello", description: "Your host welcomes you. An optional introduction prompt gives you a reason to meet someone new."},
-    {id: "first-course", kind: "activity", offsetMinutes: 20, durationMinutes: 60, title: "First course, first conversations", description: "Settle into a small group over dinner. Light conversation prompts are there if you want them."},
-    {id: "new-seat", kind: "transition", offsetMinutes: 80, durationMinutes: 15, title: "A new seat, a few new faces", description: "An optional seat change introduces you to another part of the table. Your host can adapt the plan."},
-    {id: "dessert", kind: "activity", offsetMinutes: 95, durationMinutes: 65, title: "Dessert & unhurried conversation", description: "Keep talking with the people you have met, or join a new conversation."},
-    {id: "close", kind: "finish", offsetMinutes: 180, title: "Goodnight, for now", description: "An optional feedback prompt helps the host improve the next evening."},
-  ],
+  ...storyOnlyDetails,
   eventReviews: [],
 };
+
+const [firstReviewer, secondReviewer] = guestsAt(demoEventId, "followUp").filter((guest) => guest.checkedIn);
+const followUp = momentMillis("followUp");
+const hoursBeforeFollowUp = (hours: number) => new Date(followUp - hours * 3_600_000).toISOString();
+const pastEventReviews: HostListingReview[] = [
+  {id: "preview-review-1", eventId: demoEventId, reviewerName: reviewerName(firstReviewer), rating: 5,
+    comment: `Illustrative review: coming alone felt easy. ${demoHost.firstName} put me straight into a team and the shuffle meant I met more people.`,
+    createdAt: hoursBeforeFollowUp(12), verificationStatus: "verified", source: "catchEvent", isAnonymous: false,
+    ownerResponse: {hostName: demoHost.displayName, hostAvatarUrl: null, message: "Illustrative host reply: thank you for joining us. We are glad the teams worked out.", updatedAt: hoursBeforeFollowUp(1)}},
+  {id: "preview-review-2", eventId: demoEventId, reviewerName: reviewerName(secondReviewer), rating: 4,
+    comment: "Illustrative review: good questions and a friendly group. I would have liked a little more time before the shuffle.",
+    createdAt: hoursBeforeFollowUp(10), verificationStatus: "verified", source: "catchEvent", isAnonymous: false, ownerResponse: null},
+];
+const pastEvent = withReadableReviews(eventDetailAt(demoEventId, "followUp"));
 export const completePastEventDetailFixture: EventDetailRecord = {
-  ...completeEventDetailFixture,
-  title: "A table for strangers. · Past edition",
-  date: "Saturday, October 10, 2026 · 7:00–10:00 PM",
-  startTime: "2026-10-10T13:30:00.000Z", endTime: "2026-10-10T16:30:00.000Z",
-  isUpcoming: false, registrationState: "closed", registrationMode: "closed",
-  eventReviews: [
-    {id: "preview-review-1", eventId: completeEventDetailFixture.eventId, reviewerName: "Demo guest A", rating: 5,
-      comment: "Illustrative review: coming alone felt easy. The host introduced us and the seat change helped me speak to more people.",
-      createdAt: "2026-10-11T10:00:00.000Z", verificationStatus: "verified", source: "catchEvent", isAnonymous: false,
-      ownerResponse: {hostName: "Demo host", hostAvatarUrl: null, message: "Illustrative host reply: thank you for joining us. We are glad the introductions helped.", updatedAt: "2026-10-12T10:00:00.000Z"}},
-    {id: "preview-review-2", eventId: completeEventDetailFixture.eventId, reviewerName: "Demo guest B", rating: 4,
-      comment: "Illustrative review: good food and a friendly group. I would have liked a little more time before the seat change.",
-      createdAt: "2026-10-12T10:00:00.000Z", verificationStatus: "verified", source: "catchEvent", isAnonymous: false, ownerResponse: null},
-  ],
+  ...pastEvent,
+  ...storyOnlyDetails,
+  listing: {...pastEvent.listing, reviews: pastEventReviews},
+  eventReviews: pastEventReviews,
 };

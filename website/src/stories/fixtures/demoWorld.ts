@@ -16,7 +16,7 @@ interface DemoWorld {
   timeZone: string;
   currency: string;
   moments: Record<DemoMoment, string>;
-  host: {personaId: string; displayName: string};
+  host: {personaId: string; displayName: string; firstName: string};
   organizer: {id: string; name: string; description: string; city: string; area: string; tags: string[]};
   venues: {id: string; name: string; area: string; lat: number; lng: number; directions: string}[];
   people: {id: string; personaId: string}[];
@@ -58,8 +58,9 @@ const personas: readonly DemoPersona[] = personaJson.personas;
 
 /** The world's one event: Saturday Trivia Social. */
 export const demoEventId = world.events[0].id;
+export const demoEventName = world.events[0].name;
 export const demoOrganizerName = world.organizer.name;
-export const demoHostName = world.host.displayName;
+export const demoHost = {displayName: world.host.displayName, firstName: world.host.firstName};
 
 /** Guest counts and phase for an event at a named moment. */
 export function eventStateAt(eventId: string, moment: DemoMoment) {
