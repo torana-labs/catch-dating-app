@@ -315,7 +315,7 @@
   position: absolute;
   inset-block-start: 100%;
   inset-inline-end: var(--catch-space-s3);
-  z-index: 20;
+  z-index: var(--catch-layer-dropdown);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--catch-space-s2) var(--catch-space-micro14);
@@ -653,7 +653,7 @@
 }
 
 .intake-batch-inspector {
-  z-index: 10;
+  z-index: var(--catch-layer-sticky);
   flex: 0 0 clamp(360px, 34vw, 520px);
   min-width: 340px;
   min-height: 0;
@@ -699,7 +699,7 @@
   padding: var(--catch-space-s2) var(--catch-space-s2);
   font-size: var(--catch-typography-web-status-size);
   background: var(--surface);
-  border-inline-start: 3px solid var(--attention-line);
+  border-inline-start: var(--catch-stroke-selection) solid var(--attention-line);
   border-radius: var(--catch-radius-xs);
 }
 
@@ -813,7 +813,7 @@
   position: absolute;
   inset-inline-end: var(--catch-space-micro14);
   inset-block-end: var(--catch-space-micro14);
-  z-index: 30;
+  z-index: var(--catch-layer-overlay);
   display: flex;
   align-items: center;
   gap: var(--catch-space-s3);
@@ -1300,7 +1300,7 @@ button {
 
 .admin-account-panel {
   position: absolute;
-  z-index: 40;
+  z-index: var(--catch-layer-modal);
   top: calc(100% + var(--catch-space-s2));
   right: 0;
   display: grid;
@@ -1558,7 +1558,7 @@ select {
   align-content: start;
   padding: var(--catch-space-s4);
   border: var(--catch-stroke-hairline) solid var(--line);
-  border-top: 2px solid var(--ink);
+  border-top: var(--catch-stroke-focus-ring) solid var(--ink);
   border-radius: var(--catch-radius-sm);
   background: var(--surface);
 }
@@ -1761,11 +1761,11 @@ select {
 }
 
 .queue-row.danger {
-  border-left: 3px solid var(--danger);
+  border-left: var(--catch-stroke-selection) solid var(--danger);
 }
 
 .queue-row.warning {
-  border-left: 3px solid var(--attention);
+  border-left: var(--catch-stroke-selection) solid var(--attention);
 }
 
 .queue-row.selected {
@@ -2122,7 +2122,7 @@ select {
 }
 
 .roadmap-list-item svg {
-  margin-top: 1px;
+  margin-top: var(--catch-space-micro2);
   color: var(--positive);
 }
 
@@ -2214,7 +2214,7 @@ select {
 }
 
 .check-row input {
-  margin-top: 1px;
+  margin-top: var(--catch-space-micro2);
 }
 
 .diff-list {
@@ -2590,7 +2590,7 @@ select {
 
 .intake-checkbox-row input {
   flex: 0 0 auto;
-  margin-top: 1px;
+  margin-top: var(--catch-space-micro2);
 }
 
 .curation-control {
