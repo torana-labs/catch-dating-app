@@ -101,6 +101,11 @@ const invariantCases = [
   ["an activity kind production doesn't have", (world) => { world.events[0].activityKind = "laserTag"; }, /laserTag is not a production activity kind/],
   ["an unknown venue", (world) => { world.events[0].venueId = "nowhere"; }, /unknown venue nowhere/],
   ["a guest booked twice", (world) => { world.events[0].attendance[1].personId = world.events[0].attendance[0].personId; }, /books p01 twice/],
+  ["a persona no catalog has", (world) => { world.people[0].personaId = "in_nobody_999"; }, /person p01 uses unknown persona in_nobody_999/],
+  ["a persona from another country", (world) => { world.people[0].personaId = "nyc_maya_shah_001"; }, /persona nyc_maya_shah_001 is from US, not IN/],
+  ["one persona cast twice", (world) => { world.people[1].personaId = world.people[0].personaId; }, /is cast twice/],
+  ["a host persona also cast as a guest", (world) => { world.people[0].personaId = world.host.personaId; }, /in_meher_bhatia_001 is cast twice/],
+  ["a host named differently from their persona", (world) => { world.host.displayName = "Demo Host"; }, /host is named Demo Host, but persona in_meher_bhatia_001 is Meher Bhatia/],
 ];
 
 for (const [name, mutate, expected] of invariantCases) {

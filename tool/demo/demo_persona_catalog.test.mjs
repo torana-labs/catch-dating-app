@@ -31,6 +31,23 @@ test("draft sales persona catalog validates", () => {
   assert.equal(result.summary.categoryCounts.activeLifestyle, 13);
 });
 
+test("India core persona catalog validates as one balanced, Indian cohort", () => {
+  const catalog = loadPersonaCatalog(
+    "tool/demo/demo_seed/personas/india_core_sales_personas.draft.json"
+  );
+
+  const result = validatePersonaCatalog(catalog);
+
+  assert.equal(result.valid, true);
+  assert.equal(result.summary.personaCount, 36);
+  assert.equal(result.summary.photoCount, 144);
+  assert.equal(result.summary.genderCounts.man, 18);
+  assert.equal(result.summary.genderCounts.woman, 18);
+  assert.equal(result.summary.cityCounts.mumbai, 21);
+  assert.equal(result.summary.categoryCounts.clearSoloPortrait, 36);
+  assert.ok(catalog.personas.every((persona) => persona.countryCode === "IN" && persona.id.startsWith("in_")));
+});
+
 test("persona catalog rejects sparse photo sets", () => {
   const catalog = validCatalog();
   catalog.personas[0].photos = catalog.personas[0].photos.slice(0, 3);
