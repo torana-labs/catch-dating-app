@@ -30,7 +30,8 @@ function fixture(t) {
   write("package.json", JSON.stringify({workspaces: ["website", "packages/web-ui"]}));
   write("package-lock.json", JSON.stringify({packages: {
     "node_modules/react": {version: "19.3.0"}, "node_modules/playwright": {version: "1.64.0"},
-    "node_modules/playwright-core": {version: "1.64.0"}, "node_modules/@storybook/react-vite": {version: "10.6.1"}}}));
+    "node_modules/playwright-core": {version: "1.64.0"}, "node_modules/@storybook/react-vite": {version: "10.6.1"},
+    "website/node_modules/vite": {version: "7.2.0"}}}));
   write("design/website/routes.json", JSON.stringify({routes: [{id: "event_runtime"}]}));
   write("test/ui_captures/catalog/screen_capture_catalog.dart", "");
   write("packages/web-ui/package.json", JSON.stringify({name: "@catch/web-ui", exports: {".": {import: "./src/index.ts"}}}));
@@ -40,6 +41,8 @@ function fixture(t) {
   write("website/package.json", JSON.stringify({name: "catch-marketing"}));
   write("website/.storybook/main.ts", 'import type {StorybookConfig} from "@storybook/react-vite";\nexport default {};\n');
   write("website/.storybook/preview.ts", 'import "../src/styles.css";\nexport default {};\n');
+  write("website/vite.config.ts", 'import {defineConfig} from "vite";\nimport {createConfig} from "../packages/vite-react.js";\nexport default defineConfig(createConfig());\n');
+  write("packages/vite-react.ts", "export const createConfig = () => ({});\n");
   write("website/src/styles.css", '@import "../../packages/tokens.css";\n@import "./styles/runtime.css";\n');
   write("packages/tokens.css", '@font-face { font-family: "Archivo"; src: url("./fonts/Archivo.woff2") format("woff2"); }\n');
   write("packages/fonts/Archivo.woff2", "font bytes");
@@ -88,6 +91,7 @@ test("the closure follows imports, aliases, workspaces, JSON, CSS and public ass
   const f = fixture(t);
   const {files, externals} = JSON.parse(f.ok(f.run("closure.mjs", f.capture.story.file)));
   for (const file of ["website/src/stories/WebCaptures.stories.tsx", "website/.storybook/main.ts", "website/.storybook/preview.ts",
+    "website/vite.config.ts", "packages/vite-react.ts",
     "website/src/styles.css", "packages/tokens.css", "packages/fonts/Archivo.woff2", "website/src/styles/runtime.css",
     "website/src/content/runtime.ts", "website/src/stories/fixtures/world.ts", "tool/demo/world.json",
     "packages/web-ui/src/index.ts", "packages/web-ui/src/components/CatchText.tsx",
@@ -95,7 +99,8 @@ test("the closure follows imports, aliases, workspaces, JSON, CSS and public ass
     assert.ok(files.includes(file), file);
   }
   assert.ok(!files.includes("website/src/unrelated.ts"));
-  assert.deepEqual(externals, {"@storybook/react-vite": "10.6.1", playwright: "1.64.0", "playwright-core": "1.64.0"});
+  // vite resolves from the workspace's own node_modules, where npm nested it.
+  assert.deepEqual(externals, {"@storybook/react-vite": "10.6.1", vite: "7.2.0", playwright: "1.64.0", "playwright-core": "1.64.0"});
   f.write("website/src/content/runtime.ts", 'import {missing} from "./nowhere";\n');
   assert.match(f.run("closure.mjs", f.capture.story.file).stderr, /Cannot resolve \.\/nowhere/u);
 });
@@ -115,10 +120,11 @@ test("only what changes pixels changes a web capture's input hash", t => {
     ["packages/fonts/Archivo.woff2", "new font bytes"],
     ["tool/demo/world.json", '{"name": "Sunday Run"}'],
     ["website/.storybook/preview.ts", 'import "../src/styles.css";\nexport default {parameters: {}};\n'],
+    ["packages/vite-react.ts", "export const createConfig = () => ({css: {devSourcemap: true}});\n"],
     ["website/public/assets/branding/mark.png", "new mark"],
     ["package-lock.json", JSON.stringify({packages: {"node_modules/react": {version: "19.3.0"},
       "node_modules/playwright": {version: "1.65.0"}, "node_modules/playwright-core": {version: "1.65.0"},
-      "node_modules/@storybook/react-vite": {version: "10.6.1"}}})],
+      "node_modules/@storybook/react-vite": {version: "10.6.1"}, "website/node_modules/vite": {version: "7.2.0"}}})],
   ];
   for (const [file, content] of edits) {
     const before = f.hash(f.capture);

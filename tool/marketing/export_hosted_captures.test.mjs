@@ -71,6 +71,7 @@ function fixture(t, {web = false} = {}) {
       "node_modules/playwright-core": {version: "1.64.0"}}}));
     write("design/website/routes.json", JSON.stringify({routes: [{id: "event_runtime"}]}));
     write("website/.storybook/preview.ts", 'import "../src/styles.css";\n');
+    write("website/vite.config.ts", "export default {};\n");
     write("website/src/styles.css", "h1 { letter-spacing: -.065em; }\n");
     write("website/src/stories/WebCaptures.stories.tsx", "export const JoinPhoneCheckIn = {};\n");
   }
@@ -921,6 +922,8 @@ test("a web capture renders on macOS from a Linux-built Storybook with WebKit, t
   assert.equal(web.provenance.platform, "ios-safari");
   assert.equal(web.provenance.captureId, "marketing-website-web-captures--join-phone-check-in");
   assert.equal(rendered.toolchain.playwright, "1.64.0");
+  assert.equal(rendered.toolchain.storybookIndexSha256,
+    crypto.createHash("sha256").update(fs.readFileSync(path.join(storybookDir, "index.json"))).digest("hex"));
   assert.equal(new Set(rendered.captures.map(c => c.provenance.nativeFontSha256)).size, 1);
   assert.ok(rendered.commands[0].includes("--storybook") && rendered.commands[0].includes("--playwright-dir"));
   // The page renders as the iPhone 17 Pro descriptor in India time, then composes at the frame's scale.
@@ -934,4 +937,5 @@ test("a web capture renders on macOS from a Linux-built Storybook with WebKit, t
     platform: "linux", sfFont: "/missing/font.ttf", mode: "reuse", seeds});
   assert.ok(reused.captures.every(c => c.disposition === "reused"));
   assert.equal(reused.toolchain.playwright, null);
+  assert.equal(reused.toolchain.storybookIndexSha256, null);
 });

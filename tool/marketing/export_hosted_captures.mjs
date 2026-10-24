@@ -226,6 +226,8 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
   }
   const playwright = webRenders.length ? JSON.parse(fs.readFileSync(path.join(playwrightDir, "node_modules",
     "playwright", "package.json"), "utf8")).version : null;
+  // Which Storybook build the web captures were rendered from.
+  const storybookIndexSha256 = webRenders.length ? sha256(fs.readFileSync(path.join(storybookDir, "index.json"))) : null;
   const reusedBytes = new Map(captures.filter(c => !renderIds.has(c.id)).map(c =>
     [c.id, fs.readFileSync(regularFile(root, c.sourcePath))]));
   for (const capture of captures) {
@@ -288,7 +290,7 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
     ...(request ? {workflowDefinitionSha: request.workflowDefinitionSha, request} : {}),
     runUrl: `https://github.com/${repository}/actions/runs/${runId}/attempts/${runAttempt}`,
     exporterSha256: sha256(fs.readFileSync(fileURLToPath(import.meta.url))),
-    toolchain: {node: process.version, flutter, playwright, os: rendering ? execute("sw_vers", [], true) : execute("uname", ["-sr"], true),
+    toolchain: {node: process.version, flutter, playwright, storybookIndexSha256, os: rendering ? execute("sw_vers", [], true) : execute("uname", ["-sr"], true),
       architecture: process.arch, runnerImage: process.env.ImageVersion ?? null},
     commands, captures: records, files};
   fs.mkdirSync(outputDir, {recursive: true});

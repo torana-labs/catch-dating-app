@@ -19,8 +19,10 @@ const renderer = [
   "tool/marketing/frame_device_capture.dart",
   "tool/lib/repo_paths.mjs",
 ];
-// Storybook's own config and global decorators wrap every story.
+// Storybook's own config and global decorators wrap every story, and
+// @storybook/react-vite builds with the website's Vite config.
 const storybookConfig = "website/.storybook";
+const viteConfig = "website/vite.config.ts";
 const sourceExtensions = [".ts", ".tsx", ".js", ".mjs", ".jsx", ".json"];
 // Packages whose resolved version changes how a page or the renderer draws.
 const rendererPackages = ["playwright", "playwright-core"];
@@ -31,7 +33,7 @@ export const webRenderFields = ["id", "kind", "status", "device", "story", "addr
 export function webCaptureClosure(storyFile) {
   const files = new Set();
   const externals = new Map();
-  const queue = [storyFile, ...treeFiles(storybookConfig)];
+  const queue = [storyFile, viteConfig, ...treeFiles(storybookConfig)];
   const lock = readLock();
   const workspaces = workspacePackages();
   for (let index = 0; index < queue.length; index += 1) {
@@ -148,8 +150,12 @@ function readLock() {
   return JSON.parse(fs.readFileSync(fromRepo("package-lock.json"), "utf8")).packages ?? {};
 }
 
+// npm hoists packages to the root; a version conflict nests one under the
+// workspace that needs it instead.
+const lockLocations = ["", "website/", "packages/web-ui/", "packages/web-config/"];
+
 function packageVersion(lock, name) {
-  const version = lock[`node_modules/${name}`]?.version;
+  const version = lockLocations.map(prefix => lock[`${prefix}node_modules/${name}`]?.version).find(Boolean);
   if (!version) throw new Error(`package-lock.json has no resolved version for ${name}`);
   return version;
 }
