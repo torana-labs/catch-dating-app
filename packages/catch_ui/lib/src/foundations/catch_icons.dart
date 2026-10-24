@@ -148,7 +148,7 @@ abstract final class CatchIcons {
 
   /// A Catch activity in general, when no activity kind applies.
   static IconData get activity => const IconData(
-    0xe20f,
+    0xe305,
     fontFamily: _fontFamily,
     fontPackage: _fontPackage,
   );
@@ -1657,8 +1657,9 @@ abstract final class CatchIcons {
     };
   }
 
-  // Pre-Lucide names kept while call sites migrate to role names. Source:
-  // design/tokens/catch.icons.legacy_flutter.json. Use the role names above in new code.
+  // Pre-Lucide names kept while call sites migrate to role names, from
+  // design/tokens/catch.icons.legacy_flutter.json. Use the role names above in
+  // new code.
   static IconData get accessTimeRounded => time;
   static IconData get accountBalanceWalletOutlined => wallet;
   static IconData get accountTreeOutlined => hierarchy;

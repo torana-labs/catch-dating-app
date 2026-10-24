@@ -219,8 +219,12 @@ function renderDart(catalog, aliases, codepoints) {
   }
   if (aliases.length) {
     sections.push([
-      "  // Pre-Lucide names kept while call sites migrate to role names. Source:",
-      `  // ${inputs.legacy}. Use the role names above in new code.`,
+      dartDoc(
+        "Pre-Lucide names kept while call sites migrate to role names, from " +
+        `${inputs.legacy}. Use the role names above in new code.`,
+        "  ",
+        "//",
+      ),
       ...aliases.map(([alias, target]) => {
         const line = `  static IconData get ${alias} => ${target};`;
         return line.length <= 80 ? line : `  static IconData get ${alias} =>\n      ${target};`;

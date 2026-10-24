@@ -1127,7 +1127,9 @@ void main() {
       expect(
         find.descendant(
           of: find.byTooltip('Share event'),
-          matching: find.byIcon(CatchIcons.iosShareRounded),
+          matching: find.byIcon(
+            CatchIcons.platformShare(platform: TargetPlatform.iOS),
+          ),
         ),
         findsOneWidget,
       );

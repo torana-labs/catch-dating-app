@@ -44,7 +44,7 @@
     "people": { "group": "ui", "glyph": "users", "description": "Several people: guests, members, customers, groups." },
     "ticket": { "group": "ui", "glyph": "ticket", "description": "Events tab, tickets and bookings." },
     "ticketConfirmed": { "group": "ui", "glyph": "ticket-check", "description": "A confirmed ticket or booking." },
-    "activity": { "group": "ui", "glyph": "ticket", "description": "A Catch activity in general, when no activity kind applies." },
+    "activity": { "group": "ui", "glyph": "calendar-heart", "description": "A Catch activity in general, when no activity kind applies." },
     "forms": { "group": "ui", "glyph": "notebook-pen", "description": "Forms tab and form builder." },
     "organizer": { "group": "ui", "glyph": "store", "description": "An organizer storefront or the organizer tab." },
     "business": { "group": "ui", "glyph": "building-2", "description": "A business, venue partner or organization." },
