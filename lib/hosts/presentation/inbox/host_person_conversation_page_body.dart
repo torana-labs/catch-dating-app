@@ -305,10 +305,10 @@ class _HostPersonConversationPageBodyState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           CatchSection.content(
-            child: Text(
+            child: CatchText(
               widget.scopeLabel ??
                   context.l10n.hostsHostInboxScreenVisiblecopyGeneralInquiries,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
           Expanded(
@@ -325,19 +325,19 @@ class _HostPersonConversationPageBodyState
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      CatchText(
                         context.l10n.hostInboxHistoryCoverage,
-                        style: CatchTextStyles.supporting(context),
+                        variant: CatchTextVariant.supporting,
                       ),
                       if (sharedScope)
-                        Text(
+                        CatchText(
                           context.l10n.hostInboxSharedThreadHistory,
-                          style: CatchTextStyles.supporting(context),
+                          variant: CatchTextVariant.supporting,
                         ),
                       if (partial) ...[
-                        Text(
+                        CatchText(
                           context.l10n.hostInboxPartialSources,
-                          style: CatchTextStyles.supporting(context),
+                          variant: CatchTextVariant.supporting,
                         ),
                         CatchButton(
                           label: context.l10n.sharedActionTryAgain,
@@ -372,9 +372,9 @@ class _HostPersonConversationPageBodyState
                       ? CrossAxisAlignment.end
                       : CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    CatchText(
                       message.channel,
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                     MessageBubble(
                       text: message.text,
@@ -413,11 +413,11 @@ class _HostPersonConversationPageBodyState
                   ],
                 ),
                 if (!canSend)
-                  Text(
+                  CatchText(
                     selected == null
                         ? context.l10n.hostInboxChooseReplyRoute
                         : context.l10n.hostInboxRouteUnavailable,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
               ],
             ),

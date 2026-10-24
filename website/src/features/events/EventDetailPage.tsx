@@ -34,7 +34,7 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
   }, [event.eventId, inviteToken]);
   return (
     <ConsumerEventPage>
-      <PublicSiteHeader audience="consumer" />
+      <PublicSiteHeader />
 
       <WebsitePageMain id="event-detail">
         <EventDiscoveryLink aria-label={consumerEventCopy.discoveryLabel}>
@@ -49,7 +49,7 @@ export function EventDetailPage({event}: {event: EventDetailRecord}) {
         <EventDetailReviewsSection event={event} />
       </WebsitePageMain>
 
-      <PublicSiteFooter audience="consumer" />
+      <PublicSiteFooter />
     </ConsumerEventPage>
   );
 }

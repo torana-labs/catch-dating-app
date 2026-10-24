@@ -196,37 +196,13 @@ abstract final class CatchTextStyles {
 
   // ===========================================================================
   // FUNCTION — platform system font (UI titles, body, labels, controls)
-  static TextStyle recordContext(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.context,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
 
-  static TextStyle recordBody(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.body,
-        color: color ?? CatchTokens.of(context).ink,
-      );
   // ===========================================================================
 
   /// Large UI title for sections, cards, and sheet headings.
   static TextStyle titleL(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.title,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Long-form app/user copy — bios, event descriptions, readable details.
-  static TextStyle proseL(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.body,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Long-form app/user copy, smaller cut.
-  static TextStyle proseM(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.secondary,
         color: color ?? CatchTokens.of(context).ink,
       );
 
@@ -284,21 +260,10 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
-  /// AppBar subtitle (`.t-body-s`) under compact and large screen titles.
-  static TextStyle appBarSubtitle(BuildContext context, {Color? color}) =>
-      bodyS(context, color: color);
-
   /// The workhorse supporting label — dense meta, secondary copy.
   static TextStyle supporting(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.secondary,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  /// Supporting copy inside command and selection menus.
-  static TextStyle menuSupporting(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.context,
         color: color ?? CatchTokens.of(context).ink2,
       );
 
@@ -308,18 +273,6 @@ abstract final class CatchTextStyles {
   static TextStyle fieldLabel(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.fieldLabel,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  static TextStyle labelM(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.status,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  static TextStyle labelS(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.status,
         color: color ?? CatchTokens.of(context).ink2,
       );
 
@@ -541,7 +494,7 @@ abstract final class CatchTextStyles {
 
   /// Compact numeric seal on club cards.
   static TextStyle clubMemberSeal(BuildContext context, {Color? color}) =>
-      labelM(context, color: color).copyWith(height: 1.05);
+      statusLabel(context, color: color).copyWith(height: 1.05);
 
   static TextStyle debugDetails(BuildContext context, {Color? color}) =>
       CatchFonts.mono(

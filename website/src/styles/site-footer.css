@@ -2,7 +2,7 @@
 .site-footer {
   display: grid;
   gap: 22px;
-  padding: 34px 0 44px;
+  padding: 34px 0 var(--catch-space-s11);
   border-top: 1px solid var(--website-line);
   color: var(--website-copy-muted);
 }
@@ -10,7 +10,7 @@
 .site-footer nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 18px;
+  gap: var(--catch-space-micro18);
   font-size: 14px;
 }
 
@@ -31,8 +31,8 @@
   width: min(420px, calc(100vw - (var(--website-gutter) * 2)));
   max-height: calc(100dvh - (var(--website-gutter) * 2) - env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
-  gap: 14px;
-  padding: 16px;
+  gap: var(--catch-space-micro14);
+  padding: var(--catch-space-s4);
   border: 1px solid var(--website-line);
   border-radius: var(--catch-radius-sm);
   background: var(--website-surface);
@@ -48,7 +48,7 @@
 .consent-banner div {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--catch-space-micro10);
 }
 
 .site-footer__context {

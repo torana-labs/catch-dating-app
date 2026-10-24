@@ -37,6 +37,7 @@ function request(overrides = {}) {
     seed: {name: "BlrDroid", urls: ["https://lu.ma/1dfd73wq?utm_source=wa"], notes: null, categories: ["tech_meetup"]},
     submittedBy: {role: "associate", uid: "associate-1", partnerId: null},
     submittedAt: NOW,
+    origin: null,
     ...overrides,
   };
 }

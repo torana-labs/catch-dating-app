@@ -4,7 +4,6 @@ import {afterEach, describe, expect, it, vi} from "vitest";
 import {HomePage, VisitorDiscoveryPage} from "../features/home/HomePage";
 import {ClaimPage} from "../features/claims/ClaimPage";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
-import {websiteCopy} from "../content/generated";
 
 vi.mock("../analytics", () => ({trackMarketingEvent: vi.fn()}));
 vi.mock("../firebaseConfig", () => ({claimFirebaseConfigured: false,
@@ -38,13 +37,13 @@ describe("public route navigation targets", () => {
     expect(screen.getByRole("search")).toBeTruthy();
   });
 
-  it("sends claim Trust to help and Member site to discovery", () => {
+  it("gives the claim page the same header and footer as every public route", () => {
     renderPage(<ClaimPage routeState={emptyClaimRouteState} />);
-    const local = screen.getByRole("navigation", {name: "On this page"});
-    expect(within(local).getByRole("link", {name: websiteCopy.claimpage_0031})
-      .getAttribute("href")).toBe("/help/");
-    const footer = screen.getByRole("navigation", {name: "Related links"});
-    expect(within(footer).getByRole("link", {name: websiteCopy.claimpage_0028})
-      .getAttribute("href")).toBe("/explore/");
+    const nav = screen.getByRole("navigation", {name: "Primary"});
+    expect(within(nav).getAllByRole("link").map(link => link.getAttribute("href"))).toEqual(["/explore/", "/organizers/", "/host/"]);
+    expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
+    const footer = screen.getByRole("navigation", {name: "Footer"});
+    expect(within(footer).getByRole("link", {name: "Help"}).getAttribute("href")).toBe("/help/");
+    expect(within(footer).getByRole("link", {name: "Find events"}).getAttribute("href")).toBe("/explore/");
   });
 });

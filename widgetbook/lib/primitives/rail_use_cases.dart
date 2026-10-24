@@ -24,7 +24,7 @@ Widget horizontalScrollViewStates(BuildContext context) =>
               height: height == null ? 84 : 110,
               child: Text(
                 'Item ${index + 1}',
-                style: CatchTextStyles.labelM(context),
+                style: CatchTextStyles.statusLabel(context),
               ),
             ),
             footer: CatchButton(label: 'More', onPressed: () {}),

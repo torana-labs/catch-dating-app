@@ -93,7 +93,7 @@ main {
   width: 28px;
   height: 28px;
   border: 2px solid var(--website-line-strong);
-  border-radius: 999px;
+  border-radius: var(--catch-radius-pill);
   border-top-color: var(--website-accent);
   animation: route-loading-spin 800ms linear infinite;
   content: "";

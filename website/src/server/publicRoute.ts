@@ -4,6 +4,7 @@ import {readRouteCatalog} from "./publicCatalog";
 import {readPublicContact} from "./publicContact";
 import {isLegalPageKey, pageMeta, pageMetaForHostPath, pageMetaForListing, pageMetaForEvent, type PageKey} from "../app/pageMeta";
 import {getHostListingRouteForPath} from "../features/organizers/routing";
+import {previewCardFor, previewCardImage} from "./previewCards";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/events/eventDetailModel";
 import type {Metadata} from "next";
 export const resolvePublicRoute = cache(async (pathname: string) => {
@@ -21,10 +22,11 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
   const contact = isLegalPageKey(page) ? await readPublicContact() : null;
   const meta = listingRoute ? pageMetaForListing(listingRoute.listing) : event ? pageMetaForEvent(event) :
     pageMetaForHostPath(pathname) ?? pageMeta[page as keyof typeof pageMeta];
+  const image = previewCardImage(previewCardFor(meta.canonicalPath));
   const metadata: Metadata = {title: meta.title, description: meta.description,
     alternates: {canonical: `https://catchdates.com${meta.canonicalPath}`},
     robots: productionIndexing() ? meta.robots ?? "index, follow" : "noindex, follow", openGraph: {title: meta.title, description: meta.description,
-      url: `https://catchdates.com${meta.canonicalPath}`, type: "website"},
-    twitter: {card: "summary_large_image", title: meta.title, description: meta.twitterDescription}};
+      url: `https://catchdates.com${meta.canonicalPath}`, type: "website", images: [image]},
+    twitter: {card: "summary_large_image", title: meta.title, description: meta.twitterDescription, images: [image]}};
   return {page, catalog, metadata, listingRoute, event, live, contact};
 });

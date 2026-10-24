@@ -9,6 +9,7 @@ import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -283,9 +284,10 @@ class ProgramOperationReviewSheet extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (entries.isEmpty)
-            Text(
+            CatchText(
               context.l10n.programsOperationsReviewEmpty,
-              style: CatchTextStyles.recordBody(context),
+              variant: CatchTextVariant.bodyL,
+              color: CatchTokens.of(context).ink,
             ),
           for (final entry in entries) ...[
             CatchSurface.card(
@@ -297,11 +299,11 @@ class ProgramOperationReviewSheet extends ConsumerWidget {
                     _operationLabel(context, entry),
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  Text(
+                  CatchText(
                     AppTimeFormatters.dateTime(entry.createdAt),
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
-                  Text(
+                  CatchText(
                     (entry.kind == ProgramOperationKind.dispatch
                             ? (entry.payload['legIds']! as List).map(
                                 (id) =>
@@ -317,7 +319,8 @@ class ProgramOperationReviewSheet extends ConsumerWidget {
                                         .programsOperationsGuestUnavailable,
                               ])
                         .join(', '),
-                    style: CatchTextStyles.recordBody(context),
+                    variant: CatchTextVariant.bodyL,
+                    color: CatchTokens.of(context).ink,
                   ),
                   gapH8,
                   CatchButton(

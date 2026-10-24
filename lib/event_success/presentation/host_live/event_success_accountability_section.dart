@@ -47,12 +47,12 @@ class EventSuccessAccountabilitySection extends StatelessWidget {
             subtitle: context.l10n.eventSuccessAccountabilitySubtitle,
           ),
           gapH8,
-          Text(
+          CatchText(
             context.l10n.eventSuccessAccountabilityProgress(
               resolved: resolvedCount,
               total: attendees.length,
             ),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           if (error != null) ...[
             gapH10,
@@ -63,9 +63,9 @@ class EventSuccessAccountabilitySection extends StatelessWidget {
             CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWideWidth),
           ] else if (attendees.isEmpty) ...[
             gapH12,
-            Text(
+            CatchText(
               context.l10n.eventSuccessAccountabilityEmpty,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ] else ...[
             gapH8,

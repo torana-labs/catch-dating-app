@@ -108,11 +108,12 @@ class EventActionCard extends StatelessWidget {
                 ),
                 if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
                   gapH4,
-                  Text(
+                  CatchText(
                     subtitle!,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
+
+                    variant: CatchTextVariant.supporting,
+                    color: t.ink2,
                   ),
                 ],
                 if (metaRows.isNotEmpty) ...[

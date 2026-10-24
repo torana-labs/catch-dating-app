@@ -10,25 +10,20 @@ type Story = StoryObj<typeof meta>;
 
 export const PublicSiteHeaderStory: Story = {
   parameters: {catchComponent: {id: "shared_public_site_header", routeIds: publicRouteIds,
-    states: ["global-navigation", "secondary-navigation"]}},
+    states: ["global-navigation"]}},
   play: exerciseHeaderContrast,
   render: () => <>
-    <PublicSiteHeader localNav={[{href: "#events", label: "Events"},
-      {href: "#about", label: "About"}, {href: "#reviews", label: "Reviews"}]}
-      localActions={[{href: "/claim/example/", label: "Claim listing"}]} />
+    <PublicSiteHeader />
     <WebsitePageMain>
-      <section id="events"><h1>Organiser profile</h1><p>Browse this organiser&apos;s events.</p></section>
-      <section id="about"><h2>About</h2><p>Public organiser information.</p></section>
-      <section id="reviews"><h2>Reviews</h2><p>Published public reviews.</p></section>
+      <section><h1>Organiser profile</h1><p>Browse this organiser&apos;s events.</p></section>
     </WebsitePageMain>
   </>,
 };
 
 export const PublicSiteFooterStory: Story = {
   parameters: {catchComponent: {id: "shared_public_site_footer", routeIds: publicRouteIds,
-    states: ["global-links", "context-links"]}},
-  render: () => <PublicSiteFooter body="Explore this organiser's public sources and events."
-    links={[{href: "/organizers/", label: "Search organisers"}, {href: "/host/", label: "For hosts"}]} />,
+    states: ["global-links"]}},
+  render: () => <PublicSiteFooter />,
 };
 
 // WCAG contrast from rendered colors, including transparent ancestor surfaces.
@@ -70,10 +65,11 @@ async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLEleme
     const menu = within(dialog);
     const close = menu.getByRole("button", {name: "Close"});
     await expect(close).toHaveFocus();
-    const actions = [menu.getByRole("link", {name: "Claim your page"}),
-      menu.getByRole("link", {name: "Apply for a pilot"})];
+    const actions = menu.getAllByRole("link");
     for (const action of actions) {
-      await hoverAction(action, false);
+      // Park the pointer on Close: the stacked menu links leave no gap for an unhover.
+      await hoverAction(close);
+      await expect(action.matches(":hover")).toBe(false);
       await expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5);
       await hoverAction(action);
       await expect(contrastRatio(action)).toBeGreaterThanOrEqual(4.5);
@@ -93,7 +89,7 @@ async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLEleme
     }
     close.focus();
     await userEvent.tab({shift: true});
-    await expect(actions[1]).toHaveFocus();
+    await expect(actions[actions.length - 1]).toHaveFocus();
     await userEvent.tab();
     await expect(close).toHaveFocus();
     if (exit === "Escape") await userEvent.keyboard("{Escape}");
@@ -107,34 +103,6 @@ async function exerciseHeaderContrast({canvasElement}: {canvasElement: HTMLEleme
   trigger.blur();
   window.scrollTo({...scroll, behavior: "instant"});
 }
-
-export const PublicSiteHeaderDarkStory: Story = {
-  parameters: {catchComponent: {id: "shared_public_site_header", routeIds: publicRouteIds,
-    states: ["global-navigation"]}},
-  render: () => <div style={{background: "var(--catch-color-dark-bg)", minHeight: "100vh"}}>
-    <PublicSiteHeader tone="dark" />
-  </div>,
-  play: async (context) => {
-    const header = context.canvasElement.querySelector<HTMLElement>(".site-header")!;
-    const signIn = within(header).getByRole("link", {name: "Claim your page"});
-    if (getComputedStyle(signIn).display !== "none") {
-      await expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5);
-      await hoverAction(signIn);
-      await expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5);
-      await userEvent.tab();
-      signIn.focus();
-      await Promise.all(signIn.getAnimations().map((animation) => animation.finished));
-      const style = getComputedStyle(signIn);
-      await expect(signIn.matches(":focus-visible")).toBe(true);
-      await expect(style.outlineStyle).toBe("solid");
-      await expect(contrastRatio(header, style.outlineColor)).toBeGreaterThanOrEqual(3);
-      await expect(contrastRatio(signIn)).toBeGreaterThanOrEqual(4.5);
-      await hoverAction(signIn, false);
-      signIn.blur();
-    }
-    await exerciseHeaderContrast(context);
-  },
-};
 
 async function hoverAction(action: HTMLElement, hover = true) {
   // Chromium tests use the provider's real pointer so CSS :hover is exercised.

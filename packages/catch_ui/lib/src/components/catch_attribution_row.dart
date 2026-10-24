@@ -30,7 +30,7 @@ class CatchAttributionRow extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.end,
-            style: CatchTextStyles.labelS(
+            style: CatchTextStyles.statusLabel(
               context,
               color: trailingColor ?? t.ink2,
             ),

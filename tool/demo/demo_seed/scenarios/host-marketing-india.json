@@ -1,154 +1,293 @@
 {
+  "schemaVersion": 2,
   "id": "host-marketing-india",
-  "label": "India Host Marketing Draft",
-  "description": "Fictional India host capture narrative. Draft evidence, conditional on target-build capability review; never a seed-world or availability claim.",
-  "captureNarrative": {
-    "eventName": "Saturday Trivia Social",
-    "civilDate": "2026-10-17",
-    "startTime": "18:30",
-    "endTime": "20:30",
-    "timeZone": "Asia/Kolkata",
-    "currency": "INR",
-    "admissionPreset": "openCapacity",
-    "interactionModel": "hostLedProgram",
-    "selectedModuleIds": [
-      "host_script",
-      "safety_controls"
-    ],
-    "phaseClocks": {
-      "planning": "2026-10-16T12:00:00",
-      "today": "2026-10-17T16:00:00",
-      "live": "2026-10-17T19:00:00",
-      "followUp": "2026-10-18T10:00:00"
-    },
-    "customActivityLabel": "Trivia social",
-    "hostGoal": "Welcome guests and explain the trivia format."
+  "label": "India Host Marketing",
+  "description": "Fictional Mumbai trivia night used by the Host marketing captures. Draft capture input, never a seed world or an availability claim.",
+  "uses": [
+    "marketing-capture"
+  ],
+  "locale": "en-IN",
+  "timeZone": "Asia/Kolkata",
+  "currency": "INR",
+  "moments": {
+    "planning": "2026-10-16T12:00:00",
+    "today": "2026-10-17T16:00:00",
+    "live": "2026-10-17T19:00:00",
+    "followUp": "2026-10-18T10:00:00"
   },
-  "salesDemo": {
-    "referenceNow": "2026-10-16T12:00:00",
-    "host": {
-      "uid": "sales-demo-host",
-      "displayName": "Demo Host",
-      "firstName": "Host",
-      "phoneNumber": "+919000000001",
-      "email": "host@example.test",
+  "host": {
+    "uid": "sales-demo-host",
+    "personaId": "nyc_jordan_ellis_002",
+    "displayName": "Demo Host",
+    "firstName": "Host",
+    "phoneNumber": "+919000000001",
+    "email": "host@example.test"
+  },
+  "organizer": {
+    "id": "club-host-marketing-india",
+    "name": "Evening Club",
+    "description": "Fictional Mumbai organizer for a host workflow demonstration.",
+    "city": "mumbai",
+    "area": "Bandra West",
+    "tags": [
+      "trivia",
+      "hosted"
+    ],
+    "memberCount": 0,
+    "rating": 0,
+    "reviewCount": 0
+  },
+  "venues": [
+    {
+      "id": "harbour-room",
+      "name": "Harbour Room",
+      "area": "Bandra West",
+      "lat": 19.0607,
+      "lng": 72.8362,
+      "directions": "Meet the host at the entrance."
+    }
+  ],
+  "people": [
+    {
+      "id": "p01",
+      "personaId": "nyc_maya_shah_001"
+    },
+    {
+      "id": "p02",
       "personaId": "nyc_jordan_ellis_002"
     },
-    "club": {
-      "id": "club-host-marketing-india",
-      "name": "Evening Club",
-      "description": "Fictional Mumbai organizer for a host workflow demonstration.",
-      "location": "mumbai",
-      "area": "Bandra West",
-      "tags": [
-        "trivia",
-        "hosted"
-      ],
-      "memberCount": 0,
-      "rating": 0,
-      "reviewCount": 0
+    {
+      "id": "p03",
+      "personaId": "nyc_sofia_martinez_003"
     },
-    "events": [
-      {
-        "id": "event-host-trivia-store-demo",
-        "activityKind": "openActivity",
-        "startTime": "2026-10-17T18:30:00",
-        "endTime": "2026-10-17T20:30:00",
-        "meetingPoint": "Harbour Room",
-        "locationDetails": "Meet the host at the entrance.",
-        "startingPointLat": 19.0607,
-        "startingPointLng": 72.8362,
-        "capacityLimit": 30,
-        "waitlistedCount": 0,
-        "priceInPaise": 0,
-        "description": "A fictional hosted trivia social with a welcome and a simple run of show.",
-        "role": "hostEventSetup",
-        "bookedCount": 0,
-        "checkedInCount": 0
-      },
-      {
-        "id": "event-host-trivia-store-demo",
-        "activityKind": "openActivity",
-        "startTime": "2026-10-17T18:30:00",
-        "endTime": "2026-10-17T20:30:00",
-        "meetingPoint": "Harbour Room",
-        "locationDetails": "Meet the host at the entrance.",
-        "startingPointLat": 19.0607,
-        "startingPointLng": 72.8362,
-        "capacityLimit": 30,
-        "waitlistedCount": 0,
-        "priceInPaise": 0,
-        "description": "A fictional hosted trivia social with a welcome and a simple run of show.",
-        "role": "hostToday",
-        "bookedCount": 24,
-        "checkedInCount": 0
-      },
-      {
-        "id": "event-host-trivia-store-demo",
-        "activityKind": "openActivity",
-        "startTime": "2026-10-17T18:30:00",
-        "endTime": "2026-10-17T20:30:00",
-        "meetingPoint": "Harbour Room",
-        "locationDetails": "Meet the host at the entrance.",
-        "startingPointLat": 19.0607,
-        "startingPointLng": 72.8362,
-        "capacityLimit": 30,
-        "waitlistedCount": 0,
-        "priceInPaise": 0,
-        "description": "A fictional hosted trivia social with a welcome and a simple run of show.",
-        "role": "hostLiveConsole",
-        "bookedCount": 24,
-        "checkedInCount": 18
-      },
-      {
-        "id": "event-host-trivia-store-demo",
-        "activityKind": "openActivity",
-        "startTime": "2026-10-17T18:30:00",
-        "endTime": "2026-10-17T20:30:00",
-        "meetingPoint": "Harbour Room",
-        "locationDetails": "Meet the host at the entrance.",
-        "startingPointLat": 19.0607,
-        "startingPointLng": 72.8362,
-        "capacityLimit": 30,
-        "waitlistedCount": 0,
-        "priceInPaise": 0,
-        "description": "A fictional hosted trivia social with a welcome and a simple run of show.",
-        "role": "hostPostEventReport",
-        "bookedCount": 24,
-        "checkedInCount": 18
-      }
-    ],
-    "rosterPersonaIds": [
-      "nyc_maya_shah_001",
-      "nyc_jordan_ellis_002",
-      "nyc_sofia_martinez_003",
-      "nyc_ethan_brooks_004",
-      "nyc_aisha_williams_005",
-      "nyc_daniel_kim_006",
-      "nyc_priya_desai_007",
-      "nyc_marcus_chen_008",
-      "nyc_chloe_bennett_009",
-      "nyc_noah_patel_010",
-      "nyc_olivia_nguyen_011",
-      "nyc_caleb_johnson_012",
-      "nyc_emma_rodriguez_013",
-      "nyc_liam_oconnor_014",
-      "nyc_nia_okafor_015",
-      "nyc_arjun_mehta_016",
-      "nyc_grace_liu_017",
-      "nyc_miles_anderson_018",
-      "nyc_hannah_cohen_019",
-      "nyc_andre_baptiste_020",
-      "nyc_isabella_romano_021",
-      "nyc_samir_khan_022",
-      "nyc_taylor_reed_023",
-      "nyc_victor_alvarez_024"
-    ],
-    "eventSuccess": {
-      "defaultCheckedInCount": 18,
-      "defaultWaitlistedCount": 0,
-      "viewerPersonaId": "nyc_maya_shah_001",
-      "wingmanTargetPersonaId": "nyc_sofia_martinez_003"
+    {
+      "id": "p04",
+      "personaId": "nyc_ethan_brooks_004"
+    },
+    {
+      "id": "p05",
+      "personaId": "nyc_aisha_williams_005"
+    },
+    {
+      "id": "p06",
+      "personaId": "nyc_daniel_kim_006"
+    },
+    {
+      "id": "p07",
+      "personaId": "nyc_priya_desai_007"
+    },
+    {
+      "id": "p08",
+      "personaId": "nyc_marcus_chen_008"
+    },
+    {
+      "id": "p09",
+      "personaId": "nyc_chloe_bennett_009"
+    },
+    {
+      "id": "p10",
+      "personaId": "nyc_noah_patel_010"
+    },
+    {
+      "id": "p11",
+      "personaId": "nyc_olivia_nguyen_011"
+    },
+    {
+      "id": "p12",
+      "personaId": "nyc_caleb_johnson_012"
+    },
+    {
+      "id": "p13",
+      "personaId": "nyc_emma_rodriguez_013"
+    },
+    {
+      "id": "p14",
+      "personaId": "nyc_liam_oconnor_014"
+    },
+    {
+      "id": "p15",
+      "personaId": "nyc_nia_okafor_015"
+    },
+    {
+      "id": "p16",
+      "personaId": "nyc_arjun_mehta_016"
+    },
+    {
+      "id": "p17",
+      "personaId": "nyc_grace_liu_017"
+    },
+    {
+      "id": "p18",
+      "personaId": "nyc_miles_anderson_018"
+    },
+    {
+      "id": "p19",
+      "personaId": "nyc_hannah_cohen_019"
+    },
+    {
+      "id": "p20",
+      "personaId": "nyc_andre_baptiste_020"
+    },
+    {
+      "id": "p21",
+      "personaId": "nyc_isabella_romano_021"
+    },
+    {
+      "id": "p22",
+      "personaId": "nyc_samir_khan_022"
+    },
+    {
+      "id": "p23",
+      "personaId": "nyc_taylor_reed_023"
+    },
+    {
+      "id": "p24",
+      "personaId": "nyc_victor_alvarez_024"
     }
-  }
+  ],
+  "events": [
+    {
+      "id": "event-host-trivia-store-demo",
+      "name": "Saturday Trivia Social",
+      "description": "A fictional hosted trivia social with a welcome and a simple run of show.",
+      "venueId": "harbour-room",
+      "civilDate": "2026-10-17",
+      "startTime": "18:30",
+      "endTime": "20:30",
+      "activityKind": "openActivity",
+      "customActivityLabel": "Trivia social",
+      "format": {
+        "interactionModel": "hostLedProgram",
+        "admissionPreset": "openCapacity",
+        "playbookId": "host_led_social",
+        "selectedModuleIds": [
+          "host_script",
+          "safety_controls"
+        ],
+        "hostGoal": "Welcome guests and explain the trivia format."
+      },
+      "capacity": 30,
+      "priceInPaise": 0,
+      "guestPerspective": {
+        "viewer": "p01",
+        "wingmanTarget": "p03"
+      },
+      "attendance": [
+        {
+          "personId": "p01",
+          "bookedAt": "2026-10-16T12:30:00",
+          "checkedInAt": "2026-10-17T18:20:00"
+        },
+        {
+          "personId": "p02",
+          "bookedAt": "2026-10-16T13:25:00",
+          "checkedInAt": "2026-10-17T18:22:00"
+        },
+        {
+          "personId": "p03",
+          "bookedAt": "2026-10-16T14:20:00",
+          "checkedInAt": "2026-10-17T18:24:00"
+        },
+        {
+          "personId": "p04",
+          "bookedAt": "2026-10-16T15:15:00",
+          "checkedInAt": "2026-10-17T18:26:00"
+        },
+        {
+          "personId": "p05",
+          "bookedAt": "2026-10-16T16:10:00",
+          "checkedInAt": "2026-10-17T18:28:00"
+        },
+        {
+          "personId": "p06",
+          "bookedAt": "2026-10-16T17:05:00",
+          "checkedInAt": "2026-10-17T18:30:00"
+        },
+        {
+          "personId": "p07",
+          "bookedAt": "2026-10-16T18:00:00",
+          "checkedInAt": "2026-10-17T18:32:00"
+        },
+        {
+          "personId": "p08",
+          "bookedAt": "2026-10-16T18:55:00",
+          "checkedInAt": "2026-10-17T18:34:00"
+        },
+        {
+          "personId": "p09",
+          "bookedAt": "2026-10-16T19:50:00",
+          "checkedInAt": "2026-10-17T18:36:00"
+        },
+        {
+          "personId": "p10",
+          "bookedAt": "2026-10-16T20:45:00",
+          "checkedInAt": "2026-10-17T18:38:00"
+        },
+        {
+          "personId": "p11",
+          "bookedAt": "2026-10-16T21:40:00",
+          "checkedInAt": "2026-10-17T18:40:00"
+        },
+        {
+          "personId": "p12",
+          "bookedAt": "2026-10-16T22:35:00",
+          "checkedInAt": "2026-10-17T18:42:00"
+        },
+        {
+          "personId": "p13",
+          "bookedAt": "2026-10-16T23:30:00",
+          "checkedInAt": "2026-10-17T18:44:00"
+        },
+        {
+          "personId": "p14",
+          "bookedAt": "2026-10-17T00:25:00",
+          "checkedInAt": "2026-10-17T18:46:00"
+        },
+        {
+          "personId": "p15",
+          "bookedAt": "2026-10-17T01:20:00",
+          "checkedInAt": "2026-10-17T18:48:00"
+        },
+        {
+          "personId": "p16",
+          "bookedAt": "2026-10-17T02:15:00",
+          "checkedInAt": "2026-10-17T18:50:00"
+        },
+        {
+          "personId": "p17",
+          "bookedAt": "2026-10-17T03:10:00",
+          "checkedInAt": "2026-10-17T18:52:00"
+        },
+        {
+          "personId": "p18",
+          "bookedAt": "2026-10-17T04:05:00",
+          "checkedInAt": "2026-10-17T18:54:00"
+        },
+        {
+          "personId": "p19",
+          "bookedAt": "2026-10-17T05:00:00"
+        },
+        {
+          "personId": "p20",
+          "bookedAt": "2026-10-17T05:55:00"
+        },
+        {
+          "personId": "p21",
+          "bookedAt": "2026-10-17T06:50:00"
+        },
+        {
+          "personId": "p22",
+          "bookedAt": "2026-10-17T07:45:00"
+        },
+        {
+          "personId": "p23",
+          "bookedAt": "2026-10-17T08:40:00"
+        },
+        {
+          "personId": "p24",
+          "bookedAt": "2026-10-17T09:35:00"
+        }
+      ]
+    }
+  ]
 }

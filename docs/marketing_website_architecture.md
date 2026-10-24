@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.15.0
+version: 0.16.0
 updated: 2026-10-24
 owner: marketing_website
 status: active
@@ -87,18 +87,17 @@ isolated local emulator and packaged server described in `website/README.md`.
 
 `shared/site/PublicSiteChrome.tsx` owns `PublicSiteHeader` and `PublicSiteFooter`
 for marketing, discovery, directory/listing, public event detail, claim,
-Host product/application, legal/help and 404 pages. `content/site.ts` owns the
-canonical Find events, Organisers, Catch Host and Pricing links, root brand,
-claim/pilot actions, menu copy and global footer/legal links.
+Host product/application, legal/help and 404 pages. Every one of those routes
+renders the same header and footer: there are no per-route variants, local
+navigation props or route actions. `content/site.ts` owns the Find events,
+Organisers and For organisers links, root brand, menu copy, operator credit and
+global footer/legal links. Route-specific links belong in the page itself (the
+Host and Host application pages use the Host section navigation row).
 `SiteHeader` and `SiteFooter` remain low-level presentation primitives.
 The import scanner permits only `PublicSiteChrome.tsx` and its focused test to
 read resolved `content/site.ts`; arbitrary shared UI and every route-specific
-content import remain rejected by scanner self-tests. The canonical footer
-reuses the published operator credit through the site-wide content owner.
-Former route menus and actions remain in a separate labelled secondary nav;
-profile Events/About/Reviews links retain their conditional local anchors.
-Footer context copy and unique route links remain in a separate related-links
-group. Transactional/private shells keep their existing composition and authority.
+content import remain rejected by scanner self-tests. Transactional/private
+shells keep their existing composition and authority.
 
 ## Public content ownership
 
@@ -1249,8 +1248,8 @@ ownership without recreating duplicate marketing destinations.
 
 ### Host landing content and format explorer
 
-Home, Host and Explore select the same consumer `PublicSiteHeader` and
-`PublicSiteFooter` configuration (Find events, Organisers, For organisers).
+Home, Host and Explore render the shared `PublicSiteHeader` and
+`PublicSiteFooter` (Find events, Organisers, For organisers).
 Their typography and responsive chrome are owned by that shared consumer
 wrapper, not the surrounding page. Host-specific section links and the pilot
 action sit in a separately labelled navigation row below the global header.

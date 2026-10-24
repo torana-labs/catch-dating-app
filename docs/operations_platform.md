@@ -175,6 +175,29 @@ Robots.txt and each redirect consume budget like any other request. A capture
 returns a page snapshot without raw HTML plus a receipt holding only the
 outcome, hashes, sizes and budget window.
 
+#### Front doors
+
+Three front doors create requests today, all through one in-transaction
+service (`functions/src/operations/supplyIntake/requests.ts`). Each door
+derives its request id deterministically, so a retried submission finds its
+own request, and the same id with different content is refused rather than
+overwritten. Every request records its `origin`.
+
+- **Admin nomination.** `adminNominateOrganizer` (roles `admin`, `adminOwner`,
+  `salesStaff`) takes a name and/or links, market, notes and categories. It is
+  audited and rate-limited, and the id is keyed on the nominator and their own
+  request id.
+- **Website host applications and partner nominations.** Both already arrive
+  as `salesInboundIntents`, which ad attribution, alerts and partner credit
+  read. `onSalesInboundIntentForIntake` turns each intent that names an
+  organizer or a link into a request: a `self_submission` for the website, a
+  `nomination` credited to the partner for a partner. Applicant name and email
+  stay on the intent; only the organizer name, link, city and notes travel.
+
+Free-text cities resolve to the market slug Supply Intake keys work by
+(`mumbai`, `bengaluru`). An unknown city becomes `unassigned` for staff to
+place.
+
 #### Trusted intake worker
 
 Front doors write `supplyIntakeRequests/{requestId}` as `queued`

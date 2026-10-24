@@ -7,6 +7,7 @@ import {useSalesFitQueueController} from
   "../controllers/useSalesFitQueueController";
 import type {FitQueueEntry, FitQueueView} from
   "../api/salesFitQueueTypes";
+import {CatchText} from "@catch/web-ui";
 
 const views: Array<{id: FitQueueView; label: string}> = [
   {id: "ranked", label: "Reviewed fit"},
@@ -30,8 +31,8 @@ export function renderSalesFitQueueWorkspace(actorUid: string,
   onOpenHost: (organizerId: string) => void) {
   return dataMode() === "sample" ? <Panel title="Reviewed fit queue"
     icon={<ClipboardList size={18} />}>
-    <p>Company-wide reviewed fit is available with live Sales records.
-      Sample hosts do not carry reviewed scores.</p>
+    <CatchText as="p" variant="supporting">Company-wide reviewed fit is available with live Sales records.
+      Sample hosts do not carry reviewed scores.</CatchText>
   </Panel> : <SalesFitQueueWorkspace actorUid={actorUid}
     onOpenHost={onOpenHost} />;
 }
@@ -43,16 +44,16 @@ function SalesFitQueueWorkspace({actorUid, onOpenHost}: {
   const c = useSalesFitQueueController({actorUid});
   const rows = c.page.data?.rows ?? [];
   return <Panel title="Reviewed fit queue" icon={<ClipboardList size={18} />}>
-    <p>Scores use current reviewed factor evidence. Missing or disputed factors
+    <CatchText as="p" variant="supporting">Scores use current reviewed factor evidence. Missing or disputed factors
       stay unknown. This queue helps choose research and review; it does not
-      authorize contacting anyone.</p>
+      authorize contacting anyone.</CatchText>
     <SegmentedControl ariaLabel="Fit queue view" mobileLayout="content"
       mobileSelectLabel="Fit queue view" options={views} value={c.view}
       onChange={(value) => c.changeView(value as FitQueueView)} />
-    {c.view === "outreach_review_candidate" ? <p>
+    {c.view === "outreach_review_candidate" ? <CatchText as="p" variant="supporting">
       Candidates have a current reviewed score, a matching qualification policy,
       and no account hold or duplicate review. Review the contact and all current
-      source details before any outreach activity.</p> : null}
+      source details before any outreach activity.</CatchText> : null}
     {c.page.isPending ? <EmptyState>Loading reviewed fit…</EmptyState> : null}
     {c.page.isError ? <EmptyState>
       {c.view === "outreach_review_candidate" ?
@@ -60,12 +61,12 @@ function SalesFitQueueWorkspace({actorUid, onOpenHost}: {
         "Current fit could not be loaded."}{" "}
       <AdminButton onClick={() => void c.page.refetch()}>Try again</AdminButton>
     </EmptyState> : null}
-    {c.error ? <p role="alert">{c.error}</p> : null}
-    {c.notice ? <p role="status">{c.notice}</p> : null}
-    {c.page.data?.omittedExpiredInPage ? <p role="status">
+    {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
+    {c.notice ? <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText> : null}
+    {c.page.data?.omittedExpiredInPage ? <CatchText as="p" variant="supporting" role="status">
       {c.page.data.omittedExpiredInPage} expired ranking(s) were omitted from
       this page. Refresh a bounded batch to review them again.
-    </p> : null}
+    </CatchText> : null}
     {c.page.isSuccess && !rows.length ? <EmptyState>
       {c.page.data.nextCursor ?
         "No current results in this scanned page. Continue for more hosts." :
@@ -115,12 +116,12 @@ function SalesFitQueueWorkspace({actorUid, onOpenHost}: {
         Retry unchanged refresh
       </AdminButton> : null}
     </AdminToolbar>
-    {c.lastBatch ? <p role="status">
+    {c.lastBatch ? <CatchText as="p" variant="supporting" role="status">
       This batch refreshed {c.lastBatch.rows.filter((row) =>
         row.result === "refreshed").length} host(s);{" "}
       {c.lastBatch.rows.filter((row) => row.result === "needs_review").length}
       {" "}need source review. The batch covers only these ten or fewer hosts.
-    </p> : null}
+    </CatchText> : null}
     {c.lastBatch?.rows.some((row) => row.result === "needs_review") ?
       <ul>{c.lastBatch.rows.filter((row) => row.result === "needs_review")
         .map((row) => <li key={row.organizerId}>

@@ -34,13 +34,13 @@ class RotationSlotRow extends StatelessWidget {
             ),
             gapW8,
             Expanded(
-              child: Text(
+              child: CatchText(
                 context.l10n
                     .eventSuccessEventSuccessCompanionLiveCardsTextTimerangePeername(
                       timeRange: timeRange,
                       peerName: peerName,
                     ),
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             ),
           ],

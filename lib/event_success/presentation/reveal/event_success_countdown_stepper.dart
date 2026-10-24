@@ -85,19 +85,17 @@ class EventSuccessCountdownStepper extends StatelessWidget {
                     ),
                     gapW4,
                     Flexible(
-                      child: Text(
+                      child: CatchText(
                         entry.$2.item.label,
                         maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+
                         textAlign: TextAlign.center,
-                        style: CatchTextStyles.labelS(
-                          context,
-                          color: switch (entry.$2.state) {
-                            EventSuccessProgressStatus.current => t.gold,
-                            EventSuccessProgressStatus.complete => t.success,
-                            EventSuccessProgressStatus.future => t.ink3,
-                          },
-                        ),
+                        variant: CatchTextVariant.statusLabel,
+                        color: switch (entry.$2.state) {
+                          EventSuccessProgressStatus.current => t.gold,
+                          EventSuccessProgressStatus.complete => t.success,
+                          EventSuccessProgressStatus.future => t.ink3,
+                        },
                       ),
                     ),
                   ],

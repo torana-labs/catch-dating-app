@@ -216,11 +216,12 @@ class PaymentCheckoutHeader extends StatelessWidget {
             ),
             child: Align(
               alignment: Alignment.bottomLeft,
-              child: Text(
+              child: CatchText(
                 event.title,
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.headline(context, color: t.primaryInk),
+
+                variant: CatchTextVariant.headline,
+                color: t.primaryInk,
               ),
             ),
           ),
@@ -230,7 +231,7 @@ class PaymentCheckoutHeader extends StatelessWidget {
             top: CatchSpacing.s4,
             bottom: 0,
           ),
-          child: Text(
+          child: CatchText(
             context.l10n
                 .paymentsPaymentConfirmationScreenTextLongdatelabelTimerangelabelLocationnamePriceinpaise(
                   longDateLabel: event.longDateLabel,
@@ -242,7 +243,8 @@ class PaymentCheckoutHeader extends StatelessWidget {
                   ),
                   capacityLimit: event.capacityLimit,
                 ),
-            style: CatchTextStyles.proseM(context, color: t.ink2),
+            variant: CatchTextVariant.bodyM,
+            color: t.ink2,
           ),
         ),
         const Spacer(),
@@ -343,10 +345,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
               style: CatchTextStyles.headlineS(context, color: t.ink),
             ),
             gapH8,
-            Text(
-              message,
-              style: CatchTextStyles.proseM(context, color: t.ink2),
-            ),
+            CatchText(message, variant: CatchTextVariant.bodyM, color: t.ink2),
             gapH18,
             Padding(
               padding: CatchInsets.content,
@@ -356,14 +355,12 @@ class PaymentCheckoutSheet extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CatchText(
                           event.title,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.sectionTitle(
-                            context,
-                            color: t.ink,
-                          ),
+
+                          variant: CatchTextVariant.sectionTitle,
+                          color: t.ink,
                         ),
                         gapH4,
                         Text(
@@ -636,14 +633,16 @@ class PaymentConfirmationNotice extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             context.l10n.paymentsPaymentConfirmationScreenTextHeadsUp,
-            style: CatchTextStyles.labelM(context, color: t.primary),
+            variant: CatchTextVariant.statusLabel,
+            color: t.primary,
           ),
           gapH6,
-          Text(
+          CatchText(
             context.l10n.paymentsPaymentConfirmationScreenTextBringAWaterBottle,
-            style: CatchTextStyles.proseM(context, color: t.ink),
+            variant: CatchTextVariant.bodyM,
+            color: t.ink,
           ),
         ],
       ),
@@ -678,18 +677,19 @@ class PaymentReferralBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   context
                       .l10n
                       .paymentsPaymentConfirmationScreenTextBringSomeoneYouActually,
-                  style: CatchTextStyles.sectionTitle(context),
+                  variant: CatchTextVariant.sectionTitle,
                 ),
                 gapH2,
-                Text(
+                CatchText(
                   context
                       .l10n
                       .paymentsPaymentConfirmationScreenTextTheBestInvitesHappen,
-                  style: CatchTextStyles.proseM(context, color: t.ink2),
+                  variant: CatchTextVariant.bodyM,
+                  color: t.ink2,
                 ),
               ],
             ),

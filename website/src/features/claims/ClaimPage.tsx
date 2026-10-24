@@ -1,7 +1,6 @@
 import {claimGuidance} from "@content/claimGuidance";
 import {HostPreviewFaqList, HostPreviewSection, HostPreviewSectionHead, ButtonLink, ActionGroup} from "../../shared/ui/primitives";
 import {DemoContinuationWorkspace} from "./DemoContinuationWorkspace";
-import {websiteCopy} from "@content/generated";
 import {PublicSiteFooter, PublicSiteHeader} from "../../shared/site";
 import {ClaimFlowMain} from "../../shared/ui/primitives";
 import {
@@ -22,14 +21,7 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
 
   return (
     <>
-      <PublicSiteHeader
-        localNav={[
-          {href: "/organizers/", label: websiteCopy["claimpage_0025"]},
-          {href: "/host/", label: websiteCopy["claimpage_0027"]},
-          {href: "/help/", label: websiteCopy["claimpage_0031"]},
-        ]}
-        localActions={[{href: "/host/apply/", label: websiteCopy["claimpage_0030"]}]}
-      />
+      <PublicSiteHeader />
 
       <ClaimFlowMain>
         <ClaimHeroSection listing={controller.listing} />
@@ -51,14 +43,7 @@ function PublicClaimPage({routeState}: {routeState: ClaimRouteState}) {
         </HostPreviewSection>
       </ClaimFlowMain>
 
-      <PublicSiteFooter
-        body={websiteCopy["claimpage_0024"]}
-        links={[
-          {href: "/organizers/", label: websiteCopy["claimpage_0029"]},
-          {href: "/host/", label: websiteCopy["claimpage_0026"]},
-          {href: "/explore/", label: websiteCopy["claimpage_0028"]},
-        ]}
-      />
+      <PublicSiteFooter />
     </>
   );
 }

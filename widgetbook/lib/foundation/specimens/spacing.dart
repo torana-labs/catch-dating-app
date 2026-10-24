@@ -130,7 +130,7 @@ class _InsetTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(row.name, style: CatchTextStyles.labelM(context)),
+              Text(row.name, style: CatchTextStyles.statusLabel(context)),
               gapH10,
               Container(
                 height: WidgetbookPreviewLayout.foundationInsetSampleHeight,

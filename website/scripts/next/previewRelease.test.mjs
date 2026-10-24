@@ -30,6 +30,13 @@ test("preview requires current-main successful push CI from this repository", ()
     assert.throws(() => assertSuccessfulSource({...input, run: {...run, [key]: value}}));
   }
   assert.throws(() => assertSuccessfulSource({...input, mainSha: "b".repeat(40)}));
+  // The merge queue run of the same commit is equally its CI; only main's queue counts.
+  const queued = {...run, event: "merge_group", head_branch: `gh-readonly-queue/main/pr-841-${"b".repeat(40)}`};
+  assert.doesNotThrow(() => assertSuccessfulSource({...input, run: queued}));
+  for (const head_branch of ["main", `gh-readonly-queue/develop/pr-841-${"b".repeat(40)}`]) {
+    assert.throws(() => assertSuccessfulSource({...input, run: {...queued, head_branch}}), /merge queue run/u);
+  }
+  assert.throws(() => assertSuccessfulSource({...input, run: {...queued, conclusion: "cancelled"}}));
 });
 test("a release may trail main but never be off main or older than live", () => {
   const run = {head_sha: sourceSha, head_branch: "main", event: "push", path: ".github/workflows/ci.yml", repository: {full_name: repository},

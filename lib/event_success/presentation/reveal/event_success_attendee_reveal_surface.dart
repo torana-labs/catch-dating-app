@@ -169,16 +169,17 @@ class _EventSuccessAttendeeRevealSurfaceState
             ],
           ),
           gapH12,
-          Text(title, style: CatchTextStyles.titleL(context)),
+          CatchText(title, variant: CatchTextVariant.titleL),
           gapH6,
-          Text(
+          CatchText(
             _attendeeSubtitle(
               assigned: assigned,
               standings: widget.standings,
               showAssignment: showAssignment,
               isCountingDown: isCountingDown,
             ),
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           if (hasPayload && !widget.optedOut) ...[
             gapH16,

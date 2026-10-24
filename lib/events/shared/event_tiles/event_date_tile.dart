@@ -94,14 +94,12 @@ class WeekDayTile extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Text(
+                CatchText(
                   day,
-                  style: CatchTextStyles.statusLabel(
-                    context,
-                    color: active
-                        ? t.surface.withValues(alpha: CatchOpacity.scrimFill)
-                        : t.ink3,
-                  ),
+                  variant: CatchTextVariant.statusLabel,
+                  color: active
+                      ? t.surface.withValues(alpha: CatchOpacity.scrimFill)
+                      : t.ink3,
                 ),
                 gapH2,
                 Text(

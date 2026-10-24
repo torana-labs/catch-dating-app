@@ -175,7 +175,7 @@ app bars, names, sentence-case labels, controls and prose use the platform font.
 All app-bar text uses the platform function family. `CatchTopBar.route` and
 `.identity` use `CatchTextStyles.titleL`; root `.screen` and `.primaryRail` use
 `CatchTextStyles.headline`. Context always follows the primary title using
-`appBarSubtitle`. A screen's purpose is primary; an event or organizer name is
+`bodyS`. A screen's purpose is primary; an event or organizer name is
 secondary context. Person-identity destinations may use the person's name as
 the primary title. No app-bar eyebrow, kicker, IBM Plex, Archivo, raw title
 widget or feature-owned typography/geometry is valid.

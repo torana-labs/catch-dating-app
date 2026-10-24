@@ -8764,7 +8764,8 @@
         "path": "tool/ci/wait_main_marketing_validation.test.mjs",
         "contains": [
           "missing jobs and a completed run without evidence fail closed",
-          "cancellation during the final identity recheck revokes reuse"
+          "a newer merge cancelling CI during the final identity recheck keeps succeeded evidence",
+          "failure during the final identity recheck revokes reuse"
         ]
       }
     },

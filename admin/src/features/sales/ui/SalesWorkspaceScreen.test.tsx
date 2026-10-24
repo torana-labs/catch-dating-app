@@ -92,7 +92,8 @@ function controller() {
     nextInboundPage: vi.fn(), previousContactPage: vi.fn(), nextContactPage: vi.fn(),
     previousEvidencePage: vi.fn(), nextEvidencePage: vi.fn(),
     previousProposalPage: vi.fn(), nextProposalPage: vi.fn(),
-    addAccount: vi.fn(), saveAccount: vi.fn(async () => true),
+    addAccount: vi.fn(), nominateOrganizer: vi.fn(async () => true),
+    saveAccount: vi.fn(async () => true),
     logActivity: vi.fn(async () => true), saveOpportunity: vi.fn(), saveTask: vi.fn(),
     saveCustomValue: vi.fn(),
   };
@@ -134,6 +135,29 @@ describe("SalesWorkspaceScreen assigned staff access", () => {
     expect(controllerMock.use).toHaveBeenCalledWith(expect.objectContaining({
       area: "hosts", assignedStaffOnly: true,
     }));
+  });
+
+  it("lets assigned staff nominate an organizer Catch does not list yet", async () => {
+    renderWorkspace();
+
+    fireEvent.click(screen.getByRole("button", {name: "Nominate organizer"}));
+    const nominate = screen.getByRole("button", {name: "Nominate"});
+    expect(nominate).toHaveProperty("disabled", true);
+    fireEvent.change(screen.getByLabelText("City"), {target: {value: " Bengaluru "}});
+    fireEvent.change(screen.getByLabelText("Links, one per line"), {target: {value:
+      "https://lu.ma/thebhag\n\n lu.ma/thebhag \nhttps://lu.ma/thebhag"}});
+    expect(screen.getByRole("status").textContent).toContain('Check "lu.ma/thebhag"');
+    fireEvent.change(screen.getByLabelText("Links, one per line"), {target: {value:
+      "https://lu.ma/thebhag\n https://thebhag.in \nhttps://lu.ma/thebhag"}});
+    fireEvent.change(screen.getByLabelText("What should the reviewer know?"),
+      {target: {value: "  Sunday long runs  "}});
+    fireEvent.click(nominate);
+    await waitFor(() => expect(current.nominateOrganizer).toHaveBeenCalledWith({
+      name: null, market: "Bengaluru",
+      urls: ["https://lu.ma/thebhag", "https://thebhag.in"],
+      notes: "Sunday long runs", categories: [],
+    }));
+    await waitFor(() => expect(screen.queryByRole("button", {name: "Nominate"})).toBeNull());
   });
 
   it("keeps the assigned pipeline but does not render the global funnel", () => {

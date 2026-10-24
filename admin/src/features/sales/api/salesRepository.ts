@@ -11,7 +11,7 @@ import type {
   SalesCustomFieldValue, SalesInboundIntent, SalesLinkInboundIntentInput,
   SalesListAccountsInput,
   SalesListInboundIntentsInput, SalesListOpportunitiesInput, SalesListTasksInput,
-  SalesOpportunity, SalesPage,
+  SalesNominateOrganizerInput, SalesNomination, SalesOpportunity, SalesPage,
   SalesRecordActivityInput, SalesSetCustomFieldValueInput,
   SalesTask, SalesUpdateAccountInput,
   SalesUpsertOpportunityInput, SalesUpsertTaskInput,
@@ -275,6 +275,16 @@ export async function createSalesAccount(input: SalesCreateAccountInput): Promis
     });
     return {account, receipt: {requestId: input.requestId, revision: 1}};
   });
+}
+
+/** Queues the organizer for Supply Intake; staff review the listing it builds. */
+export async function nominateSalesOrganizer(
+  input: SalesNominateOrganizerInput
+): Promise<SalesNomination> {
+  if (dataMode() !== "sample") return call("adminNominateOrganizer", input);
+  return replayOrStore(input.requestId, () => ({
+    requestId: `nom-${"0".repeat(40)}`, created: true, status: "queued" as const,
+  }));
 }
 
 export async function upsertSalesTask(input: SalesUpsertTaskInput): Promise<{

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/hosts/presentation/applications/host_applicatio
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,9 +62,9 @@ class HostCustomerApplicationsSection extends ConsumerWidget {
             CatchSection.content(
               key: const ValueKey('host-customer-applications'),
               title: context.l10n.hostApplicationsTitle,
-              child: Text(
+              child: CatchText(
                 context.l10n.hostCustomersNoApplications,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             )
           else
@@ -168,11 +169,12 @@ class HostCustomerApplicationCard extends ConsumerWidget {
       loadingBuilder: (_) => CatchSkeleton.content(
         child: CatchSection.fieldRows(
           title: context.l10n.hostCustomersLatestSubmittedDetails,
-          footer: Text(
+          footer: CatchText(
             context.l10n.hostCustomersSubmittedOn(
               date: CatchSkeleton.sampleDateText,
             ),
-            style: CatchTextStyles.recordContext(context),
+            variant: CatchTextVariant.bodyS,
+            color: CatchTokens.of(context).ink2,
           ),
           children: [
             CatchField.read(
@@ -197,11 +199,12 @@ class HostCustomerApplicationCard extends ConsumerWidget {
       builder: (context, detail) => CatchSection.fieldRows(
         key: const ValueKey('host-customer-submitted-fields'),
         title: context.l10n.hostCustomersLatestSubmittedDetails,
-        footer: Text(
+        footer: CatchText(
           context.l10n.hostCustomersSubmittedOn(
             date: AppTimeFormatters.shortDate(detail.submittedAt),
           ),
-          style: CatchTextStyles.recordContext(context),
+          variant: CatchTextVariant.bodyS,
+          color: CatchTokens.of(context).ink2,
         ),
         children: [
           if (detail.answers.isEmpty)

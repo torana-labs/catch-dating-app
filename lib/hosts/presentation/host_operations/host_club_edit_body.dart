@@ -687,9 +687,10 @@ class HostClubPublicationChannelRow extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Text(
+              child: CatchText(
                 label,
-                style: CatchTextStyles.labelM(context, color: tokens.ink),
+                variant: CatchTextVariant.statusLabel,
+                color: tokens.ink,
               ),
             ),
             gapW12,

@@ -168,16 +168,16 @@ class HostGuestIntakeSettingsField extends StatelessWidget {
             ],
             if (showsProviderSource) ...[
               gapH20,
-              Text(
+              CatchText(
                 context.l10n.hostsOperationalRosterProviderTitle,
-                style: CatchTextStyles.sectionTitle(context),
+                variant: CatchTextVariant.sectionTitle,
               ),
               gapH4,
-              Text(
+              CatchText(
                 context.l10n.hostsOperationalRosterProviderBody(
                   provider: _providerDisplayName(context, bookingProvider!),
                 ),
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
               gapH12,
               HostBookingProviderSection(
@@ -552,18 +552,18 @@ class HostRosterInsightRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => insightsAsync.when(
-    loading: () => Text(
+    loading: () => CatchText(
       context.l10n.hostsOperationalRosterInsightsLoading,
-      style: CatchTextStyles.supporting(context),
+      variant: CatchTextVariant.supporting,
     ),
     error: (_, _) => Wrap(
       crossAxisAlignment: WrapCrossAlignment.center,
       spacing: CatchSpacing.s2,
       runSpacing: CatchSpacing.s2,
       children: [
-        Text(
+        CatchText(
           context.l10n.hostsOperationalRosterInsightsUnavailable,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         CatchButton(
           label: context.l10n.hostsOperationalRosterInsightsRetry,
@@ -584,9 +584,9 @@ class HostRosterInsightRail extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          CatchText(
             context.l10n.hostsOperationalRosterInsightsCaption,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           gapH8,
           Wrap(

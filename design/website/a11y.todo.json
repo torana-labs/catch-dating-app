@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-10-23",
+  "updated": "2026-10-24",
   "owner": "marketing_website",
   "debtId": "WEB-A11Y-001",
   "policy": "Project default is a11y.test=error. Only the exact stories below may use todo while their existing axe findings await a dedicated visual accessibility pass.",
@@ -53,11 +53,6 @@
     {
       "file": "website/src/stories/ClaimSections.stories.tsx",
       "export": "ClaimWorkspaceSubmitted",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
-      "file": "website/src/stories/HostSections.stories.tsx",
-      "export": "HostApplySectionStory",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },
     {

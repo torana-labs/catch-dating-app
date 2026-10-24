@@ -1,7 +1,7 @@
 {
   "src/styles/base.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 6
+      "count": 5
     }
   },
   "src/styles/catch-language.css": {
@@ -14,7 +14,7 @@
   },
   "src/styles/consumer-event.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 107
+      "count": 63
     },
     "declaration-property-value-allowed-list": {
       "count": 7
@@ -25,7 +25,7 @@
   },
   "src/styles/consumer-home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 225
+      "count": 217
     },
     "declaration-property-value-allowed-list": {
       "count": 20
@@ -36,7 +36,7 @@
   },
   "src/styles/event-detail.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 54
+      "count": 53
     },
     "declaration-property-value-allowed-list": {
       "count": 13
@@ -47,7 +47,7 @@
   },
   "src/styles/event-runtime.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 128
+      "count": 115
     },
     "declaration-property-value-allowed-list": {
       "count": 15
@@ -58,7 +58,7 @@
   },
   "src/styles/explore.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 81
+      "count": 46
     },
     "declaration-property-value-allowed-list": {
       "count": 3
@@ -91,7 +91,7 @@
   },
   "src/styles/host-foundation.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 62
+      "count": 36
     },
     "declaration-property-value-allowed-list": {
       "count": 15
@@ -113,7 +113,7 @@
   },
   "src/styles/host.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 240
+      "count": 166
     },
     "declaration-property-value-allowed-list": {
       "count": 47
@@ -124,7 +124,7 @@
   },
   "src/styles/legal.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 36
+      "count": 27
     },
     "declaration-property-value-allowed-list": {
       "count": 5
@@ -135,7 +135,7 @@
   },
   "src/styles/organiser-directory.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 87
+      "count": 49
     },
     "declaration-property-value-allowed-list": {
       "count": 4
@@ -146,7 +146,7 @@
   },
   "src/styles/organiser-profile.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 82
+      "count": 43
     },
     "declaration-property-value-allowed-list": {
       "count": 6
@@ -157,7 +157,7 @@
   },
   "src/styles/organizers.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 319
+      "count": 189
     },
     "declaration-property-value-allowed-list": {
       "count": 75
@@ -168,7 +168,7 @@
   },
   "src/styles/public-forms.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 116
+      "count": 72
     },
     "declaration-property-value-allowed-list": {
       "count": 16
@@ -192,7 +192,7 @@
   },
   "src/styles/site-footer.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 14
+      "count": 9
     },
     "declaration-property-value-allowed-list": {
       "count": 2
@@ -200,7 +200,7 @@
   },
   "src/styles/site-shell.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 62
+      "count": 43
     },
     "declaration-property-value-allowed-list": {
       "count": 12

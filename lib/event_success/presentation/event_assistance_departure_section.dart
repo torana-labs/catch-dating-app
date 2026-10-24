@@ -121,15 +121,15 @@ class _EventAssistanceDepartureSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        CatchText(
           l10n.eventAssistanceDepartureBody,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (widget.contextMessage != null) ...[
           gapH8,
-          Text(
+          CatchText(
             widget.contextMessage!,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         gapH12,
@@ -143,9 +143,9 @@ class _EventAssistanceDepartureSectionState
           ),
         ),
         if (widget.sourceChanged)
-          Text(
+          CatchText(
             l10n.eventAssistanceDepartureSourceChanged,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         gapH12,
         if (ready) ...[
@@ -171,7 +171,7 @@ class _EventAssistanceDepartureSectionState
           if (target != null) ...[
             if (target.detail.isNotEmpty) ...[
               gapH8,
-              Text(target.detail, style: CatchTextStyles.supporting(context)),
+              CatchText(target.detail, variant: CatchTextVariant.supporting),
             ],
             CatchFieldLanes.single(
               child: CatchField.toggle(
@@ -207,9 +207,9 @@ class _EventAssistanceDepartureSectionState
                 ),
               gapH8,
               if (_selected.isEmpty)
-                Text(
+                CatchText(
                   l10n.eventAssistanceDepartureNobody,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 ),
               if (canRequest)
                 CatchFieldLanes.single(
@@ -265,7 +265,7 @@ class _EventAssistanceDepartureSectionState
                   ),
           ),
         ] else ...[
-          Text(switch (widget.phase) {
+          CatchText(switch (widget.phase) {
             EventAssistanceDeparturePhase.ready ||
             EventAssistanceDeparturePhase.unavailable =>
               l10n.eventAssistanceDepartureUnavailable,
@@ -279,32 +279,32 @@ class _EventAssistanceDepartureSectionState
               l10n.eventAssistanceDepartureChanged,
             EventAssistanceDeparturePhase.saved =>
               l10n.eventAssistanceDepartureSaved,
-          }, style: CatchTextStyles.supporting(context)),
+          }, variant: CatchTextVariant.supporting),
           if (submitted != null &&
               widget.phase != EventAssistanceDeparturePhase.saved) ...[
             gapH8,
-            Text(
+            CatchText(
               widget.destinations
                       .where((d) => d.target == submitted.destination)
                       .firstOrNull
                       ?.label ??
                   l10n.eventAssistanceDepartureDestination,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
-            Text(
+            CatchText(
               submitted.roster == null
                   ? l10n.eventAssistanceDepartureRosterSkipped
                   : l10n.eventAssistanceDepartureSelected(
                       count: submitted.roster!.attendeeIds.length,
                     ),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
             if (submitted.checkpoint != null)
-              Text(
+              CatchText(
                 l10n.eventAssistanceDepartureReportAt(
                   time: time(submitted.checkpoint!.dueAt),
                 ),
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
           ],
         ],

@@ -879,6 +879,8 @@ export {validateAdminListIntakeOperationsCallablePayload} from "./validators/adm
 export {validateAdminListActionExecutionsCallablePayload} from "./validators/adminListActionExecutionsInput";
 export {validateAdminRecordActionExecutionCallablePayload} from "./validators/adminRecordActionExecutionInput";
 export {validateAdminDecideOrganizerEventCandidateCallablePayload} from "./validators/adminDecideOrganizerEventCandidateInput";
+export {validateAdminNominateOrganizerCallablePayload} from "./validators/adminNominateOrganizerInput";
+export {validateAdminNominateOrganizerCallableResponse} from "./validators/adminNominateOrganizerOutput";
 export {validateAdminDecideOrganizerPolicyGapCallablePayload} from "./validators/adminDecideOrganizerPolicyGapInput";
 export {validateAdminResolveOrganizerEventLocationCallablePayload} from "./validators/adminResolveOrganizerEventLocationInput";
 export {validateAdminSetClubIndexStatusCallablePayload} from "./validators/adminSetClubIndexStatusInput";

@@ -85,31 +85,27 @@ class EventLocationMapScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
+                            CatchText(
                               state.locationName,
-                              style: CatchTextStyles.sectionTitle(context),
+                              variant: CatchTextVariant.sectionTitle,
                             ),
                             if (state.event.effectiveMeetingLocation?.address
                                     ?.trim()
                                 case final address?
                                 when address.isNotEmpty) ...[
                               gapH2,
-                              Text(
+                              CatchText(
                                 address,
-                                style: CatchTextStyles.supporting(
-                                  context,
-                                  color: t.ink2,
-                                ),
+                                variant: CatchTextVariant.supporting,
+                                color: t.ink2,
                               ),
                             ],
                             if (state.locationNotes != null) ...[
                               gapH2,
-                              Text(
+                              CatchText(
                                 state.locationNotes!,
-                                style: CatchTextStyles.supporting(
-                                  context,
-                                  color: t.ink2,
-                                ),
+                                variant: CatchTextVariant.supporting,
+                                color: t.ink2,
                               ),
                             ],
                           ],

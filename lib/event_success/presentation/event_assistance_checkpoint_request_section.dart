@@ -115,34 +115,34 @@ class _EventAssistanceCheckpointRequestSectionState
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(widget.contextMessage, style: CatchTextStyles.supporting(context)),
+        CatchText(widget.contextMessage, variant: CatchTextVariant.supporting),
         if (widget.checkpointLabel case final label?) ...[
           gapH8,
-          Text(label, style: CatchTextStyles.titleL(context)),
+          CatchText(label, variant: CatchTextVariant.titleL),
         ],
         gapH12,
-        Text(
+        CatchText(
           l10n.eventAssistanceCheckpointRequestBody,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (assistanceCheckpointRequestCopy(context, widget.request)
             case final status?) ...[
           gapH12,
-          Text(status, style: CatchTextStyles.supporting(context)),
+          CatchText(status, variant: CatchTextVariant.supporting),
         ],
         if (due != null) ...[
           gapH8,
-          Text(
+          CatchText(
             l10n.eventAssistanceCheckpointDue(
               deadline:
                   '${local.formatMediumDate(due)} · ${local.formatTimeOfDay(TimeOfDay.fromDateTime(due))}',
             ),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         if (widget.request case final request?) ...[
           gapH8,
-          Text(
+          CatchText(
             l10n.eventAssistanceCheckpointReporterCurrent(
               name: checkpointReporterName(
                 context,
@@ -150,7 +150,7 @@ class _EventAssistanceCheckpointRequestSectionState
                 request.responsibleOperatorId,
               ),
             ),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         if (widget.observationSummary case final summary?) ...[
@@ -168,7 +168,7 @@ class _EventAssistanceCheckpointRequestSectionState
             ),
           ],
           gapH12,
-          Text(
+          CatchText(
             widget.request == null
                 ? l10n.eventAssistanceCheckpointRequestMissing
                 : eligibility == null
@@ -195,7 +195,7 @@ class _EventAssistanceCheckpointRequestSectionState
                           l10n.eventAssistanceCheckpointClosedOut,
                       },
                   },
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           if (widget.canReassign && widget.reporterOptions != null) ...[
             gapH8,
@@ -215,9 +215,9 @@ class _EventAssistanceCheckpointRequestSectionState
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
+                  CatchText(
                     l10n.eventAssistanceCheckpointReporterBody,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                   gapH8,
                   if (namedReporters?.isNotEmpty == true)
@@ -244,14 +244,14 @@ class _EventAssistanceCheckpointRequestSectionState
                       ),
                     )
                   else
-                    Text(
+                    CatchText(
                       l10n.eventAssistanceCheckpointReporterEmpty,
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                   if (alternativeReporters?.length != namedReporters?.length)
-                    Text(
+                    CatchText(
                       l10n.eventAssistanceCheckpointReporterUnnamed,
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                 ],
               ),
@@ -309,14 +309,14 @@ class _EventAssistanceCheckpointRequestSectionState
             ],
           ] else if (widget.request != null) ...[
             gapH8,
-            Text(
+            CatchText(
               l10n.eventAssistanceCheckpointRequestAuthority,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ],
         ] else ...[
           gapH12,
-          Text(switch (widget.phase) {
+          CatchText(switch (widget.phase) {
             EventAssistanceCheckpointPhase.submitting =>
               l10n.eventAssistanceCheckpointRequestSaving,
             EventAssistanceCheckpointPhase.retryRequired =>
@@ -328,7 +328,7 @@ class _EventAssistanceCheckpointRequestSectionState
             EventAssistanceCheckpointPhase.unavailable =>
               l10n.eventAssistanceCheckpointRequestAuthority,
             EventAssistanceCheckpointPhase.ready => '',
-          }, style: CatchTextStyles.supporting(context)),
+          }, variant: CatchTextVariant.supporting),
           if ((busy ||
                   widget.phase ==
                       EventAssistanceCheckpointPhase.retryRequired) &&
@@ -346,17 +346,17 @@ class _EventAssistanceCheckpointRequestSectionState
             if (decision case ReassignCheckpointReporter(
               :final reporterId,
             )) ...[
-              Text(
+              CatchText(
                 checkpointReporterName(
                   context,
                   widget.reporterOptions,
                   reporterId,
                 ),
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
               gapH8,
             ],
-            Text(decision.reason, style: CatchTextStyles.supporting(context)),
+            CatchText(decision.reason, variant: CatchTextVariant.supporting),
           ],
         ],
         if (widget.error != null) ...[

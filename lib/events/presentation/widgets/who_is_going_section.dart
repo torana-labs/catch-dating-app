@@ -112,12 +112,10 @@ class WhoIsGoingBody extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
+                child: CatchText(
                   context.l10n.eventsWhoIsGoingTextWhoSGoing,
-                  style: CatchTextStyles.titleL(
-                    context,
-                    color: surfaceStyle?.headingColor,
-                  ),
+                  variant: CatchTextVariant.titleL,
+                  color: surfaceStyle?.headingColor,
                 ),
               ),
               Text(
@@ -219,20 +217,16 @@ class WhoIsGoingEmptyState extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   title,
-                  style: CatchTextStyles.sectionTitle(
-                    context,
-                    color: surfaceStyle?.headingColor,
-                  ),
+                  variant: CatchTextVariant.sectionTitle,
+                  color: surfaceStyle?.headingColor,
                 ),
                 gapH4,
-                Text(
+                CatchText(
                   message,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: surfaceStyle?.bodyColor ?? t.ink2,
-                  ),
+                  variant: CatchTextVariant.supporting,
+                  color: surfaceStyle?.bodyColor ?? t.ink2,
                 ),
               ],
             ),
@@ -275,12 +269,10 @@ class SwipeWindowBanner extends StatelessWidget {
           ),
           gapW8,
           Expanded(
-            child: Text(
+            child: CatchText(
               message,
-              style: CatchTextStyles.supporting(
-                context,
-                color: surfaceStyle?.primaryColor ?? t.primary,
-              ),
+              variant: CatchTextVariant.supporting,
+              color: surfaceStyle?.primaryColor ?? t.primary,
             ),
           ),
         ],

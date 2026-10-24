@@ -137,7 +137,10 @@ class WidgetbookContractStateCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: CatchTextStyles.labelM(context, color: t.primary)),
+          Text(
+            label,
+            style: CatchTextStyles.statusLabel(context, color: t.primary),
+          ),
           if (description != null) ...[
             const SizedBox(height: CatchSpacing.s2),
             Text(

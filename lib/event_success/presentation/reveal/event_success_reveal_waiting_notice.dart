@@ -29,19 +29,20 @@ class EventSuccessRevealWaitingNotice extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   context
                       .l10n
                       .eventSuccessEventSuccessLiveRevealWidgetsTextTheRoomIsHolding,
-                  style: CatchTextStyles.sectionTitle(context),
+                  variant: CatchTextVariant.sectionTitle,
                 ),
                 gapH2,
-                Text(
+                CatchText(
                   context.l10n
                       .eventSuccessEventSuccessLiveRevealWidgetsTextTheHostControlsThe(
                         assignmentNoun: kind.assignmentNoun,
                       ),
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                 ),
               ],
             ),

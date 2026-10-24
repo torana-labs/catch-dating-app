@@ -16,6 +16,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 import '../../clubs/clubs_test_helpers.dart' as club_test;
 import '../../events/events_test_helpers.dart' as event_test;
+import 'demo_world.dart';
 
 final salesDemoSyntheticFixtures = SalesDemoSyntheticFixtures.load();
 final salesDemoHostScenario = SalesDemoHostScenarioFixture.load();
@@ -26,20 +27,40 @@ final _ageReferenceDate = DateTime(2026, 5, 31);
 // It does not change the global host-demo seed world or persona projection.
 final hostMarketingIndiaScenario = HostMarketingIndiaScenarioFixture.load();
 
+const hostMarketingIndiaEventId = 'event-host-trivia-store-demo';
+
+/// Which demo world moment each Host capture role shows.
+const hostCaptureRoleMoments = <String, String>{
+  'hostEventSetup': 'planning',
+  'hostToday': 'today',
+  'hostLiveConsole': 'live',
+  'hostPostEventReport': 'followUp',
+};
+
 class HostMarketingIndiaScenarioFixture {
   const HostMarketingIndiaScenarioFixture._(this.scenario, this._narrative);
 
   factory HostMarketingIndiaScenarioFixture.load({
     String path = 'tool/demo/demo_seed/scenarios/host-marketing-india.json',
   }) {
-    final root = _stringMap(
-      jsonDecode(File(path).readAsStringSync()),
-      context: path,
-    );
-    final narrative = _stringMap(
-      root['captureNarrative'],
-      context: '$path.captureNarrative',
-    );
+    final world = DemoWorld.load(path);
+    final event = world.event(hostMarketingIndiaEventId);
+    final format = _stringMap(event['format'], context: '$path.format');
+    final narrative = <String, Object?>{
+      'eventName': event['name'],
+      'civilDate': event['civilDate'],
+      'startTime': event['startTime'],
+      'endTime': event['endTime'],
+      'timeZone': world.timeZone,
+      'currency': world.currency,
+      'admissionPreset': format['admissionPreset'],
+      'interactionModel': format['interactionModel'],
+      'playbookId': format['playbookId'],
+      'selectedModuleIds': format['selectedModuleIds'],
+      'phaseClocks': world.moments,
+      'customActivityLabel': event['customActivityLabel'],
+      'hostGoal': format['hostGoal'],
+    };
     if (narrative['timeZone'] != 'Asia/Kolkata' ||
         narrative['currency'] != 'INR' ||
         narrative['admissionPreset'] != 'openCapacity' ||
@@ -49,7 +70,11 @@ class HostMarketingIndiaScenarioFixture {
       );
     }
     return HostMarketingIndiaScenarioFixture._(
-      SalesDemoHostScenarioFixture.load(path: path),
+      SalesDemoHostScenarioFixture.fromDemoWorld(
+        world,
+        eventId: hostMarketingIndiaEventId,
+        roleMoments: hostCaptureRoleMoments,
+      ),
       Map.unmodifiable(narrative),
     );
   }
@@ -84,7 +109,7 @@ class HostMarketingIndiaScenarioFixture {
     activityKind: scenario.eventByRole('hostEventSetup').activityKind,
     interactionModel: EventInteractionModel.hostLedProgram,
     customActivityLabel: _requiredStringFrom(_narrative, 'customActivityLabel'),
-    defaultPlaybookId: 'host_led_social',
+    defaultPlaybookId: _requiredStringFrom(_narrative, 'playbookId'),
   );
 
   EventSuccessDefaults get guideDefaults =>
@@ -232,6 +257,70 @@ class SalesDemoHostScenarioFixture {
       wingmanTargetPersonaId: _requiredStringFrom(
         eventSuccess,
         'wingmanTargetPersonaId',
+      ),
+    );
+  }
+
+  /// Builds the per-role events from one demo world event: each role shows
+  /// the world's state at its moment, so counts come from guest records.
+  factory SalesDemoHostScenarioFixture.fromDemoWorld(
+    DemoWorld world, {
+    required String eventId,
+    required Map<String, String> roleMoments,
+  }) {
+    final event = world.event(eventId);
+    final venue = world.venueFor(eventId);
+    final civilDate = _requiredStringFrom(event, 'civilDate');
+    final perspective = _stringMap(
+      event['guestPerspective'],
+      context: '${world.id}.guestPerspective',
+    );
+    final organizer = world.organizer;
+    return SalesDemoHostScenarioFixture._(
+      id: world.id,
+      referenceNow: DateTime.parse(world.moments[roleMoments.values.first]!),
+      host: SalesDemoHostUserFixture._fromJson(world.host),
+      club: SalesDemoHostClubFixture._fromJson({
+        ...organizer,
+        'location': organizer['city'],
+      }),
+      eventsByRole: Map.unmodifiable({
+        for (final MapEntry(key: role, value: moment) in roleMoments.entries)
+          role: SalesDemoHostEventFixture._(
+            role: role,
+            id: eventId,
+            activityKind: _activityKindFromName(
+              _requiredStringFrom(event, 'activityKind'),
+            ),
+            startTime: world.civil(
+              civilDate,
+              _requiredStringFrom(event, 'startTime'),
+            ),
+            endTime: world.civil(
+              civilDate,
+              _requiredStringFrom(event, 'endTime'),
+            ),
+            meetingPoint: _requiredStringFrom(venue, 'name'),
+            locationDetails: _requiredStringFrom(venue, 'directions'),
+            startingPointLat: _requiredDoubleFrom(venue, 'lat'),
+            startingPointLng: _requiredDoubleFrom(venue, 'lng'),
+            capacityLimit: _requiredIntFrom(event, 'capacity'),
+            bookedCount: world.stateAt(eventId, moment).booked,
+            checkedInCount: world.stateAt(eventId, moment).checkedIn,
+            waitlistedCount: 0,
+            priceInPaise: _requiredIntFrom(event, 'priceInPaise'),
+            description: _requiredStringFrom(event, 'description'),
+            scorecard: null,
+          ),
+      }),
+      rosterPersonaIds: List.unmodifiable(world.personaIds),
+      defaultCheckedInCount: world.stateAt(eventId, 'live').checkedIn,
+      defaultWaitlistedCount: 0,
+      viewerPersonaId: world.personaIdFor(
+        _requiredStringFrom(perspective, 'viewer'),
+      ),
+      wingmanTargetPersonaId: world.personaIdFor(
+        _requiredStringFrom(perspective, 'wingmanTarget'),
       ),
     );
   }

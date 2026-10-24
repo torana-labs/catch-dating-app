@@ -142,21 +142,21 @@ class _EventAssistanceCheckpointSectionState
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(widget.contextMessage, style: CatchTextStyles.supporting(context)),
+        CatchText(widget.contextMessage, variant: CatchTextVariant.supporting),
         gapH8,
-        Text(
+        CatchText(
           l10n.eventAssistanceCheckpointDeparture(
             number: widget.progressRevision,
           ),
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (roster != null) ...[
           gapH12,
-          Text(roster.label, style: CatchTextStyles.titleL(context)),
+          CatchText(roster.label, variant: CatchTextVariant.titleL),
           gapH8,
-          Text(
+          CatchText(
             l10n.eventAssistanceCheckpointBody,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           gapH12,
           Text(
@@ -168,14 +168,14 @@ class _EventAssistanceCheckpointSectionState
           ),
           if (roster.members.isEmpty) ...[
             gapH8,
-            Text(
+            CatchText(
               l10n.eventAssistanceCheckpointEmptyRoster,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ],
           if (widget.requestMessage case final message?) ...[
             gapH8,
-            Text(message, style: CatchTextStyles.supporting(context)),
+            CatchText(message, variant: CatchTextVariant.supporting),
           ],
           gapH12,
           if (roster.members.isNotEmpty)
@@ -202,21 +202,21 @@ class _EventAssistanceCheckpointSectionState
               ),
             ),
             gapH8,
-            Text(
+            CatchText(
               l10n.eventAssistanceCheckpointCorrectionBody,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ] else if (widget.phase != EventAssistanceCheckpointPhase.saved &&
               widget.submittedObservation?.correctionReason != null) ...[
             gapH8,
-            Text(
+            CatchText(
               widget.submittedObservation!.correctionReason!,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ],
         ] else if (available is AssistanceCheckpointUnavailable) ...[
           gapH12,
-          Text(switch (available.reason) {
+          CatchText(switch (available.reason) {
             AssistanceCheckpointUnavailableReason.rosterNotRecorded =>
               l10n.eventAssistanceCheckpointNoRoster,
             AssistanceCheckpointUnavailableReason.destinationNotRecorded =>
@@ -226,11 +226,11 @@ class _EventAssistanceCheckpointSectionState
             AssistanceCheckpointUnavailableReason.differentCheckpoint ||
             AssistanceCheckpointUnavailableReason.setupChanged =>
               l10n.eventAssistanceCheckpointSetupChanged,
-          }, style: CatchTextStyles.supporting(context)),
+          }, variant: CatchTextVariant.supporting),
         ],
         if (widget.phase != EventAssistanceCheckpointPhase.ready) ...[
           gapH12,
-          Text(switch (widget.phase) {
+          CatchText(switch (widget.phase) {
             EventAssistanceCheckpointPhase.submitting =>
               l10n.eventAssistanceCheckpointSaving,
             EventAssistanceCheckpointPhase.retryRequired =>
@@ -242,7 +242,7 @@ class _EventAssistanceCheckpointSectionState
             EventAssistanceCheckpointPhase.unavailable =>
               l10n.eventAssistanceCheckpointReadOnly,
             EventAssistanceCheckpointPhase.ready => '',
-          }, style: CatchTextStyles.supporting(context)),
+          }, variant: CatchTextVariant.supporting),
         ],
         if (widget.error != null) ...[
           gapH12,

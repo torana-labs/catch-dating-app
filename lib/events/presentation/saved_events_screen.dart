@@ -90,7 +90,7 @@ class SavedEventsScreen extends ConsumerWidget {
                       iconSize: CatchLayout.calendarEmptyIconSize,
                       padding: EdgeInsets.zero,
                       titleStyle: CatchTextStyles.titleL(context),
-                      messageStyle: CatchTextStyles.proseM(
+                      messageStyle: CatchTextStyles.supporting(
                         context,
                         color: CatchTokens.of(context).ink2,
                       ),

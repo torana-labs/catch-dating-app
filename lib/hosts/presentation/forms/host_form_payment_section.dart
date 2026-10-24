@@ -8,6 +8,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -88,9 +89,9 @@ class HostFormPaymentSetupSection extends StatelessWidget {
       title: l10n.hostFormPaymentTitle,
       footer: fee == null
           ? null
-          : Text(
+          : CatchText(
               l10n.hostFormPaymentPublishHelp,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
       children: [
         CatchField.content(
@@ -234,9 +235,10 @@ class HostFormPaymentSetupSection extends StatelessWidget {
             onPressed: () => Navigator.of(dialogContext).pop(true),
           ),
         ],
-        child: Text(
+        child: CatchText(
           context.l10n.hostFormPaymentDisconnectHelp,
-          style: CatchTextStyles.proseM(context),
+          variant: CatchTextVariant.bodyM,
+          color: CatchTokens.of(context).ink,
         ),
       ),
     );

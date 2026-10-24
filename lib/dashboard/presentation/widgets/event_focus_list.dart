@@ -138,9 +138,9 @@ class _EventFocusListState extends State<EventFocusList> {
       children: [
         Row(
           children: [
-            Text(
+            CatchText(
               context.l10n.dashboardEventFocusRailTextEventFocus,
-              style: CatchTextStyles.titleL(context),
+              variant: CatchTextVariant.titleL,
             ),
             gapW8,
             CatchBadge(label: cardCountLabel, tone: CatchBadgeTone.brand),

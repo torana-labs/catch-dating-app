@@ -49,7 +49,7 @@ function request(overrides: Record<string, unknown> = {}) {
   return {
     schemaVersion: 1, requestId: "nom-afterfly-1", kind: "nomination", market: "mumbai",
     seed: {name: "Afterfly", urls: ["https://lu.ma/afterfly"], notes: null, categories: ["social"]},
-    submittedBy: {role: "associate", uid: "associate-1", partnerId: null}, submittedAt: NOW, ...overrides,
+    submittedBy: {role: "associate", uid: "associate-1", partnerId: null}, submittedAt: NOW, origin: null, ...overrides,
   };
 }
 

@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {CheckCircle2, Clock3, ExternalLink, FileWarning, FolderSearch, Lock} from "lucide-react";
 import type {
@@ -271,7 +271,7 @@ function ExternalEventSupplyDetail({
       <AdminSearchCandidateHeader>
         <div>
           <AdminEyebrow>{event.targetPath}</AdminEyebrow>
-          <h3>{event.title}</h3>
+          <CatchText as="h3" variant="sectionTitle">{event.title}</CatchText>
         </div>
         <StatusChip tone={externalEventNeedsReview(event) ? "" : "ready"}>
           {externalEventNeedsReview(event) ? "review open" : "reviewed"}

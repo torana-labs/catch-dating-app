@@ -356,12 +356,13 @@ class _ProfilePhotoEditorScreenState
               ),
               if (!widget.canDelete) ...[
                 gapH8,
-                Text(
+                CatchText(
                   context.l10n
                       .imageUploadsProfilePhotoEditorScreenTextKeepAtLeastMinimumprofilephotocount(
                         minimumProfilePhotoCount: minimumProfilePhotoCount,
                       ),
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                 ),
               ],
             ],

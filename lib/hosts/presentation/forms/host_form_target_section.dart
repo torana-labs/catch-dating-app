@@ -36,8 +36,7 @@ class HostFormTargetSection extends ConsumerStatefulWidget {
       _HostFormTargetSectionState();
 }
 
-class _HostFormTargetSectionState
-    extends ConsumerState<HostFormTargetSection> {
+class _HostFormTargetSectionState extends ConsumerState<HostFormTargetSection> {
   HostFormTargetController? _targets;
   bool _showEventChoices = false;
 
@@ -59,7 +58,9 @@ class _HostFormTargetSectionState
   }
 
   void _bindTargetController() {
-    _targets?..removeListener(_changed)..dispose();
+    _targets
+      ?..removeListener(_changed)
+      ..dispose();
     _targets = null;
     _showEventChoices = false;
     final accountId = widget.accountId;
@@ -86,14 +87,17 @@ class _HostFormTargetSectionState
     if (oldWidget.organizerId != organizerId ||
         oldWidget.accountId != widget.accountId ||
         oldWidget.notifier != notifier ||
-        oldWidget.enableEventTargetSettings != widget.enableEventTargetSettings) {
+        oldWidget.enableEventTargetSettings !=
+            widget.enableEventTargetSettings) {
       _bindTargetController();
     }
   }
 
   @override
   void dispose() {
-    _targets?..removeListener(_changed)..dispose();
+    _targets
+      ?..removeListener(_changed)
+      ..dispose();
     super.dispose();
   }
 
@@ -135,33 +139,42 @@ class _HostFormTargetSectionState
     final accountId = widget.accountId;
     final targets = _targets;
     final uidState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
-    final targetVisible = widget.enableEventTargetSettings &&
+    final targetVisible =
+        widget.enableEventTargetSettings &&
         uidState.isSettledData &&
         uidState.value == accountId &&
         ref.watch(firebaseAuthProvider).currentUser?.uid == accountId &&
         targets?.isCurrentAccount == true;
     if (!targetVisible) return const SizedBox.shrink();
     if (definition.defaultTargetKind == HostFormTargetKind.event &&
-        targets != null && !targets.loaded && !targets.loading &&
+        targets != null &&
+        !targets.loaded &&
+        !targets.loading &&
         !targets.hasLoadFailure) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && identical(_targets, targets) &&
-            targets.isCurrentAccount && !targets.loaded && !targets.loading) {
+        if (mounted &&
+            identical(_targets, targets) &&
+            targets.isCurrentAccount &&
+            !targets.loaded &&
+            !targets.loading) {
           targets.refresh();
         }
       });
     }
     final currentEventId = definition.defaultTargetId;
     final currentEvent = currentEventId == null
-        ? null : targets?.event(currentEventId);
+        ? null
+        : targets?.event(currentEventId);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchSection.fieldRows(
           title: context.l10n.hostFormTargetTitle,
           footer: widget.hasPublishedVersion
-              ? Text(context.l10n.hostFormTargetPublishedNotice,
-                  style: CatchTextStyles.supporting(context))
+              ? CatchText(
+                  context.l10n.hostFormTargetPublishedNotice,
+                  variant: CatchTextVariant.supporting,
+                )
               : null,
           children: [
             if (definition.defaultTargetKind == HostFormTargetKind.campaign)
@@ -177,8 +190,10 @@ class _HostFormTargetSectionState
                 title: context.l10n.hostFormTargetTitle,
                 contractExemption:
                     'The versioned form definition validates its exact target.',
-                values: const [HostFormTargetKind.organizer,
-                  HostFormTargetKind.event],
+                values: const [
+                  HostFormTargetKind.organizer,
+                  HostFormTargetKind.event,
+                ],
                 value: definition.defaultTargetKind,
                 itemLabelBuilder: (kind) => kind == HostFormTargetKind.organizer
                     ? context.l10n.hostFormTargetReusable
@@ -194,7 +209,8 @@ class _HostFormTargetSectionState
                 key: const ValueKey('host-form-target-current'),
                 title: context.l10n.hostFormTargetEvent,
                 body: currentEvent?.name?.trim().isNotEmpty == true
-                    ? currentEvent!.name! : currentEventId,
+                    ? currentEvent!.name!
+                    : currentEventId,
               ),
               if (targets!.bindingUnavailable(currentEventId))
                 CatchField.read(
@@ -230,10 +246,12 @@ class _HostFormTargetSectionState
                   title: context.l10n.sharedActionTryAgain,
                   icon: CatchIcons.refreshRounded,
                   onTap: () => targets.canLoadMore
-                      ? targets.loadMore() : targets.refresh(),
+                      ? targets.loadMore()
+                      : targets.refresh(),
                 ),
               ],
-              if (targets.loaded && targets.events.isEmpty &&
+              if (targets.loaded &&
+                  targets.events.isEmpty &&
                   !targets.hasLoadFailure)
                 CatchField.read(
                   copy: catchFieldCopy(context.l10n),
@@ -245,7 +263,8 @@ class _HostFormTargetSectionState
                   copy: catchFieldCopy(context.l10n),
                   key: ValueKey('host-form-target-event-${event.eventId}'),
                   title: event.name?.trim().isNotEmpty == true
-                      ? event.name! : context.l10n.hostEventOfferUntitledEvent,
+                      ? event.name!
+                      : context.l10n.hostEventOfferUntitledEvent,
                   body: AppTimeFormatters.dateTime(event.startTime.toLocal()),
                   icon: CatchIcons.eventAvailableOutlined,
                   onTap: () => _chooseEvent(event),

@@ -62,12 +62,10 @@ class CreateEventPhotoPicker extends StatelessWidget {
               organizerLogoUrl: organizerLogoUrl,
             ),
             gapH12,
-            Text(
+            CatchText(
               context.l10n.hostsCreateEventPhotoPickerBodyUnlimitedGallery,
-              style: CatchTextStyles.supporting(
-                context,
-                color: CatchTokens.of(context).ink3,
-              ),
+              variant: CatchTextVariant.supporting,
+              color: CatchTokens.of(context).ink3,
             ),
             gapH16,
             OrderedPhotoPicker(
@@ -131,9 +129,10 @@ class _InheritedOrganizerLogo extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               gapH2,
-              Text(
+              CatchText(
                 context.l10n.hostsCreateEventPhotoPickerBodyInheritedLogo,
-                style: CatchTextStyles.supporting(context, color: t.ink3),
+                variant: CatchTextVariant.supporting,
+                color: t.ink3,
               ),
             ],
           ),

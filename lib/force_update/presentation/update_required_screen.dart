@@ -82,9 +82,10 @@ class UpdateRequiredBody extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             gapH12,
-            Text(
+            CatchText(
               context.l10n.forceUpdateUpdateRequiredScreenTextANewVersionOf,
-              style: CatchTextStyles.bodyLead(context, color: t.ink2),
+              variant: CatchTextVariant.bodyLead,
+              color: t.ink2,
               textAlign: TextAlign.center,
             ),
             gapH48,

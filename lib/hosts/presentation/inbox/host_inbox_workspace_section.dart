@@ -196,9 +196,9 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  CatchText(
                     context.l10n.hostInboxPartialSources,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                   if (liveInboxState.hasError ||
                       inboxState.hasError ||
@@ -217,18 +217,18 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
         if (scope.isProgram && (programPage?.unlinkedGuestCount ?? 0) > 0)
           SliverToBoxAdapter(
             child: CatchSection.content(
-              child: Text(
+              child: CatchText(
                 context.l10n.hostInboxProgramContactsUnlinked,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             ),
           ),
         if (people.unclassifiedCount > 0)
           SliverToBoxAdapter(
             child: CatchSection.content(
-              child: Text(
+              child: CatchText(
                 context.l10n.hostInboxUnclassified,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             ),
           ),

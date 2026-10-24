@@ -528,7 +528,6 @@
         ],
         "dartRoles": [
           "CatchTextStyles.badgeCaps",
-          "CatchTextStyles.labelS",
           "CatchTextStyles.labelL",
           "CatchTextStyles.kicker",
           "CatchTextStyles.buttonSm",
@@ -6684,11 +6683,7 @@
               "supportingStrong",
               "fieldLabel",
               "statusLabel",
-              "metric",
-              "recordContext",
-              "recordBody",
-              "proseL",
-              "proseM"
+              "metric"
             ]
           },
           {
@@ -9830,7 +9825,7 @@
           "CatchAvatar",
           "CatchTextStyles.headline",
           "CatchTextStyles.titleL",
-          "CatchTextStyles.appBarSubtitle",
+          "CatchTextStyles.bodyS",
           "CatchCollapsedHeaderTitle",
           "CatchIconAction",
           "CatchTopBarPrimaryButton",

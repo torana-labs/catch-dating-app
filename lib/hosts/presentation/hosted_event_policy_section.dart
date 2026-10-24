@@ -174,9 +174,10 @@ class HostedEventPolicySection extends StatelessWidget {
       title: context.l10n.hostsEditHostedEventScreenLabelEventPolicy,
       footer: Padding(
         padding: CatchInsets.formSectionTop,
-        child: Text(
+        child: CatchText(
           context.l10n.hostsEditHostedEventScreenTextEditableUntilTheFirst,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          variant: CatchTextVariant.supporting,
+          color: t.ink2,
         ),
       ),
       children: [

@@ -386,17 +386,17 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
           ),
         if (snapshot.ids.isNotEmpty) ...[
           CatchSection.plain(
-            child: Text(
+            child: CatchText(
               contextLabel,
-              style: CatchTextStyles.sectionTitle(context),
+              variant: CatchTextVariant.sectionTitle,
             ),
           ),
           if (snapshot.event == null) ...[
             if (snapshot.events.isEmpty && !snapshot.loading)
               CatchSection.plain(
-                child: Text(
+                child: CatchText(
                   copy.emptyEvents,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 ),
               ),
             if (snapshot.events.isNotEmpty)
@@ -456,9 +456,9 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
             ),
             if (snapshot.missingContacts.isNotEmpty) ...[
               CatchSection.plain(
-                child: Text(
+                child: CatchText(
                   copy.needsContact,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 ),
               ),
               CatchSection.fieldRows(
@@ -489,9 +489,9 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    CatchText(
                       copy.configurePayment,
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                     CatchButton(
                       label: copy.openSettings,
@@ -539,18 +539,18 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                   children: [
                     if (snapshot.offerFlow.status ==
                         HostOfferFlowStatus.committed)
-                      Text(
+                      CatchText(
                         copy.issued,
-                        style: CatchTextStyles.supporting(context),
+                        variant: CatchTextVariant.supporting,
                       ),
-                    Text(
+                    CatchText(
                       copy.existing,
-                      style: CatchTextStyles.sectionTitle(context),
+                      variant: CatchTextVariant.sectionTitle,
                     ),
                     if (snapshot.offers.isEmpty)
-                      Text(
+                      CatchText(
                         copy.noOffers,
-                        style: CatchTextStyles.supporting(context),
+                        variant: CatchTextVariant.supporting,
                       ),
                     CatchButton(
                       label: copy.refresh,
@@ -630,9 +630,9 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                 ),
               if (snapshot.handoff?.kind == 'blocked')
                 CatchSection.plain(
-                  child: Text(
+                  child: CatchText(
                     copy.handoffBlocked,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                 ),
               if (snapshot.handoff?.kind == 'prepared')
@@ -640,13 +640,13 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
+                      CatchText(
                         copy.handoffDisclosure,
-                        style: CatchTextStyles.supporting(context),
+                        variant: CatchTextVariant.supporting,
                       ),
-                      Text(
+                      CatchText(
                         snapshot.handoff!.editableText!,
-                        style: CatchTextStyles.supporting(context),
+                        variant: CatchTextVariant.supporting,
                       ),
                       Wrap(
                         children: [
@@ -668,14 +668,14 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
                         ],
                       ),
                       if (snapshot.messageCopied)
-                        Text(
+                        CatchText(
                           copy.messageCopied,
-                          style: CatchTextStyles.supporting(context),
+                          variant: CatchTextVariant.supporting,
                         ),
                       if (snapshot.handoffOpenFailed)
-                        Text(
+                        CatchText(
                           copy.handoffOpenFailed,
-                          style: CatchTextStyles.supporting(context),
+                          variant: CatchTextVariant.supporting,
                         ),
                     ],
                   ),
@@ -708,7 +708,7 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
         ],
         if (stageLabel != null)
           CatchSection.plain(
-            child: Text(stageLabel, style: CatchTextStyles.supporting(context)),
+            child: CatchText(stageLabel, variant: CatchTextVariant.supporting),
           ),
         if (snapshot.preparing)
           CatchSection.plain(
@@ -723,9 +723,9 @@ class HostEventOfferWorkspaceContentSection extends StatelessWidget {
           ),
         if (snapshot.hasError || snapshot.selectionStale) ...[
           CatchSection.plain(
-            child: Text(
+            child: CatchText(
               snapshot.selectionStale ? copy.selectionChanged : copy.loadFailed,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
           if (!snapshot.hasUnresolvedCommand)

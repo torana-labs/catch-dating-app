@@ -72,9 +72,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          CatchText(
                             context.l10n.hostFormShare,
-                            style: CatchTextStyles.headline(context),
+                            variant: CatchTextVariant.headline,
                           ),
                           gapH8,
                           CatchBadge.status(label: context.l10n.hostFormShare),
@@ -91,9 +91,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                     builder: (context, editor) => Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CatchText(
                           editor.editor.definition.title,
-                          style: CatchTextStyles.headline(context),
+                          variant: CatchTextVariant.headline,
                         ),
                         gapH8,
                         CatchBadge.status(
@@ -119,7 +119,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                       children: [
                         SelectableText(
                           assets.canonicalUrl,
-                          style: CatchTextStyles.recordBody(context),
+                          style: CatchTextStyles.bodyL(context),
                         ),
                         gapH16,
                         Row(
@@ -193,7 +193,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                         children: [
                           SelectableText(
                             link.url,
-                            style: CatchTextStyles.recordBody(context),
+                            style: CatchTextStyles.bodyL(context),
                           ),
                           gapH8,
                           Wrap(
@@ -221,9 +221,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                     ),
                   ],
                   gapH24,
-                  Text(
+                  CatchText(
                     context.l10n.hostFormCanonicalLinkHelp,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                 ],
               ),
@@ -263,7 +263,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
               gapH16,
               SelectableText(
                 assets.canonicalUrl,
-                style: CatchTextStyles.recordBody(context),
+                style: CatchTextStyles.bodyL(context),
               ),
             ],
           ),
@@ -285,7 +285,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
           ),
           child: SelectableText(
             assets.embedSnippet,
-            style: CatchTextStyles.recordBody(context),
+            style: CatchTextStyles.bodyL(context),
           ),
         ),
       );

@@ -4577,7 +4577,7 @@ Reference files:
 Use this pattern for root tab screens and root-like shell destinations.
 Scroll-owned root titles use `CatchTopBar.primaryRail`; standalone root app bars
 use `.screen`. Both use the platform `headline` role, optional contextual
-`appBarSubtitle`, and leading/action/search slots in the canonical renderer.
+`bodyS`, and leading/action/search slots in the canonical renderer.
 The former `CatchScreenHeader` renderer is retired.
 
 Preferred size and paint use the same scaled line budgets. At text scale 1.5

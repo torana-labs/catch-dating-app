@@ -25,14 +25,11 @@ class HostTodayFocusPageBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          l10n.hostTodayFocusHeading,
-          style: CatchTextStyles.titleL(context),
-        ),
+        CatchText(l10n.hostTodayFocusHeading, variant: CatchTextVariant.titleL),
         const SizedBox(height: CatchSpacing.s3),
-        Text(
+        CatchText(
           l10n.hostTodayFocusIntroduction,
-          style: CatchTextStyles.bodyL(context),
+          variant: CatchTextVariant.bodyL,
         ),
         const SizedBox(height: CatchSpacing.s6),
         for (final focus in HostTodayFocus.values) ...[
@@ -52,9 +49,9 @@ class HostTodayFocusPageBody extends StatelessWidget {
           const SizedBox(height: CatchSpacing.s3),
         ],
         const SizedBox(height: CatchSpacing.s3),
-        Text(
+        CatchText(
           l10n.hostTodayFocusSafety,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         const SizedBox(height: CatchSpacing.s6),
         CatchButton(

@@ -193,14 +193,12 @@ describe("CatchTextStyles parity", () => {
     expect(registered).toEqual(values);
   });
 
-  it("covers every role across the two preview control states", () => {
-    const flutterLists = textPreviewDart.match(/final variants = recordAndProse([\s\S]*?);/)?.[1] ?? "";
-    const flutterPreview = [...flutterLists.matchAll(/CatchTextVariant\.(\w+)/g)]
+  it("covers every canonical role in both previews", () => {
+    const flutterList = textPreviewDart.match(/const variants = \[([\s\S]*?)\];/)?.[1] ?? "";
+    const flutterPreview = [...flutterList.matchAll(/CatchTextVariant\.(\w+)/g)]
       .map((match) => match[1]);
-    const reactPreview = ["textVariants", "recordAndProseVariants"].flatMap((name) => {
-      const list = textStoriesTs.match(new RegExp(`const ${name}: readonly CatchTextVariant\\[\\] = \\[([\\s\\S]*?)\\];`))?.[1] ?? "";
-      return [...list.matchAll(/"(\w+)"/g)].map((match) => match[1]);
-    });
+    const reactList = textStoriesTs.match(/const textVariants: readonly CatchTextVariant\[\] = \[([\s\S]*?)\];/)?.[1] ?? "";
+    const reactPreview = [...reactList.matchAll(/"(\w+)"/g)].map((match) => match[1]);
     expect(flutterPreview.sort()).toEqual([...values].sort());
     expect(reactPreview.sort()).toEqual([...values].sort());
   });

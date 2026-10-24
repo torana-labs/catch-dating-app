@@ -117,31 +117,31 @@ class _EventAssistanceHelpDecisionSectionState
           style: Theme.of(context).textTheme.titleLarge,
         ),
         gapH8,
-        Text(
+        CatchText(
           helpCategoryLabel(l10n, row.category),
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
-        Text(
+        CatchText(
           helpReceivedLabel(context, row.receivedAt),
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (row.assignment != null)
-          Text(
+          CatchText(
             helpAssignmentLabel(l10n, row.assignment!, options),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         if (row.resolution != null)
-          Text(
+          CatchText(
             row.resolution == AssistanceCaseResolutionOutcome.resolved
                 ? l10n.eventAssistanceHelpResolved
                 : l10n.eventAssistanceHelpDeclined,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         if (widget.contextMessage != null) ...[
           gapH8,
-          Text(
+          CatchText(
             widget.contextMessage!,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         gapH12,
@@ -160,12 +160,12 @@ class _EventAssistanceHelpDecisionSectionState
               gapH8,
             ],
         ] else if (ready) ...[
-          Text(switch (_action!) {
+          CatchText(switch (_action!) {
             _HelpAction.take => l10n.eventAssistanceHelpTakeBody,
             _HelpAction.transfer => l10n.eventAssistanceHelpTransferBody,
             _HelpAction.resolve => l10n.eventAssistanceHelpResolveBody,
             _HelpAction.decline => l10n.eventAssistanceHelpDeclineBody,
-          }, style: CatchTextStyles.supporting(context)),
+          }, variant: CatchTextVariant.supporting),
           if (_action == _HelpAction.transfer) ...[
             gapH12,
             if (named.isNotEmpty)
@@ -184,14 +184,14 @@ class _EventAssistanceHelpDecisionSectionState
                 ),
               )
             else
-              Text(
+              CatchText(
                 l10n.eventAssistanceHelpNoHosts,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             if (named.length != candidates.length)
-              Text(
+              CatchText(
                 l10n.eventAssistanceHelpUnnamedHosts,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
           ],
           gapH12,
@@ -209,7 +209,7 @@ class _EventAssistanceHelpDecisionSectionState
             onPressed: () => setState(_clear),
           ),
         ] else ...[
-          Text(switch (widget.phase) {
+          CatchText(switch (widget.phase) {
             EventAssistanceHelpPhase.submitting =>
               l10n.eventAssistanceHelpSaving,
             EventAssistanceHelpPhase.retryRequired =>
@@ -226,10 +226,10 @@ class _EventAssistanceHelpDecisionSectionState
                   ? l10n.eventAssistanceHelpSourceChanged
                   : l10n.eventAssistanceHelpLegacy,
             EventAssistanceHelpPhase.ready => '',
-          }, style: CatchTextStyles.supporting(context)),
+          }, variant: CatchTextVariant.supporting),
           if (widget.submittedDecision case final choice?) ...[
             gapH8,
-            Text(
+            CatchText(
               l10n.eventAssistanceHelpSelected(
                 action: switch (choice) {
                   AssistanceCaseResolve() => l10n.eventAssistanceHelpResolve,
@@ -242,7 +242,7 @@ class _EventAssistanceHelpDecisionSectionState
                     ),
                 },
               ),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ],
         ],

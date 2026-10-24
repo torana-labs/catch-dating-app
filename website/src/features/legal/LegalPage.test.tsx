@@ -14,7 +14,7 @@ it.each(["help", "privacy", "terms", "account_deletion"] as const)("renders a ch
   expect(changed).toContain("support@example.org");
   expect(changed).not.toContain("suvrat.garg@gmail.com");
   expect(changed).not.toContain("suvrat@catchdates.com");
-  expect((changed.match(/mailto:support@example.org/gu) ?? []).length).toBe(2);
+  expect((changed.match(/mailto:support@example.org/gu) ?? []).length).toBe(1);
 });
 
 it("renders section links as navigable anchors", () => {

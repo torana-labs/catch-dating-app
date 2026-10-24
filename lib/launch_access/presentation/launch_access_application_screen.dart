@@ -256,11 +256,12 @@ class _LaunchAccessApplicationFormState
               style: CatchTextStyles.headlineS(context, color: t.ink),
             ),
             gapH8,
-            Text(
+            CatchText(
               context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTextTellUsWhereYou,
-              style: CatchTextStyles.bodyLead(context, color: t.ink2),
+              variant: CatchTextVariant.bodyLead,
+              color: t.ink2,
             ),
             gapH24,
             CatchField<CityOption>.select(

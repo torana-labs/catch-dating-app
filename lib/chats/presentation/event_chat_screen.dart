@@ -557,13 +557,13 @@ class EventChatPageBody extends StatelessWidget {
               style: CatchTextStyles.headlineS(context),
             ),
             gapH16,
-            Text(
+            CatchText(
               !access.isRoomOpen
                   ? access.canManage
                         ? l.eventChatHostSetup
                         : l.eventChatGuestWaiting
                   : l.eventChatJoinDisclosure,
-              style: CatchTextStyles.recordBody(context),
+              variant: CatchTextVariant.bodyL,
             ),
             gapH24,
             if (access.canManage &&
@@ -581,16 +581,16 @@ class EventChatPageBody extends StatelessWidget {
               ),
             if (access.profileClaimRequired) ...[
               gapH24,
-              Text(
+              CatchText(
                 l.eventChatProfileRequired,
-                style: CatchTextStyles.sectionTitle(context),
+                variant: CatchTextVariant.sectionTitle,
               ),
               gapH8,
-              Text(
+              CatchText(
                 onReviewProfile == null
                     ? l.eventChatProfileHostHelp
                     : l.eventChatProfileHelp,
-                style: CatchTextStyles.recordBody(context),
+                variant: CatchTextVariant.bodyL,
               ),
               if (onReviewProfile != null) ...[
                 gapH16,
@@ -632,10 +632,10 @@ class EventChatPageBody extends StatelessWidget {
                           style: CatchTextStyles.headlineS(context),
                         ),
                         gapH12,
-                        Text(
+                        CatchText(
                           l.eventChatEmptyBody,
                           textAlign: TextAlign.center,
-                          style: CatchTextStyles.recordBody(context),
+                          variant: CatchTextVariant.bodyL,
                         ),
                       ],
                     ),
@@ -708,9 +708,9 @@ class EventChatPageBody extends StatelessWidget {
         if (typing.isNotEmpty)
           Padding(
             padding: CatchInsets.contentHorizontal,
-            child: Text(
+            child: CatchText(
               l.eventChatTyping(names: typing),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
         if (reacting != null && state.canSend)
@@ -728,20 +728,19 @@ class EventChatPageBody extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      CatchText(
                         reply == null
                             ? l.eventChatUnavailable
                             : l.eventChatReplyingTo(
                                 name: reply.senderName ?? '',
                               ),
-                        style: CatchTextStyles.supporting(context),
+                        variant: CatchTextVariant.supporting,
                       ),
                       if (reply != null)
-                        Text(
+                        CatchText(
                           reply.text ?? '',
                           maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.proseM(context),
+                          variant: CatchTextVariant.bodyM,
                         ),
                     ],
                   ),
@@ -757,11 +756,11 @@ class EventChatPageBody extends StatelessWidget {
         if (!access.canPostMessages)
           Padding(
             padding: CatchInsets.contentHorizontal,
-            child: Text(
+            child: CatchText(
               access.announcementsOnly
                   ? l.eventChatAnnouncementsReadOnly
                   : l.eventChatReadOnly,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
         if (reacting == null &&

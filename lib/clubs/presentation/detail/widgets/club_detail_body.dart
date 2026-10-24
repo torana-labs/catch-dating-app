@@ -160,9 +160,10 @@ class ClubDetailSliverBody extends StatelessWidget {
                 CatchSection.divided(
                   title: context.l10n.clubsClubDetailBodyTitleAbout,
                   first: true,
-                  child: Text(
+                  child: CatchText(
                     club.description,
-                    style: CatchTextStyles.proseL(context, color: t.ink),
+                    variant: CatchTextVariant.bodyL,
+                    color: t.ink,
                   ),
                 ),
                 if (tags.isNotEmpty)

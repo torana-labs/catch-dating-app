@@ -226,7 +226,7 @@ class _ShellRouteScopeState extends State<_ShellRouteScope> {
           body: Center(
             child: Text(
               'Auth ${state.uri.queryParameters['from'] ?? ''}',
-              style: CatchTextStyles.proseM(context),
+              style: CatchTextStyles.bodyM(context),
             ),
           ),
         ),

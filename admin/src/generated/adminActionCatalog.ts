@@ -967,6 +967,23 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
+      "actionId": "sales.intake.nominate-organizer",
+      "callable": "adminNominateOrganizer",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "salesStaff"
+      ],
+      "summary": "Nominate an organizer for Supply Intake; the listing is built from its links and waits for staff review before anything is published.",
+      "controlPlane": false
+    },
+    {
       "actionId": "sales.hosts.update",
       "callable": "adminUpdateSalesAccount",
       "workflowIds": [
@@ -2239,6 +2256,7 @@ export const adminActionCatalog = {
         "sales.contacts.list",
         "sales.evidence.list",
         "sales.hosts.create",
+        "sales.intake.nominate-organizer",
         "sales.hosts.update",
         "sales.tasks.upsert",
         "sales.opportunities.upsert",

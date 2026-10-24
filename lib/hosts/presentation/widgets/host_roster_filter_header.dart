@@ -132,11 +132,12 @@ class HostWaitlistBulkOfferNotice extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.labelL(context, color: t.ink),
               ),
-              Text(
+              CatchText(
                 detail,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+
+                variant: CatchTextVariant.supporting,
+                color: t.ink2,
               ),
             ],
           ),

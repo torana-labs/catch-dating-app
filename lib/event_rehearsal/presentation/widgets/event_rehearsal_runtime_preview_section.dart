@@ -31,9 +31,9 @@ class EventRehearsalRuntimePreviewSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (!showOutcomes) ...[
-          Text(
+          CatchText(
             l.hostEventRehearsalUpdatesChannels,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           CatchSection.fieldRows(
             children: [
@@ -103,9 +103,9 @@ class EventRehearsalRuntimePreviewSection extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           gapH8,
-          Text(
+          CatchText(
             l.hostEventRehearsalUpdatesScriptBody,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           CatchSection.fieldRows(
             children: [

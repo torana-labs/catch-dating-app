@@ -2,7 +2,7 @@ export {ActionGroup, Button, ButtonLink, EventActionCard, PlainButton, PlainLink
 export type {EventActionCardAction, EventActionCardModel, ProcessStatusAction} from "./actions";
 export {ClaimResultButton, DataTable, ToggleChipButton} from "./actions2";
 export {AuthStatusRow, BadgeRow, EmptyState, ListingReviewEmptyState, LiveStatus, MarketingConsentBannerShell, ProcessStatusPanel, ReviewSignalBadge, RouteLoadingState, StatusBadge} from "./feedback";
-export {CheckboxField, ClaimRequestForm, Form, FormStatus, ListingFormatRow, ListingReviewCheckbox, ListingReviewForm, SelectedListingCard, WaitlistSection} from "./forms";
+export {CheckboxField, ClaimRequestForm, Form, FormStatus, ListingFormatRow, ListingReviewCheckbox, ListingReviewForm, SelectedListingCard} from "./forms";
 export {SearchFormShell, StepRail} from "./forms2";
 export {OperationalNote, ProfileStrength} from "./foundation";
 export type {ActivityMeta, PublicSearchSuggestion} from "./foundation";
@@ -11,7 +11,6 @@ export {HostApplicationCompletenessSummary, HostApplicationPanel, HostApplicatio
 export {ContentGrid, PanelShell, UiLabel, VerificationMethodGrid} from "./layout";
 export type {PublicEventCardModel} from "./layout";
 export {ChoiceCard, ChoiceChip, ChoiceChipGrid} from "./layout2";
-export {HomeHeroBody, HomeHeroCopy, HomeHeroInner, HomeHeroShell} from "./marketing";
 export {ActivityMark, MarketingLoopList} from "./media";
 export type {CaptureRecord} from "./media";
 export {FeaturedOrganizerCardGrid, ListingFactGrid, ListingPolaroid, ListingProfileLayout, ListingProfilePrimary, ListingProfileRail, ListingRailActions, ListingRailEmptyState, ListingRailIdentity, ListingRailLinkList, ListingRailSection, ListingSection, ListingSectionIntro, ListingStatusLedger, RecommendedOrganizersSectionShell} from "./organizer";

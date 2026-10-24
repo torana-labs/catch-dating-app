@@ -14,7 +14,7 @@ async function handleRequest(request: NextRequest) {
   if (isPrivateShellPath(url.pathname)) return NextResponse.next();
   const privateFamily = privateShellFamily(url.pathname);
   const asset = /^\/(_next\/|_legacy\/|assets\/|fonts\/|\.well-known\/)/.test(url.pathname) ||
-    ["/favicon.png", "/form-embed-resize.js", "/organizer-tracking-runtime.js", "/organizer-tracking-runtime.html"].includes(url.pathname);
+    ["/favicon.ico", "/form-embed-resize.js", "/organizer-tracking-runtime.js", "/organizer-tracking-runtime.html"].includes(url.pathname);
   const api = url.pathname.startsWith("/api/");
   const hostname = websiteRequestHostname(request.headers, process.env.K_SERVICE);
   const allowedHost = hostname && (isCatchWebsiteHost(hostname) || hostname === process.env.CATCH_PREVIEW_HOST);

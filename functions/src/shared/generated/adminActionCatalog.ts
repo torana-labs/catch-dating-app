@@ -554,6 +554,16 @@ export const ADMIN_ACTION_CATALOG = {
       "adminOwner"
     ]
   },
+  "sales.intake.nominate-organizer": {
+    "callable": "adminNominateOrganizer",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "salesStaff"
+    ]
+  },
   "sales.hosts.update": {
     "callable": "adminUpdateSalesAccount",
     "controlPlane": false,

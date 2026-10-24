@@ -409,14 +409,14 @@ class CatchesTopOverlay extends StatelessWidget {
                     ),
                     boxShadow: CatchElevation.card,
                     padding: CatchInsets.swipeRemainingCount,
-                    child: Text(
+                    child: CatchText(
                       context.l10n
                           .swipesSwipeScreenTextCatchesRemainingcountLeft(
                             remainingCount: remainingCount,
                           ),
-                      style: CatchTextStyles.labelM(context, color: t.ink),
+                      variant: CatchTextVariant.statusLabel,
+                      color: t.ink,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),

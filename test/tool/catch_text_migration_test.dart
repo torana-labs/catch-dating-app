@@ -61,7 +61,7 @@ void main() {
 
   test('new variants activate only original legacy role allowances', () {
     const initial = {
-      'lib/a.dart': {'supporting': 2, 'proseM': 1},
+      'lib/a.dart': {'supporting': 2, 'bodyM': 1},
     };
     expect(
       textMigrationPrunedCounts(initial, initial, {'supporting'}),
@@ -69,16 +69,16 @@ void main() {
     );
     final activated = textMigrationPrunedCounts(initial, initial, {
       'supporting',
-      'proseM',
+      'bodyM',
     });
     expect(textMigrationGrowth(activated, initial), isEmpty);
     const later = {
-      'lib/a.dart': {'supporting': 2, 'proseM': 2, 'labelM': 1},
+      'lib/a.dart': {'supporting': 2, 'bodyM': 2, 'labelM': 1},
     };
     expect(textMigrationPrunedCounts(later, initial, {'supporting'}), initial);
     expect(
       textMigrationGrowth(
-        textMigrationPrunedCounts(later, initial, {'supporting', 'proseM'}),
+        textMigrationPrunedCounts(later, initial, {'supporting', 'bodyM'}),
         initial,
       ),
       hasLength(1),
@@ -184,8 +184,8 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
         jsonEncode({
           'version': 2,
           'files': {
-            'lib/host.dart': {'supporting': 100, 'titleL': 100, 'proseM': 100},
-            'lib/parts.dart': {'supporting': 1, 'proseM': 1},
+            'lib/host.dart': {'supporting': 100, 'titleL': 100, 'bodyM': 100},
+            'lib/parts.dart': {'supporting': 1, 'bodyM': 1},
           },
         }),
       );
@@ -195,7 +195,7 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
       );
       final partPath = '${fixture.path}/lib/parts.dart';
       File(partPath).writeAsStringSync(
-        "part of 'host.dart';\nWidget partText(BuildContext context) => Column(children: [Text('existing', style: CatchTextStyles.supporting(context)), Text('new', style: CatchTextStyles.titleL(context)), Text('existing prose', style: CatchTextStyles.proseM(context)), Text('later prose', style: CatchTextStyles.proseM(context))]);\n",
+        "part of 'host.dart';\nWidget partText(BuildContext context) => Column(children: [Text('existing', style: CatchTextStyles.supporting(context)), Text('new', style: CatchTextStyles.titleL(context)), Text('existing body', style: CatchTextStyles.bodyM(context)), Text('later body', style: CatchTextStyles.bodyM(context))]);\n",
       );
       final collection = AnalysisContextCollection(
         includedPaths: [fixture.path],
@@ -230,14 +230,14 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
       final enumSource = variants.readAsStringSync();
       expect(enumSource, contains('titleL;'));
       variants.writeAsStringSync(
-        enumSource.replaceFirst('titleL;', 'titleL, proseM;'),
+        enumSource.replaceFirst('titleL;', 'titleL, bodyM;'),
       );
       variants.setLastModifiedSync(
         DateTime.now().add(const Duration(seconds: 1)),
       );
       expect(
         newTextMigrationSites(part.unit, partPath).map((site) => site.role),
-        ['titleL', 'proseM'],
+        ['titleL', 'bodyM'],
       );
     },
   );

@@ -83,20 +83,16 @@ class SuvbotDock extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CatchText(
                           context.l10n.chatsSuvbotActionBarTextSuvbotControls,
-                          style: CatchTextStyles.sectionTitle(
-                            context,
-                            color: t.ink,
-                          ),
+                          variant: CatchTextVariant.sectionTitle,
+                          color: t.ink,
                         ),
                         gapH2,
-                        Text(
+                        CatchText(
                           context.l10n.chatsSuvbotActionBarTextNoTypingNeeded,
-                          style: CatchTextStyles.statusLabel(
-                            context,
-                            color: t.ink2,
-                          ),
+                          variant: CatchTextVariant.statusLabel,
+                          color: t.ink2,
                         ),
                       ],
                     ),
@@ -377,9 +373,10 @@ class SuvbotResetActionRow extends StatelessWidget {
                     style: CatchTextStyles.fieldRowTitle(context, color: tone),
                   ),
                   gapH4,
-                  Text(
+                  CatchText(
                     action.description,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                    variant: CatchTextVariant.supporting,
+                    color: t.ink2,
                   ),
                 ],
               ),
@@ -456,14 +453,14 @@ class _MatchTesterSheetState extends State<MatchTesterSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          CatchText(
             context.l10n.chatsSuvbotActionBarTextMatchTester,
-            style: CatchTextStyles.titleL(context),
+            variant: CatchTextVariant.titleL,
           ),
           const SizedBox(height: CatchSpacing.s1),
-          Text(
+          CatchText(
             context.l10n.chatsSuvbotActionBarTextEnterAnAllowlistedBeta,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           const SizedBox(height: CatchSpacing.s3),
           CatchFieldLanes.single(

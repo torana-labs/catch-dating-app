@@ -8677,6 +8677,90 @@
       "decidedBy": "codex-rule:exact-text-role-identity",
       "date": "2026-10-24",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:body-small-record-context-alias",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.recordContext",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyS for supported Text calls; retire the synonym Flutter/React variant and catalog entries."
+        }
+      ],
+      "rationale": "CAT-211 comment 5e573577-8360-4eb5-b8a3-63dee7477d49 records the owner-delegated:2026-10-24 -> claude decision to absorb recordContext into existing bodyS and retire the alias. Complete TextStyle equality is verified across all six platforms, both themes and default/danger/transparent colors. Preserve the original context ink2 fallback at migrated call sites. No new role or visual decision.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:body-small-context-alias-identities",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.appBarSubtitle",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyS for supported Text calls; CatchTextStyles.bodyS for existing measurement and style-carrier APIs."
+        },
+        {
+          "name": "CatchTextStyles.menuSupporting",
+          "action": "absorb",
+          "note": "CatchTextStyles.bodyS preserves the conditional multiline menu carrier without changing its API."
+        }
+      ],
+      "rationale": "The exact-identity coordinator rule in .claude/handoffs/codex_ui_consolidation_goal.md authorizes absorbing identical roles into existing variants without synonyms. Both aliases equal bodyS across all six platforms, both themes and default/danger/transparent colors. Rename measurement and unsupported Text carriers without changing arguments, preserve original call-site colors, and retire the methods and handoff entries. This records the mechanical rule rather than an additional Claude design approval.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:canonical-reading-role-aliases",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.recordBody",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyL for supported app Text calls; CatchTextStyles.bodyL for existing library and carrier APIs."
+        },
+        {
+          "name": "CatchTextStyles.proseL",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyL for supported app Text calls; CatchTextStyles.bodyL for existing library and carrier APIs."
+        },
+        {
+          "name": "CatchTextStyles.proseM",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyM for supported app Text calls; CatchTextStyles.bodyM for existing library and carrier APIs."
+        }
+      ],
+      "rationale": "CAT-211 comment 5e573577-8360-4eb5-b8a3-63dee7477d49 records the owner-delegated:2026-10-24 -> claude decision to absorb recordBody/proseL into bodyL and proseM into bodyM. Resolved method signatures and complete recipe bodies are identical to their canonical targets. Migrate the supported app call-site set, retain library-owned Text and style-carrier APIs, and retire methods, Flutter/React synonym variants and obsolete preview controls together. Preserve original-context default ink and explicit colors. This completes the reading-role batch without adding variants. Calendar and Saved Events retain their messageStyle carrier APIs using supporting with explicit ink2: it uses the same secondary profile and color as their former proseM overrides, while respecting the existing prohibition on feature-owned low-level bodyM styles.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:canonical-status-role-aliases",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.labelM",
+          "action": "absorb",
+          "note": "CatchTextVariant.statusLabel for supported app Text calls; CatchTextStyles.statusLabel retains existing drawing, measurement and carrier APIs."
+        },
+        {
+          "name": "CatchTextStyles.labelS",
+          "action": "absorb",
+          "note": "CatchTextVariant.statusLabel for supported app Text calls; CatchTextStyles.statusLabel retains existing drawing, measurement and carrier APIs."
+        }
+      ],
+      "rationale": "The handoff exact-identity rule authorizes absorbing identical recipes into an existing variant. Resolved complete signatures and bodies match statusLabel. Migrate the deterministic supported app call-site set, rename library and unsupported carriers without changing arguments, retire both methods and duplicate specimens, and shrink the resolved Text baseline. Includes the unqualified clubMemberSeal style dependency. This records the mechanical rule without introducing a design decision or new variant.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
     }
   ]
 }

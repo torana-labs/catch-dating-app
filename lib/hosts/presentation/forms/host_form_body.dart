@@ -34,15 +34,17 @@ class _HostFormBodyState extends State<HostFormBody> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           widget.definition.title,
-          style: CatchTextStyles.headline(context, color: t.ink),
+          variant: CatchTextVariant.headline,
+          color: t.ink,
         ),
         if (widget.definition.description case final description?) ...[
           gapH10,
-          Text(
+          CatchText(
             description,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
         ],
         if (widget.definition.appearancePreset ==
@@ -63,9 +65,10 @@ class _HostFormBodyState extends State<HostFormBody> {
             first: indexedSection.$1 == 0,
             footer: indexedSection.$2.description == null
                 ? null
-                : Text(
+                : CatchText(
                     indexedSection.$2.description!,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                    variant: CatchTextVariant.supporting,
+                    color: t.ink2,
                   ),
             children: [
               for (final question in indexedSection.$2.questions)
@@ -87,12 +90,13 @@ class _HostFormBodyState extends State<HostFormBody> {
           size: CatchButtonSize.lg,
         ),
         gapH12,
-        Text(
+        CatchText(
           widget.preview
               ? context.l10n.hostFormPreviewNoResponses
               : widget.definition.completionTitle,
           textAlign: TextAlign.center,
-          style: CatchTextStyles.recordContext(context),
+          variant: CatchTextVariant.bodyS,
+          color: CatchTokens.of(context).ink2,
         ),
       ],
     );

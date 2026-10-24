@@ -144,17 +144,15 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   context.l10n.eventSuccessRoomMapTitle,
-                  style: CatchTextStyles.sectionTitle(context),
+                  variant: CatchTextVariant.sectionTitle,
                 ),
                 gapH4,
-                Text(
+                CatchText(
                   context.l10n.eventSuccessRoomMapSubtitle,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).ink2,
-                  ),
+                  variant: CatchTextVariant.supporting,
+                  color: CatchTokens.of(context).ink2,
                 ),
               ],
             ),
@@ -237,12 +235,10 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
             ],
           ),
           if (canDrag)
-            Text(
+            CatchText(
               context.l10n.eventSuccessRoomMapDragHint,
-              style: CatchTextStyles.supporting(
-                context,
-                color: CatchTokens.of(context).ink2,
-              ),
+              variant: CatchTextVariant.supporting,
+              color: CatchTokens.of(context).ink2,
             ),
         ],
       ],
@@ -502,9 +498,10 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              CatchText(
                 profile?.name ?? assignment.displayTitle,
-                style: CatchTextStyles.titleL(context, color: t.ink),
+                variant: CatchTextVariant.titleL,
+                color: t.ink,
               ),
               gapH4,
               CatchBadge(
@@ -520,11 +517,12 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
                     : CatchBadgeTone.brand,
               ),
               gapH4,
-              Text(
+              CatchText(
                 context.l10n.eventSuccessRoomMapCurrentPosition(
                   unitLabel: currentLabel,
                 ),
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+                variant: CatchTextVariant.supporting,
+                color: t.ink2,
               ),
             ],
           ),
@@ -682,7 +680,7 @@ class _EventSuccessRoomLegendItem extends StatelessWidget {
               : Icon(icon, size: CatchIcon.micro, color: color),
         ),
         gapW4,
-        Text(label, style: CatchTextStyles.labelS(context, color: t.ink2)),
+        CatchText(label, variant: CatchTextVariant.statusLabel, color: t.ink2),
       ],
     );
   }
@@ -773,15 +771,13 @@ class _EventSuccessMapUnit extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
+                    child: CatchText(
                       unit.label,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+
                       textAlign: TextAlign.center,
-                      style: CatchTextStyles.labelM(
-                        context,
-                        color: selectedDestination ? t.success : t.ink,
-                      ),
+                      variant: CatchTextVariant.statusLabel,
+                      color: selectedDestination ? t.success : t.ink,
                     ),
                   ),
                   if (invalid || alert)

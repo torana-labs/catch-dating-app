@@ -74,9 +74,9 @@ class _HostFormAnalyticsScreenState
                     value: ref.watch(editorProvider),
                     onRetry: () => ref.read(editorProvider.notifier).reload(),
                     loadingBuilder: (_) => CatchSkeleton.content(
-                      child: Text(
+                      child: CatchText(
                         context.l10n.hostFormAnalyticsTitle,
-                        style: CatchTextStyles.headline(context),
+                        variant: CatchTextVariant.headline,
                       ),
                     ),
                     errorBuilder: (_, error, _, onBoundaryRetry) =>
@@ -86,17 +86,17 @@ class _HostFormAnalyticsScreenState
                           mode: CatchErrorStateMode.compact,
                           onRetry: onBoundaryRetry,
                         ),
-                    builder: (context, editor) => Text(
+                    builder: (context, editor) => CatchText(
                       editor.editor.definition.title,
-                      style: CatchTextStyles.headline(context),
+                      variant: CatchTextVariant.headline,
                     ),
                   ),
                   gapH8,
-                  Text(
+                  CatchText(
                     context.l10n.hostAudienceResultsVersion(
                       version: value.version,
                     ),
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                   gapH24,
                   HostFormMetricRow(
@@ -122,37 +122,37 @@ class _HostFormAnalyticsScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
+                        CatchText(
                           value.starts == 0
                               ? '—'
                               : '${(value.completionRate * 100).round()}%',
-                          style: CatchTextStyles.headline(context),
+                          variant: CatchTextVariant.headline,
                         ),
                         gapH8,
-                        Text(
+                        CatchText(
                           context.l10n.hostAudienceCompletionDenominator(
                             submissions: value.submissions,
                             starts: value.starts,
                           ),
-                          style: CatchTextStyles.supporting(context),
+                          variant: CatchTextVariant.supporting,
                         ),
                         if (value.medianCompletionMillis
                             case final milliseconds?) ...[
                           gapH8,
-                          Text(
+                          CatchText(
                             context.l10n.hostAudienceMedianCompletion(
                               duration: _duration(milliseconds),
                             ),
-                            style: CatchTextStyles.supporting(context),
+                            variant: CatchTextVariant.supporting,
                           ),
                         ],
                       ],
                     ),
                   ),
                   gapH24,
-                  Text(
+                  CatchText(
                     context.l10n.hostFormAnalyticsPrivacyNotice,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                   for (final question in value.questions) ...[
                     gapH24,
@@ -167,17 +167,18 @@ class _HostFormAnalyticsScreenState
                             color: CatchTokens.of(context).ink,
                           ),
                           gapH8,
-                          Text(
+                          CatchText(
                             context.l10n.hostFormAnalyticsQuestionSummary(
                               count: question.responseCount,
                             ),
-                            style: CatchTextStyles.recordContext(context),
+                            variant: CatchTextVariant.bodyS,
+                            color: CatchTokens.of(context).ink2,
                           ),
                           if (question.kind == 'multiChoice') ...[
                             gapH8,
-                            Text(
+                            CatchText(
                               context.l10n.hostAudienceMultipleChoiceResults,
-                              style: CatchTextStyles.supporting(context),
+                              variant: CatchTextVariant.supporting,
                             ),
                           ],
                           for (final choice in question.choiceCounts) ...[
@@ -186,9 +187,10 @@ class _HostFormAnalyticsScreenState
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  child: Text(
+                                  child: CatchText(
                                     choice.label,
-                                    style: CatchTextStyles.recordBody(context),
+                                    variant: CatchTextVariant.bodyL,
+                                    color: CatchTokens.of(context).ink,
                                   ),
                                 ),
                                 gapW12,
@@ -219,7 +221,7 @@ class _HostFormAnalyticsScreenState
                           ],
                           if (question.numericCount > 0) ...[
                             gapH16,
-                            Text(
+                            CatchText(
                               context.l10n.hostAudienceNumericResult(
                                 average:
                                     (question.numericSum /
@@ -227,7 +229,8 @@ class _HostFormAnalyticsScreenState
                                         .toStringAsFixed(1),
                                 count: question.numericCount,
                               ),
-                              style: CatchTextStyles.recordBody(context),
+                              variant: CatchTextVariant.bodyL,
+                              color: CatchTokens.of(context).ink,
                             ),
                           ],
                         ],
@@ -247,9 +250,10 @@ class _HostFormAnalyticsScreenState
                       },
                     ),
                   ),
-                  Text(
+                  CatchText(
                     context.l10n.hostAudienceResponsesAllVersions,
-                    style: CatchTextStyles.recordContext(context),
+                    variant: CatchTextVariant.bodyS,
+                    color: CatchTokens.of(context).ink2,
                   ),
                   if (value.sources.isNotEmpty) ...[
                     gapH24,
@@ -275,9 +279,10 @@ class _HostFormAnalyticsScreenState
                   ],
                   if (value.sources.isNotEmpty) ...[
                     gapH8,
-                    Text(
+                    CatchText(
                       context.l10n.hostAudienceSourceTotalsScope,
-                      style: CatchTextStyles.recordContext(context),
+                      variant: CatchTextVariant.bodyS,
+                      color: CatchTokens.of(context).ink2,
                     ),
                   ],
                   gapH24,

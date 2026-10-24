@@ -5,7 +5,7 @@ import {renderHostSectionNav, renderHostLandingParticipation, renderHostLandingH
 
 export function HostPage(_props: {captures: HostCaptureMap}) {
   return <HostLanding>
-    <PublicSiteHeader audience="consumer" />
+    <PublicSiteHeader />
     {renderHostSectionNav()}
     <WebsitePageMain id="top">
       {renderHostLandingHero()}
@@ -17,6 +17,6 @@ export function HostPage(_props: {captures: HostCaptureMap}) {
       {renderHostLandingFaq()}
       {renderHostLandingClose()}
     </WebsitePageMain>
-    <PublicSiteFooter audience="consumer" />
+    <PublicSiteFooter />
   </HostLanding>;
 }

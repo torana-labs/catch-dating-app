@@ -132,9 +132,10 @@ class HostCustomerMemorySection extends StatelessWidget {
           ],
         ),
         CatchSection.content(
-          child: Text(
+          child: CatchText(
             context.l10n.hostCustomersMemoryHelp,
-            style: CatchTextStyles.recordContext(context),
+            variant: CatchTextVariant.bodyS,
+            color: CatchTokens.of(context).ink2,
           ),
         ),
       ],

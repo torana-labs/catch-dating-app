@@ -8884,6 +8884,87 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['open', 'completed', 'cancelled'],
   );
 
+  static const adminNominateOrganizerCallablePayloadCategories = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallablePayload.categories',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 8,
+    uniqueItems: true,
+  );
+
+  static const adminNominateOrganizerCallablePayloadCategoriesItems = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallablePayload.categories.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9_]{0,59}\$',
+  );
+
+  static const adminNominateOrganizerCallablePayloadMarket = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallablePayload.market',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminNominateOrganizerCallablePayloadName = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallablePayload.name',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminNominateOrganizerCallablePayloadNotes = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallablePayload.notes',
+    maxLength: 2000,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminNominateOrganizerCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\$',
+  );
+
+  static const adminNominateOrganizerCallablePayloadUrls = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallablePayload.urls',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const adminNominateOrganizerCallablePayloadUrlsItems = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallablePayload.urls.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^https?://',
+  );
+
+  static const adminNominateOrganizerCallableResponseCreated = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallableResponse.created',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminNominateOrganizerCallableResponseRequestId = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallableResponse.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^nom-[a-f0-9]{40}\$',
+  );
+
+  static const adminNominateOrganizerCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'adminNominateOrganizerCallableResponse.status',
+    required: true,
+  );
+
   static const adminPreviewSalesImportCallablePayloadContentHash = CatchContractFieldConstraints(
     path: 'adminPreviewSalesImportCallablePayload.contentHash',
     required: true,
@@ -157422,6 +157503,20 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-z][a-z0-9-]{1,49}\$',
   );
 
+  static const supplyIntakeRequestOriginId = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequest.origin.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const supplyIntakeRequestOriginKind = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequest.origin.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run'],
+  );
+
   static const supplyIntakeRequestRequestId = CatchContractFieldConstraints(
     path: 'supplyIntakeRequest.requestId',
     required: true,
@@ -157572,6 +157667,20 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-z][a-z0-9-]{1,49}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentRequestOriginId = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.request.origin.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentRequestOriginKind = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.request.origin.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run'],
   );
 
   static const supplyIntakeRequestsDocumentRequestRequestId = CatchContractFieldConstraints(
@@ -172075,6 +172184,17 @@ abstract final class CatchContractConstraints {
     'adminListSalesTasksCallablePayload.limit': adminListSalesTasksCallablePayloadLimit,
     'adminListSalesTasksCallablePayload.ownerUid': adminListSalesTasksCallablePayloadOwnerUid,
     'adminListSalesTasksCallablePayload.status': adminListSalesTasksCallablePayloadStatus,
+    'adminNominateOrganizerCallablePayload.categories': adminNominateOrganizerCallablePayloadCategories,
+    'adminNominateOrganizerCallablePayload.categories.items': adminNominateOrganizerCallablePayloadCategoriesItems,
+    'adminNominateOrganizerCallablePayload.market': adminNominateOrganizerCallablePayloadMarket,
+    'adminNominateOrganizerCallablePayload.name': adminNominateOrganizerCallablePayloadName,
+    'adminNominateOrganizerCallablePayload.notes': adminNominateOrganizerCallablePayloadNotes,
+    'adminNominateOrganizerCallablePayload.requestId': adminNominateOrganizerCallablePayloadRequestId,
+    'adminNominateOrganizerCallablePayload.urls': adminNominateOrganizerCallablePayloadUrls,
+    'adminNominateOrganizerCallablePayload.urls.items': adminNominateOrganizerCallablePayloadUrlsItems,
+    'adminNominateOrganizerCallableResponse.created': adminNominateOrganizerCallableResponseCreated,
+    'adminNominateOrganizerCallableResponse.requestId': adminNominateOrganizerCallableResponseRequestId,
+    'adminNominateOrganizerCallableResponse.status': adminNominateOrganizerCallableResponseStatus,
     'adminPreviewSalesImportCallablePayload.contentHash': adminPreviewSalesImportCallablePayloadContentHash,
     'adminPreviewSalesImportCallablePayload.mappingVersion': adminPreviewSalesImportCallablePayloadMappingVersion,
     'adminPreviewSalesImportCallablePayload.rows': adminPreviewSalesImportCallablePayloadRows,
@@ -192302,6 +192422,8 @@ abstract final class CatchContractConstraints {
     'submitProgramHouseholdRsvpCallableResponse.travelLegAppliedCount': submitProgramHouseholdRsvpCallableResponseTravelLegAppliedCount,
     'supplyIntakeRequest.kind': supplyIntakeRequestKind,
     'supplyIntakeRequest.market': supplyIntakeRequestMarket,
+    'supplyIntakeRequest.origin.id': supplyIntakeRequestOriginId,
+    'supplyIntakeRequest.origin.kind': supplyIntakeRequestOriginKind,
     'supplyIntakeRequest.requestId': supplyIntakeRequestRequestId,
     'supplyIntakeRequest.schemaVersion': supplyIntakeRequestSchemaVersion,
     'supplyIntakeRequest.seed.categories': supplyIntakeRequestSeedCategories,
@@ -192323,6 +192445,8 @@ abstract final class CatchContractConstraints {
     'supplyIntakeRequestsDocument.leaseUntil': supplyIntakeRequestsDocumentLeaseUntil,
     'supplyIntakeRequestsDocument.request.kind': supplyIntakeRequestsDocumentRequestKind,
     'supplyIntakeRequestsDocument.request.market': supplyIntakeRequestsDocumentRequestMarket,
+    'supplyIntakeRequestsDocument.request.origin.id': supplyIntakeRequestsDocumentRequestOriginId,
+    'supplyIntakeRequestsDocument.request.origin.kind': supplyIntakeRequestsDocumentRequestOriginKind,
     'supplyIntakeRequestsDocument.request.requestId': supplyIntakeRequestsDocumentRequestRequestId,
     'supplyIntakeRequestsDocument.request.schemaVersion': supplyIntakeRequestsDocumentRequestSchemaVersion,
     'supplyIntakeRequestsDocument.request.seed.categories': supplyIntakeRequestsDocumentRequestSeedCategories,

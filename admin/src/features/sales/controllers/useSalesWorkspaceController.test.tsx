@@ -8,6 +8,7 @@ import {salesErrorMessage, toLocalDateTimeInput,
 const repository = vi.hoisted(() => ({
   getSalesAccount: vi.fn(),
   createSalesAccount: vi.fn(),
+  nominateSalesOrganizer: vi.fn(),
   listSalesAccounts: vi.fn(),
   listSalesTasks: vi.fn(),
   listSalesOpportunities: vi.fn(),
@@ -140,6 +141,26 @@ describe("useSalesWorkspaceController", () => {
     const secondRequest = repository.updateSalesAccount.mock.calls[1][0].requestId;
     expect(secondRequest).toBe(firstRequest);
     expect(onNotice).toHaveBeenCalledWith("Host research saved.");
+  });
+
+  it("retries a nomination under the same request ID so the server replays it", async () => {
+    const {wrapper} = createQueryHarness();
+    const onNotice = vi.fn();
+    repository.nominateSalesOrganizer.mockRejectedValueOnce(new Error("deadline-exceeded"))
+      .mockResolvedValueOnce({requestId: `nom-${"a".repeat(40)}`, created: false,
+        status: "queued"});
+    const {result} = renderHook(() => useSalesWorkspaceController({
+      area: "hosts", selectedOrganizerId: null, onError: vi.fn(), onNotice,
+    }), {wrapper});
+    const input = {name: "The Bhag", market: "Bengaluru",
+      urls: ["https://lu.ma/thebhag"], notes: null, categories: []};
+    await act(async () => { await result.current.nominateOrganizer(input); });
+    await act(async () => { await result.current.nominateOrganizer(input); });
+    const [first, second] = repository.nominateSalesOrganizer.mock.calls
+      .map(([request]) => request.requestId);
+    expect(second).toBe(first);
+    expect(onNotice).toHaveBeenCalledWith(
+      "Nomination queued. Its listing appears in Organizer Intake for review.");
   });
 
   it("explains revision conflicts without losing the operator's edit", () => {

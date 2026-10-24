@@ -28,7 +28,7 @@ Widget catchSectionHorizontalCatalogStates(BuildContext context) {
             width: WidgetbookPreviewLayout.catalogCardWidth,
             child: Text(
               'Card ${index + 1}',
-              style: CatchTextStyles.labelM(context),
+              style: CatchTextStyles.statusLabel(context),
             ),
           ),
           footer: CatchButton(label: 'More', onPressed: widgetbookNoop),
@@ -45,7 +45,7 @@ Widget catchSectionHorizontalCatalogStates(BuildContext context) {
             width: WidgetbookPreviewLayout.catalogCardWidth,
             child: Text(
               'Card ${index + 1}',
-              style: CatchTextStyles.labelM(context),
+              style: CatchTextStyles.statusLabel(context),
             ),
           ),
           footer: CatchButton(label: 'More', onPressed: widgetbookNoop),

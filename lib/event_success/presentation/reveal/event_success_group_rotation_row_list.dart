@@ -98,11 +98,12 @@ class EventSuccessGroupRotationRow extends StatelessWidget {
               ],
             ),
             gapH8,
-            Text(timeRange, style: CatchTextStyles.sectionTitle(context)),
+            CatchText(timeRange, variant: CatchTextVariant.sectionTitle),
             gapH4,
-            Text(
+            CatchText(
               eventSuccessRevealCompatibilityExplanation(slot.compatibility),
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
             gapH10,
             Wrap(

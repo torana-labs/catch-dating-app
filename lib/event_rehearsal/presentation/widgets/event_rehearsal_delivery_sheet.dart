@@ -97,13 +97,13 @@ class EventRehearsalDeliverySheet extends ConsumerWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (form?.result != null)
-                          Text(
+                          CatchText(
                             context.l10n.eventAssistanceDeliverySaved,
-                            style: CatchTextStyles.supporting(context),
+                            variant: CatchTextVariant.supporting,
                           ),
-                        Text(
+                        CatchText(
                           context.l10n.eventAssistanceDeliveryMissing,
-                          style: CatchTextStyles.supporting(context),
+                          variant: CatchTextVariant.supporting,
                         ),
                         CatchButton(
                           label: context.l10n.eventAssistanceDeliveryReload,

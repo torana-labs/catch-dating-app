@@ -7,7 +7,7 @@
 /* Live module stack (HostLiveModulesSection). */
 .module-stack {
   display: grid;
-  gap: 14px;
+  gap: var(--catch-space-micro14);
 }
 
 .module-stack article {
@@ -36,7 +36,7 @@
 
 .module-stack strong {
   display: block;
-  margin-top: 10px;
+  margin-top: var(--catch-space-micro10);
   font-family: var(--catch-font-voice), system-ui, sans-serif;
   font-size: 22px;
   font-stretch: var(--catch-voice-stretch);
@@ -45,7 +45,7 @@
 }
 
 .module-stack p {
-  margin-top: 10px;
+  margin-top: var(--catch-space-micro10);
   color: var(--website-copy-faint);
   font-size: 14px;
   line-height: 1.55;
@@ -58,15 +58,15 @@
 
 .product-module-grid {
   display: grid;
-  gap: 18px;
-  margin-top: 40px;
+  gap: var(--catch-space-micro18);
+  margin-top: var(--catch-space-s10);
 }
 
 .product-module-card {
   display: grid;
   align-content: start;
-  gap: 16px;
-  padding: 24px;
+  gap: var(--catch-space-s4);
+  padding: var(--catch-space-s6);
   border: 1px solid var(--website-line);
   border-top: 3px solid var(--activity, var(--website-accent));
   border-radius: var(--catch-radius-md);
@@ -86,7 +86,7 @@
 }
 
 .product-module-card h3 {
-  margin-top: 4px;
+  margin-top: var(--catch-space-s1);
   font-size: 26px;
   line-height: 1.05;
 }
@@ -111,7 +111,7 @@
 }
 
 .product-module-card li {
-  padding: 12px 14px;
+  padding: var(--catch-space-s3) var(--catch-space-micro14);
   background: var(--website-bg);
   color: var(--website-copy-muted);
   font-size: 13px;
@@ -123,7 +123,7 @@
 .proof-ledger__rows {
   display: grid;
   gap: 1px;
-  margin-top: 40px;
+  margin-top: var(--catch-space-s10);
   background: var(--website-line);
   border: 1px solid var(--website-line);
 }
@@ -131,7 +131,7 @@
 .surface-grid article,
 .proof-ledger__rows article {
   min-height: 220px;
-  padding: 24px;
+  padding: var(--catch-space-s6);
   background: var(--website-surface);
 }
 
@@ -145,14 +145,14 @@
 }
 
 .surface-grid h3 {
-  margin-top: 48px;
+  margin-top: var(--catch-space-s12);
   font-size: 26px;
   line-height: 1.05;
 }
 
 .surface-grid p,
 .proof-ledger__rows p {
-  margin-top: 10px;
+  margin-top: var(--catch-space-micro10);
   color: var(--website-copy-faint);
   font-size: 14px;
   line-height: 1.55;
@@ -161,7 +161,7 @@
 .proof-ledger__rows article {
   display: grid;
   min-height: 0;
-  gap: 10px;
+  gap: var(--catch-space-micro10);
 }
 
 .proof-ledger__rows strong {
@@ -172,7 +172,7 @@
 /* Console + evidence shells: retained for adapter story coverage. */
 .host-console {
   width: 100%;
-  padding: 18px;
+  padding: var(--catch-space-micro18);
   border: 1px solid var(--website-line);
   border-radius: var(--catch-radius-md);
   background: var(--website-surface);
@@ -181,8 +181,8 @@
 .host-console__top {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 18px;
+  gap: var(--catch-space-s4);
+  padding-bottom: var(--catch-space-micro18);
   border-bottom: 1px solid var(--website-line);
 }
 
@@ -193,31 +193,31 @@
 .host-console__grid {
   display: grid;
   gap: 1px;
-  margin-top: 18px;
+  margin-top: var(--catch-space-micro18);
   background: var(--website-line);
 }
 
 .host-console__grid > div {
-  padding: 18px;
+  padding: var(--catch-space-micro18);
   background: var(--website-bg);
 }
 
 .host-console__grid strong {
   display: block;
-  margin-top: 8px;
+  margin-top: var(--catch-space-s2);
 }
 
 .host-console__timeline {
   display: grid;
-  gap: 8px;
+  gap: var(--catch-space-s2);
   margin-top: 22px;
 }
 
 .host-console__timeline span {
   display: grid;
-  gap: 4px;
+  gap: var(--catch-space-s1);
   align-content: center;
-  padding: 9px 10px;
+  padding: 9px var(--catch-space-micro10);
   border: 1px solid var(--website-line);
   border-radius: var(--catch-radius-sm);
   color: var(--website-copy-meta);
@@ -247,8 +247,8 @@
   display: grid;
   min-height: 132px;
   align-content: end;
-  gap: 10px;
-  padding: 18px;
+  gap: var(--catch-space-micro10);
+  padding: var(--catch-space-micro18);
   background: var(--website-surface);
 }
 

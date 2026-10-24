@@ -19,6 +19,7 @@ const schemaSupplyIntakeRequestSchema = <String, Object?>{
     'seed',
     'submittedBy',
     'submittedAt',
+    'origin',
   ],
   'properties': <String, Object?>{
     'schemaVersion': <String, Object?>{
@@ -87,18 +88,20 @@ const schemaSupplyIntakeRequestSchema = <String, Object?>{
           },
         },
       },
-      'anyOf': <Object?>[
+      'allOf': <Object?>[
         <String, Object?>{
-          'properties': <String, Object?>{
-            'name': <String, Object?>{
-              'type': 'string',
+          'if': <String, Object?>{
+            'properties': <String, Object?>{
+              'name': <String, Object?>{
+                'type': 'null',
+              },
             },
           },
-        },
-        <String, Object?>{
-          'properties': <String, Object?>{
-            'urls': <String, Object?>{
-              'minItems': 1,
+          'then': <String, Object?>{
+            'properties': <String, Object?>{
+              'urls': <String, Object?>{
+                'minItems': 1,
+              },
             },
           },
         },
@@ -143,6 +146,36 @@ const schemaSupplyIntakeRequestSchema = <String, Object?>{
     'submittedAt': <String, Object?>{
       'type': 'string',
       'format': 'date-time',
+    },
+    'origin': <String, Object?>{
+      'description': 'What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'null',
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'id',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'admin_nomination',
+                'sales_inbound_intent',
+                'discovery_run',
+              ],
+            },
+            'id': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+            },
+          },
+        },
+      ],
     },
   },
   'allOf': <Object?>[

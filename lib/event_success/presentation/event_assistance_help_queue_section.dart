@@ -59,13 +59,13 @@ class EventAssistanceHelpQueueSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           l10n.eventAssistanceHelpBody,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (contextMessage != null) ...[
           gapH8,
-          Text(contextMessage!, style: CatchTextStyles.supporting(context)),
+          CatchText(contextMessage!, variant: CatchTextVariant.supporting),
         ],
         gapH12,
         Wrap(
@@ -90,11 +90,11 @@ class EventAssistanceHelpQueueSection extends StatelessWidget {
         ),
         gapH12,
         if (items.isEmpty)
-          Text(
+          CatchText(
             status == AssistanceCaseStatus.open
                 ? l10n.eventAssistanceHelpEmptyOpen
                 : l10n.eventAssistanceHelpEmptyHandled,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         if (items.isNotEmpty)
           CatchSection.containedRows(
@@ -127,9 +127,9 @@ class EventAssistanceHelpQueueSection extends StatelessWidget {
             ],
           ),
         gapH12,
-        Text(
+        CatchText(
           l10n.eventAssistanceHelpPageBody,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         gapH8,
         Wrap(

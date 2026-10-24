@@ -133,7 +133,7 @@ function ContinuationWorkspace({continuationId, api, auth}: {
         </>}
       {c.notice || authError ? <FormStatus status={{tone: "is-error", message: c.notice || authError}} /> : null}
     </EventRuntimePanel>
-  </ClaimFlowMain><PublicSiteFooter body={continuationCopy.footer} /></>;
+  </ClaimFlowMain><PublicSiteFooter /></>;
 }
 
 function ContinuationClaim({view, email, phone}: {

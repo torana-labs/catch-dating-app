@@ -70,9 +70,9 @@ class EventRehearsalCheckpointVisitSheet extends ConsumerWidget {
             CatchLocalizedErrorBanner(error),
           RehearsalMovementIdle() || RehearsalMovementForm() =>
             pendingOther
-                ? Text(
+                ? CatchText(
                     context.l10n.eventAssistanceDepartureOtherPending,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   )
                 : CatchAsyncBoundary<RehearsalMovementPage>(
                     value: form == null ? page : AsyncData(form.review),
@@ -91,9 +91,9 @@ class EventRehearsalCheckpointVisitSheet extends ConsumerWidget {
                           ?.where((r) => r.attendeeId == attendeeId)
                           .firstOrNull;
                       if (row == null) {
-                        return Text(
+                        return CatchText(
                           context.l10n.eventAssistanceCheckpointVisitUnknown,
-                          style: CatchTextStyles.supporting(context),
+                          variant: CatchTextVariant.supporting,
                         );
                       }
                       final phase = form == null

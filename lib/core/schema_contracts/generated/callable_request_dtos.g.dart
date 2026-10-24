@@ -65,6 +65,7 @@ export 'callables/admin_list_sales_evidence_callable_request.g.dart';
 export 'callables/admin_list_sales_import_history_request.g.dart';
 export 'callables/admin_list_sales_import_history_rows_request.g.dart';
 export 'callables/admin_list_sales_outreach_drafts_request.g.dart';
+export 'callables/admin_nominate_organizer_callable_request.g.dart';
 export 'callables/admin_preview_sales_import_callable_request.g.dart';
 export 'callables/admin_preview_sales_import_history_request.g.dart';
 export 'callables/admin_preview_sales_privacy_plan_request.g.dart';

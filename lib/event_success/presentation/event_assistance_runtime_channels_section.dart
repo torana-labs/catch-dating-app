@@ -103,23 +103,23 @@ class EventAssistanceRuntimeChannelsSection extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         gapH8,
-        Text(
+        CatchText(
           l.eventAssistanceRuntimeChannelBody,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         CatchSection.fieldRows(first: true, children: channelFields),
         if (choices.every((c) => !c.canSelect)) ...[
           gapH12,
-          Text(
+          CatchText(
             l.eventAssistanceRuntimeNoSenders,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         for (final c in choices.where((c) => !c.canSelect)) ...[
           gapH8,
-          Text(
+          CatchText(
             '${runtimeSenderLabel(l, c)}\n${runtimeSenderIssue(l, c.availability)}',
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         for (final route in moreRoutes)

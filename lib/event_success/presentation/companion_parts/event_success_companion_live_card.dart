@@ -69,7 +69,7 @@ class MicroPodCard extends StatelessWidget {
             color: t.primary,
           ),
           gapH10,
-          Text(
+          CatchText(
             optedOut
                 ? context
                       .l10n
@@ -78,10 +78,10 @@ class MicroPodCard extends StatelessWidget {
                       context
                           .l10n
                           .eventSuccessEventSuccessCompanionLiveCardsTextYourStarterGroupIs,
-            style: CatchTextStyles.titleL(context),
+            variant: CatchTextVariant.titleL,
           ),
           gapH6,
-          Text(
+          CatchText(
             optedOut
                 ? context
                       .l10n
@@ -90,7 +90,8 @@ class MicroPodCard extends StatelessWidget {
                       context
                           .l10n
                           .eventSuccessEventSuccessCompanionLiveCardsTextTheHostWillPublish,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           if (assigned != null) ...[
             gapH14,
@@ -180,7 +181,7 @@ class RotationScheduleCard extends StatelessWidget {
             color: t.primary,
           ),
           gapH10,
-          Text(
+          CatchText(
             optedOut
                 ? context
                       .l10n
@@ -189,10 +190,10 @@ class RotationScheduleCard extends StatelessWidget {
                       context
                           .l10n
                           .eventSuccessEventSuccessCompanionLiveCardsTextYourRotationScheduleIs,
-            style: CatchTextStyles.titleL(context),
+            variant: CatchTextVariant.titleL,
           ),
           gapH6,
-          Text(
+          CatchText(
             optedOut
                 ? context
                       .l10n
@@ -201,7 +202,8 @@ class RotationScheduleCard extends StatelessWidget {
                       context
                           .l10n
                           .eventSuccessEventSuccessCompanionLiveCardsTextYourTimedPairingsAppear,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           if (assigned != null) ...[
             gapH14,
@@ -267,21 +269,22 @@ class LiveStepContextCard extends StatelessWidget {
             color: t.primary,
           ),
           gapH10,
-          Text(
+          CatchText(
             activeStep == null
                 ? context
                       .l10n
                       .eventSuccessEventSuccessCompanionLiveCardsTextEventIsLive
                 : activeStep.title,
-            style: CatchTextStyles.titleL(context),
+            variant: CatchTextVariant.titleL,
           ),
           gapH6,
-          Text(
+          CatchText(
             activeStep?.attendeeExperience ??
                 context
                     .l10n
                     .eventSuccessEventSuccessCompanionLiveCardsTextFollowTheHostFor,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
         ],
       ),
@@ -359,18 +362,19 @@ class PreCheckInPlanningCard extends StatelessWidget {
             color: t.primary,
           ),
           gapH10,
-          Text(
+          CatchText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionLiveCardsTextWhatWeLlGuide,
-            style: CatchTextStyles.titleL(context),
+            variant: CatchTextVariant.titleL,
           ),
           gapH6,
-          Text(
+          CatchText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionLiveCardsTextLivePartnerAndGroup,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           gapH14,
           for (final entry in entries) ...[entry, gapH8],
@@ -401,7 +405,7 @@ class CompanionPreviewText extends StatelessWidget {
           child: Icon(icon, size: CatchIcon.xs, color: t.ink2),
         ),
         gapW6,
-        Expanded(child: Text(text, style: CatchTextStyles.supporting(context))),
+        Expanded(child: CatchText(text, variant: CatchTextVariant.supporting)),
       ],
     );
   }
@@ -486,18 +490,19 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
             color: t.primary,
           ),
           gapH10,
-          Text(
+          CatchText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionLiveCardsTextArrivalCheckIn,
-            style: CatchTextStyles.titleL(context),
+            variant: CatchTextVariant.titleL,
           ),
           gapH6,
-          Text(
+          CatchText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionLiveCardsTextConfirmYouAreAt,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           gapH14,
           CompanionStageActionSection(
@@ -575,7 +580,7 @@ class StagePromptCard extends StatelessWidget {
             color: t.primary,
           ),
           gapH12,
-          Text(prompt, style: CatchTextStyles.titleL(context)),
+          CatchText(prompt, variant: CatchTextVariant.titleL),
         ],
       ),
     );
@@ -611,9 +616,10 @@ class StageConversationCueCard extends StatelessWidget {
           StageSectionHeader(icon: icon, label: title, color: t.primary),
           if (subtitle != null) ...[
             gapH8,
-            Text(
+            CatchText(
               subtitle!,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
           ],
           gapH14,
@@ -645,9 +651,9 @@ class StageCueCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: Text(
+                  child: CatchText(
                     cue.title,
-                    style: CatchTextStyles.sectionTitle(context),
+                    variant: CatchTextVariant.sectionTitle,
                   ),
                 ),
                 Tooltip(
@@ -671,9 +677,10 @@ class StageCueCard extends StatelessWidget {
               ],
             ),
             gapH4,
-            Text(
+            CatchText(
               cue.body,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
           ],
         ),

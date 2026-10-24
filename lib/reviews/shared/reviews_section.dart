@@ -439,11 +439,12 @@ class ReviewOwnerResponseCard extends StatelessWidget {
               ),
               gapW8,
               Expanded(
-                child: Text(
+                child: CatchText(
                   context.l10n.reviewsReviewsSectionTextHostResponseHostname(
                     hostName: response.hostName,
                   ),
-                  style: CatchTextStyles.labelS(context, color: t.ink),
+                  variant: CatchTextVariant.statusLabel,
+                  color: t.ink,
                 ),
               ),
             ],
