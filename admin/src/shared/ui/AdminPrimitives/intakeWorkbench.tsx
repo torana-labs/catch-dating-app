@@ -128,9 +128,9 @@ function EvidenceRows({rows}: {rows: AdminIntakeEvidenceRow[]}) {
             {row.href ? (
               <a href={row.href} rel="noreferrer" target="_blank">{row.title}</a>
             ) : (
-              <strong>{row.title}</strong>
+              <CatchText as="strong" variant="statusLabel" color="inherit">{row.title}</CatchText>
             )}
-            <span>{row.meta}</span>
+            <CatchText as="span" variant="bodyS" color="ink2">{row.meta}</CatchText>
           </div>
           <span className={toneClass(row.statusTone)}>{row.status}</span>
         </div>
@@ -148,8 +148,8 @@ function ChecklistRows({rows}: {rows: AdminIntakeChecklistRow[]}) {
             {row.passed ? <Check size={14} /> : "!"}
           </span>
           <div>
-            <strong>{row.label}</strong>
-            <span>{row.meta}</span>
+            <CatchText as="strong" variant="statusLabel" color="inherit">{row.label}</CatchText>
+            <CatchText as="span" variant="bodyS" color="ink2">{row.meta}</CatchText>
           </div>
         </div>
       ))}
@@ -482,17 +482,17 @@ export function AdminIntakeReviewWorkbench({
         <div className="intake-batch-command-row">
           <div className="intake-batch-title">
             <CatchText as="h3" variant="sectionTitle">{queueTitle}</CatchText>
-            <span>{queueMeta}</span>
+            <CatchText as="span" variant="bodyS" color="ink2">{queueMeta}</CatchText>
           </div>
           {stageControl ? (
             <div className="intake-batch-stage-control">{stageControl}</div>
           ) : null}
           {headerContext ? <div className="intake-batch-context">{headerContext}</div> : null}
           <div aria-label="Intake queue metrics" className="intake-batch-metrics" role="group" tabIndex={0}>
-            <span><strong>{needsNow}</strong> Need now</span>
-            <span><strong>{waiting}</strong> Waiting external</span>
-            <span><strong>{resolved.size}</strong> Cleared</span>
-            <span><strong>{oldest ? `${oldest}d` : "—"}</strong> Oldest</span>
+            <span><CatchText as="strong" variant="statusLabel" color="ink">{needsNow}</CatchText> Need now</span>
+            <span><CatchText as="strong" variant="statusLabel" color="ink">{waiting}</CatchText> Waiting external</span>
+            <span><CatchText as="strong" variant="statusLabel" color="ink">{resolved.size}</CatchText> Cleared</span>
+            <span><CatchText as="strong" variant="statusLabel" color="ink">{oldest ? `${oldest}d` : "—"}</CatchText> Oldest</span>
           </div>
           <div className="intake-batch-review-control">
             <button
@@ -524,7 +524,7 @@ export function AdminIntakeReviewWorkbench({
                   )}
                   type="checkbox"
                 />
-                <strong>{selection.size} selected</strong>
+                <CatchText as="strong" variant="statusLabel" color="inherit">{selection.size} selected</CatchText>
               </label>
               {bulkActions.map((action) => {
                 const {appliedIds, skippedIds} = eligibleBulkSelection(selection, action);
@@ -618,13 +618,13 @@ export function AdminIntakeReviewWorkbench({
             <button aria-label="Close shortcuts" onClick={() => setHelpOpen(false)} type="button">
               <X size={14} />
             </button>
-            <span><kbd>j</kbd>/<kbd>k</kbd> move</span>
-            <span><kbd>x</kbd> select</span>
-            <span><kbd>Enter</kbd> review</span>
-            <span><kbd>Esc</kbd> close</span>
-            <span><kbd>a</kbd>/<kbd>h</kbd>/<kbd>s</kbd> decide</span>
-            <span><kbd>/</kbd> search</span>
-            <span><kbd>?</kbd> shortcuts</span>
+            <CatchText as="span" variant="bodyS" color="inherit"><kbd>j</kbd>/<kbd>k</kbd> move</CatchText>
+            <CatchText as="span" variant="bodyS" color="inherit"><kbd>x</kbd> select</CatchText>
+            <CatchText as="span" variant="bodyS" color="inherit"><kbd>Enter</kbd> review</CatchText>
+            <CatchText as="span" variant="bodyS" color="inherit"><kbd>Esc</kbd> close</CatchText>
+            <CatchText as="span" variant="bodyS" color="inherit"><kbd>a</kbd>/<kbd>h</kbd>/<kbd>s</kbd> decide</CatchText>
+            <CatchText as="span" variant="bodyS" color="inherit"><kbd>/</kbd> search</CatchText>
+            <CatchText as="span" variant="bodyS" color="inherit"><kbd>?</kbd> shortcuts</CatchText>
           </div>
         ) : null}
       </header>
@@ -634,35 +634,35 @@ export function AdminIntakeReviewWorkbench({
           {state === "loading" ? <LoadingRows /> : null}
           {(loadError || (state === "error" && orderedItems.length > 0)) ? (
             <div className="intake-inline-error" role="alert">
-              <span>{loadError ?? "Candidate data could not be refreshed. The current table is preserved."}</span>
+              <CatchText as="span" variant="bodyS" color="inherit">{loadError ?? "Candidate data could not be refreshed. The current table is preserved."}</CatchText>
               {onRetry ? <button onClick={onRetry} type="button">Try again</button> : null}
             </div>
           ) : null}
           {state === "error" && orderedItems.length === 0 ? (
             <div className="intake-batch-state error" role="alert">
-              <strong>Candidate data could not be loaded.</strong>
-              <span>{loadError ?? "Your current filters and decisions were preserved."}</span>
+              <CatchText as="strong" variant="statusLabel" color="ink">Candidate data could not be loaded.</CatchText>
+              <CatchText as="span" variant="bodyS" color="inherit">{loadError ?? "Your current filters and decisions were preserved."}</CatchText>
               {onRetry ? <button onClick={onRetry} type="button">Try again</button> : null}
             </div>
           ) : null}
           {state === "unavailable" ? (
             <div className="intake-batch-state unavailable">
-              <strong>This projection is not available yet.</strong>
-              <span>
+              <CatchText as="strong" variant="statusLabel" color="ink">This projection is not available yet.</CatchText>
+              <CatchText as="span" variant="bodyS" color="inherit">
                 {emptyQueue
                   ?? "Run or refresh the governed intake workflow, then try again."}
-              </span>
+              </CatchText>
               {onRetry ? <button onClick={onRetry} type="button">Refresh</button> : null}
             </div>
           ) : null}
           {state === "ready" && orderedItems.length === 0 ? (
             <div className={`intake-batch-state empty ${emptyKind}`}>
-              <strong>{emptyKind === "filter" ? "No candidates match these filters." : "This stage is clear."}</strong>
-              <span>{emptyQueue ?? (
+              <CatchText as="strong" variant="statusLabel" color="ink">{emptyKind === "filter" ? "No candidates match these filters." : "This stage is clear."}</CatchText>
+              <CatchText as="span" variant="bodyS" color="inherit">{emptyQueue ?? (
                 emptyKind === "filter"
                   ? "Change or clear a filter to see more candidates."
                   : "There are no candidates waiting in this stage."
-              )}</span>
+              )}</CatchText>
             </div>
           ) : null}
           {(state === "ready" || state === "error") && orderedItems.length > 0 ? (
@@ -711,8 +711,8 @@ export function AdminIntakeReviewWorkbench({
                         >
                           <span aria-hidden="true" className="intake-batch-avatar">{item.initials}</span>
                           <span>
-                            <strong>{item.title}</strong>
-                            <small>{item.description}</small>
+                            <CatchText as="strong" variant="statusLabel" color="inherit">{item.title}</CatchText>
+                            <CatchText as="small" variant="bodyS" color="ink2">{item.description}</CatchText>
                           </span>
                         </button>
                       </th>
@@ -769,21 +769,21 @@ export function AdminIntakeReviewWorkbench({
               <section className="intake-inspector-blockers">
                 <div>
                   <CatchText as="h4" variant="titleS">Resolution</CatchText>
-                  <span>
+                  <CatchText as="span" variant="bodyS" color="ink2">
                     {selectedDetail.readiness.complete} of {selectedDetail.readiness.total} checks complete
-                  </span>
+                  </CatchText>
                 </div>
                 {selectedDetail.blockers?.length ? (
                   selectedDetail.blockers.map((blocker) => (
                     <div className={blocker.tone ?? "warning"} key={blocker.id}>
-                      <strong>{blocker.label}</strong>
-                      <span>{blocker.action}</span>
+                      <CatchText as="strong" variant="statusLabel" color="inherit">{blocker.label}</CatchText>
+                      <CatchText as="span" variant="bodyS" color="ink2">{blocker.action}</CatchText>
                     </div>
                   ))
                 ) : (
                   <div className="success">
-                    <strong>Ready for a decision</strong>
-                    <span>No unresolved evidence blockers remain.</span>
+                    <CatchText as="strong" variant="statusLabel" color="inherit">Ready for a decision</CatchText>
+                    <CatchText as="span" variant="bodyS" color="ink2">No unresolved evidence blockers remain.</CatchText>
                   </div>
                 )}
               </section>
@@ -802,8 +802,8 @@ export function AdminIntakeReviewWorkbench({
             </>
           ) : (
             <div className="intake-batch-state empty">
-              <strong>Select a candidate to review.</strong>
-              <span>{emptyDetail}</span>
+              <CatchText as="strong" variant="statusLabel" color="ink">Select a candidate to review.</CatchText>
+              <CatchText as="span" variant="bodyS" color="inherit">{emptyDetail}</CatchText>
             </div>
           )}
         </aside>
@@ -811,7 +811,7 @@ export function AdminIntakeReviewWorkbench({
 
       {undo ? (
         <div aria-live="polite" className="intake-undo-toast">
-          <span>{undo.label} applied to {undo.ids.length} item{undo.ids.length === 1 ? "" : "s"}.</span>
+          <CatchText as="span" variant="bodyS" color="inherit">{undo.label} applied to {undo.ids.length} item{undo.ids.length === 1 ? "" : "s"}.</CatchText>
           <button onClick={() => void undoLastAction()} type="button">
             <Undo2 size={14} /> Undo
           </button>
