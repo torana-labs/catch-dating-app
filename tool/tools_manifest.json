@@ -8432,6 +8432,102 @@
           "ZIP validates local names and CRCs and rejects prefixed or truncated archives"
         ]
       }
+    },
+    {
+      "id": "design:icon-catalog",
+      "category": "design",
+      "path": "tool/design/generate_icon_catalog.mjs",
+      "command": "node tool/design/generate_icon_catalog.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Validates the shared icon-role catalog against the vendored Flutter font, locked React family version and activity kinds, and verifies generated CatchIcons.",
+      "checks": [
+        "node --check tool/design/generate_icon_catalog.mjs",
+        "node --test tool/design/generate_icon_catalog.test.mjs",
+        "node tool/design/generate_icon_catalog.mjs --check"
+      ],
+      "impactPaths": [
+        "tool/design/generate_icon_catalog.test.mjs",
+        "design/tokens/catch.icons.json",
+        "design/tokens/catch.icons.schema.json",
+        "design/tokens/catch.icons.legacy_flutter.json",
+        "contracts/shared/event_common.schema.json",
+        "package-lock.json",
+        "website/package.json",
+        "packages/catch_ui/assets/fonts/**",
+        "packages/catch_ui/lib/src/foundations/catch_icons.dart"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
+      "role": "generator",
+      "rules": [
+        "ICON-ROLES-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/generate_icon_catalog.test.mjs",
+        "contains": [
+          "a glyph missing from the vendored font fails",
+          "Flutter and React must draw the same family version",
+          "every activity kind needs exactly one correctly named role"
+        ]
+      }
+    },
+    {
+      "id": "design:icon-family-usage",
+      "category": "design",
+      "path": "tool/design/check_icon_family_usage.mjs",
+      "command": "node tool/design/check_icon_family_usage.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Ratchets Flutter and React icon-family bypasses and legacy CatchIcons aliases downward; rejects growth and unrecorded reductions.",
+      "checks": [
+        "node --check tool/design/check_icon_family_usage.mjs",
+        "node --test tool/design/check_icon_family_usage.test.mjs",
+        "node tool/design/check_icon_family_usage.mjs --check"
+      ],
+      "impactPaths": [
+        "tool/design/check_icon_family_usage.test.mjs",
+        "tool/design/icon_family_usage_baseline.json",
+        "design/tokens/catch.icons.legacy_flutter.json",
+        "lib/**/*.dart",
+        "apps/**/*.dart",
+        "packages/catch_ui/**/*.dart",
+        "widgetbook/**/*.dart",
+        "test/**/*.dart",
+        "integration_test/**/*.dart",
+        "website/**/*.ts",
+        "website/**/*.tsx",
+        "admin/**/*.ts",
+        "admin/**/*.tsx",
+        "packages/web-ui/**/*.ts",
+        "packages/web-ui/**/*.tsx"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "ratchet",
+      "rules": [
+        "ICON-ROLES-001"
+      ],
+      "baseline": "tool/design/icon_family_usage_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_icon_family_usage.test.mjs",
+        "contains": [
+          "Dart references to Material, Cupertino and Phosphor glyphs are counted",
+          "each glyph imported from an icon-family package is counted in React",
+          "a count may only fall, and a fall must be recorded"
+        ]
+      }
     }
   ]
 }
