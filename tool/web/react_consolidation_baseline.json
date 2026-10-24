@@ -488,7 +488,7 @@
       "website/src/shared/ui/primitives/publicForms.tsx::PublicFormVerification"
     ],
     "screens.web_page_css_lines": {
-      "admin/src/styles.css": 4621,
+      "admin/src/styles.css": 4401,
       "website/src/styles.css": 22,
       "website/src/styles/consumer-event.css": 82,
       "website/src/styles/consumer-home.css": 142,

@@ -528,7 +528,7 @@ test("React dependency graph changes keep a bounded root npm closure", () => {
 
 test("backend deploy helper repairs preserve checks with only Node and root npm setup", () => {
   const changedPaths = [
-    "tool/ci/firebase_delivery_workflow.test.mjs",
+    "tool/firebase/affected_function_targets.test.mjs",
     "tool/deploy_firebase_targets.sh",
   ];
   const plan = planAffectedToolChecks({
@@ -1017,13 +1017,13 @@ test("shared controls and unknown companions still force full backend validation
     "package-lock.json", "unowned-input.xyz",
   ]) {
     const plan = planAffectedToolChecks({
-      changedPaths: [".github/workflows/_firebase-promote.yml", companion],
+      changedPaths: [".github/workflows/_backend-deploy.yml", companion],
       manifest: productionManifest, componentGraph: productionGraph,
     });
     assert.equal(plan.mode, "full", companion);
   }
   assert.equal(planAffectedToolChecks({
-    changedPaths: [".github/workflows/_firebase-promote.yml"],
+    changedPaths: [".github/workflows/_backend-deploy.yml"],
     manifest: productionManifest, componentGraph: productionGraph, mode: "nightly", full: true,
   }).mode, "full");
 });
