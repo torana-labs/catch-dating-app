@@ -3595,7 +3595,7 @@
         "contains": [
           "secret runtime IAM fails closed before Firebase can mutate policy",
           "secret metadata classification never returns payload fields",
-          "backend promotion selects targets before credentials and checks readiness before runtime installation"
+          "Deploy backend plans before credentials and checks readiness before any mutation"
         ]
       },
       "alsoCheckIds": [
