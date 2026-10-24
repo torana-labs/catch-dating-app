@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
 import {useSalesDemoPartnerReviewController} from "../controllers/useSalesDemoPartnerReviewController";
 import type {SalesDemoPartnerReviewApi} from "../api/salesDemoPartnerReview";
@@ -76,7 +76,7 @@ export function SalesDemoWorkspace({organizerId, organizerName, isAdminOwner,
   isAdminOwner: boolean; currentUserUid: string; api?: DemoManagementApi}) {
   if (!isAdminOwner) return <Panel title="Private workflow example"
     icon={<ClipboardList size={18} />}>
-    <p>An Admin owner can prepare and issue private demos.</p>
+    <CatchText as="p" variant="supporting">An Admin owner can prepare and issue private demos.</CatchText>
   </Panel>;
   return <OwnerDemoPanel key={`${currentUserUid}:${organizerId}`}
     organizerId={organizerId} organizerName={organizerName}
@@ -200,20 +200,20 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
   };
 
   return <Panel title="Private workflow example" icon={<ClipboardList size={18} />}>
-    <p>Build a private, synthetic example for {organizerName}. No real guests,
-      messages, charges, membership, or publication are changed.</p>
-    {controller.capability.isPending ? <p>Checking supported example…</p> : null}
-    {!capabilityReady ? <p role="alert">The supported demo capability is
-      unavailable. The demo has not been enabled for this environment.</p> : null}
-    {controller.error ? <p role="alert">{controller.error}</p> : null}
-    {controller.notice ? <p role="status">{controller.notice}</p> : null}
+    <CatchText as="p" variant="supporting">Build a private, synthetic example for {organizerName}. No real guests,
+      messages, charges, membership, or publication are changed.</CatchText>
+    {controller.capability.isPending ? <CatchText as="p" variant="supporting">Checking supported example…</CatchText> : null}
+    {!capabilityReady ? <CatchText as="p" variant="supporting" role="alert">The supported demo capability is
+      unavailable. The demo has not been enabled for this environment.</CatchText> : null}
+    {controller.error ? <CatchText as="p" variant="supporting" role="alert">{controller.error}</CatchText> : null}
+    {controller.notice ? <CatchText as="p" variant="supporting" role="status">{controller.notice}</CatchText> : null}
     {controller.pending ? <AdminButton disabled={controller.busy}
       onClick={() => void controller.retry()}>Retry unchanged request</AdminButton> : null}
     {controller.blueprintExists && <AdminButton disabled={controller.busy || controller.blueprint.isFetching}
       onClick={() => {void controller.blueprint.refetch(); void controller.capability.refetch();}}>Refresh example and access</AdminButton>}
-    {!sourceCurrent && <p>Current example access is being checked or was denied. Refresh to review it.</p>}
+    {!sourceCurrent && <CatchText as="p" variant="supporting">Current example access is being checked or was denied. Refresh to review it.</CatchText>}
     {sourceCurrent && <>
-    <h3>Saved examples</h3>
+    <CatchText as="h3" variant="sectionTitle">Saved examples</CatchText>
     {controller.blueprintList.isError ? <p role="alert">Saved examples could not be
       loaded. <AdminButton onClick={() => void controller.blueprintList.refetch()}>
         Try again</AdminButton></p> : null}
@@ -239,11 +239,11 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
         !controller.blueprint.isError && !dirty && !stale && !controller.busy && !controller.pending}
       onPendingChange={reportSharingPending} onLoadWording={(wording) => edit({...form, preview: {...form.preview, ...wording}})} />}
     {active && sourceCurrent ? <>
-      <h3>{selected ? "Edit example" : "New example"}</h3>
-      {controller.blueprint.isError ? <p role="alert">This blueprint could not
-        be loaded. Choose it again from the list.</p> : null}
-      {stale ? <p role="alert">This blueprint changed while you were editing.
-        Review the current version before saving.</p> : null}
+      <CatchText as="h3" variant="sectionTitle">{selected ? "Edit example" : "New example"}</CatchText>
+      {controller.blueprint.isError ? <CatchText as="p" variant="supporting" role="alert">This blueprint could not
+        be loaded. Choose it again from the list.</CatchText> : null}
+      {stale ? <CatchText as="p" variant="supporting" role="alert">This blueprint changed while you were editing.
+        Review the current version before saving.</CatchText> : null}
       <BlueprintEditor form={form} edit={edit} templateOptions={
         controller.capability.data?.templateOptions ?? []} disabled={locked ||
         selected?.state === "withdrawn"} />
@@ -259,9 +259,9 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
         onClick={() => void controller.change("withdraw",
           selected.blueprintId, formRevision)}>Withdraw example</AdminButton> : null}
       {selected?.state === "reviewed" && !dirty ? <>
-        <h3>Issue private invitation</h3>
-        <p>An unbound link shows the preview only. Interactive access requires
-          an intended email or verified phone.</p>
+        <CatchText as="h3" variant="sectionTitle">Issue private invitation</CatchText>
+        <CatchText as="p" variant="supporting">An unbound link shows the preview only. Interactive access requires
+          an intended email or verified phone.</CatchText>
         <AdminForm onSubmit={(event) => {event.preventDefault(); void issue();}}>
           <CatchField
             recipe="select"
@@ -287,8 +287,8 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
             inputMode={locked ? "inactive" : "editable"}
             keyboardType="datetime"
           />
-          {expiresAt && !expiryValid ? <p role="alert">Choose a future expiry
-            within seven days.</p> : null}
+          {expiresAt && !expiryValid ? <CatchText as="p" variant="supporting" role="alert">Choose a future expiry
+            within seven days.</CatchText> : null}
           <CatchField
             recipe="select"
             title="Maximum trial sessions"
@@ -305,8 +305,8 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
             Issue invitation</AdminButton>
         </AdminForm>
       </> : null}
-      <h3>Invitations</h3>
-      {controller.invitationList.isPending ? <p>Loading invitations…</p> : null}
+      <CatchText as="h3" variant="sectionTitle">Invitations</CatchText>
+      {controller.invitationList.isPending ? <CatchText as="p" variant="supporting">Loading invitations…</CatchText> : null}
       {controller.invitationList.isError ? <p role="alert">Invitations could not
         be loaded. <AdminButton onClick={() => void controller.invitationList.refetch()}>
           Try again</AdminButton></p> : null}
@@ -326,13 +326,13 @@ function OwnerDemoPanel({organizerId, organizerName, currentUserUid, api}: {
         onClick={controller.previousInvitationPage}>Previous invitations</AdminButton> : null}
       {controller.invitationHistory.length > 1 ? <AdminButton disabled={locked}
         onClick={controller.firstInvitationPage}>First invitations</AdminButton> : null}
-      {controller.issuedGrant ? <p role="status">Invitation issued.
-        The private link is available here until you leave this view.</p> : null}
+      {controller.issuedGrant ? <CatchText as="p" variant="supporting" role="status">Invitation issued.
+        The private link is available here until you leave this view.</CatchText> : null}
       {controller.issuedGrant && validOrigin() ? <AdminButton disabled={locked}
         onClick={() => void copyLink()}>Copy private link</AdminButton> : null}
-      {controller.issuedGrant && !validOrigin() ? <p role="alert">
-        Public site origin is unavailable; link copying is disabled.</p> : null}
-      {copyNotice ? <p role="status">{copyNotice}</p> : null}
+      {controller.issuedGrant && !validOrigin() ? <CatchText as="p" variant="supporting" role="alert">
+        Public site origin is unavailable; link copying is disabled.</CatchText> : null}
+      {copyNotice ? <CatchText as="p" variant="supporting" role="status">{copyNotice}</CatchText> : null}
     </> : null}
   </Panel>;
 }
@@ -343,9 +343,9 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
   const setPreview = (patch: Partial<DemoPreviewCopy>) => edit({...form,
     preview: {...form.preview, ...patch}});
   return <AdminForm onSubmit={(event) => event.preventDefault()}>
-    <h4>After the sample</h4>
-    <p>This plan is reviewed separately. It never publishes a form or copies
-      sample answers into a real form.</p>
+    <CatchText as="h4" variant="titleS">After the sample</CatchText>
+    <CatchText as="p" variant="supporting">This plan is reviewed separately. It never publishes a form or copies
+      sample answers into a real form.</CatchText>
     <CatchField
       recipe="select"
       title="Setup approach"
@@ -392,7 +392,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
       onChanged={(value) => edit({...form, setupPlan: {...form.setupPlan,
         requirements: splitLines(value)}})}
     />
-    <p>Up to twelve steps, 160 characters each. Manual handoff needs at least one.</p>
+    <CatchText as="p" variant="supporting">Up to twelve steps, 160 characters each. Manual handoff needs at least one.</CatchText>
     <CatchField
       recipe="input"
       title="Host name in preview"
@@ -447,7 +447,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
       onChanged={(cta) => setPreview({cta})}
       inputMode={disabled ? "inactive" : "editable"}
     />
-    <h4>Form capability review</h4>
+    <CatchText as="h4" variant="titleS">Form capability review</CatchText>
     {reviewAreas.map(([area, label]) => <CatchField
       recipe="select"
       key={area}
@@ -458,7 +458,7 @@ function BlueprintEditor({form, edit, disabled, templateOptions}: {form: FormSta
       onChanged={(value) => edit({...form,
         review: {...form.review, [area]: (value ?? "") as DemoDisposition}})}
     />)}
-    <h4>Field mapping</h4>
+    <CatchText as="h4" variant="titleS">Field mapping</CatchText>
     {form.mappings.map((mapping, index) => <div key={index}>
       <CatchField
         recipe="input"
@@ -513,17 +513,17 @@ function SalesDemoPartnerSharePanel(props: {actorUid: string; organizerId: strin
   const blocked = operationPending || c.busy || !!c.ticket;
   if (!props.parentAccessCurrent) return null;
   return <Panel title="Share a preview with the assigned partner" icon={<ClipboardList />}>
-    <p>Blueprint approval and partner assignment do not share this preview. Review this exact recipient and composition before sharing.</p>
-    {c.error && <p role="alert">{c.error}</p>}{c.notice && <p role="status">{c.notice}</p>}
+    <CatchText as="p" variant="supporting">Blueprint approval and partner assignment do not share this preview. Review this exact recipient and composition before sharing.</CatchText>
+    {c.error && <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText>}{c.notice && <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText>}
     <AdminButton disabled={operationPending || c.busy} onClick={() => void c.refresh()}>Refresh sharing scope</AdminButton>
     {c.ticket && <AdminButton disabled={operationPending || c.busy || !value} onClick={() => void c.retry()}>Retry unchanged sharing action</AdminButton>}
     {!value ? <EmptyState>A current accepted partner and reviewed canonical preview are required.</EmptyState> : <>
       <StateRow label="Recipient account" value={value.partnerUid} /><StateRow label="Assignment revision" value={value.assignmentRevision} />
       <StateRow label="Preview fingerprint" value={value.previewHash} />
-      <h3>{value.preview.headline}</h3><p>{value.preview.scenario}</p>
+      <CatchText as="h3" variant="sectionTitle">{value.preview.headline}</CatchText><CatchText as="p" variant="supporting">{value.preview.scenario}</CatchText>
       <ol>{value.preview.steps.map((step, i) => <li key={i}>{step}</li>)}</ol>
-      {value.preview.retainedTools.map((tool, i) => <p key={i}>Keep: {tool}</p>)}
-      {value.preview.limitations.map((limit, i) => <p key={i}>{limit}</p>)}<p>{value.preview.cta}</p>
+      {value.preview.retainedTools.map((tool, i) => <CatchText as="p" variant="supporting" key={i}>Keep: {tool}</CatchText>)}
+      {value.preview.limitations.map((limit, i) => <CatchText as="p" variant="supporting" key={i}>{limit}</CatchText>)}<CatchText as="p" variant="supporting">{value.preview.cta}</CatchText>
       <StateRow label="Current sharing" value={value.sharingCurrent ? `Active until ${value.expiresAt}` : value.sharingState} />
       <CatchField
         recipe="input"
@@ -533,7 +533,7 @@ function SalesDemoPartnerSharePanel(props: {actorUid: string; organizerId: strin
         onChanged={(v) => {setExpires(v); setReviewKey(null);}}
         keyboardType="datetime"
       />
-      <p>Latest allowed expiry: {value.maximumExpiresAt}. No invitation, send authority or organizer control is granted.</p>
+      <CatchText as="p" variant="supporting">Latest allowed expiry: {value.maximumExpiresAt}. No invitation, send authority or organizer control is granted.</CatchText>
       <CheckboxField label="I approve this exact synthetic preview for this assigned partner" checked={!!key && reviewKey === key}
         disabled={blocked} onChange={(checked) => setReviewKey(checked ? key : null)} />
       <AdminButton disabled={blocked || !key || reviewKey !== key || !expiryValid} onClick={() => {
@@ -541,9 +541,9 @@ function SalesDemoPartnerSharePanel(props: {actorUid: string; organizerId: strin
       <AdminButton disabled={blocked || value.sharingState === "none" || !key || reviewKey !== key} onClick={() => {
         setReviewKey(null); void c.share("withdraw", null);}}>Withdraw partner sharing</AdminButton>
       {value.proposedWording && <>
-        <h3>Pending partner wording</h3><p>{value.proposedWording.headline}</p><p>{value.proposedWording.scenario}</p><p>{value.proposedWording.cta}</p>
+        <CatchText as="h3" variant="sectionTitle">Pending partner wording</CatchText><CatchText as="p" variant="supporting">{value.proposedWording.headline}</CatchText><CatchText as="p" variant="supporting">{value.proposedWording.scenario}</CatchText><CatchText as="p" variant="supporting">{value.proposedWording.cta}</CatchText>
         <AdminButton disabled={blocked} onClick={() => props.onLoadWording(value.proposedWording!)}>Load proposal into draft editor</AdminButton>
-        <p>Loading edits does not approve them. Save and review the new blueprint, then explicitly share it again.</p>
+        <CatchText as="p" variant="supporting">Loading edits does not approve them. Save and review the new blueprint, then explicitly share it again.</CatchText>
       </>}
     </>}
   </Panel>;

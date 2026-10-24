@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {Handshake} from "lucide-react";
 import {useState} from "react";
 import {AdminButton, AdminForm, CheckboxField, Panel} from "../../../shared/ui/AdminPrimitives";
@@ -16,12 +16,12 @@ function PartnerOffer({actorUid, organizerId, organizerName}: {
   const disabled = operationPending || !!c.ticket || !!c.offeredTo;
   const change = (setter: (value: string) => void) => (value: string) => {setter(value); setReviewed(false);};
   return <Panel title="Offer this lead to a referral partner" icon={<Handshake size={18} />}>
-    <p>This creates the first partner offer for {organizerName}. It requires an active partner membership
-      and a reviewed, unrestricted Sales account. Existing assignments are never overwritten here.</p>
-    <p>The partner can see this organizer and next action, then accept or decline. An offer grants no
-      organizer control or permission to send messages.</p>
-    {c.error && <p role="alert">{c.error}</p>}
-    {c.offeredTo ? <p role="status">Lead offered to account {c.offeredTo}. Ask the partner to refresh their workspace.</p> :
+    <CatchText as="p" variant="supporting">This creates the first partner offer for {organizerName}. It requires an active partner membership
+      and a reviewed, unrestricted Sales account. Existing assignments are never overwritten here.</CatchText>
+    <CatchText as="p" variant="supporting">The partner can see this organizer and next action, then accept or decline. An offer grants no
+      organizer control or permission to send messages.</CatchText>
+    {c.error && <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText>}
+    {c.offeredTo ? <CatchText as="p" variant="supporting" role="status">Lead offered to account {c.offeredTo}. Ask the partner to refresh their workspace.</CatchText> :
     <AdminForm onSubmit={(event) => {
       event.preventDefault(); if (!reviewed || disabled) return;
       void c.offer({partnerUid, nextAction, reason,

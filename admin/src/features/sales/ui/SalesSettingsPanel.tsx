@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {ClipboardList} from "lucide-react";
 import {
@@ -58,19 +58,19 @@ function SettingsView({controller, isAdminOwner}: {
     if (saved) {setLabel(""); setHelpText(""); setEnumText("");}
   };
   return <><Panel title="Sales settings" icon={<ClipboardList size={18} />}>
-    <p>Add a private account field when the team needs the same information for
-      several hosts. Check existing fields first.</p>
-    {controller.customFields.isPending ? <p>Loading private fields…</p> : null}
+    <CatchText as="p" variant="supporting">Add a private account field when the team needs the same information for
+      several hosts. Check existing fields first.</CatchText>
+    {controller.customFields.isPending ? <CatchText as="p" variant="supporting">Loading private fields…</CatchText> : null}
     {controller.customFields.isError ? <EmptyState>
       Fields could not be loaded. <AdminButton
         onClick={() => void controller.customFields.refetch()}>Try again</AdminButton>
     </EmptyState> : null}
     {fields.map((field) => <StateRow key={field.fieldId} label={field.label}
       value={<>{typeLabels[field.type]} · {field.helpText || "No help text"}</>} />)}
-    {similar.length ? <p role="status">Similar fields: {similar.map((field) =>
-      field.label).join(", ")}. Check these before adding another.</p> : null}
+    {similar.length ? <CatchText as="p" variant="supporting" role="status">Similar fields: {similar.map((field) =>
+      field.label).join(", ")}. Check these before adding another.</CatchText> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <h3>New host field</h3>
+      <CatchText as="h3" variant="sectionTitle">New host field</CatchText>
       <CatchField
         recipe="input"
         title="Field label"
@@ -104,9 +104,9 @@ function SettingsView({controller, isAdminOwner}: {
         value={helpText}
         onChanged={setHelpText}
       />
-      <p>Preview: {label.trim() || "Field label"} · {typeLabels[type]}
-        {helpText.trim() ? ` · ${helpText.trim()}` : ""}</p>
-      {localError ? <p role="alert">{localError}</p> : null}
+      <CatchText as="p" variant="supporting">Preview: {label.trim() || "Field label"} · {typeLabels[type]}
+        {helpText.trim() ? ` · ${helpText.trim()}` : ""}</CatchText>
+      {localError ? <CatchText as="p" variant="supporting" role="alert">{localError}</CatchText> : null}
       <AdminButton type="submit" variant="primary" disabled={controller.isSaving}>
         Add private field
       </AdminButton>

@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useQuery} from "@tanstack/react-query";
 import {useEffect, useRef, useState, type FormEvent} from "react";
 import {LockKeyhole} from "lucide-react";
@@ -32,7 +32,7 @@ function blockerLabel(code: string): string {
 function Blockers({rows}: {rows: PrivacyBlocker[]}) {
   const grouped = [...new Set(rows.map((row) => blockerLabel(row.code)))];
   return grouped.length ? <ul>{grouped.map((label) =>
-    <li key={label}>{label}</li>)}</ul> : <p>No unresolved sources in this inventory.</p>;
+    <li key={label}>{label}</li>)}</ul> : <CatchText as="p" variant="supporting">No unresolved sources in this inventory.</CatchText>;
 }
 
 /** An owner may mount this for a selected host or as a Settings lookup. */
@@ -43,8 +43,8 @@ export function renderSalesPrivacyWorkspace({actorUid, isAdminOwner,
   if (!isAdminOwner) return null;
   if (dataMode() === "sample") return <Panel title="Private Sales privacy"
     icon={<LockKeyhole size={18} />}>
-    <p>This owner-only workflow requires live Admin records.
-      Sample hosts cannot be restricted or processed.</p>
+    <CatchText as="p" variant="supporting">This owner-only workflow requires live Admin records.
+      Sample hosts cannot be restricted or processed.</CatchText>
   </Panel>;
   return <PrivacyEntry actorUid={actorUid} organizerId={organizerId}
     organizerName={organizerName} api={api} />;
@@ -68,8 +68,8 @@ function PrivacyEntry({actorUid, organizerId, organizerName, api}: {
   return <>
     {!organizerId ? <Panel title="Find a host privacy case"
       icon={<LockKeyhole size={18} />}>
-      <p>Search canonical organizers, including hosts no longer in the Sales
-        directory. Choosing one only opens its private case.</p>
+      <CatchText as="p" variant="supporting">Search canonical organizers, including hosts no longer in the Sales
+        directory. Choosing one only opens its private case.</CatchText>
       <AdminForm onSubmit={(event) => {
         event.preventDefault(); setSubmitted(searchText.trim());
       }}>
@@ -87,7 +87,7 @@ function PrivacyEntry({actorUid, organizerId, organizerName, api}: {
           Search hosts
         </AdminButton>
       </AdminForm>
-      {matches.isPending && submitted ? <p>Searching hosts…</p> : null}
+      {matches.isPending && submitted ? <CatchText as="p" variant="supporting">Searching hosts…</CatchText> : null}
       {matches.isError ? <p role="alert">Host search failed. {" "}
         <AdminButton onClick={() => void matches.refetch()}>Try again</AdminButton>
       </p> : null}
@@ -188,15 +188,15 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
   }
   return <Panel title={`Private Sales privacy · ${organizerName}`}
     icon={<LockKeyhole size={18} />}>
-    <p>This workflow restricts private Sales processing and reviews an internal
+    <CatchText as="p" variant="supporting">This workflow restricts private Sales processing and reviews an internal
       cleanup. It does not delete product organizers, Forms, finance evidence,
-      audit records, external exports, or copies held by other systems.</p>
-    {c.caseQuery.isPending ? <p>Loading the current privacy case…</p> : null}
+      audit records, external exports, or copies held by other systems.</CatchText>
+    {c.caseQuery.isPending ? <CatchText as="p" variant="supporting">Loading the current privacy case…</CatchText> : null}
     {c.caseQuery.isError ? <p role="alert">The current case could not be loaded.
       {" "}<AdminButton onClick={() => void c.caseQuery.refetch()}>
         Try again</AdminButton></p> : null}
-    {c.error ? <p role="alert">{c.error}</p> : null}
-    {c.notice ? <p role="status">{c.notice}</p> : null}
+    {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
+    {c.notice ? <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText> : null}
     {c.pending ? <p role="alert">Outcome unconfirmed. {" "}
       <AdminButton disabled={c.busy} onClick={() => void c.retryPending()}>
         Retry the same request</AdminButton></p> : null}
@@ -204,10 +204,10 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
       event.preventDefault();
       if (confirm === organizerName && reason.trim()) void c.restrict(reason.trim());
     }}>
-      <h3>1. Restrict private Sales processing</h3>
-      <p>This permanent Sales restriction blocks private Sales reads and writes,
+      <CatchText as="h3" variant="sectionTitle">1. Restrict private Sales processing</CatchText>
+      <CatchText as="p" variant="supporting">This permanent Sales restriction blocks private Sales reads and writes,
         including retries of older requests. It does not alter the public
-        organizer or ownership claim.</p>
+        organizer or ownership claim.</CatchText>
       <CatchField
         recipe="input"
         title="Reason for restriction"
@@ -231,21 +231,21 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
         Restrict private Sales processing
       </AdminButton>
     </AdminForm> : null}
-    {ownerCase?.restricted ? <p role="status">Private Sales processing is
+    {ownerCase?.restricted ? <CatchText as="p" variant="supporting" role="status">Private Sales processing is
       restricted. Current state: {ownerCase.restriction?.status ===
         "internal_processed_with_unresolved" ?
         "Internal cleanup processed; unresolved sources remain" :
         ownerCase.restriction?.status === "processing" ?
-          "Cleanup in progress" : "Restricted"}.</p> : null}
+          "Cleanup in progress" : "Restricted"}.</CatchText> : null}
     {ownerCase?.restricted ? <>
-      <h3>2. Review retention decision</h3>
-      {ownerCase.policy ? <p>Current reviewed policy: {ownerCase.policy.sourceReference}
+      <CatchText as="h3" variant="sectionTitle">2. Review retention decision</CatchText>
+      {ownerCase.policy ? <CatchText as="p" variant="supporting">Current reviewed policy: {ownerCase.policy.sourceReference}
         {" · "}revision {ownerCase.policy.revision}. Finance and audit records
-        remain held for separate review.</p> : <p>No reviewed retention policy is
-        recorded. Inventory planning is blocked until an Admin owner reviews one.</p>}
-      {c.policyConflict ? <p role="alert">Another owner changed the retention
+        remain held for separate review.</CatchText> : <CatchText as="p" variant="supporting">No reviewed retention policy is
+        recorded. Inventory planning is blocked until an Admin owner reviews one.</CatchText>}
+      {c.policyConflict ? <CatchText as="p" variant="supporting" role="alert">Another owner changed the retention
         decision. Your draft is still here but cannot be submitted against the
-        new version. Discard it and review the current policy before editing.</p> :
+        new version. Discard it and review the current policy before editing.</CatchText> :
         null}
       {(policyEditRevision !== null || c.policyConflict) ? <AdminButton
         disabled={!canEdit || c.caseQuery.isFetching}
@@ -270,9 +270,9 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
           onChange={(event) => void readPolicyFile(event.target.files?.[0])}>
           Choose reviewed policy file
         </FilePickerButton>
-        <p>{hashingBusy ? "Reading the selected policy file locally…" :
+        <CatchText as="p" variant="supporting">{hashingBusy ? "Reading the selected policy file locally…" :
           policyFile ? `${policyFile} · SHA-256 checked locally; file not uploaded.` :
-          "Choose the exact reviewed policy file. Only its fingerprint is saved."}</p>
+          "Choose the exact reviewed policy file. Only its fingerprint is saved."}</CatchText>
         <CatchField
           recipe="input"
           title="Why finance records remain held for review"
@@ -302,23 +302,23 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
           !policyReference.trim() || !financeReason.trim() ||
           !auditReason.trim()}>Save reviewed retention decision</AdminButton>
       </AdminForm>
-      <h3>3. Review exact private inventory</h3>
+      <CatchText as="h3" variant="sectionTitle">3. Review exact private inventory</CatchText>
       <AdminButton disabled={!canEdit || !ownerCase.policy || c.previewBusy}
         onClick={() => void c.loadPreview()}>
         {c.previewBusy ? "Reviewing inventory…" : "Preview internal cleanup"}
       </AdminButton>
       {c.preview ? <>
-        <p role="status">This preview found {c.preview.counts.deletable}
+        <CatchText as="p" variant="supporting" role="status">This preview found {c.preview.counts.deletable}
           {" "}private records eligible for internal cleanup,
           {" "}{c.preview.counts.retained} records held for separate review,
-          and {c.preview.counts.unresolved} unresolved sources.</p>
+          and {c.preview.counts.unresolved} unresolved sources.</CatchText>
         <Blockers rows={c.preview.blockers} />
-        {c.preview.overflow ? <p role="alert">The inventory exceeded its safe
-          bound. No plan can be approved from this preview.</p> :
+        {c.preview.overflow ? <CatchText as="p" variant="supporting" role="alert">The inventory exceeded its safe
+          bound. No plan can be approved from this preview.</CatchText> :
           plan?.inventoryHash === c.preview.inventoryHash &&
           plan.policyHash === c.preview.policyHash ?
-            <p role="status">The current reviewed plan matches this inventory.
-              Continue from its saved batch position.</p> :
+            <CatchText as="p" variant="supporting" role="status">The current reviewed plan matches this inventory.
+              Continue from its saved batch position.</CatchText> :
           <AdminButton disabled={!canEdit || c.preview.counts.deletable +
             c.preview.counts.retained === 0} onClick={() => {
               setReviewedPlanKey(null); void c.reviewPlan();
@@ -328,10 +328,10 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
           </AdminButton>}
       </> : null}
       {plan ? <>
-        <h3>4. Apply reviewed plan in small batches</h3>
-        <p>{plan.cursor} of {plan.itemCount} internal records processed.
+        <CatchText as="h3" variant="sectionTitle">4. Apply reviewed plan in small batches</CatchText>
+        <CatchText as="p" variant="supporting">{plan.cursor} of {plan.itemCount} internal records processed.
           {" "}{plan.retainedCount} are held, and {plan.unresolvedCount} sources
-          need separate review. No complete-erasure claim is made.</p>
+          need separate review. No complete-erasure claim is made.</CatchText>
         <Blockers rows={plan.blockers} />
         {plan.cursor < plan.itemCount ? <>
           <CheckboxField checked={reviewedPlanKey === planKey}
@@ -343,8 +343,8 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
             onClick={() => {setReviewedPlanKey(null); void c.applyBatch();}}>
             Apply next batch of up to 20 records
           </AdminButton></AdminToolbar>
-        </> : <p role="status">Internal cleanup batches finished. Finance,
-          audit, assistant scope, and external copies still need separate review.</p>}
+        </> : <CatchText as="p" variant="supporting" role="status">Internal cleanup batches finished. Finance,
+          audit, assistant scope, and external copies still need separate review.</CatchText>}
       </> : null}
     </> : null}
   </Panel>;

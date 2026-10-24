@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {ExternalLink, Search} from "lucide-react";
 import {useEffect, useMemo, useState} from "react";
 
@@ -583,16 +583,16 @@ function OrganizerTaskWorkbench({
             {
               content: (
                 <AdminIntakeSection>
-                  <p>
+                  <CatchText as="p" variant="supporting">
                     {candidate.reviewContext?.reviewNotes ??
                       candidate.snippet ??
                       "No search-result snippet was captured for this candidate."}
-                  </p>
+                  </CatchText>
                   {candidate.reviewContext?.eventSignal ? (
-                    <p>{candidate.reviewContext.eventSignal}</p>
+                    <CatchText as="p" variant="supporting">{candidate.reviewContext.eventSignal}</CatchText>
                   ) : null}
                   {candidate.reviewContext?.formats.length ? (
-                    <p>Formats: {candidate.reviewContext.formats.join(", ")}</p>
+                    <CatchText as="p" variant="supporting">Formats: {candidate.reviewContext.formats.join(", ")}</CatchText>
                   ) : null}
                   {candidate.existingEntityMatches.length === 0 &&
                     !candidateDraft &&

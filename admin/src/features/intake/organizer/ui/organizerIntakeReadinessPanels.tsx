@@ -38,6 +38,7 @@ import type {
 } from "../../../../shared/types/adminTypes";
 import type * as Intake from "../types/organizerIntakeTypes";
 import {organizerIntakeEvidencePanels} from "./organizerIntakeEvidencePanels";
+import {CatchText} from "@catch/web-ui";
 
 const organizerCurationOperations: OrganizerCurationOperation[] = [
   "surface_decision",
@@ -156,7 +157,7 @@ function OrganizerOperatorActionQueueView({
                 <AdminEyebrow>
                   {action.actionType.replaceAll("_", " ")} / {action.priority}
                 </AdminEyebrow>
-                <h3>{action.subjectName}</h3>
+                <CatchText as="h3" variant="sectionTitle">{action.subjectName}</CatchText>
               </div>
               <StatusChip tone={action.status === "requires_admin_decision" ? "ready" : ""}>
                 {action.status.replaceAll("_", " ")}
@@ -253,7 +254,7 @@ function OrganizerOperationalHealthView({
                 <AdminEyebrow>
                   {stream.priority} / {stream.id.replaceAll("_", " ")}
                 </AdminEyebrow>
-                <h3>{stream.label}</h3>
+                <CatchText as="h3" variant="sectionTitle">{stream.label}</CatchText>
               </div>
               <StatusChip tone={organizerIntakeEvidencePanels.healthStatusTone(stream.status)}>
                 {stream.status.replaceAll("_", " ")}
@@ -366,7 +367,7 @@ function OrganizerPendingWorkCoverageView({
                 <AdminEyebrow>
                   {entry.priority} / {entry.workstreamId.replaceAll("_", " ")}
                 </AdminEyebrow>
-                <h3>{entry.label}</h3>
+                <CatchText as="h3" variant="sectionTitle">{entry.label}</CatchText>
               </div>
               <StatusChip tone={organizerIntakeEvidencePanels.coverageStatusTone(entry.coverageStatus)}>
                 {entry.coverageStatus.replaceAll("_", " ")}
@@ -506,7 +507,7 @@ function OrganizerPendingInputRequestView({
                   <AdminEyebrow>
                     {input.requestType.replaceAll("_", " ")} / {input.priority}
                   </AdminEyebrow>
-                  <h3>{input.subjectName}</h3>
+                  <CatchText as="h3" variant="sectionTitle">{input.subjectName}</CatchText>
                 </div>
                 <StatusChip tone={input.priority === "p0" ? "ready" : ""}>
                   {input.owner.replaceAll("_", " ")}
@@ -664,7 +665,7 @@ function OrganizerPendingInputRequestView({
                     <AdminEyebrow>
                       {followUp.priority} / {followUp.workstreamId.replaceAll("_", " ")}
                     </AdminEyebrow>
-                    <h3>{followUp.label}</h3>
+                    <CatchText as="h3" variant="sectionTitle">{followUp.label}</CatchText>
                   </div>
                   <StatusChip tone={organizerIntakeEvidencePanels.healthStatusTone(followUp.status)}>
                     {followUp.status.replaceAll("_", " ")}
@@ -751,7 +752,7 @@ function OrganizerReviewedDecisionAnswerPacketsView({
                   <AdminEyebrow>
                     {entry.sourceFreshness.replaceAll("_", " ")}
                   </AdminEyebrow>
-                  <h3>{entry.path}</h3>
+                  <CatchText as="h3" variant="sectionTitle">{entry.path}</CatchText>
                 </div>
                 <StatusChip tone={entry.readyToApply ? "ready" : ""}>
                   {entry.status.replaceAll("_", " ")}

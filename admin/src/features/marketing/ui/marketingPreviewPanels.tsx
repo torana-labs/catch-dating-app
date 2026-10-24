@@ -22,6 +22,7 @@ import {
   MarketingContentDraftSlide,
   MarketingOpsBridge,
 } from "../../../shared/types/adminTypes";
+import {CatchText} from "@catch/web-ui";
 
 const studioTabs: Array<{id: MarketingStudioTab; label: string}> = [
   {id: "posts", label: "Posts"},
@@ -141,8 +142,8 @@ function MarketingDraftPreview({
               Export design: Catch _ logo text, Archivo token headlines, IBM Plex Mono labels, SF body
             </AdminMarketingPreviewBrandNote>
             <AdminMarketingPreviewCopy>
-              <h4>{slide.headline}</h4>
-              <p>{slide.body}</p>
+              <CatchText as="h4" variant="titleS">{slide.headline}</CatchText>
+              <CatchText as="p" variant="supporting">{slide.body}</CatchText>
             </AdminMarketingPreviewCopy>
           </AdminMarketingPreviewSlide>
         ))}

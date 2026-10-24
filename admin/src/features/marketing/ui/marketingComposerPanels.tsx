@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {
   CheckCircle2,
   Download,
@@ -381,10 +381,10 @@ function MarketingDraftComposer({
         <AdminMarketingPostTypeBadge draftType={draftType}>
           {marketingPreviewPanels.draftLabel(draftType)}
         </AdminMarketingPostTypeBadge>
-        <h3>{marketingPreviewPanels.draftTitle(draft)}</h3>
-        <p>
+        <CatchText as="h3" variant="sectionTitle">{marketingPreviewPanels.draftTitle(draft)}</CatchText>
+        <CatchText as="p" variant="supporting">
           {draft.format} / {draft.aspectRatio} / manual Instagram export
-        </p>
+        </CatchText>
       </AdminMarketingComposerHeader>
 
       <AdminMarketingStepStrip>
