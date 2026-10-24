@@ -3428,6 +3428,12 @@
       "owner": "shared/media",
       "source": "packages/web-ui/src/components/EventBackdropImage.tsx",
       "exportName": "EventBackdropImage",
+      "comparedWith": [
+        "catch.detail_media",
+        "catch.graded_image",
+        "catch.network_image"
+      ],
+      "comparisonReason": "Paints activity artwork (duotone ground and line pattern) from an activity kind; it loads, grades and frames no photo. catch.network_image and catch.graded_image load and grade a supplied photo, and catch.detail_media composes a hero photo with its scrim.",
       "css": [
         "packages/web-ui/src/components/EventBackdropImage.module.css"
       ],

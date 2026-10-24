@@ -1,6 +1,6 @@
 import {activeMarket} from "@content/markets";
 import {exploreCopy} from "@content/explore";
-import {activityKindFromValue} from "@catch/web-ui/artwork";
+import {activityKindFromValue} from "@catch/web-ui";
 import {homeRouteStateForSearch, categoryForActivity, type HomeCategory} from "./homeDiscovery";
 import {buildPublicEventDetailRecords} from "../events/eventDetailModel";
 import type {HostListing} from "../organizers/types";

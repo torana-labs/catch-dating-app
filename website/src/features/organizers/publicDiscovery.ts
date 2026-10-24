@@ -1,4 +1,4 @@
-import {activityKindFromValue, type CatchActivityKind} from "@catch/web-ui/artwork";
+import {activityKindFromValue, type CatchActivityKind} from "@catch/web-ui";
 import {websiteCopy} from "@content/generated";
 import {organizerListingCopy} from "@content/organizer";
 import type {
