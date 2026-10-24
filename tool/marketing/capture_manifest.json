@@ -6,6 +6,7 @@
   "captures": [
     {
       "id": "member-event-discovery",
+      "kind": "app-capture",
       "audience": "member",
       "surface": "Event discovery",
       "status": "active",
@@ -20,6 +21,7 @@
     },
     {
       "id": "post-run-catch-window",
+      "kind": "app-capture",
       "audience": "member",
       "surface": "Post-event catch window",
       "status": "active",
@@ -34,6 +36,7 @@
     },
     {
       "id": "match-chat-context",
+      "kind": "app-capture",
       "audience": "member",
       "surface": "Contextual match chat",
       "status": "active",
@@ -48,11 +51,17 @@
     },
     {
       "id": "host-event-setup",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Event review",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "hostMarketingIndia.host.eventSetup",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
       "sourcePath": "artifacts/marketing/app-screenshots/host-event-setup.png",
       "websitePath": "website/public/assets/app-screenshots/host-event-setup.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-event-setup.svg",
@@ -62,11 +71,17 @@
     },
     {
       "id": "host-create-basics",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Event basics",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "hostMarketingIndia.host.createBasics",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
       "sourcePath": "artifacts/marketing/app-screenshots/host-create-basics.png",
       "websitePath": "website/public/assets/app-screenshots/host-create-basics.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-basics.svg",
@@ -76,11 +91,17 @@
     },
     {
       "id": "host-create-location",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Meeting location in When & where",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "hostMarketingIndia.host.createLocation",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
       "sourcePath": "artifacts/marketing/app-screenshots/host-create-location.png",
       "websitePath": "website/public/assets/app-screenshots/host-create-location.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-location.svg",
@@ -90,11 +111,17 @@
     },
     {
       "id": "host-create-schedule",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Schedule in When & where",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "hostMarketingIndia.host.createSchedule",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
       "sourcePath": "artifacts/marketing/app-screenshots/host-create-schedule.png",
       "websitePath": "website/public/assets/app-screenshots/host-create-schedule.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-schedule.svg",
@@ -104,11 +131,17 @@
     },
     {
       "id": "host-create-policy",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Booking & live guide",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "hostMarketingIndia.host.createPolicy",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
       "sourcePath": "artifacts/marketing/app-screenshots/host-create-policy.png",
       "websitePath": "website/public/assets/app-screenshots/host-create-policy.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-policy.svg",
@@ -118,11 +151,17 @@
     },
     {
       "id": "host-create-guide",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Event Success customization",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "hostMarketingIndia.host.createGuide",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "planning"
+      },
       "sourcePath": "artifacts/marketing/app-screenshots/host-create-guide.png",
       "websitePath": "website/public/assets/app-screenshots/host-create-guide.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-create-guide.svg",
@@ -132,25 +171,41 @@
     },
     {
       "id": "host-live-console",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Host live console",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "hostMarketingIndia.host.liveConsole",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
       "sourcePath": "artifacts/marketing/app-screenshots/host-live-console.png",
       "websitePath": "website/public/assets/app-screenshots/host-live-console.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-live-console.svg",
       "alt": "Catch host live console with roster and check-in controls",
       "caption": "Confirm guest arrivals and follow the host-led run of show.",
-      "walkthroughStep": "Live"
+      "walkthroughStep": "Live",
+      "pages": [
+        "/",
+        "/host/"
+      ]
     },
     {
       "id": "host-post-event-report",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Event recap",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "hostMarketingIndia.host.postEventReport",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "followUp"
+      },
       "sourcePath": "artifacts/marketing/app-screenshots/host-post-event-report.png",
       "websitePath": "website/public/assets/app-screenshots/host-post-event-report.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-post-event-report.svg",
@@ -160,11 +215,17 @@
     },
     {
       "id": "host-today-dashboard",
+      "kind": "app-capture",
       "audience": "host",
       "surface": "Host Today",
       "status": "active",
       "device": "iphone-17-pro",
       "fixtureKey": "hostMarketingIndia.host.todayDashboard",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "today"
+      },
       "sourcePath": "artifacts/marketing/app-screenshots/host-today-dashboard.png",
       "websitePath": "website/public/assets/app-screenshots/host-today-dashboard.png",
       "placeholderPath": "website/public/assets/app-screenshots/placeholders/host-today-dashboard.svg",

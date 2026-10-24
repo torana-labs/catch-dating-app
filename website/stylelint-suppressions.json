@@ -25,7 +25,7 @@
   },
   "src/styles/consumer-home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 217
+      "count": 199
     },
     "declaration-property-value-allowed-list": {
       "count": 20
@@ -102,7 +102,7 @@
   },
   "src/styles/host-landing.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 346
+      "count": 326
     },
     "declaration-property-value-allowed-list": {
       "count": 36

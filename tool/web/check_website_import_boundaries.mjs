@@ -123,6 +123,10 @@ function privilegedImport(specifier, sourceRelativePath, sourceLayer, source) {
 function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
   if (layerFor(sourceRelativePath).name === "next-entry" &&
       isInside(path.join(repoRoot, "website/app"), targetAbsolutePath)) return true;
+  // The app-capture records are bundled at build time from the one manifest
+  // tool/marketing/sync_website_media.mjs writes beside the images.
+  if (sourceRelativePath === "app/marketingCaptures.ts" &&
+      targetAbsolutePath === path.join(repoRoot, "website/public/assets/app-screenshots/manifest.json")) return true;
   if (["server/publicOrganizerProjection.ts", "server/publicExternalEvent.ts"].includes(sourceRelativePath) && [
     "website/scripts/next/organizerProjection.mjs",
     "website/scripts/next/externalEventProjection.mjs",
