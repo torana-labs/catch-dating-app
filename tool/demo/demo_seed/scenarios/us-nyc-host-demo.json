@@ -1,0 +1,796 @@
+{
+  "schemaVersion": 2,
+  "id": "us-nyc-host-demo",
+  "label": "New York Host Demo",
+  "description": "Fictional Sunday Table Club in New York, the host sales demo. Host app captures, the website's demo organiser listing and seeded demo environments read it. Never an availability claim.",
+  "uses": [
+    "marketing-capture",
+    "web-story",
+    "demo-seed"
+  ],
+  "locale": "en-US",
+  "timeZone": "America/New_York",
+  "currency": "INR",
+  "moments": {
+    "live": "2026-05-31T05:00:00"
+  },
+  "host": {
+    "uid": "sales-demo-host",
+    "personaId": "nyc_victor_alvarez_024",
+    "displayName": "Victor Alvarez",
+    "firstName": "Victor",
+    "phoneNumber": "+12125550101",
+    "email": "victor.host@example.test"
+  },
+  "organizer": {
+    "id": "club-sales-sunday-table",
+    "name": "Sunday Table Club",
+    "description": "Small hosted dinners and mixers with prompts that keep the room moving.",
+    "city": "new-york",
+    "area": "West Village",
+    "tags": [
+      "dinner",
+      "singles mixer",
+      "hosted"
+    ],
+    "memberCount": 76,
+    "rating": 4.8,
+    "reviewCount": 29
+  },
+  "venues": [
+    {
+      "id": "cervos-private-table",
+      "name": "Cervo's private table",
+      "area": "Lower East Side",
+      "lat": 40.7143,
+      "lng": -73.9912,
+      "directions": "Ask for the Catch table near the back banquette."
+    }
+  ],
+  "people": [
+    {
+      "id": "p01",
+      "personaId": "nyc_maya_shah_001"
+    },
+    {
+      "id": "p02",
+      "personaId": "nyc_jordan_ellis_002"
+    },
+    {
+      "id": "p03",
+      "personaId": "nyc_sofia_martinez_003"
+    },
+    {
+      "id": "p04",
+      "personaId": "nyc_ethan_brooks_004"
+    },
+    {
+      "id": "p05",
+      "personaId": "nyc_aisha_williams_005"
+    },
+    {
+      "id": "p06",
+      "personaId": "nyc_daniel_kim_006"
+    },
+    {
+      "id": "p07",
+      "personaId": "nyc_priya_desai_007"
+    },
+    {
+      "id": "p08",
+      "personaId": "nyc_marcus_chen_008"
+    },
+    {
+      "id": "p09",
+      "personaId": "nyc_chloe_bennett_009"
+    },
+    {
+      "id": "p10",
+      "personaId": "nyc_noah_patel_010"
+    },
+    {
+      "id": "p11",
+      "personaId": "nyc_olivia_nguyen_011"
+    },
+    {
+      "id": "p12",
+      "personaId": "nyc_caleb_johnson_012"
+    },
+    {
+      "id": "p13",
+      "personaId": "nyc_emma_rodriguez_013"
+    },
+    {
+      "id": "p14",
+      "personaId": "nyc_liam_oconnor_014"
+    },
+    {
+      "id": "p15",
+      "personaId": "nyc_nia_okafor_015"
+    },
+    {
+      "id": "p16",
+      "personaId": "nyc_arjun_mehta_016"
+    },
+    {
+      "id": "p17",
+      "personaId": "nyc_grace_liu_017"
+    },
+    {
+      "id": "p18",
+      "personaId": "nyc_miles_anderson_018"
+    },
+    {
+      "id": "p19",
+      "personaId": "nyc_hannah_cohen_019"
+    },
+    {
+      "id": "p20",
+      "personaId": "nyc_andre_baptiste_020"
+    },
+    {
+      "id": "p21",
+      "personaId": "nyc_isabella_romano_021"
+    },
+    {
+      "id": "p22",
+      "personaId": "nyc_samir_khan_022"
+    },
+    {
+      "id": "p23",
+      "personaId": "nyc_taylor_reed_023"
+    }
+  ],
+  "events": [
+    {
+      "id": "event-host-setup-sales-demo",
+      "name": "Hosted long-table dinner",
+      "description": "A hosted long-table dinner with arrivals, prompts, and a warm close.",
+      "venueId": "cervos-private-table",
+      "civilDate": "2026-06-07",
+      "startTime": "16:00",
+      "endTime": "18:00",
+      "activityKind": "dinner",
+      "format": {
+        "interactionModel": "seatedTable",
+        "admissionPreset": "balancedSingles",
+        "playbookId": "dinner_table_mixer",
+        "selectedModuleIds": [
+          "host_script",
+          "social_missions"
+        ],
+        "hostGoal": "Help attendees meet at least two new people."
+      },
+      "capacity": 20,
+      "priceInPaise": 120000,
+      "attendance": []
+    },
+    {
+      "id": "event-host-live-console",
+      "name": "Hosted singles mixer",
+      "description": "A hosted mixer with live rotations, compatibility questions, and host-facing reveal controls.",
+      "venueId": "cervos-private-table",
+      "civilDate": "2026-05-31",
+      "startTime": "04:30",
+      "endTime": "06:30",
+      "activityKind": "singlesMixer",
+      "format": {
+        "interactionModel": "freeFormMixer",
+        "admissionPreset": "balancedSingles",
+        "playbookId": "algorithmic_mixer_reveal",
+        "selectedModuleIds": [
+          "compatibility_questionnaire",
+          "guided_rotations",
+          "host_script",
+          "live_reveal",
+          "social_missions"
+        ],
+        "hostGoal": "Help attendees meet at least two new people."
+      },
+      "capacity": 20,
+      "priceInPaise": 120000,
+      "guestPerspective": {
+        "viewer": "p01",
+        "wingmanTarget": "p03"
+      },
+      "attendance": [
+        {
+          "personId": "p01",
+          "bookedAt": "2026-05-28T10:00:00",
+          "checkedInAt": "2026-05-31T04:20:00"
+        },
+        {
+          "personId": "p02",
+          "bookedAt": "2026-05-28T10:07:00",
+          "checkedInAt": "2026-05-31T04:25:00"
+        },
+        {
+          "personId": "p03",
+          "bookedAt": "2026-05-28T10:14:00",
+          "checkedInAt": "2026-05-31T04:30:00"
+        },
+        {
+          "personId": "p04",
+          "bookedAt": "2026-05-28T10:21:00",
+          "checkedInAt": "2026-05-31T04:35:00"
+        },
+        {
+          "personId": "p05",
+          "bookedAt": "2026-05-28T10:28:00",
+          "checkedInAt": "2026-05-31T04:40:00"
+        },
+        {
+          "personId": "p06",
+          "bookedAt": "2026-05-28T10:35:00",
+          "checkedInAt": "2026-05-31T04:45:00"
+        },
+        {
+          "personId": "p07",
+          "bookedAt": "2026-05-28T10:42:00",
+          "checkedInAt": "2026-05-31T04:50:00"
+        },
+        {
+          "personId": "p08",
+          "bookedAt": "2026-05-28T10:49:00",
+          "checkedInAt": "2026-05-31T05:05:00"
+        },
+        {
+          "personId": "p09",
+          "bookedAt": "2026-05-28T10:56:00",
+          "checkedInAt": "2026-05-31T05:09:00"
+        },
+        {
+          "personId": "p10",
+          "bookedAt": "2026-05-28T11:03:00",
+          "checkedInAt": "2026-05-31T05:13:00"
+        },
+        {
+          "personId": "p11",
+          "bookedAt": "2026-05-28T11:10:00",
+          "checkedInAt": "2026-05-31T05:17:00"
+        },
+        {
+          "personId": "p12",
+          "bookedAt": "2026-05-28T11:17:00",
+          "checkedInAt": "2026-05-31T05:21:00"
+        },
+        {
+          "personId": "p13",
+          "bookedAt": "2026-05-28T11:24:00",
+          "checkedInAt": "2026-05-31T05:25:00"
+        },
+        {
+          "personId": "p14",
+          "bookedAt": "2026-05-28T11:31:00",
+          "checkedInAt": "2026-05-31T05:29:00"
+        },
+        {
+          "personId": "p15",
+          "bookedAt": "2026-05-28T11:38:00",
+          "checkedInAt": "2026-05-31T05:33:00"
+        },
+        {
+          "personId": "p16",
+          "bookedAt": "2026-05-28T11:45:00",
+          "checkedInAt": "2026-05-31T05:37:00"
+        },
+        {
+          "personId": "p17",
+          "bookedAt": "2026-05-28T11:52:00",
+          "checkedInAt": "2026-05-31T05:41:00"
+        }
+      ],
+      "waitlist": [
+        {
+          "personId": "p18",
+          "joinedAt": "2026-05-28T11:59:00"
+        },
+        {
+          "personId": "p19",
+          "joinedAt": "2026-05-28T12:06:00"
+        },
+        {
+          "personId": "p20",
+          "joinedAt": "2026-05-28T12:13:00"
+        }
+      ]
+    },
+    {
+      "id": "event-host-post-report",
+      "name": "Hosted singles mixer",
+      "description": "A completed hosted mixer with enough feedback and matches for the sales report.",
+      "venueId": "cervos-private-table",
+      "civilDate": "2026-05-30",
+      "startTime": "16:00",
+      "endTime": "18:00",
+      "activityKind": "singlesMixer",
+      "format": {
+        "interactionModel": "freeFormMixer",
+        "admissionPreset": "balancedSingles",
+        "playbookId": "algorithmic_mixer_reveal",
+        "selectedModuleIds": [
+          "compatibility_questionnaire",
+          "guided_rotations",
+          "host_script",
+          "live_reveal",
+          "social_missions"
+        ],
+        "hostGoal": "Help attendees meet at least two new people."
+      },
+      "capacity": 20,
+      "priceInPaise": 120000,
+      "attendance": [
+        {
+          "personId": "p01",
+          "bookedAt": "2026-05-26T09:00:00",
+          "checkedInAt": "2026-05-30T15:40:00"
+        },
+        {
+          "personId": "p02",
+          "bookedAt": "2026-05-26T09:23:00",
+          "checkedInAt": "2026-05-30T15:43:00"
+        },
+        {
+          "personId": "p03",
+          "bookedAt": "2026-05-26T09:46:00",
+          "checkedInAt": "2026-05-30T15:46:00"
+        },
+        {
+          "personId": "p04",
+          "bookedAt": "2026-05-26T10:09:00",
+          "checkedInAt": "2026-05-30T15:49:00"
+        },
+        {
+          "personId": "p05",
+          "bookedAt": "2026-05-26T10:32:00",
+          "checkedInAt": "2026-05-30T15:52:00"
+        },
+        {
+          "personId": "p06",
+          "bookedAt": "2026-05-26T10:55:00",
+          "checkedInAt": "2026-05-30T15:55:00"
+        },
+        {
+          "personId": "p07",
+          "bookedAt": "2026-05-26T11:18:00",
+          "checkedInAt": "2026-05-30T15:58:00"
+        },
+        {
+          "personId": "p08",
+          "bookedAt": "2026-05-26T11:41:00",
+          "checkedInAt": "2026-05-30T16:01:00"
+        },
+        {
+          "personId": "p09",
+          "bookedAt": "2026-05-26T12:04:00",
+          "checkedInAt": "2026-05-30T16:04:00"
+        },
+        {
+          "personId": "p10",
+          "bookedAt": "2026-05-26T12:27:00",
+          "checkedInAt": "2026-05-30T16:07:00"
+        },
+        {
+          "personId": "p11",
+          "bookedAt": "2026-05-26T12:50:00",
+          "checkedInAt": "2026-05-30T16:10:00"
+        },
+        {
+          "personId": "p12",
+          "bookedAt": "2026-05-26T13:13:00",
+          "checkedInAt": "2026-05-30T16:13:00"
+        },
+        {
+          "personId": "p13",
+          "bookedAt": "2026-05-26T13:36:00",
+          "checkedInAt": "2026-05-30T16:16:00"
+        },
+        {
+          "personId": "p20",
+          "bookedAt": "2026-05-26T13:59:00"
+        },
+        {
+          "personId": "p21",
+          "bookedAt": "2026-05-26T14:22:00"
+        },
+        {
+          "personId": "p22",
+          "bookedAt": "2026-05-26T14:45:00"
+        },
+        {
+          "personId": "p23",
+          "bookedAt": "2026-05-26T15:08:00"
+        }
+      ],
+      "waitlist": [
+        {
+          "personId": "p18",
+          "joinedAt": "2026-05-28T14:00:00"
+        },
+        {
+          "personId": "p19",
+          "joinedAt": "2026-05-28T14:11:00"
+        }
+      ],
+      "catches": [
+        {
+          "personId": "p01",
+          "targetId": "p02",
+          "sentAt": "2026-05-30T18:05:00"
+        },
+        {
+          "personId": "p02",
+          "targetId": "p01",
+          "sentAt": "2026-05-30T18:07:00"
+        },
+        {
+          "personId": "p01",
+          "targetId": "p04",
+          "sentAt": "2026-05-30T18:12:00"
+        },
+        {
+          "personId": "p04",
+          "targetId": "p01",
+          "sentAt": "2026-05-30T18:14:00"
+        },
+        {
+          "personId": "p01",
+          "targetId": "p06",
+          "sentAt": "2026-05-30T18:19:00"
+        },
+        {
+          "personId": "p06",
+          "targetId": "p01",
+          "sentAt": "2026-05-30T18:21:00"
+        },
+        {
+          "personId": "p01",
+          "targetId": "p10",
+          "sentAt": "2026-05-30T18:26:00"
+        },
+        {
+          "personId": "p10",
+          "targetId": "p01",
+          "sentAt": "2026-05-30T18:28:00"
+        },
+        {
+          "personId": "p01",
+          "targetId": "p12",
+          "sentAt": "2026-05-30T18:33:00"
+        },
+        {
+          "personId": "p12",
+          "targetId": "p01",
+          "sentAt": "2026-05-30T18:35:00"
+        },
+        {
+          "personId": "p03",
+          "targetId": "p04",
+          "sentAt": "2026-05-30T18:40:00"
+        },
+        {
+          "personId": "p04",
+          "targetId": "p03",
+          "sentAt": "2026-05-30T18:42:00"
+        },
+        {
+          "personId": "p03",
+          "targetId": "p06",
+          "sentAt": "2026-05-30T18:47:00"
+        },
+        {
+          "personId": "p06",
+          "targetId": "p03",
+          "sentAt": "2026-05-30T18:49:00"
+        },
+        {
+          "personId": "p03",
+          "targetId": "p08",
+          "sentAt": "2026-05-30T18:54:00"
+        },
+        {
+          "personId": "p08",
+          "targetId": "p03",
+          "sentAt": "2026-05-30T18:56:00"
+        },
+        {
+          "personId": "p03",
+          "targetId": "p12",
+          "sentAt": "2026-05-30T19:01:00"
+        },
+        {
+          "personId": "p12",
+          "targetId": "p03",
+          "sentAt": "2026-05-30T19:03:00"
+        },
+        {
+          "personId": "p05",
+          "targetId": "p02",
+          "sentAt": "2026-05-30T19:08:00"
+        },
+        {
+          "personId": "p02",
+          "targetId": "p05",
+          "sentAt": "2026-05-30T19:10:00"
+        },
+        {
+          "personId": "p05",
+          "targetId": "p06",
+          "sentAt": "2026-05-30T19:15:00"
+        },
+        {
+          "personId": "p06",
+          "targetId": "p05",
+          "sentAt": "2026-05-30T19:17:00"
+        },
+        {
+          "personId": "p05",
+          "targetId": "p08",
+          "sentAt": "2026-05-30T19:22:00"
+        },
+        {
+          "personId": "p08",
+          "targetId": "p05",
+          "sentAt": "2026-05-30T19:24:00"
+        },
+        {
+          "personId": "p05",
+          "targetId": "p10",
+          "sentAt": "2026-05-30T19:29:00"
+        },
+        {
+          "personId": "p10",
+          "targetId": "p05",
+          "sentAt": "2026-05-30T19:31:00"
+        },
+        {
+          "personId": "p07",
+          "targetId": "p02",
+          "sentAt": "2026-05-30T19:36:00"
+        },
+        {
+          "personId": "p02",
+          "targetId": "p07",
+          "sentAt": "2026-05-30T19:38:00"
+        },
+        {
+          "personId": "p07",
+          "targetId": "p04",
+          "sentAt": "2026-05-30T19:43:00"
+        },
+        {
+          "personId": "p04",
+          "targetId": "p07",
+          "sentAt": "2026-05-30T19:45:00"
+        },
+        {
+          "personId": "p07",
+          "targetId": "p08",
+          "sentAt": "2026-05-30T19:50:00"
+        },
+        {
+          "personId": "p08",
+          "targetId": "p07",
+          "sentAt": "2026-05-30T19:52:00"
+        },
+        {
+          "personId": "p07",
+          "targetId": "p10",
+          "sentAt": "2026-05-30T19:57:00"
+        },
+        {
+          "personId": "p10",
+          "targetId": "p07",
+          "sentAt": "2026-05-30T19:59:00"
+        },
+        {
+          "personId": "p07",
+          "targetId": "p12",
+          "sentAt": "2026-05-30T20:04:00"
+        },
+        {
+          "personId": "p12",
+          "targetId": "p07",
+          "sentAt": "2026-05-30T20:06:00"
+        },
+        {
+          "personId": "p08",
+          "targetId": "p01",
+          "sentAt": "2026-05-30T20:11:00"
+        },
+        {
+          "personId": "p02",
+          "targetId": "p03",
+          "sentAt": "2026-05-30T20:17:00"
+        },
+        {
+          "personId": "p10",
+          "targetId": "p03",
+          "sentAt": "2026-05-30T20:23:00"
+        },
+        {
+          "personId": "p04",
+          "targetId": "p05",
+          "sentAt": "2026-05-30T20:29:00"
+        },
+        {
+          "personId": "p12",
+          "targetId": "p05",
+          "sentAt": "2026-05-30T20:35:00"
+        }
+      ],
+      "chats": [
+        {
+          "personIds": [
+            "p01",
+            "p02"
+          ],
+          "startedAt": "2026-05-30T21:00:00"
+        },
+        {
+          "personIds": [
+            "p01",
+            "p04"
+          ],
+          "startedAt": "2026-05-30T21:09:00"
+        },
+        {
+          "personIds": [
+            "p01",
+            "p06"
+          ],
+          "startedAt": "2026-05-30T21:18:00"
+        },
+        {
+          "personIds": [
+            "p01",
+            "p10"
+          ],
+          "startedAt": "2026-05-30T21:27:00"
+        },
+        {
+          "personIds": [
+            "p01",
+            "p12"
+          ],
+          "startedAt": "2026-05-30T21:36:00"
+        },
+        {
+          "personIds": [
+            "p03",
+            "p04"
+          ],
+          "startedAt": "2026-05-30T21:45:00"
+        },
+        {
+          "personIds": [
+            "p03",
+            "p06"
+          ],
+          "startedAt": "2026-05-30T21:54:00"
+        },
+        {
+          "personIds": [
+            "p03",
+            "p08"
+          ],
+          "startedAt": "2026-05-30T22:03:00"
+        },
+        {
+          "personIds": [
+            "p03",
+            "p12"
+          ],
+          "startedAt": "2026-05-30T22:12:00"
+        },
+        {
+          "personIds": [
+            "p05",
+            "p02"
+          ],
+          "startedAt": "2026-05-30T22:21:00"
+        },
+        {
+          "personIds": [
+            "p05",
+            "p06"
+          ],
+          "startedAt": "2026-05-30T22:30:00"
+        },
+        {
+          "personIds": [
+            "p05",
+            "p08"
+          ],
+          "startedAt": "2026-05-30T22:39:00"
+        }
+      ],
+      "reviews": [
+        {
+          "personId": "p01",
+          "rating": 5,
+          "comment": "The host kept the night moving without making it feel forced. Easy arrivals, good prompts, and useful follow-up after.",
+          "createdAt": "2026-05-30T19:10:00",
+          "anonymous": false
+        },
+        {
+          "personId": "p06",
+          "rating": 5,
+          "comment": "The rotations made it simple to meet more people than I would have on my own, and the post-event catch window felt private.",
+          "createdAt": "2026-05-30T20:45:00",
+          "anonymous": false
+        },
+        {
+          "personId": "p09",
+          "rating": 4,
+          "comment": "Good crowd and clear structure. I liked that the host could adjust the live flow when the group changed.",
+          "createdAt": "2026-05-30T22:30:00",
+          "anonymous": true
+        }
+      ]
+    }
+  ],
+  "seedWorld": {
+    "description": "Sales-grade NYC host world with one canonical club, 24 synthetic personas, Event Success setup/live/report states, payments, reviews, and Suvbot access for anchors.",
+    "cities": [
+      "new-york"
+    ],
+    "usersPerCity": 24,
+    "clubsPerCity": 1,
+    "eventsPerClub": 5,
+    "anchorsPerRun": 4,
+    "preferPaidEvents": true,
+    "eventPatterns": [
+      {
+        "kind": "upcomingFree",
+        "offsetHours": 30,
+        "price": 0,
+        "capacity": 24,
+        "durationMinutes": 90,
+        "activityKind": "singlesMixer",
+        "meetingPointKey": "west_village_table"
+      },
+      {
+        "kind": "upcomingPaid",
+        "offsetHours": 84,
+        "price": 120000,
+        "capacity": 20,
+        "durationMinutes": 120,
+        "activityKind": "dinner",
+        "meetingPointKey": "west_village_table"
+      },
+      {
+        "kind": "upcomingFull",
+        "offsetHours": 168,
+        "price": 60000,
+        "capacity": 18,
+        "durationMinutes": 75,
+        "activityKind": "pickleball",
+        "meetingPointKey": "williamsburg_court_2"
+      },
+      {
+        "kind": "upcomingWaitlist",
+        "offsetHours": 336,
+        "price": 0,
+        "capacity": 20,
+        "durationMinutes": 70,
+        "activityKind": "socialRun",
+        "meetingPointKey": "hudson_river_pier_57"
+      },
+      {
+        "kind": "pastOpen",
+        "offsetHours": -8,
+        "price": 120000,
+        "capacity": 24,
+        "durationMinutes": 120,
+        "activityKind": "singlesMixer",
+        "meetingPointKey": "west_village_table"
+      }
+    ],
+    "recommendedCommands": [
+      "seed-world --scenario us-nyc-host-demo --anchor-phones <host-phone>",
+      "demo-checklist --phone <host-phone>",
+      "suvbot-enable --phones <host-phone>"
+    ]
+  }
+}

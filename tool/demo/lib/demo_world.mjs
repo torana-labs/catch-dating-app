@@ -42,8 +42,24 @@ export function eventStateAt(world, eventId, moment) {
   return {
     booked: active.length,
     checkedIn: active.filter((record) => record.checkedInAt && record.checkedInAt <= at).length,
+    waitlisted: (event.waitlist ?? []).filter((record) => record.joinedAt <= at).length,
     capacity: event.capacity,
     phase: at < start ? "upcoming" : at < end ? "live" : "ended",
+  };
+}
+
+/** Private-interest outcomes for one event at a named moment: catches sent,
+ * mutual matches (a pair who caught each other) and chats started. */
+export function eventOutcomesAt(world, eventId, moment) {
+  const event = requireEvent(world, eventId);
+  const at = requireMoment(world, moment);
+  const catches = (event.catches ?? []).filter((record) => record.sentAt <= at);
+  const sent = new Set(catches.map((record) => `${record.personId}>${record.targetId}`));
+  return {
+    catchSent: catches.length,
+    mutualMatches: catches.filter((record) =>
+      record.personId < record.targetId && sent.has(`${record.targetId}>${record.personId}`)).length,
+    chatsStarted: (event.chats ?? []).filter((record) => record.startedAt <= at).length,
   };
 }
 
@@ -62,6 +78,7 @@ export function demoWorldFacts(world, eventId, moment) {
     priceInPaise: event.priceInPaise,
     currency: world.currency,
     ...eventStateAt(world, eventId, moment),
+    ...eventOutcomesAt(world, eventId, moment),
   };
 }
 
@@ -70,7 +87,7 @@ export function demoWorldFacts(world, eventId, moment) {
 // error, so the schema file stays the single definition of the format.
 const annotationKeywords = new Set(["$schema", "$id", "title", "description"]);
 const checkedKeywords = new Set(["type", "properties", "required", "additionalProperties", "items", "minItems",
-  "uniqueItems", "enum", "const", "pattern", "minLength", "minimum", "maximum", "minProperties", "propertyNames",
+  "maxItems", "uniqueItems", "enum", "const", "pattern", "minLength", "minimum", "maximum", "minProperties", "propertyNames",
   "$ref", "$defs"]);
 
 function schemaErrors(value, schema, root, at) {
@@ -103,6 +120,7 @@ function schemaErrors(value, schema, root, at) {
   }
   if (kind === "array") {
     if (schema.minItems != null && value.length < schema.minItems) errors.push(`${where} needs at least ${schema.minItems} item(s)`);
+    if (schema.maxItems != null && value.length > schema.maxItems) errors.push(`${where} allows at most ${schema.maxItems} item(s)`);
     if (schema.uniqueItems && new Set(value.map((item) => JSON.stringify(item))).size !== value.length) errors.push(`${where} must not repeat items`);
     if (schema.items) value.forEach((item, index) => errors.push(...schemaErrors(item, schema.items, root, `${at}/${index}`)));
   }
@@ -131,6 +149,8 @@ function invariantProblems(world) {
   duplicates(world.events.map((event) => event.id)).forEach((id) => problems.push(`event ${id} is listed twice`));
 
   problems.push(...castingProblems(world));
+  problems.push(...contactProblems(world));
+  problems.push(...seedProblems(world, enums));
 
   const moments = Object.entries(world.moments);
   for (let index = 1; index < moments.length; index += 1) {
@@ -168,6 +188,103 @@ function invariantProblems(world) {
     for (const moment of Object.keys(world.moments)) {
       const state = eventStateAt(world, event.id, moment);
       if (state.booked > event.capacity) problems.push(`${label} is over capacity at ${moment} (${state.booked}/${event.capacity})`);
+    }
+    problems.push(...waitlistProblems(event, label, peopleIds, end));
+    problems.push(...outcomeProblems(event, label, peopleIds));
+    problems.push(...reviewProblems(event, label, end));
+  }
+  return problems;
+}
+
+// A waitlisted guest holds no booking for the same event.
+function waitlistProblems(event, label, peopleIds, end) {
+  const problems = [];
+  const booked = new Set(event.attendance.map((record) => record.personId));
+  const waitlist = event.waitlist ?? [];
+  duplicates(waitlist.map((record) => record.personId)).forEach((id) => problems.push(`${label} waitlists ${id} twice`));
+  for (const record of waitlist) {
+    const who = `${label} waitlisted ${record.personId}`;
+    if (!peopleIds.has(record.personId)) problems.push(`${who} is not in people`);
+    if (booked.has(record.personId)) problems.push(`${who} also holds a booking`);
+    if (record.joinedAt >= end) problems.push(`${who} joins after the event ends`);
+  }
+  return problems;
+}
+
+// Catches go between checked-in guests after the sender checked in; a chat
+// needs a mutual match and starts after both catches.
+function outcomeProblems(event, label, peopleIds) {
+  const problems = [];
+  const checkedInAt = new Map(event.attendance
+    .filter((record) => record.checkedInAt)
+    .map((record) => [record.personId, record.checkedInAt]));
+  const catches = event.catches ?? [];
+  const sentAt = new Map();
+  duplicates(catches.map((record) => `${record.personId}>${record.targetId}`))
+    .forEach((pair) => problems.push(`${label} repeats catch ${pair}`));
+  for (const record of catches) {
+    const who = `${label} catch ${record.personId}>${record.targetId}`;
+    for (const id of [record.personId, record.targetId]) {
+      if (!peopleIds.has(id)) problems.push(`${who} names unknown person ${id}`);
+      else if (!checkedInAt.has(id)) problems.push(`${who} names ${id}, who never checked in`);
+    }
+    if (record.personId === record.targetId) problems.push(`${who} catches themselves`);
+    const checkIn = checkedInAt.get(record.personId);
+    if (checkIn && record.sentAt < checkIn) problems.push(`${who} is sent before the sender checked in`);
+    sentAt.set(`${record.personId}>${record.targetId}`, record.sentAt);
+  }
+  const chats = event.chats ?? [];
+  duplicates(chats.map((record) => [...record.personIds].sort().join("+")))
+    .forEach((pair) => problems.push(`${label} repeats chat ${pair}`));
+  for (const record of chats) {
+    const [a, b] = record.personIds;
+    const who = `${label} chat ${a}+${b}`;
+    const forward = sentAt.get(`${a}>${b}`);
+    const back = sentAt.get(`${b}>${a}`);
+    if (!forward || !back) problems.push(`${who} has no mutual match`);
+    else if (record.startedAt < forward || record.startedAt < back) problems.push(`${who} starts before the match`);
+  }
+  return problems;
+}
+
+// A review comes from a guest who checked in, once, after the event ends.
+function reviewProblems(event, label, end) {
+  const problems = [];
+  const checkedIn = new Set(event.attendance.filter((record) => record.checkedInAt).map((record) => record.personId));
+  const reviews = event.reviews ?? [];
+  duplicates(reviews.map((record) => record.personId)).forEach((id) => problems.push(`${label} has two reviews from ${id}`));
+  for (const record of reviews) {
+    const who = `${label} review by ${record.personId}`;
+    if (!checkedIn.has(record.personId)) problems.push(`${who} comes from someone who never checked in`);
+    if (record.createdAt < end) problems.push(`${who} is written before the event ends`);
+  }
+  return problems;
+}
+
+// Contact details use reserved fiction ranges for the story's country.
+const demoPhonePrefixes = {IN: "+91", US: "+1"};
+
+function contactProblems(world) {
+  const country = world.locale.split("-")[1];
+  const prefix = demoPhonePrefixes[country];
+  if (!prefix) return [`locale ${world.locale} has no reserved demo phone range`];
+  if (!world.host.phoneNumber.startsWith(prefix)) {
+    return [`host phone ${world.host.phoneNumber} is not in the ${country} demo range`];
+  }
+  return [];
+}
+
+// A seed generator is declared by the demo-seed use, and its patterns use
+// production activity kinds.
+function seedProblems(world, enums) {
+  const problems = [];
+  const seeded = world.uses.includes("demo-seed");
+  if (seeded !== Boolean(world.seedWorld)) {
+    problems.push(seeded ? "uses demo-seed but has no seedWorld" : "has a seedWorld but does not use demo-seed");
+  }
+  for (const [index, pattern] of (world.seedWorld?.eventPatterns ?? []).entries()) {
+    if (!enums.activityKind.has(pattern.activityKind)) {
+      problems.push(`seedWorld.eventPatterns[${index}] activityKind ${pattern.activityKind} is not a production activity kind`);
     }
   }
   return problems;
