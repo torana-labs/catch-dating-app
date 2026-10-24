@@ -10,7 +10,7 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import {BadgeControl} from "@catch/web-ui";
+import {CatchBadge, type CatchBadgeTone} from "@catch/web-ui";
 import {CheckCircle2, FileWarning, Lock, RefreshCw} from "lucide-react";
 
 import {
@@ -161,65 +161,39 @@ export function CardHeader({
   );
 }
 
-export function StatusChip({
-  children,
-  className = "",
-  tone = "base",
-  ...props
-}: {
-  children: ReactNode;
-  className?: string;
-  tone?: ChipTone;
-} & HTMLAttributes<HTMLSpanElement>) {
-  const toneClass = tone === "base" || tone === "neutral" ?
-    "" :
-    tone === "warning" ?
-    "blocked" :
-    tone === "success" ?
-    "ready" :
-    tone;
-  return (
-    <BadgeControl className={`intake-badge ${toneClass} ${className}`.trim()} {...props}>
-      {children}
-    </BadgeControl>
-  );
+/** Admin's legacy tone words on CatchBadge's tones. */
+function badgeTone(tone: ChipTone | TagTone | undefined): CatchBadgeTone {
+  if (tone === "success" || tone === "ready") return "success";
+  if (tone === "warning") return "warning";
+  if (tone === "danger" || tone === "blocked") return "danger";
+  return "neutral";
 }
 
-export function AdminTag({
-  children,
-  className = "",
-  href,
-  rel,
-  target,
-  tone = "neutral",
-}: {
+function badgeLabel(children: ReactNode): string {
+  if (children === null || children === undefined || typeof children === "boolean") return "";
+  if (typeof children === "string" || typeof children === "number") return String(children);
+  if (Array.isArray(children)) return children.map(badgeLabel).join("");
+  throw new Error("Badge children must be text.");
+}
+
+/**
+ * Interim: the last callers sit in files other tasks hold. Each moves to
+ * CatchBadge and StatusChip and AdminTag go.
+ */
+export function StatusChip({children, tone}: {children: ReactNode; tone?: ChipTone}) {
+  return <CatchBadge tone={badgeTone(tone)} label={badgeLabel(children)} />;
+}
+
+/** Interim, as StatusChip; only a story still links a tag. */
+export function AdminTag({children, href, rel, target, tone}: {
   children: ReactNode;
-  className?: string;
   href?: string;
   rel?: string;
   target?: string;
   tone?: TagTone;
 }) {
-  const toneClass = tone === "base" || tone === "neutral" ?
-    "" :
-    tone === "warning" || tone === "danger" ?
-    "blocked" :
-    tone === "success" ?
-    "ready" :
-    tone;
-  const classes = [
-    "intake-tag",
-    toneClass,
-    className,
-  ].filter(Boolean).join(" ");
-  if (href) {
-    return (
-      <a className={classes} href={href} rel={rel} target={target}>
-        {children}
-      </a>
-    );
-  }
-  return <span className={classes}>{children}</span>;
+  const badge = <CatchBadge tone={badgeTone(tone)} label={badgeLabel(children)} />;
+  return href ? <a href={href} rel={rel} target={target}>{badge}</a> : badge;
 }
 
 export function AdminTagList({

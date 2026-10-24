@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {type ChangeEvent, useCallback, useEffect, useState} from "react";
 import {
   CheckCircle2,
@@ -46,7 +46,6 @@ import {
   EmptyState,
   QualityRow,
   selectOptions,
-  StatusChip,
 } from "../../../shared/ui/AdminPrimitives";
 import {appScreenshotPreviewUrl, appScreenshotRawPreviewUrl} from "../assets/marketingAppScreenshotAssets";
 import {
@@ -449,7 +448,7 @@ function MarketingDrafts({
         ).length;
         return (
           <AdminCard key={draft.id} span={2}>
-            <CardHeader action={<StatusChip>{draft.aspectRatio}</StatusChip>}>
+            <CardHeader action={<CatchBadge label={draft.aspectRatio} />}>
               <div>
                 <AdminEyebrow>{draft.format} / {draft.tone}</AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{draft.id}</CatchText>

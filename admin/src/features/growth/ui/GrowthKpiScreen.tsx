@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {
   Activity,
   ArrowLeft,
@@ -25,7 +25,6 @@ import {
   EmptyState,
   Panel,
   QualityList,
-  RiskBadge,
   SearchField,
   selectOptions,
   StateRow,
@@ -274,9 +273,7 @@ function GrowthSignalTable({
             <td>{row.stage}</td>
             <td>{formatValue(row.value, row.unit)}</td>
             <td>
-              <RiskBadge tone={row.status === "ready" ? "low" : "watch"}>
-                {row.status}
-              </RiskBadge>
+              <CatchBadge tone={row.status === "ready" ? "success" : "warning"} label={row.status} />
             </td>
             <td>
               <AdminRowTitle compact>

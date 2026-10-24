@@ -1,3 +1,4 @@
+import {CatchBadge} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   BadgeRow,
@@ -5,9 +6,7 @@ import {
   EmptyState,
   LiveStatus,
   ProcessStatusPanel,
-  ReviewSignalBadge,
   RouteLoadingState,
-  StatusBadge,
 } from "../shared/ui/primitives";
 
 const meta = {
@@ -93,9 +92,9 @@ export const StatusBadgeStory: Story = {
   },
   render: () => (
     <BadgeRow>
-      <StatusBadge tone="verified">Verified on Catch</StatusBadge>
-      <StatusBadge tone="claimed">Claimed</StatusBadge>
-      <StatusBadge tone="unclaimed">Claimable</StatusBadge>
+      <CatchBadge recipe="solidStatus" label="Verified on Catch" />
+      <CatchBadge recipe="functional" label="Claimed" />
+      <CatchBadge recipe="functional" label="Claimable" />
     </BadgeRow>
   ),
 };
@@ -112,9 +111,9 @@ export const ReviewSignalBadgeStory: Story = {
   },
   render: () => (
     <BadgeRow>
-      <ReviewSignalBadge tone="verified">Verified attendee</ReviewSignalBadge>
-      <ReviewSignalBadge tone="unverified">Public source</ReviewSignalBadge>
-      <ReviewSignalBadge>Host response</ReviewSignalBadge>
+      <CatchBadge recipe="status" tone="success" label="Verified attendee" />
+      <CatchBadge recipe="status" tone="warning" label="Public source" />
+      <CatchBadge recipe="status" label="Host response" />
     </BadgeRow>
   ),
 };

@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, type CatchBadgeTone, CatchField} from "@catch/web-ui";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -23,7 +23,6 @@ import {
   EmptyState,
   Panel,
   QualityList,
-  RiskBadge,
   SearchField,
   selectOptions,
   StateRow,
@@ -311,7 +310,7 @@ function QualityTable({
                 <span>{row.source} · {row.category}</span>
               </AdminRowTitle>
             </td>
-            <td><RiskBadge tone={riskTone(row)}>{row.severity}</RiskBadge></td>
+            <td><CatchBadge tone={riskTone(row)} label={row.severity} /></td>
             <td>{row.owner}</td>
             <td>{row.timestampLabel}</td>
             <td><TableActionButton onClick={() => onSelect(row)}>Review</TableActionButton></td>
@@ -348,7 +347,7 @@ function QualityDetailPanel({
         <StateRow label="Source" value={selected.source} />
         <StateRow label="Category" value={selected.category} />
         <StateRow label="Source state" value={selected.state} />
-        <StateRow label="Severity" value={<RiskBadge tone={riskTone(selected)}>{selected.severity}</RiskBadge>} />
+        <StateRow label="Severity" value={<CatchBadge tone={riskTone(selected)} label={selected.severity} />} />
         <StateRow label="Owner" value={selected.owner} />
         <StateRow label="Freshness" value={selected.timestampLabel} />
         <StateRow label="Generated" value={formatDateTime(selected.updatedAt)} />
@@ -383,8 +382,8 @@ function QualityBoundaryDisclosure() {
   );
 }
 
-function riskTone(row: DataQualityRow): "low" | "medium" | "high" | "watch" {
-  return row.severity === "blocked" ? "high" : row.severity === "warning" ? "medium" : "low";
+function riskTone(row: DataQualityRow): CatchBadgeTone {
+  return row.severity === "blocked" ? "danger" : row.severity === "warning" ? "warning" : "success";
 }
 
 function freshnessLabel(value: DataQualityRow["freshness"]): string {

@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {
   CheckCircle2,
   Clock3,
@@ -23,7 +23,6 @@ import {
   CardHeader,
   EmptyState,
   QualityRow,
-  StatusChip,
   AdminCommandRow,
   AdminCommandStack,
   AdminEyebrow,
@@ -45,7 +44,6 @@ import {
   AdminMarketingStudioStack,
   AdminQueryList,
   AdminQueryRow,
-  AdminTag,
   DecisionFooter,
   TagList,
 } from "../../../shared/ui/AdminPrimitives";
@@ -136,10 +134,10 @@ function MarketingEventLibrary({
               ) : null}
             >
               <TagList>
-                <AdminTag>{event.venue}</AdminTag>
-                <AdminTag>{event.neighborhood}</AdminTag>
-                <AdminTag>{event.startDate}</AdminTag>
-                <AdminTag tone="muted">{event.price}</AdminTag>
+                <CatchBadge label={event.venue} />
+                <CatchBadge label={event.neighborhood} />
+                <CatchBadge label={event.startDate} />
+                <CatchBadge label={event.price} />
               </TagList>
             </AdminMarketingLibraryCard>
           ))}
@@ -213,10 +211,8 @@ function MarketingMediaLibrary({
               title={capture.surface}
             >
               <TagList>
-                <StatusChip>{capture.status}</StatusChip>
-                <StatusChip tone="muted">
-                  {capture.assetState.replaceAll("_", " ")}
-                </StatusChip>
+                <CatchBadge label={capture.status} />
+                <CatchBadge label={capture.assetState.replaceAll("_", " ")} />
               </TagList>
             </AdminMarketingMediaCard>
           );
@@ -443,9 +439,7 @@ function MarketingRecommendations({
         <AdminCard key={set.id}>
           <CardHeader
             action={(
-              <StatusChip tone={set.items.length > 0 ? "success" : "neutral"}>
-                {set.items.length} picks
-              </StatusChip>
+              <CatchBadge tone={set.items.length > 0 ? "success" : "neutral"} label={`${set.items.length} picks`} />
             )}
           >
             <div>
@@ -602,9 +596,7 @@ function MarketingAppFeatureMediaView({
             <AdminCard key={capture.id}>
               <CardHeader
                 action={(
-                  <StatusChip tone={capture.assetState === "website_synced" ? "ready" : ""}>
-                    {capture.assetState.replaceAll("_", " ")}
-                  </StatusChip>
+                  <CatchBadge tone={capture.assetState === "website_synced" ? "success" : "neutral"} label={capture.assetState.replaceAll("_", " ")} />
                 )}
               >
                 <div>
@@ -629,10 +621,10 @@ function MarketingAppFeatureMediaView({
               )}
               <AdminMarketingHelpText>{capture.caption}</AdminMarketingHelpText>
               <TagList>
-                <StatusChip>{capture.status}</StatusChip>
-                <StatusChip>{capture.device}</StatusChip>
+                <CatchBadge label={capture.status} />
+                <CatchBadge label={capture.device} />
                 {capture.captureId ? (
-                  <StatusChip>{capture.captureId}</StatusChip>
+                  <CatchBadge label={capture.captureId} />
                 ) : null}
               </TagList>
               <AdminMarketingAppMediaPaths

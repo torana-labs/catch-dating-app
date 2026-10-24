@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {CheckCircle2, FileWarning, Lock} from "lucide-react";
 import {
   AdminButton,
@@ -17,13 +17,11 @@ import {
   AdminSearchCandidateList,
   AdminSearchCandidatePanel,
   AdminSearchCandidateSnippet,
-  AdminTag,
   AdminTagList,
   EmptyState,
   QualityRow,
   selectOptions,
   StateRow,
-  StatusChip,
 } from "../../../../shared/ui/AdminPrimitives";
 import type {
   AdminRecordOrganizerCurationResponse,
@@ -70,11 +68,9 @@ function OrganizerClaimTargetSyncPreviewView({
         <span>{preview.guardrails[1]}</span>
       </QualityRow>
       <AdminTagList>
-        <AdminTag tone="muted">
-          source {preview.mode.existingDocsSource}
-        </AdminTag>
+        <CatchBadge label={`source ${preview.mode.existingDocsSource}`} />
         {preview.mode.assumesMissingWhenNotInFixture ? (
-          <AdminTag tone="muted">missing docs assumed absent</AdminTag>
+          <CatchBadge label="missing docs assumed absent" />
         ) : null}
       </AdminTagList>
       <AdminSearchCandidateList>
@@ -92,9 +88,7 @@ function OrganizerClaimTargetSyncPreviewView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{action.path}</CatchText>
                 </div>
-                <StatusChip tone={action.writesRemoteData ? "ready" : ""}>
-                  {action.status.replaceAll("_", " ")}
-                </StatusChip>
+                <CatchBadge tone={action.writesRemoteData ? "success" : "neutral"} label={action.status.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
               <AdminIntakeStateGrid>
@@ -105,9 +99,7 @@ function OrganizerClaimTargetSyncPreviewView({
 
               <AdminTagList>
                 {action.writeFields.slice(0, 12).map((field) => (
-                  <AdminTag key={field} tone="muted">
-                    {field}
-                  </AdminTag>
+                  <CatchBadge key={field} label={field} />
                 ))}
               </AdminTagList>
             </AdminSearchCandidateCard>
@@ -145,16 +137,14 @@ function OrganizerCrawlRunPlanView({
       </AdminIntakeStateGrid>
       <AdminTagList>
         {plan.policy.platformAllowlist.length === 0 ? (
-          <AdminTag tone="muted">No platform allowlist</AdminTag>
+          <CatchBadge label="No platform allowlist" />
         ) : (
           plan.policy.platformAllowlist.map((platform) => (
-            <AdminTag key={platform}>{platform}</AdminTag>
+            <CatchBadge key={platform} label={platform} />
           ))
         )}
         {plan.guardrails.map((guardrail) => (
-          <AdminTag key={guardrail} tone="muted">
-            {guardrail}
-          </AdminTag>
+          <CatchBadge key={guardrail} label={guardrail} />
         ))}
       </AdminTagList>
       <AdminIntakeSection>
@@ -163,9 +153,7 @@ function OrganizerCrawlRunPlanView({
           {Object.entries(plan.summary.blockers)
             .sort(([left], [right]) => left.localeCompare(right))
             .map(([blocker, count]) => (
-              <AdminTag key={blocker} tone="muted">
-                {blocker} x{count}
-              </AdminTag>
+              <CatchBadge key={blocker} label={`${blocker} x${count}`} />
             ))}
         </AdminTagList>
       </AdminIntakeSection>
@@ -179,9 +167,7 @@ function OrganizerCrawlRunPlanView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{intent.displayName}</CatchText>
               </div>
-              <StatusChip tone={intent.action === "would_fetch" ? "ready" : ""}>
-                {intent.action.replaceAll("_", " ")}
-              </StatusChip>
+              <CatchBadge tone={intent.action === "would_fetch" ? "success" : "neutral"} label={intent.action.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
             <AdminIntakeStateGrid>
               <StateRow label="Run" value={intent.crawlRunId} />
@@ -191,12 +177,10 @@ function OrganizerCrawlRunPlanView({
             </AdminIntakeStateGrid>
             <AdminTagList>
               {intent.blockedBy.length === 0 ? (
-                <AdminTag>ready for reviewed capture</AdminTag>
+                <CatchBadge label="ready for reviewed capture" />
               ) : (
                 intent.blockedBy.map((blocker) => (
-                  <AdminTag key={blocker} tone="muted">
-                    {blocker}
-                  </AdminTag>
+                  <CatchBadge key={blocker} label={blocker} />
                 ))
               )}
             </AdminTagList>
@@ -225,31 +209,23 @@ function OrganizerRawArtifactStorageView({
         <StateRow label="Bytes" value={manifest.summary.totalBytes.toLocaleString()} />
       </AdminIntakeStateGrid>
       <AdminTagList>
-        <AdminTag tone="muted">provider: {manifest.policy.provider}</AdminTag>
-        <AdminTag tone="muted">
-          bucket: {manifest.policy.bucket ?? "not configured"}
-        </AdminTag>
-        <AdminTag tone="muted">
-          retention: {manifest.policy.rawPayloadRetentionDays ?? "not configured"}
-        </AdminTag>
+        <CatchBadge label={`provider: ${manifest.policy.provider}`} />
+        <CatchBadge label={`bucket: ${manifest.policy.bucket ?? "not configured"}`} />
+        <CatchBadge label={`retention: ${manifest.policy.rawPayloadRetentionDays ?? "not configured"}`} />
         {manifest.guardrails.map((guardrail) => (
-          <AdminTag key={guardrail} tone="muted">
-            {guardrail}
-          </AdminTag>
+          <CatchBadge key={guardrail} label={guardrail} />
         ))}
       </AdminTagList>
       <AdminIntakeSection>
         <AdminIntakeSectionTitle>Storage blockers</AdminIntakeSectionTitle>
         <AdminTagList>
           {Object.entries(manifest.summary.blockers).length === 0 ? (
-            <AdminTag>No upload blockers</AdminTag>
+            <CatchBadge label="No upload blockers" />
           ) : (
             Object.entries(manifest.summary.blockers)
               .sort(([left], [right]) => left.localeCompare(right))
               .map(([blocker, count]) => (
-                <AdminTag key={blocker} tone="muted">
-                  {blocker} x{count}
-                </AdminTag>
+                <CatchBadge key={blocker} label={`${blocker} x${count}`} />
               ))
           )}
         </AdminTagList>
@@ -264,9 +240,7 @@ function OrganizerRawArtifactStorageView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{artifact.path}</CatchText>
               </div>
-              <StatusChip tone={artifact.storagePlan.action === "would_upload" ? "ready" : ""}>
-                {artifact.storagePlan.action.replaceAll("_", " ")}
-              </StatusChip>
+              <CatchBadge tone={artifact.storagePlan.action === "would_upload" ? "success" : "neutral"} label={artifact.storagePlan.action.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
             <AdminIntakeStateGrid>
               <StateRow label="Firestore" value={artifact.firestoreMode.replaceAll("_", " ")} />
@@ -276,12 +250,10 @@ function OrganizerRawArtifactStorageView({
             </AdminIntakeStateGrid>
             <AdminTagList>
               {artifact.storagePlan.blockedBy.length === 0 ? (
-                <AdminTag>storage policy satisfied</AdminTag>
+                <CatchBadge label="storage policy satisfied" />
               ) : (
                 artifact.storagePlan.blockedBy.map((blocker) => (
-                  <AdminTag key={blocker} tone="muted">
-                    {blocker}
-                  </AdminTag>
+                  <CatchBadge key={blocker} label={blocker} />
                 ))
               )}
             </AdminTagList>
@@ -321,12 +293,10 @@ function OrganizerSearchCandidateQueueView({
       </AdminIntakeStateGrid>
       <AdminTagList>
         {platformEntries.length === 0 ? (
-          <AdminTag tone="muted">No captured surfaces</AdminTag>
+          <CatchBadge label="No captured surfaces" />
         ) : (
           platformEntries.map(([platform, count]) => (
-            <AdminTag key={platform}>
-              {platform} x{count}
-            </AdminTag>
+            <CatchBadge key={platform} label={`${platform} x${count}`} />
           ))
         )}
       </AdminTagList>
@@ -428,12 +398,7 @@ function OrganizerDiscoverySearchPlanView({
       </AdminIntakeStateGrid>
       <AdminTagList>
         {plan.launchCities.map((city) => (
-          <AdminTag
-            key={city.citySlug}
-            tone={city.missingCategoryIds.length > 0 ? "muted" : "neutral"}
-          >
-            {city.city}: {city.categoryIds.length} categories
-          </AdminTag>
+          <CatchBadge key={city.citySlug} tone={city.missingCategoryIds.length > 0 ? "neutral" : "neutral"} label={`${city.city}: ${city.categoryIds.length} categories`} />
         ))}
       </AdminTagList>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
@@ -453,15 +418,10 @@ function OrganizerDiscoverySearchPlanView({
         <AdminIntakeSectionTitle>Launch Search Terms</AdminIntakeSectionTitle>
         <AdminTagList>
           {launchQueryTemplates.length === 0 ? (
-            <AdminTag tone="muted">No launch search terms planned.</AdminTag>
+            <CatchBadge label="No launch search terms planned." />
           ) : (
             launchQueryTemplates.map((entry) => (
-              <AdminTag
-                key={`${entry.queryTemplateId}-${entry.queryTemplate}`}
-                tone="muted"
-              >
-                {entry.queryTemplateId}: {entry.queryTemplate}
-              </AdminTag>
+              <CatchBadge key={`${entry.queryTemplateId}-${entry.queryTemplate}`} label={`${entry.queryTemplateId}: ${entry.queryTemplate}`} />
             ))
           )}
         </AdminTagList>
@@ -506,9 +466,7 @@ function OrganizerDiscoverySearchPlanView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{entry.renderedQuery}</CatchText>
               </div>
-              <StatusChip>
-                {entry.planKind.replaceAll("_", " ")}
-              </StatusChip>
+              <CatchBadge label={entry.planKind.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
             <AdminIntakeStateGrid>
               <StateRow label="Template" value={entry.queryTemplateId} />
@@ -541,7 +499,7 @@ function OrganizerDiscoverySearchPlanView({
                     </AdminEyebrow>
                     <CatchText as="h3" variant="sectionTitle">{entry.renderedQuery}</CatchText>
                   </div>
-                  <StatusChip>fresh</StatusChip>
+                  <CatchBadge label="fresh" />
                 </AdminSearchCandidateHeader>
                 <AdminIntakeStateGrid>
                   <StateRow label="Run key" value={entry.runKey} />
@@ -575,7 +533,7 @@ function OrganizerPublishingContractsView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{contract.callablePayloadSchema}</CatchText>
               </div>
-              <StatusChip tone="ready">schema source</StatusChip>
+              <CatchBadge tone="success" label="schema source" />
             </AdminSearchCandidateHeader>
             <AdminIntakeStateGrid>
               <StateRow label="Firestore" value={contract.firestoreSchema} />
@@ -584,9 +542,7 @@ function OrganizerPublishingContractsView({
             </AdminIntakeStateGrid>
             <AdminTagList>
               {contract.projectionNotes.map((note: string) => (
-                <AdminTag key={note} tone="muted">
-                  {note}
-                </AdminTag>
+                <CatchBadge key={note} label={note} />
               ))}
             </AdminTagList>
           </AdminSearchCandidateCard>
@@ -648,19 +604,13 @@ function OrganizerSourceMentionResolutionView({
         <AdminIntakeSectionTitle>Editable Resolution Policy</AdminIntakeSectionTitle>
         <AdminTagList>
           {thresholds.map(([key, value]) => (
-            <AdminTag key={key} tone="muted">
-              {key}: {value}
-            </AdminTag>
+            <CatchBadge key={key} label={`${key}: ${value}`} />
           ))}
           {blockingKeys.map((key) => (
-            <AdminTag key={key.id} tone="muted">
-              {key.id} / {key.strength}
-            </AdminTag>
+            <CatchBadge key={key.id} label={`${key.id} / ${key.strength}`} />
           ))}
           {stableProviderPlatforms.length > 0 ? (
-            <AdminTag tone="muted">
-              provider hard keys: {stableProviderPlatforms.join(", ")}
-            </AdminTag>
+            <CatchBadge label={`provider hard keys: ${stableProviderPlatforms.join(", ")}`} />
           ) : null}
         </AdminTagList>
       </AdminIntakeSection>
@@ -676,9 +626,7 @@ function OrganizerSourceMentionResolutionView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{packet.packetId}</CatchText>
                 </div>
-                <StatusChip tone={packet.humanReviewRequired ? "blocked" : "ready"}>
-                  {packet.resolutionState.replaceAll("_", " ")}
-                </StatusChip>
+                <CatchBadge tone={packet.humanReviewRequired ? "danger" : "success"} label={packet.resolutionState.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
               <AdminIntakeStateGrid>
                 <StateRow label="Score" value={String(packet.score)} />
@@ -691,19 +639,13 @@ function OrganizerSourceMentionResolutionView({
               </AdminIntakeStateGrid>
               <AdminTagList>
                 {Object.entries(packet.checklist).map(([key, value]) => (
-                  <AdminTag key={key} tone="muted">
-                    {key}: {String(value)}
-                  </AdminTag>
+                  <CatchBadge key={key} label={`${key}: ${String(value)}`} />
                 ))}
                 {packet.topSignals.slice(0, 5).map((signal) => (
-                  <AdminTag key={signal}>
-                    {signal.replaceAll("_", " ")}
-                  </AdminTag>
+                  <CatchBadge key={signal} label={signal.replaceAll("_", " ")} />
                 ))}
                 {packet.conflicts.map((conflict) => (
-                  <AdminTag key={conflict} tone="muted">
-                    conflict: {conflict.replaceAll("_", " ")}
-                  </AdminTag>
+                  <CatchBadge key={conflict} label={`conflict: ${conflict.replaceAll("_", " ")}`} />
                 ))}
               </AdminTagList>
             </AdminSearchCandidateCard>
@@ -725,9 +667,7 @@ function OrganizerSourceMentionResolutionView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{cluster.displayNames.slice(0, 3).join(" / ") || cluster.clusterId}</CatchText>
               </div>
-              <StatusChip tone={organizerIntakeEvidencePanels.sourceResolutionTone(cluster.resolutionState)}>
-                {cluster.resolutionState.replaceAll("_", " ")}
-              </StatusChip>
+              <CatchBadge tone={organizerIntakeEvidencePanels.sourceResolutionTone(cluster.resolutionState)} label={cluster.resolutionState.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
             <AdminIntakeStateGrid>
               <StateRow label="Score" value={String(cluster.score)} />
@@ -738,19 +678,13 @@ function OrganizerSourceMentionResolutionView({
             </AdminIntakeStateGrid>
             <AdminTagList>
               {cluster.hardSignals.map((signal) => (
-                <AdminTag key={signal}>
-                  {signal}
-                </AdminTag>
+                <CatchBadge key={signal} label={signal} />
               ))}
               {cluster.matchingSignals.slice(0, 6).map((signal) => (
-                <AdminTag key={signal} tone="muted">
-                  {signal.replaceAll("_", " ")}
-                </AdminTag>
+                <CatchBadge key={signal} label={signal.replaceAll("_", " ")} />
               ))}
               {cluster.conflictingSignals.map((signal) => (
-                <AdminTag key={signal} tone="muted">
-                  conflict: {signal.replaceAll("_", " ")}
-                </AdminTag>
+                <CatchBadge key={signal} label={`conflict: ${signal.replaceAll("_", " ")}`} />
               ))}
             </AdminTagList>
             {cluster.publishBoundary ? (
@@ -772,9 +706,7 @@ function OrganizerSourceMentionResolutionView({
           <AdminIntakeSectionTitle>LLM Review Queue</AdminIntakeSectionTitle>
           <AdminTagList>
             {llmQueue.map((request) => (
-              <AdminTag key={request.clusterId} tone="muted">
-                {request.clusterId}: {request.status} / {request.promptVersion}
-              </AdminTag>
+              <CatchBadge key={request.clusterId} label={`${request.clusterId}: ${request.status} / ${request.promptVersion}`} />
             ))}
           </AdminTagList>
         </AdminIntakeSection>
@@ -787,12 +719,10 @@ function OrganizerSourceMentionResolutionView({
         </QualityRow>
         <AdminTagList>
           {promptQueue.map((request) => (
-            <AdminTag key={request.requestId} tone="muted">
-              {request.clusterId}: {request.status} / {request.promptVersion}
-            </AdminTag>
+            <CatchBadge key={request.requestId} label={`${request.clusterId}: ${request.status} / ${request.promptVersion}`} />
           ))}
           {promptQueue.length === 0 ? (
-            <AdminTag tone="muted">No prompt payloads queued.</AdminTag>
+            <CatchBadge label="No prompt payloads queued." />
           ) : null}
         </AdminTagList>
       </AdminIntakeSection>
@@ -837,9 +767,7 @@ function OrganizerSearchCandidateCard({
           </AdminEyebrow>
           <CatchText as="h3" variant="sectionTitle">{candidate.title}</CatchText>
         </div>
-        <StatusChip tone={candidate.reviewAction.includes("attach") ? "ready" : ""}>
-          {candidate.reviewAction.replaceAll("_", " ")}
-        </StatusChip>
+        <CatchBadge tone={candidate.reviewAction.includes("attach") ? "success" : "neutral"} label={candidate.reviewAction.replaceAll("_", " ")} />
       </AdminSearchCandidateHeader>
       <AdminIntakeStateGrid>
         <StateRow label="Candidate" value={candidate.candidateId} />
@@ -853,21 +781,19 @@ function OrganizerSearchCandidateCard({
       <AdminTagList>
         {matchedEntityIds.length > 0 ? (
           matchedEntityIds.map((entityId) => (
-            <AdminTag key={entityId}>
-              matches {entityId}
-            </AdminTag>
+            <CatchBadge key={entityId} label={`matches ${entityId}`} />
           ))
         ) : (
-          <AdminTag tone="muted">no surface match</AdminTag>
+          <CatchBadge label="no surface match" />
         )}
         {candidate.queryIntent.marketSlug ? (
-          <AdminTag tone="muted">{candidate.queryIntent.marketSlug}</AdminTag>
+          <CatchBadge label={candidate.queryIntent.marketSlug} />
         ) : null}
         {candidate.queryIntent.entityHint ? (
-          <AdminTag tone="muted">{candidate.queryIntent.entityHint}</AdminTag>
+          <CatchBadge label={candidate.queryIntent.entityHint} />
         ) : null}
         {candidate.diagnostics.map((diagnostic) => (
-          <AdminTag key={diagnostic} tone="muted">{diagnostic}</AdminTag>
+          <CatchBadge key={diagnostic} label={diagnostic} />
         ))}
       </AdminTagList>
       {candidate.reviewAction !== "supporting_evidence_only" ? (

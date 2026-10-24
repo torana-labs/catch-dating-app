@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, type CatchBadgeTone, CatchField} from "@catch/web-ui";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -18,7 +18,6 @@ import {
   AdminRowTitle,
   AdminSecondaryDisclosure,
   AdminTableRow,
-  AdminTag,
   AdminTagList,
   AdminTagRow,
   AdminToolbar,
@@ -28,7 +27,6 @@ import {
   EmptyState,
   Panel,
   QualityList,
-  RiskBadge,
   SearchField,
   selectOptions,
   StateRow,
@@ -362,7 +360,7 @@ function FinanceTable({
               </AdminRowTitle>
             </td>
             <td>{row.sourceScope}</td>
-            <td><RiskBadge tone={riskTone(row.severity)}>{row.severity}</RiskBadge></td>
+            <td><CatchBadge tone={riskTone(row.severity)} label={row.severity} /></td>
             <td>{row.status}</td>
             <td><TableActionButton onClick={() => onSelect(row)}>Review</TableActionButton></td>
           </AdminTableRow>
@@ -403,8 +401,8 @@ function FinanceDetailPanel({
             {review.statusDetail}
           </AlertRow>
           <AdminTagRow>
-            <AdminTag tone="muted">{review.actionStatus.replaceAll("_", " ")}</AdminTag>
-            <AdminTag tone="muted">read only</AdminTag>
+            <CatchBadge label={review.actionStatus.replaceAll("_", " ")} />
+            <CatchBadge label="read only" />
           </AdminTagRow>
           <QualityList>
             {review.fieldEvidence.map((field) => (
@@ -446,7 +444,7 @@ function FinanceReconciliationPanel({review}: {review: FinanceIssueReview | null
         ))}
       </AdminRoadmapList>
       <AdminTagList>
-        {review.blockedActions.map((action) => <AdminTag key={action}>{action}</AdminTag>)}
+        {review.blockedActions.map((action) => <CatchBadge key={action} label={action} />)}
       </AdminTagList>
     </Panel>
   );
@@ -460,8 +458,8 @@ function evidenceLabel(state: FinanceEvidenceState): string {
   return state === "source" ? "source" : state === "inferred" ? "inferred" : "unknown";
 }
 
-function riskTone(severity: FinanceIssueRow["severity"]): "low" | "medium" | "high" | "watch" {
-  return severity === "high" ? "high" : severity === "medium" ? "medium" : "watch";
+function riskTone(severity: FinanceIssueRow["severity"]): CatchBadgeTone {
+  return severity === "high" ? "danger" : "warning";
 }
 
 function reviewTone(status: FinanceIssueReview["actionStatus"]): "neutral" | "warning" | "success" | "blocked" {

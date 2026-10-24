@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {useState} from "react";
 import {CheckCircle2, Clock3, FileWarning, Lock} from "lucide-react";
 import {
@@ -32,13 +32,11 @@ import {
   AdminSearchCandidateList,
   AdminSearchCandidatePanel,
   AdminSurfacePreview,
-  AdminTag,
   AdminTagList,
   EmptyState,
   QualityRow,
   selectOptions,
   StateRow,
-  StatusChip,
 } from "../../../../shared/ui/AdminPrimitives";
 import {
   decisionLabel,
@@ -123,14 +121,12 @@ function OrganizerExternalEventCandidateQueueView({
       </QualityRow>
       <AdminTagList>
         {Object.entries(queue.summary.platforms).length === 0 ? (
-          <AdminTag tone="muted">no provider batches</AdminTag>
+          <CatchBadge label="no provider batches" />
         ) : (
           Object.entries(queue.summary.platforms)
             .sort(([left], [right]) => left.localeCompare(right))
             .map(([platform, count]) => (
-              <AdminTag key={platform}>
-                {platform} x{count}
-              </AdminTag>
+              <CatchBadge key={platform} label={`${platform} x${count}`} />
             ))
         )}
       </AdminTagList>
@@ -212,9 +208,7 @@ function OrganizerExternalEventImportPlanView({
       </QualityRow>
       <AdminTagList>
         {plan.guardrails.map((guardrail) => (
-          <AdminTag key={guardrail} tone="muted">
-            {guardrail}
-          </AdminTag>
+          <CatchBadge key={guardrail} label={guardrail} />
         ))}
       </AdminTagList>
       <AdminSearchCandidateList>
@@ -232,9 +226,7 @@ function OrganizerExternalEventImportPlanView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{action.proposedReadOnlyEventDraft.eventId}</CatchText>
                 </div>
-                <StatusChip tone={action.status === "write_ready" ? "ready" : ""}>
-                  {action.action.replaceAll("_", " ")}
-                </StatusChip>
+                <CatchBadge tone={action.status === "write_ready" ? "success" : "neutral"} label={action.action.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
               <AdminIntakeStateGrid>
@@ -259,19 +251,13 @@ function OrganizerExternalEventImportPlanView({
 
               <AdminTagList>
                 {action.proposedReadOnlyEventDraft.booking.externalLinks.map((link) => (
-                  <AdminTag key={`${link.platform}-${link.url}`} tone="ready">
-                    {link.platform} outbound
-                  </AdminTag>
+                  <CatchBadge key={`${link.platform}-${link.url}`} tone="success" label={`${link.platform} outbound`} />
                 ))}
                 {action.blockers.map((blocker) => (
-                  <AdminTag key={blocker} tone="muted">
-                    {blocker}
-                  </AdminTag>
+                  <CatchBadge key={blocker} label={blocker} />
                 ))}
                 {action.duplicateCandidateIds.map((candidateId) => (
-                  <AdminTag key={candidateId} tone="muted">
-                    duplicate {candidateId}
-                  </AdminTag>
+                  <CatchBadge key={candidateId} label={`duplicate ${candidateId}`} />
                 ))}
               </AdminTagList>
             </AdminSearchCandidateCard>
@@ -331,9 +317,7 @@ function OrganizerExternalEventLocationResolutionView({
       </QualityRow>
       <AdminTagList>
         {queue.guardrails.map((guardrail) => (
-          <AdminTag key={guardrail} tone="muted">
-            {guardrail}
-          </AdminTag>
+          <CatchBadge key={guardrail} label={guardrail} />
         ))}
       </AdminTagList>
       <AdminSearchCandidateList>
@@ -355,9 +339,7 @@ function OrganizerExternalEventLocationResolutionView({
                     </AdminEyebrow>
                     <CatchText as="h3" variant="sectionTitle">{task.title}</CatchText>
                   </div>
-                  <StatusChip>
-                    {task.countryCode}
-                  </StatusChip>
+                  <CatchBadge label={task.countryCode} />
                 </AdminSearchCandidateHeader>
                 <AdminIntakeStateGrid>
                   <StateRow label="Candidate" value={task.candidateId} />
@@ -373,9 +355,7 @@ function OrganizerExternalEventLocationResolutionView({
                 </AdminIntakeStateGrid>
                 <AdminTagList>
                   {task.blockers.map((blocker) => (
-                    <AdminTag key={blocker} tone="muted">
-                      {blocker}
-                    </AdminTag>
+                    <CatchBadge key={blocker} label={blocker} />
                   ))}
                 </AdminTagList>
                 <AdminOrganizerLocationResolutionForm>
@@ -504,9 +484,7 @@ function OrganizerExternalEventImportExecutionPlanView({
       </QualityRow>
       <AdminTagList>
         {plan.guardrails.map((guardrail) => (
-          <AdminTag key={guardrail} tone="muted">
-            {guardrail}
-          </AdminTag>
+          <CatchBadge key={guardrail} label={guardrail} />
         ))}
       </AdminTagList>
       <AdminSearchCandidateList>
@@ -524,9 +502,7 @@ function OrganizerExternalEventImportExecutionPlanView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{action.readOnlyEventProjection?.eventId ?? action.createEventPayload?.eventId ?? action.sourceActionId}</CatchText>
                 </div>
-                <StatusChip tone={action.status === "would_publish_read_only" ? "ready" : ""}>
-                  {action.sourceAction.replaceAll("_", " ")}
-                </StatusChip>
+                <CatchBadge tone={action.status === "would_publish_read_only" ? "success" : "neutral"} label={action.sourceAction.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
               <AdminIntakeStateGrid>
@@ -552,9 +528,7 @@ function OrganizerExternalEventImportExecutionPlanView({
 
               <AdminTagList>
                 {action.blockers.map((blocker) => (
-                  <AdminTag key={blocker} tone="muted">
-                    {blocker}
-                  </AdminTag>
+                  <CatchBadge key={blocker} label={blocker} />
                 ))}
               </AdminTagList>
 
@@ -636,9 +610,7 @@ function OrganizerExternalEventCandidateCard({
           </AdminEyebrow>
           <CatchText as="h3" variant="sectionTitle">{candidate.title}</CatchText>
         </div>
-        <StatusChip tone={candidate.reviewStatus === "approved_for_import" ? "ready" : ""}>
-          {candidate.entityId}
-        </StatusChip>
+        <CatchBadge tone={candidate.reviewStatus === "approved_for_import" ? "success" : "neutral"} label={candidate.entityId} />
       </AdminSearchCandidateHeader>
       <AdminIntakeStateGrid>
         <StateRow label="Candidate" value={candidate.candidateId} />
@@ -650,10 +622,10 @@ function OrganizerExternalEventCandidateCard({
       </AdminIntakeStateGrid>
         <AdminTagList>
         {[...new Set([...candidate.blockers, ...blockerCodes])].map((blocker) => (
-          <AdminTag key={blocker} tone="muted">{blocker}</AdminTag>
+          <CatchBadge key={blocker} label={blocker} />
         ))}
         {candidate.diagnostics.map((diagnostic) => (
-          <AdminTag key={diagnostic} tone="muted">{diagnostic}</AdminTag>
+          <CatchBadge key={diagnostic} label={diagnostic} />
         ))}
       </AdminTagList>
       {submittedDecision ? (
@@ -775,10 +747,12 @@ function OrganizerIntakeCard({
           <CatchText as="h3" variant="sectionTitle">{item.displayName}</CatchText>
         </div>
         <AdminOrganizerIntakeBadges>
-          <StatusChip tone={item.projectionStatus}>
-            {item.projectionStatus}
-          </StatusChip>
-          <StatusChip>{item.relationshipToCatch}</StatusChip>
+          <CatchBadge
+            tone={item.projectionStatus === "ready" ? "success" :
+              item.projectionStatus === "blocked" ? "danger" : "neutral"}
+            label={item.projectionStatus}
+          />
+          <CatchBadge label={item.relationshipToCatch} />
         </AdminOrganizerIntakeBadges>
       </AdminOrganizerIntakeCardHeader>
       <AdminIntakeStateGrid>
@@ -792,34 +766,22 @@ function OrganizerIntakeCard({
           <AdminIntakeSectionTitle>Curation</AdminIntakeSectionTitle>
           <AdminTagList>
             {item.curation.attachedSurfaces.map((surface) => (
-              <AdminTag key={`attached-${surface.surfaceId}`}>
-                attached {surface.surfaceId}
-              </AdminTag>
+              <CatchBadge key={`attached-${surface.surfaceId}`} label={`attached ${surface.surfaceId}`} />
             ))}
             {item.curation.mergedFrom.map((entityId) => (
-              <AdminTag key={`merged-${entityId}`}>
-                merged {entityId}
-              </AdminTag>
+              <CatchBadge key={`merged-${entityId}`} label={`merged ${entityId}`} />
             ))}
             {item.curation.mergedInto ? (
-              <AdminTag tone="muted">
-                merged into {item.curation.mergedInto}
-              </AdminTag>
+              <CatchBadge label={`merged into ${item.curation.mergedInto}`} />
             ) : null}
             {item.curation.suppressed ? (
-              <AdminTag tone="muted">
-                suppressed
-              </AdminTag>
+              <CatchBadge label="suppressed" />
             ) : null}
             {item.curation.surfaceDecisions.map((decision) => (
-              <AdminTag key={`${decision.surfaceId}-${decision.decision}`}>
-                {decision.surfaceId}: {decision.decision}
-              </AdminTag>
+              <CatchBadge key={`${decision.surfaceId}-${decision.decision}`} label={`${decision.surfaceId}: ${decision.decision}`} />
             ))}
             {item.curation.splitSurfaces.map((split) => (
-              <AdminTag key={`${split.surfaceId}-${split.newEntityId}`} tone="muted">
-                split {split.surfaceId} to {split.newEntityId}
-              </AdminTag>
+              <CatchBadge key={`${split.surfaceId}-${split.newEntityId}`} label={`split ${split.surfaceId} to ${split.newEntityId}`} />
             ))}
           </AdminTagList>
         </AdminOrganizerIntakeCurationPanel>
@@ -828,12 +790,10 @@ function OrganizerIntakeCard({
         <AdminIntakeSectionTitle>Markets</AdminIntakeSectionTitle>
         <AdminTagList>
           {item.markets.map((market) => (
-            <AdminTag key={market.marketSlug}>
-              {market.displayName} / {market.eventFilter.citySlug}
-            </AdminTag>
+            <CatchBadge key={market.marketSlug} label={`${market.displayName} / ${market.eventFilter.citySlug}`} />
           ))}
           {item.legacyPaths.map((path) => (
-            <AdminTag key={path} tone="muted">{path}</AdminTag>
+            <CatchBadge key={path} label={path} />
           ))}
         </AdminTagList>
       </AdminIntakeSection>
@@ -847,9 +807,7 @@ function OrganizerIntakeCard({
         </AdminOrganizerIntakeSurfaceGrid>
         <AdminTagList>
           {platformEntries.map(([platform, count]) => (
-            <AdminTag key={platform}>
-              {platform} x{count}
-            </AdminTag>
+            <CatchBadge key={platform} label={`${platform} x${count}`} />
           ))}
         </AdminTagList>
         <AdminOrganizerSurfaceList>

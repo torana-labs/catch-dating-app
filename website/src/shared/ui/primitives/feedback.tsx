@@ -1,5 +1,5 @@
 import type {HTMLAttributes, MouseEvent, ReactNode} from "react";
-import {BadgeControl, EmptyStateControl, classNames} from "@catch/web-ui";
+import {CatchBadge, EmptyStateControl, classNames} from "@catch/web-ui";
 import type {AppDownloadCtaItem, ProcessStatusAction} from "./actions";
 import {ButtonLink} from "./actionControls";
 import {UiLabel} from "./layout";
@@ -141,45 +141,35 @@ export function ListingReviewEmptyState({
   return <EmptyState {...props} variant="listing-review" className={className} />;
 }
 
-export function StatusBadge({
-  children,
-  className,
-  tone,
-  ...props
-}: HTMLAttributes<HTMLSpanElement> & {
-  children: ReactNode;
-  tone: StatusBadgeTone;
-}) {
+/** Text content of a badge's children; badges render text only. */
+export function badgeLabel(children: ReactNode): string {
+  if (children === null || children === undefined || typeof children === "boolean") return "";
+  if (typeof children === "string" || typeof children === "number") return String(children);
+  if (Array.isArray(children)) return children.map(badgeLabel).join("");
+  throw new Error("Badge children must be text; pass an icon through CatchBadge's icon.");
+}
+
+/**
+ * Interim: the last callers sit in files other tasks hold. Each moves to
+ * CatchBadge (functional, or solidStatus when verified) and this goes.
+ */
+export function StatusBadge({children, tone}: {children: ReactNode; tone: StatusBadgeTone}) {
   return (
-    <BadgeControl
-      {...props}
-      className={classNames("status-badge", `is-${tone}`, className)}
-    >
-      {children}
-    </BadgeControl>
+    <CatchBadge recipe={tone === "verified" ? "solidStatus" : "functional"} label={badgeLabel(children)} />
   );
 }
 
-export function ReviewSignalBadge({
-  children,
-  className,
-  tone = "neutral",
-  ...props
-}: HTMLAttributes<HTMLSpanElement> & {
+/** Interim, as StatusBadge: CatchBadge's status recipe. */
+export function ReviewSignalBadge({children, tone = "neutral"}: {
   children: ReactNode;
   tone?: ReviewSignalBadgeTone;
 }) {
   return (
-    <BadgeControl
-      {...props}
-      className={classNames(
-        "review-signal-badge",
-        tone !== "neutral" && `is-${tone}`,
-        className
-      )}
-    >
-      {children}
-    </BadgeControl>
+    <CatchBadge
+      recipe="status"
+      tone={tone === "verified" ? "success" : tone === "unverified" ? "warning" : "neutral"}
+      label={badgeLabel(children)}
+    />
   );
 }
 

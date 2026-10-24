@@ -1,8 +1,9 @@
+import {CatchBadge} from "@catch/web-ui";
 import type {FormHTMLAttributes, HTMLAttributes, ReactNode} from "react";
 import type {StatStripItem} from "./foundation";
 import type {ListingSuccessMetricGridItem} from "./organizer";
 import {ButtonLink} from "./actions";
-import {EmptyState, ReviewSignalBadge} from "./feedback";
+import {EmptyState} from "./feedback";
 import {Form} from "./forms";
 import {StatStrip, classNames} from "./foundation";
 import {SuccessGrid, UiLabel} from "./layout";
@@ -318,10 +319,12 @@ export function ReviewSignalCard({review}: {review: PublicReviewCardModel}) {
         </span>
       </div>
       <div className="review-signal-card__badges">
-        <ReviewSignalBadge tone={review.verified ? "verified" : "unverified"}>
-          {review.verificationLabel}
-        </ReviewSignalBadge>
-        <ReviewSignalBadge>{review.sourceLabel}</ReviewSignalBadge>
+        <CatchBadge
+          recipe="status"
+          tone={review.verified ? "success" : "warning"}
+          label={review.verificationLabel}
+        />
+        <CatchBadge recipe="status" label={review.sourceLabel} />
       </div>
       {review.comment ? <p>{review.comment}</p> : null}
       {review.ownerResponse ? (

@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {Clock3, Database, FileWarning, FolderSearch, MapPin, Save, Smartphone} from "lucide-react";
 import type {
   AdminEventActivityKind,
@@ -23,7 +23,6 @@ import {
   AdminRoadmapListItem,
   AdminSecondaryDisclosure,
   AdminSurfacePreview,
-  AdminTag,
   AdminTagRow,
   AdminWorkbenchNote,
   AdminWorkbenchStack,
@@ -413,9 +412,9 @@ function AppEventPreview({
         </span>
         <span>{form.description || "No description"}</span>
         <AdminTagRow>
-          <AdminTag tone="muted">{formatEventLabel(form.interactionModel)}</AdminTag>
-          <AdminTag tone="muted">{form.distanceKm} km</AdminTag>
-          <AdminTag tone="muted">{formatEventLabel(form.pace)}</AdminTag>
+          <CatchBadge label={formatEventLabel(form.interactionModel)} />
+          <CatchBadge label={`${form.distanceKm} km`} />
+          <CatchBadge label={formatEventLabel(form.pace)} />
         </AdminTagRow>
       </AdminSurfacePreview>
     </QualityList>
