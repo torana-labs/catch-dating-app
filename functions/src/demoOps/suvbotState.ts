@@ -112,7 +112,8 @@ export async function buildResetPlan(
     for (const manifest of manifests) {
       if (scope === "world" && !worldFromManifest(manifest)) continue;
       for (const path of stringArray(manifest.data().paths)) listed.add(path);
-      listed.add(manifest.ref.path);
+      // The tester's own demo-operation records.
+      paths.add(manifest.ref.path);
     }
     // A listed path is deleted only while it is still demo-owned, so a real
     // write that later reused the same id is never removed.
@@ -166,12 +167,10 @@ export async function buildResetPlan(
         (message) => paths.add(message.ref.path));
     }
     await collectQuery(outgoingDecisions(db, uid), collect);
-    for (const castUid of castUids) {
-      const incoming = await outgoingDecisions(db, castUid).doc(uid).get();
-      if (incoming.exists && isDemoOwned(incoming.data())) {
-        paths.add(incoming.ref.path);
-      }
-    }
+    // Demo likes aimed at the tester, from a world's cast or older seeds.
+    await collectQuery(db
+      .collectionGroup(schemaProfileDecisionOutgoingSubcollectionPath)
+      .where("targetId", "==", uid), collect);
   }
   if (
     scope === "all" || scope === "chats" || scope === "notifications"

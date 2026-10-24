@@ -62,6 +62,23 @@ class SuvbotFakeFirestore extends FakeFirestore {
   deleteDoc(docPath: string) {
     if (this.docs.has(docPath)) super.deleteDoc(docPath);
   }
+  collectionGroup(name: string) {
+    const docs = this.docs;
+    const refFor = (docPath: string) =>
+      new FakeDocRef(this as FakeFirestore, docPath);
+    return {
+      where: (field: string, op: string, value: unknown) => ({
+        get: async () => {
+          assert.equal(op, "==");
+          const refs = [...docs]
+            .filter(([docPath, data]) =>
+              docPath.split("/").at(-2) === name && data[field] === value)
+            .map(([docPath]) => refFor(docPath));
+          return {docs: await Promise.all(refs.map((ref) => ref.get()))};
+        },
+      }),
+    };
+  }
 }
 
 /**
@@ -553,6 +570,55 @@ test("matchTesterByPhone writes a contract-valid tester match", async () => {
   assert.equal(match?.conversationType, "match");
   assert.equal(match?.demoOpsEntityType, undefined);
   assertStoreMatchesContracts(store);
+});
+
+// The fixture tool/demo's retired reset-user-demo-state builder was tested
+// with. Suvbot's reset deletes at least as much, but keeps a manifest-listed
+// document that has since lost its demo marker (a real write reused the id).
+test("clearDemoState covers the retired CLI reset fixture", async () => {
+  const uid = "uid_a";
+  const store = storeWithTester(uid, "in-mh-mumbai");
+  const seed: Record<string, FakeData> = {
+    "eventParticipations/demo_run_uid_a": {uid, synthetic: true},
+    "eventParticipations/real_run_uid_a": {uid},
+    "savedEvents/demo_saved": {uid, demoOps: true},
+    "savedEvents/from_manifest": {uid},
+    "demoOpsEvents/op_1": {
+      users: [uid],
+      paths: [
+        "savedEvents/from_manifest",
+        "matches/suvbot_uid_a",
+        "demoSelfServiceAccess/uid_a",
+      ],
+    },
+    "payments/demo_payment": {userId: uid, seedPrefix: "demo_ops_2026"},
+    "matches/match_1": {participantIds: [uid, "uid_b"], demoOps: true},
+    "matches/match_1/messages/demo_message": {demoOps: true},
+    "matches/match_1/messages/dogfood_message": {text: "real message"},
+    "matches/match_2": {participantIds: [uid, "uid_c"]},
+    "profileDecisions/uid_a/outgoing/uid_b": {targetId: "uid_b",
+      synthetic: true},
+    "profileDecisions/uid_a/outgoing/uid_c": {targetId: "uid_c"},
+    "profileDecisions/uid_b/outgoing/uid_a": {targetId: uid, synthetic: true},
+    "notifications/uid_a/items/demo": {demoOps: true},
+    "notifications/uid_a/items/trigger_owned": {matchId: "match_1"},
+    "notifications/uid_a/items/real": {},
+  };
+  for (const [docPath, data] of Object.entries(seed)) {
+    store.setDoc(docPath, data);
+  }
+  await run(store, uid, "clearDemoState");
+  const remaining = Object.keys(seed)
+    .filter((docPath) => store.docs.has(docPath));
+  assert.deepEqual(remaining.sort(), [
+    "eventParticipations/real_run_uid_a",
+    "matches/match_2",
+    "notifications/uid_a/items/real",
+    "profileDecisions/uid_a/outgoing/uid_c",
+    "savedEvents/from_manifest",
+  ]);
+  assert.ok(store.getDoc(`demoSelfServiceAccess/${uid}`));
+  assert.ok(store.getDoc(`matches/${suvbotMatchId(uid)}`));
 });
 
 test("contracts reject the fields the old Suvbot wrote", () => {
