@@ -371,6 +371,8 @@ import 'package:widgetbook_workspace/onboarding/catalog/steps.dart'
     as _widgetbook_workspace_onboarding_catalog_steps;
 import 'package:widgetbook_workspace/onboarding/catalog/welcome.dart'
     as _widgetbook_workspace_onboarding_catalog_welcome;
+import 'package:widgetbook_workspace/onboarding/catalog/welcome_text.dart'
+    as _widgetbook_workspace_onboarding_catalog_welcome_text;
 import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
     as _widgetbook_workspace_primitives_analytics_kit_use_cases;
 import 'package:widgetbook_workspace/primitives/avatar_use_cases.dart'
@@ -15643,6 +15645,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder:
                     _widgetbook_workspace_utility_settings.settingsScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Product materials',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Onboarding',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchWelcomeText',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_onboarding_catalog_welcome_text
+                    .catchWelcomeTextContractStates,
               ),
             ],
           ),

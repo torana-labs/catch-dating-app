@@ -56,10 +56,7 @@ class CatchWelcomeText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = CatchTextStyles.welcomeReelHeadline(
-      context,
-      color: _focus ? catchColor : phraseColor,
-    );
+    final style = catchWelcomeTextStyle(_focus ? catchColor! : phraseColor!);
     final requestedScale = MediaQuery.textScalerOf(context).scale(1);
     final textScaler = TextScaler.linear(
       requestedScale.clamp(1.0, CatchWelcomeTokens.welcomeReelMaxTextScale),

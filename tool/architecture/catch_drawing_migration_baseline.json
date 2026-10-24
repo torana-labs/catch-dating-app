@@ -707,7 +707,7 @@
     },
     "lib/onboarding/presentation/pages/onboarding_welcome_body.dart": {
       "ClipRect": 1,
-      "ColoredBox": 3,
+      "ColoredBox": 1,
       "GestureDetector": 1,
       "LinearGradient": 1,
       "Opacity": 2,

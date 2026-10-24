@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-10-17",
+  "updated": "2026-10-24",
   "sourceOfTruth": {
     "behavior": "Each component contract in this registry owns runtime behavior, accessibility, layout, and state for every framework that implements it. Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled lib/core/widgets are the reference implementation; @catch/web-ui implements the same contracts for React.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -18500,6 +18500,168 @@
       "roleNoun": "Table",
       "naming": {
         "useCase": ""
+      }
+    },
+    {
+      "id": "catch.welcome_text",
+      "name": "CatchWelcomeText",
+      "status": "active",
+      "kind": "primitive",
+      "tier": "T4",
+      "aliases": [
+        "WelcomeFocusText",
+        "WelcomeLockup",
+        "WelcomeReelText"
+      ],
+      "summary": "Measured welcome brand/phrase lockup and rich moving-reel text, with caller-supplied copy and colors.",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "The contract preview covers brand, focus, reel, focused reel and large text; focused unit tests and the existing welcome/bootstrap tests exercise fitting, semantics and handoff behavior."
+      },
+      "dart": {
+        "symbol": "CatchWelcomeText",
+        "file": "packages/catch_ui/lib/src/components/catch_welcome_text.dart",
+        "constructors": [
+          "CatchWelcomeText.focus",
+          "CatchWelcomeText.reel"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/WelcomeText",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "WelcomeText",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "brandLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "Required by .focus; localized by the feature."
+          },
+          {
+            "name": "phrase",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "Required by .reel; optional in .focus."
+          },
+          {
+            "name": "catchColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?",
+            "notes": "Required by .focus."
+          },
+          {
+            "name": "phraseColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?",
+            "notes": "Required by .reel and by .focus when a phrase is supplied."
+          },
+          {
+            "name": "periodColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?",
+            "notes": "Required by .reel; features supply their derived period color."
+          },
+          {
+            "name": "underlineColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?",
+            "notes": "Required by .focus with a phrase; optional in .reel."
+          },
+          {
+            "name": "maxWidth",
+            "type": "number",
+            "required": false,
+            "dartType": "double?",
+            "notes": "Required by .focus; the material fits the measured lockup into this bound."
+          },
+          {
+            "name": "showBrandUnderscore",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool",
+            "notes": "Only .focus uses the underscore paint; it is excluded from the spoken brand label.",
+            "default": false
+          }
+        ],
+        "states": [
+          "brand",
+          "focus",
+          "reel",
+          "focused-reel",
+          "large-text"
+        ],
+        "slots": [],
+        "tokens": [
+          "font.family.voice",
+          "theme.light.color.ink",
+          "theme.light.color.primary"
+        ],
+        "dartRoles": [
+          "CatchWelcomeTokens"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Retain the existing capped welcome scale and measured fitting while preserving complete semantic copy."
+          },
+          "reducedMotion": {
+            "policy": "The material owns no animation; features select their stable resting or reduced-motion state."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Features own localization, activity palette selection and animation state; this material owns rich paint, fitting and underline geometry.",
+          "The welcome 36 px Archivo recipe and its negative tracking stay package-internal; this does not add a CatchText variant or expose typography/opacity knobs."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.welcome_text",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.welcome_text",
+        "decisionRef": "pattern-family:welcome-text-material"
+      },
+      "level": "L3",
+      "roleNoun": "Text",
+      "naming": {
+        "useCase": "Welcome",
+        "comparedWith": [
+          "catch.text"
+        ],
+        "reason": "CatchText renders one function-family text role. This welcome material measures a brand-plus-phrase lockup and owns its fitted underline, or paints a rich reel row with a separately faded period and capped text scaling."
       }
     }
   ]
