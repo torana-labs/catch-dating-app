@@ -8,9 +8,12 @@
       "surface": "Event discovery",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/member-event-discovery.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch event discovery screen showing hosted singles events",
       "caption": "Fictional app preview. Members browse real hosted events before any dating surface opens.",
-      "walkthroughStep": "Discover"
+      "walkthroughStep": "Discover",
+      "pages": []
     },
     {
       "id": "post-run-catch-window",
@@ -18,9 +21,12 @@
       "surface": "Post-event catch window",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/post-run-catch-window.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch post-event roster screen for the 24 hour catch window",
       "caption": "Fictional app preview. The roster opens after attendance creates shared context.",
-      "walkthroughStep": "Unlock"
+      "walkthroughStep": "Unlock",
+      "pages": []
     },
     {
       "id": "match-chat-context",
@@ -28,9 +34,12 @@
       "surface": "Contextual match chat",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/match-chat-context.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch match chat screen with shared event context",
       "caption": "Fictional app preview. Matches start with the event they already shared.",
-      "walkthroughStep": "Match"
+      "walkthroughStep": "Match",
+      "pages": []
     },
     {
       "id": "host-event-setup",
@@ -38,9 +47,12 @@
       "surface": "Event review",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-event-setup.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch event review showing the current three-step setup summary",
       "caption": "Fictional app preview. Review the event details, schedule, location, and guest rules before publishing.",
-      "walkthroughStep": "Review"
+      "walkthroughStep": "Review",
+      "pages": []
     },
     {
       "id": "host-create-basics",
@@ -48,9 +60,12 @@
       "surface": "Event basics",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-create-basics.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch host event basics, step 1 of 3",
       "caption": "Fictional app preview. Name the event and choose its format and activity.",
-      "walkthroughStep": "Basics"
+      "walkthroughStep": "Basics",
+      "pages": []
     },
     {
       "id": "host-create-location",
@@ -58,9 +73,12 @@
       "surface": "Meeting location in When & where",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-create-location.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch meeting location and saved places in step 2 of 3",
       "caption": "Fictional app preview. Choose a saved venue or set the meeting point and arrival directions.",
-      "walkthroughStep": "Location"
+      "walkthroughStep": "Location",
+      "pages": []
     },
     {
       "id": "host-create-schedule",
@@ -68,9 +86,12 @@
       "surface": "Schedule in When & where",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-create-schedule.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch date, start time, and duration in step 2 of 3",
       "caption": "Fictional app preview. Set the event date, start time, and duration alongside its meeting location.",
-      "walkthroughStep": "Schedule"
+      "walkthroughStep": "Schedule",
+      "pages": []
     },
     {
       "id": "host-create-policy",
@@ -78,9 +99,12 @@
       "surface": "Booking & live guide",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-create-policy.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch booking and live guide settings, step 3 of 3",
       "caption": "Fictional app preview. Set capacity, pricing, admission, and cancellation rules.",
-      "walkthroughStep": "Booking rules"
+      "walkthroughStep": "Booking rules",
+      "pages": []
     },
     {
       "id": "host-create-guide",
@@ -88,9 +112,12 @@
       "surface": "Event Success customization",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-create-guide.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch expanded Event Success guide settings within step 3 of 3",
       "caption": "Fictional app preview. Configure the host-led welcome and safety guide for this fictional event.",
-      "walkthroughStep": "Guide"
+      "walkthroughStep": "Guide",
+      "pages": []
     },
     {
       "id": "host-live-console",
@@ -98,9 +125,15 @@
       "surface": "Host live console",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-live-console.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch host live console with roster and check-in controls",
       "caption": "Fictional app preview. Confirm guest arrivals and follow the host-led run of show.",
-      "walkthroughStep": "Live"
+      "walkthroughStep": "Live",
+      "pages": [
+        "/",
+        "/host/"
+      ]
     },
     {
       "id": "host-post-event-report",
@@ -108,9 +141,12 @@
       "surface": "Event recap",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-post-event-report.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch event recap with public reviews, guest help, message delivery, and aggregate feedback",
       "caption": "Fictional app preview. Review the event recap and available feedback after the event.",
-      "walkthroughStep": "Report"
+      "walkthroughStep": "Report",
+      "pages": []
     },
     {
       "id": "host-today-dashboard",
@@ -118,9 +154,12 @@
       "surface": "Host Today",
       "device": "iphone-17-pro",
       "webPath": "/assets/app-screenshots/host-today-dashboard.png",
+      "width": 1020,
+      "height": 1964,
       "alt": "Catch Host Today showing the fictional Saturday Trivia Social at Harbour Room",
       "caption": "Fictional app preview. See the next event and its guest count before arrivals begin.",
-      "walkthroughStep": "Today"
+      "walkthroughStep": "Today",
+      "pages": []
     }
   ]
 }

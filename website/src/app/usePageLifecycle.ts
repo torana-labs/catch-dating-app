@@ -1,15 +1,9 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {
   initializeMarketingAnalytics,
   trackPageView,
 } from "../analytics";
 import type {PageKey, PageMeta} from "./pageMeta";
-import type {CaptureRecord} from "../shared/ui/primitives";
-
-interface CaptureManifest {
-  captures?: CaptureRecord[];
-}
-
 export function useDocumentMeta(meta: PageMeta) {
   useEffect(() => {
     document.title = meta.title;
@@ -90,33 +84,6 @@ export function useHashScroll(page: PageKey, hash?: string) {
       window.removeEventListener("hashchange", scheduleScroll);
     };
   }, [page, hash]);
-}
-
-export function useMarketingCaptures() {
-  const [captures, setCaptures] = useState<Record<string, CaptureRecord>>({});
-
-  useEffect(() => {
-    let isActive = true;
-    fetch("/assets/app-screenshots/manifest.json", {cache: "no-cache"})
-      .then((response) => (response.ok ? response.json() : null))
-      .then((manifest: CaptureManifest | null) => {
-        if (!isActive || !Array.isArray(manifest?.captures)) return;
-        const byId: Record<string, CaptureRecord> = {};
-        for (const capture of manifest.captures) {
-          byId[capture.id] = capture;
-        }
-        setCaptures(byId);
-      })
-      .catch(() => {
-        // Local static pages can run without a fetchable manifest.
-      });
-
-    return () => {
-      isActive = false;
-    };
-  }, []);
-
-  return captures;
 }
 
 function setMetaContent(name: string, content: string) {

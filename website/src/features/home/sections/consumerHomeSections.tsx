@@ -1,4 +1,4 @@
-import {ConsumerCity, ConsumerHero, ConsumerHeroCopy, ConsumerActions, ConsumerHeroImage, ConsumerEventsSection, ConsumerSectionHeading, ConsumerFilters, ConsumerSrOnly, ConsumerEmpty, ConsumerButton, ConsumerEventGrid, ConsumerEventLink, ConsumerEventMedia, ConsumerPhotoNote, ConsumerCategory, ConsumerEventArrow, ConsumerAvailability, ConsumerTextActionLink, ConsumerExperience, ConsumerExperienceImage, ConsumerExperienceCopy, ConsumerExperienceBadge, ConsumerExperienceReassurance, ConsumerPaperButton, ConsumerExperiencePrompt, ConsumerOrganisersSection, ConsumerOrganiserGrid, ConsumerOrganiserLink, ConsumerOrganiserMedia, ConsumerOrganiserLocation, ConsumerOrganiserDescription, ConsumerOrganizerAction, ConsumerFaqSection, ConsumerFaqItem, ConsumerHost, ConsumerHostCopy, ConsumerEyebrow, ConsumerHostAudience, ConsumerHostMedia, ConsumerGuestList, ConsumerGuestStatus, ConsumerClosingSection} from "../../../shared/ui/primitives/consumerHome";
+import {ConsumerCity, ConsumerHero, ConsumerHeroCopy, ConsumerActions, ConsumerHeroImage, ConsumerEventsSection, ConsumerSectionHeading, ConsumerFilters, ConsumerSrOnly, ConsumerEmpty, ConsumerButton, ConsumerEventGrid, ConsumerEventLink, ConsumerEventMedia, ConsumerPhotoNote, ConsumerCategory, ConsumerEventArrow, ConsumerAvailability, ConsumerTextActionLink, ConsumerExperience, ConsumerExperienceImage, ConsumerExperienceCopy, ConsumerExperienceBadge, ConsumerExperienceReassurance, ConsumerPaperButton, ConsumerExperiencePrompt, ConsumerOrganisersSection, ConsumerOrganiserGrid, ConsumerOrganiserLink, ConsumerOrganiserMedia, ConsumerOrganiserLocation, ConsumerOrganiserDescription, ConsumerOrganizerAction, ConsumerFaqSection, ConsumerFaqItem, ConsumerHost, ConsumerHostCopy, ConsumerEyebrow, ConsumerHostAudience, ConsumerHostMedia, ConsumerClosingSection} from "../../../shared/ui/primitives/consumerHome";
 import {useState} from "react";
 import {ArrowRight, CalendarDays, MapPin, Users, MessageCircle, Shuffle, Plus, Minus} from "lucide-react";
 import {consumerHomeCopy as copy} from "@content/consumerHome";
@@ -7,6 +7,7 @@ import {interpolateContent as fill} from "@content/interpolate";
 import {CatchField} from "@catch/web-ui";
 import {ButtonLink, PlainButton, PlainLink} from "../../../shared/ui/primitives";
 import {useConsumerHomeController} from "../useConsumerHomeController";
+import {MediaSlot, type CaptureSlots} from "../../../shared/media/MediaSlot";
 import {categoryForActivity, homeEditorialImage} from "../homeDiscovery";
 
 type Controller = ReturnType<typeof useConsumerHomeController>;
@@ -93,13 +94,11 @@ function Questions() {
   </ConsumerFaqItem>)}
  </ConsumerFaqSection>;
 }
-function HostInvitation() {
+function HostInvitation({captures}: {captures: CaptureSlots}) {
  return <ConsumerHost aria-labelledby="consumer-host-title"><ConsumerHostCopy ><ConsumerEyebrow >{copy.host.eyebrow}</ConsumerEyebrow><h2 id="consumer-host-title">{copy.host.title}</h2><p>{copy.host.body}</p><ConsumerHostAudience >{copy.host.audience}</ConsumerHostAudience><ButtonLink href="/host/">{copy.actions.host}<ArrowRight size={19} aria-hidden="true" /></ButtonLink></ConsumerHostCopy>
-  <ConsumerHostMedia ><img src="/assets/marketing/home-organiser.jpg" width={1448} height={1086} alt={copy.host.alt} loading="lazy" />
-   <ConsumerGuestList aria-label={copy.host.illustrative}><strong>{copy.host.guestList}</strong>{copy.host.names.map((name, index) => <div key={name}><span>{name}</span><ConsumerGuestStatus checkedIn={index < 2}>{index < 2 ? copy.host.checkedIn : copy.host.confirmed}</ConsumerGuestStatus></div>)}<small>{copy.host.illustrative}</small></ConsumerGuestList>
-  </ConsumerHostMedia>
+  <ConsumerHostMedia ><MediaSlot captures={captures} id="host-live-console" /></ConsumerHostMedia>
  </ConsumerHost>;
 }
-export function renderConsumerStory(home: Controller) {
- return <><Experience /><Organisers home={home} /><Questions /><HostInvitation /><ConsumerClosingSection ><h2>{copy.close}</h2><ButtonLink href={home.discoveryHref}>{copy.actions.find}<ArrowRight size={19} aria-hidden="true" /></ButtonLink></ConsumerClosingSection></>;
+export function renderConsumerStory(home: Controller, captures: CaptureSlots) {
+ return <><Experience /><Organisers home={home} /><Questions /><HostInvitation captures={captures} /><ConsumerClosingSection ><h2>{copy.close}</h2><ButtonLink href={home.discoveryHref}>{copy.actions.find}<ArrowRight size={19} aria-hidden="true" /></ButtonLink></ConsumerClosingSection></>;
 }

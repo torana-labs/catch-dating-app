@@ -47,6 +47,7 @@ import {AdminLinkButton, InlineTextField} from "./actions";
 import {SelectableCardButton} from "./cards";
 import {AdminPanel} from "./data";
 import {AdminEyebrow} from "./shell";
+import {CatchText} from "@catch/web-ui";
 
 export function AdminMarketingHelpText({
   children,
@@ -109,9 +110,9 @@ export function AdminMarketingLibraryCard({
     <article {...props} className={classNames("marketing-library-card", className)}>
       <header>
         <AdminEyebrow as="span">{eyebrow}</AdminEyebrow>
-        <h3>{title}</h3>
+        <CatchText as="h3" variant="sectionTitle">{title}</CatchText>
       </header>
-      <p>{description}</p>
+      <CatchText as="p" variant="supporting">{description}</CatchText>
       {children}
       {action}
     </article>
@@ -172,8 +173,8 @@ export function AdminMarketingMediaCard({
       )}
       <div>
         <AdminEyebrow as="span">{eyebrow}</AdminEyebrow>
-        <h3>{title}</h3>
-        <p>{description}</p>
+        <CatchText as="h3" variant="sectionTitle">{title}</CatchText>
+        <CatchText as="p" variant="supporting">{description}</CatchText>
       </div>
       {children}
     </article>
@@ -216,7 +217,7 @@ export function AdminMarketingNewPostCard({
     >
       <span>{meta}</span>
       <strong>{label}</strong>
-      <p>{description}</p>
+      <CatchText as="p" variant="supporting">{description}</CatchText>
       <small>{actionLabel}</small>
     </SelectableCardButton>
   );
@@ -332,7 +333,7 @@ export function AdminMarketingSectionHeader({
 }) {
   return (
     <header {...props} className={classNames("marketing-section-header", className)}>
-      <h3>{title}</h3>
+      <CatchText as="h3" variant="sectionTitle">{title}</CatchText>
       {meta ? <span>{meta}</span> : null}
     </header>
   );
