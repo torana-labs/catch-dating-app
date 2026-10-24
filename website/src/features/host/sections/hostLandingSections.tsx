@@ -136,11 +136,14 @@ export function renderHostLandingAdoption() {
   </HostLandingSection>;
 }
 
+// The questions sit beside the guest's phone-browser check-in, which answers
+// "Do my guests need to download an app?" at a glance.
 export function renderHostLandingFaq(captures: CaptureSlots) {
   return <HostLandingSection variant="faq" aria-labelledby="host-faq-title"><h2 id="host-faq-title">{copy.faqTitle}</h2>
-    {copy.faqs.map(item => <HostLandingDetails key={item.question}><summary>{item.question}</summary><p>{item.answer}</p>
-      {"showsBrowserCheckIn" in item ? <HostLandingMedia variant="capture"><MediaSlot captures={captures} id="guest-join-phone" /></HostLandingMedia> : null}
-    </HostLandingDetails>)}
+    <HostAdoptionLayout>
+      <div>{copy.faqs.map(item => <HostLandingDetails key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></HostLandingDetails>)}</div>
+      <HostLandingMedia variant="capture"><MediaSlot captures={captures} id="guest-join-phone" /></HostLandingMedia>
+    </HostAdoptionLayout>
   </HostLandingSection>;
 }
 
