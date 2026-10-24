@@ -742,6 +742,30 @@ test("Deploy backend preserves every readiness failure before mutation", (t) => 
   }
 });
 
+test("Deploy backend requires manual dispatch to bootstrap an untagged environment", (t) => {
+  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_backend-deploy.yml"), "utf8");
+  const blocks = [...workflow.matchAll(/name: Plan from the last deployed commit[\s\S]*?        run: \|\n((?:          .*\n|\n)+)/gu)];
+  assert.equal(blocks.length, 2, "check both the initial and post-approval plans");
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-bootstrap-"));
+  t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
+  for (const [index, block] of blocks.entries()) {
+    for (const event of ["push", "schedule", "workflow_dispatch"]) {
+      const output = path.join(cwd, `${index}-${event}.txt`);
+      const result = spawnSync("bash", ["-c", `
+        git() { if [[ "$1" == "rev-parse" ]]; then return 1; fi; }
+        node() { printf 'planner reached\n' >> "$GITHUB_OUTPUT"; }
+        ${block[1].replace(/^          /gmu, "")}
+      `], {
+        cwd, encoding: "utf8",
+        env: {...process.env, GITHUB_EVENT_NAME: event, GITHUB_OUTPUT: output,
+          DEPLOY_ENVIRONMENT: "staging", GITHUB_SHA: "a".repeat(40), FULL: "false"},
+      });
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(fs.readFileSync(output, "utf8"), event === "workflow_dispatch" ? "planner reached\n" : "mode=no-op\n");
+    }
+  }
+});
+
 function readyMetadataRunner(spec) {
   if (spec.args[0] === "projects") {
     return readyProjectMetadata(spec.args[2]);

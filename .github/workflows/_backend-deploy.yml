@@ -56,7 +56,7 @@ jobs:
           set -euo pipefail
           git fetch --force origin "refs/tags/deployed/*:refs/tags/deployed/*"
           # A first deploy is full and long, so only a manual run may start it.
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]] &&
+          if [[ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]] &&
               ! git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT" > /dev/null; then
             echo "::notice::$DEPLOY_ENVIRONMENT has no deployed/$DEPLOY_ENVIRONMENT tag; run Deploy backend manually to bootstrap it."
             echo "mode=no-op" >> "$GITHUB_OUTPUT"
@@ -108,7 +108,7 @@ jobs:
           set -euo pipefail
           git fetch --force origin "refs/tags/deployed/*:refs/tags/deployed/*"
           # A first deploy is full and long, so only a manual run may start it.
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]] &&
+          if [[ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]] &&
               ! git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT" > /dev/null; then
             echo "::notice::$DEPLOY_ENVIRONMENT has no deployed/$DEPLOY_ENVIRONMENT tag; run Deploy backend manually to bootstrap it."
             echo "mode=no-op" >> "$GITHUB_OUTPUT"

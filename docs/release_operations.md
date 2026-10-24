@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.14.1
-updated: 2026-10-23
+version: 2.14.2
+updated: 2026-10-25
 owner: recursive_audit_loop
 status: active
 ---
@@ -67,11 +67,11 @@ before removing resources or claiming savings from the invoice.
 
 ## Firebase Environment Readiness
 
-The reusable backend Firebase promotion workflow installs its pinned source
-parser without lifecycle scripts and verifies affected targets before cloud
-authentication. The target-aware metadata preflight then runs after OIDC
-authentication and before Functions runtime dependency installation, Firebase
-CLI installation, or any backend mutation.
+The Deploy backend workflow installs its pinned source parser without lifecycle
+scripts and verifies affected targets before cloud authentication. Its deploy
+job builds Functions, replans after approval, authenticates, installs the cloud
+CLIs and materializes parameters. The target-aware metadata preflight then
+runs before any backend mutation.
 Hosting and explicit Remote Config/Extensions operations have separate owners:
 
 ```sh
@@ -95,8 +95,8 @@ Confirmed missing state exits `1`; authentication, authorization, unavailable
 tooling, or malformed metadata exits `2`; invalid invocation exits `64`. All
 non-zero results block deployment. Add a requirement in the same change that
 introduces a new `defineSecret`, TTL-dependent capability, or deploy-time
-project prerequisite. A missing prerequisite must fail before Functions runtime
-dependency installation; do not move this gate into Firebase predeploy hooks.
+project prerequisite. A missing or indeterminate prerequisite must fail before
+deployment; do not move this gate into Firebase predeploy hooks.
 
 ## Firebase Functions Deployment Parity
 
@@ -1288,6 +1288,9 @@ When it runs:
 - **Prod:** deploys the same commit after a `prod` environment reviewer
   approves, but only when prod has something to receive. A merge with nothing
   to deploy never asks for approval.
+- **Staging:** refreshes on the first of each month at 02:17 UTC. Like a push,
+  a scheduled run skips an environment without a deployed tag; only a manual
+  dispatch may bootstrap it.
 - **One deploy per environment at a time.** Newer runs wait, and GitHub keeps
   only the newest waiting run. Each run deploys everything since the tag, so
   skipping intermediate commits loses nothing.
