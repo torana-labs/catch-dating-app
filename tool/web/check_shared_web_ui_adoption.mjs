@@ -120,8 +120,8 @@ function validateRequiredSourceContracts(readSource = readRepoSource) {
       includes: ["role=\"region\"", "ariaLabel", "aria-busy", "aria-invalid"],
     },
     {
-      path: "website/src/styles/home.css",
-      includes: [".public-search__input:focus-within"],
+      path: "packages/web-ui/src/components/CatchField.module.css",
+      includes: [".field:has(.control:focus-visible)"],
     },
     {
       path: "admin/src/styles.css",

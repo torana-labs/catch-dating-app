@@ -38,7 +38,11 @@ const hostCaptureRoleMoments = <String, String>{
 };
 
 class HostMarketingIndiaScenarioFixture {
-  const HostMarketingIndiaScenarioFixture._(this.scenario, this._narrative);
+  const HostMarketingIndiaScenarioFixture._(
+    this.scenario,
+    this._narrative,
+    this._world,
+  );
 
   factory HostMarketingIndiaScenarioFixture.load({
     String path = 'tool/demo/demo_seed/scenarios/host-marketing-india.json',
@@ -76,11 +80,18 @@ class HostMarketingIndiaScenarioFixture {
         roleMoments: hostCaptureRoleMoments,
       ),
       Map.unmodifiable(narrative),
+      world,
     );
   }
 
   final SalesDemoHostScenarioFixture scenario;
   final Map<String, Object?> _narrative;
+  final DemoWorld _world;
+
+  /// The story's guests at a named moment, from its attendance records.
+  List<({String personaId, DateTime bookedAt, DateTime? checkedInAt})> guestsAt(
+    String moment,
+  ) => _world.guestsAt(hostMarketingIndiaEventId, moment);
   String get eventName => _requiredStringFrom(_narrative, 'eventName');
   String get civilDate => _requiredStringFrom(_narrative, 'civilDate');
   String get timeZone => _requiredStringFrom(_narrative, 'timeZone');
@@ -496,31 +507,41 @@ class SalesDemoHostScorecardFixture {
   }
 }
 
+/// Profile projections of every persona cohort capture fixtures may cast.
+const salesDemoProfileProjectionPaths = <String>[
+  'tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json',
+  'tool/demo/demo_seed/personas/india_core_sales_profile_projection.planned.json',
+];
+
 class SalesDemoSyntheticFixtures {
   const SalesDemoSyntheticFixtures._(this._personas);
 
   factory SalesDemoSyntheticFixtures.load({
-    String path =
-        'tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json',
+    List<String> paths = salesDemoProfileProjectionPaths,
   }) {
-    final decoded = jsonDecode(File(path).readAsStringSync());
-    final root = _stringMap(decoded, context: path);
-    if (_optionalStringFrom(root, 'kind') !=
-        'sales-demo-persona-profile-projection') {
-      throw StateError(
-        'Expected sales demo persona profile projection in $path.',
-      );
-    }
-    final remotePhotosAvailable = _list(
-      root['assetStatuses'],
-    ).whereType<String>().contains('uploaded');
     final personas = <String, _SalesDemoPersona>{};
-    for (final persona in _list(root['personas'])) {
-      final mapped = _SalesDemoPersona(
-        _stringMap(persona, context: path),
-        remotePhotosAvailable: remotePhotosAvailable,
-      );
-      personas[mapped.id] = mapped;
+    for (final path in paths) {
+      final decoded = jsonDecode(File(path).readAsStringSync());
+      final root = _stringMap(decoded, context: path);
+      if (_optionalStringFrom(root, 'kind') !=
+          'sales-demo-persona-profile-projection') {
+        throw StateError(
+          'Expected sales demo persona profile projection in $path.',
+        );
+      }
+      final remotePhotosAvailable = _list(
+        root['assetStatuses'],
+      ).whereType<String>().contains('uploaded');
+      for (final persona in _list(root['personas'])) {
+        final mapped = _SalesDemoPersona(
+          _stringMap(persona, context: path),
+          remotePhotosAvailable: remotePhotosAvailable,
+        );
+        if (personas.containsKey(mapped.id)) {
+          throw StateError('Persona ${mapped.id} appears in two cohorts.');
+        }
+        personas[mapped.id] = mapped;
+      }
     }
     return SalesDemoSyntheticFixtures._(personas);
   }

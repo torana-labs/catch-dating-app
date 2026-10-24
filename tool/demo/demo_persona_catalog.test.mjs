@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import test from "node:test";
 import {
   assertValidPersonaCatalog,
@@ -29,6 +30,36 @@ test("draft sales persona catalog validates", () => {
   assert.equal(result.summary.genderCounts.woman, 12);
   assert.equal(result.summary.categoryCounts.clearSoloPortrait, 24);
   assert.equal(result.summary.categoryCounts.activeLifestyle, 13);
+});
+
+test("India core persona catalog validates as one balanced, Indian cohort", () => {
+  const catalog = loadPersonaCatalog(
+    "tool/demo/demo_seed/personas/india_core_sales_personas.draft.json"
+  );
+
+  const result = validatePersonaCatalog(catalog);
+
+  assert.equal(result.valid, true);
+  assert.equal(result.summary.personaCount, 68);
+  assert.equal(result.summary.photoCount, 272);
+  assert.equal(result.summary.genderCounts.man, 34);
+  assert.equal(result.summary.genderCounts.woman, 34);
+  assert.deepEqual(result.summary.cityCounts, {bangalore: 12, delhi: 12, hyderabad: 10, indore: 1, mumbai: 21, pune: 12});
+  assert.equal(result.summary.categoryCounts.clearSoloPortrait, 68);
+  assert.ok(catalog.personas.every((persona) => persona.countryCode === "IN" && persona.id.startsWith("in_")));
+});
+
+test("India core profile projection matches its catalog", () => {
+  const catalog = loadPersonaCatalog(
+    "tool/demo/demo_seed/personas/india_core_sales_personas.draft.json"
+  );
+  const committed = JSON.parse(fs.readFileSync(
+    "tool/demo/demo_seed/personas/india_core_sales_profile_projection.planned.json",
+    "utf8"
+  ));
+
+  assert.deepEqual(committed, personaProfileProjection(catalog, {assetStatuses: ["planned"]}),
+    "Run: node tool/demo/demo_ops.mjs persona-profile-projection --persona-catalog tool/demo/demo_seed/personas/india_core_sales_personas.draft.json --asset-statuses planned --output tool/demo/demo_seed/personas/india_core_sales_profile_projection.planned.json --update");
 });
 
 test("persona catalog rejects sparse photo sets", () => {

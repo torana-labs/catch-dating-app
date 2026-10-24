@@ -6,25 +6,7 @@ import {
   StatusBadge as OrganizerStatusBadge,
 } from "../features/organizers/OrganizerIdentity";
 import type {HostListing} from "../features/organizers/types";
-import {type HostCaptureMap} from "../features/host/sections/CaptureFrames";
 import {BadgeRow, ContentGrid} from "../shared/ui/primitives";
-
-const captures: HostCaptureMap = {
-  "member-event-discovery": {
-    id: "member-event-discovery",
-    alt: "Catch member event discovery screen",
-    caption: "Members browse source-backed hosted events before any dating surface opens.",
-    walkthroughStep: "Discover",
-    webPath: "/assets/app-screenshots/member-event-discovery.png",
-  },
-  "host-live-console": {
-    id: "host-live-console",
-    alt: "Catch host live console screen",
-    caption: "Hosts reconcile check-ins, waitlist movement, and live event notes.",
-    walkthroughStep: "Run",
-    webPath: "/assets/app-screenshots/host-live-console.png",
-  },
-};
 
 const unclaimedListing = requireListing("afterfly");
 const verifiedListing = requireListing("sunday-table-club");

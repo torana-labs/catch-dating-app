@@ -5,8 +5,7 @@ import {PlainButton} from "./actionControls";
 export function HostLanding(props: ComponentProps<"div">) { return <div {...props} className="consumer-home host-landing" />; }
 export function HostLandingHero(props: ComponentProps<"section">) { return <section {...props} className="host-landing-hero" />; }
 export function HostLandingHeroCopy(props: ComponentProps<"div">) { return <div {...props} className="host-landing-hero__copy" />; }
-export function HostLandingMedia(props: ComponentProps<"div">) { return <div {...props} className="host-landing-media" />; }
-export function HostLandingPhotoMessage(props: ComponentProps<"div">) { return <div {...props} className="host-landing-photo-message" />; }
+export function HostLandingMedia({variant, ...props}: ComponentProps<"div"> & {variant?: "capture"}) { return <div {...props} className={variant ? `host-landing-media host-landing-media--${variant}` : "host-landing-media"} />; }
 export function HostLandingSection({variant, ...props}: ComponentProps<"section"> & {variant?: "formats" | "insights" | "adoption" | "participation" | "close" | "faq" | "apply"}) { return <section {...props} className={`host-landing-section${variant ? ` host-landing-section--${variant}` : ""}`} />; }
 export function HostLandingHeading(props: ComponentProps<"div">) { return <div {...props} className="host-landing-heading" />; }
 export function HostLandingNote(props: ComponentProps<"p">) { return <p {...props} className="host-landing-note" />; }

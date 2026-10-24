@@ -20,7 +20,7 @@ import {OrganizerSearchPage} from "../features/organizers/OrganizerSearchPage";
 import type {HostListing} from "../features/organizers/types";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
 import {PageShell} from "../shared/site";
-import {captures} from "./fixtures/marketingCaptures";
+import {marketingCaptures as captures} from "../app/marketingCaptures";
 import {
   catchEventDetailFixture,
   completeEventDetailFixture,
