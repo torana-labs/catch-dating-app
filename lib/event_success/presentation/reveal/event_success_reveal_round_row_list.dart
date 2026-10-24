@@ -110,64 +110,68 @@ class EventSuccessRevealRoundRow extends StatelessWidget {
         CatchBadgeTone.neutral,
       ),
     };
-    return Container(
-      padding: CatchInsets.contentVerticalCompact,
-      decoration: showDivider
-          ? BoxDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: foreground.withValues(alpha: CatchOpacity.warningFill),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (showDivider)
+          CatchDivider(
+            color: foreground.withValues(alpha: CatchOpacity.warningFill),
+          ),
+        Padding(
+          padding: CatchInsets.contentVerticalCompact,
+          child: Row(
+            children: [
+              Text(
+                context.l10n
+                    .eventSuccessEventSuccessLiveRevealWidgetsTextRValue1(
+                      value1: index + 1,
+                    ),
+                style: CatchTextStyles.monoLabel(
+                  context,
+                  color: foreground.withValues(
+                    alpha: CatchOpacity.revealMutedForeground,
+                  ),
                 ),
               ),
-            )
-          : null,
-      child: Row(
-        children: [
-          Text(
-            context.l10n.eventSuccessEventSuccessLiveRevealWidgetsTextRValue1(
-              value1: index + 1,
-            ),
-            style: CatchTextStyles.monoLabel(
-              context,
-              color: foreground.withValues(
-                alpha: CatchOpacity.revealMutedForeground,
+              gapW10,
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      CatchTextStyles.supporting(
+                        context,
+                        color: hidden
+                            ? foreground.withValues(
+                                alpha: CatchOpacity.revealMutedForeground,
+                              )
+                            : foreground,
+                      ).copyWith(
+                        fontStyle: hidden ? FontStyle.italic : FontStyle.normal,
+                      ),
+                ),
               ),
-            ),
+              gapW8,
+              CatchBadge(
+                label: badgeLabel,
+                tone: tone,
+                size: CatchBadgeSize.action,
+                backgroundColor: foreground.withValues(
+                  alpha: state == _RevealRoundState.now
+                      ? CatchOpacity.revealSurfaceBorder
+                      : CatchOpacity.revealBeatFillInactive,
+                ),
+                foregroundColor: foreground,
+                borderColor: foreground.withValues(
+                  alpha: CatchOpacity.warningFill,
+                ),
+              ),
+            ],
           ),
-          gapW10,
-          Expanded(
-            child: Text(
-              label,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style:
-                  CatchTextStyles.supporting(
-                    context,
-                    color: hidden
-                        ? foreground.withValues(
-                            alpha: CatchOpacity.revealMutedForeground,
-                          )
-                        : foreground,
-                  ).copyWith(
-                    fontStyle: hidden ? FontStyle.italic : FontStyle.normal,
-                  ),
-            ),
-          ),
-          gapW8,
-          CatchBadge(
-            label: badgeLabel,
-            tone: tone,
-            size: CatchBadgeSize.action,
-            backgroundColor: foreground.withValues(
-              alpha: state == _RevealRoundState.now
-                  ? CatchOpacity.revealSurfaceBorder
-                  : CatchOpacity.revealBeatFillInactive,
-            ),
-            foregroundColor: foreground,
-            borderColor: foreground.withValues(alpha: CatchOpacity.warningFill),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -33,10 +33,11 @@ class ClubIndexRow extends StatelessWidget {
           children: [
             Padding(
               padding: CatchInsets.mediaFrameContent,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(
-                  CatchLayout.posterMediaRadius,
-                ),
+              child: CatchSurface(
+                duration: Duration.zero,
+                tone: CatchSurfaceTone.transparent,
+                radius: CatchLayout.posterMediaRadius,
+                clipBehavior: Clip.antiAlias,
                 child: SizedBox.square(
                   dimension: CatchSpacing.s16,
                   child: ClubImage(club: club, coverOnly: true),
