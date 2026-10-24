@@ -278,7 +278,7 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
   assert.match(plan, /permissions:\n      actions: read\n      contents: read\n/u);
   assert.match(plan, /web_render: \$\{\{ steps\.plan\.outputs\.web_render \}\}\n/u);
   assert.doesNotMatch(storybook + render + reuse, /actions: read/u);
-  // Web captures: Linux builds the Storybook only when one is stale; the Mac
+  // Web captures: Linux builds the Storybook when rendering may need it; the Mac
   // installs just the pinned Playwright and WebKit, and reuse installs nothing.
   assert.match(storybook, /needs: plan\n[^]*?if: \$\{\{ needs\.plan\.outputs\.web_render == 'true' \}\}\n/u);
   assert.match(storybook, /runs-on: ubuntu-24\.04\n/u);
@@ -909,6 +909,33 @@ export const webkit = {launch: async () => ({close: async () => {}, newContext: 
 `);
   return {storybookDir, playwrightDir, contexts};
 }
+
+test("an app-only Linux render plan prepares web tools for a native-font change on macOS", async t => {
+  const f = fixture(t, {web: true});
+  const directory = path.dirname(f.options.outputDir);
+  const webTools = webStubs(directory);
+  exportHostedCaptures({...f.options, ...webTools});
+  f.git("add", ".");
+  f.git("commit", "-qm", "preserve rendered captures");
+  const request = async endpoint => endpoint === "repos/owner/repo" ? {id: 1} :
+    endpoint.endsWith("/workflows/ci.yml") ? {id: 7} : {workflow_runs: []};
+  const plan = () => planHostedCaptures({sourceDir: f.root, sourceSha: f.git("rev-parse", "HEAD"),
+    repository: "owner/repo", eventName: "pull_request", request});
+  const fresh = await plan();
+  assert.deepEqual([fresh.render, fresh.webRender], [false, false], "reuse needs no web tooling");
+  f.write("lib/leaf.dart", "const title = 'Updated app';\n");
+  f.git("add", "lib/leaf.dart");
+  f.git("commit", "-qm", "change only app capture inputs");
+  const appOnly = await plan();
+  assert.ok(appOnly.renderIds.length > 0);
+  assert.ok(!appOnly.renderIds.includes("guest-join-phone"));
+  assert.equal(appOnly.webRender, true, "macOS can invalidate the otherwise-current web capture's font");
+  fs.writeFileSync(f.options.sfFont, "updated macOS native font");
+  const rendered = exportHostedCaptures({...f.options, ...webTools,
+    sourceSha: f.git("rev-parse", "HEAD"), outputDir: path.join(directory, "font-updated")});
+  assert.equal(rendered.captures.find(c => c.id === "guest-join-phone").disposition, "rendered");
+  assert.equal(new Set(rendered.captures.map(c => c.provenance.nativeFontSha256)).size, 1);
+});
 
 test("a web capture renders on macOS from a Linux-built Storybook with WebKit, then reuses on Linux", t => {
   const f = fixture(t, {web: true});

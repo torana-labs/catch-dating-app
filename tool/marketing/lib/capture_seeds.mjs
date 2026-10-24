@@ -109,8 +109,10 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
     }
   }
   const renderIds = eventName === "schedule" ? captures.map(capture => capture.id) : [...stale()];
-  // A web capture renders from a Storybook the plan's caller builds on Linux.
-  const webRender = captures.some(capture => capture.kind === "web-capture" && renderIds.includes(capture.id));
+  // Linux cannot judge the macOS font. Any render job can therefore discover
+  // a stale web capture even when only app inputs changed here. Prepare the
+  // Storybook and WebKit whenever that job may need them; reuse needs neither.
+  const webRender = renderIds.length > 0 && captures.some(capture => capture.kind === "web-capture");
   return {sourceSha, render: renderIds.length > 0, renderIds, webRender,
     seeds, seedIds: [...seeds.keys()], seedSources: sources};
 }

@@ -107,8 +107,8 @@ jobs:
   storybook:
     name: Build website Storybook for web captures
     needs: plan
-    # Web captures render on macOS from this Linux build, so the Mac never
-    # installs the website's dependencies.
+    # Prepare for web renders, including native-font changes only macOS can
+    # detect, without installing the website's dependencies on the Mac.
     if: ${{ needs.plan.outputs.web_render == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
