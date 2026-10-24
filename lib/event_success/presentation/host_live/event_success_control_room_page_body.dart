@@ -83,8 +83,10 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
             checkedIn: checkedInCount,
             expected: expectedCount,
           );
-    final supportingFields = DecoratedBox(
-      decoration: BoxDecoration(color: t.surface),
+    final supportingFields = CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: t.surface,
       child: CatchSection.fieldRows(
         children: [
           CatchField.nav(

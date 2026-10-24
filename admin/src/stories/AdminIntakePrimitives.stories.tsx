@@ -19,7 +19,6 @@ import {
   AdminIntakeDecisionBox,
   AdminIntakeDecisionState,
   AdminIntakeBoundaryNotice,
-  AdminIntakeEventWorkspaceShell,
   AdminIntakeGate,
   AdminIntakeGateList,
   AdminIntakeLayout,
@@ -32,7 +31,6 @@ import {
   AdminIntakeStageRail,
   AdminIntakeTaskToolbar,
   AdminIntakeWorkspaceFrame,
-  AdminIntakeWorkspaceHeader,
   AdminIntakeWorkspaceTabs,
   AdminOrganizerCurationControlGrid,
   AdminOrganizerCurationControlSection,
@@ -78,27 +76,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-export const AdminIntakeWorkspaceHeaderStory: Story = {
-  name: "Workspace header",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_intake_workspace_header",
-      states: ["with-actions", "description"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminIntakeWorkspaceHeader
-        actions={<AdminButton variant="primary">Refresh bridge</AdminButton>}
-        eyebrow="Review queue"
-        title="Organizer intake"
-      >
-        Resolve candidate quality, surface coverage, and publication readiness.
-      </AdminIntakeWorkspaceHeader>
-    </AdminWorkspace>
-  ),
-};
 
 export const AdminIntakeWorkspaceTabsStory: Story = {
   name: "Workspace tabs",
@@ -359,30 +336,6 @@ export const AdminIntakeLayoutStory: Story = {
           <AdminOrganizerIntakeCard>Candidate list item</AdminOrganizerIntakeCard>
         </AdminOrganizerIntakeList>
       </AdminIntakeLayout>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminIntakeEventWorkspaceShellStory: Story = {
-  name: "Event workspace shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_intake_event_workspace_shell",
-      states: ["event-review"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminIntakeEventWorkspaceShell>
-        <AdminIntakeWorkspaceHeader eyebrow="Event intake" title="External event review">
-          Event candidates stay separate from canonical app events.
-        </AdminIntakeWorkspaceHeader>
-        <AdminGuardrailList>
-          <AlertRow icon={<Lock size={16} />} title="Publication boundary">
-            Review writes stay in the event intake decision collection.
-          </AlertRow>
-        </AdminGuardrailList>
-      </AdminIntakeEventWorkspaceShell>
     </AdminWorkspace>
   ),
 };

@@ -4,7 +4,10 @@ import previewCards from "../content/previewCards.json" with {type: "json"};
 // changes with the card's inputs so chat apps fetch a re-rendered card.
 export type PreviewCardId = keyof typeof previewCards.cards;
 
-const cardForCanonicalPath: Record<string, PreviewCardId> = {"/host/": "host", "/host/apply/": "apply", "/f/": "form"};
+const cardForCanonicalPath: Record<string, PreviewCardId> = {
+  "/": "home", "/explore/": "home", "/host/": "host", "/host/apply/": "apply",
+  "/claim/": "claim", "/organizers/": "organizers", "/f/": "form",
+};
 
 export function previewCardFor(canonicalPath: string): PreviewCardId {
   return cardForCanonicalPath[canonicalPath] ?? "default";

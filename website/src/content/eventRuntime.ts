@@ -1,7 +1,6 @@
 export const eventRuntimeCopy = {
   brand: "Catch event mode",
   brandWord: "Catch",
-  demoEventTitle: "Courtyard Social",
   phoneKicker: "You are on the guest list",
   phoneTitle: "Check in and make this room easier to meet.",
   phoneBody: "No download. Verify the phone number used for your booking to open tonight's live event tools.",

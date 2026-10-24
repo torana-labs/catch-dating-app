@@ -559,6 +559,10 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
     maxRequests: 10,
     windowMs: 60 * 1000,
   },
+  adminListOrganizerListingReviews: {
+    maxRequests: 60,
+    windowMs: 60 * 1000,
+  },
   adminRecordEventIntakeReviewDecision: {
     maxRequests: 30,
     windowMs: 60 * 1000,

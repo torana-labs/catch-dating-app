@@ -21,7 +21,7 @@ enum CatchButtonVariant {
 
 enum CatchButtonSize { sm, md, lg }
 
-/// Pill geometry is the default; rounded mode reads as a full-width action bar.
+/// Retiring: since D20 both modes draw 4px corners; the D20 rename removes it.
 enum CatchButtonMode { pill, rounded }
 
 enum CatchButtonStatus { idle, loading }
@@ -375,7 +375,11 @@ class _CatchButtonState extends State<CatchButton> {
           padding: widget.padding,
           tapTargetSize: widget.tapTargetSize,
           side: widget.side,
-          shape: widget.shape,
+          shape:
+              widget.shape ??
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(CatchButtonTokens.radius),
+              ),
           textStyle: effectiveTextStyle,
         ),
         child: widget.leading == null
@@ -528,26 +532,12 @@ class _CatchButtonState extends State<CatchButton> {
       );
     }
     final spec = _ButtonSizeSpec.from(widget.size);
-    final mediaQuery = MediaQuery.maybeOf(context);
-    final reduceMotion = mediaQuery?.disableAnimations ?? false;
+    final reduceMotion = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
     final transitionDuration = reduceMotion
         ? CatchMotion.none
         : CatchMotion.fast;
-    final radius = widget.mode == CatchButtonMode.pill
-        ? CatchRadius.pill
-        : CatchRadius.md;
+    const radius = CatchButtonTokens.radius;
     var palette = _ButtonPalette.from(widget.variant, t);
-    if (widget.variant == CatchButtonVariant.dangerSecondary &&
-        _enabled &&
-        (_hovered || _pressed || _focused)) {
-      palette = palette.copyWith(
-        foreground: t.danger,
-        border: t.danger,
-        background: t.danger.withValues(
-          alpha: CatchOpacity.controlOverlayHover,
-        ),
-      );
-    }
     final accent = widget.accentColor;
     if (accent != null && widget.variant == CatchButtonVariant.primary) {
       palette = palette.copyWith(
@@ -561,43 +551,32 @@ class _CatchButtonState extends State<CatchButton> {
       foreground: widget.foregroundColor,
       border: widget.borderColor,
     );
-    final border = _focused
-        ? CatchBorder.resolve(t, CatchBorderRole.focus)
-        : (widget.variant == CatchButtonVariant.secondary ||
-              widget.variant == CatchButtonVariant.dangerSecondary)
-        ? CatchBorder.interactive(
-            t,
-            _pressed
-                ? CatchInteractiveBorderState.pressed
-                : _hovered
-                ? CatchInteractiveBorderState.hovered
-                : CatchInteractiveBorderState.resting,
-          ).copyWith(
-            color:
-                widget.borderColor ??
-                (widget.variant == CatchButtonVariant.dangerSecondary &&
-                        _enabled &&
-                        (_hovered || _pressed)
-                    ? t.danger
-                    : null),
-          )
-        : CatchBorder.resolve(
-            t,
-            CatchBorderRole.boundary,
-            color: palette.border,
-          );
+    final outlined =
+        widget.variant == CatchButtonVariant.secondary ||
+        widget.variant == CatchButtonVariant.dangerSecondary;
+    final engaged = _enabled && (_hovered || _pressed);
+    // Outlines share the control border and turn full ink while engaged.
+    final border = CatchBorder.resolve(
+      t,
+      outlined ? CatchBorderRole.control : CatchBorderRole.boundary,
+      color: outlined && engaged && widget.borderColor == null
+          ? t.ink
+          : palette.border,
+    );
+    final overlayAlpha = _pressed
+        ? CatchButtonTokens.pressedAlpha
+        : palette.background.a > 0
+        ? CatchButtonTokens.hoverFilledAlpha
+        : CatchButtonTokens.hoverOutlineAlpha;
 
     final buttonContent = Stack(
       alignment: Alignment.center,
       children: [
-        if (_enabled && (_hovered || _pressed))
+        // Feedback tints in the label colour, so it reads on every fill.
+        if (engaged)
           Positioned.fill(
             child: ColoredBox(
-              color: CatchTokens.editorialBlack.withValues(
-                alpha: _pressed
-                    ? CatchOpacity.controlOverlayPressed
-                    : CatchOpacity.controlOverlayHover,
-              ),
+              color: palette.foreground.withValues(alpha: overlayAlpha),
             ),
           ),
         Padding(
@@ -615,7 +594,7 @@ class _CatchButtonState extends State<CatchButton> {
                     label: widget.label,
                     color: palette.foreground,
                     leading: widget.leading,
-                    gap: spec.gap,
+                    gap: CatchSpacing.micro6,
                     fullWidth: widget.fullWidth,
                     allowMultiline: !widget._selection,
                     textStyle: spec.textStyle(context),
@@ -625,28 +604,57 @@ class _CatchButtonState extends State<CatchButton> {
       ],
     );
 
-    final decoratedButton = ConstrainedBox(
-      constraints: BoxConstraints(minHeight: spec.height),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: palette.background,
-          borderRadius: BorderRadius.circular(radius),
-          border: border.all,
-          boxShadow: _focused ? CatchElevation.focusRing(t) : null,
+    const ringInset = -CatchButtonTokens.focusRingOutset;
+    final decoratedButton = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ConstrainedBox(
+          constraints: BoxConstraints(minHeight: spec.height),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: palette.background,
+              borderRadius: BorderRadius.circular(radius),
+              border: border.all,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(radius),
+              child: buttonContent,
+            ),
+          ),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(radius),
-          child: buttonContent,
-        ),
-      ),
+        // The focus ring sits outside the button, so focus never moves layout.
+        if (_focused)
+          Positioned(
+            left: ringInset,
+            top: ringInset,
+            right: ringInset,
+            bottom: ringInset,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                key: const ValueKey('catch_button.focus_ring'),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius - ringInset),
+                  border: Border.all(
+                    color: t.ink,
+                    width: CatchButtonTokens.focusRingWidth,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
 
     final child = AnimatedScale(
-      scale: _enabled && _pressed ? 0.97 : 1,
+      scale: _enabled && _pressed && !reduceMotion
+          ? CatchButtonTokens.pressedScale
+          : 1,
       duration: transitionDuration,
       curve: CatchMotion.standardCurve,
       child: AnimatedOpacity(
-        opacity: widget.isInteractive && !_enabled ? 0.4 : 1,
+        opacity: widget.isInteractive && !_enabled
+            ? CatchButtonTokens.disabledOpacity
+            : 1,
         duration: transitionDuration,
         curve: CatchMotion.standardCurve,
         child: decoratedButton,
@@ -706,33 +714,29 @@ class _ButtonSizeSpec {
   const _ButtonSizeSpec({
     required this.height,
     required this.padding,
-    required this.gap,
     required this.textStyle,
   });
 
   final double height;
   final double padding;
-  final double gap;
   final TextStyle Function(BuildContext context) textStyle;
 
   static _ButtonSizeSpec from(CatchButtonSize size) {
+    // D20: sm draws medium and md large; the rename folds lg in, adds small.
     return switch (size) {
       CatchButtonSize.sm => const _ButtonSizeSpec(
-        height: CatchSpacing.s9,
-        padding: CatchSpacing.micro14,
-        gap: CatchSpacing.micro6,
+        height: CatchButtonTokens.mediumHeight,
+        padding: CatchButtonTokens.mediumPaddingX,
         textStyle: CatchTextStyles.buttonSm,
       ),
       CatchButtonSize.md => const _ButtonSizeSpec(
-        height: CatchSpacing.s12,
-        padding: CatchSpacing.s5,
-        gap: CatchSpacing.micro6,
+        height: CatchButtonTokens.largeHeight,
+        padding: CatchButtonTokens.largePaddingX,
         textStyle: CatchTextStyles.buttonMd,
       ),
       CatchButtonSize.lg => const _ButtonSizeSpec(
         height: CatchLayout.buttonLgHeight,
         padding: CatchSpacing.s6,
-        gap: CatchSpacing.micro6,
         textStyle: CatchTextStyles.buttonLg,
       ),
     };
@@ -769,20 +773,17 @@ class _ButtonPalette {
         foreground: t.primaryInk,
         border: Colors.transparent,
       ),
-      CatchButtonVariant.secondary => _ButtonPalette(
-        background: t.surface,
+      // D20 folds dangerSecondary in: the confirm step carries the danger.
+      CatchButtonVariant.secondary ||
+      CatchButtonVariant.dangerSecondary => _ButtonPalette(
+        background: Colors.transparent,
         foreground: t.ink,
-        border: t.line2,
+        border: CatchBorder.resolve(t, CatchBorderRole.control).color,
       ),
       CatchButtonVariant.ghost => _ButtonPalette(
         background: Colors.transparent,
         foreground: t.ink,
         border: Colors.transparent,
-      ),
-      CatchButtonVariant.dangerSecondary => _ButtonPalette(
-        background: t.surface,
-        foreground: t.ink,
-        border: t.line2,
       ),
       CatchButtonVariant.danger => _ButtonPalette(
         background: t.danger,

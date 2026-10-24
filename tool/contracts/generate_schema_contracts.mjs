@@ -3703,6 +3703,24 @@ const schemaSpecs = [
     ],
   },
   {
+    name: "AdminListOrganizerListingReviewsCallablePayload",
+    source: "callables/admin_list_organizer_listing_reviews_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListOrganizerListingReviewsCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListOrganizerListingReviewsCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminListOrganizerListingReviewsCallableResponse",
+    source: "callable_responses/admin_list_organizer_listing_reviews_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListOrganizerListingReviewsCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListOrganizerListingReviewsCallableResponse.ts",
+    ],
+  },
+  {
     name: "AdminApproveOrganizerListingCallableResponse",
     source: "callable_responses/admin_approve_organizer_listing_response.schema.json",
     typeOutput:
