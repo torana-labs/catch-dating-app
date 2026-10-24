@@ -15,16 +15,11 @@ import {
   buildHostAccountPlan,
   buildLaunchCleanupPlan,
   buildMakeEventFullPlan,
-  buildMatchPhonePlan,
-  buildMarkAttendedPlan,
   buildPromoteWaitlistPlan,
   buildRefundPlan,
-  buildResetUserDemoStatePlan,
   buildStaleEventCleanupPlan,
   buildUnreadMessagePlan,
   buildValidateDemoStateReport,
-  buildWarmGroupPlans,
-  buildWarmUserPlan,
   demoOperationId,
   isProductionTarget,
   listScenarioConfigs,
@@ -174,20 +169,11 @@ export async function main(argv = process.argv.slice(2)) {
       repair: true,
     });
   } else if (command === "mark-attended") {
-    await runWritePlan({
-      db,
-      args,
-      projectId,
-      title: "Demo mark attended plan",
-      plan: await buildMarkAttendedPlan({
-        db,
-        admin,
-        phone: requireArg(args, "phone", "--phone"),
-        eventId: requireArg(args, "eventId", "--event-id"),
-        seedPrefix: args.seedPrefix,
-      }),
-      repair: true,
-    });
+    throw new Error(
+      "mark-attended is retired. Start the tester's demo world at the live " +
+      "or after moment instead: suvbot --phone <phone> --action " +
+      "startDemoWorld --world <worldId> --moment live"
+    );
   } else if (command === "promote-waitlist") {
     await runWritePlan({
       db,
@@ -214,7 +200,7 @@ export async function main(argv = process.argv.slice(2)) {
         admin,
         fromPhone: requireArg(args, "fromPhone", "--from-phone"),
         toPhone: requireArg(args, "toPhone", "--to-phone"),
-        text: args.text,
+        text: args.text ?? undefined,
         seedPrefix: args.seedPrefix,
       }),
     });
@@ -271,106 +257,91 @@ export async function main(argv = process.argv.slice(2)) {
   }
 }
 
+// Per-user demo state is owned by the Suvbot backend
+// (functions/src/demoOps/suvbot.ts). These commands only choose the Suvbot
+// action, so the CLI and the in-app chat cannot drift apart.
 async function runMatchPhones({db, args, projectId}) {
-  const plan = await buildMatchPhonePlan({
+  if (args.viaSwipes || args.withMessages || args.eventId) {
+    throw new Error(
+      "match-phones no longer takes --via-swipes, --with-messages or " +
+      "--event-id: those needed a shared seeded event. Each tester now has " +
+      "a private demo world; Suvbot's tester match is the only pair match."
+    );
+  }
+  const userA = await resolveUserByPhone(db, requireArg(args, "phoneA", "--phone-a"));
+  await runSuvbotOperations({
     db,
-    admin,
-    phoneA: requireArg(args, "phoneA", "--phone-a"),
-    phoneB: requireArg(args, "phoneB", "--phone-b"),
-    eventId: args.eventId,
-    viaSwipes: args.viaSwipes,
-    direct: !args.viaSwipesOnly,
-    withMessages: args.withMessages,
-    seedPrefix: args.seedPrefix,
-  });
-  if (args.apply) await applyDocPlan({db, docs: plan.docs});
-  const manifest = await writeManifest({db, admin, plan, apply: args.apply});
-  printPlan({
     args,
     projectId,
     title: "Demo match phone plan",
-    plan,
-    manifest,
-    appliedSummary: args.apply ? {written: plan.docs.length} : null,
+    command: "match-phones",
+    requireAccess: false,
+    operations: [{
+      uid: userA.uid,
+      phone: userA.phoneNumber,
+      action: "matchTesterByPhone",
+      targetPhone: normalizePhone(requireArg(args, "phoneB", "--phone-b")),
+    }],
   });
 }
 
 async function runWarmUser({db, args, projectId}) {
-  const plan = await buildWarmUserPlan({
+  const user = await resolveSuvbotUser({db, args});
+  await runSuvbotOperations({
     db,
-    admin,
-    phone: requireArg(args, "phone", "--phone"),
-    seedPrefix: args.seedPrefix,
-    syntheticMatchCount: args.syntheticMatches,
-  });
-  let aggregateSummary = null;
-  if (args.apply) {
-    await applyDocPlan({db, docs: plan.docs});
-    aggregateSummary = await repairAggregates(db);
-  }
-  const manifest = await writeManifest({db, admin, plan, apply: args.apply});
-  printPlan({
     args,
     projectId,
     title: "Demo warm user plan",
-    plan,
-    manifest,
-    appliedSummary: args.apply ? {written: plan.docs.length, aggregateSummary} : null,
+    command: "warm-user",
+    requireAccess: false,
+    operations: [{
+      uid: user.uid,
+      phone: user.phoneNumber ?? null,
+      ...worldActionFromArgs(args, "warmChatState"),
+    }],
   });
 }
 
 async function runWarmGroup({db, args, projectId}) {
-  const phones = phonesFromArgs(args);
+  const phones = [...new Set(phonesFromArgs(args).map(normalizePhone))];
   if (phones.length < 2) throw new Error("warm-group requires at least two phones.");
-  const plans = await buildWarmGroupPlans({
+  const operations = [];
+  for (let i = 0; i < phones.length; i += 1) {
+    const user = await resolveUserByPhone(db, phones[i]);
+    for (let j = i + 1; j < phones.length; j += 1) {
+      operations.push({
+        uid: user.uid,
+        phone: user.phoneNumber,
+        action: "matchTesterByPhone",
+        targetPhone: phones[j],
+      });
+    }
+  }
+  await runSuvbotOperations({
     db,
-    admin,
-    phones,
-    seedPrefix: args.seedPrefix,
-  });
-  const docs = [];
-  const manifests = [];
-  for (const plan of plans) {
-    docs.push(...plan.docs);
-  }
-  if (args.apply) await applyDocPlan({db, docs});
-  for (const plan of plans) {
-    manifests.push(await writeManifest({db, admin, plan, apply: args.apply}));
-  }
-  printPlan({
     args,
     projectId,
     title: "Demo warm group plan",
-    plan: {
-      command: "warm-group",
-      phones,
-      pairCount: plans.length,
-      docs,
-      matchIds: plans.map((plan) => plan.matchId),
-    },
-    manifest: {count: manifests.length, manifests: manifests.map((item) => item.operationId)},
-    appliedSummary: args.apply ? {written: docs.length} : null,
+    command: "warm-group",
+    requireAccess: false,
+    operations,
   });
 }
 
 async function runResetUserDemoState({db, args, projectId}) {
-  const plan = await buildResetUserDemoStatePlan({
+  const user = await resolveSuvbotUser({db, args});
+  await runSuvbotOperations({
     db,
-    phone: args.phone,
-    uid: args.uid,
-  });
-  let aggregateSummary = null;
-  if (args.apply) {
-    await applyDeletePlan({db, paths: plan.paths});
-    aggregateSummary = await repairAggregates(db);
-  }
-  printPlan({
     args,
     projectId,
     title: "Demo reset user state plan",
-    plan,
-    manifest: {pathCount: plan.paths.length},
-    appliedSummary: args.apply ? {deleted: plan.paths.length, aggregateSummary} : null,
+    command: "reset-user-demo-state",
+    requireAccess: false,
+    operations: [{
+      uid: user.uid,
+      phone: user.phoneNumber ?? null,
+      action: "clearDemoState",
+    }],
   });
 }
 
@@ -675,29 +646,72 @@ async function runSuvbotEnable({db, args, projectId}) {
 }
 
 async function runSuvbot({db, args, projectId}) {
-  const suvbot = loadSuvbotFunctionsModule(args);
   const action = requireArg(args, "action", "--action");
-  if (!suvbot.isSuvbotAction(action)) {
-    throw new Error(`Unsupported Suvbot action: ${action}`);
-  }
   const resolvedUser = await resolveSuvbotUser({db, args});
-  const descriptor = suvbot
-    .suvbotActionCatalog()
-    .find((item) => item.id === action) ?? {id: action};
+  await runSuvbotOperations({
+    db,
+    args,
+    projectId,
+    title: "Suvbot operation",
+    command: "suvbot",
+    requireAccess: !args.bypassSuvbotAccess,
+    operations: [{
+      uid: resolvedUser.uid,
+      phone: resolvedUser.phoneNumber ?? null,
+      ...(action === "startDemoWorld" ?
+        worldActionFromArgs(args, action) :
+        {action, text: args.text ?? undefined}),
+      targetPhone: args.targetPhone ?? undefined,
+    }],
+  });
+}
 
+/**
+ * Suvbot action for a demo world: Start a demo when --world is given,
+ * otherwise the fallback preset (which starts the tester's home world).
+ */
+function worldActionFromArgs(args, fallbackAction) {
+  if (!args.world) {
+    if (fallbackAction === "startDemoWorld") {
+      throw new Error("startDemoWorld requires --world <worldId>.");
+    }
+    return {action: fallbackAction};
+  }
+  return {
+    action: "startDemoWorld",
+    text: `${args.world} ${args.moment ?? "after"}`,
+  };
+}
+
+async function runSuvbotOperations({
+  db,
+  args,
+  projectId,
+  title,
+  command,
+  requireAccess,
+  operations,
+}) {
+  const suvbot = loadSuvbotFunctionsModule(args);
+  for (const operation of operations) {
+    if (!suvbot.isSuvbotAction(operation.action)) {
+      throw new Error(`Unsupported Suvbot action: ${operation.action}`);
+    }
+  }
+  const planned = operations.map((operation) => ({
+    ...operation,
+    descriptor: suvbot.suvbotActionCatalog()
+      .find((item) => item.id === operation.action) ?? {id: operation.action},
+  }));
   if (!args.apply) {
     printPlan({
       args,
       projectId,
-      title: "Suvbot operation",
+      title,
       plan: {
-        command: "suvbot",
-        uid: resolvedUser.uid,
-        phone: resolvedUser.phoneNumber ?? null,
-        action,
-        targetPhone: args.targetPhone,
-        text: args.text,
-        descriptor,
+        command,
+        ...singleOperationFields(planned),
+        operations: planned,
         backendSource: "functions/src/demoOps/suvbot.ts",
       },
       manifest: null,
@@ -706,37 +720,48 @@ async function runSuvbot({db, args, projectId}) {
     return;
   }
 
-  const result = await suvbot.runSuvbotDemoOperationForUser({
-    uid: resolvedUser.uid,
-    action,
-    text: args.text,
-    targetPhone: args.targetPhone,
-    deps: suvbotDeps(db),
-    options: {
-      skipConfirmation: true,
-      requireAccess: !args.bypassSuvbotAccess,
-    },
-  });
-
+  const results = [];
+  for (const operation of operations) {
+    const result = await suvbot.runSuvbotDemoOperationForUser({
+      uid: operation.uid,
+      action: operation.action,
+      text: operation.text,
+      targetPhone: operation.targetPhone,
+      deps: suvbotDeps(db),
+      options: {skipConfirmation: true, requireAccess},
+    });
+    results.push({
+      uid: operation.uid,
+      phone: operation.phone ?? null,
+      action: operation.action,
+      matchId: result.matchId,
+      reply: result.reply,
+    });
+  }
   printPlan({
     args,
     projectId,
-    title: "Suvbot operation",
-    plan: {
-      command: "suvbot",
-      uid: resolvedUser.uid,
-      phone: resolvedUser.phoneNumber ?? null,
-      action,
-      targetPhone: args.targetPhone,
-      matchId: result.matchId,
-      reply: result.reply,
-    },
+    title,
+    plan: {command, ...singleOperationFields(results), operations: results},
     manifest: null,
     appliedSummary: {
-      ok: result.ok,
+      ok: true,
+      operations: results.length,
       source: "functions/src/demoOps/suvbot.ts",
     },
   });
+}
+
+function singleOperationFields(operations) {
+  if (operations.length !== 1) return {};
+  const [operation] = operations;
+  return {
+    uid: operation.uid,
+    phone: operation.phone ?? null,
+    action: operation.action,
+    ...(operation.matchId ? {matchId: operation.matchId} : {}),
+    ...(operation.reply ? {reply: operation.reply} : {}),
+  };
 }
 
 async function printSuvbotActions(args) {
@@ -906,8 +931,9 @@ function parseArgs(argv) {
     lat: null,
     lng: null,
     meetingPoint: undefined,
-    text: "Can you check this demo chat?",
-    syntheticMatches: 3,
+    text: null,
+    world: null,
+    moment: null,
     candidateCount: DEFAULT_CROSS_PATHS_DEMO_CANDIDATE_COUNT,
     testPhone: null,
     testCode: null,
@@ -1005,6 +1031,8 @@ function parseArgs(argv) {
     else if (arg === "--lng") args.lng = requireValue(argv, ++i, arg);
     else if (arg === "--meeting-point") args.meetingPoint = requireValue(argv, ++i, arg);
     else if (arg === "--text") args.text = requireValue(argv, ++i, arg);
+    else if (arg === "--world") args.world = requireValue(argv, ++i, arg);
+    else if (arg === "--moment") args.moment = requireValue(argv, ++i, arg);
     else if (arg === "--seed-prefixes") args.seedPrefixes = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--keep-seed-prefixes") args.keepSeedPrefixes = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--golden-file") args.goldenFile = requireValue(argv, ++i, arg);
@@ -1026,7 +1054,10 @@ function parseArgs(argv) {
     else if (arg === "--personas") args.personas = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--demo-scenario") args.demoScenario = requireValue(argv, ++i, arg);
     else if (arg === "--synthetic-matches") {
-      args.syntheticMatches = Number(requireValue(argv, ++i, arg));
+      throw new Error(
+        "--synthetic-matches is retired: warm-user starts a demo world, " +
+        "whose After moment brings 2-3 catches."
+      );
     } else if (arg === "--candidate-count") {
       args.candidateCount = Number(requireValue(argv, ++i, arg));
     } else {
@@ -1473,7 +1504,6 @@ function printCommands() {
 - cleanup-stale-events
 - seed-cross-paths
 - make-event-full
-- mark-attended
 - promote-waitlist
 - create-unread-message
 - create-refund
@@ -1496,8 +1526,9 @@ Usage:
   node tool/demo/demo_ops.mjs suvbot-actions
   node tool/demo/demo_ops.mjs suvbot-enable --env prod --phones +91...,+91... --apply --allow-prod
   node tool/demo/demo_ops.mjs suvbot --env prod --phone +91... --action warmChatState --apply --allow-prod
+  node tool/demo/demo_ops.mjs suvbot --env prod --phone +91... --action startDemoWorld --world host-marketing-india --moment live --apply --allow-prod
   node tool/demo/demo_ops.mjs match-phones --env prod --phone-a +91... --phone-b +91... --apply --allow-prod
-  node tool/demo/demo_ops.mjs warm-user --env prod --phone +91... --apply --allow-prod
+  node tool/demo/demo_ops.mjs warm-user --env prod --phone +91... [--world <worldId> --moment <before|today|live|after>] --apply --allow-prod
   node tool/demo/demo_ops.mjs warm-group --env prod --phones +91...,+91...,+91... --apply --allow-prod
   node tool/demo/demo_ops.mjs reset-user-demo-state --env prod --phone +91... --apply --allow-prod
   node tool/demo/demo_ops.mjs validate-demo-state --env prod --phones +91...,+91...
@@ -1532,20 +1563,17 @@ Common options:
 Command options:
   --phone <phone>                One E.164 phone number.
   --phones <phone,...>           Comma-separated phone numbers.
-  --phone-a / --phone-b          Pair for match-phones.
+  --phone-a / --phone-b          Pair for match-phones (both Suvbot-enabled).
   --from-phone / --to-phone      Sender and recipient for unread-message.
   --action <actionId>            Suvbot action id from suvbot-actions.
   --target-phone <phone>         Tester phone for Suvbot matchTesterByPhone.
-  --event-id <eventId>           Force match/shared event context.
+  --event-id <eventId>           Event for make-event-full, promote-waitlist, create-refund.
+  --world <worldId>              Demo world for Start a demo (see suvbot-actions / help).
+  --moment <moment>              before, today, live or after. Default: after.
   --organizer-id <organizerId>   Bind the Cross Paths QA event to one organizer.
   --lat / --lng                  Event coordinates for host/check-in creation.
   --meeting-point <label>        Meeting label for host/check-in creation.
   --text <message>               Demo chat message text.
-  --via-swipes                   Also write reciprocal profile-decision likes.
-  --via-swipes-only              Write profile-decision likes only; rely on trigger.
-  --with-messages                Create starter chat messages for match-phones.
-  --no-messages                  Deprecated; match-phones defaults to no messages.
-  --synthetic-matches <n>        warm-user synthetic match count. Default: 3.
   --candidate-count <1|2>        seed-cross-paths profile count. Default: 2.
   --configure-test-login         Create/reuse the selected dev Auth user and
                                  configure its fictional Firebase test phone.

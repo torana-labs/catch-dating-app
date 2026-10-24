@@ -123,7 +123,12 @@ export function packagedIntake(): Promise<PackagedIntake> {
     const loaded = await Promise.all(modules.map(([, relative]) =>
       import(pathToFileURL(path.join(root, relative)).href)));
     return Object.assign({}, ...loaded) as PackagedIntake;
-  })();
+  })().catch((error: unknown) => {
+    // A failed load is retried by the next request rather than kept for the
+    // life of the instance.
+    packaged = null;
+    throw error;
+  });
   return packaged;
 }
 
