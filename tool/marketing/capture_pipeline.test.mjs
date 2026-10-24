@@ -60,14 +60,16 @@ function fixture(t) {
   fs.chmodSync(git, 0o755);
   const font = write('fonts/native.ttf', 'native font fixture');
   write('stamp.mjs', `import {stampCapture} from './tool/marketing/lib/capture_provenance.mjs'; import fs from 'node:fs'; stampCapture(JSON.parse(fs.readFileSync('tool/marketing/capture_manifest.json')).captures[0], 'sample_screen', 'fonts/native.ttf');`);
+  write('hash.mjs', `import {captureInputHash} from './tool/marketing/lib/capture_provenance.mjs'; process.stdout.write(captureInputHash(JSON.parse(process.argv[2])));`);
   const run = (script, ...args) => spawnSync(process.execPath, [path.join(root, script), ...args], {
     encoding: 'utf8', cwd: root,
     env: {...process.env, PATH: `${path.join(root, 'bin')}${path.delimiter}${process.env.PATH}`, CAPTURE_TEST_CALLS: calls, CAPTURE_TEST_PNG: png().toString('base64')},
   });
   const readCalls = () => fs.readFileSync(calls, 'utf8').trim().split('\n').map(JSON.parse);
   const stamp = () => { const result = run('stamp.mjs'); assert.equal(result.status, 0, result.stderr); };
+  const hash = entry => { const result = run('hash.mjs', JSON.stringify(entry)); assert.equal(result.status, 0, result.stderr); return result.stdout; };
   stamp();
-  return {root, write, capture, run, readCalls, stamp};
+  return {root, write, capture, run, readCalls, stamp, hash};
 }
 
 const sync = 'tool/marketing/sync_website_media.mjs';
@@ -222,4 +224,21 @@ test('unchanged render inputs reuse exact PNG bytes but font and source edits st
   assert.equal(f.readCalls().length, 2);
   f.write('lib/leaf.dart', "const title = 'Changed';\n");
   assert.equal(JSON.parse(f.run(exporter, '--plan', '--sf-font', font).stdout)[0].render, true);
+});
+
+test('only render fields enter the render hash; presentation fields, known or new, never do', t => {
+  const f = fixture(t);
+  const base = f.hash(f.capture);
+  const presentation = {audience: 'member', surface: 'Explore', alt: 'Changed', caption: 'Changed', walkthroughStep: '2',
+    websitePath: 'website/public/assets/app-screenshots/elsewhere.png', placeholderPath: 'elsewhere.svg',
+    kind: 'app-screen', scenario: {world: 'host-marketing-india', event: 'event-host-trivia', moment: 'live'},
+    pages: ['/host/', '/'], facts: ['booked', 'checkedIn'], disclosure: 'none', replaceBy: 'event-photography',
+    someFutureField: {nested: true}};
+  assert.equal(f.hash({...f.capture, ...presentation}), base);
+  const {audience: _audience, surface: _surface, alt: _alt, caption: _caption, ...bare} = f.capture;
+  assert.equal(f.hash(bare), base);
+  for (const [field, value] of [['id', 'other'], ['status', 'paused'], ['device', 'pixel-9'],
+    ['fixtureKey', 'salesDemo.other'], ['sourcePath', 'artifacts/other.png']]) {
+    assert.notEqual(f.hash({...f.capture, [field]: value}), base, field);
+  }
 });

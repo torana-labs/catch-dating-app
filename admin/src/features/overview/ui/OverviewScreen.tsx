@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {
   ArrowRight,
   CircleDollarSign,
@@ -310,8 +310,8 @@ function DigestQueueRow({
   return (
     <AdminOverviewQueueRow intent="neutral">
       <div>
-        <h3>{displayAdminQueueTitle(item.title)}</h3>
-        <p>{item.detail}</p>
+        <CatchText as="h3" variant="sectionTitle">{displayAdminQueueTitle(item.title)}</CatchText>
+        <CatchText as="p" variant="supporting">{item.detail}</CatchText>
       </div>
       <AdminOverviewQueueRowActions>
         <span>{relativeTime(item.createdAt)}</span>

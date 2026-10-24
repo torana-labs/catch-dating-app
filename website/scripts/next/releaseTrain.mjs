@@ -40,7 +40,9 @@ export function planDecision({event, eventSha, eventConclusion, mainSha, validat
   // A newer merge cancels main's push run of a commit; the merge queue run that
   // tested the same commit still validates it, so only a failure stops here.
   if (event === "workflow_run" && !["success", "cancelled"].includes(eventConclusion)) return skip("ci_unsuccessful");
-  if (event === "workflow_run" && eventSha !== mainSha) return skip("superseded_by_newer_main");
+  // Any CI completion considers main's head, not the commit that completed: a
+  // later merge supersedes that commit, and the head's merge queue run already
+  // validated it. Scheduled runs are no fallback; GitHub may delay or drop them.
   if (!validation?.validated || !validation.captureBinding) return skip("no_website_validation_for_main_head");
   if (lineage.alreadyLive) return skip("already_live");
   return {release: true, sourceSha: mainSha, liveSha: lineage.liveSha, reason: "release"};

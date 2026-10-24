@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {type ChangeEvent, useCallback, useEffect, useState} from "react";
 import {
   CheckCircle2,
@@ -452,7 +452,7 @@ function MarketingDrafts({
             <CardHeader action={<StatusChip>{draft.aspectRatio}</StatusChip>}>
               <div>
                 <AdminEyebrow>{draft.format} / {draft.tone}</AdminEyebrow>
-                <h3>{draft.id}</h3>
+                <CatchText as="h3" variant="sectionTitle">{draft.id}</CatchText>
               </div>
             </CardHeader>
             <QualityRow icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
@@ -722,7 +722,7 @@ function MarketingAudit({
             <AdminMarketingAuditRow key={`${item.targetType}-${item.targetId}`}>
               <strong>{item.targetType}: {item.targetId}</strong>
               <span>{String(item.decision)} by {item.reviewer ?? "unknown"}</span>
-              {item.note ? <p>{item.note}</p> : null}
+              {item.note ? <CatchText as="p" variant="supporting">{item.note}</CatchText> : null}
             </AdminMarketingAuditRow>
           ))}
           {local.map((item) => (

@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {
   CheckCircle2,
   Clock3,
@@ -450,7 +450,7 @@ function MarketingRecommendations({
           >
             <div>
               <AdminEyebrow>{set.tone} / {set.status}</AdminEyebrow>
-              <h3>{set.title}</h3>
+              <CatchText as="h3" variant="sectionTitle">{set.title}</CatchText>
             </div>
           </CardHeader>
           <AdminMarketingHelpText>{set.explanation}</AdminMarketingHelpText>
@@ -611,7 +611,7 @@ function MarketingAppFeatureMediaView({
                   <AdminEyebrow>
                     {capture.audience} / {capture.walkthroughStep}
                   </AdminEyebrow>
-                  <h3>{capture.surface}</h3>
+                  <CatchText as="h3" variant="sectionTitle">{capture.surface}</CatchText>
                 </div>
               </CardHeader>
               {previewUrl ? (

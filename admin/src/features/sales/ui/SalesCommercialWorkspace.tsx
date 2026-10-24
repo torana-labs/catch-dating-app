@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useEffect, useRef, useState} from "react";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {ClipboardList} from "lucide-react";
@@ -102,12 +102,12 @@ function SalesCommercialWorkspace({detail, evidence, isAdminOwner}: {
     } finally {setSaving(false); endOperation(token);}
   };
   if (!live) return <Panel title="Pilots and commercial terms" icon={<ClipboardList size={18} />}>
-    <p>Commercial approvals require live Sales records. Sample hosts are not approval evidence.</p>
+    <CatchText as="p" variant="supporting">Commercial approvals require live Sales records. Sample hosts are not approval evidence.</CatchText>
   </Panel>;
   return <>
     <Panel title="Pilots and commercial terms" icon={<ClipboardList size={18} />}>
-      <p>Record a reviewed pilot and quote for this host. Accepted terms,
-        manual host collection and opportunity close are separate reviews.</p>
+      <CatchText as="p" variant="supporting">Record a reviewed pilot and quote for this host. Accepted terms,
+        manual host collection and opportunity close are separate reviews.</CatchText>
       <CatchField
         recipe="select"
         title="Opportunity"
@@ -137,8 +137,8 @@ function SalesCommercialWorkspace({detail, evidence, isAdminOwner}: {
       <StageHistory record={record.data} />
     </> : null}
     <Panel title="Host commercial report" icon={<ClipboardList size={18} />}>
-      <p>One server page of this host’s opportunities. Booked host revenue stays unset
-        until finance-owned reconciliation.</p>
+      <CatchText as="p" variant="supporting">One server page of this host’s opportunities. Booked host revenue stays unset
+        until finance-owned reconciliation.</CatchText>
       {report.isPending ? <EmptyState>Loading report…</EmptyState> :
         report.error ? <EmptyState>Report could not be loaded.
           <AdminButton onClick={() => void report.refetch()}>Try again</AdminButton>
@@ -208,8 +208,8 @@ function PilotEditor({organizerId, opportunityId, record, evidence, saving, save
       {...input, requestId}), "Pilot plan saved.")) setDirty(false);
   };
   return <Panel title="Pilot plan" icon={<ClipboardList size={18} />}>
-    <p>Review evidence before starting a pilot; record outcome evidence before
-      marking it complete. An active or finished pilot cannot restart.</p>
+    <CatchText as="p" variant="supporting">Review evidence before starting a pilot; record outcome evidence before
+      marking it complete. An active or finished pilot cannot restart.</CatchText>
     <AdminForm onSubmit={(event) => {event.preventDefault(); void submit();}}>
       <CatchField
         recipe="select"
@@ -281,7 +281,7 @@ function PilotEditor({organizerId, opportunityId, record, evidence, saving, save
       {changed ? <p role="alert">Pilot changed since you opened this form.
         Compare it before saving. <AdminButton type="button" onClick={refresh}>
           Use latest pilot</AdminButton></p> : null}
-      {localError ? <p role="alert">{localError}</p> : null}
+      {localError ? <CatchText as="p" variant="supporting" role="alert">{localError}</CatchText> : null}
       <AdminButton type="submit" disabled={saving || changed}>Save pilot plan</AdminButton>
     </AdminForm>
   </Panel>;
@@ -345,8 +345,8 @@ function QuoteEditor({organizerId, opportunityId, record, evidence, saving, save
       setDirty(false);
   };
   return <Panel title="Quote and terms" icon={<ClipboardList size={18} />}>
-    <p>Source facts must be recorded evidence for this host. Approval and acceptance
-      each need their own evidence. No charge or payment confirmation occurs here.</p>
+    <CatchText as="p" variant="supporting">Source facts must be recorded evidence for this host. Approval and acceptance
+      each need their own evidence. No charge or payment confirmation occurs here.</CatchText>
     <StateRow label="Current quote" value={quote ?
       `Version ${quote.termVersion} · ${quote.status.replaceAll("_", " ")}` :
       "No quote recorded"} />
@@ -414,15 +414,15 @@ function QuoteEditor({organizerId, opportunityId, record, evidence, saving, save
       {changed ? <p role="alert">Quote changed since you opened this form.
         Compare it before saving. <AdminButton type="button" onClick={refresh}>
           Use latest quote</AdminButton></p> : null}
-      {localError ? <p role="alert">{localError}</p> : null}
+      {localError ? <CatchText as="p" variant="supporting" role="alert">{localError}</CatchText> : null}
       <AdminButton type="submit" disabled={saving || changed ||
         quote?.status === "accepted_reviewed"}>Record new quote version</AdminButton>
     </AdminForm>
     {quote ? <AdminForm onSubmit={(event) => {event.preventDefault();
       void decide(quote.status === "draft" ? "approve" : "accept");}}>
-      <h3>{quote.status === "draft" ? "Approve quote" : "Review accepted terms"}</h3>
-      <p>Choose evidence that supports this exact saved version.
-        Acceptance evidence must be separate from approval evidence.</p>
+      <CatchText as="h3" variant="sectionTitle">{quote.status === "draft" ? "Approve quote" : "Review accepted terms"}</CatchText>
+      <CatchText as="p" variant="supporting">Choose evidence that supports this exact saved version.
+        Acceptance evidence must be separate from approval evidence.</CatchText>
       <CatchField
         recipe="select"
         title="Distinct review evidence"
@@ -514,9 +514,9 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
       setReviewedKey("");
   };
   return <Panel title="Host collection and close" icon={<ClipboardList size={18} />}>
-    <p>Only an Admin Owner can attest one host subscription period received elsewhere.
+    <CatchText as="p" variant="supporting">Only an Admin Owner can attest one host subscription period received elsewhere.
       This does not charge a card, confirm a provider settlement or count guest
-      booking payments.</p>
+      booking payments.</CatchText>
     {attestation ? <>
       <StateRow label="Manual host collection" value={
         `${attestation.currency} ${(attestation.amountMinor / 100).toFixed(2)} · ` +
@@ -533,10 +533,10 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
       !attestation ? <AdminForm onSubmit={(event) => {
         event.preventDefault(); void submitAttestation();
       }}>
-        <h3>Attest manual host collection</h3>
-        <p>Exact accepted amount: {terms.currency} {(
+        <CatchText as="h3" variant="sectionTitle">Attest manual host collection</CatchText>
+        <CatchText as="p" variant="supporting">Exact accepted amount: {terms.currency} {(
           terms.amountMinor / 100).toFixed(2)}. Record a real first-party
-          settlement source; a human note alone is not accepted as proof.</p>
+          settlement source; a human note alone is not accepted as proof.</CatchText>
         <CatchField
           recipe="input"
           title="Received on"
@@ -595,15 +595,15 @@ function FinanceCloseEditor({organizerId, opportunityId, record, evidence,
           onChanged={(value) => setProofId(value ?? "")}
           {...selectOptions(evidenceOptions(eligibleEvidence))}
         />
-        {localError ? <p role="alert">{localError}</p> : null}
+        {localError ? <CatchText as="p" variant="supporting" role="alert">{localError}</CatchText> : null}
         <AdminButton type="submit" disabled={saving || !proofId}>
           Record manual host collection</AdminButton>
       </AdminForm> : null}
     {isAdminOwner && attestation &&
       record.opportunity.stage !== "closed_won" ? <>
-        <p>Closing won records the opportunity outcome against this exact accepted
+        <CatchText as="p" variant="supporting">Closing won records the opportunity outcome against this exact accepted
           quote and finance attestation. It does not confirm provider settlement
-          or activate a product entitlement.</p>
+          or activate a product entitlement.</CatchText>
         <AdminButton type="button" onClick={() => setReviewedKey(reviewKey)}>
           Review current quote and finance proof</AdminButton>{" "}
         <AdminButton type="button" disabled={saving || reviewedKey !== reviewKey}
@@ -621,6 +621,6 @@ function StageHistory({record}: {record: CommercialDetail}) {
         label={`${entry.fromStage ?? "New"} → ${entry.toStage}`}
         value={`${new Date(entry.changedAt).toLocaleString()} · ${entry.reason ??
           "No reason required"}`} />) : <EmptyState>No stage changes recorded yet.</EmptyState>}
-    {record.historyTruncated ? <p>Only the first 25 stage changes are shown.</p> : null}
+    {record.historyTruncated ? <CatchText as="p" variant="supporting">Only the first 25 stage changes are shown.</CatchText> : null}
   </Panel>;
 }

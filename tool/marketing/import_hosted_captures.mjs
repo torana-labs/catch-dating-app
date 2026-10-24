@@ -85,8 +85,10 @@ export function verifyArtifactMetadata({binding, artifact, repositoryId, run, wo
 // and CRCs. Read only the complete allowlist into memory; never extract paths.
 export function readCaptureArchive(bytes, expectedNames) {
   assert.ok(Buffer.isBuffer(bytes) && bytes.length <= maxBytes && bytes.subarray(0, 4).equals(Buffer.from("PK\x03\x04")), "Invalid capture ZIP.");
-  assert.equal(expectedNames.length, 28, "Expected 27 capture files plus their receipt.");
-  assert.equal(new Set(expectedNames).size, 28, "Duplicate expected capture paths.");
+  // The manifest, design context and website manifest, two copies of each
+  // capture, and the receipt.
+  assert.ok(expectedNames.length >= 6 && expectedNames.length % 2 === 0, "Expected capture files plus their receipt.");
+  assert.equal(new Set(expectedNames).size, expectedNames.length, "Duplicate expected capture paths.");
   const script = `import base64, io, json, stat, sys, zipfile
 allowed = json.loads(sys.argv[1])
 with zipfile.ZipFile(io.BytesIO(sys.stdin.buffer.read())) as archive:
@@ -146,13 +148,33 @@ function verifyFiles({files, binding}, {built = false, toolChecks = false} = {})
   const sourceRoots = ["lib", "website/src", "website/public", "admin/src", "tool", "test", "design", "contracts", "docs", "assets",
     ":(glob)apps/*/lib/**", ":(glob)packages/*/lib/**", ":(glob)packages/*/src/**"];
   const untracked = execute("git", ["ls-files", "--others", "-z", "--", ...sourceRoots]).split("\0").filter(Boolean);
-  // Tools bootstraps this standalone analyzer package after strict import.
-  // These are its only generated dependency outputs; authored files and every
+  // Tools bootstraps this standalone analyzer package, and installs the pinned
+  // import-graph tool (npm ci --prefix tool/impact), after strict import. These
+  // are their only generated dependency outputs; authored files and every
   // actual capture input remain checked against the source and capture hashes.
+  const impactModules = "tool/impact/node_modules";
   const bootstrapOutput = file => file.startsWith("tool/widget_dedupe/.dart_tool/") ||
-    file === "tool/widget_dedupe/pubspec.lock";
+    file === "tool/widget_dedupe/pubspec.lock" || file.startsWith(`${impactModules}/`);
   if (toolChecks) {
-    for (const file of untracked.filter(bootstrapOutput)) destination(file);
+    const installed = untracked.filter(file => file.startsWith(`${impactModules}/`));
+    if (installed.length) {
+      let directory = fromRepo(".");
+      for (const segment of impactModules.split("/")) {
+        directory = path.join(directory, segment);
+        const stat = fs.lstatSync(directory);
+        assert.ok(stat.isDirectory() && !stat.isSymbolicLink(), `Bootstrap install is not a plain directory: ${impactModules}`);
+      }
+    }
+    for (const file of untracked.filter(bootstrapOutput)) {
+      if (!file.startsWith(`${impactModules}/`)) {
+        destination(file);
+        continue;
+      }
+      // npm links package binaries under node_modules/.bin; each must stay inside.
+      const real = fs.realpathSync(fromRepo(file));
+      assert.ok(real.startsWith(`${fs.realpathSync(fromRepo(impactModules))}${path.sep}`),
+        `Bootstrap output escapes its install: ${file}`);
+    }
   }
   assert.deepEqual(untracked.filter(file => !(toolChecks && bootstrapOutput(file))), [],
     "Untracked consumer source cannot enter the website build.");
@@ -310,7 +332,7 @@ export function verifyBuiltCaptureBytes({binding}) {
     const target = file.replace("website/public/", "website/dist/");
     assert.ok(fs.readFileSync(destination(target)).equals(files.get(file)), `Built website capture differs from verified input: ${file}`);
   }
-  return {sourceSha: binding.sourceSha, artifactId: binding.artifactId, verifiedFiles: 13};
+  return {sourceSha: binding.sourceSha, artifactId: binding.artifactId, verifiedFiles: context.captures.length + 1};
 }
 
 if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {

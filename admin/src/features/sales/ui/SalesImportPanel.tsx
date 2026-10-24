@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useRef, useState} from "react";
 import {ClipboardList, Upload} from "lucide-react";
 import {
@@ -101,16 +101,16 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
     setMapping((current) => ({...current, [key]: Number(value)})); clearPreview();
   };
   return <><Panel title="Reviewed CSV import" icon={<ClipboardList size={18} />}>
-    <p>Upload a private CSV, map its columns, and review each 25-row batch before
-      applying. Unresolved identities stay unresolved; the preview makes no changes.</p>
+    <CatchText as="p" variant="supporting">Upload a private CSV, map its columns, and review each 25-row batch before
+      applying. Unresolved identities stay unresolved; the preview makes no changes.</CatchText>
     {dataMode() === "sample" ? <EmptyState>Imports require a live employee workspace.
       No sample import is applied.</EmptyState> : <>
       <FilePickerButton inputLabel="Choose Sales CSV" accept=".csv,text/csv"
         disabled={busy}
         icon={<Upload size={16} />} onChange={(event) =>
           void upload(event.target.files?.[0])}>Choose CSV</FilePickerButton>
-      {fileName ? <p role="status">{fileName} · {rows.length - 1} rows ·
-        {batchCount} batch{batchCount === 1 ? "" : "es"}</p> : null}
+      {fileName ? <CatchText as="p" variant="supporting" role="status">{fileName} · {rows.length - 1} rows ·
+        {batchCount} batch{batchCount === 1 ? "" : "es"}</CatchText> : null}
       {rows.length ? <>
         <CatchField
           recipe="input"
@@ -119,8 +119,8 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
           inputMode={busy ? "inactive" : "editable"}
           onChanged={(value) => {setSourceId(value); clearPreview();}}
         />
-        <p>This name keeps batches from the same file together. All columns are
-          preserved privately, including columns you do not map below.</p>
+        <CatchText as="p" variant="supporting">This name keeps batches from the same file together. All columns are
+          preserved privately, including columns you do not map below.</CatchText>
         {(["organizerId", "name", "researchStatus", "summary"] as const).map((key) =>
           <CatchField
             recipe="select"
@@ -133,9 +133,9 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
             onChanged={(value) => mapField(key, (value ?? ""))}
             {...selectOptions(mappingOptions)}
           />)}
-        <p>If the file has Catch host IDs, select that column. Other rows stay in
+        <CatchText as="p" variant="supporting">If the file has Catch host IDs, select that column. Other rows stay in
           identity review. New hosts begin as Needs research; previous statuses
-          are retained as history and do not grant qualification.</p>
+          are retained as history and do not grant qualification.</CatchText>
         <CatchField
           recipe="select"
           title="Batch to review"
@@ -148,8 +148,8 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
               applied.includes(index) ? " · applied" : ""}`,
           })))}
         />
-        <p>Selected batch: {Math.min(25, rows.length - 1 - batch * 25)} rows ·
-          {applied.length} of {batchCount} batches applied in this session.</p>
+        <CatchText as="p" variant="supporting">Selected batch: {Math.min(25, rows.length - 1 - batch * 25)} rows ·
+          {applied.length} of {batchCount} batches applied in this session.</CatchText>
         {rows.slice(1 + batch * 25, 1 + (batch + 1) * 25).map((cells, index) =>
           <StateRow key={batch * 25 + index} label={`Row ${batch * 25 + index + 2}`}
             value={<>{mapping.name >= 0 ? cells[mapping.name] : "Unmapped name"} ·
@@ -157,15 +157,15 @@ export function SalesImportWorkspace({controller, isAdminOwner = false}: {
                 "Unresolved identity" : "Unresolved identity"} ·
               {mapping.researchStatus >= 0 ? cells[mapping.researchStatus] :
                 "Unmapped status"}</>} />)}
-        {error ? <p role="alert">{error}</p> : null}
+        {error ? <CatchText as="p" variant="supporting" role="alert">{error}</CatchText> : null}
         <AdminButton onClick={() => void inspect()}
           disabled={applied.includes(batch) || controller.importPreviewPending ||
             controller.isSaving}>Preview batch on server</AdminButton>
-      </> : error ? <p role="alert">{error}</p> : null}
+      </> : error ? <CatchText as="p" variant="supporting" role="alert">{error}</CatchText> : null}
       {preview ? <>
-        <p role="status">Server preview only · effects applied: no ·
+        <CatchText as="p" variant="supporting" role="status">Server preview only · effects applied: no ·
           {Object.entries(preview.counts).map(([key, count]) =>
-            ` ${key}: ${count}`).join(" ·")}</p>
+            ` ${key}: ${count}`).join(" ·")}</CatchText>
         {preview.rows.map((row) => <StateRow key={row.sourceRowId}
           label={row.sourceRowId} value={<>{row.organizerId || "Unresolved identity"} ·
             {row.disposition} · {row.reason}</>} />)}
