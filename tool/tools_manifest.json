@@ -5831,6 +5831,7 @@
       "path": "tool/marketing/export_hosted_captures.mjs",
       "impactPaths": [
         "tool/marketing/export_hosted_captures.test.mjs",
+        "tool/marketing/lib/capture_seeds.mjs",
         ".github/workflows/marketing-captures.yml",
         ".github/workflows/ci.yml",
         "artifacts/marketing/app-screenshots/**"
@@ -5839,7 +5840,7 @@
       "safety": "local-writes-artifacts",
       "status": "active",
       "role": "generator",
-      "description": "Validates manual or same-repository capture-label requests, runs the canonical 12-image macOS exporter from exact source/controller checkouts, and packages media plus distinct workflow and trigger provenance without changing goldens or publishing.",
+      "description": "Validates manual or same-repository capture-label requests; plans on Linux which captures are stale and seeds the rest from main-line CI bundles; renders only stale captures with the canonical macOS exporter, or packages a Linux reuse bundle when none are, from exact source/controller checkouts, with distinct workflow and trigger provenance and without changing goldens or publishing.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
