@@ -81,6 +81,11 @@ jobs:
       - name: Check React dependency topology
         run: node tool/web/react_dependency_graph.mjs --check
 
+      # Features name icon roles; lucide-react imports outside the icon layer
+      # may only fall.
+      - name: Check icon-family references
+        run: node tool/design/check_icon_family_usage.mjs --check
+
       - name: Check design tokens
         if: ${{ inputs.surface == 'marketing' }}
         run: npm run web:tokens:check
