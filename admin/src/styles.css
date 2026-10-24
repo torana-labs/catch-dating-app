@@ -454,14 +454,8 @@
 .intake-batch-table th[scope="row"] strong,
 .intake-batch-table th[scope="row"] small {
   overflow: hidden;
-  font-size: var(--catch-typography-web-status-size);
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.intake-batch-table th[scope="row"] small {
-  color: var(--muted);
-  font-weight: var(--catch-typography-web-body-weight);
 }
 
 .intake-batch-table td:last-child button,
