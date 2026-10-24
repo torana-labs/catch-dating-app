@@ -119,8 +119,6 @@ void _registerCatchPrimitivesControlsTests() {
                 CatchTextStyles.headlineS(context),
                 CatchTextStyles.titleL(context),
                 CatchTextStyles.eventTitle(context),
-                CatchTextStyles.consoleTitle(context),
-                CatchTextStyles.hint(context),
                 CatchTextStyles.titleL(context),
                 CatchTextStyles.sectionTitle(context),
                 CatchTextStyles.bodyL(context),

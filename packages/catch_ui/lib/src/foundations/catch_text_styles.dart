@@ -124,17 +124,6 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
-  /// Brand-led onboarding introduction copy. This is intentionally Archivo;
-  /// ordinary app prose remains in the platform function family.
-  static TextStyle welcomeIntroBody(BuildContext context, {Color? color}) =>
-      _voice(
-        context,
-        size: 15,
-        weight: FontWeight.w400,
-        height: 1.48,
-        color: color,
-      );
-
   /// Editorial club identity treatment on the named display-step scale.
   static TextStyle clubDisplay(
     BuildContext context, {
@@ -172,24 +161,6 @@ abstract final class CatchTextStyles {
       CatchFonts.head(
         fontSize: 36,
         height: 1,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Host live-console title (`.t-console-title`).
-  static TextStyle consoleTitle(BuildContext context, {Color? color}) =>
-      CatchFonts.head(
-        fontSize: 20,
-        fontWeight: FontWeight.w800,
-        height: 1.15,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Condensed hint/list copy (`.t-hint`).
-  static TextStyle hint(BuildContext context, {Color? color}) =>
-      CatchFonts.head(
-        fontSize: 16.5,
-        fontWeight: FontWeight.w600,
-        height: 1.25,
         color: color ?? CatchTokens.of(context).ink,
       );
 
@@ -258,9 +229,6 @@ abstract final class CatchTextStyles {
         CatchPlatformTokens.typography.secondary,
         color: color ?? CatchTokens.of(context).ink2,
       );
-
-  static TextStyle labelL(BuildContext context, {Color? color}) =>
-      _functionStrong14(context, color: color);
 
   static TextStyle fieldLabel(BuildContext context, {Color? color}) =>
       _functionProfile(

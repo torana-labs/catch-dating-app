@@ -330,9 +330,10 @@ class ProfileCompatibilitySection extends StatelessWidget {
                 ),
                 gapW12,
                 Expanded(
-                  child: Text(
+                  child: CatchText(
                     reason,
-                    style: CatchTextStyles.hint(context, color: t.ink),
+                    variant: CatchTextVariant.sectionTitle,
+                    color: t.ink,
                   ),
                 ),
               ],

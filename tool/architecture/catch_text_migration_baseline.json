@@ -34,7 +34,6 @@
       "monoLabelS": 1
     },
     "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart": {
-      "consoleTitle": 1,
       "monoLabel": 2
     },
     "lib/event_success/presentation/reveal/event_success_countdown_text.dart": {
@@ -48,7 +47,6 @@
       "numericLarge": 1
     },
     "lib/events/presentation/widgets/event_detail_fact_list.dart": {
-      "hint": 1,
       "monoLabelS": 3,
       "numericMeta": 1
     },
@@ -105,17 +103,11 @@
       "mono": 1,
       "statDisplay": 2
     },
-    "lib/onboarding/presentation/pages/onboarding_welcome_body.dart": {
-      "welcomeIntroBody": 1
-    },
     "lib/payments/presentation/payment_confirmation_screen.dart": {
       "headlineS": 1
     },
     "lib/payments/presentation/payment_history_screen.dart": {
       "statCompact": 1
-    },
-    "lib/swipes/shared/profile_surface/profile_body.dart": {
-      "hint": 1
     }
   }
 }

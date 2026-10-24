@@ -116,9 +116,10 @@ class EventDetailHintList extends StatelessWidget {
           ),
           gapW12,
           Expanded(
-            child: Text(
+            child: CatchText(
               hints[index],
-              style: CatchTextStyles.hint(context, color: textColor ?? t.ink),
+              variant: CatchTextVariant.sectionTitle,
+              color: textColor ?? t.ink,
             ),
           ),
         ],

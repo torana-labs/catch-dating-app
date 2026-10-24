@@ -8820,6 +8820,48 @@
       "decidedBy": "codex-rule:exact-text-role-identity",
       "date": "2026-10-24",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:d19-sub24-function-roles",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.welcomeIntroBody",
+          "action": "absorb",
+          "note": "One caller uses existing bodyL, retaining its explicit welcome opacity/colour binding."
+        },
+        {
+          "name": "CatchTextStyles.consoleTitle",
+          "action": "absorb",
+          "note": "One caller uses existing titleL (the D19 title mapping), retaining dark ink and the two-line ellipsis limit."
+        },
+        {
+          "name": "CatchTextStyles.hint",
+          "action": "absorb",
+          "note": "Two callers use existing sectionTitle, retaining their explicit text colour and unbounded content."
+        }
+      ],
+      "rationale": "D19 limits Archivo to display text at24px and above. D21 authorizes moving these four sub24px callers onto the nearest existing function roles. Intro15px/400 Archivo adopts bodyL; console20px/800 Archivo adopts titleL; hint16.5px/600 Archivo adopts sectionTitle. The function roles use their existing platform metrics and emphasis. Retire the three unused public style helpers and their duplicate specimen/context entries. No component API, variant, prop or token is added; no content, callback, colour binding or line-limit behavior changes.",
+      "decidedBy": "codex-rule:D19+D21-existing-function-roles",
+      "date": "2026-10-25",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:canonical-label-alias",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.labelL",
+          "action": "absorb",
+          "note": "Existing titleS uses the identical functionStrong14 helper, ink default and colour-override contract. All production role callers, including the accepted D20 button fallback, now use titleS; the sole alias specimen becomes the canonical titleS specimen."
+        }
+      ],
+      "rationale": "The handoff exact-recipe rule authorizes retiring synonyms into existing roles. After accepted #873 releases its button path, the final fallback call adopts identical titleS. Retire the public labelL method and duplicate context alias entry, update the six current registry role references and current choice-chip note, and regenerate dependent metadata. Historical decision prose remains unchanged. No rendering delta, new public variant, prop or token.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-25",
+      "status": "implemented"
     }
   ]
 }

@@ -58,11 +58,6 @@ class FoundationTypographyTokens extends StatelessWidget {
               ),
 
               _TypeSpec(
-                'welcomeIntroBody',
-                'Show up to something you would do anyway.',
-                CatchTextStyles.welcomeIntroBody(context),
-              ),
-              _TypeSpec(
                 'clubDisplay(s)',
                 'Fort Greene Run Club',
                 CatchTextStyles.clubDisplay(
@@ -82,16 +77,6 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'eventTitle',
                 'Sundowner 5K',
                 CatchTextStyles.eventTitle(context),
-              ),
-              _TypeSpec(
-                'consoleTitle',
-                'Live check-in',
-                CatchTextStyles.consoleTitle(context),
-              ),
-              _TypeSpec(
-                'hint',
-                'Waitlist opened',
-                CatchTextStyles.hint(context),
               ),
             ],
           ),
@@ -137,7 +122,7 @@ class FoundationTypographyTokens extends StatelessWidget {
                 'Shown below field and row labels.',
                 CatchTextStyles.supporting(context),
               ),
-              _TypeSpec('labelL', 'CONTINUE', CatchTextStyles.labelL(context)),
+              _TypeSpec('titleS', 'CONTINUE', CatchTextStyles.titleS(context)),
               _TypeSpec(
                 'fieldLabel',
                 'INVITE CODE',

@@ -665,17 +665,17 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventDockStatusText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:525</code> | — | — | No class documentation or registry summary. |
 | <code>EventPriceText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:443</code> | — | — | No class documentation or registry summary. |
 | <code>WaitlistOfferNotice</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:481</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailFactList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:346</code> | — | — | Flat Event Detail fact rows with structural stacked and inline modes. |
-| <code>EventDetailGoodToKnowList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:313</code> | — | — | Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows. |
+| <code>EventDetailFactList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:347</code> | — | — | Flat Event Detail fact rows with structural stacked and inline modes. |
+| <code>EventDetailGoodToKnowList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:314</code> | — | — | Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows. |
 | <code>EventDetailHintList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:81</code> | — | — | Why-you-might-click hint list derived from event format and activity context. |
-| <code>EventDetailItineraryList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:130</code> | — | — | Timed event itinerary rail for route plan, meet, run, and post-event moments. |
-| <code>EventDetailMapCard</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:167</code> | — | — | Event detail map preview card with exact or morning-of pin states and optional route-owned tap action. |
-| <code>EventDetailMechanismList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:285</code> | — | — | How-sign-ups-work list for open signup, approval, waitlist, and demand-pricing mechanics. |
-| <code>EventDetailPhotoGrid</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:480</code> | — | — | Canonical event-detail photo proof strip with uploaded photos and activity-soft placeholders. |
-| <code>EventDetailPhotoTile</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:542</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailItineraryList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:131</code> | — | — | Timed event itinerary rail for route plan, meet, run, and post-event moments. |
+| <code>EventDetailMapCard</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:168</code> | — | — | Event detail map preview card with exact or morning-of pin states and optional route-owned tap action. |
+| <code>EventDetailMechanismList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:286</code> | — | — | How-sign-ups-work list for open signup, approval, waitlist, and demand-pricing mechanics. |
+| <code>EventDetailPhotoGrid</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:481</code> | — | — | Canonical event-detail photo proof strip with uploaded photos and activity-soft placeholders. |
+| <code>EventDetailPhotoTile</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:543</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailTicketStubRow</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:20</code> | — | — | Flush ticket fact band for when, where, pace, and activity facts below the hero. |
-| <code>HairlineList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:665</code> | — | — | No class documentation or registry summary. |
-| <code>TicketStubTile</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:592</code> | — | — | No class documentation or registry summary. |
+| <code>HairlineList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:666</code> | — | — | No class documentation or registry summary. |
+| <code>TicketStubTile</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:593</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHeroTopBar</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:12</code> | — | — | Event detail hero section with standard, ticket, and spotlight-dark media treatments plus route-owned top actions. |
 | <code>EventDetailTicketHeroSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:237</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailTicketSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:261</code> | — | — | No class documentation or registry summary. |
@@ -1063,10 +1063,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OnboardingRunningPrefsBody</code> | <code>lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingRunningPrefsStep</code> | <code>lib/onboarding/presentation/pages/onboarding_running_prefs_step.dart:163</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingWelcomeBody</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:18</code> | — | — | No class documentation or registry summary. |
-| <code>WelcomeFocusText</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:407</code> | — | — | Localized binding for the library-owned welcome focus lockup. |
-| <code>WelcomeReelList</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:442</code> | — | — | No class documentation or registry summary. |
-| <code>WelcomeReelRow</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:521</code> | — | — | No class documentation or registry summary. |
-| <code>WelcomeRevealTransition</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:619</code> | — | — | No class documentation or registry summary. |
+| <code>WelcomeFocusText</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:405</code> | — | — | Localized binding for the library-owned welcome focus lockup. |
+| <code>WelcomeReelList</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:440</code> | — | — | No class documentation or registry summary. |
+| <code>WelcomeReelRow</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:519</code> | — | — | No class documentation or registry summary. |
+| <code>WelcomeRevealTransition</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:617</code> | — | — | No class documentation or registry summary. |
 | <code>WelcomeSceneLayout</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:222</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingStepLayout</code> | <code>lib/onboarding/shared/onboarding_step_layout.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerAuthorityBadge</code> | <code>lib/organizers/presentation/organizer_authority_badge.dart:21</code> | — | — | No class documentation or registry summary. |
@@ -1185,16 +1185,16 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchesPassButton</code> | <code>lib/swipes/presentation/widgets/catches_pass_button.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>SwipeEmptyState</code> | <code>lib/swipes/presentation/widgets/swipe_empty_state.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileBody</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:21</code> | — | — | PHASE 2 — the flagship profile surface, in the locked editorial language: a person-polaroid hero on a graded photo, Archivo voice, IBM Plex Mono data, bodyL reading text, hairlines over boxes. Color = activity (the kicker + reaction affordances borrow the meeting activity's pigment). |
-| <code>ProfileCaptionText</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:546</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileCaptionText</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:547</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileCompatibilitySection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:291</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileDivider</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:565</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileFactsSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:448</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileDivider</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:566</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileFactsSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:449</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileHeader</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:123</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileKickerText</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:272</code> | — | — | No class documentation or registry summary. |
 | <code>ProfilePhoto</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:180</code> | — | — | Real photo (graded at display time) or the activity-art fallback when absent. |
-| <code>ProfilePhotoSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:493</code> | — | — | No class documentation or registry summary. |
-| <code>ProfilePromptSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:360</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileRunningSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:385</code> | — | — | No class documentation or registry summary. |
+| <code>ProfilePhotoSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:494</code> | — | — | No class documentation or registry summary. |
+| <code>ProfilePromptSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:361</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileRunningSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:386</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileSection</code> | <code>lib/swipes/shared/profile_surface/profile_body.dart:209</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileReactionAction</code> | <code>lib/swipes/shared/profile_surface/profile_reaction_action.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileReactionButton</code> | <code>lib/swipes/shared/profile_surface/profile_reaction_action.dart:217</code> | — | — | No class documentation or registry summary. |

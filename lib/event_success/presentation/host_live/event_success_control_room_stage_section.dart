@@ -33,11 +33,11 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
     final eventIdentity = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        CatchText(
           event.title,
+          variant: CatchTextVariant.titleL,
+          color: dark.ink,
           maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.consoleTitle(context, color: dark.ink),
         ),
         if (showVenue) ...[
           gapH4,
