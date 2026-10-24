@@ -12,6 +12,7 @@ import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import path from "node:path";
 import {PNG} from "pngjs";
+import {consumerHomeCopy} from "../src/content/consumerHome.ts";
 
 const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
 const fromRepo = (file) => path.join(repoRoot, file);
@@ -31,13 +32,21 @@ const marks = {
 const tokenNames = ["bg", "ink", "ink2", "line"];
 
 // Each card's words come from meta.json, so editing a page title or
-// description changes the card's input hash.
+// description changes the card's input hash. The home card lists the event
+// formats its page filters by.
 export const cards = [
   {id: "default", route: "home", mark: "catch", headline: "after", body: "twitterDescription", capture: null},
+  {id: "home", route: "home", mark: "catch", headline: "after", body: "twitterDescription", capture: null, chips: "homeFormats"},
   {id: "host", route: "host", mark: "host", headline: "after", body: "twitterDescription", capture: "host-live-console"},
   {id: "apply", route: "host_apply", mark: "host", headline: "before", body: "description", capture: "host-create-basics"},
+  {id: "claim", route: "claim", mark: "catch", headline: "before", body: "description", capture: null},
+  {id: "organizers", route: "organizers", mark: "catch", headline: "before", body: "twitterDescription", capture: null},
   {id: "form", route: "public_form", mark: "catch", headline: "before", body: "description", capture: null},
 ];
+
+const chipSources = {
+  homeFormats: () => consumerHomeCopy.categories.filter((category) => category.id !== "all").map((category) => category.label),
+};
 
 if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const command = process.argv[2];
@@ -56,7 +65,8 @@ export function cardContent(card, meta = readJson(metaPath)) {
   const headline = card.headline === "after" ? after : before;
   if (!headline) throw new Error(`Preview card ${card.id} expects "${card.route}" title to read "<before> | <after>".`);
   const brand = card.mark === "host" ? "Catch Host" : "Catch";
-  return {headline, body: route[card.body], alt: `${brand}: ${headline}`};
+  const chips = card.chips ? chipSources[card.chips]() : [];
+  return {headline, body: route[card.body], chips, alt: `${brand}: ${headline}`};
 }
 
 export function readTokens(css = readText(tokensPath)) {
@@ -135,6 +145,7 @@ async function updateCards() {
 
 function cardHtml({content, tokens, font, mark, capture}) {
   const escape = (value) => value.replace(/[&<>"']/g, (character) => `&#${character.charCodeAt(0)};`);
+  const aside = Boolean(capture || content.chips.length);
   return `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face { font-family: "Archivo"; src: url(data:font/woff2;base64,${font}) format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; }
 * { box-sizing: border-box; }
@@ -142,15 +153,18 @@ html, body { margin: 0; width: ${cardWidth}px; height: ${cardHeight}px; overflow
 body { background: ${tokens.bg}; color: ${tokens.ink}; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
 .card { position: relative; width: 100%; height: 100%; padding: 64px 72px; border-bottom: 10px solid ${tokens.ink}; }
 .mark { display: block; height: 46px; width: auto; }
-.copy { max-width: ${capture ? 640 : 960}px; }
-h1 { margin: 52px 0 0; font-family: "Archivo", sans-serif; font-stretch: 78%; font-variation-settings: "wdth" 78; font-weight: 760; letter-spacing: -0.035em; word-spacing: 0.08em; font-size: ${capture ? 68 : 84}px; line-height: 1.02; text-wrap: balance; }
+.copy { max-width: ${aside ? 640 : 960}px; }
+h1 { margin: 52px 0 0; font-family: "Archivo", sans-serif; font-stretch: 78%; font-variation-settings: "wdth" 78; font-weight: 760; letter-spacing: -0.035em; word-spacing: 0.08em; font-size: ${aside ? 68 : 84}px; line-height: 1.02; text-wrap: balance; }
 p { margin: 26px 0 0; max-width: 760px; font-size: 26px; line-height: 1.42; color: ${tokens.ink2}; }
 .url { position: absolute; left: 72px; bottom: 52px; font-size: 20px; font-weight: 600; letter-spacing: 0.02em; }
 .capture { position: absolute; right: 64px; top: 48px; width: 300px; filter: drop-shadow(0 18px 36px rgba(22, 20, 15, 0.18)); }
+.chips { position: absolute; right: 72px; top: 0; bottom: 10px; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 16px; }
+.chips li { padding: 10px 26px 12px; border: 3px solid ${tokens.ink}; border-radius: 999px; font-family: "Archivo", sans-serif; font-stretch: 78%; font-variation-settings: "wdth" 78; font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: -0.01em; }
 </style></head><body><main class="card">
 <img class="mark" alt="" src="${mark}">
 <div class="copy"><h1>${escape(content.headline)}</h1><p>${escape(content.body)}</p></div>
 ${capture ? `<img class="capture" alt="" src="${capture}">` : ""}
+${content.chips.length ? `<ul class="chips">${content.chips.map((chip) => `<li>${escape(chip)}</li>`).join("")}</ul>` : ""}
 <div class="url">catchdates.com</div>
 </main></body></html>`;
 }
