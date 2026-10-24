@@ -291,7 +291,7 @@
   background: var(--surface);
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-xs);
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--ink) 12%, transparent);
+  box-shadow: var(--catch-elevation-raised);
 }
 
 .intake-batch-context {
@@ -325,7 +325,7 @@
   background: var(--surface);
   border: var(--catch-stroke-hairline) solid var(--line-strong);
   border-radius: var(--catch-radius-sm);
-  box-shadow: 0 12px 32px color-mix(in srgb, var(--ink) 16%, transparent);
+  box-shadow: var(--catch-elevation-overlay);
 }
 
 .intake-shortcuts > button {
@@ -811,7 +811,7 @@
   font-size: var(--catch-typography-web-status-size);
   background: var(--primary);
   border-radius: var(--catch-radius-sm);
-  box-shadow: 0 12px 32px color-mix(in srgb, var(--ink) 22%, transparent);
+  box-shadow: var(--catch-elevation-overlay);
 }
 
 .intake-undo-toast button {
