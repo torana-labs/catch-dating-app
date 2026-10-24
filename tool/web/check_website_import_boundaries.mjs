@@ -131,7 +131,7 @@ function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
   // reader's test checks its derivation against the world validator.
   if (sourceRelativePath.startsWith("stories/fixtures/demoWorld.") && [
     "tool/demo/demo_seed/scenarios/host-marketing-india.json",
-    "tool/demo/demo_seed/personas/india_core_sales_profile_projection.planned.json",
+    "tool/demo/demo_seed/personas/india_core_sales_personas.draft.json",
     "tool/demo/lib/demo_world.mjs",
   ].some(target => targetAbsolutePath === path.join(repoRoot, target))) return true;
   if (["server/publicOrganizerProjection.ts", "server/publicExternalEvent.ts"].includes(sourceRelativePath) && [

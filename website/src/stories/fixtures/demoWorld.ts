@@ -1,14 +1,15 @@
 import worldJson from "../../../../tool/demo/demo_seed/scenarios/host-marketing-india.json";
-import personaJson from "../../../../tool/demo/demo_seed/personas/india_core_sales_profile_projection.planned.json";
+import personaJson from "../../../../tool/demo/demo_seed/personas/india_core_sales_personas.draft.json";
 import {buildPublicEventDetailRecords, type EventDetailRecord} from "../../features/events/eventDetailModel";
 import {projectLivePublicCatchEvent} from "../../features/organizers/publicCatchEventProjection";
 import type {HostListing} from "../../features/organizers/types";
 import {hostListings} from "./hostListings";
 
-// Reader for the Mumbai demo world, so Storybook guest pages show the same
-// people and event as the app captures. Guest state is derived from the
-// timestamped attendance records with the rule in eventStateAt of
-// tool/demo/lib/demo_world.mjs. See docs/plans/demo_world_scenarios_spec.md.
+// Reader for the Mumbai demo world and the India persona catalog, so Storybook
+// guest pages show the same people and event as the app captures. Guest state
+// is derived from the timestamped attendance records with the rule in
+// eventStateAt of tool/demo/lib/demo_world.mjs.
+// See docs/plans/demo_world_scenarios_spec.md.
 
 interface DemoWorld {
   id: string;
