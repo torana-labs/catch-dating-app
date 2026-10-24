@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "sourceProfileId": "district",
+  "label": "District",
+  "sourceTier": "structured_official_platform",
+  "status": "shadow",
+  "allowedUse": "Extract event sessions and organizer names from District event pages' schema.org JSON-LD. Network capture follows the acquisition policy.",
+  "acquisition": {
+    "networkEnabled": false,
+    "allowedHosts": [
+      "district.in"
+    ],
+    "artifactOnly": true
+  },
+  "extraction": {
+    "strategy": "district_json_ld_event_v1",
+    "deterministicFirst": true,
+    "modelFallback": true,
+    "templateDriftBehavior": "abstain"
+  },
+  "publication": {
+    "autoEligible": false,
+    "requiresOfficialSource": true,
+    "requiresPolicyApproval": true
+  }
+}

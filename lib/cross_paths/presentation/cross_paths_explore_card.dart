@@ -173,18 +173,15 @@ class CrossPathsEventContextCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    CatchText(
                       context.l10n
                           .crossPathsExploreCardContextPersonGoingToEvent(
                             firstName: firstName,
                             eventTitle: event.title,
                           ),
                       maxLines: compact ? 1 : 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.sectionTitle(
-                        context,
-                        color: t.ink,
-                      ),
+                      variant: CatchTextVariant.sectionTitle,
+                      color: t.ink,
                     ),
                     gapH4,
                     Text(
@@ -291,9 +288,9 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
+                        child: CatchText(
                           context.l10n.crossPathsProfilePreviewTitle,
-                          style: CatchTextStyles.titleL(context),
+                          variant: CatchTextVariant.titleL,
                         ),
                       ),
                       CatchIconAction.icon(
@@ -323,12 +320,10 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                   children: [
                     if (invitation?.status ==
                         CrossPathsInvitationStatus.pending) ...[
-                      Text(
+                      CatchText(
                         context.l10n.crossPathsInvitationStatusPending,
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
+                        variant: CatchTextVariant.supporting,
+                        color: t.ink2,
                         textAlign: TextAlign.center,
                       ),
                       gapH8,

@@ -62,6 +62,18 @@ const _androidSplashSizes = <String, int>{
 
 const _iosSplashSizes = <String, int>{'': 256, '@2x': 512, '@3x': 768};
 
+// The marketing website reuses the Consumer launcher icon. Browser tabs draw
+// it at 16-48px, where the launcher padding leaves the wordmark unreadable, so
+// those sizes crop to the mark; home-screen and install icons keep the full
+// launcher icon, whose mark already sits inside the maskable safe zone.
+const _websitePublicDir = 'website/public';
+const _websiteIconDir = 'website/public/assets/icons';
+const _websiteManifestPath = 'website/public/assets/site.webmanifest';
+const _websiteIconIndexPath = 'website/src/generated/siteIcons.json';
+const _websiteFaviconSizes = [16, 32, 48];
+const _websiteAppleTouchIconSize = 180;
+const _websiteManifestIconSizes = [192, 512];
+
 const _iconVariants = <String, _IconVariant>{
   'dev': _IconVariant(
     generatedName: 'catch_icon_dev.png',
@@ -141,6 +153,7 @@ void main() {
   _writeConsumerLaunchScreen();
   _writeHostSplashAssets(hostSplashLight, hostSplashDark);
   _writeHostLaunchScreen();
+  _writeWebsiteIcons(baseIcon, tokens);
 
   for (final entry in _iconVariants.entries) {
     final variant = entry.value;
@@ -631,8 +644,121 @@ void _writeNativeBrandManifest(_NativeBrandTokens tokens) {
       'apps/host/ios/Runner/Assets.xcassets/AppIcon-host-prod.appiconset',
       'apps/host/ios/Runner/Assets.xcassets/LaunchImage.imageset',
       _hostLaunchScreenPath,
+      '$_websitePublicDir/favicon.ico',
+      '$_websiteIconDir/*.png',
+      _websiteManifestPath,
+      _websiteIconIndexPath,
     ],
   });
+}
+
+void _writeWebsiteIcons(image.Image baseIcon, _NativeBrandTokens tokens) {
+  final mark = _cropToMark(baseIcon);
+  final opaqueIcon = baseIcon.convert(numChannels: 3);
+  final faviconFile = File('$_websitePublicDir/favicon.ico');
+  faviconFile.parent.createSync(recursive: true);
+  faviconFile.writeAsBytesSync(
+    image.IcoEncoder().encodeImages([
+      for (final size in _websiteFaviconSizes) _resizeSquare(mark, size),
+    ]),
+  );
+  _writePng('$_websiteIconDir/icon-32.png', _resizeSquare(mark, 32));
+  _writePng(
+    '$_websiteIconDir/apple-touch-icon.png',
+    _resizeSquare(opaqueIcon, _websiteAppleTouchIconSize),
+  );
+  for (final size in _websiteManifestIconSizes) {
+    _writePng('$_websiteIconDir/icon-$size.png', _resizeSquare(baseIcon, size));
+  }
+
+  final background = tokens.colorHex('bg', 'light');
+  _writeJson(_websiteManifestPath, {
+    'name': 'Catch',
+    'short_name': 'Catch',
+    'start_url': '/',
+    'scope': '/',
+    'display': 'browser',
+    'background_color': background,
+    'theme_color': background,
+    'icons': [
+      for (final size in _websiteManifestIconSizes)
+        {
+          'src': '/assets/icons/icon-$size.png',
+          'sizes': '${size}x$size',
+          'type': 'image/png',
+          'purpose': 'any',
+        },
+      {
+        'src': '/assets/icons/icon-512.png',
+        'sizes': '512x512',
+        'type': 'image/png',
+        'purpose': 'maskable',
+      },
+    ],
+  });
+  _writeJson(_websiteIconIndexPath, {
+    'source': _baseIconPath,
+    'themeColor': background,
+    'manifest': '/assets/site.webmanifest',
+    'icons': [
+      {
+        'rel': 'icon',
+        'href': '/favicon.ico',
+        'sizes': _websiteFaviconSizes.map((size) => '${size}x$size').join(' '),
+      },
+      {
+        'rel': 'icon',
+        'href': '/assets/icons/icon-32.png',
+        'type': 'image/png',
+        'sizes': '32x32',
+      },
+      {
+        'rel': 'apple-touch-icon',
+        'href': '/assets/icons/apple-touch-icon.png',
+        'sizes': '${_websiteAppleTouchIconSize}x$_websiteAppleTouchIconSize',
+      },
+    ],
+  });
+}
+
+/// Square crop around every pixel that differs from the icon's background.
+image.Image _cropToMark(image.Image icon) {
+  final background = icon.getPixel(0, 0);
+  var left = icon.width, top = icon.height, right = -1, bottom = -1;
+  for (final pixel in icon) {
+    final distance =
+        (pixel.r - background.r).abs() +
+        (pixel.g - background.g).abs() +
+        (pixel.b - background.b).abs();
+    if (distance <= 48) continue;
+    left = math.min(left, pixel.x);
+    right = math.max(right, pixel.x);
+    top = math.min(top, pixel.y);
+    bottom = math.max(bottom, pixel.y);
+  }
+  if (right < 0) throw StateError('$_baseIconPath has no mark to crop.');
+  final side = math.min(
+    icon.width,
+    (math.max(right - left, bottom - top) * 1.12).round(),
+  );
+  return image.copyCrop(
+    icon,
+    x: ((left + right) ~/ 2 - side ~/ 2).clamp(0, icon.width - side),
+    y: ((top + bottom) ~/ 2 - side ~/ 2).clamp(0, icon.height - side),
+    width: side,
+    height: side,
+  );
+}
+
+image.Image _resizeSquare(image.Image source, int size) {
+  return image.copyResize(
+    source,
+    width: size,
+    height: size,
+    interpolation: size <= 48
+        ? image.Interpolation.average
+        : image.Interpolation.cubic,
+  );
 }
 
 String _projectPath(String projectRoot, String relativePath) {

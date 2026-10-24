@@ -5003,6 +5003,8 @@ describe("firestore.rules", () => {
         "eventMessagingBudgetDecisions",
         "eventMessagingBudgetDecisionReceipts",
         "eventMessagingBudgetApplicationReceipts",
+        "supplyIntakeRequests",
+        "supplyIntakeUsage",
       ];
       for (const collectionName of collections) {
         await seed([collectionName, "record-1"], {schemaVersion: 1});

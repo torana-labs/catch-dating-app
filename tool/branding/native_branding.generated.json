@@ -41,6 +41,10 @@
     "apps/host/ios/Runner/Assets.xcassets/AppIcon-host-staging.appiconset",
     "apps/host/ios/Runner/Assets.xcassets/AppIcon-host-prod.appiconset",
     "apps/host/ios/Runner/Assets.xcassets/LaunchImage.imageset",
-    "apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard"
+    "apps/host/ios/Runner/Base.lproj/LaunchScreen.storyboard",
+    "website/public/favicon.ico",
+    "website/public/assets/icons/*.png",
+    "website/public/assets/site.webmanifest",
+    "website/src/generated/siteIcons.json"
   ]
 }

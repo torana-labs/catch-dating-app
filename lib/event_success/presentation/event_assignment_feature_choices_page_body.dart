@@ -39,10 +39,14 @@ class _EventAssignmentFeatureChoicesPageBodyState
   EventAssignmentFeatureChoiceStore get _repository =>
       ref.read(eventAssignmentFeatureChoiceStoreProvider);
 
-  bool _isCurrent(int generation) => mounted && _active &&
+  bool _isCurrent(int generation) =>
+      mounted &&
+      _active &&
       generation == _generation &&
-      identical(ref.read(authenticatedSessionProvider).asData?.value,
-          widget.session);
+      identical(
+        ref.read(authenticatedSessionProvider).asData?.value,
+        widget.session,
+      );
 
   @override
   void initState() {
@@ -130,7 +134,8 @@ class _EventAssignmentFeatureChoicesPageBodyState
       if (!_isCurrent(generation)) return;
       await _reload();
       if (writeGeneration == _writeGeneration &&
-          _isCurrent(_generation) && _review != null) {
+          _isCurrent(_generation) &&
+          _review != null) {
         setState(() => _saved = true);
       }
     } catch (error) {
@@ -161,11 +166,15 @@ class _EventAssignmentFeatureChoicesPageBodyState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l.eventMatchingDisclosure,
-            style: CatchTextStyles.supporting(context)),
+        CatchText(
+          l.eventMatchingDisclosure,
+          variant: CatchTextVariant.supporting,
+        ),
         gapH12,
-        Text(l.eventMatchingCoverageNote,
-            style: CatchTextStyles.supporting(context)),
+        CatchText(
+          l.eventMatchingCoverageNote,
+          variant: CatchTextVariant.supporting,
+        ),
         if (_mutationError case final error?) ...[
           gapH12,
           CatchLocalizedErrorBanner(
@@ -175,19 +184,27 @@ class _EventAssignmentFeatureChoicesPageBodyState
         ],
         if (_saved) ...[
           gapH12,
-          Text(l.eventMatchingSaved,
-              style: CatchTextStyles.supportingStrong(context)),
+          CatchText(
+            l.eventMatchingSaved,
+            variant: CatchTextVariant.supportingStrong,
+          ),
         ],
         gapH12,
         if (choices.isEmpty)
-          Text(l.eventMatchingNoChoices,
-              style: CatchTextStyles.supporting(context)),
+          CatchText(
+            l.eventMatchingNoChoices,
+            variant: CatchTextVariant.supporting,
+          ),
         for (final choice in choices) ...[
-          Text(choice.questionLabel ?? l.eventMatchingUnavailable,
-              style: CatchTextStyles.supportingStrong(context)),
+          CatchText(
+            choice.questionLabel ?? l.eventMatchingUnavailable,
+            variant: CatchTextVariant.supportingStrong,
+          ),
           if (choice.answerLabel case final answer?)
-            Text('${l.eventMatchingAnswerLabel}: $answer',
-                style: CatchTextStyles.supporting(context)),
+            CatchText(
+              '${l.eventMatchingAnswerLabel}: $answer',
+              variant: CatchTextVariant.supporting,
+            ),
           gapH8,
           CatchButton(
             label: choice.isGranted
@@ -196,7 +213,8 @@ class _EventAssignmentFeatureChoicesPageBodyState
             variant: choice.isGranted
                 ? CatchButtonVariant.secondary
                 : CatchButtonVariant.primary,
-            onPressed: (_savingFeatureId == null &&
+            onPressed:
+                (_savingFeatureId == null &&
                     (choice.isGranted || choice.canGrant))
                 ? () => _decide(choice)
                 : null,

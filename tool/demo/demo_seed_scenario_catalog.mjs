@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {isDemoWorld, validateDemoWorld} from "./lib/demo_world.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
@@ -32,6 +33,10 @@ export function scenarioPath(nameOrPath) {
 
 function validateScenarioConfig(config, filePath) {
   const label = path.relative(repoRoot, filePath);
+  if (isDemoWorld(config)) {
+    validateDemoWorld(config, label);
+    return;
+  }
   for (const field of ["id", "label", "description"]) {
     if (typeof config?.[field] !== "string" || config[field].trim() === "") {
       throw new Error(`${label}.${field} must be a non-empty string.`);

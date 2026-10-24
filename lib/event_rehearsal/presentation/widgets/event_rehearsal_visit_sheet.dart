@@ -78,9 +78,9 @@ class EventRehearsalVisitSheet extends ConsumerWidget {
                         .where((row) => row.scope == scope)
                         .firstOrNull;
                 if (row == null) {
-                  return Text(
+                  return CatchText(
                     context.l10n.eventAssistanceVisitChanged,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   );
                 }
                 final evidence =

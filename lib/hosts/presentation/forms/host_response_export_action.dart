@@ -11,9 +11,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Inline action for the applied manager query; it shares the response
 /// workspace instead of starting a second, unrelated export screen.
 class HostResponseExportAction extends ConsumerStatefulWidget {
-  const HostResponseExportAction({super.key, required this.accountId,
-    required this.organizerId, required this.formId, required this.queryController,
-    required this.gateway, this.openDownload, this.currentAccountId});
+  const HostResponseExportAction({
+    super.key,
+    required this.accountId,
+    required this.organizerId,
+    required this.formId,
+    required this.queryController,
+    required this.gateway,
+    this.openDownload,
+    this.currentAccountId,
+  });
 
   final String accountId;
   final String organizerId;
@@ -39,10 +46,11 @@ class _HostResponseExportActionState
       formId: widget.formId,
       queryController: widget.queryController,
       gateway: widget.gateway,
-      currentAccountId: widget.currentAccountId ??
-        () => ref.read(firebaseAuthProvider).currentUser?.uid,
-      openDownload: widget.openDownload ??
-        ref.read(externalLinkControllerProvider).open,
+      currentAccountId:
+          widget.currentAccountId ??
+          () => ref.read(firebaseAuthProvider).currentUser?.uid,
+      openDownload:
+          widget.openDownload ?? ref.read(externalLinkControllerProvider).open,
       now: DateTime.now,
       wait: Future<void>.delayed,
     )..addListener(_changed);
@@ -85,53 +93,68 @@ class _HostResponseExportActionState
   Widget build(BuildContext context) {
     final view = _controller.view;
     final query = widget.queryController.view;
-    final enabled = query.status == HostResponseQueryStatus.ready ||
+    final enabled =
+        query.status == HostResponseQueryStatus.ready ||
         query.status == HostResponseQueryStatus.empty;
-    final busy = view.status == HostResponseExportStatus.recovering ||
+    final busy =
+        view.status == HostResponseExportStatus.recovering ||
         view.status == HostResponseExportStatus.preparing;
-    return CatchSection.content(child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Wrap(spacing: CatchSpacing.s3, runSpacing: CatchSpacing.s2,
-          children: [
-            for (final format in HostFormExportFormat.values)
-              CatchButton.command(
-                label: busy && view.command?.format == format
-                    ? context.l10n.hostAudiencePreparingExport
-                    : format == HostFormExportFormat.csv
+    return CatchSection.content(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Wrap(
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final format in HostFormExportFormat.values)
+                CatchButton.command(
+                  label: busy && view.command?.format == format
+                      ? context.l10n.hostAudiencePreparingExport
+                      : format == HostFormExportFormat.csv
                       ? context.l10n.hostFormExportCsv
                       : context.l10n.hostFormExportXlsx,
-                leading: Icon(CatchIcons.downloadRounded),
-                onPressed: !enabled || busy ||
-                    view.status == HostResponseExportStatus.pending ||
-                    view.status == HostResponseExportStatus.stale
-                    ? null : () => _controller.start(format),
-              ),
-            if (view.command != null &&
-                (view.status == HostResponseExportStatus.pending ||
-                    view.status == HostResponseExportStatus.stale))
-              CatchButton.command(
-                label: context.l10n.hostFormExportStillPreparing,
-                onPressed: _controller.retryPending,
-              ),
-            if (view.status == HostResponseExportStatus.ready &&
-                view.receipt?.downloadUrl != null)
-              CatchButton.command(
-                label: context.l10n.hostFormExportReady,
-                onPressed: _controller.openReady,
-              ),
-          ],
-        ),
-        if (view.status == HostResponseExportStatus.stale)
-          Text(context.l10n.hostsHostAudienceRefresh,
-            style: CatchTextStyles.supporting(context)),
-        if (view.status == HostResponseExportStatus.pending)
-          Text(context.l10n.hostFormExportStillPreparing,
-            style: CatchTextStyles.supporting(context)),
-        if (view.status == HostResponseExportStatus.failure)
-          Text(context.l10n.hostFormExportFailed,
-            style: CatchTextStyles.supporting(context)),
-      ],
-    ));
+                  leading: Icon(CatchIcons.downloadRounded),
+                  onPressed:
+                      !enabled ||
+                          busy ||
+                          view.status == HostResponseExportStatus.pending ||
+                          view.status == HostResponseExportStatus.stale
+                      ? null
+                      : () => _controller.start(format),
+                ),
+              if (view.command != null &&
+                  (view.status == HostResponseExportStatus.pending ||
+                      view.status == HostResponseExportStatus.stale))
+                CatchButton.command(
+                  label: context.l10n.hostFormExportStillPreparing,
+                  onPressed: _controller.retryPending,
+                ),
+              if (view.status == HostResponseExportStatus.ready &&
+                  view.receipt?.downloadUrl != null)
+                CatchButton.command(
+                  label: context.l10n.hostFormExportReady,
+                  onPressed: _controller.openReady,
+                ),
+            ],
+          ),
+          if (view.status == HostResponseExportStatus.stale)
+            CatchText(
+              context.l10n.hostsHostAudienceRefresh,
+              variant: CatchTextVariant.supporting,
+            ),
+          if (view.status == HostResponseExportStatus.pending)
+            CatchText(
+              context.l10n.hostFormExportStillPreparing,
+              variant: CatchTextVariant.supporting,
+            ),
+          if (view.status == HostResponseExportStatus.failure)
+            CatchText(
+              context.l10n.hostFormExportFailed,
+              variant: CatchTextVariant.supporting,
+            ),
+        ],
+      ),
+    );
   }
 }

@@ -236,16 +236,18 @@ class _HostBroadcastComposerSheetState
           ),
           if (!_sendingEnabled) ...[
             gapH12,
-            Text(
+            CatchText(
               context.l10n.hostsHostBroadcastComposerSheetTextSendingStaysOffIn,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
           ],
           if (recipientCount == 0) ...[
             gapH12,
-            Text(
+            CatchText(
               context.l10n.hostsHostBroadcastComposerSheetTextThisAudienceHasNo,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
           ],
           if (mutation.hasError) ...[

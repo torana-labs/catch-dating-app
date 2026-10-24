@@ -88,6 +88,7 @@ export async function fixtureInputSnapshot(_repoRoot, market = "mumbai") {
     externalEventCandidates: [],
     organizerLeads: [],
     crawlSurfaces: [],
+    intakeListings: [],
   });
 }
 

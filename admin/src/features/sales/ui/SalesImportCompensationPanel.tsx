@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useRef, useState} from "react";
 import {RotateCcw} from "lucide-react";
 import {
@@ -46,8 +46,8 @@ function CompensationPanel({controller}: {controller: SalesWorkspaceController})
     if (saved) setReason("");
   };
   return <Panel title="Correct a reviewed import" icon={<RotateCcw size={18} />}>
-    <p>Admin Owner review only. Correct one imported organizer at a time. The
-      original import receipt and source lineage stay in place.</p>
+    <CatchText as="p" variant="supporting">Admin Owner review only. Correct one imported organizer at a time. The
+      original import receipt and source lineage stay in place.</CatchText>
     {dataMode() === "sample" ? <EmptyState>Compensation requires a live Admin
       Owner workspace. No sample correction is applied.</EmptyState> : <>
       <CatchField
@@ -69,17 +69,17 @@ function CompensationPanel({controller}: {controller: SalesWorkspaceController})
           !id.test(importId) || !id.test(organizerId)}>
         Preview current correction</AdminButton>
       {plan ? <>
-        <p role="status">Server plan: {plan.mode.replaceAll("_", " ")} ·
-          account revision {plan.accountRevision ?? "unavailable"}</p>
+        <CatchText as="p" variant="supporting" role="status">Server plan: {plan.mode.replaceAll("_", " ")} ·
+          account revision {plan.accountRevision ?? "unavailable"}</CatchText>
         <p>Review hash: <code>{plan.previewHash}</code></p>
         {plan.mode === "archive_companion" ?
-          <p>This archives the pristine private Sales companion and holds
-            outreach. The canonical organizer and import evidence remain.</p> : null}
+          <CatchText as="p" variant="supporting">This archives the pristine private Sales companion and holds
+            outreach. The canonical organizer and import evidence remain.</CatchText> : null}
         {plan.mode === "remove_cohorts" ?
-          <p>Only these import-owned cohorts will be removed:
-            {plan.cohortIdsRemoved.join(", ")}. Later account content remains.</p> : null}
-        {plan.alreadyCompensated ? <p>This import effect is already corrected.
-          Refresh the Sales account for its current state.</p> : null}
+          <CatchText as="p" variant="supporting">Only these import-owned cohorts will be removed:
+            {plan.cohortIdsRemoved.join(", ")}. Later account content remains.</CatchText> : null}
+        {plan.alreadyCompensated ? <CatchText as="p" variant="supporting">This import effect is already corrected.
+          Refresh the Sales account for its current state.</CatchText> : null}
         {plan.blockers.map((blocker) => <StateRow key={blocker}
           label="Correction blocked" value={blocker.replaceAll("_", " ")} />)}
         {plan.mode !== "blocked" && !plan.blockers.length &&

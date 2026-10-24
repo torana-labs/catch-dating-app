@@ -31,7 +31,7 @@ void main() {
           ),
           home: Builder(
             builder: (context) {
-              name = CatchTextStyles.name(context);
+              name = CatchTextStyles.sectionTitle(context);
               field = CatchTextStyles.fieldRowTitle(context);
               return const SizedBox.shrink();
             },

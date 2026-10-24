@@ -621,7 +621,7 @@ Widget catchSectionContractStates(BuildContext context) {
               width: WidgetbookPreviewLayout.catalogCardWidth,
               child: Text(
                 'Card ${index + 1}',
-                style: CatchTextStyles.labelM(context),
+                style: CatchTextStyles.statusLabel(context),
               ),
             ),
           ),
@@ -641,7 +641,7 @@ Widget catchSectionContractStates(BuildContext context) {
           itemBuilder: (context, index) => CatchSurface.card(
             child: Text(
               'Club ${index + 1}',
-              style: CatchTextStyles.labelM(context),
+              style: CatchTextStyles.statusLabel(context),
             ),
           ),
           footer: CatchButton(label: 'More', onPressed: widgetbookNoop),

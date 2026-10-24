@@ -123,6 +123,7 @@
         "adminUpdateOrganizerDetails",
         "adminSetOrganizerIndexStatus",
         "adminCreateOrganizerDraftFromCandidate",
+        "adminApproveOrganizerListing",
         "createOrganizer",
         "clubsToOrganizersMigration"
       ],

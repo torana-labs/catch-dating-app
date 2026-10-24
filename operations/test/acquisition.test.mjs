@@ -44,6 +44,13 @@ test("acquisition policy keeps provider fetches and Firestore payloads off",
       maxNetworkRequestsPerRun: 0,
       maxNetworkRequestsPerMonth: 0,
     });
+    assert.deepEqual(
+      [policy.pageFetch.enabled, policy.pageFetch.adapterId,
+        policy.pageFetch.decisionId, policy.pageFetch.policyGapId,
+        policy.pageFetch.maxRequestsPerIntake,
+        policy.pageFetch.maxRequestsPerMonth],
+      [false, null, null, "on_demand_page_fetch_policy", 0, 0]
+    );
     assert.deepEqual(policy.rawPayload, {
       firestorePersistenceAllowed: false,
       persistence: "external_artifact_store_only",
@@ -384,3 +391,31 @@ function acceptedPolicyDecision() {
     operationalState: "blocked_until_policy_encoded",
   };
 }
+
+test("page fetching can be enabled only with its adapter, decision and positive caps",
+  async () => {
+    const base = await loadSupplyAcquisitionPolicy();
+    const load = (pageFetch) => loadSupplyAcquisitionPolicy({
+      readFile: async (file, encoding) => file.endsWith("acquisition_policy.json") ?
+        JSON.stringify({...base, pageFetch: {...base.pageFetch, ...pageFetch}}) :
+        fs.readFile(file, encoding),
+    });
+    const enabled = {enabled: true, adapterId: "page_fetch",
+      decisionId: "decision-pages-1", maxRequestsPerIntake: 24,
+      maxRequestsPerMonth: 2_000};
+    assert.equal((await load(enabled)).pageFetch.enabled, true);
+    for (const override of [
+      {decisionId: null},
+      {adapterId: null},
+      {maxRequestsPerIntake: 0},
+      {maxRequestsPerMonth: 0},
+      {maxResponseBytes: 8 * 1024 * 1024},
+      {maxRedirects: 9},
+    ]) {
+      await assert.rejects(load({...enabled, ...override}),
+        {code: "INVALID_ACQUISITION_POLICY"}, JSON.stringify(override));
+    }
+    await assert.rejects(load({maxRequestsPerIntake: 5}),
+      {code: "INVALID_ACQUISITION_POLICY"},
+      "a disabled channel carries no allowance");
+  });

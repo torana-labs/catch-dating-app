@@ -1,0 +1,23 @@
+{
+  "source": "assets/branding/catch_icon.png",
+  "themeColor": "#F4F4F1",
+  "manifest": "/assets/site.webmanifest",
+  "icons": [
+    {
+      "rel": "icon",
+      "href": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48"
+    },
+    {
+      "rel": "icon",
+      "href": "/assets/icons/icon-32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "rel": "apple-touch-icon",
+      "href": "/assets/icons/apple-touch-icon.png",
+      "sizes": "180x180"
+    }
+  ]
+}

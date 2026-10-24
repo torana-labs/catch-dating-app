@@ -565,6 +565,9 @@ export {
   adminCreateOrganizerDraftFromCandidate,
 } from "./admin/organizerDraftFromCandidate";
 export {
+  adminApproveOrganizerListing,
+} from "./admin/organizerListingApproval";
+export {
   adminRecordEventIntakeReviewDecision,
 } from "./admin/eventIntakeReview";
 export {
@@ -848,6 +851,14 @@ export {
   adminGetSalesOutreachDraftJob,
   adminGetSalesOutreachDraft,
 } from "./admin/salesIntelligence/callables";
+export {
+  onSupplyIntakeRequestCreated,
+  recoverSupplyIntakeRequests,
+} from "./operations/supplyIntake/triggers";
+export {
+  adminNominateOrganizer,
+  onSalesInboundIntentForIntake,
+} from "./operations/supplyIntake/nominations";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,

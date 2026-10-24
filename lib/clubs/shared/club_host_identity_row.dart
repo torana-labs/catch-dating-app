@@ -92,11 +92,12 @@ class ClubHostIdentityRow extends StatelessWidget {
                 style: CatchTextStyles.kicker(context, color: t.ink3),
               ),
               gapH2,
-              Text(
+              CatchText(
                 hostName,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.labelM(context, color: t.ink),
+
+                variant: CatchTextVariant.statusLabel,
+                color: t.ink,
               ),
             ],
           ),

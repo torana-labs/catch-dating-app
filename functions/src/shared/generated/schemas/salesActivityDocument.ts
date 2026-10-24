@@ -6,7 +6,7 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_activities.schema.json",
   "title": "SalesActivityDocument",
-  "description": "Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions.",
+  "description": "Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions, and the approval of a listing Supply Intake built.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "salesActivities",
@@ -72,7 +72,8 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
         "claim_approved",
         "claim_rejected",
         "demo_started",
-        "demo_completed"
+        "demo_completed",
+        "listing_approved"
       ]
     },
     "channel": {
@@ -187,6 +188,41 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
               "pattern": "^[A-Za-z0-9_-]{3,128}$"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "requestId",
+            "approvalId",
+            "origin"
+          ],
+          "properties": {
+            "kind": {
+              "const": "supply_intake"
+            },
+            "requestId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "origin": {
+              "enum": [
+                "admin_nomination",
+                "sales_inbound_intent",
+                "discovery_run",
+                "none"
+              ]
+            }
+          }
         }
       ]
     }
@@ -202,7 +238,8 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
               "claim_approved",
               "claim_rejected",
               "demo_started",
-              "demo_completed"
+              "demo_completed",
+              "listing_approved"
             ]
           }
         }
@@ -302,6 +339,26 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
             "properties": {
               "kind": {
                 "const": "organizer_claim"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "listing_approved"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "supply_intake"
               }
             }
           }

@@ -30806,6 +30806,1174 @@ export const outreachDraftingSelectionSchema = {
   }
 };
 
+export const supplyIntakeRequestSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/supply_intake_request.schema.json",
+  "title": "SupplyIntakeRequest",
+  "description": "One request to build an organizer listing and collect that organizer's events. Every front door (a sales associate or partner nomination, an organizer's own submission, or an Admin-started discovery run) creates one; Supply Intake gathers, reviews and stages the result for staff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "requestId",
+    "kind",
+    "market",
+    "seed",
+    "submittedBy",
+    "submittedAt",
+    "origin"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,159}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "nomination",
+        "self_submission",
+        "discovery"
+      ]
+    },
+    "market": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    },
+    "seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "urls",
+        "notes",
+        "categories"
+      ],
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "urls": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "pattern": "^https?://"
+          }
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000
+        },
+        "categories": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,59}$"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "urls": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "submittedBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "uid",
+        "partnerId"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": [
+            "associate",
+            "partner",
+            "organizer",
+            "system"
+          ]
+        },
+        "uid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "partnerId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "submittedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "origin": {
+      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "admin_nomination",
+                "sales_inbound_intent",
+                "discovery_run"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "discovery"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "role": {
+                "const": "system"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "self_submission"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "role": {
+                "const": "organizer"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "nomination"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "associate",
+                  "partner"
+                ]
+              },
+              "uid": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "role": {
+                "const": "partner"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "partnerId": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "partnerId": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+};
+
+export const supplyIntakeRequestsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/supply_intake_requests.schema.json",
+  "title": "SupplyIntakeRequestDocument",
+  "description": "One organizer intake request and its processing state. Front doors create it queued; the trusted Supply Intake worker leases it, gathers the seed pages, runs the workflow and records where the reviewable listing landed. Page snapshots live in the server-only artifact store; only their hashes and paths appear here.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supplyIntakeRequests",
+  "x-firestore-path": "supplyIntakeRequests/{requestId}",
+  "x-document-id-field": "requestId",
+  "x-owner": "trusted Supply Intake worker",
+  "required": [
+    "schemaVersion",
+    "requestId",
+    "request",
+    "status",
+    "attempts",
+    "leaseUntil",
+    "result",
+    "failure",
+    "approval",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "request": {
+      "title": "SupplyIntakeRequest",
+      "description": "One request to build an organizer listing and collect that organizer's events. Every front door (a sales associate or partner nomination, an organizer's own submission, or an Admin-started discovery run) creates one; Supply Intake gathers, reviews and stages the result for staff.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "requestId",
+        "kind",
+        "market",
+        "seed",
+        "submittedBy",
+        "submittedAt",
+        "origin"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,159}$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "nomination",
+            "self_submission",
+            "discovery"
+          ]
+        },
+        "market": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,49}$"
+        },
+        "seed": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "urls",
+            "notes",
+            "categories"
+          ],
+          "properties": {
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "urls": {
+              "type": "array",
+              "maxItems": 10,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000,
+                "pattern": "^https?://"
+              }
+            },
+            "notes": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 2000
+            },
+            "categories": {
+              "type": "array",
+              "maxItems": 8,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,59}$"
+              }
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "name": {
+                    "type": "null"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "urls": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "submittedBy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "role",
+            "uid",
+            "partnerId"
+          ],
+          "properties": {
+            "role": {
+              "type": "string",
+              "enum": [
+                "associate",
+                "partner",
+                "organizer",
+                "system"
+              ]
+            },
+            "uid": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "partnerId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "origin": {
+          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.",
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "id"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "admin_nomination",
+                    "sales_inbound_intent",
+                    "discovery_run"
+                  ]
+                },
+                "id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "discovery"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "submittedBy": {
+                "properties": {
+                  "role": {
+                    "const": "system"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "self_submission"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "submittedBy": {
+                "properties": {
+                  "role": {
+                    "const": "organizer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "nomination"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "submittedBy": {
+                "properties": {
+                  "role": {
+                    "enum": [
+                      "associate",
+                      "partner"
+                    ]
+                  },
+                  "uid": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "submittedBy": {
+                "properties": {
+                  "role": {
+                    "const": "partner"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "submittedBy": {
+                "properties": {
+                  "partnerId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "submittedBy": {
+                "properties": {
+                  "partnerId": {
+                    "type": "null"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "running",
+        "completed",
+        "failed"
+      ]
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "leaseUntil": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "result": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "runId",
+            "listingId",
+            "listingWorkItemId",
+            "eventWorkItemIds",
+            "listingContentHash",
+            "gaps",
+            "researchNeeded",
+            "eventCount",
+            "stoppedReason",
+            "artifactHash",
+            "snapshotRefs",
+            "captureReceipts"
+          ],
+          "properties": {
+            "runId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "listingId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "listingWorkItemId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "eventWorkItemIds": {
+              "type": "array",
+              "maxItems": 60,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              }
+            },
+            "listingContentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "gaps": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]{0,79}$"
+              }
+            },
+            "researchNeeded": {
+              "type": "boolean"
+            },
+            "eventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 60
+            },
+            "stoppedReason": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "artifactHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "snapshotRefs": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "string",
+                "pattern": "^supply-intake/snapshots/[A-Za-z0-9._:-]{1,160}/[a-f0-9]{64}\\.json$"
+              }
+            },
+            "captureReceipts": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "schemaVersion",
+                  "runKey",
+                  "adapterId",
+                  "policyVersion",
+                  "policyDecisionId",
+                  "requestedUrl",
+                  "finalUrl",
+                  "outcome",
+                  "status",
+                  "contentType",
+                  "capturedAt",
+                  "snapshotHash",
+                  "snapshotBytes",
+                  "networkRequestsConsumed",
+                  "budgetWindow",
+                  "rawPayloadPersistence",
+                  "firestorePersistenceAllowed"
+                ],
+                "properties": {
+                  "schemaVersion": {
+                    "const": 1
+                  },
+                  "runKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "adapterId": {
+                    "enum": [
+                      "page_fetch",
+                      "static_page"
+                    ]
+                  },
+                  "policyVersion": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "policyDecisionId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 200
+                  },
+                  "requestedUrl": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "finalUrl": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 2000
+                  },
+                  "outcome": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z_]{0,59}$"
+                  },
+                  "status": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 100,
+                    "maximum": 599
+                  },
+                  "contentType": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 120
+                  },
+                  "capturedAt": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "format": "date-time"
+                  },
+                  "snapshotHash": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "snapshotBytes": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "networkRequestsConsumed": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 200
+                  },
+                  "budgetWindow": {
+                    "anyOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "monthKey",
+                          "intakeConsumed",
+                          "intakeLimit",
+                          "monthConsumed",
+                          "monthLimit"
+                        ],
+                        "properties": {
+                          "monthKey": {
+                            "type": "string",
+                            "pattern": "^[0-9]{4}-[0-9]{2}$"
+                          },
+                          "intakeConsumed": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "intakeLimit": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "monthConsumed": {
+                            "type": "integer",
+                            "minimum": 0
+                          },
+                          "monthLimit": {
+                            "type": "integer",
+                            "minimum": 0
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "rawPayloadPersistence": {
+                    "const": "external_artifact_store_only"
+                  },
+                  "firestorePersistenceAllowed": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "failure": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "message",
+            "at",
+            "attempts"
+          ],
+          "properties": {
+            "code": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]{1,80}$"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 500
+            },
+            "at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "attempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3
+            }
+          }
+        }
+      ]
+    },
+    "approval": {
+      "description": "Set once, when staff approve the listing this request built: the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "approvalId",
+            "organizerId",
+            "approvedByUid",
+            "approvedAt",
+            "materialHash",
+            "salesOwnerUid"
+          ],
+          "properties": {
+            "approvalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvedByUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "materialHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "salesOwnerUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "definitions": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "captureReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "runKey",
+        "adapterId",
+        "policyVersion",
+        "policyDecisionId",
+        "requestedUrl",
+        "finalUrl",
+        "outcome",
+        "status",
+        "contentType",
+        "capturedAt",
+        "snapshotHash",
+        "snapshotBytes",
+        "networkRequestsConsumed",
+        "budgetWindow",
+        "rawPayloadPersistence",
+        "firestorePersistenceAllowed"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "runKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "adapterId": {
+          "enum": [
+            "page_fetch",
+            "static_page"
+          ]
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "policyDecisionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 200
+        },
+        "requestedUrl": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "finalUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000
+        },
+        "outcome": {
+          "type": "string",
+          "pattern": "^[a-z][a-z_]{0,59}$"
+        },
+        "status": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 100,
+          "maximum": 599
+        },
+        "contentType": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "capturedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "snapshotHash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snapshotBytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "networkRequestsConsumed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "budgetWindow": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "monthKey",
+                "intakeConsumed",
+                "intakeLimit",
+                "monthConsumed",
+                "monthLimit"
+              ],
+              "properties": {
+                "monthKey": {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}-[0-9]{2}$"
+                },
+                "intakeConsumed": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "intakeLimit": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "monthConsumed": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "monthLimit": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          ]
+        },
+        "rawPayloadPersistence": {
+          "const": "external_artifact_store_only"
+        },
+        "firestorePersistenceAllowed": {
+          "const": false
+        }
+      }
+    }
+  }
+};
+
+export const supplyIntakeUsageDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/supply_intake_usage.schema.json",
+  "title": "SupplyIntakeUsageDocument",
+  "description": "Durable monthly page-fetch usage for Supply Intake. The worker reserves an intake's allowance here in a transaction before any request leaves the process and releases what it did not use; the monthly cap in acquisition_policy.json is enforced against this count, never against process memory.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supplyIntakeUsage",
+  "x-firestore-path": "supplyIntakeUsage/{monthKey}",
+  "x-document-id-field": "monthKey",
+  "x-owner": "trusted Supply Intake worker",
+  "required": [
+    "schemaVersion",
+    "monthKey",
+    "networkRequests",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "monthKey": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}$"
+    },
+    "networkRequests": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+};
+
 export const adminSalesIntelligenceGenerateCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_sales_intelligence_generate_payload.schema.json",
@@ -36008,7 +37176,7 @@ export const salesActivityDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_activities.schema.json",
   "title": "SalesActivityDocument",
-  "description": "Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions.",
+  "description": "Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions, and the approval of a listing Supply Intake built.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "salesActivities",
@@ -36074,7 +37242,8 @@ export const salesActivityDocumentSchema = {
         "claim_approved",
         "claim_rejected",
         "demo_started",
-        "demo_completed"
+        "demo_completed",
+        "listing_approved"
       ]
     },
     "channel": {
@@ -36189,6 +37358,41 @@ export const salesActivityDocumentSchema = {
               "pattern": "^[A-Za-z0-9_-]{3,128}$"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "requestId",
+            "approvalId",
+            "origin"
+          ],
+          "properties": {
+            "kind": {
+              "const": "supply_intake"
+            },
+            "requestId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "origin": {
+              "enum": [
+                "admin_nomination",
+                "sales_inbound_intent",
+                "discovery_run",
+                "none"
+              ]
+            }
+          }
         }
       ]
     }
@@ -36204,7 +37408,8 @@ export const salesActivityDocumentSchema = {
               "claim_approved",
               "claim_rejected",
               "demo_started",
-              "demo_completed"
+              "demo_completed",
+              "listing_approved"
             ]
           }
         }
@@ -36304,6 +37509,26 @@ export const salesActivityDocumentSchema = {
             "properties": {
               "kind": {
                 "const": "organizer_claim"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "listing_approved"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "supply_intake"
               }
             }
           }
@@ -138354,6 +139579,839 @@ export const operationWorkItemSchema = {
           "normalizedPayload": {
             "type": "object",
             "required": [
+              "intake"
+            ],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": [
+                  "recordType"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "organizer_listing_draft"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entityKind": {
+            "const": "organizer"
+          },
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "recordType",
+                  "listing"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "organizer_listing_draft"
+                  },
+                  "listing": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "listingId",
+                      "requestId",
+                      "kind",
+                      "submittedBy",
+                      "submittedAt",
+                      "seed",
+                      "organizer",
+                      "fieldEvidence",
+                      "eventCount",
+                      "pastEventCount",
+                      "pages",
+                      "gaps",
+                      "researchNeeded",
+                      "contentHash"
+                    ],
+                    "properties": {
+                      "listingId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "requestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "kind": {
+                        "enum": [
+                          "nomination",
+                          "self_submission",
+                          "discovery"
+                        ]
+                      },
+                      "submittedBy": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "role",
+                          "uid",
+                          "partnerId"
+                        ],
+                        "properties": {
+                          "role": {
+                            "enum": [
+                              "associate",
+                              "partner",
+                              "organizer",
+                              "system"
+                            ]
+                          },
+                          "uid": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "partnerId": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      "submittedAt": {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 40
+                      },
+                      "seed": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "name",
+                          "urls",
+                          "notes",
+                          "categories"
+                        ],
+                        "properties": {
+                          "name": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "urls": {
+                            "type": "array",
+                            "maxItems": 10,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          },
+                          "notes": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "categories": {
+                            "type": "array",
+                            "maxItems": 40,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            }
+                          }
+                        }
+                      },
+                      "organizer": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "name",
+                          "description",
+                          "imageUrl",
+                          "locality",
+                          "categories",
+                          "links",
+                          "identityKeys"
+                        ],
+                        "properties": {
+                          "name": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "description": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "imageUrl": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "locality": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 500
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "categories": {
+                            "type": "array",
+                            "maxItems": 40,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            }
+                          },
+                          "links": {
+                            "type": "array",
+                            "maxItems": 20,
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "platform",
+                                "surfaceKind",
+                                "url",
+                                "normalizedKey",
+                                "evidenceUrl"
+                              ],
+                              "properties": {
+                                "platform": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 500
+                                },
+                                "surfaceKind": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 500
+                                },
+                                "url": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "normalizedKey": {
+                                  "anyOf": [
+                                    {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 500
+                                    },
+                                    {
+                                      "type": "null"
+                                    }
+                                  ]
+                                },
+                                "evidenceUrl": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            }
+                          },
+                          "identityKeys": {
+                            "type": "array",
+                            "maxItems": 40,
+                            "items": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            }
+                          }
+                        }
+                      },
+                      "fieldEvidence": {
+                        "type": "array",
+                        "maxItems": 20,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "field",
+                            "sourceUrl",
+                            "method",
+                            "adapterId"
+                          ],
+                          "properties": {
+                            "field": {
+                              "enum": [
+                                "name",
+                                "description",
+                                "imageUrl",
+                                "locality"
+                              ]
+                            },
+                            "sourceUrl": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "method": {
+                              "enum": [
+                                "adapter",
+                                "nominator",
+                                "agent"
+                              ]
+                            },
+                            "adapterId": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 500
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      "eventCount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 60
+                      },
+                      "pastEventCount": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "pages": {
+                        "type": "array",
+                        "maxItems": 12,
+                        "items": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "url",
+                            "via",
+                            "platform",
+                            "outcome",
+                            "adapterId",
+                            "pageKind",
+                            "abstainReason",
+                            "snapshotHash",
+                            "capturedAt"
+                          ],
+                          "properties": {
+                            "url": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "via": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "platform": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            },
+                            "outcome": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 500
+                            },
+                            "adapterId": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 500
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "pageKind": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 500
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "abstainReason": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 500
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "snapshotHash": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "pattern": "^[a-f0-9]{64}$"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "capturedAt": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 10,
+                                  "maxLength": 40
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      "gaps": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      },
+                      "researchNeeded": {
+                        "type": "boolean"
+                      },
+                      "contentHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "intake"
+            ],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": [
+                  "recordType"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "listing_event_candidate"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entityKind": {
+            "const": "event"
+          },
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "recordType",
+                  "event"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "listing_event_candidate"
+                  },
+                  "event": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "listingId",
+                      "listingWorkItemId",
+                      "requestId",
+                      "eventKey",
+                      "platform",
+                      "sourceEntityId",
+                      "title",
+                      "description",
+                      "startAt",
+                      "endAt",
+                      "timezone",
+                      "venue",
+                      "address",
+                      "locality",
+                      "latitude",
+                      "longitude",
+                      "sourceUrl",
+                      "imageUrl",
+                      "price",
+                      "status",
+                      "attendanceMode",
+                      "organizerName",
+                      "organizerUrl",
+                      "adapterId",
+                      "evidenceFields",
+                      "alsoListedAt"
+                    ],
+                    "properties": {
+                      "listingId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "listingWorkItemId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "requestId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "eventKey": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "platform": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "sourceEntityId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "title": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "description": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "startAt": {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 40
+                      },
+                      "endAt": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 10,
+                            "maxLength": 40
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "timezone": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "venue": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "address": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "locality": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "latitude": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": -90,
+                            "maximum": 90
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "longitude": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": -180,
+                            "maximum": 180
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "sourceUrl": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "imageUrl": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "price": {
+                        "anyOf": [
+                          {
+                            "type": "object",
+                            "maxProperties": 8
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "status": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "attendanceMode": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "organizerName": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "organizerUrl": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "adapterId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "evidenceFields": {
+                        "type": "array",
+                        "maxItems": 40,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 500
+                        }
+                      },
+                      "alsoListedAt": {
+                        "type": "array",
+                        "maxItems": 10,
+                        "items": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
               "kind"
             ],
             "properties": {
@@ -142855,6 +144913,767 @@ export const operationWorkItemSchema = {
                     "maxLength": 2000
                   }
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "organizerListingDraftIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordType",
+        "listing"
+      ],
+      "properties": {
+        "recordType": {
+          "const": "organizer_listing_draft"
+        },
+        "listing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "listingId",
+            "requestId",
+            "kind",
+            "submittedBy",
+            "submittedAt",
+            "seed",
+            "organizer",
+            "fieldEvidence",
+            "eventCount",
+            "pastEventCount",
+            "pages",
+            "gaps",
+            "researchNeeded",
+            "contentHash"
+          ],
+          "properties": {
+            "listingId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "requestId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "kind": {
+              "enum": [
+                "nomination",
+                "self_submission",
+                "discovery"
+              ]
+            },
+            "submittedBy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "role",
+                "uid",
+                "partnerId"
+              ],
+              "properties": {
+                "role": {
+                  "enum": [
+                    "associate",
+                    "partner",
+                    "organizer",
+                    "system"
+                  ]
+                },
+                "uid": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "partnerId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "submittedAt": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 40
+            },
+            "seed": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "urls",
+                "notes",
+                "categories"
+              ],
+              "properties": {
+                "name": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "urls": {
+                  "type": "array",
+                  "maxItems": 10,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                },
+                "notes": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "categories": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                }
+              }
+            },
+            "organizer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "description",
+                "imageUrl",
+                "locality",
+                "categories",
+                "links",
+                "identityKeys"
+              ],
+              "properties": {
+                "name": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "description": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "imageUrl": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "locality": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "categories": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                },
+                "links": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "platform",
+                      "surfaceKind",
+                      "url",
+                      "normalizedKey",
+                      "evidenceUrl"
+                    ],
+                    "properties": {
+                      "platform": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "surfaceKind": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      "url": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "normalizedKey": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 500
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "evidenceUrl": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      }
+                    }
+                  }
+                },
+                "identityKeys": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  }
+                }
+              }
+            },
+            "fieldEvidence": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "field",
+                  "sourceUrl",
+                  "method",
+                  "adapterId"
+                ],
+                "properties": {
+                  "field": {
+                    "enum": [
+                      "name",
+                      "description",
+                      "imageUrl",
+                      "locality"
+                    ]
+                  },
+                  "sourceUrl": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "method": {
+                    "enum": [
+                      "adapter",
+                      "nominator",
+                      "agent"
+                    ]
+                  },
+                  "adapterId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "eventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 60
+            },
+            "pastEventCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pages": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "url",
+                  "via",
+                  "platform",
+                  "outcome",
+                  "adapterId",
+                  "pageKind",
+                  "abstainReason",
+                  "snapshotHash",
+                  "capturedAt"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "via": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "platform": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "outcome": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500
+                  },
+                  "adapterId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "pageKind": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "abstainReason": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "snapshotHash": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "capturedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 40
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "gaps": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "researchNeeded": {
+              "type": "boolean"
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      }
+    },
+    "listingEventCandidateIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordType",
+        "event"
+      ],
+      "properties": {
+        "recordType": {
+          "const": "listing_event_candidate"
+        },
+        "event": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "listingId",
+            "listingWorkItemId",
+            "requestId",
+            "eventKey",
+            "platform",
+            "sourceEntityId",
+            "title",
+            "description",
+            "startAt",
+            "endAt",
+            "timezone",
+            "venue",
+            "address",
+            "locality",
+            "latitude",
+            "longitude",
+            "sourceUrl",
+            "imageUrl",
+            "price",
+            "status",
+            "attendanceMode",
+            "organizerName",
+            "organizerUrl",
+            "adapterId",
+            "evidenceFields",
+            "alsoListedAt"
+          ],
+          "properties": {
+            "listingId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "listingWorkItemId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "requestId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "eventKey": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "platform": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "sourceEntityId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "title": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "startAt": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 40
+            },
+            "endAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "timezone": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "venue": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "address": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "locality": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "latitude": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": -90,
+                  "maximum": 90
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "longitude": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sourceUrl": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "imageUrl": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "price": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "maxProperties": 8
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "attendanceMode": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "organizerName": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "organizerUrl": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "adapterId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidenceFields": {
+              "type": "array",
+              "maxItems": 40,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 500
+              }
+            },
+            "alsoListedAt": {
+              "type": "array",
+              "maxItems": 10,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
               }
             }
           }
@@ -152160,6 +154979,7 @@ export const organizerDocumentSchema = {
           "type": "string",
           "enum": [
             "adminCreateOrganizerDraftFromCandidate",
+            "adminApproveOrganizerListing",
             "adminUpdateClubDetails",
             "adminSetClubIndexStatus",
             "adminOrganizerSearchBackfill"
@@ -235967,6 +238787,7 @@ export const publicRouteReservationDocumentSchema = {
         "adminUpdateOrganizerDetails",
         "adminSetOrganizerIndexStatus",
         "adminCreateOrganizerDraftFromCandidate",
+        "adminApproveOrganizerListing",
         "createOrganizer",
         "clubsToOrganizersMigration"
       ],
@@ -236544,7 +239365,7 @@ export const organizerIntakeCurationDecisionDocumentSchema = {
   "x-firestore-collection": "organizerIntakeCurationDecisions",
   "x-firestore-path": "organizerIntakeCurationDecisions/{operationId}",
   "x-document-id-field": "operationId",
-  "x-owner": "adminRecordOrganizerCuration and adminCreateOrganizerDraftFromCandidate callables",
+  "x-owner": "adminRecordOrganizerCuration, adminCreateOrganizerDraftFromCandidate and adminApproveOrganizerListing callables",
   "required": [
     "schemaVersion",
     "operationId",
@@ -246306,6 +249127,291 @@ export const adminDecideOrganizerEventCandidateCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 1000
+    }
+  }
+};
+
+export const adminNominateOrganizerCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_nominate_organizer_payload.schema.json",
+  "title": "AdminNominateOrganizerCallablePayload",
+  "description": "A Catch sales associate nominates an organizer. Supply Intake builds the listing from the name and links; nothing is published until staff review it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "name",
+    "market",
+    "urls",
+    "notes",
+    "categories"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "market": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "urls": {
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000,
+        "pattern": "^https?://"
+      }
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 2000
+    },
+    "categories": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]{0,59}$"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "name": {
+            "type": "null"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "urls": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "x-callable-aliases": [
+    "adminNominateOrganizer"
+  ]
+};
+
+export const adminNominateOrganizerCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_nominate_organizer_response.schema.json",
+  "title": "AdminNominateOrganizerCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "created",
+    "status"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^nom-[a-f0-9]{40}$"
+    },
+    "created": {
+      "type": "boolean"
+    },
+    "status": {
+      "const": "queued"
+    }
+  }
+};
+
+export const adminApproveOrganizerListingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_approve_organizer_listing_payload.schema.json",
+  "title": "AdminApproveOrganizerListingCallablePayload",
+  "description": "Staff approve a listing Supply Intake built from a nomination, an organizer's own submission or discovery. One transaction publishes the organizer page claimable and noindex, hidden in the app, records the review decision and receipt, and opens the organizer's Sales account, opportunity, tasks and activity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "listingWorkItemId",
+    "contentHash",
+    "name",
+    "publicSlug",
+    "marketId",
+    "organizerType",
+    "checklist",
+    "note"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "The reviewer's idempotency key; a retry with the same content replays."
+    },
+    "listingWorkItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "The listing content the reviewer saw. A listing rebuilt since then is refused."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "publicSlug": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$"
+    },
+    "marketId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "organizerType": {
+      "type": "string",
+      "enum": [
+        "club",
+        "community",
+        "individual",
+        "eventProducer",
+        "venue",
+        "brand"
+      ],
+      "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The public-web publication checklist, every item confirmed.",
+      "required": [
+        "identityReviewed",
+        "surfaceInventoryReviewed",
+        "ownerSafeCopyReviewed",
+        "marketScopeReviewed",
+        "mediaRightsReviewed",
+        "crawlDisabledReviewed",
+        "claimTargetReviewed",
+        "takedownPathReviewed",
+        "impersonationReviewed"
+      ],
+      "properties": {
+        "identityReviewed": {
+          "const": true
+        },
+        "surfaceInventoryReviewed": {
+          "const": true
+        },
+        "ownerSafeCopyReviewed": {
+          "const": true
+        },
+        "marketScopeReviewed": {
+          "const": true
+        },
+        "mediaRightsReviewed": {
+          "const": true
+        },
+        "crawlDisabledReviewed": {
+          "const": true
+        },
+        "claimTargetReviewed": {
+          "const": true
+        },
+        "takedownPathReviewed": {
+          "const": true
+        },
+        "impersonationReviewed": {
+          "const": true
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500
+    }
+  },
+  "x-callable-aliases": [
+    "adminApproveOrganizerListing"
+  ]
+};
+
+export const adminApproveOrganizerListingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_approve_organizer_listing_response.schema.json",
+  "title": "AdminApproveOrganizerListingCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "approvalId",
+    "organizerId",
+    "organizerPath",
+    "created",
+    "publishStatus",
+    "indexStatus",
+    "appVisibility",
+    "claimState",
+    "salesOwnerUid"
+  ],
+  "properties": {
+    "approvalId": {
+      "type": "string",
+      "pattern": "^listing-[a-f0-9]{40}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "organizerPath": {
+      "type": "string",
+      "pattern": "^organizers/[^/]+$"
+    },
+    "created": {
+      "type": "boolean",
+      "description": "False when this exact approval had already been applied."
+    },
+    "publishStatus": {
+      "const": "published"
+    },
+    "indexStatus": {
+      "const": "noindex"
+    },
+    "appVisibility": {
+      "const": "hidden"
+    },
+    "claimState": {
+      "const": "unclaimed"
+    },
+    "salesOwnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   }
 };

@@ -235,9 +235,9 @@ class _ProgramLodgingLayoutState extends State<ProgramLodgingLayout> {
             ],
           ),
         if (selectedTarget != null) ...[
-          Text(
+          CatchText(
             selectedTarget.explanation,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           CatchButton(
             key: const ValueKey('lodging-move'),

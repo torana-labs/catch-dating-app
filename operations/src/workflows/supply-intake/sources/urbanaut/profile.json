@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "sourceProfileId": "urbanaut",
+  "label": "Urbanaut",
+  "sourceTier": "structured_official_platform",
+  "status": "shadow",
+  "allowedUse": "Extract an experience and its host's public account data from Urbanaut's embedded page state. Booking and on-ground contacts are never read.",
+  "acquisition": {
+    "networkEnabled": false,
+    "allowedHosts": [
+      "urbanaut.app"
+    ],
+    "artifactOnly": true
+  },
+  "extraction": {
+    "strategy": "urbanaut_ng_state_spot_v1",
+    "deterministicFirst": true,
+    "modelFallback": true,
+    "templateDriftBehavior": "abstain"
+  },
+  "publication": {
+    "autoEligible": false,
+    "requiresOfficialSource": true,
+    "requiresPolicyApproval": true
+  }
+}

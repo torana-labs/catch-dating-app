@@ -63,10 +63,7 @@ class CatchStepHeader extends StatelessWidget {
             ? (onStepOverview == null
                   ? Text(
                       visibleStepLabel!,
-                      style: CatchTextStyles.appBarSubtitle(
-                        context,
-                        color: t.ink3,
-                      ),
+                      style: CatchTextStyles.bodyS(context, color: t.ink3),
                     )
                   : Semantics(
                       button: true,
@@ -81,7 +78,7 @@ class CatchStepHeader extends StatelessWidget {
                           CatchIconAction.navSize,
                         ),
                         padding: EdgeInsets.zero,
-                        textStyle: CatchTextStyles.appBarSubtitle(
+                        textStyle: CatchTextStyles.bodyS(
                           context,
                           color: t.ink3,
                         ),

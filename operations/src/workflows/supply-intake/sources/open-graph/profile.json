@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "sourceProfileId": "open-graph",
+  "label": "Page metadata",
+  "sourceTier": "metadata_only",
+  "status": "discovery_only",
+  "allowedUse": "Give the extraction agent and reviewers a page's OpenGraph and meta tags as context. Never a source of event or organizer facts on its own.",
+  "acquisition": {
+    "networkEnabled": false,
+    "allowedHosts": [],
+    "artifactOnly": true
+  },
+  "extraction": {
+    "strategy": "open_graph_metadata_v1",
+    "deterministicFirst": true,
+    "modelFallback": true,
+    "templateDriftBehavior": "abstain"
+  },
+  "publication": {
+    "autoEligible": false,
+    "discoveryOnly": true,
+    "requiresOfficialSource": true,
+    "requiresPolicyApproval": true
+  }
+}

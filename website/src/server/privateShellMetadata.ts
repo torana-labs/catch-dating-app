@@ -1,4 +1,5 @@
 import {pageMeta} from "../app/pageMeta";
+import {previewCardFor, previewCardImage} from "./previewCards";
 
 const families = {
   join: "event_runtime", booking: "event_booking", offer: "event_offer",
@@ -24,5 +25,10 @@ export function privateShellHead(family: string | null): string {
   const escape = (value: string) => value.replace(/[&<>"']/g, character => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
   })[character]!);
-  return `<title>${escape(meta.title)}</title><meta name="description" content="${escape(meta.description)}"><link rel="canonical" href="https://catchdates.com${escape(meta.canonicalPath)}">`;
+  // The preview card is chosen by family alone: no event, guest or token detail.
+  const image = previewCardImage(previewCardFor(meta.canonicalPath));
+  return `<title>${escape(meta.title)}</title><meta name="description" content="${escape(meta.description)}"><link rel="canonical" href="https://catchdates.com${escape(meta.canonicalPath)}">` +
+    `<meta property="og:type" content="website"><meta property="og:title" content="${escape(meta.title)}"><meta property="og:description" content="${escape(meta.description)}">` +
+    `<meta property="og:image" content="${escape(image.url)}"><meta property="og:image:width" content="${image.width}"><meta property="og:image:height" content="${image.height}"><meta property="og:image:alt" content="${escape(image.alt)}">` +
+    `<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escape(meta.title)}"><meta name="twitter:description" content="${escape(meta.twitterDescription)}"><meta name="twitter:image" content="${escape(image.url)}">`;
 }

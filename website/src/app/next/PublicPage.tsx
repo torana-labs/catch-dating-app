@@ -8,7 +8,8 @@ import {retiredMarketingDestination} from "../retiredMarketingRoutes";
 import {useLocation, useNavigate} from "react-router";
 import {PageShell} from "../../shared/site";
 import {isLegalPageKey, pageClassFor, type PageKey} from "../pageMeta";
-import {useHashScroll, useMarketingAnalytics, useMarketingCaptures} from "../usePageLifecycle";
+import {useHashScroll, useMarketingAnalytics} from "../usePageLifecycle";
+import {marketingCaptures as captures} from "../marketingCaptures";
 import {usePublicHostListings} from "../../features/organizers/usePublicEventListingsController";
 import {getHostListingRouteForPath} from "../../features/organizers/routing";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../../features/events/eventDetailModel";
@@ -30,7 +31,6 @@ const Missing = dynamic(() => import("../../features/notFound/NotFoundPage").the
 export function PublicPage({page, readAt, contact}: {page: PageKey; readAt: number; contact?: PublicContact}) {
   const location = useLocation();
   const {listings, readAt: currentReadAt} = usePublicHostListings();
-  const captures = useMarketingCaptures();
   const navigate = useNavigate();
   const exploreRouteState = exploreRouteStateForSearch(location.search);
   const homeRouteState = homeRouteStateForSearch(location.search);

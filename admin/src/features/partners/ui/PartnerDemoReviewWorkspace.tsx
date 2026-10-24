@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {ClipboardList} from "lucide-react";
 import {useEffect, useState} from "react";
 import {AdminButton, AdminForm, CheckboxField, EmptyState, Panel, StateRow} from "../../../shared/ui/AdminPrimitives";
@@ -20,8 +20,8 @@ function ReviewBody(props: Parameters<typeof PartnerDemoReviewWorkspace>[0]) {
   const retained = props.isCurrentSession() && c.query.data?.organizerId === props.organizerId &&
     c.query.data.assignmentRevision === props.assignmentRevision ? c.query.data : null;
   return <>{visible && <Panel title="Private synthetic preview" icon={<ClipboardList />}>
-    <p>Review the sample and propose wording for Owner review. This review creates no invitation or organizer control.</p>
-    {c.error && <p role="alert">{c.error}</p>}{c.notice && <p role="status">{c.notice}</p>}
+    <CatchText as="p" variant="supporting">Review the sample and propose wording for Owner review. This review creates no invitation or organizer control.</CatchText>
+    {c.error && <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText>}{c.notice && <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText>}
     <AdminButton disabled={operationPending || c.busy} onClick={() => void c.refresh()}>Refresh private previews</AdminButton>
     {c.ticket && <AdminButton disabled={operationPending || c.busy || !c.data} onClick={() => void c.retry()}>Retry unchanged preview proposal</AdminButton>}
     {!c.data || !c.data.rows.length ? <EmptyState>No current preview has been separately shared with you.</EmptyState> : null}
@@ -39,12 +39,12 @@ function PreviewEditor({row, visible, disabled, propose}: {row: PartnerDemoRevie
   if (!visible) return null;
   return <Panel title="Review shared composition" icon={<ClipboardList />}><AdminForm onSubmit={(e) => {e.preventDefault(); if (reviewed && valid && !disabled) void propose(row, {
     headline: wording.headline.trim(), scenario: wording.scenario.trim(), cta: wording.cta.trim()});}}>
-    <h3>{row.preview.brandName}</h3><StateRow label="Approved headline" value={row.preview.headline} />
-    <p>{row.preview.scenario}</p><ol>{row.preview.steps.map((step, i) => <li key={i}>{step}</li>)}</ol>
-    {row.preview.retainedTools.map((tool, i) => <p key={i}>Keep: {tool}</p>)}
-    {row.preview.limitations.map((limit, i) => <p key={i}>{limit}</p>)}
-    <p>Approved call to action: {row.preview.cta}</p><p>Sample only. No guests, messages or admissions are real.</p>
-    {row.proposedWording && <p role="status">Your wording is awaiting Owner review. The approved preview remains above.</p>}
+    <CatchText as="h3" variant="sectionTitle">{row.preview.brandName}</CatchText><StateRow label="Approved headline" value={row.preview.headline} />
+    <CatchText as="p" variant="supporting">{row.preview.scenario}</CatchText><ol>{row.preview.steps.map((step, i) => <li key={i}>{step}</li>)}</ol>
+    {row.preview.retainedTools.map((tool, i) => <CatchText as="p" variant="supporting" key={i}>Keep: {tool}</CatchText>)}
+    {row.preview.limitations.map((limit, i) => <CatchText as="p" variant="supporting" key={i}>{limit}</CatchText>)}
+    <CatchText as="p" variant="supporting">Approved call to action: {row.preview.cta}</CatchText><CatchText as="p" variant="supporting">Sample only. No guests, messages or admissions are real.</CatchText>
+    {row.proposedWording && <CatchText as="p" variant="supporting" role="status">Your wording is awaiting Owner review. The approved preview remains above.</CatchText>}
     <CatchField
       recipe="input"
       title="Proposed headline"

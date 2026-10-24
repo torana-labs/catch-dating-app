@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "description": "Event platforms Supply Intake recognizes. Ids match externalEvents.externalSource.platform. adapterId names the deterministic adapter that reads the platform's pages, or null when only URL classification exists.",
+  "platforms": [
+    {"id": "luma", "displayName": "Luma", "hosts": ["luma.com", "lu.ma"], "adapterId": "luma"},
+    {"id": "district", "displayName": "District", "hosts": ["district.in"], "adapterId": "district"},
+    {"id": "urbanaut", "displayName": "Urbanaut", "hosts": ["urbanaut.app"], "adapterId": "urbanaut"},
+    {"id": "partiful", "displayName": "Partiful", "hosts": ["partiful.com"], "adapterId": null},
+    {"id": "bookMyShow", "displayName": "BookMyShow", "hosts": ["bookmyshow.com"], "adapterId": null},
+    {"id": "sortMyScene", "displayName": "Sort My Scene", "hosts": ["sortmyscene.com"], "adapterId": null}
+  ]
+}

@@ -1,0 +1,122 @@
+name: Website Release
+
+# The release train from main to catchdates.com. After main CI succeeds (and
+# hourly, in case an event was missed), it previews main's head with the
+# existing Next Website Preview workflow, waits for a reviewer to approve the
+# preview in the protected prod environment, then promotes that exact preview
+# with Next Website Promotion. Both workflows keep every check of their own.
+# Trains queue rather than cancel, so an approval is never reset by a newer
+# merge; the newest pending train waits behind it. Operator guide:
+# docs/web_surface_architecture.md, "Release train".
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  schedule:
+    - cron: "23 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: website-release
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: Decide whether main's head should be released
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name != 'workflow_run' || github.event.workflow_run.event == 'push') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      deployments: read
+    outputs:
+      release: ${{ steps.plan.outputs.release }}
+      source_sha: ${{ steps.plan.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          EVENT_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+        run: node website/scripts/next/releaseTrain.mjs plan
+
+  preview:
+    name: Preview main's head
+    needs: plan
+    if: ${{ needs.plan.outputs.release == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    permissions:
+      actions: write
+      contents: read
+    outputs:
+      preview_run_id: ${{ steps.preview.outputs.preview_run_id }}
+      preview_url: ${{ steps.preview.outputs.preview_url }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+        run: node website/scripts/next/releaseTrain.mjs preview
+
+  approve:
+    name: Approve the preview for catchdates.com
+    needs: [plan, preview]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    # The protected environment's required reviewers are the release gate. The
+    # job holds no token and uses none of the environment's credentials.
+    environment:
+      name: prod
+      url: ${{ needs.preview.outputs.preview_url }}
+    permissions: {}
+    steps:
+      - env:
+          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+          PREVIEW_URL: ${{ needs.preview.outputs.preview_url }}
+        run: echo "Approved $SOURCE_SHA for production after review of $PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"
+
+  promote:
+    name: Promote the approved preview
+    needs: [plan, preview, approve]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+          PREVIEW_RUN_ID: ${{ needs.preview.outputs.preview_run_id }}
+        run: node website/scripts/next/releaseTrain.mjs promote

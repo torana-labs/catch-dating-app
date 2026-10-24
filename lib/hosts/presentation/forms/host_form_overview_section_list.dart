@@ -114,9 +114,9 @@ class HostFormOverviewSectionList extends ConsumerWidget {
             builder: (context, value) {
               final response = value.responses.firstOrNull;
               if (response == null) {
-                return Text(
+                return CatchText(
                   context.l10n.hostFormResponsesEmptyBody,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 );
               }
               return CatchSection.containedRows(
@@ -191,9 +191,9 @@ class HostFormOverviewSectionList extends ConsumerWidget {
         gapH24,
         CatchSection.divided(
           title: context.l10n.hostFormConsequencesTitle,
-          child: Text(
+          child: CatchText(
             hostFormConsequenceSummary(context, form),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ),
       ],

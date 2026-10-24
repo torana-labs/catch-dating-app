@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/supply_intake_requests.schema.json",
+  "title": "SupplyIntakeRequestDocument",
+  "description": "One organizer intake request and its processing state. Front doors create it queued; the trusted Supply Intake worker leases it, gathers the seed pages, runs the workflow and records where the reviewable listing landed. Page snapshots live in the server-only artifact store; only their hashes and paths appear here.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supplyIntakeRequests",
+  "x-firestore-path": "supplyIntakeRequests/{requestId}",
+  "x-document-id-field": "requestId",
+  "x-owner": "trusted Supply Intake worker",
+  "required": ["schemaVersion", "requestId", "request", "status", "attempts", "leaseUntil", "result", "failure", "approval",
+    "createdAt", "updatedAt"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "requestId": {"$ref": "#/definitions/id"},
+    "request": {"$ref": "../operations/supply_intake_request.schema.json"},
+    "status": {"type": "string", "enum": ["queued", "running", "completed", "failed"]},
+    "attempts": {"type": "integer", "minimum": 0, "maximum": 3},
+    "leaseUntil": {"type": ["string", "null"], "format": "date-time"},
+    "result": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["runId", "listingId", "listingWorkItemId", "eventWorkItemIds", "listingContentHash", "gaps",
+            "researchNeeded", "eventCount", "stoppedReason", "artifactHash", "snapshotRefs", "captureReceipts"],
+          "properties": {
+            "runId": {"$ref": "#/definitions/id"},
+            "listingId": {"$ref": "#/definitions/id"},
+            "listingWorkItemId": {"$ref": "#/definitions/id"},
+            "eventWorkItemIds": {"type": "array", "maxItems": 60, "items": {"$ref": "#/definitions/id"}},
+            "listingContentHash": {"$ref": "#/definitions/hash"},
+            "gaps": {"type": "array", "maxItems": 40, "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]{0,79}$"}},
+            "researchNeeded": {"type": "boolean"},
+            "eventCount": {"type": "integer", "minimum": 0, "maximum": 60},
+            "stoppedReason": {"type": ["string", "null"], "maxLength": 80},
+            "artifactHash": {"$ref": "#/definitions/hash"},
+            "snapshotRefs": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {"type": "string", "pattern": "^supply-intake/snapshots/[A-Za-z0-9._:-]{1,160}/[a-f0-9]{64}\\.json$"}
+            },
+            "captureReceipts": {"type": "array", "maxItems": 12, "items": {"$ref": "#/definitions/captureReceipt"}}
+          }
+        }
+      ]
+    },
+    "failure": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "message", "at", "attempts"],
+          "properties": {
+            "code": {"type": "string", "pattern": "^[A-Za-z0-9_.-]{1,80}$"},
+            "message": {"type": "string", "maxLength": 500},
+            "at": {"type": "string", "format": "date-time"},
+            "attempts": {"type": "integer", "minimum": 1, "maximum": 3}
+          }
+        }
+      ]
+    },
+    "approval": {
+      "description": "Set once, when staff approve the listing this request built: the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays.",
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["approvalId", "organizerId", "approvedByUid", "approvedAt", "materialHash", "salesOwnerUid"],
+          "properties": {
+            "approvalId": {"$ref": "#/definitions/id"},
+            "organizerId": {"$ref": "#/definitions/id"},
+            "approvedByUid": {"$ref": "#/definitions/id"},
+            "approvedAt": {"type": "string", "format": "date-time"},
+            "materialHash": {"$ref": "#/definitions/hash"},
+            "salesOwnerUid": {"$ref": "#/definitions/id"}
+          }
+        }
+      ]
+    },
+    "createdAt": {"type": "string", "format": "date-time"},
+    "updatedAt": {"type": "string", "format": "date-time"}
+  },
+  "definitions": {
+    "id": {"type": "string", "minLength": 1, "maxLength": 240, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"},
+    "hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "captureReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersion", "runKey", "adapterId", "policyVersion", "policyDecisionId", "requestedUrl", "finalUrl",
+        "outcome", "status", "contentType", "capturedAt", "snapshotHash", "snapshotBytes", "networkRequestsConsumed",
+        "budgetWindow", "rawPayloadPersistence", "firestorePersistenceAllowed"],
+      "properties": {
+        "schemaVersion": {"const": 1},
+        "runKey": {"type": "string", "minLength": 1, "maxLength": 500},
+        "adapterId": {"enum": ["page_fetch", "static_page"]},
+        "policyVersion": {"type": "string", "minLength": 1, "maxLength": 120},
+        "policyDecisionId": {"type": ["string", "null"], "maxLength": 200},
+        "requestedUrl": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "finalUrl": {"type": ["string", "null"], "maxLength": 2000},
+        "outcome": {"type": "string", "pattern": "^[a-z][a-z_]{0,59}$"},
+        "status": {"type": ["integer", "null"], "minimum": 100, "maximum": 599},
+        "contentType": {"type": ["string", "null"], "maxLength": 120},
+        "capturedAt": {"type": ["string", "null"], "format": "date-time"},
+        "snapshotHash": {"anyOf": [{"$ref": "#/definitions/hash"}, {"type": "null"}]},
+        "snapshotBytes": {"type": "integer", "minimum": 0},
+        "networkRequestsConsumed": {"type": "integer", "minimum": 0, "maximum": 200},
+        "budgetWindow": {
+          "anyOf": [
+            {"type": "null"},
+            {"type": "object", "additionalProperties": false,
+              "required": ["monthKey", "intakeConsumed", "intakeLimit", "monthConsumed", "monthLimit"],
+              "properties": {
+                "monthKey": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}$"},
+                "intakeConsumed": {"type": "integer", "minimum": 0},
+                "intakeLimit": {"type": "integer", "minimum": 0},
+                "monthConsumed": {"type": "integer", "minimum": 0},
+                "monthLimit": {"type": "integer", "minimum": 0}
+              }}
+          ]
+        },
+        "rawPayloadPersistence": {"const": "external_artifact_store_only"},
+        "firestorePersistenceAllowed": {"const": false}
+      }
+    }
+  }
+}

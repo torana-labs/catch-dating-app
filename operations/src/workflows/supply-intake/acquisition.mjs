@@ -1,10 +1,11 @@
+import Ajv from "ajv";
+import addFormats from "ajv-formats";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {BudgetLedger} from "../../platform/budget.mjs";
 import {hashValue} from "../../platform/canonical-json.mjs";
 import {OperationsError, invariant} from "../../platform/errors.mjs";
-import {validateJsonSchema} from "../../platform/json-schema.mjs";
 
 const moduleDirectory = path.dirname(fileURLToPath(import.meta.url));
 const policyPath = path.join(
@@ -19,6 +20,8 @@ const schemaPath = path.join(
 );
 
 export const MANUAL_FILE_ACQUISITION_ADAPTER_ID = "manual_file";
+export const PAGE_FETCH_ADAPTER_ID = "page_fetch";
+export const PAGE_FETCH_POLICY_GAP_ID = "on_demand_page_fetch_policy";
 export const RAW_PAYLOAD_PERSISTENCE =
   "external_artifact_store_only";
 
@@ -30,15 +33,19 @@ export async function loadSupplyAcquisitionPolicy({
     readFile(schemaPath, "utf8"),
   ]);
   const policy = JSON.parse(policyText);
-  const schema = JSON.parse(schemaText);
-  const validation = validateJsonSchema(schema, policy);
-  if (!validation.valid) {
+  // Full draft-07 validation: the channel rules are if/then conditions.
+  const ajv = new Ajv({allErrors: true, strict: false});
+  addFormats(ajv);
+  const validate = ajv.compile(JSON.parse(schemaText));
+  if (!validate(policy)) {
     throw new OperationsError(
       "INVALID_ACQUISITION_POLICY",
       "Supply Intake acquisition policy does not satisfy its schema.",
-      {details: {errors: validation.errors}}
+      {details: {errors: (validate.errors ?? []).map((error) =>
+        ({path: error.instancePath, keyword: error.keyword, message: error.message}))}}
     );
   }
+  assertPolicy(policy);
   return structuredClone(policy);
 }
 
@@ -165,10 +172,10 @@ export class ProviderAcquisitionAdapter {
         }
       );
     }
-    assertAcceptedPolicyDecision(
-      this.policyDecision,
-      this.policy
-    );
+    assertAcceptedAcquisitionDecision(this.policyDecision, {
+      decisionId: this.policy.provider.decisionId,
+      gapId: this.policy.provider.policyGapId,
+    });
     invariant(
       typeof this.provider?.acquire === "function",
       "ACQUISITION_PROVIDER_MISSING",
@@ -353,7 +360,7 @@ function assertBudgetLedgers(budgets, policy) {
   );
 }
 
-function assertPolicy(policy) {
+export function assertPolicy(policy) {
   invariant(
     policy?.schemaVersion === 1 &&
       typeof policy.policyVersion === "string" &&
@@ -370,6 +377,12 @@ function assertPolicy(policy) {
         policy.budgets?.maxNetworkRequestsPerMonth
       ) &&
       policy.budgets.maxNetworkRequestsPerMonth >= 0 &&
+      typeof policy.pageFetch?.enabled === "boolean" &&
+      policy.pageFetch.policyGapId === PAGE_FETCH_POLICY_GAP_ID &&
+      Number.isSafeInteger(policy.pageFetch.maxRequestsPerIntake) &&
+      policy.pageFetch.maxRequestsPerIntake >= 0 &&
+      Number.isSafeInteger(policy.pageFetch.maxRequestsPerMonth) &&
+      policy.pageFetch.maxRequestsPerMonth >= 0 &&
       policy.rawPayload?.firestorePersistenceAllowed === false &&
       policy.rawPayload?.persistence ===
         RAW_PAYLOAD_PERSISTENCE,
@@ -388,13 +401,28 @@ function assertPolicy(policy) {
       "Enabled provider acquisition requires an adapter, decision, and positive caps."
     );
   }
+  if (policy.pageFetch.enabled) {
+    invariant(
+      policy.pageFetch.adapterId === PAGE_FETCH_ADAPTER_ID &&
+        typeof policy.pageFetch.decisionId === "string" &&
+        policy.pageFetch.decisionId.length > 0 &&
+        policy.pageFetch.maxRequestsPerIntake > 0 &&
+        policy.pageFetch.maxRequestsPerMonth > 0,
+      "ACQUISITION_POLICY_DECISION_REQUIRED",
+      "Enabled page fetching requires its adapter, decision, and positive caps."
+    );
+  }
 }
 
-function assertAcceptedPolicyDecision(decision, policy) {
+/**
+ * An enabled network channel must cite the accepted Admin policy-gap decision
+ * recorded at organizerPolicyGapReviewDecisions/{decisionId}.
+ */
+export function assertAcceptedAcquisitionDecision(decision, {decisionId, gapId}) {
   invariant(
     decision?.schemaVersion === 1 &&
-      decision.decisionId === policy.provider.decisionId &&
-      decision.gapId === policy.provider.policyGapId &&
+      decision.decisionId === decisionId &&
+      decision.gapId === gapId &&
       decision.decision === "accept" &&
       decision.decisionStatus === "accepted" &&
       Array.isArray(decision.requiredInputsReviewed) &&
@@ -407,7 +435,7 @@ function assertAcceptedPolicyDecision(decision, policy) {
       decision.operationalState ===
         "blocked_until_policy_encoded",
     "ACQUISITION_POLICY_DECISION_REQUIRED",
-    "Provider acquisition requires its accepted Firestore policy-gap review decision."
+    "Network acquisition requires its accepted Firestore policy-gap review decision."
   );
 }
 

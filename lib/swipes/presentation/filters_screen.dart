@@ -394,6 +394,6 @@ class FiltersValueText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(value, style: CatchTextStyles.titleL(context));
+    return CatchText(value, variant: CatchTextVariant.titleL);
   }
 }

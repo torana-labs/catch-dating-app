@@ -2,9 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import fs from "node:fs";
 import {spawnSync} from "node:child_process";
-import {assertPromotionInvocation, selectPreviewArtifact, productionHostingConfig, assertPreviewRuntime, assertProductionTarget, production} from "./promoteRelease.mjs";
+import {assertPromotionInvocation, selectPreviewArtifact, productionHostingConfig, assertPreviewRuntime, assertProductionTarget, production,
+  releaseTagUpdate} from "./promoteRelease.mjs";
 import {liveVersionName, usesNextRuntime} from "./hostingState.mjs";
-import {preview} from "./previewRelease.mjs";
+import {LIVE_RELEASE_TAG, preview} from "./previewRelease.mjs";
 import {CANONICAL_REPOSITORY_ID} from "../../../tool/lib/canonical_repository.mjs";
 const sourceSha = "a".repeat(40), repository = "suvratgarg/catch-dating-app";
 const env = {GITHUB_EVENT_NAME: "workflow_dispatch", GITHUB_REF: "refs/heads/main", GITHUB_REPOSITORY: repository, GITHUB_REPOSITORY_ID: "1170579691",
@@ -82,7 +83,8 @@ test("production workflow preserves credentials boundary, tested bytes, shared l
   assert.doesNotMatch(workflow, /result.marketing.version/u);
   const legacy = fs.readFileSync(new URL("../../../.github/workflows/_web-hosting-promote.yml", import.meta.url), "utf8");
   assert.ok(legacy.indexOf("hostingState.mjs legacy-guard") < legacy.indexOf("prod deploy"));
-  assert.match(legacy, /if: \$\{\{ steps.legacy-runtime.outputs.retired != 'true' \}\}/u);
+  // The deploy also waits on both superseded checks; the legacy guard comes first.
+  assert.match(legacy, /if: \$\{\{ steps.legacy-runtime.outputs.retired != 'true' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' \}\}/u);
   const lines = workflow.split("\n");
   for (let i = 0; i < lines.length; i++) {
     if (!/^        run: \|$/u.test(lines[i])) continue;
@@ -102,4 +104,22 @@ test("production target cannot replace an unrelated or secret-bearing service", 
     s => {s.spec.template.spec.containers[0].env.push({name: "PRIVATE", valueFrom: {secretKeyRef: {name: "secret"}}});}]) {
     const wrong = structuredClone(service); change(wrong); assert.throws(() => assertProductionTarget([wrong]));
   }
+});
+
+test("promotion releases the preview's own source and moves the live tag only forward", () => {
+  const workflow = fs.readFileSync(new URL("../../../.github/workflows/website-next-promote.yml", import.meta.url), "utf8");
+  // Main may have moved since the preview; the release is the preview's source.
+  assert.match(workflow, /release="\$\(jq -er \.sourceSha build\/next-promote\/authorization\.json\)"/u);
+  assert.doesNotMatch(workflow, /CATCH_RELEASE_SHA=\$GITHUB_SHA|source-sha=\$GITHUB_SHA|process\.env\.GITHUB_SHA/u);
+  assert.match(workflow, /CATCH_RELEASE_SHA=\$RELEASE_SHA/u);
+  assert.ok(workflow.indexOf("deployedSmoke.mjs https://catchdates.com") < workflow.indexOf("promoteRelease.mjs record"),
+    "the tag moves only after the live checks pass");
+  const live = "c".repeat(40);
+  assert.deepEqual(releaseTagUpdate({existing: null, sourceSha, lineage: {sourceSha, liveSha: live}}),
+    {method: "POST", endpoint: "git/refs", fields: {ref: `refs/tags/${LIVE_RELEASE_TAG}`, sha: sourceSha}});
+  assert.deepEqual(releaseTagUpdate({existing: live, sourceSha, lineage: {sourceSha, liveSha: live}}),
+    {method: "PATCH", endpoint: `git/refs/tags/${LIVE_RELEASE_TAG}`, fields: {sha: sourceSha, force: true}});
+  assert.throws(() => releaseTagUpdate({existing: "d".repeat(40), sourceSha, lineage: {sourceSha, liveSha: live}}),
+    /moved during promotion/u);
+  assert.throws(() => releaseTagUpdate({existing: live, sourceSha, lineage: {sourceSha: "e".repeat(40), liveSha: live}}));
 });

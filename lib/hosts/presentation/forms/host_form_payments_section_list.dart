@@ -58,9 +58,9 @@ class _HostFormPaymentsSectionListState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
+                CatchText(
                   l10n.hostFormPaymentsHelp,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 ),
                 gapH16,
                 CatchChoiceInput<HostFormPaymentFilter>.segmented(

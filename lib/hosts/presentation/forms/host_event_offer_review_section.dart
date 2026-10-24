@@ -128,9 +128,9 @@ class HostEventOfferReviewSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchSection.plain(
-          child: Text(
+          child: CatchText(
             copy.noReservation,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ),
         CatchFieldLanes.divided(
@@ -165,16 +165,13 @@ class HostEventOfferReviewSection extends ConsumerWidget {
         ),
         if (view.status == HostOfferFlowStatus.failure && sameDraft)
           CatchSection.plain(
-            child: Text(
-              copy.failed,
-              style: CatchTextStyles.supporting(context),
-            ),
+            child: CatchText(copy.failed, variant: CatchTextVariant.supporting),
           ),
         if (view.status == HostOfferFlowStatus.committed && sameDraft)
           CatchSection.plain(
-            child: Text(
+            child: CatchText(
               copy.committed,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
       ],
@@ -243,16 +240,13 @@ class _HostManualPaymentReviewSectionState
       children: [
         if (state.pendingMutation != null) ...[
           CatchSection.plain(
-            child: Text(
-              copy.failed,
-              style: CatchTextStyles.supporting(context),
-            ),
+            child: CatchText(copy.failed, variant: CatchTextVariant.supporting),
           ),
         ],
         CatchSection.plain(
-          child: Text(
+          child: CatchText(
             copy.noReservation,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ),
         if (status == HostManualPaymentStatus.none) ...[
@@ -271,9 +265,9 @@ class _HostManualPaymentReviewSectionState
         ],
         if (status == HostManualPaymentStatus.evidenceSubmitted) ...[
           CatchSection.plain(
-            child: Text(
+            child: CatchText(
               '${copy.evidenceSubmitted}: ${widget.offer.manualPayment.evidenceReference ?? ''}',
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
           CatchSection.fieldRows(
@@ -339,24 +333,21 @@ class _HostManualPaymentReviewSectionState
         ],
         if (status == HostManualPaymentStatus.hostAttestedReceived)
           CatchSection.plain(
-            child: Text(
+            child: CatchText(
               copy.hostAttested,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
         if (status == HostManualPaymentStatus.rejected)
           CatchSection.plain(
-            child: Text(
+            child: CatchText(
               copy.rejected,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ),
         if (state.error != null)
           CatchSection.plain(
-            child: Text(
-              copy.failed,
-              style: CatchTextStyles.supporting(context),
-            ),
+            child: CatchText(copy.failed, variant: CatchTextVariant.supporting),
           ),
       ],
     );

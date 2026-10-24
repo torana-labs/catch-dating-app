@@ -63,14 +63,12 @@ class EventDetailOverviewSection extends StatelessWidget {
                 dividerColor: style?.dividerColor,
               ),
               gapH12,
-              Text(
+              CatchText(
                 context
                     .l10n
                     .eventsEventDetailOverviewSectionTextBasedOnEventFormat,
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: style?.bodyColor,
-                ),
+                variant: CatchTextVariant.supporting,
+                color: style?.bodyColor,
               ),
             ],
           ),
@@ -105,12 +103,10 @@ class EventDetailOverviewSection extends StatelessWidget {
             children: [
               if (event.effectiveMeetingLocation?.address?.trim()
                   case final address? when address.isNotEmpty) ...[
-                Text(
+                CatchText(
                   address,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: style?.bodyColor,
-                  ),
+                  variant: CatchTextVariant.supporting,
+                  color: style?.bodyColor,
                 ),
                 gapH8,
               ],
@@ -171,20 +167,16 @@ class EventDescriptionSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        CatchText(
           context.l10n.eventsEventDetailOverviewSectionTextAboutThisEvent,
-          style: CatchTextStyles.sectionTitle(
-            context,
-            color: surfaceStyle?.headingColor,
-          ),
+          variant: CatchTextVariant.sectionTitle,
+          color: surfaceStyle?.headingColor,
         ),
         const SizedBox(height: CatchLayout.detailScreenSupportingGap),
-        Text(
+        CatchText(
           description,
-          style: CatchTextStyles.bodyLead(
-            context,
-            color: surfaceStyle?.bodyColor ?? t.ink2,
-          ),
+          variant: CatchTextVariant.bodyLead,
+          color: surfaceStyle?.bodyColor ?? t.ink2,
         ),
       ],
     );

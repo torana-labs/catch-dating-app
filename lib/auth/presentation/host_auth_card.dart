@@ -36,11 +36,12 @@ class HostAuthHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(title, style: CatchTextStyles.sectionTitle(context)),
+        CatchText(title, variant: CatchTextVariant.sectionTitle),
         gapH4,
-        Text(
+        CatchText(
           subtitle,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          variant: CatchTextVariant.supporting,
+          color: t.ink2,
         ),
       ],
     );

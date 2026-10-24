@@ -219,9 +219,9 @@ class ReviewsPreviewSection extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
+                child: CatchText(
                   context.l10n.reviewsReviewsSectionTextReviews,
-                  style: CatchTextStyles.titleL(context),
+                  variant: CatchTextVariant.titleL,
                 ),
               ),
               if (avgRating != null) ...[
@@ -230,12 +230,13 @@ class ReviewsPreviewSection extends StatelessWidget {
                   size: CatchIcon.rating,
                 ),
                 gapW4,
-                Text(
+                CatchText(
                   context.l10n.reviewsReviewsSectionTextTostringasfixedLength(
                     toStringAsFixed: avgRating.toStringAsFixed(1),
                     length: reviews.length,
                   ),
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                 ),
               ],
             ],
@@ -389,9 +390,10 @@ class ReviewCard extends StatelessWidget {
           ),
           if (review.comment.isNotEmpty) ...[
             gapH6,
-            Text(
+            CatchText(
               review.comment,
-              style: CatchTextStyles.bodyLead(context, color: t.ink2),
+              variant: CatchTextVariant.bodyLead,
+              color: t.ink2,
             ),
           ],
           if (review.ownerResponse case final response?) ...[
@@ -437,19 +439,21 @@ class ReviewOwnerResponseCard extends StatelessWidget {
               ),
               gapW8,
               Expanded(
-                child: Text(
+                child: CatchText(
                   context.l10n.reviewsReviewsSectionTextHostResponseHostname(
                     hostName: response.hostName,
                   ),
-                  style: CatchTextStyles.labelS(context, color: t.ink),
+                  variant: CatchTextVariant.statusLabel,
+                  color: t.ink,
                 ),
               ),
             ],
           ),
           gapH6,
-          Text(
+          CatchText(
             response.message,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
         ],
       ),

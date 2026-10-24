@@ -150,6 +150,9 @@ export {salesHostSettlementAttestationsDocumentSchema} from "./schemas/salesHost
 export {salesHostSettlementEvidenceUsesDocumentSchema} from "./schemas/salesHostSettlementEvidenceUses";
 export {outreachDraftingInputSchema} from "./schemas/outreachDraftingInput";
 export {outreachDraftingSelectionSchema} from "./schemas/outreachDraftingSelection";
+export {supplyIntakeRequestSchema} from "./schemas/supplyIntakeRequest";
+export {supplyIntakeRequestsDocumentSchema} from "./schemas/supplyIntakeRequestsDocument";
+export {supplyIntakeUsageDocumentSchema} from "./schemas/supplyIntakeUsageDocument";
 export {adminSalesIntelligenceGenerateCallablePayloadSchema} from "./schemas/adminSalesIntelligenceGenerateInput";
 export {salesOutreachJobsDocumentSchema} from "./schemas/salesOutreachJobsDocument";
 export {outreachDraftSchema} from "./schemas/outreachDraft";
@@ -876,6 +879,10 @@ export {adminListIntakeOperationsCallablePayloadSchema} from "./schemas/adminLis
 export {adminListActionExecutionsCallablePayloadSchema} from "./schemas/adminListActionExecutionsInput";
 export {adminRecordActionExecutionCallablePayloadSchema} from "./schemas/adminRecordActionExecutionInput";
 export {adminDecideOrganizerEventCandidateCallablePayloadSchema} from "./schemas/adminDecideOrganizerEventCandidateInput";
+export {adminNominateOrganizerCallablePayloadSchema} from "./schemas/adminNominateOrganizerInput";
+export {adminNominateOrganizerCallableResponseSchema} from "./schemas/adminNominateOrganizerOutput";
+export {adminApproveOrganizerListingCallablePayloadSchema} from "./schemas/adminApproveOrganizerListingInput";
+export {adminApproveOrganizerListingCallableResponseSchema} from "./schemas/adminApproveOrganizerListingOutput";
 export {adminDecideOrganizerPolicyGapCallablePayloadSchema} from "./schemas/adminDecideOrganizerPolicyGapInput";
 export {adminResolveOrganizerEventLocationCallablePayloadSchema} from "./schemas/adminResolveOrganizerEventLocationInput";
 export {adminSetClubIndexStatusCallablePayloadSchema} from "./schemas/adminSetClubIndexStatusInput";

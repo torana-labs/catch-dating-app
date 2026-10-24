@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import {spawnSync} from "node:child_process";
 import test from "node:test";
-import {downloadCaptureArtifact, readCaptureArchive, validateBinding, verifyArtifactMetadata} from "./import_hosted_captures.mjs";
+import {CAPTURE_PRODUCER_JOBS, downloadCaptureArtifact, readCaptureArchive, selectCaptureProducerJob, validateBinding, verifyArtifactMetadata} from "./import_hosted_captures.mjs";
 
 const hash = bytes => `sha256:${crypto.createHash("sha256").update(bytes).digest("hex")}`;
 function identities() {
@@ -11,7 +11,7 @@ function identities() {
     workflowRef: "owner/repo/.github/workflows/marketing-captures.yml@refs/heads/main",
     workflowDefinitionSha: "c".repeat(40), eventSha: "d".repeat(40), runHeadSha: "e".repeat(40),
     artifactId: "41", artifactDigest: hash(bytes), runId: "51", runAttempt: "2"};
-  const artifact = {id: 41, expired: false, name: `canonical-marketing-${binding.sourceSha}-51-2`,
+  const artifact = {id: 41, expired: false, created_at: "2026-10-23T10:05:00Z", name: `canonical-marketing-${binding.sourceSha}-51-2`,
     digest: binding.artifactDigest, workflow_run: {id: 51, repository_id: 61, head_repository_id: 61, head_sha: binding.runHeadSha}};
   const workflow = {id: 71, path: ".github/workflows/marketing-captures.yml"};
   const run = {id: 51, run_attempt: 2, head_sha: binding.runHeadSha, repository: {id: 61}, head_repository: {id: 61}, conclusion: null, workflow_id: 71, path: workflow.path};
@@ -36,6 +36,50 @@ test("artifact identity distinguishes capture source from the controller event a
   ]) {
     const changed = identities(); mutate(changed);
     assert.throws(() => verifyArtifactMetadata(changed));
+  }
+});
+
+const producer = (values, overrides = {}) => ({name: `capture-freshness / ${CAPTURE_PRODUCER_JOBS[0]}`, run_id: 51, run_attempt: 2,
+  head_sha: values.binding.runHeadSha, status: "completed", conclusion: "success",
+  started_at: "2026-10-23T10:00:00Z", completed_at: "2026-10-23T10:10:00Z", ...overrides});
+
+test("a run cancelled by a newer merge keeps captures whose exact producing job succeeded", () => {
+  const values = identities(); values.run.conclusion = "cancelled";
+  assert.throws(() => verifyArtifactMetadata(values), /successful capture job is required/);
+  assert.doesNotThrow(() => verifyArtifactMetadata({...values, producerJob: producer(values)}));
+  for (const overrides of [{conclusion: "failure"}, {conclusion: "cancelled"}, {status: "in_progress"},
+    {run_id: 52}, {run_attempt: 1}, {head_sha: values.binding.sourceSha}, {name: "marketing / Validate marketing website"},
+    {started_at: "2026-10-23T10:06:00Z"}, {completed_at: "2026-10-23T10:04:00Z"}]) {
+    assert.throws(() => verifyArtifactMetadata({...values, producerJob: producer(values, overrides)}),
+      /cancelled before its capture job succeeded/, JSON.stringify(overrides));
+  }
+  assert.throws(() => selectCaptureProducerJob({jobs: [producer(values), producer(values)], binding: values.binding,
+    artifact: values.artifact}), /cancelled before its capture job succeeded/);
+  // Either producer counts, but only one can have run; the other is skipped.
+  const reuse = producer(values, {name: `capture-freshness / ${CAPTURE_PRODUCER_JOBS[1]}`});
+  const skippedRender = producer(values, {conclusion: "skipped"});
+  assert.equal(selectCaptureProducerJob({jobs: [skippedRender, reuse], binding: values.binding, artifact: values.artifact}), reuse);
+  assert.throws(() => verifyArtifactMetadata({...values, producerJob: producer(values,
+    {name: "capture-freshness / Render and validate 12 canonical iPhone captures"})}), /cancelled before its capture job succeeded/);
+});
+
+test("artifact download reads the capture job only when the producing run was cancelled", async () => {
+  const values = identities();
+  for (const jobs of [[producer(values)], [producer(values, {conclusion: "cancelled"})]]) {
+    const endpoints = [];
+    const request = async (endpoint) => {
+      endpoints.push(endpoint);
+      if (endpoint === "repos/owner/repo") return {id: 61};
+      if (endpoint.endsWith("/workflows/marketing-captures.yml")) return values.workflow;
+      if (endpoint.endsWith("/artifacts/41")) return values.artifact;
+      if (endpoint.endsWith("/runs/51")) return {...values.run, status: "completed", conclusion: "cancelled"};
+      if (endpoint.endsWith("/runs/51/attempts/2/jobs?per_page=100")) return {total_count: jobs.length, jobs};
+      return values.bytes;
+    };
+    const action = () => downloadCaptureArtifact({binding: values.binding, request});
+    if (jobs[0].conclusion === "success") assert.deepEqual(await action(), values.bytes);
+    else await assert.rejects(action, /cancelled before its capture job succeeded/);
+    assert.equal(endpoints.filter(endpoint => endpoint.includes("/jobs?")).length, 1);
   }
 });
 
@@ -117,6 +161,20 @@ test("ZIP rejects missing, duplicate, extra, traversal, absolute, directory and 
     values => [{...values[0], attributes: 0o120777 << 16}, ...values.slice(1)],
   ]) {
     assert.throws(() => readCaptureArchive(archive(change(entries())), names));
+  }
+});
+
+test("an earlier bundle offers only the wanted entries it has, and every entry stays checked", () => {
+  const wanted = [names[0], names[5], "artifacts/not-in-this-bundle.bin"];
+  const files = readCaptureArchive(archive(entries()), wanted, {exact: false});
+  assert.deepEqual([...files.keys()].sort(), [names[0], names[5]].sort());
+  assert.deepEqual(files.get(names[5]), Buffer.from("pixel bytes 5\0"));
+  for (const change of [
+    values => [...values, values[3]],
+    ...["../escape", "/absolute", "artifacts\\escape", "artifacts/"].map(name => values => [...values, {...values[1], name}]),
+    values => [...values, {...values[1], name: "artifacts/link.bin", attributes: 0o120777 << 16}],
+  ]) {
+    assert.throws(() => readCaptureArchive(archive(change(entries())), wanted, {exact: false}));
   }
 });
 

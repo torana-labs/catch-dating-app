@@ -110,12 +110,21 @@ export function buildReactComponentInventory({graph, registry, surfaceRegistries
       row.mapping = {kind: "adapter", componentId: entry.componentId};
     } else if (owners.length === 0) {
       row.mapping = {kind: "delete", reason: "no production consumer"};
+    } else if (area === "web-ui" && entry) {
+      // Blueprint D18: the library draws. A component one surface renders stays
+      // in @catch/web-ui as that surface's registered T4 entry.
+      row.mapping = {kind: "t4", owner: owners.length === 1 ? owners[0] : `${entry.surface}:shared`};
     } else if (!isPassThroughArea(area)) {
       row.mapping = {kind: "t4", owner: area};
     } else if (owners.length === 1) {
+      // A single-use shared export is debt until it is a registered T4
+      // component in @catch/web-ui (D18), never moved into its feature.
       row.mapping = {kind: "t4", owner: owners[0], move: true};
     } else if (area === "web-ui") {
-      problems.push(`${component.id}: @catch/web-ui export rendered by ${owners.join(", ")} implements no registered contract; add its react record or move it to its owner`);
+      problems.push(
+        `${component.id}: @catch/web-ui export rendered by ${owners.join(", ")} implements no registered contract; ` +
+        "add its react record to a T1/T2 contract, or register it as T4 in the registry of the one surface that renders it",
+      );
     } else {
       row.mapping = {kind: "t4", owner: area};
     }
@@ -175,8 +184,14 @@ function entryProblems({entry, row, contracts}) {
       }
     }
   }
-  if (entry.surface !== "admin") return problems;
   const owners = row.owners;
+  if (row.area === "web-ui" && !entry.componentId) {
+    const foreign = owners.filter((owner) => !owner.startsWith(`${entry.surface}:`));
+    if (foreign.length > 0) {
+      problems.push(`${label}: T4 component registered for ${entry.surface} is also rendered by ${foreign.join(", ")}; promote it to a T1/T2 contract`);
+    }
+  }
+  if (entry.surface !== "admin") return problems;
   if (entry.kind === "feature-component" && row.mapping?.kind !== "adapter") {
     const expected = ownerArea("admin", entry.owner);
     if (owners.length > 0 && (owners.length !== 1 || owners[0] !== expected)) {

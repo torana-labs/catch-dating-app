@@ -1,7 +1,7 @@
 ---
 doc_id: agent_skill_catch_react_surface_refactor
-version: 1.2.0
-updated: 2026-10-19
+version: 1.3.0
+updated: 2026-10-24
 owner: agent_operating_model
 status: active
 ---
@@ -45,16 +45,18 @@ Loop:
    implementation without a recorded `componentId` (it implements the
    contract) or `comparedWith` plus `comparisonReason` (it does not) in its
    surface registry. `--write` saves the inventory to ignored
-   `build/react_component_inventory.json`. Styling stays surface-owned only
-   until UI blueprint Phase 7e moves styled `Catch*` components into
-   `@catch/web-ui` (ratified 2026-10-17). Before
-   adding a shared React component, find its concept in
+   `build/react_component_inventory.json`. Blueprint D18 (ratified
+   2026-10-23): the library draws; features arrange and bind. Anything that
+   decides how something looks is built in `@catch/web-ui`, even when one
+   feature uses it. Before adding a React component, find its concept in
    `design/components/catch.components.json`: use the concept's symbol and prop
    names (Cross-Framework Names in `docs/app_architecture.md`), build it in
-   `@catch/web-ui` rather than a surface folder when its `tier` is T1 or T2,
-   and never port a T3 entry locally.
+   `@catch/web-ui` when its `tier` is T1 or T2, and never port a T3 entry
+   locally. A component one surface renders is a T4 under
+   `packages/web-ui/src/components/`, registered in that surface's registry;
+   its feature keeps only the binding that passes domain data to its props.
 8. For the marketing website, every exported uppercase component under `website/src/features/**/*.tsx` must be declared in `design/website/components.json` as a route, section, flow, or supporting component, or made private. Run `node tool/run.mjs check marketing:website-components` after adding, moving, or exporting website route/section/supporting components.
-9. For admin feature UI, export only route/workspace entry components such as `*Screen` and `*Workspace`; reusable panels/cards/lists/sections belong in `admin/src/shared/ui` or stay private. Route/workspace entries, shared admin primitives, and admin feedback providers must be declared in `design/admin/components.json`. Run `node tool/run.mjs check web:admin-feature-exports` and `node tool/run.mjs check web:admin-components` after touching admin feature or shared admin UI exports. When an admin registry entry becomes preview-ready, add or update `admin/src/stories/**` metadata and run `node tool/run.mjs check web:admin-storybook`.
+9. For admin feature UI, export only route/workspace entry components such as `*Screen` and `*Workspace`. Panels, cards, lists and sections that draw belong in `packages/web-ui/src/components/` as registered T4 components (D18; entries still under `admin/src/shared/ui` await that move); a private feature component may only arrange library components and bind data. Route/workspace entries, shared admin primitives, and admin feedback providers must be declared in `design/admin/components.json`. Run `node tool/run.mjs check web:admin-feature-exports` and `node tool/run.mjs check web:admin-components` after touching admin feature or shared admin UI exports. When an admin registry entry becomes preview-ready, add or update `admin/src/stories/**` metadata and run `node tool/run.mjs check web:admin-storybook`.
 10. For marketing website public route changes, update
    `design/website/routes.json` first and run
    `node tool/run.mjs check marketing:website-routes`.
@@ -70,8 +72,8 @@ Loop:
    `npm --workspace catch-marketing run build:storybook`.
 13. For admin feature work, keep `features/<feature>/api|controllers|ui` intact
    and run `npm --workspace catch-admin run check:boundaries`. Keep route and
-   workspace entries thin, put cohesive private panels behind lower-case module
-   APIs, and run `node tool/run.mjs check web:admin-feature-ui-size`.
+   workspace entries thin, keep private feature components to arrangement and
+   binding (D18), and run `node tool/run.mjs check web:admin-feature-ui-size`.
 14. Keep `tool/web/react_controller_test_targets.json` exhaustive. Promote
     behavior-critical query/mutation controllers to `required` with a named
     importing suite, and run

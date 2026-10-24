@@ -308,6 +308,8 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminListExternalEventDetails` | `src/admin/externalEventDetails.ts` | Admin read-only external event supply list for `externalEvents/{id}` |
 | `adminListIntakeOperations` | `src/admin/intakeOperations.ts` | Role-gated read-only Supply Intake projection with authoritative aggregates, server-filtered human exceptions, and lazy ordinary pages |
 | `adminCreateOrganizerDraftFromCandidate` | `src/admin/organizerDraftFromCandidate.ts` | Admin audited, retry-safe creation of a fail-closed organizer draft from reviewed Supply Intake evidence |
+| `adminApproveOrganizerListing` | `src/admin/organizerListingApproval.ts` | Admin or owner approve a Supply Intake listing: one audited, idempotent transaction publishes the organizer page unclaimed and noindex (hidden in the app), records the review decision and receipt, links the enquiry it came from, and opens its Sales account, opportunity, tasks and activity |
+| `adminNominateOrganizer` | `src/operations/supplyIntake/nominations.ts` | Admin, owner or sales staff nominate an organizer; audited, rate-limited and idempotent per nominator request id. Creates a queued Supply Intake request; nothing is published until staff review the listing |
 | `adminGetEventSupplyReadiness` | `src/admin/eventSupplyReadiness.ts` | Admin read-only external event import plan and preflight snapshot |
 | `adminPublishExternalEvent` | `src/admin/externalEventPublishing.ts` | Admin audited publish of one preflight-approved read-only `externalEvents/{id}` document |
 | `adminTakedownExternalEvent` | `src/admin/externalEventTakedown.ts` | Admin audited dry-run/apply takedown of one published external event without deleting its source or publication receipts |
@@ -334,6 +336,8 @@ enter previews.
 | `syncPublicProfile` | `src/profiles/` | `users/{userId}` onWrite — mirrors public fields + age gate |
 | `syncClubMemberStats` | `src/clubs/` | `clubMemberships/{membershipId}` onWrite — recomputes `memberCount` |
 | `syncOrganizerFollowerStats` | `src/clubs/` | `organizerFollowers/{followerId}` onWrite — recomputes canonical follower totals |
+| `onSalesInboundIntentForIntake` | `src/operations/supplyIntake/nominations.ts` | `salesInboundIntents/{intentId}` onCreate — a website host application or partner nomination that names an organizer or a link also becomes a Supply Intake request (deterministic id, idempotent) |
+| `onSupplyIntakeRequestCreated` | `src/operations/supplyIntake/triggers.ts` | `supplyIntakeRequests/{requestId}` onCreate — leases the request, gathers its pages, runs Supply Intake and imports the reviewable listing; retries until the third failure |
 | `syncOrganizerNextEvent` | `src/clubs/` | `events/{eventId}` onWrite — recomputes organizer next-event projection |
 | `syncAlgoliaOrganizerIndex` | `src/search/` | `organizers/{organizerId}` onWrite — synchronizes organizer discovery search records |
 | `onSwipeCreated` | `src/matching/` | `profileDecisions/{id}/outgoing/{id}` onCreate — mutual-like → match |
@@ -386,6 +390,7 @@ enter previews.
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
 | `expireEventRehearsals` | `src/eventRehearsal/` | Hourly deletion of expired rehearsal sessions and isolated child projections |
 | `evaluateDueEventAssistanceWork` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Every minute: bounded recovery of saved roster, source, operational-notice, guest, delivery and checkpoint work; dormant pending operating-budget approval |
+| `recoverSupplyIntakeRequests` | `src/operations/supplyIntake/triggers.ts` | Hourly: picks up queued intake requests whose event was lost and requests whose worker stopped mid-lease |
 
 ### Storage-triggered
 

@@ -9,6 +9,7 @@
     "policyVersion",
     "manualFileCaptureEnabled",
     "provider",
+    "pageFetch",
     "budgets",
     "rawPayload"
   ],
@@ -38,15 +39,98 @@
           "type": "boolean"
         },
         "adapterId": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "pattern": "^[a-z0-9][a-z0-9._-]{0,119}$"
         },
         "policyGapId": {
           "const": "recurring_event_crawl_policy"
         },
         "decisionId": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,199}$"
+        }
+      }
+    },
+    "pageFetch": {
+      "description": "On-demand fetches of the pages an intake request names, separate from recurring crawls. Enabling cites an accepted on_demand_page_fetch_policy decision.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "adapterId",
+        "policyGapId",
+        "decisionId",
+        "userAgent",
+        "productToken",
+        "timeoutMs",
+        "maxResponseBytes",
+        "maxRedirects",
+        "maxRequestsPerIntake",
+        "maxRequestsPerMonth"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "adapterId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "page_fetch",
+            null
+          ]
+        },
+        "policyGapId": {
+          "const": "on_demand_page_fetch_policy"
+        },
+        "decisionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,199}$"
+        },
+        "userAgent": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "productToken": {
+          "type": "string",
+          "pattern": "^[A-Za-z_-]{1,60}$"
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 1000,
+          "maximum": 60000
+        },
+        "maxResponseBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        },
+        "maxRedirects": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "maxRequestsPerIntake": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "maxRequestsPerMonth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
         }
       }
     },
@@ -97,10 +181,14 @@
                 "const": true
               }
             },
-            "required": ["enabled"]
+            "required": [
+              "enabled"
+            ]
           }
         },
-        "required": ["provider"]
+        "required": [
+          "provider"
+        ]
       },
       "then": {
         "properties": {
@@ -146,6 +234,66 @@
                 "const": 0
               },
               "maxNetworkRequestsPerMonth": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "pageFetch": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            },
+            "required": [
+              "enabled"
+            ]
+          }
+        },
+        "required": [
+          "pageFetch"
+        ]
+      },
+      "then": {
+        "properties": {
+          "pageFetch": {
+            "properties": {
+              "adapterId": {
+                "const": "page_fetch"
+              },
+              "decisionId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "maxRequestsPerIntake": {
+                "minimum": 1
+              },
+              "maxRequestsPerMonth": {
+                "minimum": 1
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "pageFetch": {
+            "properties": {
+              "adapterId": {
+                "type": "null"
+              },
+              "decisionId": {
+                "type": "null"
+              },
+              "maxRequestsPerIntake": {
+                "const": 0
+              },
+              "maxRequestsPerMonth": {
                 "const": 0
               }
             }

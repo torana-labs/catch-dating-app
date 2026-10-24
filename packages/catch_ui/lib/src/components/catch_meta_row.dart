@@ -147,7 +147,7 @@ class CatchMetaRow extends StatelessWidget {
         ? labelColor ?? t.ink2
         : _entry?.color ?? inkColor;
     final style = fullWidthLabel
-        ? CatchTextStyles.labelM(context, color: textColor)
+        ? CatchTextStyles.statusLabel(context, color: textColor)
         : isStrong
         ? CatchTextStyles.numericMeta(
             context,

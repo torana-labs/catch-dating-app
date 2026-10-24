@@ -37,6 +37,21 @@ function projectRun(run) {
   };
 }
 
+// A newer push of the same surface on main supersedes an older promotion:
+// queue: max runs promotions in push order, and the newest one deploys the
+// newest bytes. Only the latest-run identity may differ, the newer run must
+// have a higher run number, and recovery is never superseded.
+const SUPERSEDING_FRESHNESS_CHECKS = new Set(["latestRunIdentity", "latestRunNumber", "latestRunSourceSha"]);
+const SUPERSEDING_AUTHORIZATION_CHECKS = new Set(["latestRunIdentity", "latestRunNumber", "latestSourceSha"]);
+
+function supersededBy({recovery, failedChecks, allowed, latestRunNumber, runNumber}) {
+  const superseded = recovery !== true && failedChecks.length > 0 &&
+    failedChecks.every((name) => allowed.has(name)) &&
+    Number.isSafeInteger(latestRunNumber) && Number.isSafeInteger(runNumber) &&
+    latestRunNumber > runNumber;
+  return superseded ? {runNumber: latestRunNumber} : null;
+}
+
 /** Evaluate every existing last-moment source/freshness predicate. */
 export function evaluatePromotionFreshness(evidence) {
   const expected = evidence?.expected ?? {};
@@ -95,8 +110,12 @@ export function evaluatePromotionFreshness(evidence) {
     .filter(([, passed]) => passed !== true)
     .map(([name]) => name);
 
+  const superseding = supersededBy({recovery: expected.recovery, failedChecks,
+    allowed: SUPERSEDING_FRESHNESS_CHECKS, latestRunNumber: latest.runNumber, runNumber: expectedRunNumber});
   return {
     passed: failedChecks.length === 0,
+    superseded: superseding !== null,
+    supersededBy: superseding,
     failedChecks,
     checks,
     expected: expectedView,
@@ -198,7 +217,10 @@ export function evaluatePromotionAuthorization(expected, snapshot) {
   check("packagedAttemptsValid", attempts.every(value => Number.isSafeInteger(value) && value > 0), true);
   check("freshestPackagedAttempt", attempts.length ? Math.max(...attempts) : 0, expected.runAttempt);
   const failedChecks = Object.keys(checks).filter(name => !checks[name]);
-  return {passed: failedChecks.length === 0, failedChecks, checks, observations,
+  const superseding = supersededBy({recovery: expected.recovery, failedChecks,
+    allowed: SUPERSEDING_AUTHORIZATION_CHECKS, latestRunNumber: latest.run_number, runNumber});
+  return {passed: failedChecks.length === 0, superseded: superseding !== null, supersededBy: superseding,
+    failedChecks, checks, observations,
     binding: failedChecks.length === 0 ? {workflowId, runNumber, artifactName: name} : null};
 }
 
@@ -215,6 +237,7 @@ export function readAuthorizationSnapshot(expected, noCache, api) {
 }
 
 export function authorizePromotion(expected, api, log = () => {}) {
+  let last = null;
   for (const noCache of [false, true]) {
     let result;
     try {
@@ -225,7 +248,9 @@ export function authorizePromotion(expected, api, log = () => {}) {
     }
     log({phase: noCache ? "single no-cache read" : "initial read", ...result, binding: undefined});
     if (result.passed) return result.binding;
+    last = result;
   }
+  if (last?.superseded) return {superseded: true, latestRunNumber: last.supersededBy.runNumber};
   throw new Error("Initial authorization remains unsatisfied after one complete no-cache read; refusing deployment.");
 }
 

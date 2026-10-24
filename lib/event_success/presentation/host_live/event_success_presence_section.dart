@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -50,17 +51,17 @@ class EventSuccessPresenceSection extends StatelessWidget {
           ],
           if (likelyDeparted.isNotEmpty) ...[
             gapH12,
-            Text(
+            CatchText(
               context.l10n
                   .eventSuccessEventSuccessHostLiveTextGuestsMayHaveLeft(
                     count: likelyDeparted.length,
                   ),
-              style: CatchTextStyles.sectionTitle(context),
+              variant: CatchTextVariant.sectionTitle,
             ),
             gapH4,
-            Text(
+            CatchText(
               likelyDeparted.map((entry) => entry.displayName).join(', '),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
             gapH10,
             CatchButton(
@@ -76,9 +77,9 @@ class EventSuccessPresenceSection extends StatelessWidget {
           ],
           if (lateArrivals.isNotEmpty) ...[
             gapH16,
-            Text(
+            CatchText(
               context.l10n.eventSuccessEventSuccessHostLiveTitleLateArrivals,
-              style: CatchTextStyles.sectionTitle(context),
+              variant: CatchTextVariant.sectionTitle,
             ),
             gapH4,
             ...lateArrivals.map(
@@ -87,9 +88,10 @@ class EventSuccessPresenceSection extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
+                      child: CatchText(
                         candidate.displayName,
-                        style: CatchTextStyles.name(context),
+                        variant: CatchTextVariant.sectionTitle,
+                        color: CatchTokens.of(context).ink,
                       ),
                     ),
                     gapW8,

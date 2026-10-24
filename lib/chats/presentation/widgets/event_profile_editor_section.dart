@@ -6,6 +6,7 @@ import 'package:catch_dating_app/chats/presentation/widgets/event_profile_photo_
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -94,20 +95,22 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           l.eventProfileDisclosure,
-          style: CatchTextStyles.recordBody(context),
+          variant: CatchTextVariant.bodyL,
+          color: CatchTokens.of(context).ink,
         ),
         gapH16,
-        Text(
+        CatchText(
           l.eventProfileReviewAgain,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (!current.settings.canShare) ...[
           gapH24,
-          Text(
+          CatchText(
             l.eventProfileCannotShare,
-            style: CatchTextStyles.recordBody(context),
+            variant: CatchTextVariant.bodyL,
+            color: CatchTokens.of(context).ink,
           ),
         ] else ...[
           gapH24,
@@ -119,7 +122,8 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                 copy: catchFieldCopy(l),
                 title: l.eventProfileFirstName,
                 titleMaxLines: 3,
-                emptyValueText: l.onboardingNameDobPageStateVisiblecopyFirstName,
+                emptyValueText:
+                    l.onboardingNameDobPageStateVisiblecopyFirstName,
                 initialValue: _draft.firstName,
                 maxLength: 80,
                 states: disabled ? const {WidgetState.disabled} : const {},
@@ -175,9 +179,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
             title: l.eventProfilePhoto,
             children: [
               if (current.settings.photoIds.isEmpty)
-                Text(
+                CatchText(
                   l.eventProfileNoPhoto,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 ),
               for (final (index, id) in current.settings.photoIds.indexed)
                 if (widget.photos[id] case final image?)
@@ -193,9 +197,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                           ),
                   )
                 else
-                  Text(
+                  CatchText(
                     l.eventProfilePhotoUnavailable,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
             ],
           ),
@@ -203,9 +207,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
           CatchSection.fieldRows(
             title: l.eventProfileCard,
             children: [
-              Text(
+              CatchText(
                 l.eventProfileCardDisclosure,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
               if (choices.isNotEmpty)
                 CatchField<String>.select(
@@ -224,9 +228,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
               if (choices.isEmpty &&
                   current.nextCursor == null &&
                   current.cardError == null)
-                Text(
+                CatchText(
                   l.eventProfileNoCards,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 ),
               for (final field in fields)
                 Column(
@@ -251,9 +255,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                               }
                             }),
                     ),
-                    Text(
+                    CatchText(
                       l.eventProfileQuestionAudience,
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                   ],
                 ),
@@ -281,9 +285,9 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                 : () => widget.onSave(_draft.selection()),
           ),
           gapH12,
-          Text(
+          CatchText(
             l.eventProfileEditAgain,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         if (current.settings.selection != null) ...[

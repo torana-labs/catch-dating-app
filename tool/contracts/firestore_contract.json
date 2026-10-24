@@ -2991,6 +2991,44 @@
       "write": "server only"
     },
     {
+      "id": "supplyIntakeRequests",
+      "path": "supplyIntakeRequests/{requestId}",
+      "rulesMatch": "/supplyIntakeRequests/{requestId}",
+      "typescriptInterface": "SupplyIntakeRequestsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps durable operations records server-owned"
+      ],
+      "owner": "trusted Supply Intake worker",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "onSupplyIntakeRequestCreated",
+        "recoverSupplyIntakeRequests"
+      ],
+      "migrationNotes": [
+        "Portable request shape is contracts/operations/supply_intake_request.schema.json; front doors create requests through callables."
+      ]
+    },
+    {
+      "id": "supplyIntakeUsage",
+      "path": "supplyIntakeUsage/{monthKey}",
+      "rulesMatch": "/supplyIntakeUsage/{monthKey}",
+      "typescriptInterface": "SupplyIntakeUsageDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps durable operations records server-owned"
+      ],
+      "owner": "trusted Supply Intake worker",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "onSupplyIntakeRequestCreated"
+      ]
+    },
+    {
       "id": "operationPublicationPlans",
       "path": "operationPublicationPlans/{publicationPlanId}",
       "rulesMatch": "/operationPublicationPlans/{publicationPlanId}",

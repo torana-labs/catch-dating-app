@@ -91,21 +91,19 @@ class ClubScheduleSection extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
+                      CatchText(
                         eventDateRailDayLabel(
                           groupedRows[groupIndex].key,
                           today,
                         ).toUpperCase(),
-                        style: CatchTextStyles.labelM(
-                          context,
-                          color:
-                              DateUtils.isSameDay(
-                                groupedRows[groupIndex].key,
-                                today,
-                              )
-                              ? t.primary
-                              : t.ink3,
-                        ),
+                        variant: CatchTextVariant.statusLabel,
+                        color:
+                            DateUtils.isSameDay(
+                              groupedRows[groupIndex].key,
+                              today,
+                            )
+                            ? t.primary
+                            : t.ink3,
                       ),
                       const SizedBox(
                         height: CatchLayout.agendaDayLabelBottomGap,

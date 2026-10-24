@@ -20,7 +20,7 @@ afterEach(cleanup);
 function Profile({listing}: {listing: HostListing}) {
   const controller = useHostListingPageController(listing);
   const claimController = {presentation: {panel: "hidden"}} as ListingClaimController;
-  return <><PublicSiteHeader audience="consumer" />
+  return <><PublicSiteHeader />
     <WebsitePageMain id="profile"><HostListingSections listing={listing} controller={controller}
       claimController={claimController} /></WebsitePageMain></>;
 }

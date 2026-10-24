@@ -78,19 +78,16 @@ class ChatEventContextHeader extends StatelessWidget {
                     ).copyWith(fontSize: 10, fontWeight: FontWeight.w800),
                   ),
                   gapH2,
-                  Text(
+                  CatchText(
                     date == null
                         ? title
                         : context.l10n.chatsChatEventContextHeaderTextTitleDate(
                             title: title,
                             date: date,
                           ),
-                    style: CatchTextStyles.chatThreadContext(
-                      context,
-                      color: t.ink,
-                    ),
+                    variant: CatchTextVariant.supportingStrong,
+                    color: t.ink,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

@@ -141,12 +141,10 @@ class EventShareCard extends StatelessWidget {
                       ),
                       radius: CatchRadius.pill,
                       padding: CatchInsets.compactLabelContent,
-                      child: Text(
+                      child: CatchText(
                         context.l10n.eventsEventShareCardTextCatchInvite,
-                        style: CatchTextStyles.labelS(
-                          context,
-                          color: visual.accent,
-                        ),
+                        variant: CatchTextVariant.statusLabel,
+                        color: visual.accent,
                       ),
                     ),
                   ),
@@ -276,7 +274,11 @@ class EventShareChip extends StatelessWidget {
       ),
       radius: CatchRadius.pill,
       padding: CatchInsets.compactLabelContent,
-      child: Text(label, style: CatchTextStyles.labelS(context, color: t.ink)),
+      child: CatchText(
+        label,
+        variant: CatchTextVariant.statusLabel,
+        color: t.ink,
+      ),
     );
   }
 }

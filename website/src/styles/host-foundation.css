@@ -4,134 +4,18 @@
  * story coverage. Page-level hero and feature sections live in host.css.
  */
 
-/* Live module stack (HostLiveModulesSection). */
-.module-stack {
-  display: grid;
-  gap: 14px;
-}
-
-.module-stack article {
-  padding: 22px;
-  border: 1px solid var(--website-line);
-  border-radius: var(--catch-radius-md);
-  background: var(--website-surface);
-  transition:
-    transform var(--catch-motion-micro) var(--catch-motion-spring-curve),
-    box-shadow var(--catch-motion-micro) var(--catch-motion-standard-curve);
-}
-
-.module-stack article:hover {
-  box-shadow: var(--catch-elevation-card);
-  transform: translateY(-1px);
-}
-
-.module-stack article span {
-  color: var(--website-text-muted);
-  font-family: var(--catch-font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.module-stack strong {
-  display: block;
-  margin-top: 10px;
-  font-family: var(--catch-font-voice), system-ui, sans-serif;
-  font-size: 22px;
-  font-stretch: var(--catch-voice-stretch);
-  font-weight: 600;
-  line-height: 1.05;
-}
-
-.module-stack p {
-  margin-top: 10px;
-  color: var(--website-copy-faint);
-  font-size: 14px;
-  line-height: 1.55;
-}
-
-/* Fill-the-room module cards, keyed to their activity pigment. */
-.host-fill-room {
-  border-top: 1px solid var(--website-line);
-}
-
-.product-module-grid {
-  display: grid;
-  gap: 18px;
-  margin-top: 40px;
-}
-
-.product-module-card {
-  display: grid;
-  align-content: start;
-  gap: 16px;
-  padding: 24px;
-  border: 1px solid var(--website-line);
-  border-top: 3px solid var(--activity, var(--website-accent));
-  border-radius: var(--catch-radius-md);
-  background: var(--website-surface);
-  transition:
-    transform var(--catch-motion-micro) var(--catch-motion-spring-curve),
-    box-shadow var(--catch-motion-micro) var(--catch-motion-standard-curve);
-}
-
-.product-module-card:hover {
-  box-shadow: var(--catch-elevation-raised);
-  transform: translateY(-2px);
-}
-
-.product-module-card .ui-label {
-  color: var(--website-copy-meta);
-}
-
-.product-module-card h3 {
-  margin-top: 4px;
-  font-size: 26px;
-  line-height: 1.05;
-}
-
-.product-module-card p {
-  margin: 0;
-  color: var(--website-copy-muted);
-  font-size: 14px;
-  line-height: 1.55;
-}
-
-.product-module-card ul {
-  display: grid;
-  gap: 1px;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  border: 1px solid var(--website-line);
-  border-radius: var(--catch-radius-sm);
-  background: var(--website-line);
-  list-style: none;
-}
-
-.product-module-card li {
-  padding: 12px 14px;
-  background: var(--website-bg);
-  color: var(--website-copy-muted);
-  font-size: 13px;
-  line-height: 1.45;
-}
-
 /* Surface cards (bookings/live/after) + proof ledger rows. */
-.surface-grid,
-.proof-ledger__rows {
+.surface-grid {
   display: grid;
   gap: 1px;
-  margin-top: 40px;
+  margin-top: var(--catch-space-s10);
   background: var(--website-line);
   border: 1px solid var(--website-line);
 }
 
-.surface-grid article,
-.proof-ledger__rows article {
+.surface-grid article {
   min-height: 220px;
-  padding: 24px;
+  padding: var(--catch-space-s6);
   background: var(--website-surface);
 }
 
@@ -145,141 +29,14 @@
 }
 
 .surface-grid h3 {
-  margin-top: 48px;
+  margin-top: var(--catch-space-s12);
   font-size: 26px;
   line-height: 1.05;
 }
 
-.surface-grid p,
-.proof-ledger__rows p {
-  margin-top: 10px;
+.surface-grid p {
+  margin-top: var(--catch-space-micro10);
   color: var(--website-copy-faint);
   font-size: 14px;
   line-height: 1.55;
-}
-
-.proof-ledger__rows article {
-  display: grid;
-  min-height: 0;
-  gap: 10px;
-}
-
-.proof-ledger__rows strong {
-  color: var(--website-text);
-  font-size: 15px;
-}
-
-/* Console + evidence shells: retained for adapter story coverage. */
-.host-console {
-  width: 100%;
-  padding: 18px;
-  border: 1px solid var(--website-line);
-  border-radius: var(--catch-radius-md);
-  background: var(--website-surface);
-}
-
-.host-console__top {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--website-line);
-}
-
-.host-console__top span {
-  color: var(--website-text-muted);
-}
-
-.host-console__grid {
-  display: grid;
-  gap: 1px;
-  margin-top: 18px;
-  background: var(--website-line);
-}
-
-.host-console__grid > div {
-  padding: 18px;
-  background: var(--website-bg);
-}
-
-.host-console__grid strong {
-  display: block;
-  margin-top: 8px;
-}
-
-.host-console__timeline {
-  display: grid;
-  gap: 8px;
-  margin-top: 22px;
-}
-
-.host-console__timeline span {
-  display: grid;
-  gap: 4px;
-  align-content: center;
-  padding: 9px 10px;
-  border: 1px solid var(--website-line);
-  border-radius: var(--catch-radius-sm);
-  color: var(--website-copy-meta);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.host-console__timeline strong {
-  color: var(--website-text);
-  font-family: var(--catch-font-mono), ui-monospace, monospace;
-  font-feature-settings: "tnum" 1;
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 1;
-}
-
-.evidence-strip {
-  display: grid;
-  gap: 1px;
-  overflow: hidden;
-  border: 1px solid var(--website-line);
-  border-radius: var(--catch-radius-md);
-  background: var(--website-line);
-}
-
-.evidence-strip div {
-  display: grid;
-  min-height: 132px;
-  align-content: end;
-  gap: 10px;
-  padding: 18px;
-  background: var(--website-surface);
-}
-
-.evidence-strip strong {
-  color: var(--website-text);
-  font-family: var(--catch-font-mono), ui-monospace, monospace;
-  font-feature-settings: "tnum" 1;
-  font-size: 38px;
-  font-weight: 500;
-  line-height: 0.95;
-}
-
-.evidence-strip span {
-  color: var(--website-copy-meta);
-  font-family: var(--catch-font-mono), ui-monospace, monospace;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-@media (min-width: 720px) {
-  .host-console__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .module-stack {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .product-module-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }

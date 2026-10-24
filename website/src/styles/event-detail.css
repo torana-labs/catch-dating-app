@@ -51,7 +51,7 @@
 .event-detail-ticket__facts small { display: block; font-size: 13px; color: var(--website-copy-muted); white-space: pre-line; }
 .event-guest-action > .button, .event-detail-ticket__body > .button { width: 100%; }
 .event-guest-action > p { color: var(--website-copy-muted); font-size: 13px; line-height: 1.5; margin: var(--catch-space-s3) 0; }
-.event-guest-action .button, .event-guest-mobile .button { background: var(--website-text); color: var(--website-bg); border-radius: var(--catch-radius-pill, 999px); }
+.event-guest-action .button, .event-guest-mobile .button { background: var(--website-text); color: var(--website-bg); border-radius: var(--catch-radius-pill, var(--catch-radius-pill)); }
 .event-guest-action .button:disabled { opacity: .65; }
 .event-guest-mobile { display: none; }
 .event-detail-section { padding: var(--catch-space-s8) var(--website-gutter); }

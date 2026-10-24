@@ -164,12 +164,12 @@
         "date": "2026-10-23",
         "value": 420
       },
-      "owner": "Website Phase 4 and Admin (Phase 7 'screens become assemblies')",
+      "owner": "Website Phase 4 and Admin. Under blueprint D18 (\"the library draws; features arrange and bind\") each one becomes a registered @catch/web-ui component; none moves into a feature.",
       "linear": [
         "CAT-218",
         "CAT-219"
       ],
-      "enforcement": "web:shared-ui-adoption classifies every export but does not ratchet the count."
+      "enforcement": "None yet, and the measure is provisional. The React inventory counts any shared export with one owner as t4-move, @catch/web-ui included, and the registry rejects a React record on T3/T4 entries, so a component registered under D18 would still be counted. The D18 prerequisite (Linear CAT-225, PR #796) lets a T4 entry carry its one framework record and owning surface, with the component in packages/web-ui/src/components/, and maps those rows to concept; only then does this gate fall for the right reason. Until then, new React one-offs stay in their app shared/ui."
     },
     {
       "id": "screens.web_bare_markup",

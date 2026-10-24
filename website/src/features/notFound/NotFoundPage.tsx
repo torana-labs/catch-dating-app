@@ -5,14 +5,7 @@ import {ProcessStatusPanel} from "../../shared/ui/primitives";
 export function NotFoundPage() {
   return (
     <>
-      <PublicSiteHeader
-        localNav={[
-          {href: "/organizers/", label: websiteCopy["notfoundpage_0339"]},
-          {href: "/host/", label: websiteCopy["notfoundpage_0334"]},
-          {href: "/", label: websiteCopy["notfoundpage_0337"]},
-        ]}
-        localActions={[{href: "/organizers/", label: websiteCopy["notfoundpage_0342"]}]}
-      />
+      <PublicSiteHeader />
 
       <WebsitePageMain id="top">
         <ProcessStatusPanel
@@ -42,14 +35,7 @@ export function NotFoundPage() {
         />
       </WebsitePageMain>
 
-      <PublicSiteFooter
-        body={websiteCopy["notfoundpage_0333"]}
-        links={[
-          {href: "/organizers/", label: websiteCopy["notfoundpage_0339"]},
-          {href: "/host/", label: websiteCopy["notfoundpage_0334"]},
-          {href: "/claim/", label: websiteCopy["notfoundpage_0332"]},
-        ]}
-      />
+      <PublicSiteFooter />
     </>
   );
 }

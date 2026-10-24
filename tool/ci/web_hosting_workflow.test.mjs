@@ -35,13 +35,15 @@ function finalFreshnessGateScript() {
     .join("\n");
 }
 
-function runFinalFreshnessGate(mode) {
+function runFinalFreshnessGate(mode, {ancestor = true} = {}) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "web-hosting-freshness-"));
   const bin = path.join(directory, "bin");
   fs.mkdirSync(path.join(directory, "web-hosting-control"));
   fs.copyFileSync(path.join(repoRoot, "tool/ci/web_hosting_freshness.mjs"), path.join(directory, "web-hosting-control/web_hosting_freshness.mjs"));
   fs.mkdirSync(bin);
   const trace = path.join(directory, "calls.log");
+  const output = path.join(directory, "github-output");
+  fs.writeFileSync(output, "");
   const sha = "a".repeat(40);
   const mainSha = "b".repeat(40);
   const git = `#!/bin/sh
@@ -65,6 +67,8 @@ case "$*" in
   *"actions/workflows/$SOURCE_CI_WORKFLOW_ID/runs?"*)
     if [ "$GATE_MODE" = "clean" ] || { [ "$GATE_MODE" = "stale-then-fresh" ] && [ "$no_cache" = "true" ]; }; then
       printf '%s\\n' '{"workflow_runs":[{"id":101,"run_number":73,"head_sha":"${sha}","head_branch":"main","event":"push"}]}'
+    elif [ "$GATE_MODE" = "same-number-mismatch" ]; then
+      printf '%s\\n' '{"workflow_runs":[{"id":102,"run_number":73,"head_sha":"${mainSha}","head_branch":"main","event":"push"}]}'
     else
       printf '%s\\n' '{"workflow_runs":[{"id":102,"run_number":74,"head_sha":"${mainSha}","head_branch":"main","event":"push"}]}'
     fi
@@ -86,7 +90,8 @@ esac
         GATE_TRACE: trace,
         GATE_MODE: mode,
         GATE_MAIN_SHA: mainSha,
-        GATE_ANCESTOR: "true",
+        GATE_ANCESTOR: String(ancestor),
+        GITHUB_OUTPUT: output,
         GITHUB_REPOSITORY: "suvratgarg/catch-dating-app",
         IS_RECOVERY: "false",
         SOURCE_CI_RUN_ATTEMPT: "2",
@@ -97,7 +102,7 @@ esac
       },
     });
     const calls = fs.readFileSync(trace, "utf8").trim().split("\n").filter(Boolean);
-    return {result, calls};
+    return {result, calls, output: fs.readFileSync(output, "utf8")};
   } finally {
     fs.rmSync(directory, {recursive: true, force: true});
   }
@@ -586,6 +591,7 @@ test("final freshness mismatch gets at most one no-cache read and remains fail-c
 test("final freshness shell retries one stale API read once, then still refuses persistent mismatch", () => {
   const clean = runFinalFreshnessGate("clean");
   assert.equal(clean.result.status, 0, clean.result.stderr);
+  assert.equal(clean.output, "");
   assert.equal(clean.calls.filter((call) => call.startsWith("api ")).length, 2);
   assert.equal(clean.calls.filter((call) => call.includes("Cache-Control: no-cache")).length, 0);
 
@@ -596,11 +602,110 @@ test("final freshness shell retries one stale API read once, then still refuses 
   assert.match(staleThenFresh.result.stdout, /Initial source\/freshness read did not satisfy/u);
   assert.match(staleThenFresh.result.stdout, /single no-cache read/u);
 
-  const persistentMismatch = runFinalFreshnessGate("persistent-mismatch");
-  assert.equal(persistentMismatch.result.status, 1);
-  assert.equal(persistentMismatch.calls.filter((call) => call.startsWith("api ")).length, 4);
-  assert.equal(persistentMismatch.calls.filter((call) => call.includes("Cache-Control: no-cache")).length, 2);
-  assert.match(persistentMismatch.result.stdout, /remains unsatisfied after one no-cache read; refusing deployment/u);
+  assert.equal(staleThenFresh.output, "");
+
+  // Only a newer push stands down (next test); anything else stays a refusal.
+  for (const [label, gate] of [
+    ["same run number, different run", runFinalFreshnessGate("same-number-mismatch")],
+    ["newer push but source left main", runFinalFreshnessGate("persistent-mismatch", {ancestor: false})],
+  ]) {
+    assert.equal(gate.result.status, 1, label);
+    assert.equal(gate.calls.filter((call) => call.startsWith("api ")).length, 4, label);
+    assert.equal(gate.calls.filter((call) => call.includes("Cache-Control: no-cache")).length, 2, label);
+    assert.equal(gate.output, "", label);
+    assert.match(gate.result.stdout, /remains unsatisfied after one no-cache read; refusing deployment/u, label);
+  }
+});
+
+test("final freshness shell stands down without deploying when a newer push of the surface started", () => {
+  const newerPush = runFinalFreshnessGate("persistent-mismatch");
+  assert.equal(newerPush.result.status, 0, newerPush.result.stderr);
+  assert.equal(newerPush.calls.filter((call) => call.startsWith("api ")).length, 4);
+  assert.equal(newerPush.calls.filter((call) => call.includes("Cache-Control: no-cache")).length, 2);
+  assert.equal(newerPush.output, "superseded=true\n");
+  assert.match(newerPush.result.stdout, /this run deploys nothing/u);
+});
+
+test("only a newer push of the same surface supersedes a promotion, and recovery never is", () => {
+  const newer = (evidence) => {
+    evidence.actual.latestRuns[0] = {id: 102, runNumber: 74, sha: "c".repeat(40), branch: "main", event: "push"};
+    return evidence;
+  };
+  const superseded = evaluatePromotionFreshness(newer(validFreshnessEvidence()));
+  assert.equal(superseded.passed, false);
+  assert.equal(superseded.superseded, true);
+  assert.deepEqual(superseded.supersededBy, {runNumber: 74});
+  assert.equal(evaluatePromotionFreshness(validFreshnessEvidence()).superseded, false);
+
+  for (const [label, mutate] of [
+    ["older latest run", (e) => { e.actual.latestRuns[0].runNumber = 72; }],
+    ["same run number", (e) => { e.actual.latestRuns[0].runNumber = 73; }],
+    ["source left main", (e) => { e.actual.sourceIsAncestor = false; }],
+    ["producer attempt changed", (e) => { e.actual.sourceRun.runAttempt = 1; }],
+    ["latest is not a main push", (e) => { e.actual.latestRuns[0].event = "workflow_dispatch"; }],
+    ["ambiguous latest query", (e) => { e.actual.latestRuns.push({...e.actual.latestRuns[0]}); }],
+    ["recovery", (e) => { e.expected.recovery = true; e.actual.mainSha = "c".repeat(40); }],
+  ]) {
+    const evidence = newer(validFreshnessEvidence());
+    mutate(evidence);
+    const result = evaluatePromotionFreshness(evidence);
+    assert.equal(result.passed, false, label);
+    assert.equal(result.superseded, false, label);
+    assert.equal(result.supersededBy, null, label);
+  }
+
+  const initialNewer = (e) => {
+    Object.assign(e.snapshot.latest.workflow_runs[0], {id: 102, run_number: 74, head_sha: "c".repeat(40)});
+    return e;
+  };
+  const authorization = initialNewer(initialEvidence());
+  const result = evaluatePromotionAuthorization(authorization.expected, authorization.snapshot);
+  assert.equal(result.passed, false);
+  assert.equal(result.binding, null);
+  assert.deepEqual([result.superseded, result.supersededBy], [true, {runNumber: 74}]);
+  for (const [label, mutate] of [
+    ["same run number", (e) => { e.snapshot.latest.workflow_runs[0].run_number = 73; }],
+    ["artifact digest changed", (e) => { e.snapshot.artifact.digest = `sha256:${"d".repeat(64)}`; }],
+    ["recovery", (e) => { e.expected.recovery = true; }],
+  ]) {
+    const e = initialNewer(initialEvidence());
+    mutate(e);
+    assert.equal(evaluatePromotionAuthorization(e.expected, e.snapshot).superseded, false, label);
+  }
+
+  // Authorization stands down only after the no-cache reread agrees.
+  const {expected, snapshot} = initialNewer(initialEvidence());
+  const api = (endpoint) => structuredClone(endpoint.includes("/attempts/") ? snapshot.attempt :
+    endpoint.endsWith("/runs/101") ? snapshot.current :
+    endpoint.includes("marketing-website.yml") ? snapshot.canonical :
+    endpoint.includes("/workflows/55/runs?") ? snapshot.latest :
+    endpoint.includes("/artifacts/901") ? snapshot.artifact :
+    endpoint.includes("/runs/101/artifacts?") ? snapshot.pages : snapshot.repository);
+  const logs = [];
+  assert.deepEqual(authorizePromotion(expected, api, (entry) => logs.push(entry)),
+    {superseded: true, latestRunNumber: 74});
+  assert.equal(logs.length, 2);
+});
+
+test("a superseded promotion skips every later step but still removes credentials it obtained", () => {
+  const promote = workflow("_web-hosting-promote.yml");
+  const steps = promote.slice(promote.indexOf("      - id: authorize")).split(/\n      - /u).slice(1);
+  assert.ok(steps.length > 10);
+  const authorizeSkip = "steps.authorize.outputs.superseded != 'true'";
+  const freshnessSkip = "steps.freshness.outputs.superseded != 'true'";
+  const lateGate = steps.findIndex((step) => step.startsWith("name: Refuse to overtake a newer main push"));
+  assert.ok(lateGate > 0);
+  assert.match(steps[lateGate], /\n        id: freshness\n/u);
+  for (const [index, step] of steps.entries()) {
+    const name = step.split("\n")[0];
+    const condition = step.match(/\n        if: (\$\{\{[^\n]*\}\})/u)?.[1] ?? "";
+    assert.ok(condition.includes(authorizeSkip), `${name} must skip after superseded authorization`);
+    const removesCredentials = name.includes("Remove deploy credentials");
+    assert.equal(condition.includes(freshnessSkip), index > lateGate && !removesCredentials,
+      `${name} late-gate condition`);
+  }
+  const authorize = promote.slice(promote.indexOf("      - id: authorize"), promote.indexOf("Checkout the exact producing source"));
+  assert.match(authorize, /if jq -e '\.superseded == true'[\s\S]*superseded=true[\s\S]*exit 0[\s\S]*workflow_id=/u);
 });
 
 test("the packaged Firebase target cannot run lifecycle hooks with deploy credentials", () => {
@@ -639,7 +744,7 @@ test("marketing production postconditions run only after exact promotion", () =>
   assert.match(promote,
     /probeProduction\.mjs --base-url https:\/\/catchdates\.com --json/u);
   assert.match(promote,
-    /if: \$\{\{ inputs\.surface == 'marketing' \}\}/u);
+    /if: \$\{\{ inputs\.surface == 'marketing' && steps\.legacy-runtime\.outputs\.retired != 'true' && /u);
 });
 
 function initialEvidence() {

@@ -209,6 +209,7 @@ export function toCanonicalWorkItemRecord(item, {
         artifactId,
         confidence
       ),
+      ...intakeListingFieldProvenance(item, artifactId, confidence),
     ],
     normalizedPayload: {
       title: item.sourceEntity.title,
@@ -436,6 +437,24 @@ function orphanEventFieldProvenance(item, artifactId, confidence) {
     confidence,
     `${base}#normalizedPayload.${field}`
   ));
+}
+
+// Each listing field names the page it came from, so a reviewer can check the
+// source and an agent-filled field is labelled as model output.
+function intakeListingFieldProvenance(item, artifactId, confidence) {
+  const intake = item.adminProjection;
+  if (intake?.recordType !== "organizer_listing_draft") return [];
+  return intake.listing.fieldEvidence.map((entry) => ({
+    ...fieldProvenance(
+      `intake.listing.organizer.${entry.field}`,
+      item,
+      artifactId,
+      confidence,
+      (entry.sourceUrl ?? `${item.evidence.artifactRef ?? "supply-intake-artifact"}#seed.${entry.field}`).slice(0, 1_000)
+    ),
+    extractedBy: entry.method === "agent" ? "model" : entry.method === "nominator" ? "human" : "deterministic",
+    extractorVersion: entry.adapterId ?? item.decisionProvenance.actorId ?? `${item.workflowId}-unknown`,
+  }));
 }
 
 function canonicalLifecycleStatus(item, contract) {

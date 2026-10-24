@@ -137,7 +137,7 @@ class _PhotoGradeTile extends StatelessWidget {
             ),
           ),
           gapH8,
-          Text(label, style: CatchTextStyles.labelM(context)),
+          Text(label, style: CatchTextStyles.statusLabel(context)),
           Text(
             enabled ? 'display-time grade' : 'ungraded source',
             style: CatchTextStyles.monoLabelS(context, color: t.ink2),

@@ -84,7 +84,7 @@ class CatchMenuRow<T> extends StatelessWidget {
                             item.sublabel!,
                             maxLines: _sheet ? null : 2,
                             overflow: _sheet ? null : TextOverflow.ellipsis,
-                            style: CatchTextStyles.menuSupporting(
+                            style: CatchTextStyles.bodyS(
                               context,
                               color: t.ink3,
                             ),

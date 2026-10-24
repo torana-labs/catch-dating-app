@@ -1,3 +1,4 @@
+import type {ComponentProps} from "react";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {CatchGap, type CatchGapSize} from "./CatchGap";
 import {CatchInset, type CatchInsetPadding} from "./CatchInset";
@@ -5,14 +6,16 @@ import {CatchPageBody} from "./CatchPageBody";
 import {CatchSectionList} from "./CatchSectionList";
 import {CatchText, type CatchTextVariant} from "./CatchText";
 
+type FoundationStoryArgs = ComponentProps<typeof CatchText>;
+
 const meta = {
   title: "Web UI/Foundations",
   component: CatchText,
   args: {children: "Catch", variant: "bodyM"},
-} satisfies Meta<typeof CatchText>;
+} satisfies Meta<FoundationStoryArgs>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<FoundationStoryArgs>;
 
 const textVariants: readonly CatchTextVariant[] = [
   "headline",
@@ -55,9 +58,10 @@ const insetPaddings: readonly CatchInsetPadding[] = [
 ];
 
 function TextRoles() {
+  const variants = textVariants;
   return (
     <CatchGap size="related">
-      {textVariants.map((variant) => (
+      {variants.map((variant) => (
         <CatchText key={variant} variant={variant}>
           {variant === "metric" ? "1,280" : `${variant}: Thursday supper club, 8 PM`}
         </CatchText>

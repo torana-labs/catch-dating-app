@@ -1,6 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/contract_preview.dart';
 
@@ -14,6 +15,22 @@ import '../../preview_layout_contracts.dart';
 Widget catchTextContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
+  const variants = [
+    CatchTextVariant.headline,
+    CatchTextVariant.titleL,
+    CatchTextVariant.sectionTitle,
+    CatchTextVariant.titleS,
+    CatchTextVariant.bodyLead,
+    CatchTextVariant.bodyL,
+    CatchTextVariant.bodyM,
+    CatchTextVariant.bodyS,
+    CatchTextVariant.supporting,
+    CatchTextVariant.supportingStrong,
+    CatchTextVariant.fieldLabel,
+    CatchTextVariant.statusLabel,
+    CatchTextVariant.metric,
+  ];
+
   return WidgetbookContractFrame(
     title: 'CatchText',
     contractId: 'catch.text',
@@ -25,7 +42,7 @@ Widget catchTextContractStates(BuildContext context) {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: CatchGaps.related,
           children: [
-            for (final variant in CatchTextVariant.values)
+            for (final variant in variants)
               CatchText(
                 variant == CatchTextVariant.metric
                     ? '1,280'

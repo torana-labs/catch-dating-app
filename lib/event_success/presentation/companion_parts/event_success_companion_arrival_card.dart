@@ -94,18 +94,19 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
               ],
             ),
             gapH12,
-            Text(
+            CatchText(
               context
                   .l10n
                   .eventSuccessEventSuccessCompanionArrivalMissionTextStartYourFirstHello,
-              style: CatchTextStyles.titleL(context),
+              variant: CatchTextVariant.titleL,
             ),
             gapH6,
-            Text(
+            CatchText(
               context
                   .l10n
                   .eventSuccessEventSuccessCompanionArrivalMissionTextWeWillConfirmYou,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
             gapH14,
             CompanionStageBanner(
@@ -119,11 +120,11 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                   ),
                   gapW8,
                   Expanded(
-                    child: Text(
+                    child: CatchText(
                       context
                           .l10n
                           .eventSuccessEventSuccessCompanionArrivalMissionTextThisIsAPrivate,
-                      style: CatchTextStyles.sectionTitle(context),
+                      variant: CatchTextVariant.sectionTitle,
                     ),
                   ),
                 ],
@@ -319,17 +320,18 @@ class FirstHelloMissionEditor extends StatelessWidget {
           ],
         ),
         gapH12,
-        Text(
+        CatchText(
           context.l10n
               .eventSuccessEventSuccessCompanionArrivalMissionTextFindTargetdisplayname(
                 targetDisplayName: mission.targetDisplayName,
               ),
-          style: CatchTextStyles.titleL(context),
+          variant: CatchTextVariant.titleL,
         ),
         gapH6,
-        Text(
+        CatchText(
           mission.targetContext,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          variant: CatchTextVariant.supporting,
+          color: t.ink2,
         ),
         gapH14,
         CompanionStageBanner(
@@ -343,9 +345,9 @@ class FirstHelloMissionEditor extends StatelessWidget {
               ),
               gapW8,
               Expanded(
-                child: Text(
+                child: CatchText(
                   mission.question,
-                  style: CatchTextStyles.sectionTitle(context),
+                  variant: CatchTextVariant.sectionTitle,
                 ),
               ),
             ],
@@ -365,11 +367,12 @@ class FirstHelloMissionEditor extends StatelessWidget {
           ],
         ),
         gapH14,
-        Text(
+        CatchText(
           context
               .l10n
               .eventSuccessEventSuccessCompanionArrivalMissionTextCompleteThisTinyMission,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          variant: CatchTextVariant.supporting,
+          color: t.ink2,
         ),
         gapH14,
         CompanionStageActionSection(

@@ -190,16 +190,17 @@ class HostTodayEventMetricTile extends StatelessWidget {
               ),
               TextSpan(
                 text: ' $label',
-                style: CatchTextStyles.name(context, color: t.ink),
+                style: CatchTextStyles.sectionTitle(context, color: t.ink),
               ),
             ],
           ),
         ),
         if (supporting != null) ...[
           gapH2,
-          Text(
+          CatchText(
             supporting!,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
         ],
       ],

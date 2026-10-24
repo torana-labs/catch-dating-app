@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-10-23",
+  "updated": "2026-10-24",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "76575de1d8403386a2164b917e1f4ccbf7179970b7b6c9c291e3454f15de6181",
+  "sourceDigest": "1b01c3712418616deb1a9750a3034d01cad37db67f23cb53c4e7b5cef48e7e67",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "76575de1d8403386a2164b917e1f4ccbf7179970b7b6c9c291e3454f15de6181",
-    "contractDigest": "76575de1d8403386a2164b917e1f4ccbf7179970b7b6c9c291e3454f15de6181"
+    "digest": "1b01c3712418616deb1a9750a3034d01cad37db67f23cb53c4e7b5cef48e7e67",
+    "contractDigest": "1b01c3712418616deb1a9750a3034d01cad37db67f23cb53c4e7b5cef48e7e67"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "86c90721e906dc783c0ef63d3afbcfaba7d2ef0617f37e0e64fad8d0587e5b82",
+    "handoffRequestDigest": "c9fc123b07bbad0f5726d77b5b80f78300be818ee1945d24bc175fb229511599",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,

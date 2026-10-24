@@ -141,17 +141,15 @@ class EventSuccessCountdownSurface extends StatelessWidget {
                   ).copyWith(),
                 ),
                 gapH8,
-                Text(
+                CatchText(
                   context.l10n
                       .eventSuccessEventSuccessLiveRevealWidgetsTextEveryoneGetsThisAssignmentnoun(
                         assignmentNoun: kind.assignmentNoun,
                       ),
                   textAlign: TextAlign.center,
-                  style: CatchTextStyles.proseM(
-                    context,
-                    color: t.ink.withValues(
-                      alpha: CatchOpacity.revealMutedForeground,
-                    ),
+                  variant: CatchTextVariant.bodyM,
+                  color: t.ink.withValues(
+                    alpha: CatchOpacity.revealMutedForeground,
                   ),
                 ),
                 gapH18,

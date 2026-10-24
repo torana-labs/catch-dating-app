@@ -1356,6 +1356,37 @@
       }
     },
     {
+      "actionId": "sales.intake.nominate-organizer",
+      "callable": "adminNominateOrganizer",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "salesStaff"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "requestId",
+      "requestSchema": "contracts/callables/admin_nominate_organizer_payload.schema.json",
+      "summary": "Nominate an organizer for Supply Intake; the listing is built from its links and waits for staff review before anything is published.",
+      "example": {
+        "requestId": "example-nomination-001",
+        "name": "Example Run Club",
+        "market": "mumbai",
+        "urls": [
+          "https://lu.ma/example"
+        ],
+        "notes": null,
+        "categories": [
+          "running"
+        ]
+      }
+    },
+    {
       "actionId": "sales.hosts.update",
       "callable": "adminUpdateSalesAccount",
       "workflowIds": [
@@ -3367,6 +3398,7 @@
         "sales.contacts.list",
         "sales.evidence.list",
         "sales.hosts.create",
+        "sales.intake.nominate-organizer",
         "sales.hosts.update",
         "sales.tasks.upsert",
         "sales.opportunities.upsert",

@@ -1,0 +1,34 @@
+{
+  "width": 1200,
+  "height": 630,
+  "cards": {
+    "default": {
+      "path": "/assets/og/default.png",
+      "version": "ab5013ee6fe4",
+      "alt": "Catch: Find something worth showing up for",
+      "capture": null,
+      "inputHash": "ab5013ee6fe485ae919cf220b5de20e59c2154d609d43e97824cd4050002456e"
+    },
+    "host": {
+      "path": "/assets/og/host.png",
+      "version": "780b3235dc38",
+      "alt": "Catch Host: Run great events. Build a business around them.",
+      "capture": "host-live-console",
+      "inputHash": "780b3235dc38c23156d4304ea1e414a3b529d1a257dbef8a4d38b763b33aa36a"
+    },
+    "apply": {
+      "path": "/assets/og/apply.png",
+      "version": "d792643bae24",
+      "alt": "Catch Host: Apply for a pilot",
+      "capture": "host-create-basics",
+      "inputHash": "d792643bae24db51e8cedb91bf014d8a56184bbfbd006b3ad3d78c42ed481cb2"
+    },
+    "form": {
+      "path": "/assets/og/form.png",
+      "version": "f2710af6523e",
+      "alt": "Catch: Organizer form",
+      "capture": null,
+      "inputHash": "f2710af6523e88724db9ae85b97ec6aeca28ad8aba015c37ec07c1dd4558aeff"
+    }
+  }
+}

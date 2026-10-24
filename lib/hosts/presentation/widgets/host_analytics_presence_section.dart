@@ -54,23 +54,23 @@ class HostAnalyticsPresenceSection extends StatelessWidget {
           ),
           gapH12,
           if (unavailable || empty) ...[
-            Text(
+            CatchText(
               unavailable
                   ? context.l10n.hostsHostAnalyticsTextPresenceUnavailable
                   : context.l10n.hostsHostAnalyticsTextPresenceEmpty,
               key: const ValueKey('host-analytics-presence-empty'),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
             gapH6,
           ],
-          Text(
+          CatchText(
             context.l10n.hostsHostAnalyticsTextPresenceObservedTotals,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           gapH6,
-          Text(
+          CatchText(
             context.l10n.hostsHostAnalyticsTextPresenceExternalLimits,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
       ),

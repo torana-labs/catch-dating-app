@@ -8592,6 +8592,175 @@
       "decidedBy": "owner-approved -> codex",
       "date": "2026-10-08",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-236:status-bar-time",
+      "decision": "delete",
+      "members": [
+        {
+          "name": "CatchTextStyles.statusBarTime",
+          "action": "delete"
+        },
+        {
+          "name": "CatchLayout.statusBarTimeFontSize",
+          "action": "delete"
+        },
+        {
+          "name": "FoundationTypographyTokens statusBarTime specimen",
+          "action": "delete"
+        }
+      ],
+      "rationale": "CAT-236 comment 22a3daa7-9274-4c45-99a8-1629a0db61fc records the owner-delegated 2026-10-24 Claude decision to retire unused status-time typography. Remove the public style and font-size alias, its specimen and generated handoff projection; no production consumer needs a replacement. This records only the status-time decision, not the separate welcome extraction or display-scale proposal.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-234:chat-text-roles",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.chatMessage",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyL for direct text; CatchTextStyles.bodyL for unchanged timestamped carrier props."
+        },
+        {
+          "name": "CatchTextStyles.chatPreview",
+          "action": "absorb",
+          "note": "CatchTextVariant.supporting in conversation content."
+        },
+        {
+          "name": "CatchTextStyles.chatThreadContext",
+          "action": "absorb",
+          "note": "CatchTextVariant.supportingStrong; approved header-only weight 600 to 500."
+        }
+      ],
+      "rationale": "CAT-234 comment 2d5bdcb6-962b-43c6-bc7c-79f4147a5c0f records the owner-delegated:2026-10-24 -> claude decision B. Retire the three feature aliases into existing system roles without adding variants. Message and preview recipes preserve every style field and caller color. Only chat_event_context_header.dart changes rendered weight from 600 to 500; all other production output remains equivalent. CatchTimestampedMessageText keeps its textStyle and timestampStyle carrier API. Remove retired alias specimens and generated handoff entries with their definitions.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:section-title-record-name-aliases",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.recordTitle",
+          "action": "absorb",
+          "note": "CatchTextVariant.sectionTitle for supported Text calls; CatchTextStyles.sectionTitle for unchanged style carriers."
+        },
+        {
+          "name": "CatchTextStyles.name",
+          "action": "absorb",
+          "note": "CatchTextVariant.sectionTitle for supported Text calls; CatchTextStyles.sectionTitle for unchanged style carriers."
+        }
+      ],
+      "rationale": "CAT-211 comment 5e573577-8360-4eb5-b8a3-63dee7477d49 records the owner-delegated:2026-10-24 -> claude decision to absorb recordTitle and name into existing sectionTitle and retire both aliases instead of exposing synonyms. Record approval as owner+claude under the goal handoff format. Complete TextStyle equality holds across six platforms, both themes and default/danger/transparent colors; the original thirteen variants are distinct. Retire all callers, methods and the two Flutter/React variants and catalog projections together, preserving colors and rendering. No new API or visual decision.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:section-title-profile-answer-identity",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.profileAnswer",
+          "action": "absorb",
+          "note": "CatchTextVariant.sectionTitle for supported Text calls; CatchTextStyles.sectionTitle for unchanged style carriers."
+        }
+      ],
+      "rationale": "The 2026-10-24 exact-identity coordinator rule in .claude/handoffs/codex_ui_consolidation_goal.md authorizes absorbing an identical style into its existing variant without exposing a synonym. profileAnswer equals the unique original sectionTitle recipe across six platforms, both themes and default/danger/transparent colors. Migrate its supported production Text call to CatchTextVariant.sectionTitle, rename unchanged specimen/test carriers and retire the alias and generated projection. Preserve all rendering and caller colors. This is the mechanical rule, not an additional Claude design approval.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:body-small-record-context-alias",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.recordContext",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyS for supported Text calls; retire the synonym Flutter/React variant and catalog entries."
+        }
+      ],
+      "rationale": "CAT-211 comment 5e573577-8360-4eb5-b8a3-63dee7477d49 records the owner-delegated:2026-10-24 -> claude decision to absorb recordContext into existing bodyS and retire the alias. Complete TextStyle equality is verified across all six platforms, both themes and default/danger/transparent colors. Preserve the original context ink2 fallback at migrated call sites. No new role or visual decision.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:body-small-context-alias-identities",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.appBarSubtitle",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyS for supported Text calls; CatchTextStyles.bodyS for existing measurement and style-carrier APIs."
+        },
+        {
+          "name": "CatchTextStyles.menuSupporting",
+          "action": "absorb",
+          "note": "CatchTextStyles.bodyS preserves the conditional multiline menu carrier without changing its API."
+        }
+      ],
+      "rationale": "The exact-identity coordinator rule in .claude/handoffs/codex_ui_consolidation_goal.md authorizes absorbing identical roles into existing variants without synonyms. Both aliases equal bodyS across all six platforms, both themes and default/danger/transparent colors. Rename measurement and unsupported Text carriers without changing arguments, preserve original call-site colors, and retire the methods and handoff entries. This records the mechanical rule rather than an additional Claude design approval.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:canonical-reading-role-aliases",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.recordBody",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyL for supported app Text calls; CatchTextStyles.bodyL for existing library and carrier APIs."
+        },
+        {
+          "name": "CatchTextStyles.proseL",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyL for supported app Text calls; CatchTextStyles.bodyL for existing library and carrier APIs."
+        },
+        {
+          "name": "CatchTextStyles.proseM",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyM for supported app Text calls; CatchTextStyles.bodyM for existing library and carrier APIs."
+        }
+      ],
+      "rationale": "CAT-211 comment 5e573577-8360-4eb5-b8a3-63dee7477d49 records the owner-delegated:2026-10-24 -> claude decision to absorb recordBody/proseL into bodyL and proseM into bodyM. Resolved method signatures and complete recipe bodies are identical to their canonical targets. Migrate the supported app call-site set, retain library-owned Text and style-carrier APIs, and retire methods, Flutter/React synonym variants and obsolete preview controls together. Preserve original-context default ink and explicit colors. This completes the reading-role batch without adding variants. Calendar and Saved Events retain their messageStyle carrier APIs using supporting with explicit ink2: it uses the same secondary profile and color as their former proseM overrides, while respecting the existing prohibition on feature-owned low-level bodyM styles.",
+      "decidedBy": "owner+claude",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:canonical-status-role-aliases",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.labelM",
+          "action": "absorb",
+          "note": "CatchTextVariant.statusLabel for supported app Text calls; CatchTextStyles.statusLabel retains existing drawing, measurement and carrier APIs."
+        },
+        {
+          "name": "CatchTextStyles.labelS",
+          "action": "absorb",
+          "note": "CatchTextVariant.statusLabel for supported app Text calls; CatchTextStyles.statusLabel retains existing drawing, measurement and carrier APIs."
+        }
+      ],
+      "rationale": "The handoff exact-identity rule authorizes absorbing identical recipes into an existing variant. Resolved complete signatures and bodies match statusLabel. Migrate the deterministic supported app call-site set, rename library and unsupported carriers without changing arguments, retire both methods and duplicate specimens, and shrink the resolved Text baseline. Includes the unqualified clubMemberSeal style dependency. This records the mechanical rule without introducing a design decision or new variant.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
     }
   ]
 }

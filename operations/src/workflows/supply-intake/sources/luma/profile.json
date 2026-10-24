@@ -4,16 +4,19 @@
   "label": "Luma",
   "sourceTier": "structured_official_platform",
   "status": "shadow",
-  "allowedUse": "Extract reviewed local Luma JSON-LD artifacts. Network capture remains disabled.",
+  "allowedUse": "Extract organizers and events from Luma event and calendar pages' schema.org JSON-LD. Network capture follows the acquisition policy.",
   "acquisition": {
     "networkEnabled": false,
-    "allowedHosts": ["lu.ma", "luma.com"],
+    "allowedHosts": [
+      "lu.ma",
+      "luma.com"
+    ],
     "artifactOnly": true
   },
   "extraction": {
-    "strategy": "json_ld_event_v1",
+    "strategy": "luma_json_ld_page_v1",
     "deterministicFirst": true,
-    "modelFallback": false,
+    "modelFallback": true,
     "templateDriftBehavior": "abstain"
   },
   "publication": {

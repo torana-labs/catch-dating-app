@@ -90,7 +90,8 @@ freshness-scheduled `runKey` to an injected acquisition port and receives a raw
 JSON payload plus bounded provenance. The workflow never constructs a network
 client, and the React admin has no acquisition or model client.
 
-Two adapters implement that port:
+Two adapters implement that port (on-demand page fetching for intake
+requests is a separate channel, described below):
 
 - `manual_file` reads the same reviewed JSON payloads used by the existing
   compatibility capture commands. It consumes no network allowance and
@@ -119,6 +120,146 @@ and budget evidence. The checked policy fixes
 `firestorePersistenceAllowed=false` and
 `persistence=external_artifact_store_only`.
 
+### Supply intake requests
+
+Every way an organizer enters Catch creates one intake request
+(`contracts/operations/supply_intake_request.schema.json`): a sales
+associate's or sales partner's nomination, an organizer's own submission, or
+an Admin-started discovery run. A request names a market, a seed (organizer
+name, up to ten URLs, notes, categories) and who submitted it. A nomination
+requires the submitter's uid, a partner nomination also requires the
+partner id, and discovery requests are always submitted by `system`.
+
+`supply-intake/intake-request.mjs` turns a request into one listing:
+
+1. **Gather.** Each seed URL is normalized and read through an injected page
+   source. The deterministic adapters in `supply-intake/sources/` extract
+   organizer and event candidates. Organizer pages that a seed links to on an
+   adapter platform (an event's organizer, a profile's `sameAs`) are read too,
+   one hop from the seed, up to twelve pages. A page that cannot be read, or
+   whose template drifted, becomes a recorded outcome rather than an error.
+2. **Build the listing.** Name, description, image and locality each record
+   the page and adapter they came from. Organizer pages outrank event pages,
+   and a nominator's typed name is used only when no page names the
+   organizer. Links keep only organizer surfaces, and their normalized keys
+   become the identity keys used for matching. Upcoming events are
+   deduplicated by platform id and by title and start time across platforms;
+   past events are counted, not listed.
+3. **Record gaps.** Missing fields, unreadable seeds, a name that differs from
+   the nomination, an exhausted fetch budget and similar conditions are
+   listed as gaps. Gaps that more evidence could close mark the listing
+   `researchNeeded`.
+
+The listing is the only content of the request's input snapshot
+(`intakeListings`). Supply Intake projects it as an `organizer_listing_draft`
+work item, and each upcoming event as a `listing_event_candidate` linked to
+it. Both are owned by a person: a listing waits in Verify for staff review (or
+in Resolve when it has no name or no readable source), and an event stays
+ineligible for promotion until its organizer's listing is approved. The work
+item contract validates both projections strictly, and every listing field
+carries provenance naming its source page.
+
+Two page sources implement capture. `StaticPageSource` reads pages a person
+saved and never touches the network. `GuardedPageFetchPort` fetches live
+pages only when `acquisition_policy.json` enables `pageFetch`, cites an
+accepted `on_demand_page_fetch_policy` decision, and freezes positive
+per-intake and monthly request ceilings. That channel is separate from the
+recurring crawl provider and its `recurring_event_crawl_policy`. The fetcher
+(`platform/network/page-fetcher.mjs`) connects only to public addresses: every
+DNS answer is checked at connect time, so a name cannot pass the check and
+then rebind to a private address. It refuses credentials in URLs and
+non-standard ports, revalidates every redirect (three at most), honours
+robots.txt for its own product token (a missing file allows everything; an
+unreachable one disallows everything), and stops at ten seconds or 4 MB.
+Robots.txt and each redirect consume budget like any other request. A capture
+returns a page snapshot without raw HTML plus a receipt holding only the
+outcome, hashes, sizes and budget window.
+
+#### Front doors
+
+Three front doors create requests today, all through one in-transaction
+service (`functions/src/operations/supplyIntake/requests.ts`). Each door
+derives its request id deterministically, so a retried submission finds its
+own request, and the same id with different content is refused rather than
+overwritten. Every request records its `origin`.
+
+- **Admin nomination.** `adminNominateOrganizer` (roles `admin`, `adminOwner`,
+  `salesStaff`) takes a name and/or links, market, notes and categories. It is
+  audited and rate-limited, and the id is keyed on the nominator and their own
+  request id.
+- **Website host applications and partner nominations.** Both already arrive
+  as `salesInboundIntents`, which ad attribution, alerts and partner credit
+  read. `onSalesInboundIntentForIntake` turns each intent that names an
+  organizer or a link into a request: a `self_submission` for the website, a
+  `nomination` credited to the partner for a partner. Applicant name and email
+  stay on the intent; only the organizer name, link, city and notes travel.
+
+Free-text cities resolve to the market slug Supply Intake keys work by
+(`mumbai`, `bengaluru`). An unknown city becomes `unassigned` for staff to
+place.
+
+#### Trusted intake worker
+
+Front doors write `supplyIntakeRequests/{requestId}` as `queued`
+(`contracts/firestore/supply_intake_requests.schema.json`); clients can
+neither read nor write it. `onSupplyIntakeRequestCreated`
+(`functions/src/operations/supplyIntake/`) then:
+
+1. Leases the request in a transaction for nine minutes. A request still under
+   lease is left to its worker; an expired lease is taken over.
+2. Chooses the page source. When policy disables page fetching, it uses a
+   source that captures nothing, so the listing still forms from the
+   nomination and every seed becomes a gap. When page fetching is enabled, it
+   validates the cited decision before anything else, then reserves the
+   intake's allowance against `supplyIntakeUsage/{YYYY-MM}` in a transaction,
+   so the monthly cap holds across concurrent workers. It releases what the
+   intake did not use afterwards.
+3. Runs gathering, listing assembly and Supply Intake in a scratch file store,
+   using the packaged Operations runtime that the Functions build copies into
+   `lib` (`functions/scripts/copy-operations-runtime.cjs`, checked again
+   before deploy).
+4. Writes page snapshots to the server-only Storage path
+   `supply-intake/snapshots/{requestId}/{snapshotHash}.json`, then imports the
+   run's canonical projection idempotently into `operationRuns` and
+   `operationWorkItems`.
+5. Records the result on the request: run, listing and event work items, gaps,
+   snapshot paths and capture receipts.
+
+A failure releases the lease and leaves the request `queued` for the
+platform's redelivery. The third failed attempt, or an invalid request or
+policy, is terminal and recorded. `recoverSupplyIntakeRequests` runs hourly
+and picks up queued requests and expired leases whose events were lost.
+
+#### Approval
+
+Staff approve a listing with `adminApproveOrganizerListing`
+(`functions/src/admin/organizerListingApproval.ts`; roles `admin`,
+`adminOwner`, because approval opens Sales records). The reviewer confirms
+the name, public slug, an open launch market and the organizer type, ticks the
+public-web checklist that Organizer Intake decisions use, and quotes the
+listing's `contentHash`; a listing rebuilt since the review is refused. One
+transaction then:
+
+- creates the organizer published, unclaimed and `noindex` (`robots: noindex,
+  follow`), hidden in the app, from the listing's name, description,
+  categories and links (no image until media rights are settled), and reserves
+  its route;
+- records the curation receipt (`create_entity_draft`) and an `approve_public`
+  review decision;
+- sets the request's `approval` (organizer, approver, Sales owner, a hash of
+  what was approved);
+- links the website or partner enquiry the request came from, which credits
+  the partner;
+- opens the Sales account, a `new_enquiry` opportunity, a research task to
+  check the page and its events, a follow-up to invite the organizer to claim
+  it, and a `listing_approved` activity whose `source` names the request.
+
+An associate who nominated the organizer owns its Sales work; otherwise the
+approver does. Approval is idempotent per listing: an identical retry replays,
+and a different approval of the same listing is refused. Indexing and app
+discovery remain later decisions, after the organizer is verified. Matching a
+listing to an organizer Catch already lists is the reviewer's check for now.
+
 ## Reference Layout
 
 ```text
@@ -127,6 +268,7 @@ operations/
   src/admin-cli/                   catalog-driven admin callable client
   src/admin/                       action catalog, client, local receipts
   src/platform/                    reusable execution and persistence ports
+  src/platform/network/            guarded public-web page fetcher
   src/workflows/registry.mjs       workflow inventory and factories
   src/workflows/supply-intake/     reference business workflow
   test/                            engine, adapter, safety, and replay tests

@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.36.0
+version: 0.38.0
 updated: 2026-10-24
 owner: web_platform
 status: active
@@ -102,8 +102,9 @@ states.
 
 ### Accepted-source container preview
 
-`Next Website Preview` is a main-only manual workflow for the Cloud Run candidate.
-It refuses source that is no longer current main or has not completed successful
+`Next Website Preview` is a main-only dispatched workflow for the Cloud Run
+candidate; the release train below dispatches it. It refuses source that is not
+on main, is older than the live release, or has not completed successful
 same-source CI, Marketing validation and canonical captures. Its uncredentialed
 build job imports only those verified captures, supplies the production public
 browser configuration, builds the non-root image and exercises the actual
@@ -140,9 +141,11 @@ refuses to proceed until it is ready.
 
 ### Exact-container production promotion
 
-After deployed preview and browser acceptance, dispatch `Next Website Promotion`
-with that successful preview run id. The preview source must still be current
-main with successful CI. The workflow verifies GitHub artifact provenance and
+After deployed preview and browser acceptance, `Next Website Promotion` runs
+with that successful preview run id; the release train dispatches it once a
+reviewer approves. The release is the preview's own source, which main may have
+moved past: it must still be on main, with successful CI, and not older than
+the live release, so live only moves forward. The workflow verifies GitHub artifact provenance and
 ZIP digest, bounded archive contents, source/run/attempt identity and the loaded
 Docker image before OIDC. It then verifies the registry image configuration
 against the tested image and checks that the preview still serves that digest
@@ -176,6 +179,43 @@ the expected runtime service, region and pinned tag. Preview runs must pass the
 deployed public-route smoke check. Promotion records the production candidate
 version before smoke checks and rechecks it immediately before cloning that
 exact version; an absent, changed or unrelated release fails closed.
+
+### Release train
+
+`Website Release` (`.github/workflows/website-release.yml`) takes main to
+catchdates.com without hand dispatches. It runs when main CI completes and
+hourly as a fallback:
+
+1. **Plan** (no credentials). It refuses to run unless the `prod` environment
+   requires a reviewer. Then it releases main's head only if that head has
+   successful same-source CI with Marketing validation and captures, and is
+   newer than live. Otherwise it records why it skipped: CI failed, no
+   website validation for the head, or already live. A head without website
+   validation waits for the next website-relevant merge, which releases
+   everything before it.
+   Whichever commit's CI completed, the train considers main's head. Its
+   same-source CI is the merge queue run that tested the exact commit main
+   received (`gh-readonly-queue/main/pr-<n>-<base>`), or main's own push run
+   for a commit that reached main without the queue. A later merge cancels
+   main's push run of a commit (`ci.yml` concurrency) but never its queue run,
+   so a busy merge day still releases; plan, preview and promotion all read
+   the same completed run. The hourly schedule is only a fallback: GitHub may
+   delay or drop scheduled runs.
+2. **Preview.** It dispatches `Next Website Preview`, follows that exact run,
+   and publishes the preview channel URL.
+3. **Approve.** A job in the protected `prod` environment, whose required
+   reviewer approves in GitHub with the preview URL shown on the deployment.
+   The job holds no token and uses none of the environment's credentials.
+4. **Promote.** It dispatches `Next Website Promotion` with the approved
+   preview run and waits for it.
+
+Trains queue (`cancel-in-progress: false`), so a newer merge never resets an
+approval; the newest pending train waits behind it. After the live checks pass,
+promotion moves the `deployed/prod-website` tag forward to the released commit
+(never backwards), so "what is live" has the same answer as the backend's
+`deployed/<environment>` tags. Before the first tagged release, the live
+runtime's `X-Catch-Release` header is the live commit. Both workflows can still
+be dispatched by hand for recovery, with the same checks.
 
 ### Public contact configuration
 
@@ -625,9 +665,9 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   decides how something looks belongs in `@catch/web-ui`, even when one
   feature uses it. Feature and app-shell code arranges library components
   with `CatchGap`, `CatchInset`, `CatchPageBody` and `CatchSectionList`, and
-  passes data and callbacks to their props. Until the registry accepts a React
-  record on a T4 entry, a new one-off goes in its app's `shared/ui` under the
-  rules below. It never stays private inside a feature.
+  passes data and callbacks to their props. A one-off is a T4 component under
+  `packages/web-ui/src/components/`, registered in the registry of the one
+  surface that renders it. It never stays private inside a feature.
 - Keep shared UI primitives centralized. Feature, app, and Storybook code must
   not render raw `<button>`, `<a>`, `<input>`, `<select>`, or `<textarea>`
   controls. Add missing neutral controls to the owning shared primitive module
@@ -650,8 +690,9 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   route, section, flow, or supporting-component exports.
   Admin feature UI may export route/workspace entry components, but panels,
   cards, lists, badges, and sections that draw must live in
-  `admin/src/shared/ui` (D18), and a private feature component may only
-  arrange and bind. Run `node tool/run.mjs check web:admin-feature-exports`
+  `packages/web-ui/src/components/` (D18; entries still under
+  `admin/src/shared/ui` await that move), and a private feature component may
+  only arrange and bind. Run `node tool/run.mjs check web:admin-feature-exports`
   when touching admin feature UI exports. Admin route/workspace entries, shared
   admin primitives, and admin feedback providers must also be declared in
   `design/admin/components.json`; run
@@ -672,6 +713,18 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   package export or same-named website/admin primitive without a tracker entry
   fails that gate. Marking a candidate adopted also requires both surface
   adapters to import and use a classified package symbol.
+
+  The same adoption check enforces `tool/web/react_consolidation_baseline.json`:
+  missing styled T1/priority T2 contracts, headless controls, catalog-parity
+  gaps, adapters and single-owner shared components cannot gain debt identities.
+  Page CSS outside the two website foundation layers has a separate newline
+  ceiling for each file, so another file or surface cannot spend its allowance.
+  Fixed identities and shorter files must leave the baseline in the same slice.
+  Regenerate with `node tool/web/check_shared_web_ui_adoption.mjs
+  --update-consolidation-baseline`; the generator rejects growth against both
+  the local baseline and fetched-main merge base. `--write` still writes only
+  the ignored inventory. Bare `--json` is the scorecard's read-only inventory
+  feed; `--check --json` also enforces the ratchet.
 
 ## Admin Console Route and Information Architecture
 

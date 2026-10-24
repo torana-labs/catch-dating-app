@@ -148,6 +148,9 @@ import {
   salesHostSettlementEvidenceUsesDocumentSchema,
   outreachDraftingInputSchema,
   outreachDraftingSelectionSchema,
+  supplyIntakeRequestSchema,
+  supplyIntakeRequestsDocumentSchema,
+  supplyIntakeUsageDocumentSchema,
   adminSalesIntelligenceGenerateCallablePayloadSchema,
   salesOutreachJobsDocumentSchema,
   outreachDraftSchema,
@@ -874,6 +877,10 @@ import {
   adminListActionExecutionsCallablePayloadSchema,
   adminRecordActionExecutionCallablePayloadSchema,
   adminDecideOrganizerEventCandidateCallablePayloadSchema,
+  adminNominateOrganizerCallablePayloadSchema,
+  adminNominateOrganizerCallableResponseSchema,
+  adminApproveOrganizerListingCallablePayloadSchema,
+  adminApproveOrganizerListingCallableResponseSchema,
   adminDecideOrganizerPolicyGapCallablePayloadSchema,
   adminResolveOrganizerEventLocationCallablePayloadSchema,
   adminSetClubIndexStatusCallablePayloadSchema,
@@ -1418,6 +1425,9 @@ export const validateSalesHostSettlementAttestationsDocument = ajv.compile(sales
 export const validateSalesHostSettlementEvidenceUsesDocument = ajv.compile(salesHostSettlementEvidenceUsesDocumentSchema);
 export const validateOutreachDraftingInput = ajv.compile(outreachDraftingInputSchema);
 export const validateOutreachDraftingSelection = ajv.compile(outreachDraftingSelectionSchema);
+export const validateSupplyIntakeRequest = ajv.compile(supplyIntakeRequestSchema);
+export const validateSupplyIntakeRequestsDocument = ajv.compile(supplyIntakeRequestsDocumentSchema);
+export const validateSupplyIntakeUsageDocument = ajv.compile(supplyIntakeUsageDocumentSchema);
 export const validateAdminSalesIntelligenceGenerateCallablePayload = ajv.compile(adminSalesIntelligenceGenerateCallablePayloadSchema);
 export const validateSalesOutreachJobsDocument = ajv.compile(salesOutreachJobsDocumentSchema);
 export const validateOutreachDraft = ajv.compile(outreachDraftSchema);
@@ -2144,6 +2154,10 @@ export const validateAdminListIntakeOperationsCallablePayload = ajv.compile(admi
 export const validateAdminListActionExecutionsCallablePayload = ajv.compile(adminListActionExecutionsCallablePayloadSchema);
 export const validateAdminRecordActionExecutionCallablePayload = ajv.compile(adminRecordActionExecutionCallablePayloadSchema);
 export const validateAdminDecideOrganizerEventCandidateCallablePayload = ajv.compile(adminDecideOrganizerEventCandidateCallablePayloadSchema);
+export const validateAdminNominateOrganizerCallablePayload = ajv.compile(adminNominateOrganizerCallablePayloadSchema);
+export const validateAdminNominateOrganizerCallableResponse = ajv.compile(adminNominateOrganizerCallableResponseSchema);
+export const validateAdminApproveOrganizerListingCallablePayload = ajv.compile(adminApproveOrganizerListingCallablePayloadSchema);
+export const validateAdminApproveOrganizerListingCallableResponse = ajv.compile(adminApproveOrganizerListingCallableResponseSchema);
 export const validateAdminDecideOrganizerPolicyGapCallablePayload = ajv.compile(adminDecideOrganizerPolicyGapCallablePayloadSchema);
 export const validateAdminResolveOrganizerEventLocationCallablePayload = ajv.compile(adminResolveOrganizerEventLocationCallablePayloadSchema);
 export const validateAdminSetClubIndexStatusCallablePayload = ajv.compile(adminSetClubIndexStatusCallablePayloadSchema);

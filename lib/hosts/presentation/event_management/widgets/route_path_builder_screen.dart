@@ -114,13 +114,13 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
+                      CatchText(
                         coordinates.isEmpty
                             ? context.l10n.hostsRoutePathBuilderEmpty
                             : context.l10n.hostsRoutePathBuilderCount(
                                 count: coordinates.length,
                               ),
-                        style: CatchTextStyles.supporting(context),
+                        variant: CatchTextVariant.supporting,
                       ),
                       gapH12,
                       Row(

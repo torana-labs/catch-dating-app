@@ -85,13 +85,13 @@ class EventAssistanceVisitSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           l10n.eventAssistanceVisitBody,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (contextMessage != null) ...[
           gapH8,
-          Text(contextMessage!, style: CatchTextStyles.supporting(context)),
+          CatchText(contextMessage!, variant: CatchTextVariant.supporting),
         ],
         gapH12,
         CatchFieldLanes.single(
@@ -121,7 +121,7 @@ class EventAssistanceVisitSection extends StatelessWidget {
           ],
         ] else ...[
           gapH12,
-          Text(switch (phase) {
+          CatchText(switch (phase) {
             EventAssistanceVisitPhase.submitting =>
               l10n.eventAssistanceVisitSaving,
             EventAssistanceVisitPhase.retryRequired =>
@@ -132,23 +132,23 @@ class EventAssistanceVisitSection extends StatelessWidget {
             EventAssistanceVisitPhase.unavailable =>
               unavailableMessage ?? l10n.eventAssistanceVisitReadOnly,
             EventAssistanceVisitPhase.ready => '',
-          }, style: CatchTextStyles.supporting(context)),
+          }, variant: CatchTextVariant.supporting),
           if (submittedDisposition != null &&
               (pending ||
                   phase == EventAssistanceVisitPhase.retryRequired)) ...[
             gapH8,
-            Text(
+            CatchText(
               l10n.eventAssistanceVisitPendingChoice(
                 status: assistanceVisitLabel(l10n, submittedDisposition!),
               ),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           ],
         ],
         if (phase == EventAssistanceVisitPhase.saved &&
             unavailableMessage != null) ...[
           gapH8,
-          Text(unavailableMessage!, style: CatchTextStyles.supporting(context)),
+          CatchText(unavailableMessage!, variant: CatchTextVariant.supporting),
         ],
         if (error != null) ...[gapH12, CatchLocalizedErrorBanner(error!)],
         if (phase == EventAssistanceVisitPhase.retryRequired) ...[

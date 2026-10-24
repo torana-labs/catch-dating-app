@@ -55,7 +55,7 @@ class HostFormEditorViewport extends StatelessWidget {
                   ),
                 ),
               ),
-              VerticalDivider(width: CatchStroke.hairline, color: t.line),
+              CatchDivider.vertical(color: t.line),
               Expanded(
                 child: ColoredBox(
                   color: t.surface,
@@ -72,7 +72,7 @@ class HostFormEditorViewport extends StatelessWidget {
                   ),
                 ),
               ),
-              VerticalDivider(width: CatchStroke.hairline, color: t.line),
+              CatchDivider.vertical(color: t.line),
               SizedBox(
                 width: CatchFormWorkspaceTokens.formBuilderInspectorWidth,
                 child: SingleChildScrollView(
@@ -193,9 +193,9 @@ class HostFormOutlineMenu extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text(
+      CatchText(
         context.l10n.hostFormOutline,
-        style: CatchTextStyles.sectionTitle(context),
+        variant: CatchTextVariant.sectionTitle,
       ),
       gapH12,
       CatchSection.containedFieldRows(

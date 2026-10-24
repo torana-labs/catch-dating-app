@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {CheckCircle2, FileWarning, Lock} from "lucide-react";
 import {
   AdminButton,
@@ -90,7 +90,7 @@ function OrganizerClaimTargetSyncPreviewView({
                   <AdminEyebrow>
                     {action.entityId} / {action.reason.replaceAll("_", " ")}
                   </AdminEyebrow>
-                  <h3>{action.path}</h3>
+                  <CatchText as="h3" variant="sectionTitle">{action.path}</CatchText>
                 </div>
                 <StatusChip tone={action.writesRemoteData ? "ready" : ""}>
                   {action.status.replaceAll("_", " ")}
@@ -177,7 +177,7 @@ function OrganizerCrawlRunPlanView({
                 <AdminEyebrow>
                   {intent.platform} / {intent.surfaceKind}
                 </AdminEyebrow>
-                <h3>{intent.displayName}</h3>
+                <CatchText as="h3" variant="sectionTitle">{intent.displayName}</CatchText>
               </div>
               <StatusChip tone={intent.action === "would_fetch" ? "ready" : ""}>
                 {intent.action.replaceAll("_", " ")}
@@ -262,7 +262,7 @@ function OrganizerRawArtifactStorageView({
                 <AdminEyebrow>
                   {artifact.storageClass} / {artifact.artifactKind}
                 </AdminEyebrow>
-                <h3>{artifact.path}</h3>
+                <CatchText as="h3" variant="sectionTitle">{artifact.path}</CatchText>
               </div>
               <StatusChip tone={artifact.storagePlan.action === "would_upload" ? "ready" : ""}>
                 {artifact.storagePlan.action.replaceAll("_", " ")}
@@ -504,7 +504,7 @@ function OrganizerDiscoverySearchPlanView({
                 <AdminEyebrow>
                   {entry.city} / {entry.categoryId.replaceAll("_", " ")}
                 </AdminEyebrow>
-                <h3>{entry.renderedQuery}</h3>
+                <CatchText as="h3" variant="sectionTitle">{entry.renderedQuery}</CatchText>
               </div>
               <StatusChip>
                 {entry.planKind.replaceAll("_", " ")}
@@ -539,7 +539,7 @@ function OrganizerDiscoverySearchPlanView({
                     <AdminEyebrow>
                       {entry.city} / {entry.categoryId.replaceAll("_", " ")}
                     </AdminEyebrow>
-                    <h3>{entry.renderedQuery}</h3>
+                    <CatchText as="h3" variant="sectionTitle">{entry.renderedQuery}</CatchText>
                   </div>
                   <StatusChip>fresh</StatusChip>
                 </AdminSearchCandidateHeader>
@@ -573,7 +573,7 @@ function OrganizerPublishingContractsView({
                 <AdminEyebrow>
                   {contract.intakeTarget} / {contract.writeCallable}
                 </AdminEyebrow>
-                <h3>{contract.callablePayloadSchema}</h3>
+                <CatchText as="h3" variant="sectionTitle">{contract.callablePayloadSchema}</CatchText>
               </div>
               <StatusChip tone="ready">schema source</StatusChip>
             </AdminSearchCandidateHeader>
@@ -674,7 +674,7 @@ function OrganizerSourceMentionResolutionView({
                   <AdminEyebrow>
                     {packet.entityType} / {packet.recommendedAction.replaceAll("_", " ")}
                   </AdminEyebrow>
-                  <h3>{packet.packetId}</h3>
+                  <CatchText as="h3" variant="sectionTitle">{packet.packetId}</CatchText>
                 </div>
                 <StatusChip tone={packet.humanReviewRequired ? "blocked" : "ready"}>
                   {packet.resolutionState.replaceAll("_", " ")}
@@ -723,7 +723,7 @@ function OrganizerSourceMentionResolutionView({
                 <AdminEyebrow>
                   {cluster.entityType} / {cluster.scoreBand.replaceAll("_", " ")}
                 </AdminEyebrow>
-                <h3>{cluster.displayNames.slice(0, 3).join(" / ") || cluster.clusterId}</h3>
+                <CatchText as="h3" variant="sectionTitle">{cluster.displayNames.slice(0, 3).join(" / ") || cluster.clusterId}</CatchText>
               </div>
               <StatusChip tone={organizerIntakeEvidencePanels.sourceResolutionTone(cluster.resolutionState)}>
                 {cluster.resolutionState.replaceAll("_", " ")}
@@ -835,7 +835,7 @@ function OrganizerSearchCandidateCard({
           <AdminEyebrow>
             #{candidate.rank} / {candidate.platform} / {candidate.surfaceKind}
           </AdminEyebrow>
-          <h3>{candidate.title}</h3>
+          <CatchText as="h3" variant="sectionTitle">{candidate.title}</CatchText>
         </div>
         <StatusChip tone={candidate.reviewAction.includes("attach") ? "ready" : ""}>
           {candidate.reviewAction.replaceAll("_", " ")}

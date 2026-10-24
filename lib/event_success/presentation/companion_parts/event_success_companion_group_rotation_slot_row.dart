@@ -49,7 +49,7 @@ class GroupRotationSlotRow extends StatelessWidget {
               ],
             ),
             gapH8,
-            Text(timeRange, style: CatchTextStyles.supporting(context)),
+            CatchText(timeRange, variant: CatchTextVariant.supporting),
             gapH8,
             Wrap(
               spacing: CatchSpacing.s2,

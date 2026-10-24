@@ -141,15 +141,15 @@ class _EventAssistanceMembershipSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        CatchText(
           l10n.eventAssistanceGroupBody,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (widget.contextMessage != null) ...[
           gapH8,
-          Text(
+          CatchText(
             widget.contextMessage!,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         gapH12,
@@ -166,21 +166,21 @@ class _EventAssistanceMembershipSectionState
         ),
         if (facts.membership is AssistanceChangedMembership) ...[
           gapH8,
-          Text(
+          CatchText(
             l10n.eventAssistanceGroupPrevious,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         if (transfer != null) ...[
           gapH8,
-          Text(transfer, style: CatchTextStyles.supporting(context)),
+          CatchText(transfer, variant: CatchTextVariant.supporting),
         ],
         gapH12,
         if (ready && action == null) ...[
           if (facts.actions.isEmpty)
-            Text(
+            CatchText(
               widget.unavailableMessage ?? l10n.eventAssistanceGroupNoActions,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
           for (final choice in facts.actions) ...[
             CatchButton(
@@ -198,14 +198,14 @@ class _EventAssistanceMembershipSectionState
           ],
           if (facts.actions.contains(AssistanceMembershipAction.propose) &&
               widget.handoverReview == null)
-            Text(
+            CatchText(
               l10n.eventAssistanceGroupNoReceivers,
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
         ] else if (ready && action != null) ...[
-          Text(
+          CatchText(
             assistanceMembershipActionBody(l10n, action),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           gapH12,
           if (placement || proposal)
@@ -250,14 +250,14 @@ class _EventAssistanceMembershipSectionState
                       }),
                     ),
                   if (unnamedReceivers)
-                    Text(
+                    CatchText(
                       l10n.eventAssistanceGroupMissingName,
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                   if (receivers.isEmpty && !unnamedReceivers)
-                    Text(
+                    CatchText(
                       l10n.eventAssistanceGroupNoReceivers,
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                   if (expiry != null)
                     CatchField<int>.select(
@@ -289,7 +289,7 @@ class _EventAssistanceMembershipSectionState
             onPressed: () => setState(_clear),
           ),
         ] else ...[
-          Text(switch (widget.phase) {
+          CatchText(switch (widget.phase) {
             EventAssistanceMembershipPhase.submitting =>
               l10n.eventAssistanceGroupSaving,
             EventAssistanceMembershipPhase.retryRequired =>
@@ -301,38 +301,38 @@ class _EventAssistanceMembershipSectionState
             EventAssistanceMembershipPhase.unavailable =>
               widget.unavailableMessage ?? l10n.eventAssistanceGroupNoActions,
             EventAssistanceMembershipPhase.ready => '',
-          }, style: CatchTextStyles.supporting(context)),
+          }, variant: CatchTextVariant.supporting),
           if ((busy ||
                   widget.phase ==
                       EventAssistanceMembershipPhase.retryRequired) &&
               widget.submittedDecision != null) ...[
             gapH8,
-            Text(
+            CatchText(
               l10n.eventAssistanceGroupSelected(
                 action: assistanceMembershipActionLabel(
                   l10n,
                   widget.submittedDecision!.action,
                 ),
               ),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
             if (widget.submittedDecision case AssistancePlaceGroup(
               :final groupId,
             ))
-              Text(
+              CatchText(
                 assistanceMembershipGroupLabel(l10n, facts, groupId),
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             if (widget.submittedDecision case AssistanceProposeGroup(
               :final groupId,
               :final receivingOperatorId,
               :final expiresAt,
             )) ...[
-              Text(
+              CatchText(
                 assistanceMembershipGroupLabel(l10n, facts, groupId),
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
-              Text(
+              CatchText(
                 l10n.eventAssistanceGroupReceiverValue(
                   name: receivingOperatorId == widget.actorUid
                       ? l10n.eventAssistanceGroupYou
@@ -344,11 +344,11 @@ class _EventAssistanceMembershipSectionState
                                 ?.displayName ??
                             l10n.eventAssistanceGroupUnnamedHost,
                 ),
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
-              Text(
+              CatchText(
                 '${l10n.eventAssistanceGroupDeadline} ${DateFormat.jm(Localizations.localeOf(context).toLanguageTag()).format(DateTime.fromMillisecondsSinceEpoch(expiresAt))}',
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             ],
           ],

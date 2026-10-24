@@ -67,18 +67,17 @@ class EventSuccessCountdownNotice extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   title,
-                  style: CatchTextStyles.sectionTitle(context, color: t.ink),
+                  variant: CatchTextVariant.sectionTitle,
+                  color: t.ink,
                 ),
                 gapH2,
-                Text(
+                CatchText(
                   body,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: t.ink.withValues(
-                      alpha: CatchOpacity.eventSuccessMutedInk,
-                    ),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink.withValues(
+                    alpha: CatchOpacity.eventSuccessMutedInk,
                   ),
                 ),
               ],

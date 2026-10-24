@@ -91,9 +91,9 @@ class EventRehearsalDepartureSheet extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    CatchText(
                       context.l10n.eventAssistanceDepartureOtherPending,
-                      style: CatchTextStyles.supporting(context),
+                      variant: CatchTextVariant.supporting,
                     ),
                     if (form!.canRetry)
                       CatchButton(

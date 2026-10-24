@@ -426,7 +426,7 @@ void main() {
       theme: AppTheme.dark,
     );
     final title = find.byKey(const ValueKey('host-form-command-center-title'));
-    expect(tester.widget<Text>(title).maxLines, isNull);
+    expect(tester.widget<CatchText>(title).maxLines, isNull);
     expect(
       find.byKey(const ValueKey('host_form_metrics.reflow')),
       findsOneWidget,

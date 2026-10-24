@@ -230,9 +230,9 @@ class _HostResponseOfferScreenState
         sections: [
           CatchSectionListItem(
             child: !available
-                ? Text(
+                ? CatchText(
                     context.l10n.hostEventOfferUnavailable,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   )
                 : HostEventOfferWorkspaceSection(
                     organizerId: widget.organizerId,

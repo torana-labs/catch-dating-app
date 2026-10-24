@@ -431,6 +431,94 @@ expect_code_count \
   "catch_no_shell_local_measurement" \
   1
 
+probe_path="$probe_root/lib/core/widgets/text_migration_lint_probe.dart"
+stage_probe "CatchText steer rejects covered direct roles" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as fw;
+
+Widget textMigrationProbe(BuildContext context) => Column(children: [
+  Text('Covered role', style: CatchTextStyles.supporting(context)),
+  fw.Text('Clamped role', maxLines: 1, overflow: TextOverflow.ellipsis,
+    style: CatchTextStyles.sectionTitle(context)),
+]);
+DART
+expect_probe exact catch_text_requires_style 2
+
+stage_probe "CatchText steer leaves unsupported APIs and library text legal" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+
+Widget textMigrationCleanProbe(BuildContext context) => Column(children: [
+  const CatchText('Library text', variant: CatchTextVariant.supporting),
+  Text('Uncovered role', style: CatchTextStyles.mono(context)),
+  Text('Extra API', semanticsLabel: 'Details', style: CatchTextStyles.supporting(context)),
+  Text('Clipped text', maxLines: 1, style: CatchTextStyles.supporting(context)),
+  Text('Modified role', style: CatchTextStyles.supporting(context).copyWith(color: null)),
+]);
+DART
+expect_probe exact catch_text_requires_style 0
+
+probe_path="$probe_root/lib/core/widgets/drawing_migration_lint_probe.dart"
+stage_probe "drawing steer rejects SDK constructors and inherited drawing" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart' as fw;
+typedef SurfaceAlias = fw.ColoredBox;
+class FeatureShell extends fw.ColoredBox {
+  const FeatureShell():super(color: fw.Colors.transparent);
+}
+fw.Widget drawingProbe() => SurfaceAlias(
+  color: fw.Colors.transparent, child: const fw.Opacity(opacity: 1),
+);
+DART
+expect_probe exact catch_no_raw_surface_shell 3
+
+stage_probe "drawing strategy bases belong in the library" <<'DART'
+import 'package:flutter/material.dart' as fw;
+abstract class FeaturePainter extends fw.CustomPainter {}
+abstract class FeatureClipper extends fw.CustomClipper<fw.Path> {}
+abstract class FeatureDecoration extends fw.Decoration {}
+DART
+expect_probe exact catch_no_raw_surface_shell 3
+
+stage_probe "drawing steer permits arrangement, library primitives and unavailable families" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+Widget arrangementProbe(BuildContext context) => Column(children: [
+  const CatchText('Library', variant: CatchTextVariant.supporting),
+  const Row(), const Stack(), const SizedBox.shrink(),
+  const Padding(padding: CatchInsets.pageBody),
+  const Icon(Icons.close),
+  const Tooltip(message: 'Help', child: SizedBox.shrink()),
+]);
+DART
+expect_probe exact catch_no_raw_surface_shell 0
+
+for drawing_scope in \
+  "lib/core/widgets/drawing_boundary_probe.dart" \
+  "lib/events/presentation/drawing_boundary_probe.dart"; do
+  probe_path="$probe_root/$drawing_scope"
+  stage_probe "drawing boundary delegates existing diagnostics $drawing_scope" <<'DART'
+import 'package:flutter/material.dart';
+typedef CardAlias = Card;
+typedef ImageAlias = Image;
+List<Widget> drawingBoundaryProbe(String url) => [
+  const Card(child: SizedBox.shrink()),
+  const CardAlias(child: SizedBox.shrink()),
+  Image.network(url), ImageAlias.network(url),
+];
+DART
+  if [[ "$drawing_scope" == lib/core/widgets/* ]]; then
+    expect_probe exact catch_no_raw_surface_shell 4
+    expect_probe exact catch_no_raw_material_control 0
+    expect_probe exact catch_no_raw_network_image 0
+  else
+    expect_probe exact catch_no_raw_surface_shell 0
+    expect_probe exact catch_no_raw_material_control 2
+    expect_probe exact catch_no_raw_network_image 2
+  fi
+done
+
 probe_path="$probe_root/lib/hosts/presentation/error_recovery_lint_probe.dart"
 stage_probe "canonical error recovery rejects empty actions" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
@@ -568,7 +656,7 @@ done < <(
   '
 )
 
-stage_probe "transparent and token-backed clean cases" <<'DART'
+stage_probe "transparent drawing still belongs to the library" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -592,7 +680,8 @@ class CatchUiLintProbe extends StatelessWidget {
 }
 DART
 
-expect_probe clean
+expect_probe exact catch_no_raw_surface_shell 2
+expect_probe exact catch_no_raw_color 0
 
 stage_probe "mutation pending per-mutation violation" <<'DART'
 import 'package:flutter/material.dart';
@@ -655,16 +744,16 @@ class CatchUiMutationProbe extends ConsumerWidget {
         EventDetailMutationProbeController.deleteMutation;
     final deleteMutation = ref.watch(deleteMutationHandle);
     if (saveMutation.hasError) {
-      return Text('Failed', style: CatchTextStyles.supporting(context));
+      return const CatchText('Failed', variant: CatchTextVariant.supporting);
     }
     listenToCatchMutationErrors(
       context,
       ref,
       mutations: [deleteMutationHandle],
     );
-    return Text(
+    return CatchText(
       deleteMutation.isPending ? 'Deleting' : 'Ready',
-      style: CatchTextStyles.supporting(context),
+      variant: CatchTextVariant.supporting,
     );
   }
 }

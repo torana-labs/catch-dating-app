@@ -26,10 +26,6 @@ export function getHostListingRouteForPath(
   } : null;
 }
 
-export function getHostListingForPath(pathname: string) {
-  return getHostListingRouteForPath(pathname)?.listing ?? null;
-}
-
 export function claimHrefForListing(listing: HostListing) {
   return `/claim/?listing=${encodeURIComponent(listing.id)}`;
 }

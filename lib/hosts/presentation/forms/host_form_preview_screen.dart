@@ -50,9 +50,9 @@ class HostFormPreviewScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
+                  CatchText(
                     context.l10n.hostFormPreviewSubtitle,
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                   gapH24,
                   HostFormBody(definition: value.editor.definition),

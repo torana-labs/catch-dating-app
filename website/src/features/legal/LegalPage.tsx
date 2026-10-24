@@ -21,14 +21,7 @@ export function LegalPage({page, effectiveDate, contact = fallbackPublicContact}
   const {ui} = publishedLegalContent;
   return (
     <>
-      <PublicSiteHeader
-        localNav={[
-          {href: "/", label: ui.homeLabel},
-          {href: "/organizers/", label: ui.organizersLabel},
-          {href: "/host/", label: ui.hostsLabel},
-        ]}
-        localActions={[{href: `mailto:${contact.supportEmail}`, label: ui.contactLabel}]}
-      />
+      <PublicSiteHeader />
       <WebsitePageMain id="top">
         <LegalDocument>
           <LegalDocumentHeader>
@@ -65,7 +58,7 @@ export function LegalPage({page, effectiveDate, contact = fallbackPublicContact}
           </LegalDocumentContact>
         </LegalDocument>
       </WebsitePageMain>
-      <PublicSiteFooter body={ui.footerBody} />
+      <PublicSiteFooter />
     </>
   );
 }

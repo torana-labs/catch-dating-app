@@ -211,6 +211,9 @@ const schemaSpecs = [
 
   {"name": "OutreachDraftingInput", "source": "operations/outreach_drafting_input.schema.json", "typeOutput": "functions/src/shared/generated/outreachDraftingInput.ts"},
   {"name": "OutreachDraftingSelection", "source": "operations/outreach_drafting_selection.schema.json", "typeOutput": "functions/src/shared/generated/outreachDraftingSelection.ts"},
+  {"name": "SupplyIntakeRequest", "source": "operations/supply_intake_request.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeRequest.ts"},
+  {"name": "SupplyIntakeRequestsDocument", "source": "firestore/supply_intake_requests.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeRequestsDocument.ts"},
+  {"name": "SupplyIntakeUsageDocument", "source": "firestore/supply_intake_usage.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeUsageDocument.ts"},
 
   {"name": "AdminSalesIntelligenceGenerateCallablePayload", "source": "callables/admin_sales_intelligence_generate_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminSalesIntelligenceGenerateCallablePayload.ts"},
   {"name": "SalesOutreachJobsDocument", "source": "firestore/sales_outreach_jobs.schema.json", "typeOutput": "functions/src/shared/generated/salesOutreachJobsDocument.ts"},
@@ -3671,6 +3674,42 @@ const schemaSpecs = [
     source: "callables/admin_decide_organizer_event_candidate_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/adminDecideOrganizerEventCandidateCallablePayload.ts",
+  },
+  {
+    name: "AdminNominateOrganizerCallablePayload",
+    source: "callables/admin_nominate_organizer_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminNominateOrganizerCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminNominateOrganizerCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminNominateOrganizerCallableResponse",
+    source: "callable_responses/admin_nominate_organizer_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminNominateOrganizerCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminNominateOrganizerCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminApproveOrganizerListingCallablePayload",
+    source: "callables/admin_approve_organizer_listing_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminApproveOrganizerListingCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminApproveOrganizerListingCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminApproveOrganizerListingCallableResponse",
+    source: "callable_responses/admin_approve_organizer_listing_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminApproveOrganizerListingCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminApproveOrganizerListingCallableResponse.ts",
+    ],
   },
   {
     name: "AdminDecideOrganizerPolicyGapCallablePayload",

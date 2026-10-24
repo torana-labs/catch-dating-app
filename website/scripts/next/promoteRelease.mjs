@@ -3,7 +3,7 @@ import {createHash} from "node:crypto";
 import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
-import {preview, assertSuccessfulSource, unpackPreview} from "./previewRelease.mjs";
+import {LIVE_RELEASE_TAG, preview, assertSuccessfulSourceRun, currentReleaseLineage, unpackPreview} from "./previewRelease.mjs";
 import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
 import {CANONICAL_REPOSITORY_ID, canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 
@@ -77,15 +77,19 @@ export function assertProductionTarget(services) {
     assert.equal(item.valueFrom, undefined, "Do not replace a secret-bearing runtime");
   }
 }
+// The release is the accepted preview's own source, which main may have
+// moved past since; the workflow's checkout only supplies trusted scripts.
 async function authorize() {
   assertPromotionInvocation(process.env);
-  const repository = canonicalRepository(process.env), sourceSha = process.env.GITHUB_SHA;
+  const repository = canonicalRepository(process.env);
+  const run = github(`repos/${repository}/actions/runs/${process.env.PREVIEW_RUN_ID}`);
+  const sourceSha = run.head_sha;
   const validation = await waitMainMarketingValidation({repository, sourceSha, maxWaitMs: 0});
   assert.equal(validation.validated, true); assert.ok(validation.captureBinding);
   const ci = github(`repos/${repository}/actions/runs/${validation.sourceCiRunId}`);
   assert.equal(ci.run_attempt, validation.sourceCiRunAttempt);
-  assertSuccessfulSource({run: ci, sourceSha, repository, mainSha: github(`repos/${repository}/git/ref/heads/main`).object.sha});
-  const run = github(`repos/${repository}/actions/runs/${process.env.PREVIEW_RUN_ID}`);
+  assertSuccessfulSourceRun({run: ci, sourceSha, repository});
+  await currentReleaseLineage(repository, sourceSha);
   const workflow = github(`repos/${repository}/actions/workflows/website-next-preview.yml`);
   const artifacts = JSON.parse(command("gh", ["api", "--paginate", "--slurp", `repos/${repository}/actions/runs/${run.id}/artifacts?per_page=100`])).flatMap(page => page.artifacts);
   return selectPreviewArtifact({run, workflow, artifacts, sourceSha});
@@ -118,8 +122,29 @@ async function recheck() {
   const binding = await authorize();
   assert.deepEqual(binding, JSON.parse(fs.readFileSync(`${directory}/authorization.json`, "utf8")));
 }
+/** Moves deployed/prod-website forward to the promoted commit, never back. */
+export function releaseTagUpdate({existing, sourceSha, lineage}) {
+  assert.equal(lineage.sourceSha, sourceSha);
+  if (existing === null) return {method: "POST", endpoint: "git/refs", fields: {ref: `refs/tags/${LIVE_RELEASE_TAG}`, sha: sourceSha}};
+  assert.equal(lineage.liveSha, existing, "The live release tag moved during promotion");
+  return {method: "PATCH", endpoint: `git/refs/tags/${LIVE_RELEASE_TAG}`, fields: {sha: sourceSha, force: true}};
+}
+async function record() {
+  const binding = await authorize();
+  assert.deepEqual(binding, JSON.parse(fs.readFileSync(`${directory}/authorization.json`, "utf8")));
+  const repository = canonicalRepository();
+  const lineage = await currentReleaseLineage(repository, binding.sourceSha);
+  const existing = github(`repos/${repository}/git/matching-refs/tags/${LIVE_RELEASE_TAG}`)
+    .find((ref) => ref.ref === `refs/tags/${LIVE_RELEASE_TAG}`)?.object?.sha ?? null;
+  const update = releaseTagUpdate({existing, sourceSha: binding.sourceSha, lineage});
+  const fields = Object.entries(update.fields).flatMap(([key, value]) =>
+    typeof value === "boolean" ? ["-F", `${key}=${value}`] : ["-f", `${key}=${value}`]);
+  command("gh", ["api", "-X", update.method, `repos/${repository}/${update.endpoint}`, ...fields]);
+  console.log(`${LIVE_RELEASE_TAG} -> ${binding.sourceSha}`);
+}
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (process.argv[2] === "prepare") await prepare();
   else if (process.argv[2] === "recheck") await recheck();
-  else throw new Error("Expected prepare or recheck");
+  else if (process.argv[2] === "record") await record();
+  else throw new Error("Expected prepare, recheck or record");
 }

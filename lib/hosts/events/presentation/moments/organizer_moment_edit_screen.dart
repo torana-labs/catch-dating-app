@@ -187,12 +187,10 @@ class _OrganizerMomentEditScreenState
                   gapH16,
                 ],
                 if (_validation case final message?) ...[
-                  Text(
+                  CatchText(
                     message,
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: CatchTokens.of(context).danger,
-                    ),
+                    variant: CatchTextVariant.supporting,
+                    color: CatchTokens.of(context).danger,
                   ),
                   gapH16,
                 ],

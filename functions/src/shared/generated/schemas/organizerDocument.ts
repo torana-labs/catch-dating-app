@@ -2463,6 +2463,7 @@ export const organizerDocumentSchema: Record<string, unknown> = {
           "type": "string",
           "enum": [
             "adminCreateOrganizerDraftFromCandidate",
+            "adminApproveOrganizerListing",
             "adminUpdateClubDetails",
             "adminSetClubIndexStatus",
             "adminOrganizerSearchBackfill"

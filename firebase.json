@@ -383,7 +383,7 @@
     "predeploy": [
       "npm --prefix \"$RESOURCE_DIR\" run lint",
       "npm --prefix \"$RESOURCE_DIR\" run build",
-      "node functions/src/admin/salesIntelligence/copy-operations.cjs --check"
+      "node functions/scripts/copy-operations-runtime.cjs --check"
     ],
     "source": "functions"
   },

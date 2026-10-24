@@ -1,9 +1,4 @@
 export {PageShell, WebsitePageMain} from "./PageShell";
 export {SectionHeader} from "./SectionHeader";
-export {SiteFooter} from "./SiteFooter";
-export {
-  SiteHeader,
-  type SiteHeaderAction,
-  type SiteNavItem,
-} from "./SiteHeader";
+export {type SiteNavItem} from "./SiteHeader";
 export {PublicSiteHeader, PublicSiteFooter} from "./PublicSiteChrome";

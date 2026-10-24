@@ -399,6 +399,7 @@ export interface OrganizerDocument {
     };
     updatedBySource:
       | "adminCreateOrganizerDraftFromCandidate"
+      | "adminApproveOrganizerListing"
       | "adminUpdateClubDetails"
       | "adminSetClubIndexStatus"
       | "adminOrganizerSearchBackfill";

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {verifyDeployedWebsite} from "./deployedSmoke.mjs";
+import {expectedRelease, verifyDeployedWebsite} from "./deployedSmoke.mjs";
 import {consumerHomeCopy} from "../../src/content/consumerHome.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
 import {exploreCopy} from "../../src/content/explore.ts";
@@ -40,4 +40,10 @@ test("deployed acceptance rejects stale builds, bad status, indexing leaks and b
   ]) await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, change)}));
   await assert.rejects(verifyDeployedWebsite("https://unrelated.example", sourceSha));
   await assert.rejects(verifyDeployedWebsite("https://catchdates.com", sourceSha, {fetchImpl: responder("https://catchdates.com", (path, result) => {result.headers["x-robots-tag"] = "noindex";})}));
+});
+
+test("promotion checks the preview's release, which main may have moved past", () => {
+  const release = "a".repeat(40), head = "b".repeat(40);
+  assert.equal(expectedRelease({GITHUB_SHA: head, RELEASE_SHA: release}), release);
+  assert.equal(expectedRelease({GITHUB_SHA: release}), release, "a preview checks its own commit");
 });

@@ -128,11 +128,11 @@ class ClubHostRow extends StatelessWidget {
               Row(
                 children: [
                   Flexible(
-                    child: Text(
+                    child: CatchText(
                       host.displayName,
-                      style: CatchTextStyles.name(context),
+                      variant: CatchTextVariant.sectionTitle,
+                      color: CatchTokens.of(context).ink,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (isOwner) ...[

@@ -14,7 +14,6 @@ export {rawColorRules};
 export const rawColorDebt = [
   "src/styles/event-runtime.css",
   "src/styles/host-landing.css",
-  "src/styles/host.css",
   "src/styles/public-forms.css",
 ];
 

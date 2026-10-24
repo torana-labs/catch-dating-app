@@ -246,20 +246,16 @@ class EventDetailCalloutCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   title,
-                  style: CatchTextStyles.sectionTitle(
-                    context,
-                    color: surfaceStyle.headingColor,
-                  ),
+                  variant: CatchTextVariant.sectionTitle,
+                  color: surfaceStyle.headingColor,
                 ),
                 gapH4,
-                Text(
+                CatchText(
                   body,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: surfaceStyle.bodyColor,
-                  ),
+                  variant: CatchTextVariant.supporting,
+                  color: surfaceStyle.bodyColor,
                 ),
                 gapH12,
                 Builder(

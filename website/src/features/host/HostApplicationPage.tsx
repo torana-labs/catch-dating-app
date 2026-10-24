@@ -1,20 +1,28 @@
+import {ArrowLeft} from "lucide-react";
+import {hostPageCopy} from "@content/host";
+import {hostLandingCopy} from "@content/hostLanding";
 import {hostProductCopy} from "@content/hostProduct";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
-import {ActionGroup, ButtonLink, HomeHeroBody, HomeHeroCopy, HomeHeroInner, HomeHeroShell, UiLabel} from "../../shared/ui/primitives";
-import {HostApplySection} from "./sections/HostPageSections";
+import {PlainLink} from "../../shared/ui/primitives";
+import {HostLanding, HostLandingHeading, HostLandingNote, HostLandingSection, HostSectionNav} from "../../shared/ui/primitives/hostLanding";
+import {HostApplicationFlow} from "./application/HostApplicationFlow";
 
 export function HostApplicationPage() {
   const copy = hostProductCopy.application;
-  return <>
-    <PublicSiteHeader tone="dark" localNav={[{href: "/host/", label: copy.back}]} />
+  return <HostLanding>
+    <PublicSiteHeader />
+    <HostSectionNav aria-label={hostLandingCopy.navLabel}><PlainLink href="/host/"><ArrowLeft size={15} aria-hidden="true" />{copy.back}</PlainLink></HostSectionNav>
     <WebsitePageMain id="top">
-      <HomeHeroShell><HomeHeroInner layout="content"><HomeHeroCopy>
-        <UiLabel>{copy.back}</UiLabel>
-        <h1>{copy.title}</h1><HomeHeroBody>{copy.body}</HomeHeroBody><HomeHeroBody>{copy.note}</HomeHeroBody>
-        <ActionGroup variant="marketing"><ButtonLink href="#founding-hosts">{copy.action}</ButtonLink></ActionGroup>
-      </HomeHeroCopy></HomeHeroInner></HomeHeroShell>
-      <HostApplySection />
+      <HostLandingSection variant="apply" id="founding-hosts" aria-labelledby="host-apply-title">
+        <HostLandingHeading>
+          <h1 id="host-apply-title">{copy.title}</h1>
+          <p>{hostPageCopy.apply.body}</p>
+          <HostLandingNote>{copy.body}</HostLandingNote>
+          <HostLandingNote>{copy.note}</HostLandingNote>
+        </HostLandingHeading>
+        <HostApplicationFlow />
+      </HostLandingSection>
     </WebsitePageMain>
-    <PublicSiteFooter links={[{href: "/host/", label: copy.back}]} />
-  </>;
+    <PublicSiteFooter />
+  </HostLanding>;
 }

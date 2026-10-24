@@ -30,7 +30,7 @@ class MessageBubble extends StatelessWidget {
     final timeStr = sentAt == null
         ? context.l10n.chatsMessageBubbleVisiblecopySending
         : AppTimeFormatters.time(sentAt);
-    final messageStyle = CatchTextStyles.chatMessage(
+    final messageStyle = CatchTextStyles.bodyL(
       context,
       color: isMe ? t.primaryInk : t.ink,
     );

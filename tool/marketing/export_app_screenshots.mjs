@@ -173,7 +173,9 @@ function printRenderPlan() {
   const {manifest, catalog} = loadContext();
   const errors = validateExports(manifest, catalog, {requireSources: false});
   if (errors.length) fail("Marketing capture planning failed.", errors);
-  const fontPath = nativeFont();
+  // Without the native font (Linux planning) a plan judges inputs only; the
+  // macOS render job checks the font again before it reuses anything.
+  const fontPath = args.includes("--inputs-only") ? undefined : nativeFont();
   console.log(JSON.stringify(selectCaptures(manifest).map(capture => {
     const entry = findCatalogEntry(catalog, capture.fixtureKey);
     const reasons = validateCapture(capture, entry.id, {fontPath});
@@ -600,6 +602,7 @@ Commands:
   --update           Force a fresh render of selected active captures.
   --update-stale     Render only missing, invalid or changed-input captures.
   --plan             Print the per-capture render/reuse decision as JSON.
+                     Add --inputs-only to judge inputs without the native font.
   --check            Verify frame, render provenance, and current capture inputs.
   --design-json      Print Figma/AI-friendly capture metadata and frame geometry.
   --update-design-json

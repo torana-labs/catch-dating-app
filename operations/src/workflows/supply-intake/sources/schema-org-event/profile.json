@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "sourceProfileId": "schema-org-event",
+  "label": "schema.org Event markup",
+  "sourceTier": "structured_publisher_markup",
+  "status": "shadow",
+  "allowedUse": "Extract Event and Organization JSON-LD from any page, such as an organizer's own website. A reviewer confirms the page belongs to the organizer.",
+  "acquisition": {
+    "networkEnabled": false,
+    "allowedHosts": [],
+    "artifactOnly": true
+  },
+  "extraction": {
+    "strategy": "schema_org_json_ld_v1",
+    "deterministicFirst": true,
+    "modelFallback": true,
+    "templateDriftBehavior": "abstain"
+  },
+  "publication": {
+    "autoEligible": false,
+    "requiresOfficialSource": true,
+    "requiresPolicyApproval": true
+  }
+}

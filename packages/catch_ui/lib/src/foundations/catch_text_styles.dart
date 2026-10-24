@@ -196,57 +196,13 @@ abstract final class CatchTextStyles {
 
   // ===========================================================================
   // FUNCTION — platform system font (UI titles, body, labels, controls)
-  static TextStyle recordTitle(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.name,
-        color: color ?? CatchTokens.of(context).ink,
-      );
 
-  static TextStyle recordContext(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.context,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  static TextStyle recordBody(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.body,
-        color: color ?? CatchTokens.of(context).ink,
-      );
   // ===========================================================================
 
   /// Large UI title for sections, cards, and sheet headings.
   static TextStyle titleL(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.title,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Profile prompt answers — user-authored content, not brand voice.
-  static TextStyle profileAnswer(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.name,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Long-form app/user copy — bios, event descriptions, readable details.
-  static TextStyle proseL(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.body,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Long-form app/user copy, smaller cut.
-  static TextStyle proseM(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.secondary,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Host/person row name treatment (`.t-name`).
-  static TextStyle name(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.name,
         color: color ?? CatchTokens.of(context).ink,
       );
 
@@ -304,21 +260,10 @@ abstract final class CatchTextStyles {
         color: color ?? CatchTokens.of(context).ink2,
       );
 
-  /// AppBar subtitle (`.t-body-s`) under compact and large screen titles.
-  static TextStyle appBarSubtitle(BuildContext context, {Color? color}) =>
-      bodyS(context, color: color);
-
   /// The workhorse supporting label — dense meta, secondary copy.
   static TextStyle supporting(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.secondary,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  /// Supporting copy inside command and selection menus.
-  static TextStyle menuSupporting(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.context,
         color: color ?? CatchTokens.of(context).ink2,
       );
 
@@ -328,18 +273,6 @@ abstract final class CatchTextStyles {
   static TextStyle fieldLabel(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.fieldLabel,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  static TextStyle labelM(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.status,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  static TextStyle labelS(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.status,
         color: color ?? CatchTokens.of(context).ink2,
       );
 
@@ -400,15 +333,6 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink,
   );
 
-  /// Simulated phone-frame status-bar time.
-  static TextStyle statusBarTime(BuildContext context, {Color? color}) => _mono(
-    context,
-    size: CatchLayout.statusBarTimeFontSize,
-    weight: FontWeight.w700,
-    height: 1,
-    color: color,
-  );
-
   /// OTP digit boxes (`.t-code`).
   static TextStyle otpDigit(BuildContext context, {Color? color}) => _mono(
     context,
@@ -417,27 +341,6 @@ abstract final class CatchTextStyles {
     height: 1,
     color: color,
   );
-
-  /// Chat message body (sans, comfortable leading).
-  static TextStyle chatMessage(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.body,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Chat inbox preview copy (`CatchPersonRow` chat-preview secondary line).
-  static TextStyle chatPreview(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.secondary,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
-
-  /// Chat thread event-context title (`ChatThreadHeader` secondary line).
-  static TextStyle chatThreadContext(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.secondary,
-        color: color ?? CatchTokens.of(context).ink,
-      ).copyWith(fontWeight: FontWeight.w600);
 
   /// Compact tabular stat figure (sans).
   static TextStyle statCompact(BuildContext context, {Color? color}) =>
@@ -591,7 +494,7 @@ abstract final class CatchTextStyles {
 
   /// Compact numeric seal on club cards.
   static TextStyle clubMemberSeal(BuildContext context, {Color? color}) =>
-      labelM(context, color: color).copyWith(height: 1.05);
+      statusLabel(context, color: color).copyWith(height: 1.05);
 
   static TextStyle debugDetails(BuildContext context, {Color? color}) =>
       CatchFonts.mono(

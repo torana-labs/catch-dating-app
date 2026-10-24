@@ -274,12 +274,10 @@ class AgendaDaySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           eventDateRailDayLabel(date, today).toUpperCase(),
-          style: CatchTextStyles.labelM(
-            context,
-            color: DateUtils.isSameDay(date, today) ? t.primary : t.ink3,
-          ),
+          variant: CatchTextVariant.statusLabel,
+          color: DateUtils.isSameDay(date, today) ? t.primary : t.ink3,
         ),
         SizedBox(height: dayLabelBottomGap),
         for (var eventIndex = 0; eventIndex < rows.length; eventIndex++) ...[

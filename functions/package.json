@@ -16,7 +16,7 @@
     "backfill:profile-thumbnails": "node scripts/backfill-profile-thumbnails.cjs",
     "deploy": "node ../tool/firebase_functions.mjs deploy",
     "logs": "node ../tool/firebase_functions.mjs logs",
-    "postbuild": "node src/admin/salesIntelligence/copy-operations.cjs"
+    "postbuild": "node scripts/copy-operations-runtime.cjs"
   },
   "engines": {
     "node": "24"

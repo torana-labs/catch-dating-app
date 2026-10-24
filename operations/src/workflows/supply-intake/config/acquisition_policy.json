@@ -1,12 +1,25 @@
 {
   "schemaVersion": 1,
-  "policyVersion": "supply-acquisition-v1",
+  "policyVersion": "supply-acquisition-v2",
   "manualFileCaptureEnabled": true,
   "provider": {
     "enabled": false,
     "adapterId": null,
     "policyGapId": "recurring_event_crawl_policy",
     "decisionId": null
+  },
+  "pageFetch": {
+    "enabled": false,
+    "adapterId": null,
+    "policyGapId": "on_demand_page_fetch_policy",
+    "decisionId": null,
+    "userAgent": "CatchSupplyIntake/1.0 (+https://catchdates.com)",
+    "productToken": "CatchSupplyIntake",
+    "timeoutMs": 10000,
+    "maxResponseBytes": 4194304,
+    "maxRedirects": 3,
+    "maxRequestsPerIntake": 0,
+    "maxRequestsPerMonth": 0
   },
   "budgets": {
     "maxNetworkRequestsPerRun": 0,

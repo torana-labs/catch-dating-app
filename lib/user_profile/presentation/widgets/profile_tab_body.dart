@@ -148,9 +148,9 @@ class _ProfileTabBodyState extends ConsumerState<ProfileTabBody> {
             padding: CatchInsets.pageHorizontal,
             child: CatchSection.content(
               title: context.l10n.profileCoreDetailsTitle,
-              child: Text(
+              child: CatchText(
                 context.l10n.profileCoreDetailsBody,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             ),
           ),

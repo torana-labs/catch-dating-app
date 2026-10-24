@@ -63,10 +63,11 @@ class EventRehearsalEntryScaffold extends StatelessWidget {
             color: CatchTokens.of(context).bg,
             child: Padding(
               padding: CatchInsets.content,
-              child: Text(
+              child: CatchText(
                 context.l10n.hostRehearsalSafety,
                 textAlign: TextAlign.center,
-                style: CatchTextStyles.recordContext(context),
+                variant: CatchTextVariant.bodyS,
+                color: CatchTokens.of(context).ink2,
               ),
             ),
           ),

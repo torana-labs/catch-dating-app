@@ -7,27 +7,27 @@ import {ExplorePageLayout} from "../../shared/ui/primitives/explore";
 import {renderExploreDiscovery} from "./sections/exploreSections";
 import {useExploreController} from "./useExploreController";
 import type {ExploreFilters} from "./exploreDiscovery";
-import type {CaptureRecord} from "../../shared/ui/primitives";
+import type {CaptureSlots} from "../../shared/media/MediaSlot";
 import {
   PublicSiteFooter,
   PublicSiteHeader,
   WebsitePageMain,
 } from "../../shared/site";
 
-export function VisitorDiscoveryPage({routeState, onFiltersChange}: {captures: Record<string, CaptureRecord>; routeState?: ExploreFilters; onFiltersChange?: (filters: ExploreFilters) => void}) {
+export function VisitorDiscoveryPage({routeState, onFiltersChange}: {captures: CaptureSlots; routeState?: ExploreFilters; onFiltersChange?: (filters: ExploreFilters) => void}) {
   const explore = useExploreController(routeState, onFiltersChange);
   return <ExplorePageLayout>
-    <PublicSiteHeader audience="consumer" />
+    <PublicSiteHeader />
     <WebsitePageMain id="top">{renderExploreDiscovery(explore)}</WebsitePageMain>
-    <PublicSiteFooter audience="consumer" />
+    <PublicSiteFooter />
   </ExplorePageLayout>;
 }
 
-export function HomePage({routeState}: {captures: Record<string, CaptureRecord>; routeState?: HomeRouteState}) {
+export function HomePage({captures, routeState}: {captures: CaptureSlots; routeState?: HomeRouteState}) {
   const home = useConsumerHomeController(routeState?.city, routeState?.category);
   return <ConsumerHome >
-    <PublicSiteHeader audience="consumer" />
-    <WebsitePageMain id="top">{renderConsumerHero(home)}{renderConsumerEvents(home)}{renderConsumerStory(home)}</WebsitePageMain>
-    <PublicSiteFooter audience="consumer" />
+    <PublicSiteHeader />
+    <WebsitePageMain id="top">{renderConsumerHero(home)}{renderConsumerEvents(home)}{renderConsumerStory(home, captures)}</WebsitePageMain>
+    <PublicSiteFooter />
   </ConsumerHome>;
 }

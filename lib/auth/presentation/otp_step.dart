@@ -225,9 +225,9 @@ class _OtpStepState extends ConsumerState<OtpStep> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            CatchText(
               l10n.authOtpTitle,
-              style: CatchTextStyles.sectionTitle(context),
+              variant: CatchTextVariant.sectionTitle,
             ),
             gapH16,
             if (reflowPhoneSummary) ...[
@@ -259,9 +259,10 @@ class _OtpStepState extends ConsumerState<OtpStep> {
             ),
             if (verifyError != null) ...[
               gapH8,
-              Text(
+              CatchText(
                 verifyError,
-                style: CatchTextStyles.supporting(context, color: t.danger),
+                variant: CatchTextVariant.supporting,
+                color: t.danger,
               ),
             ],
             if (sendMutation.hasError) ...[
@@ -278,10 +279,11 @@ class _OtpStepState extends ConsumerState<OtpStep> {
             if (viewState.verifyButtonLoading) ...[
               HostAuthProgressButton(label: l10n.authHostVerifyingStatus),
               gapH8,
-              Text(
+              CatchText(
                 l10n.authHostVerificationPendingHint,
                 textAlign: TextAlign.center,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+                variant: CatchTextVariant.supporting,
+                color: t.ink2,
               ),
             ] else if (viewState.isSendPending)
               HostAuthProgressButton(

@@ -32,8 +32,9 @@ concurrency:
   # share one group, so a newer merge cancels the older main run instead of
   # competing with the queue for runners. Delivery still covers the cancelled
   # commits: the next run's window starts at the last successful main run
-  # (tool/ci/main_ci_baseline.mjs). A Marketing Website run for a cancelled
-  # source stops; the next website change or its recovery path packages it.
+  # (tool/ci/main_ci_baseline.mjs). Marketing Website reuses the cancelled
+  # run's capture and validation jobs that already succeeded, and otherwise
+  # captures and validates its exact source itself.
   group: ci-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.event_name == 'push' && github.ref || github.event.merge_group.head_sha || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
 

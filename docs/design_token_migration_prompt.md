@@ -79,7 +79,7 @@ or directly above the raw color expression.
    ```
 
 3. **Raw `TextStyle(...)`** → a named `CatchTextStyles.<style>(context)`
-   (display/headline/headlineS/titleL/sectionTitle/bodyL/M/S/proseL/M/supporting/
+   (display/headline/headlineS/titleL/sectionTitle/bodyL/M/S/supporting/
    label*/kicker/monoLabel/…). If no semantic role fits, add one to
    `CatchTextStyles`; app UI must not call `CatchFonts` directly or own
    `letterSpacing` at the call site.

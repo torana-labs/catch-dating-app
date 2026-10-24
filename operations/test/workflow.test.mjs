@@ -15,7 +15,7 @@ import {
 } from "../src/platform/read-models.mjs";
 import {FileOperationsStore} from "../src/platform/storage/file-store.mjs";
 import {SupplyIntakeLearner} from "../src/workflows/supply-intake/learning.mjs";
-import {loadSourceProfiles} from "../src/workflows/supply-intake/sources/index.mjs";
+import {SOURCE_PROFILE_IDS, loadSourceProfiles} from "../src/workflows/supply-intake/sources/index.mjs";
 import {
   MIN_WORK_ITEMS_PER_RUN,
 } from "../src/platform/contracts.mjs";
@@ -38,6 +38,9 @@ import {
   temporaryDirectory,
 } from "./helpers.mjs";
 
+// Each run projects the fixture's five records plus one work item per source profile.
+const FIXTURE_WORK_ITEMS = 5 + SOURCE_PROFILE_IDS.length;
+
 const NOW = "2026-07-14T12:00:00.000Z";
 const REPO_ROOT = fileURLToPath(new URL("../../", import.meta.url));
 
@@ -59,7 +62,7 @@ test("supply-intake runs end to end in shadow mode with one exclusive stage per 
   assert.equal(replay.run.runId, first.run.runId);
 
   const items = await store.listWorkItems({runId: first.run.runId});
-  assert.equal(items.length, 7);
+  assert.equal(items.length, FIXTURE_WORK_ITEMS);
   assert.ok(items.every((item) => ["incoming", "verify", "resolve", "ready"].includes(item.primaryStage)));
   assert.deepEqual(new Set(items.map((item) => item.entityKind)), new Set(["event", "organizer", "source_result", "source_profile"]));
   assert.equal(items.find((item) => item.sourceEntity.id === "event-ready").primaryStage, "ready");
@@ -1290,7 +1293,7 @@ test("reconciliation keeps source capacity when through-date filtering shrinks i
       workerId: "reconcile-capacity-source",
     });
     const sourceRun = (await engine.start(plan)).run;
-    assert.equal(sourceRun.counters.workItems, 7);
+    assert.equal(sourceRun.counters.workItems, FIXTURE_WORK_ITEMS);
     assert.equal(sourceRun.plan.budgets.workItems, 1_000);
 
     const laterEngine = new OperationsEngine({
@@ -1300,7 +1303,7 @@ test("reconciliation keeps source capacity when through-date filtering shrinks i
       workerId: "reconcile-capacity-child",
     });
     const reconciliation = await laterEngine.reconcile(sourceRun.runId);
-    assert.equal(reconciliation.run.counters.workItems, 7);
+    assert.equal(reconciliation.run.counters.workItems, FIXTURE_WORK_ITEMS);
     assert.equal(reconciliation.run.plan.budgets.workItems, 1_000);
     await assert.rejects(
       laterEngine.start(reconciliation.run.plan),
@@ -1334,7 +1337,7 @@ test("plans execute their immutable input snapshot when upstream fixtures change
   });
   const engine = new OperationsEngine({store, workflow, clock: () => new Date(NOW), workerId: "test-worker"});
   const completed = await engine.start(plan);
-  assert.equal(completed.run.counters.workItems, 7);
+  assert.equal(completed.run.counters.workItems, FIXTURE_WORK_ITEMS);
   const refreshed = await workflow.createPlan({
     market: "mumbai",
     through: "2026-07-28",
@@ -1371,6 +1374,7 @@ test("plans fail closed above the canonical shardable work-item capacity", async
     externalEventCandidates: [],
     organizerLeads: [],
     crawlSurfaces: [],
+    intakeListings: [],
   });
   const workflow = new SupplyIntakeWorkflow({
     inputSnapshotLoader: async () => oversizedInput,
@@ -1558,14 +1562,14 @@ test("resume reconstructs work-item budget from durable items after checkpoint c
   await assert.rejects(engine.start(plan), {code: "INJECTED"});
   const runId = `run-${plan.planId}`;
   assert.equal((await store.getCheckpoint(runId, "project-artifacts")).completed, true);
-  assert.equal((await store.listWorkItems({runId})).length, 7);
+  assert.equal((await store.listWorkItems({runId})).length, FIXTURE_WORK_ITEMS);
   assert.equal((await store.requireRun(runId)).budget.consumed.workItems, 0);
 
   store.updateRun = updateRun;
   const resumed = await engine.resume(runId, plan);
   assert.equal(resumed.run.status, "completed");
-  assert.equal(resumed.run.budget.consumed.workItems, 7);
-  assert.equal(resumed.run.budget.remaining.workItems, plan.budgets.workItems - 7);
+  assert.equal(resumed.run.budget.consumed.workItems, FIXTURE_WORK_ITEMS);
+  assert.equal(resumed.run.budget.remaining.workItems, plan.budgets.workItems - FIXTURE_WORK_ITEMS);
 });
 
 test("resume repairs a completed run whose terminal action was interrupted",

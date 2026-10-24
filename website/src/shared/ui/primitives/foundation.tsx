@@ -2,9 +2,6 @@ import {classNames} from "@catch/web-ui";
 import type {HTMLAttributes, ReactNode} from "react";
 import type {ActionGroupVariant} from "./actions";
 
-export {emptyStateClassNames} from "./feedback";
-export {buttonClassName} from "./actionControls";
-
 export interface ActivityMeta {
   label: string;
   token: string;

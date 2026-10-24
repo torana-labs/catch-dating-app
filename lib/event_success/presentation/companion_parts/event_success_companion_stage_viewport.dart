@@ -187,21 +187,17 @@ class CompanionMomentViewport extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
+                CatchText(
                   presentation.headline,
-                  style: CatchTextStyles.headline(
-                    context,
-                    color: stageTheme.foreground,
-                  ),
+                  variant: CatchTextVariant.headline,
+                  color: stageTheme.foreground,
                 ),
                 gapH10,
-                Text(
+                CatchText(
                   presentation.body,
-                  style: CatchTextStyles.bodyL(
-                    context,
-                    color: stageTheme.foreground.withValues(
-                      alpha: CatchOpacity.eventSuccessProminent,
-                    ),
+                  variant: CatchTextVariant.bodyL,
+                  color: stageTheme.foreground.withValues(
+                    alpha: CatchOpacity.eventSuccessProminent,
                   ),
                 ),
                 gapH16,
@@ -336,18 +332,16 @@ class CompanionHeroSection extends StatelessWidget {
           ],
         ),
         gapH14,
-        Text(event.title, style: CatchTextStyles.titleL(context, color: fg)),
+        CatchText(event.title, variant: CatchTextVariant.titleL, color: fg),
         gapH4,
-        Text(
+        CatchText(
           context.l10n
               .eventSuccessEventSuccessCompanionSharedTextTitleLocationname29e462(
                 title: plan.playbook.title,
                 locationName: event.locationName,
               ),
-          style: CatchTextStyles.supporting(
-            context,
-            color: fg.withValues(alpha: CatchOpacity.eventSuccessMutedInk),
-          ),
+          variant: CatchTextVariant.supporting,
+          color: fg.withValues(alpha: CatchOpacity.eventSuccessMutedInk),
         ),
       ],
     );
@@ -401,13 +395,11 @@ class CompanionPrivacyText extends StatelessWidget {
           ),
           gapW8,
           Expanded(
-            child: Text(
+            child: CatchText(
               text,
-              style: CatchTextStyles.supporting(
-                context,
-                color: stageTheme.foreground.withValues(
-                  alpha: CatchOpacity.eventSuccessProminent,
-                ),
+              variant: CatchTextVariant.supporting,
+              color: stageTheme.foreground.withValues(
+                alpha: CatchOpacity.eventSuccessProminent,
               ),
             ),
           ),

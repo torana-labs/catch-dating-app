@@ -10,13 +10,19 @@ import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {buildReactComponentGraph} from "./lib/react_component_graph.mjs";
 import {buildReactComponentInventory} from "./lib/react_component_inventory.mjs";
 import {graphProbeProblems, inventoryProbeProblems} from "./lib/react_component_inventory_probes.mjs";
+import {checkConsolidationRatchet} from "./lib/react_consolidation_ratchet.mjs";
+import {runConsolidationRatchetProbes} from "./lib/react_consolidation_ratchet.test.mjs";
 
 const inventoryOutput = "build/react_component_inventory.json";
 const args = new Set(process.argv.slice(2));
-const allowed = new Set(["--check", "--self-test", "--json", "--write"]);
+const allowed = new Set(["--check", "--self-test", "--json", "--write", "--update-consolidation-baseline"]);
 const unknown = [...args].filter((arg) => !allowed.has(arg));
 if (unknown.length > 0) {
-  console.error(`Unknown argument(s): ${unknown.join(", ")}. Use --check, --self-test, --json or --write.`);
+  console.error(`Unknown argument(s): ${unknown.join(", ")}. Use --check, --self-test, --json, --write or --update-consolidation-baseline.`);
+  process.exit(64);
+}
+if (args.has("--update-consolidation-baseline") && (args.has("--check") || args.has("--self-test"))) {
+  console.error("Baseline regeneration cannot be combined with --check or --self-test.");
   process.exit(64);
 }
 if (args.has("--self-test")) {
@@ -38,6 +44,23 @@ const findings = [
   ...productionShellProblems(inventory),
   ...validateRequiredSourceContracts(),
 ];
+
+// Bare --json supplies the scorecard's read-only inventory. Explicit checks,
+// including --check --json, enforce the baseline without recursive measurement.
+if ((!args.has("--json") || args.has("--check") || args.has("--update-consolidation-baseline")) && findings.length === 0) {
+  try {
+    const ratchet = checkConsolidationRatchet({
+      root: repoRoot, inventory, update: args.has("--update-consolidation-baseline"),
+    });
+    findings.push(...ratchet.findings);
+    if (!args.has("--json") && ratchet.findings.length === 0) {
+      console.log(`React consolidation ratchet passed: ${JSON.stringify(ratchet.counts)}.`);
+    }
+    if (ratchet.findings.length) findings.push("Remove new debt, or regenerate fixed allowances with --update-consolidation-baseline.");
+  } catch (error) {
+    findings.push(error.message);
+  }
+}
 
 if (args.has("--write")) {
   fs.mkdirSync(path.dirname(fromRepo(inventoryOutput)), {recursive: true});
@@ -97,8 +120,8 @@ function validateRequiredSourceContracts(readSource = readRepoSource) {
       includes: ["role=\"region\"", "ariaLabel", "aria-busy", "aria-invalid"],
     },
     {
-      path: "website/src/styles/home.css",
-      includes: [".public-search__input:focus-within"],
+      path: "packages/web-ui/src/components/CatchField.module.css",
+      includes: [".field:has(.control:focus-visible)"],
     },
     {
       path: "admin/src/styles.css",
@@ -165,6 +188,7 @@ function readRepoSource(relativePath) {
 }
 
 function runSelfTest() {
+  runConsolidationRatchetProbes();
   const probeProblems = [...graphProbeProblems(), ...inventoryProbeProblems()];
   if (probeProblems.length > 0) {
     throw new Error(`inventory self-test failed:\n${probeProblems.join("\n")}`);

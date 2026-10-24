@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
 import test from "node:test";
 import {organizerFixture} from "./organizerFixture.mjs";
 import {projectPublicOrganizer} from "../../src/server/publicOrganizerProjection.ts";
@@ -77,4 +78,15 @@ test("runtime validator adapter agrees with repository generated validators", ()
   for (const value of [listing, {...listing, privateToken: "no"}, {...listing, name: 123}, null]) {
     assert.equal(narrow.validateWebsiteHostListingProjection(value), repository.validateWebsiteHostListingProjection(value));
   }
+});
+test("webpack's runtime validator replacement retains external-event validation", () => {
+  assert.deepEqual(Object.keys(narrow).sort(), [
+    "validateExternalEventDocument", "validateOrganizerDocument", "validateWebsiteHostListingProjection",
+  ]);
+  const valid = JSON.parse(readFileSync(new URL("../../../contracts/fixtures/valid/external_event_doc.json", import.meta.url), "utf8"));
+  for (const value of [valid, {...valid, eventId: 17}, {...valid, booking: {}}, null]) {
+    assert.equal(narrow.validateExternalEventDocument(value), repository.validateExternalEventDocument(value));
+  }
+  assert.equal(narrow.validateExternalEventDocument(valid), true);
+  assert.equal(narrow.validateExternalEventDocument({...valid, booking: {}}), false);
 });

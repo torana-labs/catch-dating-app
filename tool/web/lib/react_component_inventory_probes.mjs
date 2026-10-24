@@ -153,6 +153,8 @@ export function probeGraph() {
     component("admin", `${A}/cards.tsx`, "SoloCard"),
     component("admin", `${A}/cards.tsx`, "OwnedCard"),
     component("admin", `${A}/forms.tsx`, "DupField"),
+    component("web-ui", "packages/web-ui/src/components/CatchSoloPanel.tsx", "CatchSoloPanel"),
+    component("web-ui", "packages/web-ui/src/components/CatchLeakyPanel.tsx", "CatchLeakyPanel"),
   ];
   const websiteA = "website/src/features/a/Page.tsx::PageA";
   const websiteB = "website/src/features/b/Page.tsx::PageB";
@@ -175,6 +177,9 @@ export function probeGraph() {
     use(adminX, `${A}/forms.tsx::DupField`),
     use(adminY, `${A}/forms.tsx::DupField`),
     use("website/src/stories/Media.stories.tsx", `${W}/media.tsx::DeadThing`),
+    use(adminX, "packages/web-ui/src/components/CatchSoloPanel.tsx::CatchSoloPanel"),
+    use(adminX, "packages/web-ui/src/components/CatchLeakyPanel.tsx::CatchLeakyPanel"),
+    use(websiteA, "packages/web-ui/src/components/CatchLeakyPanel.tsx::CatchLeakyPanel"),
   ];
   return {components, references};
 }
@@ -191,6 +196,11 @@ export const probeSurfaceRegistries = {
       exportName: "AdminActionButton", comparedWith: ["catch.button"], comparisonReason: "Too short."},
     {id: "solo_card", kind: "shared-primitive", owner: "shared/ui", source: `${A}/cards.tsx`, exportName: "SoloCard"},
     {id: "owned_card", kind: "feature-component", owner: "features/y", source: `${A}/cards.tsx`, exportName: "OwnedCard"},
+    // D18: one-feature components drawn in the library are that surface's T4 entries.
+    {id: "solo_panel", kind: "feature-component", owner: "features/x",
+      source: "packages/web-ui/src/components/CatchSoloPanel.tsx", exportName: "CatchSoloPanel"},
+    {id: "leaky_panel", kind: "feature-component", owner: "features/x",
+      source: "packages/web-ui/src/components/CatchLeakyPanel.tsx", exportName: "CatchLeakyPanel"},
   ]},
 };
 
@@ -202,6 +212,7 @@ export const expectedProbeProblems = [
   ["owned_card", "feature-component owned by features/y is rendered by admin:features/x"],
   ["both export DupField", "point both at one contract"],
   ["stale_compare", "is not a measured candidate"],
+  ["leaky_panel", "T4 component registered for admin is also rendered by website:features/a"],
 ];
 
 /** Problems with the gate itself: an expected finding missing or a quiet case reported. */
@@ -224,7 +235,14 @@ export function inventoryProbeProblems() {
   if (mapping("DeadThing")?.kind !== "delete") failures.push("a story-only export was not mapped to deletion");
   const single = mapping("SingleThing");
   if (single?.kind !== "t4" || !single.move || single.owner !== "website:features/a") {
-    failures.push("a single-feature shared export was not mapped to its feature for a move");
+    failures.push("a single-feature shared export was not counted as debt awaiting its library move");
+  }
+  const solo = mapping("CatchSoloPanel");
+  if (solo?.kind !== "t4" || solo.move || solo.owner !== "admin:features/x") {
+    failures.push("a registered T4 component in @catch/web-ui was not mapped to its owner without a move");
+  }
+  if (inventory.problems.some((problem) => problem.includes("solo_panel") || problem.includes("CatchSoloPanel"))) {
+    failures.push("a registered T4 component in @catch/web-ui was reported");
   }
   if (mapping("ButtonControl")?.componentId !== "catch.button") failures.push("a react record was not mapped to its concept");
   return failures;

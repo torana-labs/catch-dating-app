@@ -11,7 +11,7 @@ export function HostListingPage({listing}: {listing: HostListing}) {
 
   return (
     <OrganiserProfile>
-      <PublicSiteHeader audience="consumer" />
+      <PublicSiteHeader />
 
       <WebsitePageMain id="profile">
         <HostListingSections
@@ -21,7 +21,7 @@ export function HostListingPage({listing}: {listing: HostListing}) {
         />
       </WebsitePageMain>
 
-      <PublicSiteFooter audience="consumer" />
+      <PublicSiteFooter />
     </OrganiserProfile>
   );
 }

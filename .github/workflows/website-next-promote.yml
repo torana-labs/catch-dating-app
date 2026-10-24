@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       preview_run_id:
-        description: Successful, browser-accepted Next Website Preview run for current main
+        description: Successful, browser-accepted Next Website Preview run of a commit on main
         required: true
         type: string
 
@@ -25,7 +25,8 @@ jobs:
       queue: max
     permissions:
       actions: read
-      contents: read
+      # Moves the deployed/prod-website tag after a verified promotion.
+      contents: write
       id-token: write
     env:
       PREVIEW_RUN_ID: ${{ inputs.preview_run_id }}
@@ -41,7 +42,13 @@ jobs:
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
       - name: Verify accepted preview source and immutable artifact before credentials
-        run: node website/scripts/next/promoteRelease.mjs prepare
+        run: |
+          set -euo pipefail
+          node website/scripts/next/promoteRelease.mjs prepare
+          # The release is the preview's source; main may have moved past it.
+          release="$(jq -er .sourceSha build/next-promote/authorization.json)"
+          [[ "$release" =~ ^[a-f0-9]{40}$ ]]
+          echo "RELEASE_SHA=$release" >> "$GITHUB_ENV"
       - name: Install the pinned Hosting client before authentication
         env:
           FIREBASE_TOOLS_VERSION: ${{ steps.toolchain.outputs.firebase-tools-version }}
@@ -74,7 +81,7 @@ jobs:
           test "$(docker image inspect "$pinned" --format '{{.Id}}')" = "$(jq -r .imageId build/next-preview/verified/release.json)"
           gcloud run services describe catch-website-next-preview --project catch-dating-app-64e51 --region asia-south1 \
             --format=json > build/next-promote/preview-service.json
-          PINNED_IMAGE="$pinned" node --input-type=module -e 'import fs from "node:fs"; import {assertPreviewRuntime} from "./website/scripts/next/promoteRelease.mjs"; assertPreviewRuntime(JSON.parse(fs.readFileSync("build/next-promote/preview-service.json")), process.env.GITHUB_SHA, process.env.PINNED_IMAGE);'
+          PINNED_IMAGE="$pinned" node --input-type=module -e 'import fs from "node:fs"; import {assertPreviewRuntime} from "./website/scripts/next/promoteRelease.mjs"; assertPreviewRuntime(JSON.parse(fs.readFileSync("build/next-promote/preview-service.json")), process.env.RELEASE_SHA, process.env.PINNED_IMAGE);'
           printf '%s\n' "$pinned" > build/next-promote/image-digest.txt
       - name: Require the protected organiser-review index to be ready
         run: |
@@ -92,8 +99,8 @@ jobs:
             --service-account github-actions-web-reader@catch-dating-app-64e51.iam.gserviceaccount.com \
             --allow-unauthenticated --ingress all --cpu 1 --memory 512Mi --concurrency 40 \
             --min-instances 0 --max-instances 3 --timeout 30 --port 8080 \
-            --set-env-vars "CATCH_WEBSITE_STAGE=production,CATCH_PUBLIC_FIRESTORE_PROJECT=catch-dating-app-64e51,CATCH_RELEASE_SHA=$GITHUB_SHA" \
-            --labels "catch-surface=website,source-sha=$GITHUB_SHA" --quiet
+            --set-env-vars "CATCH_WEBSITE_STAGE=production,CATCH_PUBLIC_FIRESTORE_PROJECT=catch-dating-app-64e51,CATCH_RELEASE_SHA=$RELEASE_SHA" \
+            --labels "catch-surface=website,source-sha=$RELEASE_SHA" --quiet
           gcloud run services describe catch-website-next --project catch-dating-app-64e51 --region asia-south1 \
             --format=json > build/next-promote/production-service.json
       - name: Exercise the production configuration on an expiring channel first
@@ -118,6 +125,8 @@ jobs:
             --project catch-dating-app-64e51 --non-interactive --json > build/next-promote/promotion.json
           EXPECTED_HOSTING_VERSION="$version" node website/scripts/next/hostingState.mjs verify-next
           node website/scripts/next/deployedSmoke.mjs https://catchdates.com > build/next-promote/live-checks.json
+      - name: Record the released commit
+        run: node website/scripts/next/promoteRelease.mjs record
       - name: Retain exact release and rollback identities
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7

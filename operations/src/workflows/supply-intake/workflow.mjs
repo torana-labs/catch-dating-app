@@ -40,7 +40,7 @@ import {loadSupplyModelPolicy} from "./model-fallback.mjs";
 
 export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
-export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.6.0";
+export const SUPPLY_INTAKE_WORKFLOW_VERSION = "0.7.0";
 const SUPPLY_INTAKE_SCOPES = Object.freeze(["all", "organizer"]);
 const ORGANIZER_PACKET_STRING_LIMIT = 500;
 const ORGANIZER_PACKET_LIST_LIMIT = 40;
@@ -636,6 +636,16 @@ export class SupplyIntakeWorkflow {
         artifact,
       }));
     }
+    for (const listing of input.intakeListings) {
+      if (listing?.market !== plan.market) continue;
+      const context = {runId, now, market: plan.market, artifact};
+      const listingItem = workItemForIntakeListing(listing, context);
+      items.push(listingItem);
+      if (plan.intakeScope === "organizer") continue;
+      for (const event of listing.events) {
+        items.push(workItemForListingEvent(event, listing, listingItem.workItemId, context));
+      }
+    }
     return dedupeItems(items).sort((left, right) => {
       if (!plan.discoveryGate) return left.workItemId.localeCompare(right.workItemId);
       const leftCandidate = left.adminProjection?.recordType === "organizer_search_candidate";
@@ -709,6 +719,12 @@ export class SupplyIntakeWorkflow {
   }
 
   review(item, {now}) {
+    if (item.adminProjection?.recordType === "organizer_listing_draft") {
+      return reviewIntakeListing(item, now);
+    }
+    if (item.adminProjection?.recordType === "listing_event_candidate") {
+      return reviewListingEvent(item, now);
+    }
     if (item.entityKind === "event") {
       return item.adminProjection?.recordType === "orphan_event_candidate" ?
         reviewOrphanEvent(item, now) :
@@ -740,6 +756,9 @@ export class SupplyIntakeWorkflow {
     if (item.entityKind === "event") {
       if (item.adminProjection?.recordType === "orphan_event_candidate") {
         blockers.push("organizer_not_in_inventory");
+      }
+      if (item.adminProjection?.recordType === "listing_event_candidate") {
+        blockers.push("organizer_listing_pending");
       }
       if (!profile) blockers.push("source_policy_snapshot_missing");
       if (profile?.publication?.autoEligible !== true) {
@@ -901,6 +920,8 @@ function plannedWorkItemCount(
     intakeScope === "organizer" ? 0 :
       inputSummary?.externalEventCandidates,
     inputSummary?.organizerLeads,
+    inputSummary?.intakeListings,
+    intakeScope === "organizer" ? 0 : inputSummary?.intakeListingEvents,
     intakeScope === "organizer" ? 0 : sourceProfileCount,
   ].map((count) => count ?? 0);
   invariant(
@@ -946,6 +967,13 @@ function plannedInputSummary(snapshot, market) {
     organizerLeads:
       snapshot.organizerLeads.filter((lead) =>
         lead?.marketSlug === market).length,
+    intakeListings:
+      snapshot.intakeListings.filter((listing) =>
+        listing?.market === market).length,
+    intakeListingEvents:
+      snapshot.intakeListings.filter((listing) =>
+        listing?.market === market).reduce((sum, listing) =>
+        sum + (Array.isArray(listing.events) ? listing.events.length : 0), 0),
   };
 }
 
@@ -1449,6 +1477,133 @@ function boundedProjectionStringArray(value, field) {
     boundedProjectionString(entry, {field: `${field}[${index}]`}));
 }
 
+// An intake listing is the organizer a request asked for, assembled from the
+// pages it read. Its projection carries everything a reviewer and the
+// organizer-draft service need; raw evidence stays in the input snapshot.
+function workItemForIntakeListing(listing, context) {
+  const citations = listing.pages
+    .filter((page) => page.outcome === "fetched")
+    .map((page) => page.url);
+  return baseWorkItem({
+    ...context,
+    entityKind: "organizer",
+    id: listing.listingId,
+    title: listing.organizer.name ?? listing.seed.name ?? listing.listingId,
+    source: {
+      sourceProfileId: `supply_intake_request:${listing.kind}`,
+      label: INTAKE_KIND_LABELS[listing.kind],
+      url: listing.organizer.links[0]?.url ?? listing.seed.urls[0] ?? null,
+      artifactRef: context.artifact.relativePath,
+    },
+    evidence: evidenceFor(context.artifact, listing, citations),
+    raw: listing,
+    adminProjection: {
+      recordType: "organizer_listing_draft",
+      listing: intakeListingProjection(listing),
+    },
+    observedAt: listing.observedAt,
+  });
+}
+
+const INTAKE_KIND_LABELS = Object.freeze({
+  nomination: "Nomination",
+  self_submission: "Organizer submission",
+  discovery: "Discovery",
+});
+
+function intakeListingProjection(listing) {
+  return {
+    listingId: listing.listingId,
+    requestId: listing.requestId,
+    kind: listing.kind,
+    submittedBy: {...listing.submittedBy},
+    submittedAt: listing.submittedAt,
+    seed: {
+      name: listing.seed.name,
+      urls: [...listing.seed.urls],
+      notes: listing.seed.notes,
+      categories: [...listing.seed.categories],
+    },
+    organizer: {
+      name: boundedNullable(listing.organizer.name, 500),
+      description: boundedNullable(listing.organizer.description, 2_000),
+      imageUrl: listing.organizer.imageUrl,
+      locality: boundedNullable(listing.organizer.locality, 500),
+      categories: [...listing.organizer.categories],
+      links: listing.organizer.links.map((link) => ({...link})),
+      identityKeys: [...listing.organizer.identityKeys],
+    },
+    fieldEvidence: listing.fieldEvidence.map((entry) => ({...entry})),
+    eventCount: listing.events.length,
+    pastEventCount: listing.pastEventCount,
+    pages: listing.pages.map((page) => ({...page})),
+    gaps: [...listing.gaps],
+    researchNeeded: listing.researchNeeded,
+    contentHash: listing.contentHash,
+  };
+}
+
+function workItemForListingEvent(event, listing, listingWorkItemId, context) {
+  return baseWorkItem({
+    ...context,
+    entityKind: "event",
+    id: `${listing.listingId}:${event.eventKey}`,
+    title: event.title ?? event.eventKey,
+    source: {
+      sourceProfileId: `external_event:${event.platform}`,
+      label: event.platform,
+      url: event.sourceUrl,
+      artifactRef: context.artifact.relativePath,
+    },
+    evidence: evidenceFor(
+      context.artifact,
+      event,
+      [event.sourceUrl, event.evidenceUrl, ...event.alsoListedAt].filter(Boolean)
+    ),
+    raw: {...event, listingId: listing.listingId},
+    adminProjection: {
+      recordType: "listing_event_candidate",
+      event: {
+        listingId: listing.listingId,
+        listingWorkItemId,
+        requestId: listing.requestId,
+        eventKey: event.eventKey,
+        platform: event.platform,
+        sourceEntityId: event.sourceEntityId,
+        title: boundedNullable(event.title, 500),
+        description: boundedNullable(event.description, 2_000),
+        startAt: event.startAt,
+        endAt: event.endAt,
+        timezone: event.timezone,
+        venue: boundedNullable(event.venue, 500),
+        address: boundedNullable(event.address, 500),
+        locality: boundedNullable(event.locality, 500),
+        latitude: event.latitude,
+        longitude: event.longitude,
+        sourceUrl: event.sourceUrl,
+        imageUrl: event.imageUrl,
+        price: event.price ? {...event.price} : null,
+        status: event.status,
+        attendanceMode: event.attendanceMode,
+        organizerName: boundedNullable(event.organizerName, 500),
+        organizerUrl: event.organizerUrl,
+        adapterId: event.adapterId,
+        evidenceFields: [...event.evidenceFields],
+        alsoListedAt: [...event.alsoListedAt],
+      },
+    },
+    observedAt: listing.observedAt,
+    expiresAt: event.endAt ?? event.startAt,
+  });
+}
+
+// Free text from public pages is clipped to the projection contract; URLs are
+// never clipped, because a shortened URL points somewhere else.
+function boundedNullable(value, maximum) {
+  if (typeof value !== "string" || value.length === 0) return null;
+  return value.length > maximum ? `${value.slice(0, maximum - 1)}…` : value;
+}
+
 function workItemForOrganizer(packet, context) {
   return baseWorkItem({
     ...context,
@@ -1837,6 +1992,53 @@ function reviewOrphanEvent(item, now) {
       "orphan-event-publication-block-v1",
     ],
     reason: "organizer_attribution_required",
+    now,
+  });
+}
+
+// Every listing waits for staff: the review gate publishes nothing. A listing
+// with no name or no readable source cannot be reviewed yet; one whose
+// evidence is thin is reviewable but flagged for research.
+function reviewIntakeListing(item, now) {
+  const listing = item.adminProjection.listing;
+  const blockers = [];
+  if (!listing.organizer.name) blockers.push("organizer_name_missing");
+  if (!listing.pages.some((page) => page.outcome === "fetched")) blockers.push("source_url_missing");
+  const primaryStage = blockers.length > 0 ? "resolve" : "verify";
+  const complete = listing.gaps.length === 0;
+  return outcome(item, {
+    primaryStage,
+    blockers,
+    taskFlags: [
+      "listing_review",
+      ...(listing.researchNeeded ? ["research_needed"] : []),
+      ...(listing.gaps.includes("name_differs_from_nomination") ? ["identity_review"] : []),
+    ],
+    owner: "human",
+    overall: blockers.length > 0 ? 0.25 : complete ? 0.8 : 0.6,
+    basis: "intake_listing_adapters",
+    ruleIds: ["intake-listing-review-v1"],
+    reason: blockers.length > 0 ? "intake_listing_blocked" : "intake_listing_review_pending",
+    now,
+  });
+}
+
+function reviewListingEvent(item, now) {
+  const event = item.adminProjection.event;
+  const blockers = [];
+  if (!event.startAt || !Number.isFinite(Date.parse(event.startAt))) blockers.push("start_time_missing");
+  if (!event.title) blockers.push("title_missing");
+  if (event.status === "cancelled") blockers.push("event_cancelled");
+  return outcome(item, {
+    primaryStage: blockers.length > 0 ? "resolve" : "verify",
+    blockers,
+    // Events publish only after their organizer's listing is approved.
+    taskFlags: ["event_bulk_review", "awaits_listing_approval"],
+    owner: "human",
+    overall: blockers.length > 0 ? 0.3 : 0.7,
+    basis: "intake_listing_event_adapter",
+    ruleIds: ["intake-listing-event-review-v1"],
+    reason: "listing_event_review_pending",
     now,
   });
 }

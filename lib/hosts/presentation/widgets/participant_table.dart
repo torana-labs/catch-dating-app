@@ -114,11 +114,11 @@ class ParticipantRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  CatchText(
                     person,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.name(context),
+                    variant: CatchTextVariant.sectionTitle,
+                    color: CatchTokens.of(context).ink,
                   ),
                   if (meta != null && meta!.isNotEmpty) ...[
                     const SizedBox(height: CatchSpacing.micro3),
@@ -356,15 +356,16 @@ class ParticipantTable extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CatchText(
                           emptyTitle ?? '',
-                          style: CatchTextStyles.name(context),
+                          variant: CatchTextVariant.sectionTitle,
+                          color: CatchTokens.of(context).ink,
                         ),
                         if (emptyMessage != null) ...[
                           const SizedBox(height: CatchSpacing.s1),
-                          Text(
+                          CatchText(
                             emptyMessage!,
-                            style: CatchTextStyles.supporting(context),
+                            variant: CatchTextVariant.supporting,
                           ),
                         ],
                       ],

@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useEffect, useMemo, useState} from "react";
 import {
   ArrowLeft,
@@ -337,7 +337,7 @@ function EventReadinessDetail({
       <AdminSearchCandidateHeader>
         <div>
           <AdminEyebrow>{row.targetPath}</AdminEyebrow>
-          <h3>{row.title}</h3>
+          <CatchText as="h3" variant="sectionTitle">{row.title}</CatchText>
         </div>
         <StatusChip tone={row.publishReady ? "ready" : ""}>
           {row.publishReady ? "ready" : "blocked"}

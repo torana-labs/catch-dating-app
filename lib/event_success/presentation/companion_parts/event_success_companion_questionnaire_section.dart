@@ -76,11 +76,11 @@ class _CompatibilityQuestionnaireSectionState
             runSpacing: CatchSpacing.s2,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Text(
+              CatchText(
                 context
                     .l10n
                     .eventSuccessEventSuccessCompanionQuestionnaireTextAFewQuickQuestions,
-                style: CatchTextStyles.sectionTitle(context),
+                variant: CatchTextVariant.sectionTitle,
               ),
               CatchPrivacyBadge(
                 copy: catchPrivacyBadgeCopy(context.l10n),
@@ -112,7 +112,7 @@ class _CompatibilityQuestionnaireSectionState
             ],
           ),
           gapH10,
-          Text(
+          CatchText(
             rankingOn
                 ? context
                       .l10n
@@ -120,7 +120,8 @@ class _CompatibilityQuestionnaireSectionState
                 : context
                       .l10n
                       .eventSuccessEventSuccessCompanionQuestionnaireTextYourAnswersCanShape025884,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           gapH16,
           QuestionProgressRail(
@@ -145,9 +146,9 @@ class _CompatibilityQuestionnaireSectionState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  CatchText(
                     activeQuestion.prompt,
-                    style: CatchTextStyles.titleL(context),
+                    variant: CatchTextVariant.titleL,
                   ),
                   gapH12,
                   Wrap(
@@ -176,13 +177,14 @@ class _CompatibilityQuestionnaireSectionState
           ),
           if (widget.actionState.error != null) ...[
             gapH14,
-            Text(
+            CatchText(
               appErrorMessage(
                 widget.actionState.error!,
                 l10n: context.l10n,
                 context: AppErrorContext.event,
               ),
-              style: CatchTextStyles.supporting(context, color: t.danger),
+              variant: CatchTextVariant.supporting,
+              color: t.danger,
             ),
             gapH10,
           ],
@@ -305,15 +307,13 @@ class QuestionProgressRail extends StatelessWidget {
                     ? t.primarySoft
                     : t.surface,
                 borderRole: CatchBorderRole.separator,
-                child: Text(
+                child: CatchText(
                   context.l10n
                       .eventSuccessEventSuccessCompanionQuestionnaireTextValue1(
                         value1: index + 1,
                       ),
-                  style: CatchTextStyles.labelS(
-                    context,
-                    color: index == activeIndex ? t.surface : t.ink2,
-                  ),
+                  variant: CatchTextVariant.statusLabel,
+                  color: index == activeIndex ? t.surface : t.ink2,
                 ),
               ),
             ),

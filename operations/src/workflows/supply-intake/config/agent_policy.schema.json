@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/operations/supply-intake/agent-policy.schema.json",
+  "title": "SupplyIntakeResearchAgentPolicy",
+  "description": "The bounded research agent for intake listings. Enabling it cites an accepted agent_research_policy decision and freezes positive per-run and monthly cost ceilings in micro-dollars.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "policyVersion", "agent", "limits", "budgets", "placement"],
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "policyVersion": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,119}$"},
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "providerId", "modelId", "effort", "promptVersion", "serverSecretRef", "policyGapId", "decisionId"],
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "providerId": {"const": "anthropic"},
+        "modelId": {"enum": ["claude-opus-5-5"]},
+        "effort": {"enum": ["low", "medium", "high"]},
+        "promptVersion": {"const": "organizer-research-v1"},
+        "serverSecretRef": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._/-]{0,127}$"},
+        "policyGapId": {"const": "agent_research_policy"},
+        "decisionId": {"type": ["string", "null"], "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,199}$"}
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxSteps", "maxToolCalls", "maxWebSearches", "maxOutputTokensPerStep", "stepTimeoutMs"],
+      "properties": {
+        "maxSteps": {"type": "integer", "minimum": 1, "maximum": 30},
+        "maxToolCalls": {"type": "integer", "minimum": 1, "maximum": 60},
+        "maxWebSearches": {"type": "integer", "minimum": 0, "maximum": 20},
+        "maxOutputTokensPerStep": {"type": "integer", "minimum": 512, "maximum": 16000},
+        "stepTimeoutMs": {"type": "integer", "minimum": 10000, "maximum": 600000}
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxCostMicrosPerRun", "maxCostMicrosPerMonth"],
+      "properties": {
+        "maxCostMicrosPerRun": {"type": "integer", "minimum": 0, "maximum": 5000000},
+        "maxCostMicrosPerMonth": {"type": "integer", "minimum": 0, "maximum": 50000000}
+      }
+    },
+    "placement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["forbiddenUses"],
+      "properties": {
+        "forbiddenUses": {"const": ["copy_generation", "ranking", "publication", "per_user_path"]}
+      }
+    }
+  },
+  "allOf": [{
+    "if": {"properties": {"agent": {"properties": {"enabled": {"const": true}}, "required": ["enabled"]}}, "required": ["agent"]},
+    "then": {"properties": {
+      "agent": {"properties": {"decisionId": {"type": "string", "minLength": 1}}},
+      "budgets": {"properties": {"maxCostMicrosPerRun": {"minimum": 1}, "maxCostMicrosPerMonth": {"minimum": 1}}}
+    }},
+    "else": {"properties": {
+      "agent": {"properties": {"decisionId": {"type": "null"}}},
+      "budgets": {"properties": {"maxCostMicrosPerRun": {"const": 0}, "maxCostMicrosPerMonth": {"const": 0}}}
+    }}
+  }]
+}

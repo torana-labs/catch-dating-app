@@ -11,43 +11,7 @@ import {usePendingRequestNavigationBlocked} from "../../pendingRequest";
 import {LiveStatus} from "./feedback";
 import {classNames} from "@catch/web-ui";
 
-export type SearchFormVariant = "organizer" | "public";
-
-export function WaitlistSection({
-  body,
-  children,
-  className,
-  id,
-  introReveal = true,
-  title,
-  titleId,
-  tone,
-}: HTMLAttributes<HTMLElement> & {
-  body: ReactNode;
-  children: ReactNode;
-  introReveal?: boolean;
-  title: ReactNode;
-  titleId: string;
-  tone?: "dark";
-}) {
-  return (
-    <section
-      className={classNames(
-        "waitlist-section",
-        tone === "dark" && "waitlist-section--dark",
-        className
-      )}
-      id={id}
-      aria-labelledby={titleId}
-    >
-      <div className="waitlist__intro" data-reveal={introReveal || undefined}>
-        <h2 id={titleId}>{title}</h2>
-        <p>{body}</p>
-      </div>
-      {children}
-    </section>
-  );
-}
+export type SearchFormVariant = "organizer";
 
 export function ListingFormatRow({
   children,
@@ -176,5 +140,4 @@ export const ClaimRequestForm = forwardRef<
 
 export const searchFormClassNames: Record<SearchFormVariant, string> = {
   organizer: "organizer-search-form",
-  public: "public-search",
 };

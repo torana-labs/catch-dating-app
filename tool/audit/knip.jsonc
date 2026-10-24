@@ -20,7 +20,21 @@
       "ignoreDependencies": ["@vitest/coverage-v8"]
     },
     "admin": {},
-    "website": {},
+    "website": {
+      "entry": [
+        // Loaded by their HTML document or an embed script tag, not an ESM import.
+        "measurement-runtime/catch-acquisition-runtime.js",
+        "public/form-embed-resize.js",
+        "public/organizer-tracking-runtime.js",
+        // Invoked by the Hosting workflow and registered tooling command.
+        "scripts/verifyHosting404.mjs",
+        // Webpack/Vite replacement modules in next.config.mjs/buildPrivateShell.mjs.
+        "scripts/next/publicValidators.mjs",
+        "src/features/organizers/emptyData.ts",
+        // Included by tsconfig.json to exercise negative compile-time contracts.
+        "src/content/interpolate.typecheck.ts"
+      ]
+    },
     "packages/web-ui": {},
     "packages/web-config": {},
     "functions": {

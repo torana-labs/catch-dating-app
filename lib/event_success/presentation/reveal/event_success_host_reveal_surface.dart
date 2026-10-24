@@ -268,13 +268,14 @@ class _EventSuccessHostRevealSurfaceState
           ],
           if (widget.actionState.error != null) ...[
             gapH10,
-            Text(
+            CatchText(
               appErrorMessage(
                 widget.actionState.error!,
                 l10n: context.l10n,
                 context: AppErrorContext.event,
               ),
-              style: CatchTextStyles.supporting(context, color: t.surface),
+              variant: CatchTextVariant.supporting,
+              color: t.surface,
             ),
           ],
           gapH16,

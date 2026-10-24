@@ -25,6 +25,7 @@ const stopWords = new Set([
 
 export type OrganizerAdminSearchSource =
   "adminCreateOrganizerDraftFromCandidate" |
+  "adminApproveOrganizerListing" |
   "adminUpdateClubDetails" |
   "adminSetClubIndexStatus" |
   "adminOrganizerSearchBackfill";

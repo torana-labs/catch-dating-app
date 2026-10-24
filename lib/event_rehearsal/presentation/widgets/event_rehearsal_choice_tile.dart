@@ -44,9 +44,9 @@ class EventRehearsalChoiceTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: CatchTextStyles.sectionTitle(context)),
+                  CatchText(title, variant: CatchTextVariant.sectionTitle),
                   gapH8,
-                  Text(description, style: CatchTextStyles.supporting(context)),
+                  CatchText(description, variant: CatchTextVariant.supporting),
                 ],
               ),
             ),

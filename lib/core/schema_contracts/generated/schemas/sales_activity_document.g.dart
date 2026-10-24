@@ -8,7 +8,7 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/sales_activities.schema.json',
   'title': 'SalesActivityDocument',
-  'description': 'Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions.',
+  'description': 'Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions, and the approval of a listing Supply Intake built.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'salesActivities',
@@ -75,6 +75,7 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
         'claim_rejected',
         'demo_started',
         'demo_completed',
+        'listing_approved',
       ],
     },
     'channel': <String, Object?>{
@@ -190,6 +191,41 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'requestId',
+            'approvalId',
+            'origin',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'supply_intake',
+            },
+            'requestId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'approvalId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'origin': <String, Object?>{
+              'enum': <Object?>[
+                'admin_nomination',
+                'sales_inbound_intent',
+                'discovery_run',
+                'none',
+              ],
+            },
+          },
+        },
       ],
     },
   },
@@ -205,6 +241,7 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
               'claim_rejected',
               'demo_started',
               'demo_completed',
+              'listing_approved',
             ],
           },
         },
@@ -304,6 +341,26 @@ const schemaSalesActivityDocumentSchema = <String, Object?>{
             'properties': <String, Object?>{
               'kind': <String, Object?>{
                 'const': 'organizer_claim',
+              },
+            },
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'type': <String, Object?>{
+            'const': 'listing_approved',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'source': <String, Object?>{
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'supply_intake',
               },
             },
           },

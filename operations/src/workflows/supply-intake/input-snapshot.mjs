@@ -12,6 +12,7 @@ const ARRAY_FIELDS = Object.freeze([
   "externalEventCandidates",
   "organizerLeads",
   "crawlSurfaces",
+  "intakeListings",
 ]);
 
 export function emptySupplyInputSnapshot(market) {
@@ -32,6 +33,7 @@ export function emptySupplyInputSnapshot(market) {
     externalEventCandidates: [],
     organizerLeads: [],
     crawlSurfaces: [],
+    intakeListings: [],
   });
 }
 

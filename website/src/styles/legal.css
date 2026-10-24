@@ -9,7 +9,7 @@
 }
 
 .legal-document__header {
-  padding-bottom: 40px;
+  padding-bottom: var(--catch-space-s10);
   border-bottom: 1px solid var(--website-line);
 }
 
@@ -28,7 +28,7 @@
 
 .legal-document h1 {
   max-width: 760px;
-  margin: 14px 0 18px;
+  margin: var(--catch-space-micro14) 0 var(--catch-space-micro18);
   font-size: clamp(2.6rem, 7vw, 5.2rem);
   line-height: 0.96;
   letter-spacing: -0.055em;
@@ -49,12 +49,12 @@
 .legal-document__sections {
   display: grid;
   gap: 42px;
-  padding: 48px 0;
+  padding: var(--catch-space-s12) 0;
 }
 
 .legal-document__sections section {
   display: grid;
-  gap: 14px;
+  gap: var(--catch-space-micro14);
 }
 
 .legal-document__sections h2 {
@@ -71,12 +71,12 @@
 
 .legal-document__sections ul {
   display: grid;
-  gap: 10px;
-  padding-left: 24px;
+  gap: var(--catch-space-micro10);
+  padding-left: var(--catch-space-s6);
 }
 
 .legal-document__contact {
-  padding: 24px;
+  padding: var(--catch-space-s6);
   border: 1px solid var(--website-line);
   border-radius: var(--catch-radius-lg);
   background: var(--website-surface);
@@ -84,7 +84,7 @@
 
 .legal-document__contact a {
   display: inline-block;
-  margin-top: 6px;
+  margin-top: var(--catch-space-micro6);
   font-weight: 700;
 }
 

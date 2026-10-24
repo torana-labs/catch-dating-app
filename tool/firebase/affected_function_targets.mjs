@@ -239,8 +239,8 @@ export function affectedFunctionTargets({
       return all("Runtime asset changed");
     }
     // Untraceable loads resolve against Functions source and the Operations
-    // files the build copies into lib (functions/src/admin/salesIntelligence/
-    // copy-operations.cjs), so only those inputs can change what they load.
+    // files the build copies into lib (functions/scripts/
+    // copy-operations-runtime.cjs), so only those inputs can change what they load.
     const dynamicInputsChanged = [...changed].some((name) =>
       name.startsWith("functions/src/") && !isNonRuntimeFile(name) ||
       name.startsWith("operations/") || name.startsWith("contracts/"));

@@ -48,12 +48,12 @@ class MapPreview extends StatelessWidget {
                 Icon(CatchIcons.mapOutlined, color: t.ink3, size: CatchIcon.lg),
                 if (fallbackLabel.trim().isNotEmpty) ...[
                   gapH6,
-                  Text(
+                  CatchText(
                     fallbackLabel,
                     maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
-                    style: CatchTextStyles.supporting(context, color: t.ink3),
+                    variant: CatchTextVariant.supporting,
+                    color: t.ink3,
                   ),
                 ],
               ],

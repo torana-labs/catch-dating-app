@@ -18,6 +18,839 @@ const schemaOperationWorkItemSchema = <String, Object?>{
           'normalizedPayload': <String, Object?>{
             'type': 'object',
             'required': <Object?>[
+              'intake',
+            ],
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'required': <Object?>[
+                  'recordType',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'organizer_listing_draft',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'entityKind': <String, Object?>{
+            'const': 'organizer',
+          },
+          'normalizedPayload': <String, Object?>{
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'recordType',
+                  'listing',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'organizer_listing_draft',
+                  },
+                  'listing': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'listingId',
+                      'requestId',
+                      'kind',
+                      'submittedBy',
+                      'submittedAt',
+                      'seed',
+                      'organizer',
+                      'fieldEvidence',
+                      'eventCount',
+                      'pastEventCount',
+                      'pages',
+                      'gaps',
+                      'researchNeeded',
+                      'contentHash',
+                    ],
+                    'properties': <String, Object?>{
+                      'listingId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'requestId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'kind': <String, Object?>{
+                        'enum': <Object?>[
+                          'nomination',
+                          'self_submission',
+                          'discovery',
+                        ],
+                      },
+                      'submittedBy': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'role',
+                          'uid',
+                          'partnerId',
+                        ],
+                        'properties': <String, Object?>{
+                          'role': <String, Object?>{
+                            'enum': <Object?>[
+                              'associate',
+                              'partner',
+                              'organizer',
+                              'system',
+                            ],
+                          },
+                          'uid': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 500,
+                              },
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                            ],
+                          },
+                          'partnerId': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 500,
+                              },
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      'submittedAt': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 10,
+                        'maxLength': 40,
+                      },
+                      'seed': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'name',
+                          'urls',
+                          'notes',
+                          'categories',
+                        ],
+                        'properties': <String, Object?>{
+                          'name': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 500,
+                              },
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                            ],
+                          },
+                          'urls': <String, Object?>{
+                            'type': 'array',
+                            'maxItems': 10,
+                            'items': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                          },
+                          'notes': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 2000,
+                              },
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                            ],
+                          },
+                          'categories': <String, Object?>{
+                            'type': 'array',
+                            'maxItems': 40,
+                            'items': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                            },
+                          },
+                        },
+                      },
+                      'organizer': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'name',
+                          'description',
+                          'imageUrl',
+                          'locality',
+                          'categories',
+                          'links',
+                          'identityKeys',
+                        ],
+                        'properties': <String, Object?>{
+                          'name': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 500,
+                              },
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                            ],
+                          },
+                          'description': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 2000,
+                              },
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                            ],
+                          },
+                          'imageUrl': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 2000,
+                              },
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                            ],
+                          },
+                          'locality': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 500,
+                              },
+                              <String, Object?>{
+                                'type': 'null',
+                              },
+                            ],
+                          },
+                          'categories': <String, Object?>{
+                            'type': 'array',
+                            'maxItems': 40,
+                            'items': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                            },
+                          },
+                          'links': <String, Object?>{
+                            'type': 'array',
+                            'maxItems': 20,
+                            'items': <String, Object?>{
+                              'type': 'object',
+                              'additionalProperties': false,
+                              'required': <Object?>[
+                                'platform',
+                                'surfaceKind',
+                                'url',
+                                'normalizedKey',
+                                'evidenceUrl',
+                              ],
+                              'properties': <String, Object?>{
+                                'platform': <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 500,
+                                },
+                                'surfaceKind': <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 500,
+                                },
+                                'url': <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 2000,
+                                },
+                                'normalizedKey': <String, Object?>{
+                                  'anyOf': <Object?>[
+                                    <String, Object?>{
+                                      'type': 'string',
+                                      'minLength': 1,
+                                      'maxLength': 500,
+                                    },
+                                    <String, Object?>{
+                                      'type': 'null',
+                                    },
+                                  ],
+                                },
+                                'evidenceUrl': <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 2000,
+                                },
+                              },
+                            },
+                          },
+                          'identityKeys': <String, Object?>{
+                            'type': 'array',
+                            'maxItems': 40,
+                            'items': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                            },
+                          },
+                        },
+                      },
+                      'fieldEvidence': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 20,
+                        'items': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'field',
+                            'sourceUrl',
+                            'method',
+                            'adapterId',
+                          ],
+                          'properties': <String, Object?>{
+                            'field': <String, Object?>{
+                              'enum': <Object?>[
+                                'name',
+                                'description',
+                                'imageUrl',
+                                'locality',
+                              ],
+                            },
+                            'sourceUrl': <String, Object?>{
+                              'anyOf': <Object?>[
+                                <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 2000,
+                                },
+                                <String, Object?>{
+                                  'type': 'null',
+                                },
+                              ],
+                            },
+                            'method': <String, Object?>{
+                              'enum': <Object?>[
+                                'adapter',
+                                'nominator',
+                                'agent',
+                              ],
+                            },
+                            'adapterId': <String, Object?>{
+                              'anyOf': <Object?>[
+                                <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 500,
+                                },
+                                <String, Object?>{
+                                  'type': 'null',
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                      'eventCount': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 60,
+                      },
+                      'pastEventCount': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                      },
+                      'pages': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 12,
+                        'items': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'url',
+                            'via',
+                            'platform',
+                            'outcome',
+                            'adapterId',
+                            'pageKind',
+                            'abstainReason',
+                            'snapshotHash',
+                            'capturedAt',
+                          ],
+                          'properties': <String, Object?>{
+                            'url': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                            'via': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                            'platform': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                            },
+                            'outcome': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                            },
+                            'adapterId': <String, Object?>{
+                              'anyOf': <Object?>[
+                                <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 500,
+                                },
+                                <String, Object?>{
+                                  'type': 'null',
+                                },
+                              ],
+                            },
+                            'pageKind': <String, Object?>{
+                              'anyOf': <Object?>[
+                                <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 500,
+                                },
+                                <String, Object?>{
+                                  'type': 'null',
+                                },
+                              ],
+                            },
+                            'abstainReason': <String, Object?>{
+                              'anyOf': <Object?>[
+                                <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 500,
+                                },
+                                <String, Object?>{
+                                  'type': 'null',
+                                },
+                              ],
+                            },
+                            'snapshotHash': <String, Object?>{
+                              'anyOf': <Object?>[
+                                <String, Object?>{
+                                  'type': 'string',
+                                  'pattern': '^[a-f0-9]{64}\$',
+                                },
+                                <String, Object?>{
+                                  'type': 'null',
+                                },
+                              ],
+                            },
+                            'capturedAt': <String, Object?>{
+                              'anyOf': <Object?>[
+                                <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 10,
+                                  'maxLength': 40,
+                                },
+                                <String, Object?>{
+                                  'type': 'null',
+                                },
+                              ],
+                            },
+                          },
+                        },
+                      },
+                      'gaps': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                      'researchNeeded': <String, Object?>{
+                        'type': 'boolean',
+                      },
+                      'contentHash': <String, Object?>{
+                        'type': 'string',
+                        'pattern': '^[a-f0-9]{64}\$',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'type': 'object',
+            'required': <Object?>[
+              'intake',
+            ],
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'required': <Object?>[
+                  'recordType',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'listing_event_candidate',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'entityKind': <String, Object?>{
+            'const': 'event',
+          },
+          'normalizedPayload': <String, Object?>{
+            'properties': <String, Object?>{
+              'intake': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'recordType',
+                  'event',
+                ],
+                'properties': <String, Object?>{
+                  'recordType': <String, Object?>{
+                    'const': 'listing_event_candidate',
+                  },
+                  'event': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'listingId',
+                      'listingWorkItemId',
+                      'requestId',
+                      'eventKey',
+                      'platform',
+                      'sourceEntityId',
+                      'title',
+                      'description',
+                      'startAt',
+                      'endAt',
+                      'timezone',
+                      'venue',
+                      'address',
+                      'locality',
+                      'latitude',
+                      'longitude',
+                      'sourceUrl',
+                      'imageUrl',
+                      'price',
+                      'status',
+                      'attendanceMode',
+                      'organizerName',
+                      'organizerUrl',
+                      'adapterId',
+                      'evidenceFields',
+                      'alsoListedAt',
+                    ],
+                    'properties': <String, Object?>{
+                      'listingId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'listingWorkItemId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 180,
+                        'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                      },
+                      'requestId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'eventKey': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'platform': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'sourceEntityId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'title': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'description': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 2000,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'startAt': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 10,
+                        'maxLength': 40,
+                      },
+                      'endAt': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 10,
+                            'maxLength': 40,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'timezone': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'venue': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'address': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'locality': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'latitude': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'number',
+                            'minimum': -90,
+                            'maximum': 90,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'longitude': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'number',
+                            'minimum': -180,
+                            'maximum': 180,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'sourceUrl': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 2000,
+                      },
+                      'imageUrl': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 2000,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'price': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'object',
+                            'maxProperties': 8,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'status': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'attendanceMode': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'organizerName': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'organizerUrl': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 2000,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'adapterId': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'evidenceFields': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 40,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 500,
+                        },
+                      },
+                      'alsoListedAt': <String, Object?>{
+                        'type': 'array',
+                        'maxItems': 10,
+                        'items': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 2000,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'normalizedPayload': <String, Object?>{
+            'type': 'object',
+            'required': <Object?>[
               'kind',
             ],
             'properties': <String, Object?>{
@@ -4519,6 +5352,767 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                     'maxLength': 2000,
                   },
                 },
+              },
+            },
+          },
+        },
+      },
+    },
+    'organizerListingDraftIntake': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'recordType',
+        'listing',
+      ],
+      'properties': <String, Object?>{
+        'recordType': <String, Object?>{
+          'const': 'organizer_listing_draft',
+        },
+        'listing': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'listingId',
+            'requestId',
+            'kind',
+            'submittedBy',
+            'submittedAt',
+            'seed',
+            'organizer',
+            'fieldEvidence',
+            'eventCount',
+            'pastEventCount',
+            'pages',
+            'gaps',
+            'researchNeeded',
+            'contentHash',
+          ],
+          'properties': <String, Object?>{
+            'listingId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'requestId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'kind': <String, Object?>{
+              'enum': <Object?>[
+                'nomination',
+                'self_submission',
+                'discovery',
+              ],
+            },
+            'submittedBy': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'role',
+                'uid',
+                'partnerId',
+              ],
+              'properties': <String, Object?>{
+                'role': <String, Object?>{
+                  'enum': <Object?>[
+                    'associate',
+                    'partner',
+                    'organizer',
+                    'system',
+                  ],
+                },
+                'uid': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'partnerId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+              },
+            },
+            'submittedAt': <String, Object?>{
+              'type': 'string',
+              'minLength': 10,
+              'maxLength': 40,
+            },
+            'seed': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'name',
+                'urls',
+                'notes',
+                'categories',
+              ],
+              'properties': <String, Object?>{
+                'name': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'urls': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 10,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 2000,
+                  },
+                },
+                'notes': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 2000,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'categories': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 40,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 500,
+                  },
+                },
+              },
+            },
+            'organizer': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'name',
+                'description',
+                'imageUrl',
+                'locality',
+                'categories',
+                'links',
+                'identityKeys',
+              ],
+              'properties': <String, Object?>{
+                'name': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'description': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 2000,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'imageUrl': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 2000,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'locality': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'categories': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 40,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 500,
+                  },
+                },
+                'links': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 20,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'platform',
+                      'surfaceKind',
+                      'url',
+                      'normalizedKey',
+                      'evidenceUrl',
+                    ],
+                    'properties': <String, Object?>{
+                      'platform': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'surfaceKind': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      'url': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 2000,
+                      },
+                      'normalizedKey': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 500,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
+                      'evidenceUrl': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 2000,
+                      },
+                    },
+                  },
+                },
+                'identityKeys': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 40,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 500,
+                  },
+                },
+              },
+            },
+            'fieldEvidence': <String, Object?>{
+              'type': 'array',
+              'maxItems': 20,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'field',
+                  'sourceUrl',
+                  'method',
+                  'adapterId',
+                ],
+                'properties': <String, Object?>{
+                  'field': <String, Object?>{
+                    'enum': <Object?>[
+                      'name',
+                      'description',
+                      'imageUrl',
+                      'locality',
+                    ],
+                  },
+                  'sourceUrl': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 2000,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'method': <String, Object?>{
+                    'enum': <Object?>[
+                      'adapter',
+                      'nominator',
+                      'agent',
+                    ],
+                  },
+                  'adapterId': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            'eventCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 60,
+            },
+            'pastEventCount': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+            },
+            'pages': <String, Object?>{
+              'type': 'array',
+              'maxItems': 12,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'url',
+                  'via',
+                  'platform',
+                  'outcome',
+                  'adapterId',
+                  'pageKind',
+                  'abstainReason',
+                  'snapshotHash',
+                  'capturedAt',
+                ],
+                'properties': <String, Object?>{
+                  'url': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 2000,
+                  },
+                  'via': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 2000,
+                  },
+                  'platform': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 500,
+                  },
+                  'outcome': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 500,
+                  },
+                  'adapterId': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'pageKind': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'abstainReason': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 500,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'snapshotHash': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'pattern': '^[a-f0-9]{64}\$',
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                  'capturedAt': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'string',
+                        'minLength': 10,
+                        'maxLength': 40,
+                      },
+                      <String, Object?>{
+                        'type': 'null',
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+            'gaps': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+            'researchNeeded': <String, Object?>{
+              'type': 'boolean',
+            },
+            'contentHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+        },
+      },
+    },
+    'listingEventCandidateIntake': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'recordType',
+        'event',
+      ],
+      'properties': <String, Object?>{
+        'recordType': <String, Object?>{
+          'const': 'listing_event_candidate',
+        },
+        'event': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'listingId',
+            'listingWorkItemId',
+            'requestId',
+            'eventKey',
+            'platform',
+            'sourceEntityId',
+            'title',
+            'description',
+            'startAt',
+            'endAt',
+            'timezone',
+            'venue',
+            'address',
+            'locality',
+            'latitude',
+            'longitude',
+            'sourceUrl',
+            'imageUrl',
+            'price',
+            'status',
+            'attendanceMode',
+            'organizerName',
+            'organizerUrl',
+            'adapterId',
+            'evidenceFields',
+            'alsoListedAt',
+          ],
+          'properties': <String, Object?>{
+            'listingId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'listingWorkItemId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'requestId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'eventKey': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'platform': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'sourceEntityId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 500,
+            },
+            'title': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'description': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 2000,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'startAt': <String, Object?>{
+              'type': 'string',
+              'minLength': 10,
+              'maxLength': 40,
+            },
+            'endAt': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 10,
+                  'maxLength': 40,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'timezone': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'venue': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'address': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'locality': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'latitude': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'number',
+                  'minimum': -90,
+                  'maximum': 90,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'longitude': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'number',
+                  'minimum': -180,
+                  'maximum': 180,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'sourceUrl': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 2000,
+            },
+            'imageUrl': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 2000,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'price': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'maxProperties': 8,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'status': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'attendanceMode': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'organizerName': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'organizerUrl': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 2000,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'adapterId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'evidenceFields': <String, Object?>{
+              'type': 'array',
+              'maxItems': 40,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 500,
+              },
+            },
+            'alsoListedAt': <String, Object?>{
+              'type': 'array',
+              'maxItems': 10,
+              'items': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 2000,
               },
             },
           },

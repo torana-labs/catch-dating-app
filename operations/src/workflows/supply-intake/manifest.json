@@ -1,8 +1,10 @@
 {
   "schemaVersion": 1,
   "workflowId": "supply-intake",
-  "version": "0.6.0",
-  "executionModes": ["shadow"],
+  "version": "0.7.0",
+  "executionModes": [
+    "shadow"
+  ],
   "capabilities": {
     "network": true,
     "modelCalls": true,
@@ -22,13 +24,35 @@
     "discovery",
     "export-admin"
   ],
-  "primaryStages": ["incoming", "verify", "resolve", "ready"],
-  "entityKinds": ["event", "organizer", "source_result", "source_profile"],
+  "primaryStages": [
+    "incoming",
+    "verify",
+    "resolve",
+    "ready"
+  ],
+  "entityKinds": [
+    "event",
+    "organizer",
+    "source_result",
+    "source_profile"
+  ],
   "allowedTransitions": {
-    "incoming": ["verify", "resolve", "ready"],
-    "verify": ["resolve", "ready"],
-    "resolve": ["verify", "ready"],
-    "ready": ["resolve"]
+    "incoming": [
+      "verify",
+      "resolve",
+      "ready"
+    ],
+    "verify": [
+      "resolve",
+      "ready"
+    ],
+    "resolve": [
+      "verify",
+      "ready"
+    ],
+    "ready": [
+      "resolve"
+    ]
   },
   "lifecycleStatuses": [
     "active",
@@ -39,11 +63,24 @@
     "taken_down"
   ],
   "lifecycleSemantics": {
-    "activeStatuses": ["active"],
-    "publishedStatuses": ["published"],
-    "expiredStatuses": ["expired"]
+    "activeStatuses": [
+      "active"
+    ],
+    "publishedStatuses": [
+      "published"
+    ],
+    "expiredStatuses": [
+      "expired"
+    ]
   },
   "maxWorkItemsPerRun": 10000,
-  "sourceProfiles": ["cntraveller", "luma"],
+  "sourceProfiles": [
+    "cntraveller",
+    "district",
+    "luma",
+    "open-graph",
+    "schema-org-event",
+    "urbanaut"
+  ],
   "compatibilityInputs": []
 }

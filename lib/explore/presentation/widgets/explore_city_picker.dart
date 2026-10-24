@@ -211,12 +211,10 @@ class CityOptionTile extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
+                  child: CatchText(
                     city.label,
-                    style: CatchTextStyles.bodyL(
-                      context,
-                      color: selected ? t.primary : t.ink,
-                    ),
+                    variant: CatchTextVariant.bodyL,
+                    color: selected ? t.primary : t.ink,
                   ),
                 ),
                 if (selected)

@@ -537,7 +537,6 @@ abstract final class CatchLayout {
   static const double statusBarTopPadding = CatchSpacing.micro14;
   static const double statusBarHorizontalPadding = CatchSpacing.s7;
   static const double statusBarBottomPadding = CatchSpacing.micro6;
-  static const double statusBarTimeFontSize = 14.0;
   static const double statusBarIconSize = 14.0;
   static const double statusBarIconGap = CatchSpacing.micro6;
   static const double tabBarExtent = 64.0;

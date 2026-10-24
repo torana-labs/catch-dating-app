@@ -1,0 +1,282 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const supplyIntakeRequestSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/supply_intake_request.schema.json",
+  "title": "SupplyIntakeRequest",
+  "description": "One request to build an organizer listing and collect that organizer's events. Every front door (a sales associate or partner nomination, an organizer's own submission, or an Admin-started discovery run) creates one; Supply Intake gathers, reviews and stages the result for staff.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "requestId",
+    "kind",
+    "market",
+    "seed",
+    "submittedBy",
+    "submittedAt",
+    "origin"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,159}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "nomination",
+        "self_submission",
+        "discovery"
+      ]
+    },
+    "market": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    },
+    "seed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "urls",
+        "notes",
+        "categories"
+      ],
+      "properties": {
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "urls": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "pattern": "^https?://"
+          }
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2000
+        },
+        "categories": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,59}$"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "name": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "urls": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "submittedBy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "uid",
+        "partnerId"
+      ],
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": [
+            "associate",
+            "partner",
+            "organizer",
+            "system"
+          ]
+        },
+        "uid": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "partnerId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "submittedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "origin": {
+      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "id"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "admin_nomination",
+                "sales_inbound_intent",
+                "discovery_run"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "discovery"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "role": {
+                "const": "system"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "self_submission"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "role": {
+                "const": "organizer"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "nomination"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "associate",
+                  "partner"
+                ]
+              },
+              "uid": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "role": {
+                "const": "partner"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "partnerId": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "partnerId": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+} as const;

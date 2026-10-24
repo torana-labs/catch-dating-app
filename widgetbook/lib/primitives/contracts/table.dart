@@ -17,11 +17,11 @@ List<Widget> widgetbookTableRows(
   bool longCopy = false,
 }) {
   final t = CatchTokens.of(context);
-  Text cell(String value) => Text(
+  CatchText cell(String value) => CatchText(
     value,
     maxLines: 1,
-    overflow: TextOverflow.ellipsis,
-    style: CatchTextStyles.name(context),
+    variant: CatchTextVariant.sectionTitle,
+    color: CatchTokens.of(context).ink,
   );
   Text meta(String value) =>
       Text(value, style: CatchTextStyles.supporting(context, color: t.ink2));

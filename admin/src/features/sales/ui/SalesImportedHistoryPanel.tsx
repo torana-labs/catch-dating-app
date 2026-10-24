@@ -6,6 +6,7 @@ import {useSalesHistoryController} from
   "../controllers/useSalesHistoryController";
 import type {SalesImportedHistoryRecord} from
   "../api/salesHistoryTypes";
+import {CatchText} from "@catch/web-ui";
 
 function dateLabel(record: SalesImportedHistoryRecord): string {
   return record.dateCertainty === "source_exact" && record.occurredAt ?
@@ -24,9 +25,9 @@ function SalesImportedHistoryPanel({organizerId, actorUid}: {
   reviewNeeded: rows.filter((row) =>
     row.disposition === "review_needed").length};
   return <Panel title="Imported source history" icon={<History size={18} />}>
-    <p>Historical spreadsheet material only. It does not establish a current
+    <CatchText as="p" variant="supporting">Historical spreadsheet material only. It does not establish a current
       fit score, contact permission, message delivery, or a current next step.
-      Unknown source dates remain unknown.</p>
+      Unknown source dates remain unknown.</CatchText>
     {c.rows.isPending || c.records.isPending ?
       <EmptyState>Loading private imported history…</EmptyState> : null}
     {c.rows.isError || c.records.isError ? <EmptyState>
@@ -36,10 +37,10 @@ function SalesImportedHistoryPanel({organizerId, actorUid}: {
       }}>Try again</AdminButton>
     </EmptyState> : null}
     {c.rows.isSuccess ? <>
-      <p role="status">This row page: {counts.promoted} promoted, {counts.skipped}
+      <CatchText as="p" variant="supporting" role="status">This row page: {counts.promoted} promoted, {counts.skipped}
         {" "}skipped, {counts.reviewNeeded} need review. These are page counts,
         not source-wide totals. Rows without reviewed canonical identity remain
-        in the private migration plan.</p>
+        in the private migration plan.</CatchText>
       {rows.length ? <ul>{rows.map((row) => <li key={row.rowId}>
         <strong>{row.disposition.replaceAll("_", " ")}</strong> ·
         {" "}{row.reason} · source row <code>{row.sourceRowId}</code> ·
@@ -82,8 +83,8 @@ export function renderSalesImportedHistory(organizerId: string,
   actorUid: string) {
   return dataMode() === "sample" ?
     <Panel title="Imported source history" icon={<History size={18} />}>
-      <p>Imported source history is available only with live private Sales
-        records. Sample hosts have no imported history.</p>
+      <CatchText as="p" variant="supporting">Imported source history is available only with live private Sales
+        records. Sample hosts have no imported history.</CatchText>
     </Panel> : <SalesImportedHistoryPanel
       key={`${actorUid}:${organizerId}`} organizerId={organizerId}
       actorUid={actorUid} />;

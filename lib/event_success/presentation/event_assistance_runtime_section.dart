@@ -134,17 +134,17 @@ class _EventAssistanceRuntimeSectionState
           style: Theme.of(context).textTheme.titleLarge,
         ),
         gapH12,
-        Text(
+        CatchText(
           l.eventAssistanceRuntimeBody,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (saved) ...[
           gapH12,
-          Text(
+          CatchText(
             widget.view.runtime?.status == AssistanceRuntimeRecordStatus.paused
                 ? l.eventAssistanceRuntimePauseSaved
                 : l.eventAssistanceRuntimeSaved,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         gapH16,
@@ -168,28 +168,28 @@ class _EventAssistanceRuntimeSectionState
               ][entry.$1],
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            Text(
+            CatchText(
               _senderSummary(entry.$2),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
             gapH12,
           ],
         gapH12,
-        Text(
+        CatchText(
           '${l.eventAssistanceRuntimeUntil}: ${lateJoinTimeLabel(context, value.expiresAt)}',
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
-        Text(
+        CatchText(
           value.responseDeadline == null
               ? l.eventAssistanceRuntimeNoDeadline
               : '${l.eventAssistanceRuntimeDeadline}: ${lateJoinTimeLabel(context, value.responseDeadline!)}',
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (value.laterChoices?.isNotEmpty ?? false) ...[
           gapH8,
-          Text(
+          CatchText(
             l.eventAssistanceRuntimeRetainedChoices,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         if (_canConfigure) ...[
@@ -212,9 +212,9 @@ class _EventAssistanceRuntimeSectionState
         ],
         if (issue != null && _canConfigure) ...[
           gapH12,
-          Text(
+          CatchText(
             runtimeIssueLabel(l, issue),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         if (widget.error != null) ...[
@@ -223,9 +223,9 @@ class _EventAssistanceRuntimeSectionState
         ],
         if (widget.phase == EventAssistanceRuntimePhase.retryRequired) ...[
           gapH12,
-          Text(
+          CatchText(
             l.eventAssistanceRuntimeRetryBody,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           CatchButton(
             key: const ValueKey('runtime.retry'),
@@ -238,9 +238,9 @@ class _EventAssistanceRuntimeSectionState
                 !widget.canChooseSenders &&
                 widget.loadingRoute == null) ...[
           gapH12,
-          Text(
+          CatchText(
             l.eventAssistanceRuntimeReloadBody,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           CatchButton(
             label: l.eventAssistanceLateJoinReload,

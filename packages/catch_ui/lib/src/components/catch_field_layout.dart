@@ -74,10 +74,18 @@ final class CatchRecordLayout extends CatchFieldLayout {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(title, style: CatchTextStyles.recordTitle(context)),
+      CatchText(
+        title,
+        variant: CatchTextVariant.sectionTitle,
+        color: CatchTokens.of(context).ink,
+      ),
       if (metadata case final text? when text.isNotEmpty) ...[
         const SizedBox(height: CatchRecordTokens.titleGap),
-        Text(text, style: CatchTextStyles.recordContext(context)),
+        CatchText(
+          text,
+          variant: CatchTextVariant.bodyS,
+          color: CatchTokens.of(context).ink2,
+        ),
       ],
       for (final fact in facts.where((text) => text.isNotEmpty)) ...[
         const SizedBox(height: CatchRecordTokens.titleGap),
@@ -85,7 +93,7 @@ final class CatchRecordLayout extends CatchFieldLayout {
       ],
       if (description case final text? when text.isNotEmpty) ...[
         const SizedBox(height: CatchRecordTokens.bodyGap),
-        Text(text, style: CatchTextStyles.recordBody(context)),
+        Text(text, style: CatchTextStyles.bodyL(context)),
       ],
     ],
   );
@@ -188,7 +196,13 @@ final class CatchPersonLayout extends CatchFieldLayout {
           builder: (context, constraints) => Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: Text(name, style: CatchTextStyles.name(context))),
+              Expanded(
+                child: CatchText(
+                  name,
+                  variant: CatchTextVariant.sectionTitle,
+                  color: CatchTokens.of(context).ink,
+                ),
+              ),
               if (badges.isNotEmpty && !stacked) ...[
                 const SizedBox(width: CatchSpacing.s2),
                 ConstrainedBox(
@@ -209,11 +223,19 @@ final class CatchPersonLayout extends CatchFieldLayout {
         ],
         if (this.context case final text? when text.isNotEmpty) ...[
           const SizedBox(height: CatchRecordTokens.titleGap),
-          Text(text, style: CatchTextStyles.recordContext(context)),
+          CatchText(
+            text,
+            variant: CatchTextVariant.bodyS,
+            color: CatchTokens.of(context).ink2,
+          ),
         ],
         for (final fact in facts) ...[
           const SizedBox(height: CatchRecordTokens.titleGap),
-          Text(fact, style: CatchTextStyles.recordContext(context)),
+          CatchText(
+            fact,
+            variant: CatchTextVariant.bodyS,
+            color: CatchTokens.of(context).ink2,
+          ),
         ],
         if (badges.isNotEmpty && stacked) ...[
           const SizedBox(height: CatchRecordTokens.bodyGap),
@@ -283,12 +305,20 @@ final class CatchConversationLayout extends CatchFieldLayout {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(name, style: CatchTextStyles.name(context)),
+      CatchText(
+        name,
+        variant: CatchTextVariant.sectionTitle,
+        color: CatchTokens.of(context).ink,
+      ),
       const SizedBox(height: CatchRecordTokens.titleGap),
-      Text(preview, style: CatchTextStyles.chatPreview(context)),
+      CatchText(preview, variant: CatchTextVariant.supporting),
       if (this.context case final text? when text.isNotEmpty) ...[
         const SizedBox(height: CatchRecordTokens.titleGap),
-        Text(text, style: CatchTextStyles.recordContext(context)),
+        CatchText(
+          text,
+          variant: CatchTextVariant.bodyS,
+          color: CatchTokens.of(context).ink2,
+        ),
       ],
       if (timestamp != null || activityLabel != null) ...[
         const SizedBox(height: CatchRecordTokens.titleGap),
@@ -297,7 +327,11 @@ final class CatchConversationLayout extends CatchFieldLayout {
           runSpacing: CatchSpacing.s2,
           children: [
             if (timestamp case final text?)
-              Text(text, style: CatchTextStyles.recordContext(context)),
+              CatchText(
+                text,
+                variant: CatchTextVariant.bodyS,
+                color: CatchTokens.of(context).ink2,
+              ),
             if (activityLabel case final text?)
               Semantics(
                 label: activitySemantics,

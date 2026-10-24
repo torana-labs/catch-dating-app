@@ -19,12 +19,24 @@ class HostResponseAnswerRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: CatchTextStyles.recordTitle(context)),
+          CatchText(
+            label,
+            variant: CatchTextVariant.sectionTitle,
+            color: CatchTokens.of(context).ink,
+          ),
           gapH8,
-          Text(answer, style: CatchTextStyles.recordBody(context)),
+          CatchText(
+            answer,
+            variant: CatchTextVariant.bodyL,
+            color: CatchTokens.of(context).ink,
+          ),
           if (origin != null) ...[
             gapH8,
-            Text(origin!, style: CatchTextStyles.recordContext(context)),
+            CatchText(
+              origin!,
+              variant: CatchTextVariant.bodyS,
+              color: CatchTokens.of(context).ink2,
+            ),
           ],
         ],
       ),

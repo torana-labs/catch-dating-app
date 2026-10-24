@@ -49,6 +49,14 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
   assert.ok(JSON.parse(association.text).applinks);
   return {sourceSha, base, checks: evidence};
 }
+/**
+ * The release a deployment must serve. Promotion runs on main's head but
+ * releases the accepted preview's source (RELEASE_SHA); a preview releases
+ * the commit it runs on.
+ */
+export function expectedRelease(env) {
+  return env.RELEASE_SHA || env.GITHUB_SHA;
+}
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  console.log(JSON.stringify(await verifyDeployedWebsite(process.argv[2], process.env.GITHUB_SHA), null, 2));
+  console.log(JSON.stringify(await verifyDeployedWebsite(process.argv[2], expectedRelease(process.env)), null, 2));
 }

@@ -48,14 +48,14 @@ class _EventAssistanceCheckpointVisitsSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        CatchText(
           l10n.eventAssistanceCheckpointVisitsTitle,
-          style: CatchTextStyles.titleL(context),
+          variant: CatchTextVariant.titleL,
         ),
         gapH8,
-        Text(
+        CatchText(
           l10n.eventAssistanceCheckpointVisitsBody,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         if (unconfirmed.length > 12) ...[
           gapH8,
@@ -72,9 +72,9 @@ class _EventAssistanceCheckpointVisitsSectionState
           ),
         ],
         if (matches.isEmpty)
-          Text(
+          CatchText(
             l10n.eventAssistanceDepartureNoGuests,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         if (matches.isNotEmpty)
           CatchSection.containedRows(

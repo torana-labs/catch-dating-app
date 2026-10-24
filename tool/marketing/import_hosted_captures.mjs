@@ -20,6 +20,14 @@ const digest = bytes => `sha256:${crypto.createHash("sha256").update(bytes).dige
 const json = value => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
 const sha = value => typeof value === "string" && /^[a-f0-9]{40}$/u.test(value);
 const positive = value => typeof value === "string" && /^[1-9][0-9]*$/u.test(value) && Number.isSafeInteger(Number(value));
+// The reusable marketing-captures.yml jobs that produce a bundle; exactly one
+// runs. Callers prefix them as "<job> / <name>".
+export const CAPTURE_PRODUCER_JOBS = Object.freeze([
+  "Render and validate canonical iPhone captures",
+  "Reuse validated canonical iPhone captures",
+]);
+const isProducerJob = name => typeof name === "string" &&
+  CAPTURE_PRODUCER_JOBS.some(producer => name === producer || name.endsWith(` / ${producer}`));
 
 export function validateBinding(binding) {
   assert.match(binding?.repository ?? "", /^[\w.-]+\/[\w.-]+$/u, "Invalid capture repository.");
@@ -32,7 +40,26 @@ export function validateBinding(binding) {
   assert.match(binding.artifactDigest ?? "", /^sha256:[a-f0-9]{64}$/u, "Invalid capture artifact digest.");
 }
 
-export function verifyArtifactMetadata({binding, artifact, repositoryId, run, workflow}) {
+/**
+ * The one successful capture job in the binding's exact attempt that was
+ * running when the artifact was created. A newer merge to main cancels the
+ * older main CI run (ci.yml concurrency) after its captures may already be
+ * complete; the job, not the run, is then the evidence.
+ */
+export function selectCaptureProducerJob({jobs, binding, artifact}) {
+  assert.ok(Array.isArray(jobs), "Missing capture run jobs.");
+  const created = Date.parse(artifact?.created_at);
+  assert.ok(Number.isFinite(created), "Missing capture artifact creation time.");
+  const producers = jobs.filter(job => isProducerJob(job?.name));
+  const matches = producers.filter(job => job.run_id === Number(binding.runId) &&
+    job.run_attempt === Number(binding.runAttempt) && job.head_sha === binding.runHeadSha &&
+    job.status === "completed" && job.conclusion === "success" &&
+    Date.parse(job.started_at) <= created && created <= Date.parse(job.completed_at));
+  assert.equal(matches.length, 1, "Capture run was cancelled before its capture job succeeded.");
+  return matches[0];
+}
+
+export function verifyArtifactMetadata({binding, artifact, repositoryId, run, workflow, producerJob = null}) {
   validateBinding(binding);
   assert.ok(Number.isSafeInteger(repositoryId) && repositoryId > 0, "Invalid repository id.");
   assert.equal(artifact?.id, Number(binding.artifactId), "Wrong capture artifact id.");
@@ -52,30 +79,41 @@ export function verifyArtifactMetadata({binding, artifact, repositoryId, run, wo
   assert.ok(Number.isSafeInteger(workflow?.id) && workflow.id > 0, "Missing canonical capture workflow.");
   assert.equal(workflow.path, workflowPath, "Wrong canonical capture workflow path.");
   assert.equal(run.workflow_id, workflow.id, "Wrong capture workflow generation.");
-  assert.ok(!["failure", "cancelled", "timed_out", "action_required"].includes(run.conclusion), "Capture run failed or was cancelled.");
+  assert.ok(!["failure", "timed_out", "action_required"].includes(run.conclusion), "Capture run failed.");
+  if (run.conclusion === "cancelled") {
+    assert.ok(producerJob, "Capture run was cancelled; its successful capture job is required evidence.");
+    assert.equal(selectCaptureProducerJob({jobs: [producerJob], binding, artifact}), producerJob);
+  }
 }
 
 // Python's standard ZIP reader checks local names, decompression bounds/overlap
 // and CRCs. Read only the complete allowlist into memory; never extract paths.
-export function readCaptureArchive(bytes, expectedNames) {
+// `exact` (a bundle to import) requires exactly the expected files. Otherwise
+// (an earlier bundle offering seeds) every entry is still checked, but only the
+// expected ones that are present are returned.
+export function readCaptureArchive(bytes, expectedNames, {exact = true} = {}) {
   assert.ok(Buffer.isBuffer(bytes) && bytes.length <= maxBytes && bytes.subarray(0, 4).equals(Buffer.from("PK\x03\x04")), "Invalid capture ZIP.");
-  assert.equal(expectedNames.length, 28, "Expected 27 capture files plus their receipt.");
-  assert.equal(new Set(expectedNames).size, 28, "Duplicate expected capture paths.");
+  // The manifest, design context and website manifest, two copies of each
+  // capture, and the receipt.
+  if (exact) assert.ok(expectedNames.length >= 6 && expectedNames.length % 2 === 0, "Expected capture files plus their receipt.");
+  assert.equal(new Set(expectedNames).size, expectedNames.length, "Duplicate expected capture paths.");
   const script = `import base64, io, json, stat, sys, zipfile
 allowed = json.loads(sys.argv[1])
+exact = sys.argv[2] == 'exact'
 with zipfile.ZipFile(io.BytesIO(sys.stdin.buffer.read())) as archive:
     entries = archive.infolist()
     names = [entry.filename for entry in entries]
-    assert len(names) == len(allowed) and len(set(names)) == len(names) and set(names) == set(allowed), 'Unexpected, missing or duplicate capture ZIP paths'
+    assert len(set(names)) == len(names), 'Duplicate capture ZIP paths'
+    assert not exact or (len(names) == len(allowed) and set(names) == set(allowed)), 'Unexpected, missing or duplicate capture ZIP paths'
     assert sum(entry.file_size for entry in entries) <= 128 * 1024 * 1024, 'Capture ZIP is too large'
     for entry in entries:
         assert not entry.is_dir() and not entry.flag_bits & 1, 'Directory or encrypted capture ZIP entry'
         assert stat.S_IFMT(entry.external_attr >> 16) in (0, stat.S_IFREG), 'Non-regular capture ZIP entry'
         assert entry.file_size <= 16 * 1024 * 1024, 'Capture ZIP entry is too large'
         assert not entry.filename.startswith('/') and '\\\\' not in entry.filename and all(part not in ('', '.', '..') for part in entry.filename.split('/')), 'Unsafe capture ZIP path'
-    print(json.dumps({entry.filename: base64.b64encode(archive.read(entry)).decode('ascii') for entry in entries}))
+    print(json.dumps({entry.filename: base64.b64encode(archive.read(entry)).decode('ascii') for entry in entries if entry.filename in allowed}))
 `;
-  const result = spawnSync("python3", ["-c", script, JSON.stringify(expectedNames)],
+  const result = spawnSync("python3", ["-c", script, JSON.stringify(expectedNames), exact ? "exact" : "subset"],
     {input: bytes, maxBuffer: maxBytes * 2, timeout: 30_000});
   assert.equal(result.status, 0, result.stderr?.toString() || "Cannot verify capture ZIP.");
   return new Map(Object.entries(JSON.parse(result.stdout)).map(([file, value]) => [file, Buffer.from(value, "base64")]));
@@ -120,13 +158,33 @@ function verifyFiles({files, binding}, {built = false, toolChecks = false} = {})
   const sourceRoots = ["lib", "website/src", "website/public", "admin/src", "tool", "test", "design", "contracts", "docs", "assets",
     ":(glob)apps/*/lib/**", ":(glob)packages/*/lib/**", ":(glob)packages/*/src/**"];
   const untracked = execute("git", ["ls-files", "--others", "-z", "--", ...sourceRoots]).split("\0").filter(Boolean);
-  // Tools bootstraps this standalone analyzer package after strict import.
-  // These are its only generated dependency outputs; authored files and every
+  // Tools bootstraps this standalone analyzer package, and installs the pinned
+  // import-graph tool (npm ci --prefix tool/impact), after strict import. These
+  // are their only generated dependency outputs; authored files and every
   // actual capture input remain checked against the source and capture hashes.
+  const impactModules = "tool/impact/node_modules";
   const bootstrapOutput = file => file.startsWith("tool/widget_dedupe/.dart_tool/") ||
-    file === "tool/widget_dedupe/pubspec.lock";
+    file === "tool/widget_dedupe/pubspec.lock" || file.startsWith(`${impactModules}/`);
   if (toolChecks) {
-    for (const file of untracked.filter(bootstrapOutput)) destination(file);
+    const installed = untracked.filter(file => file.startsWith(`${impactModules}/`));
+    if (installed.length) {
+      let directory = fromRepo(".");
+      for (const segment of impactModules.split("/")) {
+        directory = path.join(directory, segment);
+        const stat = fs.lstatSync(directory);
+        assert.ok(stat.isDirectory() && !stat.isSymbolicLink(), `Bootstrap install is not a plain directory: ${impactModules}`);
+      }
+    }
+    for (const file of untracked.filter(bootstrapOutput)) {
+      if (!file.startsWith(`${impactModules}/`)) {
+        destination(file);
+        continue;
+      }
+      // npm links package binaries under node_modules/.bin; each must stay inside.
+      const real = fs.realpathSync(fromRepo(file));
+      assert.ok(real.startsWith(`${fs.realpathSync(fromRepo(impactModules))}${path.sep}`),
+        `Bootstrap output escapes its install: ${file}`);
+    }
   }
   assert.deepEqual(untracked.filter(file => !(toolChecks && bootstrapOutput(file))), [],
     "Untracked consumer source cannot enter the website build.");
@@ -156,7 +214,14 @@ function verifyFiles({files, binding}, {built = false, toolChecks = false} = {})
   assert.equal(receipt.exporterSha256, digest(Buffer.from(execute("git", ["show", `${binding.workflowSha}:tool/marketing/export_hosted_captures.mjs`]))).slice(7), "Wrong exporter controller bytes.");
   const pins = fs.readFileSync(fromRepo("tool/ci/toolchain.env"), "utf8");
   assert.equal(receipt.toolchain?.node?.replace(/^v/u, "").split(".")[0], pins.match(/^NODE_VERSION=(.+)$/mu)?.[1], "Wrong capture Node toolchain.");
-  assert.equal(receipt.toolchain?.flutter?.frameworkVersion, pins.match(/^FLUTTER_VERSION=(.+)$/mu)?.[1], "Wrong capture Flutter toolchain.");
+  assert.ok(["render", "reuse"].includes(receipt.mode), "Unknown capture export mode.");
+  if (receipt.mode === "render") {
+    assert.equal(receipt.toolchain?.flutter?.frameworkVersion, pins.match(/^FLUTTER_VERSION=(.+)$/mu)?.[1], "Wrong capture Flutter toolchain.");
+  } else {
+    // The Flutter pin is a render input, so a reused PNG already proves it.
+    assert.equal(receipt.toolchain?.flutter, null, "A reuse bundle records no renderer.");
+    assert.ok(receipt.captures?.every(c => c.disposition === "reused"), "A reuse bundle cannot contain renders.");
+  }
   assert.ok(files.get(manifestPath).equals(context.manifestBytes), "Authored capture manifest differs from consumer source.");
   assert.deepEqual(receipt.files?.map(file => file.path).sort(), context.expectedNames.filter(file => file !== "capture-receipt.json").sort(), "Incomplete or duplicate receipt inventory.");
   for (const file of receipt.files) {
@@ -203,12 +268,23 @@ export async function downloadCaptureArtifact({binding, request = githubRequest}
   const artifact = await request(`${base}/actions/artifacts/${binding.artifactId}`);
   const workflowFile = binding.workflowRef.split("/.github/workflows/")[1].split("@")[0];
   const workflow = await request(`${base}/actions/workflows/${workflowFile}`);
+  let producerJob = null;
+  const producerFor = async (candidate) => {
+    if (candidate?.conclusion !== "cancelled") return null;
+    if (!producerJob) {
+      const page = await request(`${base}/actions/runs/${binding.runId}/attempts/${binding.runAttempt}/jobs?per_page=100`);
+      assert.ok(Array.isArray(page?.jobs) && page.total_count === page.jobs.length, "Incomplete capture run job listing.");
+      producerJob = selectCaptureProducerJob({jobs: page.jobs, binding, artifact});
+    }
+    return producerJob;
+  };
   const run = await request(`${base}/actions/runs/${binding.runId}`);
-  verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run, workflow});
+  verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run, workflow, producerJob: await producerFor(run)});
   const bytes = await request(`${base}/actions/artifacts/${binding.artifactId}/zip`, {binary: true});
   assert.equal(digest(bytes), binding.artifactDigest, "Downloaded capture ZIP digest differs.");
   const current = await request(`${base}/actions/runs/${binding.runId}`);
-  verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run: current, workflow});
+  verifyArtifactMetadata({binding, artifact, repositoryId: repository.id, run: current, workflow,
+    producerJob: await producerFor(current)});
   return bytes;
 }
 
@@ -273,7 +349,7 @@ export function verifyBuiltCaptureBytes({binding}) {
     const target = file.replace("website/public/", "website/dist/");
     assert.ok(fs.readFileSync(destination(target)).equals(files.get(file)), `Built website capture differs from verified input: ${file}`);
   }
-  return {sourceSha: binding.sourceSha, artifactId: binding.artifactId, verifiedFiles: 13};
+  return {sourceSha: binding.sourceSha, artifactId: binding.artifactId, verifiedFiles: context.captures.length + 1};
 }
 
 if (process.argv[1] && fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {

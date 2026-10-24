@@ -961,6 +961,16 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Supply Intake requests and the monthly page-fetch ledger belong to
+    // the trusted worker; front doors write requests through callables.
+    match /supplyIntakeRequests/{requestId} {
+      allow read, write: if false;
+    }
+
+    match /supplyIntakeUsage/{monthKey} {
+      allow read, write: if false;
+    }
+
     // Remote monitor receipts for authenticated admin CLI executions. Only
     // role-gated Admin SDK callables may create, advance, or list them.
     match /adminActionExecutions/{executionId} {

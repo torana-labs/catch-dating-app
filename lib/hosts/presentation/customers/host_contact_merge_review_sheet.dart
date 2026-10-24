@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -102,9 +103,9 @@ class _HostContactMergeReviewSheetState
             ],
             if (_dismissed.isNotEmpty) ...[
               gapH8,
-              Text(
+              CatchText(
                 context.l10n.hostCustomersDismissedDuplicates,
-                style: CatchTextStyles.sectionTitle(context),
+                variant: CatchTextVariant.sectionTitle,
               ),
               gapH12,
               for (final candidate in _dismissed) ...[
@@ -183,32 +184,36 @@ class _HostContactMergeCandidateCardState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (final contact in candidate.contacts) ...[
-            Text(contact.displayName, style: CatchTextStyles.name(context)),
+            CatchText(
+              contact.displayName,
+              variant: CatchTextVariant.sectionTitle,
+              color: CatchTokens.of(context).ink,
+            ),
             if (contact.phoneE164 != null)
-              Text(
+              CatchText(
                 contact.phoneE164!,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             if (contact.email != null)
-              Text(contact.email!, style: CatchTextStyles.supporting(context)),
-            Text(
+              CatchText(contact.email!, variant: CatchTextVariant.supporting),
+            CatchText(
               _sourceLabel(context, contact.primarySource),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
             gapH12,
           ],
-          Text(
+          CatchText(
             candidate.matchKinds
                 .map((kind) => _matchKindLabel(context, kind))
                 .join(' · '),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           gapH4,
-          Text(
+          CatchText(
             context.l10n.hostCustomersMergeSharedEvents(
               count: candidate.sharedEventCount,
             ),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           gapH12,
           Wrap(
@@ -339,17 +344,18 @@ class _HostDismissedMergeCandidateCardState
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           widget.candidate.contacts
               .map((contact) => contact.displayName)
               .join(' · '),
-          style: CatchTextStyles.name(context),
+          variant: CatchTextVariant.sectionTitle,
+          color: CatchTokens.of(context).ink,
         ),
         if (!widget.candidate.canReopen) ...[
           gapH4,
-          Text(
+          CatchText(
             context.l10n.hostCustomersReopenOwnerOnly,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         gapH12,

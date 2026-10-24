@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {CheckCircle2, FileWarning, Lock} from "lucide-react";
 import {
   AdminButton,
@@ -133,7 +133,7 @@ function OrganizerPromotionExecutionView({
                 <AdminEyebrow>
                   {phase.executionMode.replaceAll("_", " ")}
                 </AdminEyebrow>
-                <h3>{phase.label}</h3>
+                <CatchText as="h3" variant="sectionTitle">{phase.label}</CatchText>
               </div>
               <StatusChip tone={promotionPhaseTone(phase.status)}>
                 {phase.status.replaceAll("_", " ")}
@@ -258,7 +258,7 @@ function OrganizerPolicyGapRegisterView({
                   <AdminEyebrow>
                     {gap.area} / {gap.decisionOwner}
                   </AdminEyebrow>
-                  <h3>{gap.gapId.replaceAll("_", " ")}</h3>
+                  <CatchText as="h3" variant="sectionTitle">{gap.gapId.replaceAll("_", " ")}</CatchText>
                 </div>
                 <StatusChip tone={gap.status === "ready" ? "ready" : ""}>
                   {gap.severity}
@@ -420,7 +420,7 @@ function OrganizerPolicyDecisionPacketsView({
                 <AdminEyebrow>
                   {packet.area} / {packet.decisionOwner}
                 </AdminEyebrow>
-                <h3>{packet.decisionPrompt}</h3>
+                <CatchText as="h3" variant="sectionTitle">{packet.decisionPrompt}</CatchText>
               </div>
               <StatusChip tone={packet.status === "ready" ? "ready" : ""}>
                 {packet.severity}
@@ -516,7 +516,7 @@ function OrganizerCanonicalHostRegistryView({
                 <AdminEyebrow>
                   {entry.entityKind} / {entry.geography.scopeKind ?? "unknown"}
                 </AdminEyebrow>
-                <h3>{entry.displayName}</h3>
+                <CatchText as="h3" variant="sectionTitle">{entry.displayName}</CatchText>
               </div>
               <StatusChip tone={entry.publicPresence.publishStatus === "published" ? "ready" : ""}>
                 {entry.publicPresence.publishStatus}
@@ -608,7 +608,7 @@ function OrganizerCanonicalEvidenceIndexView({
                 <AdminEyebrow>
                   {record.surface.platform} / {record.surface.status}
                 </AdminEyebrow>
-                <h3>{record.displayName}</h3>
+                <CatchText as="h3" variant="sectionTitle">{record.displayName}</CatchText>
               </div>
               <StatusChip tone={record.evidence.status === "resolved_artifact" ? "ready" : ""}>
                 {record.evidence.status.replaceAll("_", " ")}
@@ -700,7 +700,7 @@ function OrganizerPublicationReviewPacketsView({
                 <AdminEyebrow>
                   {packet.taskType.replaceAll("_", " ")} / {packet.priority}
                 </AdminEyebrow>
-                <h3>{packet.displayName}</h3>
+                <CatchText as="h3" variant="sectionTitle">{packet.displayName}</CatchText>
               </div>
               <StatusChip tone={packet.status === "ready_for_manual_publication_review" ? "ready" : ""}>
                 {packet.status.replaceAll("_", " ")}
@@ -846,7 +846,7 @@ function OrganizerPublicationImpactPreviewView({
                 <AdminEyebrow>
                   {entry.entityId} / {entry.decisionRequired.decision}
                 </AdminEyebrow>
-                <h3>{entry.displayName}</h3>
+                <CatchText as="h3" variant="sectionTitle">{entry.displayName}</CatchText>
               </div>
               <StatusChip tone={entry.status.includes("would_publish") ? "ready" : ""}>
                 {entry.status.replaceAll("_", " ")}

@@ -1,7 +1,7 @@
 ---
 doc_id: component_contract_registry
-version: 1.10.0
-updated: 2026-10-19
+version: 1.11.0
+updated: 2026-10-24
 owner: ui_elevation_initiative
 status: active
 ---
@@ -66,10 +66,13 @@ of `tool/web/check_storybook_visuals.mjs` reads.
 The website and admin registries (`design/website/components.json`,
 `design/admin/components.json`) own their routes, sections, and
 surface-specific (T4) components. A surface adapter of a shared contract
-carries `componentId`, which must name a T1 or T2 contract. Admin components
-that a single feature or only the app shell renders are `feature-component`
-entries owned by that feature; those still under `admin/src/shared/ui` are the
-files Phase 7e moves.
+carries `componentId`, which must name a T1 or T2 contract. Under D18 the
+library draws: a React T4 component lives in `packages/web-ui/src/components/`
+and is registered in the registry of the one surface that renders it, while
+its feature keeps only the binding. Admin components that a single feature or
+only the app shell renders are `feature-component` entries owned by that
+feature; those still under `admin/src/shared/ui` await their move into
+`@catch/web-ui`.
 
 `node tool/design/check_component_lexicon.mjs` proves that every `dart`, `react`
 and story symbol exists in its named file, that React symbols are exported
@@ -82,8 +85,11 @@ T1 or T2 contract whose adapter export exists.
 component in `website/`, `admin/` and `packages/web-ui` to a contract (`react`
 record or `componentId` adapter), a T4 owner, or deletion. A TypeScript
 reference graph measures owners and deletions. Ownership passes through shared
-layers, so a shared export that one feature renders belongs to that feature,
-and an export with no production consumer is a deletion. Judgments are
+layers, so a shared export that one feature renders belongs to that feature
+and counts as debt (`t4-move`) until it is a registered T4 component in
+`@catch/web-ui`. A `@catch/web-ui` export registered in a surface registry is
+that surface's T4, and the gate fails when another surface renders it. An
+export with no production consumer is a deletion. Judgments are
 recorded in the surface registries. A shared-layer export that matches a T1 or
 T2 L2–L4 contract by name, alias or role noun and is used by more than one
 area, or that renders a `@catch/web-ui` implementation, needs `componentId` or
@@ -137,7 +143,7 @@ surface.** Tiers only decide when the React implementation has to exist.
 | `T1` Universal | Flutter and `@catch/web-ui`, now | Every surface that renders the responsibility uses it; no local substitutes. |
 | `T2` Product | Flutter now; React when a web surface first needs it | The first web need builds the React implementation in `@catch/web-ui`, never a local copy. |
 | `T3` Native-only | Flutter only | Mobile chrome, native maps, Riverpod adapters. A web need is a registry review that promotes the entry to T2, never a local port. |
-| `T4` Surface-specific | One surface | That surface's own responsibility, built from T0–T2 parts and never imported by another surface. Promote it when a second surface needs it. |
+| `T4` Surface-specific | One surface | That surface's own responsibility, built from T0–T2 parts and never imported by another surface. It is drawn in the framework's library (D18): a Flutter T4 is a `catch.components.json` entry, a React T4 a surface-registry entry whose source is under `packages/web-ui/src/components/`. Promote it when a second surface needs it. |
 
 `CatchIconTile` and `CatchControlSurface` are T1 but internal: they are matched
 through the T1 components that render them and are not exported to apps.

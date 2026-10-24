@@ -162,7 +162,7 @@ Widget timestampedMessageTextState(BuildContext context) {
     child: CatchTimestampedMessageText(
       text: 'That final kilometer was harder than advertised.',
       timestamp: '7:42 PM',
-      textStyle: CatchTextStyles.chatMessage(context, color: t.ink),
+      textStyle: CatchTextStyles.bodyL(context, color: t.ink),
       timestampStyle: CatchTextStyles.meta(context, color: t.ink3),
     ),
   );
@@ -182,7 +182,7 @@ Widget mediaMessageBodyState(BuildContext context) {
       text: 'Route card from tonight.',
       timestamp: '8:04 PM',
       imageUrl: MatchesChatSurfaceFixtures.imageMessages.first.imageUrl,
-      textStyle: CatchTextStyles.chatMessage(context, color: t.ink),
+      textStyle: CatchTextStyles.bodyL(context, color: t.ink),
       timestampStyle: CatchTextStyles.meta(context, color: t.ink3),
     ),
   );

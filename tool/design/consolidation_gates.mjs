@@ -8,6 +8,7 @@
  */
 import {spawnSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
@@ -146,10 +147,26 @@ function bySurface(values) {
   return {value: Object.values(values).reduce((total, value) => total + value, 0), bySurface: values};
 }
 
+/**
+ * The inventory exits non-zero for registry findings but still prints its full
+ * JSON, and its counts stand. It calls process.exit straight after writing, so
+ * a pipe would truncate the output at 64 KiB; a file receives all of it.
+ */
 function runJson(root, args) {
-  const result = spawnSync(process.execPath, args, {cwd: root, encoding: "utf8", maxBuffer: 64 * 1024 * 1024});
-  if (result.status !== 0) throw new Error(`${args.join(" ")} failed: ${result.stderr || result.stdout}`);
-  return JSON.parse(result.stdout);
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-consolidation-gates-"));
+  const output = path.join(directory, "out.json");
+  try {
+    const descriptor = fs.openSync(output, "w");
+    const result = spawnSync(process.execPath, args, {cwd: root, encoding: "utf8", stdio: ["ignore", descriptor, "pipe"]});
+    fs.closeSync(descriptor);
+    try {
+      return JSON.parse(fs.readFileSync(output, "utf8"));
+    } catch {
+      throw new Error(`${args.join(" ")} failed: ${result.stderr}`);
+    }
+  } finally {
+    fs.rmSync(directory, {recursive: true, force: true});
+  }
 }
 
 /** Every measure the gate file can name. Values are counts; zero is the target. */

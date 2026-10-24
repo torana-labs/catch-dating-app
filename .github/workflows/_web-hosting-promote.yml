@@ -116,16 +116,26 @@ jobs:
           fi
 
           authorization="$(node "$RUNNER_TEMP/web-hosting-control/web_hosting_freshness.mjs" authorize)"
+          if jq -e '.superseded == true' <<< "$authorization" > /dev/null; then
+            # A newer main push of this surface promotes newer bytes. Every
+            # later step skips, so this run deploys nothing instead of failing.
+            echo "superseded=true" >> "$GITHUB_OUTPUT"
+            jq -r '"::notice::Superseded by run \(.latestRunNumber) of this workflow on main; this run deploys nothing."' \
+              <<< "$authorization"
+            exit 0
+          fi
           jq -r '"workflow_id=\(.workflowId)", "run_number=\(.runNumber)", "artifact_name=\(.artifactName)"' \
             <<< "$authorization" >> "$GITHUB_OUTPUT"
 
       - name: Checkout the exact producing source
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         uses: actions/checkout@v6
         with:
           ref: ${{ inputs.source_sha }}
           fetch-depth: 0
 
       - name: Require the producing source to remain safely ordered on main
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         env:
           IS_RECOVERY: ${{ inputs.recovery }}
           SOURCE_SHA: ${{ inputs.source_sha }}
@@ -139,13 +149,16 @@ jobs:
           fi
 
       - id: toolchain
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         uses: ./.github/actions/load-toolchain
 
       - uses: actions/setup-node@v6
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         with:
           node-version: ${{ steps.toolchain.outputs.node-version }}
 
       - name: Download only the immutable artifact id and verify its GitHub digest
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         env:
           ARTIFACT_DIGEST: ${{ inputs.artifact_digest }}
           ARTIFACT_ID: ${{ inputs.artifact_id }}
@@ -166,6 +179,7 @@ jobs:
           test "$(find build/web-delivery/source -type f | wc -l | tr -d ' ')" = "2"
 
       - name: Verify provenance and every packaged byte before credentials
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         env:
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
           SOURCE_CI_RUN_ID: ${{ inputs.source_ci_run_id }}
@@ -202,13 +216,15 @@ jobs:
             --provenance-manifest "$provenance"
 
       - name: Verify production Admin callable dependencies
-        if: ${{ inputs.surface == 'admin' }}
+        if: ${{ inputs.surface == 'admin' && steps.authorize.outputs.superseded != 'true' }}
         run: node tool/web/check_admin_live_data_sources.mjs --check --verify-live --environment prod --summary
 
       - name: Install the pinned Firebase CLI before deployment credentials
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         run: npm install -g firebase-tools@${{ steps.toolchain.outputs.firebase-tools-version }}
 
       - name: Re-extract and reverify immutable bytes before deployment credentials
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         env:
           ARTIFACT_DIGEST: ${{ inputs.artifact_digest }}
           SOURCE_CI_RUN_ATTEMPT: ${{ inputs.source_ci_run_attempt }}
@@ -256,9 +272,10 @@ jobs:
             --provenance-manifest "$provenance"
 
       - uses: google-github-actions/setup-gcloud@v3
-        if: ${{ inputs.surface == 'marketing' }}
+        if: ${{ inputs.surface == 'marketing' && steps.authorize.outputs.superseded != 'true' }}
 
       - name: Authenticate to Google Cloud only for final freshness and mutation
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         uses: google-github-actions/auth@v3
         with:
           create_credentials_file: true
@@ -267,6 +284,8 @@ jobs:
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Refuse to overtake a newer main push immediately before mutation
+        id: freshness
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
           IS_RECOVERY: ${{ inputs.recovery }}
@@ -364,6 +383,11 @@ jobs:
               node "$RUNNER_TEMP/web-hosting-control/web_hosting_freshness.mjs" evaluate)"
             echo "Final source/freshness predicates (single no-cache read): $retry_evaluation"
             if ! jq -e '.passed == true' <<< "$retry_evaluation" > /dev/null; then
+              if jq -e '.superseded == true' <<< "$retry_evaluation" > /dev/null; then
+                echo "::notice::A newer main push of this surface started before deployment; this run deploys nothing."
+                echo "superseded=true" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
               echo "::error::Source/freshness gate remains unsatisfied after one no-cache read; refusing deployment."
               exit 1
             fi
@@ -371,11 +395,11 @@ jobs:
 
       - id: legacy-runtime
         name: Retire static marketing promotion once Next owns live Hosting
-        if: ${{ inputs.surface == 'marketing' }}
+        if: ${{ inputs.surface == 'marketing' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}
         run: node website/scripts/next/hostingState.mjs legacy-guard
 
       - name: Deploy only the verified production Hosting target without rebuilding
-        if: ${{ steps.legacy-runtime.outputs.retired != 'true' }}
+        if: ${{ steps.legacy-runtime.outputs.retired != 'true' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}
         working-directory: build/web-delivery/package
         env:
           SURFACE: ${{ inputs.surface }}
@@ -386,6 +410,7 @@ jobs:
           --non-interactive
 
       - name: Remove deploy credentials before postconditions
+        if: ${{ steps.authorize.outputs.superseded != 'true' }}
         run: |
           set -euo pipefail
           credential_file="${GOOGLE_GHA_CREDS_PATH:-}"
@@ -403,13 +428,13 @@ jobs:
           } >> "$GITHUB_ENV"
 
       - name: Verify marketing production unknown paths return HTTP 404
-        if: ${{ inputs.surface == 'marketing' && steps.legacy-runtime.outputs.retired != 'true' }}
+        if: ${{ inputs.surface == 'marketing' && steps.legacy-runtime.outputs.retired != 'true' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}
         run: node website/scripts/verifyHosting404.mjs https://catchdates.com
 
       - name: Verify launch-critical marketing production routes
-        if: ${{ inputs.surface == 'marketing' && steps.legacy-runtime.outputs.retired != 'true' }}
+        if: ${{ inputs.surface == 'marketing' && steps.legacy-runtime.outputs.retired != 'true' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}
         run: node website/scripts/probeProduction.mjs --base-url https://catchdates.com --json
 
       - name: Verify the standalone Host web shell
-        if: ${{ inputs.surface == 'host' }}
+        if: ${{ inputs.surface == 'host' && steps.authorize.outputs.superseded != 'true' && steps.freshness.outputs.superseded != 'true' }}
         run: curl --fail --location --silent --show-error https://catchdates-host.web.app/ > /dev/null

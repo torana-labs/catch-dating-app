@@ -128,7 +128,8 @@ export interface SalesActivity {
     | "claim_approved"
     | "claim_rejected"
     | "demo_started"
-    | "demo_completed";
+    | "demo_completed"
+    | "listing_approved";
   source?: {
     kind: "organizer_claim";
     claimRequestId: string;
@@ -139,6 +140,12 @@ export interface SalesActivity {
     blueprintId: string;
     blueprintRevision: number;
     invitationId: string;
+  } | {
+    kind: "supply_intake";
+    requestId: string;
+    approvalId: string;
+    origin:
+      "admin_nomination" | "sales_inbound_intent" | "discovery_run" | "none";
   };
   channel: "email" | "whatsapp" | "other" | null;
   outcome: "actor_attested_sent" | null;

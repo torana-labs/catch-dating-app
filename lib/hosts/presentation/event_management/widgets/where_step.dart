@@ -234,9 +234,9 @@ class HostSavedPlacesSection extends StatelessWidget {
     return CatchSection.fieldRows(
       first: true,
       title: context.l10n.hostsWhereStepSavedPlacesTitle,
-      footer: Text(
+      footer: CatchText(
         context.l10n.hostsWhereStepSavedPlacesSubtitle,
-        style: CatchTextStyles.supporting(context),
+        variant: CatchTextVariant.supporting,
       ),
       children: [
         if (loadError != null)

@@ -189,13 +189,14 @@ class _InvitationDetailBody extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(event.title, style: CatchTextStyles.sectionTitle(context)),
+                CatchText(event.title, variant: CatchTextVariant.sectionTitle),
                 gapH4,
-                Text(
+                CatchText(
                   '${EventFormatters.shortDate(event.startTime)} · '
                   '${EventFormatters.time(event.startTime)} · '
                   '${event.meetingPoint}',
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                 ),
               ],
             ),
@@ -422,23 +423,24 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             active
                 ? context.l10n.crossPathsPairInventoryStatusHeldNotBooked
                 : context.l10n.crossPathsPairInventoryStatusNoLongerHeld,
-            style: CatchTextStyles.sectionTitle(context),
+            variant: CatchTextVariant.sectionTitle,
           ),
           gapH8,
-          Text(
+          CatchText(
             active
                 ? context.l10n.crossPathsPairInventoryHoldCountdown(
                     minutes: minutes,
                   )
                 : context.l10n.crossPathsPairInventoryHoldEndedBody,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           gapH8,
-          Text(
+          CatchText(
             context.l10n.crossPathsPairInventoryBookingStates(
               requesterStatus: _bookingStatusLabel(
                 context,
@@ -449,7 +451,8 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
                 hold.attendeeBookingStatus,
               ),
             ),
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           if (active && isRequester) ...[
             gapH12,
@@ -464,9 +467,10 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
             ),
           ] else if (active) ...[
             gapH8,
-            Text(
+            CatchText(
               context.l10n.crossPathsPairInventoryWaitingForRequester,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
           ] else ...[
             gapH12,

@@ -22,6 +22,12 @@ void main() {
 
     expect(find.text('MATCHED AFTER DINNER'), findsOneWidget);
     expect(find.text('Friday Evening Dinner · Fri 29 May'), findsOneWidget);
+    final contextTitle = tester.widget<Text>(
+      find.text('Friday Evening Dinner · Fri 29 May'),
+    );
+    expect(contextTitle.style!.fontWeight, FontWeight.w500);
+    expect(contextTitle.maxLines, 1);
+    expect(contextTitle.overflow, TextOverflow.ellipsis);
   });
 
   testWidgets('renders a neutral fallback stamp while event context loads', (

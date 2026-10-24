@@ -683,6 +683,76 @@ test("accepts a shell-covering editor pushed on the root navigator", () => {
   assert.deepEqual(result.findings, []);
 });
 
+test("preserves content-header classification for the equivalent CatchText role", () => {
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    contract: compactContract(), includeRootContracts: false,
+    manualSource: `class FeatureHeader extends StatelessWidget {
+      Widget build(BuildContext context) => ui.CatchText(
+        'Module', variant: ui.CatchTextVariant.titleL,
+      );
+    }`,
+    manualHeaders: [{path: "lib/manual/header.dart", symbol: "FeatureHeader", role: "content",
+      owner: "CatchTextStyles.titleL", reason: "This exact header labels content inside the route body."}],
+  });
+  assert.deepEqual(checkScreenTopBarContracts({root}).findings, []);
+});
+
+for (const role of ["headline", "titleL"]) test(`discovers unregistered CatchText ${role} headers`, () => {
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    contract: compactContract(), includeRootContracts: false,
+    manualSource: `class FeatureHeader extends StatelessWidget {
+      Widget build(BuildContext context) => CatchText('Feature', variant: CatchTextVariant.${role});
+    }`,
+  });
+  assert.ok(hasFinding(checkScreenTopBarContracts({root}), "unregistered-manual-header"));
+});
+
+for (const [role, navigation, finding] of [
+  ["screen", false, "manual-header-role-owner-drift"],
+  ["content", true, "content-header-owns-navigation"],
+]) test(`CatchText preserves ${finding} enforcement`, () => {
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    contract: compactContract(), includeRootContracts: false,
+    manualSource: `class FeatureHeader extends StatelessWidget {
+      Widget build(BuildContext context) => Row(children: [
+        ${navigation ? 'CatchIconAction.icon(icon: CatchIcons.arrowBackRounded),' : ''}
+        CatchText('Feature', variant: CatchTextVariant.titleL),
+      ]);
+    }`,
+    manualHeaders: [{path: "lib/manual/header.dart", symbol: "FeatureHeader", role,
+      owner: "CatchTextStyles.titleL", reason: "This fixture must retain semantic classification enforcement."}],
+  });
+  assert.ok(hasFinding(checkScreenTopBarContracts({root}), finding));
+});
+
+test("CatchText cannot disguise a local root-title typography override", () => {
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar.screen(title: 'Calendar'));", contract: screenContract(),
+    rootSource: `class RootHeader {
+      Widget build() => CatchText('Today', variant: CatchTextVariant.headline);
+    }`,
+  });
+  assert.ok(hasFinding(checkScreenTopBarContracts({root}), "local-root-title-style"));
+});
+
+test("unrelated and nested variant tokens cannot impersonate header typography", () => {
+  const root = fixtureRoot({
+    source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+    contract: compactContract(), includeRootContracts: false,
+    manualSource: `class FeatureHeader extends StatelessWidget {
+      final decoy = CatchTextVariant.titleL;
+      Widget build() => CatchText('Copy', variant: CatchTextVariant.bodyM,
+        color: resolve(variant: CatchTextVariant.titleL));
+    }`,
+    manualHeaders: [{path: "lib/manual/header.dart", symbol: "FeatureHeader", role: "content",
+      owner: "CatchTextStyles.titleL", reason: "No actual header typography is rendered by this fixture."}],
+  });
+  assert.ok(hasFinding(checkScreenTopBarContracts({root}), "stale-manual-header-contract"));
+});
+
 test("flags an unregistered body-owned manual screen header", () => {
   const root = fixtureRoot({
     source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",

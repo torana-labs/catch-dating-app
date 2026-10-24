@@ -45,6 +45,7 @@ import {
 
 import {SegmentedControl} from "./actions";
 import {AdminEyebrow} from "./shell";
+import {CatchText} from "@catch/web-ui";
 
 export function PageHeader({
   actions,
@@ -57,8 +58,8 @@ export function PageHeader({
     <header className={`marketing-ops-header ${className}`.trim()}>
       <div>
         {eyebrow ? <AdminEyebrow>{eyebrow}</AdminEyebrow> : null}
-        <h2>{title}</h2>
-        {children ? <p>{children}</p> : null}
+        <CatchText as="h2" variant="titleL">{title}</CatchText>
+        {children ? <CatchText as="p" variant="supporting">{children}</CatchText> : null}
       </div>
       {actions}
     </header>
@@ -118,8 +119,8 @@ export function AdminIntakeWorkspaceHeader({
     <section {...props} className={classNames("intake-workspace-header", className)}>
       <div>
         {eyebrow ? <AdminEyebrow>{eyebrow}</AdminEyebrow> : null}
-        <h2>{title}</h2>
-        {children ? <p>{children}</p> : null}
+        <CatchText as="h2" variant="titleL">{title}</CatchText>
+        {children ? <CatchText as="p" variant="supporting">{children}</CatchText> : null}
       </div>
       {actions}
     </section>

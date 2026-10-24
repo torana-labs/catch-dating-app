@@ -1,4 +1,13 @@
 import {hashValue} from "../../../../platform/canonical-json.mjs";
+import {
+  dedupeBy,
+  eventNodes,
+  normalizeSchemaEvent,
+  normalizeSchemaOrganizer,
+  organizerNodes,
+  shapeFingerprint,
+  text as schemaText,
+} from "../schema-org.mjs";
 
 export function extractLumaEvents(raw, {artifactRef = null, observedAt = null, timezone = "Asia/Kolkata"} = {}) {
   const nodes = [];
@@ -93,4 +102,46 @@ function eventStatus(value) {
   if (normalized.includes("cancel")) return "cancelled";
   if (normalized.includes("postpon")) return "postponed";
   return "scheduled";
+}
+
+// Whole Luma pages (event, organizer calendar, city discovery) through the
+// shared schema.org normalizer. extractLumaEvents above stays the frozen
+// `luma-json-ld-event-v1` learner implementation.
+export const lumaAdapter = Object.freeze({
+  adapterId: "luma",
+  platform: "luma",
+  sourceProfileId: "luma",
+  extractionMethod: "luma_json_ld_page_v1",
+  pageKinds: Object.freeze(["event_page", "organizer_page"]),
+  extract(snapshot, {timezone}) {
+    const events = dedupeBy(eventNodes(snapshot.jsonLd).map((node, index) => normalizeSchemaEvent(node, {
+      platform: "luma",
+      timezone,
+      index,
+      sourceId: lumaId(schemaText(node.url) ?? schemaText(node["@id"])),
+    })), (event) => event.sourceEntityId).filter((event) => event.title && event.startAt);
+    const pageUrl = schemaText(snapshot.canonicalUrl) ?? schemaText(snapshot.finalUrl);
+    const organizers = organizerNodes(snapshot.jsonLd)
+      .filter((node) => lumaHosted(schemaText(node.url) ?? pageUrl))
+      .map((node) => normalizeSchemaOrganizer(node, {platform: "luma", sourceUrl: pageUrl}));
+    if (events.length === 0 && organizers.length === 0) {
+      return {abstained: true, abstainReason: "template_drift", templateFingerprint: shapeFingerprint("luma-page", snapshot.jsonLd)};
+    }
+    return {
+      abstained: false,
+      abstainReason: null,
+      pageKind: organizers.length > 0 ? "organizer_page" : "event_page",
+      templateFingerprint: shapeFingerprint("luma-page", snapshot.jsonLd),
+      organizers,
+      events,
+    };
+  },
+});
+
+function lumaHosted(value) {
+  try {
+    return ["luma.com", "lu.ma"].includes(new URL(value).hostname.replace(/^www\./u, ""));
+  } catch {
+    return false;
+  }
 }

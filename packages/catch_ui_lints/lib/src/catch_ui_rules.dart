@@ -7,11 +7,14 @@ import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
 
+import 'catch_drawing_migration.dart';
+import 'catch_text_migration.dart';
 import 'catch_ui_rules_tables.g.dart';
 
 part 'catch_ui_test_rules.dart';
 part 'catch_ui_mutation_rules.dart';
 part 'catch_ui_feedback_rules.dart';
+part 'catch_ui_text_rules.dart';
 
 const _eventDetailPathFragments = <String>[
   '/lib/events/presentation/widgets/event_detail_',
@@ -319,7 +322,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const noRawSurfaceShell = LintCode(
     'catch_no_raw_surface_shell',
-    'Use CatchSurface or a shared surface primitive instead of hand-rolling a local decorated surface.',
+    'Drawing belongs in catch_ui. Arrange existing Catch components instead of adding an SDK drawing constructor or subclass.',
     severity: DiagnosticSeverity.INFO,
   );
 
@@ -421,7 +424,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const textRequiresStyle = LintCode(
     'catch_text_requires_style',
-    'App-facing Text must declare a CatchTextStyles role unless a sanctioned framework ancestor owns its typography.',
+    '{0}',
     severity: DiagnosticSeverity.WARNING,
   );
 
@@ -586,6 +589,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
     final visitor = _CatchUiLayoutVisitor(
       this,
+      ruleContext: context,
       source: context.definingUnit.content,
       path: path,
       isEventDetailPath: _isEventDetailPath(path),
@@ -675,6 +679,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   _CatchUiLayoutVisitor(
     this.rule, {
+    required this.ruleContext,
     required this.source,
     required this.path,
     required this.isEventDetailPath,
@@ -687,6 +692,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }) : _lineStarts = _computeLineStarts(source);
 
   final CatchUiLayoutRules rule;
+  final RuleContext ruleContext;
   final String source;
   final String path;
   final bool isEventDetailPath;
@@ -704,6 +710,40 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   @override
   void visitCompilationUnit(CompilationUnit node) {
     _locallyShadowedTokenNames = _declaredTokenShadows(node);
+
+    final currentPath =
+        ruleContext.currentUnit?.file.path.replaceAll(r'\', '/') ?? path;
+    for (final site in newTextMigrationSites(node, currentPath)) {
+      rule.reportAtNode(
+        site.node,
+        diagnosticCode: CatchUiLayoutRules.textRequiresStyle,
+        arguments: [
+          'Use CatchText with CatchTextVariant.${site.role} instead of styling Text in place.',
+        ],
+      );
+    }
+
+    for (final site in newDrawingMigrationSites(node, currentPath)) {
+      final drawing = site.node;
+      if (drawing is InstanceCreationExpression) {
+        // Keep one boundary diagnostic where an existing rule already fires.
+        // Share their resolved names so aliases receive the same delegation.
+        final typeName = _constructorTypeName(drawing);
+        if (!allowRawControlConstructors &&
+            catchRawControlConstructors.contains(typeName)) {
+          continue;
+        }
+        if (typeName == 'Image' &&
+            _constructorMemberName(drawing) == 'network' &&
+            !_isCoreWidgetPrimitivePath) {
+          continue;
+        }
+      }
+      rule.reportAtNode(
+        drawing,
+        diagnosticCode: CatchUiLayoutRules.noRawSurfaceShell,
+      );
+    }
 
     for (final match in _allowDebtPattern.allMatches(source)) {
       if (_isThemeIndependentArtAllow(match.start)) continue;
@@ -872,7 +912,13 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         typeName == 'Text' &&
         !_textOwnsStyle(node) &&
         !_hasSanctionedAmbientTextAncestor(node)) {
-      _reportAtNode(node, CatchUiLayoutRules.textRequiresStyle);
+      _reportAtNode(
+        node,
+        CatchUiLayoutRules.textRequiresStyle,
+        arguments: [
+          'App-facing Text must declare a CatchTextStyles role unless a sanctioned framework ancestor owns its typography.',
+        ],
+      );
     }
 
     if (isFeaturePresentationPath &&
@@ -921,10 +967,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
     if (isUiSystemScannerPath && _isRawMotionConstructor(node, typeName)) {
       _reportAtNode(node, CatchUiLayoutRules.noRawMotion);
-    }
-
-    if (_isLocalDecoratedSurfaceShell(node, typeName)) {
-      _reportAtNode(node, CatchUiLayoutRules.noRawSurfaceShell);
     }
 
     if (isUiSystemScannerPath &&
@@ -1223,39 +1265,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     ).hasMatch(bottomNavigation.toSource());
   }
 
-  bool _hasSanctionedAmbientTextAncestor(InstanceCreationExpression node) {
-    var current = node.parent;
-    while (current != null) {
-      if (current is InstanceCreationExpression) {
-        final typeName = _constructorTypeName(current);
-        if (typeName == 'PopupMenuItem' ||
-            typeName == 'Badge' ||
-            typeName == 'AlertDialog' ||
-            typeName == 'CupertinoAlertDialog' ||
-            typeName == 'CupertinoDialogAction' ||
-            typeName == 'InputDecoration') {
-          return true;
-        }
-      }
-      if (current is Statement ||
-          current is FunctionBody ||
-          current is ClassDeclaration) {
-        return false;
-      }
-      current = current.parent;
-    }
-    return false;
-  }
-
-  bool _textOwnsStyle(InstanceCreationExpression node) {
-    if (_hasNamedArgument(node, 'style')) return true;
-    if (_constructorMemberName(node) != 'rich' ||
-        node.argumentList.arguments.isEmpty) {
-      return false;
-    }
-    return node.argumentList.arguments.first.toSource().contains('style:');
-  }
-
   bool _looksLikeRawErrorSurface(InstanceCreationExpression node) {
     final text = node.toSource();
     return RegExp(
@@ -1497,27 +1506,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (typeName == 'Duration') return !isCatchUiDateArithmeticDuration(node);
     if (typeName != 'CurveTween') return false;
     return node.toSource().contains('Curves.');
-  }
-
-  bool _isLocalDecoratedSurfaceShell(
-    InstanceCreationExpression node,
-    String typeName,
-  ) {
-    if (!isUiSystemScannerPath) return false;
-    if (!isFeaturePresentationPath) return false;
-    if (!_surfaceShellConstructors.contains(typeName)) return false;
-
-    final decoration = _namedArgument(node, 'decoration');
-    if (decoration == null) return false;
-    if (decoration is! InstanceCreationExpression) return false;
-    if (_constructorTypeName(decoration) != 'BoxDecoration') return false;
-
-    final text = decoration.toSource();
-    return text.contains('gradient:') ||
-        text.contains('borderRadius:') ||
-        text.contains('Border.all') ||
-        text.contains('boxShadow:') ||
-        text.contains('shape:');
   }
 
   bool _isNestedRoundedRectangleSurface(

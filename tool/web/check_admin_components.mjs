@@ -2,7 +2,13 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import ts from "typescript";
 import {fromRepo} from "../lib/repo_paths.mjs";
+
+// Blueprint D18: the library draws; features arrange and bind. A component
+// that one feature (or only the app shell) renders is that owner's T4 entry,
+// drawn in @catch/web-ui. Entries still under shared/ui await that move.
+const libraryHome = "packages/web-ui/src/components/";
 
 const args = parseArgs(process.argv.slice(2));
 
@@ -42,7 +48,7 @@ if (args.summary || warnings.length > 0) {
     [
       `Admin component registry ok: ${registry.components.length} component contract(s).`,
       `Preview-ready components: ${registry.components.filter((component) => component.preview?.status === "ready").length}.`,
-      `Feature components awaiting their Phase 7e move out of shared/ui: ${registry.components.filter((component) =>
+      `Feature components awaiting their D18 move into @catch/web-ui: ${registry.components.filter((component) =>
         component.kind === "feature-component" &&
         normalizeRepoPath(component.source ?? "").startsWith("admin/src/shared/ui/")).length}.`,
       `Contract: ${path.relative(fromRepo("."), componentsPath)}`,
@@ -234,8 +240,8 @@ function validateKindAgainstSource(component, label) {
   if (component.kind === "workspace" && !source.startsWith("admin/src/features/")) {
     errors.push(`${label}: workspace components must live under admin/src/features.`);
   }
-  if (component.kind === "shared-primitive" && !source.startsWith("admin/src/shared/ui/")) {
-    errors.push(`${label}: shared-primitive components must live under admin/src/shared/ui.`);
+  if (component.kind === "shared-primitive" && !isDrawingHome(source)) {
+    errors.push(`${label}: shared-primitive components must live under ${libraryHome} (or await their D18 move from admin/src/shared/ui).`);
   }
   if (component.kind === "feature-component") {
     errors.push(...featureComponentPlacementErrors(component, label));
@@ -245,17 +251,18 @@ function validateKindAgainstSource(component, label) {
   }
 }
 
-// A component that one feature (or only the app shell) renders belongs to that
-// owner. Entries still under shared/ui are the files Phase 7e moves.
+function isDrawingHome(source) {
+  return source.startsWith(libraryHome) || source.startsWith("admin/src/shared/ui/");
+}
+
 function featureComponentPlacementErrors(component, label) {
   const source = normalizeRepoPath(component.source ?? "");
   const owner = component.owner ?? "";
   if (!/^(?:features\/[a-z0-9-]+|app)$/u.test(owner)) {
     return [`${label}: feature-component owner must be features/<feature> or app, not ${owner}.`];
   }
-  const home = owner === "app" ? "admin/src/app/" : `admin/src/${owner}/`;
-  if (source.startsWith(home) || source.startsWith("admin/src/shared/ui/")) return [];
-  return [`${label}: feature-component owned by ${owner} must live under ${home} (or await its Phase 7e move from admin/src/shared/ui).`];
+  if (isDrawingHome(source)) return [];
+  return [`${label}: feature-component owned by ${owner} must live under ${libraryHome} (or await its D18 move from admin/src/shared/ui); its feature keeps only the binding.`];
 }
 
 function validateExportCoverage(components) {
@@ -329,11 +336,11 @@ function adminChromeErrors(source) {
     chromeErrors.push("admin shell brand must be the single product label Catch Admin.");
   }
 
-  const topbar = source.match(/<AdminTopbar>[\s\S]*?<\/AdminTopbar>/u)?.[0] ?? "";
-  if (!topbar.includes("<h1>{topbarTitle}</h1>")) {
+  const {topbars, headings, subtitle} = adminTopbarContent(source);
+  if (topbars !== 1 || headings.length !== 1 || headings[0].element !== "h1" || !headings[0].routeTitle) {
     chromeErrors.push("admin top bar must render the route-owned topbarTitle as its single heading.");
   }
-  if (/<AdminEyebrow\b|<PageHeader\b|<p\b/u.test(topbar)) {
+  if (subtitle) {
     chromeErrors.push("admin top bar must not add a kicker, secondary PageHeader, or subtitle.");
   }
 
@@ -343,6 +350,53 @@ function adminChromeErrors(source) {
     chromeErrors.push(`admin shell must not expose prototype label ${label}.`);
   }
   return chromeErrors;
+}
+
+function adminTopbarContent(source) {
+  const unit = ts.createSourceFile("admin.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const textNames = new Set();
+  for (const statement of unit.statements) {
+    if (!ts.isImportDeclaration(statement) || statement.moduleSpecifier.text !== "@catch/web-ui") continue;
+    const bindings = statement.importClause?.namedBindings;
+    if (!bindings || !ts.isNamedImports(bindings)) continue;
+    for (const specifier of bindings.elements) {
+      if ((specifier.propertyName?.text ?? specifier.name.text) === "CatchText") textNames.add(specifier.name.text);
+    }
+  }
+  const topbars = [];
+  function collect(node) {
+    if (ts.isJsxElement(node) && node.openingElement.tagName.getText(unit) === "AdminTopbar") topbars.push(node);
+    ts.forEachChild(node, collect);
+  }
+  collect(unit);
+  const headings = [];
+  let subtitle = false;
+  function inspect(node) {
+    if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
+      const opening = ts.isJsxElement(node) ? node.openingElement : node;
+      const name = opening.tagName.getText(unit);
+      const attributes = opening.attributes.properties;
+      const literal = (name) => {
+        const attribute = attributes.find((item) => ts.isJsxAttribute(item) && item.name.getText(unit) === name);
+        const value = attribute?.initializer;
+        if (value && ts.isStringLiteral(value)) return value.text;
+        if (value && ts.isJsxExpression(value) && value.expression && ts.isStringLiteral(value.expression)) return value.expression.text;
+        return null;
+      };
+      const element = textNames.has(name)
+        ? (attributes.some(ts.isJsxSpreadAttribute) ? null : literal("as") ?? "p")
+        : name;
+      if (/^h[1-6]$/u.test(element ?? "") || literal("role") === "heading") {
+        const children = ts.isJsxElement(node) ? node.children.filter((child) => !ts.isJsxText(child) || child.text.trim()) : [];
+        const content = children.length === 1 && ts.isJsxExpression(children[0]) ? children[0].expression : null;
+        headings.push({element, routeTitle: Boolean(content && ts.isIdentifier(content) && content.text === "topbarTitle")});
+      }
+      if (["AdminEyebrow", "PageHeader"].includes(name) || element === "p") subtitle = true;
+    }
+    ts.forEachChild(node, inspect);
+  }
+  for (const topbar of topbars) for (const child of topbar.children) inspect(child);
+  return {topbars: topbars.length, headings, subtitle};
 }
 
 function featureComponentExports() {
@@ -572,9 +626,9 @@ export const StatusBannerStory = {
 
   const featureComponent = (owner, source) => ({kind: "feature-component", owner, source});
   for (const [owner, source] of [
-    ["features/marketing", "admin/src/features/marketing/ui/MarketingStudioGrid.tsx"],
+    ["features/marketing", "packages/web-ui/src/components/CatchMarketingStudioGrid.tsx"],
     ["features/marketing", "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx"],
-    ["app", "admin/src/app/AdminShell.tsx"],
+    ["app", "packages/web-ui/src/components/CatchAdminShell.tsx"],
   ]) {
     assert.deepEqual(featureComponentPlacementErrors(featureComponent(owner, source), "probe"), []);
   }
@@ -582,9 +636,10 @@ export const StatusBannerStory = {
     featureComponentPlacementErrors(featureComponent("shared/ui", "admin/src/shared/ui/AdminPrimitives/cards.tsx"), "probe"),
     ["probe: feature-component owner must be features/<feature> or app, not shared/ui."],
   );
+  // D18: a component that draws never lives in its feature, even the feature that owns it.
   assert.deepEqual(
-    featureComponentPlacementErrors(featureComponent("features/intake", "admin/src/features/marketing/ui/Grid.tsx"), "probe"),
-    ["probe: feature-component owned by features/intake must live under admin/src/features/intake/ (or await its Phase 7e move from admin/src/shared/ui)."],
+    featureComponentPlacementErrors(featureComponent("features/marketing", "admin/src/features/marketing/ui/Grid.tsx"), "probe"),
+    ["probe: feature-component owned by features/marketing must live under packages/web-ui/src/components/ (or await its D18 move from admin/src/shared/ui); its feature keeps only the binding."],
   );
 
   const validChrome = `
@@ -592,6 +647,38 @@ export const StatusBannerStory = {
     <AdminTopbar><h1>{topbarTitle}</h1><AdminTopbarActions /></AdminTopbar>
   `;
   assert.deepEqual(adminChromeErrors(validChrome), []);
+  const libraryChrome = (title, extra = "", imported = "CatchText") => `
+    import {CatchText as ${imported}} from "@catch/web-ui";
+    const Chrome = () => <>
+      <AdminBrandTitle>Catch Admin</AdminBrandTitle>
+      <AdminTopbar>${title}${extra}<AdminTopbarActions /></AdminTopbar>
+    </>;
+  `;
+  for (const title of [
+    '<CatchText as="h1" variant="titleL">{topbarTitle}</CatchText>',
+    '<CatchText variant="titleL" as={"h1"}>{topbarTitle}</CatchText>',
+  ]) assert.deepEqual(adminChromeErrors(libraryChrome(title)), []);
+  assert.deepEqual(adminChromeErrors(libraryChrome(
+    '<Copy as="h1" variant="titleL">{topbarTitle}</Copy>', "", "Copy",
+  )), []);
+  for (const title of [
+    '<CatchText as="h2" variant="titleL">{topbarTitle}</CatchText>',
+    '<CatchText variant="titleL">{topbarTitle}</CatchText>',
+    '<CatchText as="h1" variant="titleL">{otherTitle}</CatchText>',
+    '<CatchText as="h1" {...props} variant="titleL">{topbarTitle}</CatchText>',
+    '<h1>{topbarTitle}</h1><h2>Duplicate</h2>',
+    '<h1>{topbarTitle}</h1><CatchText as="h3" variant="titleL">Extra</CatchText>',
+  ]) assert.ok(adminChromeErrors(libraryChrome(title)).includes(
+    "admin top bar must render the route-owned topbarTitle as its single heading.",
+  ));
+  assert.ok(adminChromeErrors(libraryChrome(
+    '<CatchText as="h1" variant="titleL">{topbarTitle}</CatchText>',
+    '<CatchText as="p" variant="supporting">Subtitle</CatchText>',
+  )).includes("admin top bar must not add a kicker, secondary PageHeader, or subtitle."));
+  assert.ok(adminChromeErrors(libraryChrome(
+    '{/* <h1>{topbarTitle}</h1> */}<span>{"<h1>{topbarTitle}</h1>"}</span>',
+  )).includes("admin top bar must render the route-owned topbarTitle as its single heading."));
+
   assert.deepEqual(adminChromeErrors(`
     <AdminBrandTitle>Catch Ops</AdminBrandTitle>
     <AdminTopbar><AdminEyebrow>Supply</AdminEyebrow><h1>Organizers</h1><p>Copy</p></AdminTopbar>

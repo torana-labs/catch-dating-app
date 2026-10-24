@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "supply-research-agent-v1",
+  "agent": {
+    "enabled": false,
+    "providerId": "anthropic",
+    "modelId": "claude-opus-5-5",
+    "effort": "medium",
+    "promptVersion": "organizer-research-v1",
+    "serverSecretRef": "anthropic/supply-intake-agent",
+    "policyGapId": "agent_research_policy",
+    "decisionId": null
+  },
+  "limits": {
+    "maxSteps": 12,
+    "maxToolCalls": 24,
+    "maxWebSearches": 5,
+    "maxOutputTokensPerStep": 4096,
+    "stepTimeoutMs": 180000
+  },
+  "budgets": {
+    "maxCostMicrosPerRun": 0,
+    "maxCostMicrosPerMonth": 0
+  },
+  "placement": {
+    "forbiddenUses": ["copy_generation", "ranking", "publication", "per_user_path"]
+  }
+}

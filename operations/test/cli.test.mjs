@@ -40,6 +40,7 @@ test("CLI ingests one immutable normalized Supply Intake snapshot", async () => 
     externalEventCandidates: [],
     organizerLeads: [],
     crawlSurfaces: [],
+    intakeListings: [],
   }));
   const writes = [];
   const result = await main([
@@ -72,6 +73,7 @@ test("CLI ingests one immutable normalized Supply Intake snapshot", async () => 
     externalEventCandidates: 0,
     organizerLeads: 0,
     crawlSurfaces: 0,
+    intakeListings: 0,
   });
 });
 

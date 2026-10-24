@@ -1,8 +1,7 @@
 import {expect, userEvent, within} from "storybook/test";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {HostApplicationFlow} from "../features/host/application/HostApplicationFlow";
-import {HostApplySection as HostApplySectionComponent} from "../features/host/sections/HostPageSections";
-import {WaitlistSection} from "../shared/ui/primitives";
+import {HostLanding, HostLandingSection} from "../shared/ui/primitives/hostLanding";
 
 const meta = {
   title: "Marketing Website/Host/Sections",
@@ -20,19 +19,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const HostApplySectionStory: Story = {
-  name: "Host apply section",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "host_apply_section",
-      routeIds: ["host_apply"],
-      states: ["initial", "interactive-steps"],
-    },
-  },
-  render: () => <HostApplySectionComponent />,
-};
-
 export const HostApplicationFlowInitial: Story = {
   name: "Host application flow · initial",
   parameters: {
@@ -44,15 +30,11 @@ export const HostApplicationFlowInitial: Story = {
     },
   },
   render: () => (
-    <WaitlistSection
-      id="founding-hosts"
-      introReveal={false}
-      titleId="host-application-story-title"
-      title="Bring the format. Catch handles the loop around it."
-      body="Apply as a founding host if you run events, communities, venues, or formats where the right singles can meet with more context."
-    >
-      <HostApplicationFlow />
-    </WaitlistSection>
+    <HostLanding>
+      <HostLandingSection variant="apply" aria-label="Host application">
+        <HostApplicationFlow />
+      </HostLandingSection>
+    </HostLanding>
   ),
 };
 

@@ -12,6 +12,84 @@
           "normalizedPayload": {
             "type": "object",
             "required": [
+              "intake"
+            ],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": [
+                  "recordType"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "organizer_listing_draft"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entityKind": {
+            "const": "organizer"
+          },
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "$ref": "#/definitions/organizerListingDraftIntake"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "intake"
+            ],
+            "properties": {
+              "intake": {
+                "type": "object",
+                "required": [
+                  "recordType"
+                ],
+                "properties": {
+                  "recordType": {
+                    "const": "listing_event_candidate"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "entityKind": {
+            "const": "event"
+          },
+          "normalizedPayload": {
+            "properties": {
+              "intake": {
+                "$ref": "#/definitions/listingEventCandidateIntake"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
               "kind"
             ],
             "properties": {
@@ -555,6 +633,672 @@
                   "label": {"$ref": "#/definitions/boundedString"},
                   "url": {"type": "string", "maxLength": 2000}
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "organizerListingDraftIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordType",
+        "listing"
+      ],
+      "properties": {
+        "recordType": {
+          "const": "organizer_listing_draft"
+        },
+        "listing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "listingId",
+            "requestId",
+            "kind",
+            "submittedBy",
+            "submittedAt",
+            "seed",
+            "organizer",
+            "fieldEvidence",
+            "eventCount",
+            "pastEventCount",
+            "pages",
+            "gaps",
+            "researchNeeded",
+            "contentHash"
+          ],
+          "properties": {
+            "listingId": {
+              "$ref": "#/definitions/boundedString"
+            },
+            "requestId": {
+              "$ref": "#/definitions/boundedString"
+            },
+            "kind": {
+              "enum": [
+                "nomination",
+                "self_submission",
+                "discovery"
+              ]
+            },
+            "submittedBy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "role",
+                "uid",
+                "partnerId"
+              ],
+              "properties": {
+                "role": {
+                  "enum": [
+                    "associate",
+                    "partner",
+                    "organizer",
+                    "system"
+                  ]
+                },
+                "uid": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/boundedString"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "partnerId": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/boundedString"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "submittedAt": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 40
+            },
+            "seed": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "urls",
+                "notes",
+                "categories"
+              ],
+              "properties": {
+                "name": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/boundedString"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "urls": {
+                  "type": "array",
+                  "maxItems": 10,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  }
+                },
+                "notes": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "categories": {
+                  "$ref": "#/definitions/boundedStringArray"
+                }
+              }
+            },
+            "organizer": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "name",
+                "description",
+                "imageUrl",
+                "locality",
+                "categories",
+                "links",
+                "identityKeys"
+              ],
+              "properties": {
+                "name": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/boundedString"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "description": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "imageUrl": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "locality": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/boundedString"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "categories": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "links": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "platform",
+                      "surfaceKind",
+                      "url",
+                      "normalizedKey",
+                      "evidenceUrl"
+                    ],
+                    "properties": {
+                      "platform": {
+                        "$ref": "#/definitions/boundedString"
+                      },
+                      "surfaceKind": {
+                        "$ref": "#/definitions/boundedString"
+                      },
+                      "url": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      "normalizedKey": {
+                        "anyOf": [
+                          {
+                            "$ref": "#/definitions/boundedString"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "evidenceUrl": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      }
+                    }
+                  }
+                },
+                "identityKeys": {
+                  "$ref": "#/definitions/boundedStringArray"
+                }
+              }
+            },
+            "fieldEvidence": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "field",
+                  "sourceUrl",
+                  "method",
+                  "adapterId"
+                ],
+                "properties": {
+                  "field": {
+                    "enum": [
+                      "name",
+                      "description",
+                      "imageUrl",
+                      "locality"
+                    ]
+                  },
+                  "sourceUrl": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "method": {
+                    "enum": [
+                      "adapter",
+                      "nominator",
+                      "agent"
+                    ]
+                  },
+                  "adapterId": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/boundedString"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "eventCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 60
+            },
+            "pastEventCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "pages": {
+              "type": "array",
+              "maxItems": 12,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "url",
+                  "via",
+                  "platform",
+                  "outcome",
+                  "adapterId",
+                  "pageKind",
+                  "abstainReason",
+                  "snapshotHash",
+                  "capturedAt"
+                ],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "via": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "platform": {
+                    "$ref": "#/definitions/boundedString"
+                  },
+                  "outcome": {
+                    "$ref": "#/definitions/boundedString"
+                  },
+                  "adapterId": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/boundedString"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "pageKind": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/boundedString"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "abstainReason": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/definitions/boundedString"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "snapshotHash": {
+                    "anyOf": [
+                      {
+                        "$ref": "common.schema.json#/definitions/sha256"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "capturedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 40
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "gaps": {
+              "$ref": "#/definitions/boundedStringArray"
+            },
+            "researchNeeded": {
+              "type": "boolean"
+            },
+            "contentHash": {
+              "$ref": "common.schema.json#/definitions/sha256"
+            }
+          }
+        }
+      }
+    },
+    "listingEventCandidateIntake": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordType",
+        "event"
+      ],
+      "properties": {
+        "recordType": {
+          "const": "listing_event_candidate"
+        },
+        "event": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "listingId",
+            "listingWorkItemId",
+            "requestId",
+            "eventKey",
+            "platform",
+            "sourceEntityId",
+            "title",
+            "description",
+            "startAt",
+            "endAt",
+            "timezone",
+            "venue",
+            "address",
+            "locality",
+            "latitude",
+            "longitude",
+            "sourceUrl",
+            "imageUrl",
+            "price",
+            "status",
+            "attendanceMode",
+            "organizerName",
+            "organizerUrl",
+            "adapterId",
+            "evidenceFields",
+            "alsoListedAt"
+          ],
+          "properties": {
+            "listingId": {
+              "$ref": "#/definitions/boundedString"
+            },
+            "listingWorkItemId": {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "requestId": {
+              "$ref": "#/definitions/boundedString"
+            },
+            "eventKey": {
+              "$ref": "#/definitions/boundedString"
+            },
+            "platform": {
+              "$ref": "#/definitions/boundedString"
+            },
+            "sourceEntityId": {
+              "$ref": "#/definitions/boundedString"
+            },
+            "title": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/boundedString"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "startAt": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 40
+            },
+            "endAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 40
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "timezone": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/boundedString"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "venue": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/boundedString"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "address": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/boundedString"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "locality": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/boundedString"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "latitude": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": -90,
+                  "maximum": 90
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "longitude": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sourceUrl": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "imageUrl": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "price": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "maxProperties": 8
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "status": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/boundedString"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "attendanceMode": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/boundedString"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "organizerName": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/boundedString"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "organizerUrl": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "adapterId": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/boundedString"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evidenceFields": {
+              "$ref": "#/definitions/boundedStringArray"
+            },
+            "alsoListedAt": {
+              "type": "array",
+              "maxItems": 10,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
               }
             }
           }

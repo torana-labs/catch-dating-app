@@ -183,7 +183,7 @@ function fixture() {
 
 // The build post-step copies these exact existing Operations modules to lib.
 execFileSync(process.execPath, [path.join(__dirname,
-  "../../../src/admin/salesIntelligence/copy-operations.cjs")]);
+  "../../../scripts/copy-operations-runtime.cjs")]);
 
 test("real zero-model Operations runner creates one reviewed draft and exact retry", async () => {
   const f = fixture();

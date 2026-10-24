@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 
 /// PHASE 2 — the flagship profile surface, in the locked editorial language:
 /// a person-polaroid hero on a graded photo, Archivo voice, IBM Plex Mono data,
-/// proseL reading text, hairlines over boxes. Color = activity (the kicker +
+/// bodyL reading text, hairlines over boxes. Color = activity (the kicker +
 /// reaction affordances borrow the meeting activity's pigment).
 ///
 /// Pure presentation over a [ProfileView]; real data is mapped on via
@@ -368,9 +368,10 @@ class ProfilePromptSection extends StatelessWidget {
       children: [
         ProfileKickerText(section.question),
         gapH8,
-        Text(
+        CatchText(
           section.answer,
-          style: CatchTextStyles.profileAnswer(context, color: t.ink),
+          variant: CatchTextVariant.sectionTitle,
+          color: t.ink,
         ),
       ],
     );
@@ -414,9 +415,10 @@ class ProfileRunningSection extends StatelessWidget {
         ),
         if (section.reasons.isNotEmpty || section.times.isNotEmpty) ...[
           gapH10,
-          Text(
+          CatchText(
             [...section.reasons, ...section.times].join('  ·  '),
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
         ],
         if (section.tags.isNotEmpty) ...[
@@ -470,9 +472,10 @@ class ProfileFactsSection extends StatelessWidget {
                 ),
                 gapW12,
                 Expanded(
-                  child: Text(
+                  child: CatchText(
                     fact.text,
-                    style: CatchTextStyles.bodyL(context, color: t.ink),
+                    variant: CatchTextVariant.bodyL,
+                    color: t.ink,
                   ),
                 ),
               ],
@@ -548,10 +551,7 @@ class ProfileCaptionText extends StatelessWidget {
       padding: CatchInsets.compactControlContent,
       radius: CatchRadius.sm,
       backgroundColor: dark.darkScrimFill,
-      child: Text(
-        text,
-        style: CatchTextStyles.proseM(context, color: dark.ink),
-      ),
+      child: CatchText(text, variant: CatchTextVariant.bodyM, color: dark.ink),
     );
   }
 }

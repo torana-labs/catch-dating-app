@@ -147,17 +147,18 @@ class ShareCardHeader extends StatelessWidget {
                 chatContextStampFor(event),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.labelM(
+                style: CatchTextStyles.statusLabel(
                   context,
                   color: accent,
                 ).copyWith(fontWeight: FontWeight.w800),
               ),
               gapH3,
-              Text(
+              CatchText(
                 chatShareCardTitleFor(event),
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.titleL(context, color: t.ink),
+
+                variant: CatchTextVariant.titleL,
+                color: t.ink,
               ),
             ],
           ),
@@ -217,14 +218,11 @@ class ShareCardBubble extends StatelessWidget {
               ),
             ),
             padding: CatchInsets.chatBubbleContent,
-            child: Text(
+            child: CatchText(
               text,
+              variant: CatchTextVariant.bodyL,
+              color: isMe ? t.primaryInk : t.ink,
               maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.chatMessage(
-                context,
-                color: isMe ? t.primaryInk : t.ink,
-              ),
             ),
           ),
         ),
