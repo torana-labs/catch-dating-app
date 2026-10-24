@@ -547,24 +547,18 @@ class OrderedPhotoTile extends StatelessWidget {
                         .coreOrderedPhotoPickerMessageRemovePhotoValue1(
                           value1: index + 1,
                         ),
-                    child: Material(
-                      color: t.surface.withValues(
+                    child: CatchIconAction(
+                      key: OrderedPhotoPickerKeys.removeAction(index),
+                      variant: CatchIconActionVariant.plain,
+                      size: CatchLayout.photoSlotDeleteExtent,
+                      backgroundColor: t.surface.withValues(
                         alpha: CatchOpacity.photoSlotDeleteChrome,
                       ),
-                      shape: const CircleBorder(),
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        key: OrderedPhotoPickerKeys.removeAction(index),
-                        customBorder: const CircleBorder(),
-                        onTap: onRemove,
-                        child: SizedBox.square(
-                          dimension: CatchLayout.photoSlotDeleteExtent,
-                          child: Icon(
-                            CatchIcons.closeRounded,
-                            size: CatchIcon.sm,
-                            color: t.ink,
-                          ),
-                        ),
+                      onPressed: onRemove,
+                      child: Icon(
+                        CatchIcons.closeRounded,
+                        size: CatchIcon.sm,
+                        color: t.ink,
                       ),
                     ),
                   ),
@@ -677,35 +671,35 @@ class _OrderedPhotoStatusBanner extends StatelessWidget {
     return Semantics(
       button: failed && onRetry != null,
       label: failed && onRetry != null ? '$label. $retryLabel' : label,
-      child: Material(
-        color: (failed ? t.danger : t.ink).withValues(
+      child: CatchSurface(
+        backgroundColor: (failed ? t.danger : t.ink).withValues(
           alpha: CatchOpacity.hostMediaStatusScrim,
         ),
-        child: InkWell(
-          onTap: failed ? onRetry : null,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.s2,
-              vertical: CatchSpacing.micro6,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (activelyUploading) ...[
-                  SizedBox.square(
-                    dimension: CatchIcon.xs,
-                    child: CatchLoadingIndicator(color: t.surface),
-                  ),
-                  gapW6,
-                ],
-                Flexible(
-                  child: CatchMetadataText(
-                    failed && onRetry != null ? '$label · $retryLabel' : label,
-                    color: t.surface,
-                  ),
+        radius: CatchRadius.none,
+        onTap: failed ? onRetry : null,
+        duration: Duration.zero,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CatchSpacing.s2,
+            vertical: CatchSpacing.micro6,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (activelyUploading) ...[
+                SizedBox.square(
+                  dimension: CatchIcon.xs,
+                  child: CatchLoadingIndicator(color: t.surface),
                 ),
+                gapW6,
               ],
-            ),
+              Flexible(
+                child: CatchMetadataText(
+                  failed && onRetry != null ? '$label · $retryLabel' : label,
+                  color: t.surface,
+                ),
+              ),
+            ],
           ),
         ),
       ),

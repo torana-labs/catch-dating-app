@@ -214,74 +214,67 @@ class EventDetailMapCard extends StatelessWidget {
     return Semantics(
       button: canOpen,
       label: event.locationName,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          onTap: canOpen ? onTap : null,
-          child: Ink(
-            height: CatchLayout.eventDetailMapCardHeight,
-            decoration: BoxDecoration(
-              color: surfaceColor ?? t.surface,
-              border: Border.all(color: borderColor ?? t.line),
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-            ),
-            child: CatchSurface(
-              duration: Duration.zero,
-              tone: CatchSurfaceTone.transparent,
-              radius: CatchRadius.md - 1,
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: MapPreview(
-                      coordinate: coordinate,
-                      path: routePath,
-                      markers: itineraryMarkers,
-                      fallbackLabel:
-                          context.l10n.eventsEventPinsMapLabelEventMapPreview,
-                      enableNetworkTiles: enableNetworkTiles,
-                    ),
-                  ),
-                  CatchDivider.fieldRow(indent: 0, color: borderColor),
-                  Padding(
-                    padding: CatchInsets.compactControlContent,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            event.locationName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: CatchTextStyles.labelL(
-                              context,
-                              color: t.ink,
-                            ),
-                          ),
-                        ),
-                        gapW8,
-                        Text(
-                          trailingLabel.toUpperCase(),
-                          maxLines: 1,
-                          style: CatchTextStyles.monoLabelS(
-                            context,
-                            color: t.ink2,
-                          ),
-                        ),
-                        if (canOpen) ...[
-                          gapW4,
-                          Icon(
-                            CatchIcons.chevronRightRounded,
-                            color: t.ink2,
-                            size: CatchIcon.xs,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
+      child: CatchSurface(
+        height: CatchLayout.eventDetailMapCardHeight,
+        backgroundColor: surfaceColor ?? t.surface,
+        radius: CatchRadius.none,
+        borderRadius: BorderRadius.circular(CatchRadius.md),
+        borderSpec: CatchBorderSpec(
+          role: CatchBorderRole.boundary,
+          color: borderColor ?? t.line,
+          width: CatchStroke.hairline,
+        ),
+        padding: const EdgeInsets.all(CatchStroke.hairline),
+        onTap: canOpen ? onTap : null,
+        duration: Duration.zero,
+        child: CatchSurface(
+          duration: Duration.zero,
+          tone: CatchSurfaceTone.transparent,
+          radius: CatchRadius.md - 1,
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              Expanded(
+                child: MapPreview(
+                  coordinate: coordinate,
+                  path: routePath,
+                  markers: itineraryMarkers,
+                  fallbackLabel:
+                      context.l10n.eventsEventPinsMapLabelEventMapPreview,
+                  enableNetworkTiles: enableNetworkTiles,
+                ),
               ),
-            ),
+              CatchDivider.fieldRow(indent: 0, color: borderColor),
+              Padding(
+                padding: CatchInsets.compactControlContent,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        event.locationName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.labelL(context, color: t.ink),
+                      ),
+                    ),
+                    gapW8,
+                    Text(
+                      trailingLabel.toUpperCase(),
+                      maxLines: 1,
+                      style: CatchTextStyles.monoLabelS(context, color: t.ink2),
+                    ),
+                    if (canOpen) ...[
+                      gapW4,
+                      Icon(
+                        CatchIcons.chevronRightRounded,
+                        color: t.ink2,
+                        size: CatchIcon.xs,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

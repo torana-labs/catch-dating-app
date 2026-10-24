@@ -81,42 +81,36 @@ class WeekDayTile extends StatelessWidget {
         day: day,
         day2: date.day,
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(_dateMarkerRadius),
-          child: Ink(
-            padding: CatchInsets.contentVerticalCompact,
-            decoration: BoxDecoration(
-              color: active ? t.ink : Colors.transparent,
-              borderRadius: BorderRadius.circular(_dateMarkerRadius),
+      child: CatchSurface(
+        backgroundColor: active ? t.ink : Colors.transparent,
+        radius: CatchRadius.none,
+        borderRadius: BorderRadius.circular(_dateMarkerRadius),
+        padding: CatchInsets.contentVerticalCompact,
+        onTap: onTap,
+        duration: Duration.zero,
+        child: Column(
+          children: [
+            CatchText(
+              day,
+              variant: CatchTextVariant.statusLabel,
+              color: active
+                  ? t.surface.withValues(alpha: CatchOpacity.scrimFill)
+                  : t.ink3,
             ),
-            child: Column(
-              children: [
-                CatchText(
-                  day,
-                  variant: CatchTextVariant.statusLabel,
-                  color: active
-                      ? t.surface.withValues(alpha: CatchOpacity.scrimFill)
-                      : t.ink3,
-                ),
-                gapH2,
-                Text(
-                  context.l10n.eventsEventDateMarkerTextDay(day: date.day),
-                  style: CatchTextStyles.statCompact(
-                    context,
-                    color: active ? t.surface : t.ink,
-                  ),
-                ),
-                gapH4,
-                CatchStatusIndicator(
-                  color: hasEvent ? t.primary : Colors.transparent,
-                  size: 4,
-                ),
-              ],
+            gapH2,
+            Text(
+              context.l10n.eventsEventDateMarkerTextDay(day: date.day),
+              style: CatchTextStyles.statCompact(
+                context,
+                color: active ? t.surface : t.ink,
+              ),
             ),
-          ),
+            gapH4,
+            CatchStatusIndicator(
+              color: hasEvent ? t.primary : Colors.transparent,
+              size: 4,
+            ),
+          ],
         ),
       ),
     );
@@ -158,38 +152,41 @@ class MonthDayTile extends StatelessWidget {
       button: enabled,
       selected: active,
       label: context.l10n.eventsEventDateMarkerLabelDay(day: date.day),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: enabled ? onTap : null,
-          borderRadius: BorderRadius.circular(_dateMarkerRadius),
-          child: Ink(
-            height: _monthMarkerHeight,
-            decoration: BoxDecoration(
-              color: active ? t.ink : Colors.transparent,
-              borderRadius: BorderRadius.circular(_dateMarkerRadius),
-              border: today && !active ? Border.all(color: t.line2) : null,
+      child: CatchSurface(
+        height: _monthMarkerHeight,
+        backgroundColor: active ? t.ink : Colors.transparent,
+        radius: CatchRadius.none,
+        borderRadius: BorderRadius.circular(_dateMarkerRadius),
+        borderSpec: (today && !active)
+            ? CatchBorderSpec(
+                role: CatchBorderRole.boundary,
+                color: t.line2,
+                width: CatchStroke.hairline,
+              )
+            : null,
+        padding: (today && !active)
+            ? const EdgeInsets.all(CatchStroke.hairline)
+            : EdgeInsets.zero,
+        onTap: enabled ? onTap : null,
+        duration: Duration.zero,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            enabled
+                ? dayText
+                : Visibility(
+                    visible: false,
+                    maintainState: true,
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    child: dayText,
+                  ),
+            gapH4,
+            CatchStatusIndicator(
+              color: hasEvent && enabled ? t.primary : Colors.transparent,
+              size: 4,
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                enabled
-                    ? dayText
-                    : Visibility(
-                        visible: false,
-                        maintainState: true,
-                        maintainAnimation: true,
-                        maintainSize: true,
-                        child: dayText,
-                      ),
-                gapH4,
-                CatchStatusIndicator(
-                  color: hasEvent && enabled ? t.primary : Colors.transparent,
-                  size: 4,
-                ),
-              ],
-            ),
-          ),
+          ],
         ),
       ),
     );

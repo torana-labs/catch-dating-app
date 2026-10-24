@@ -186,14 +186,14 @@ class PhotoSlotTile extends StatelessWidget {
                     ),
                   ),
                 ),
-              Material(
-                type: MaterialType.transparency,
+              CatchSurface(
+                tone: CatchSurfaceTone.transparent,
+                radius: CatchRadius.none,
                 borderRadius: borderRadius,
                 clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: isActive && !isLoading ? onTap : null,
-                  borderRadius: borderRadius,
-                ),
+                onTap: isActive && !isLoading ? onTap : null,
+                duration: Duration.zero,
+                child: const SizedBox.expand(),
               ),
               if (!isLoading && onDelete != null)
                 Positioned(
@@ -204,24 +204,18 @@ class PhotoSlotTile extends StatelessWidget {
                         .imageUploadsPhotoSlotMessageDeletePhotoValue1(
                           value1: index + 1,
                         ),
-                    child: Material(
-                      color: t.surface.withValues(
+                    child: CatchIconAction(
+                      key: PhotoGridKeys.delete(index),
+                      variant: CatchIconActionVariant.plain,
+                      size: CatchLayout.photoSlotDeleteExtent,
+                      backgroundColor: t.surface.withValues(
                         alpha: CatchOpacity.photoSlotDeleteChrome,
                       ),
-                      shape: const CircleBorder(),
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        key: PhotoGridKeys.delete(index),
-                        customBorder: const CircleBorder(),
-                        onTap: onDelete,
-                        child: SizedBox.square(
-                          dimension: CatchLayout.photoSlotDeleteExtent,
-                          child: Icon(
-                            CatchIcons.closeRounded,
-                            size: CatchIcon.sm,
-                            color: t.ink,
-                          ),
-                        ),
+                      onPressed: onDelete,
+                      child: Icon(
+                        CatchIcons.closeRounded,
+                        size: CatchIcon.sm,
+                        color: t.ink,
                       ),
                     ),
                   ),
