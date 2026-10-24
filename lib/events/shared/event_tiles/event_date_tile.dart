@@ -143,9 +143,10 @@ class MonthDayTile extends StatelessWidget {
         : enabled
         ? t.ink
         : t.ink3.withValues(alpha: CatchOpacity.mutedContent);
-    final dayText = Text(
+    final dayText = CatchText(
       context.l10n.eventsEventDateMarkerTextDay(day: date.day),
-      style: CatchTextStyles.labelL(context, color: textColor),
+      variant: CatchTextVariant.titleS,
+      color: textColor,
     );
 
     return Semantics(

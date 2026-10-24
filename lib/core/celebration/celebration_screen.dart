@@ -470,10 +470,11 @@ class PaperCelebrationDetailRow extends StatelessWidget {
           ),
           gapW12,
           Expanded(
-            child: Text(
+            child: CatchText(
               detail.value,
+              variant: CatchTextVariant.titleS,
+              color: t.ink,
               textAlign: TextAlign.right,
-              style: CatchTextStyles.labelL(context, color: t.ink),
             ),
           ),
         ],

@@ -583,11 +583,11 @@ class PaymentConfirmationBody extends StatelessWidget {
                               radius: CatchRadius.sm,
                             ),
                             gapH8,
-                            Text(
+                            CatchText(
                               actions[index].label,
-                              style: CatchTextStyles.labelL(context),
+                              variant: CatchTextVariant.titleS,
+                              color: CatchTokens.of(context).ink,
                               maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -701,9 +701,10 @@ class PaymentReferralBanner extends StatelessWidget {
               ],
             ),
           ),
-          Text(
+          CatchText(
             context.l10n.paymentsPaymentConfirmationScreenTextShare,
-            style: CatchTextStyles.labelL(context, color: t.primary),
+            variant: CatchTextVariant.titleS,
+            color: t.primary,
           ),
         ],
       ),

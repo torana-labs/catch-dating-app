@@ -125,7 +125,10 @@ void _registerCatchPrimitivesControlsTests() {
                 CatchTextStyles.sectionTitle(context),
                 CatchTextStyles.bodyL(context),
                 CatchTextStyles.bodyS(context),
-                CatchTextStyles.labelL(context),
+                CatchTextStyles.titleS(
+                  context,
+                  color: CatchTokens.of(context).ink,
+                ),
                 CatchTextStyles.monoLabel(context),
                 CatchTextStyles.monoLabelS(context),
                 CatchTextStyles.mono(context),

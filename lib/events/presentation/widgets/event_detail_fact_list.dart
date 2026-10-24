@@ -250,11 +250,11 @@ class EventDetailMapCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
+                      child: CatchText(
                         event.locationName,
+                        variant: CatchTextVariant.titleS,
+                        color: t.ink,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.labelL(context, color: t.ink),
                       ),
                     ),
                     gapW8,

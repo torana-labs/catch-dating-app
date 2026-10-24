@@ -366,11 +366,11 @@ class CompanionPaperTicketRow extends StatelessWidget {
           color: t.ink3,
         ),
         gapH6,
-        Text(
+        CatchText(
           value,
+          variant: CatchTextVariant.titleS,
+          color: CatchTokens.of(context).ink,
           maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.labelL(context),
         ),
       ],
     );

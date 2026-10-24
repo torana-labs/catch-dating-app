@@ -281,7 +281,7 @@ class _CatchChipState extends State<CatchChip> {
         border = hasTint ? Colors.transparent : t.line2;
         shadow = CatchElevation.none;
         leading = widget.leading;
-        textStyle = CatchTextStyles.labelL(context, color: foreground);
+        textStyle = CatchTextStyles.titleS(context, color: foreground);
         padding = const EdgeInsets.symmetric(
           horizontal: CatchSpacing.micro14,
           vertical: CatchSpacing.s2,
@@ -305,7 +305,7 @@ class _CatchChipState extends State<CatchChip> {
                 size: CatchFieldTokens.chipSelectedGlyphExtent,
               )
             : widget.leading;
-        textStyle = CatchTextStyles.labelL(context, color: foreground);
+        textStyle = CatchTextStyles.titleS(context, color: foreground);
         padding = const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s4,
           vertical: CatchSpacing.micro10,

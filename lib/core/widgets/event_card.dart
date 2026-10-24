@@ -128,9 +128,10 @@ class EventCard extends StatelessWidget {
                   ),
                 ),
                 gapW8,
-                Text(
+                CatchText(
                   priceLabel,
-                  style: CatchTextStyles.labelL(context, color: t.ink),
+                  variant: CatchTextVariant.titleS,
+                  color: t.ink,
                 ),
               ],
             ),

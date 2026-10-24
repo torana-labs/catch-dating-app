@@ -5854,9 +5854,10 @@ class _HostChatReportFailureNoticeCapture extends StatelessWidget {
                   horizontal: CatchSpacing.s4,
                   vertical: CatchSpacing.micro14,
                 ),
-                child: Text(
+                child: CatchText(
                   'Unable to submit report. Please try again.',
-                  style: CatchTextStyles.labelL(context, color: t.bg),
+                  variant: CatchTextVariant.titleS,
+                  color: t.bg,
                 ),
               ),
             ),
@@ -6391,9 +6392,10 @@ class _MatchChatFeedbackNoticeCapture extends StatelessWidget {
                   horizontal: CatchSpacing.s4,
                   vertical: CatchSpacing.micro14,
                 ),
-                child: Text(
+                child: CatchText(
                   message,
-                  style: CatchTextStyles.labelL(context, color: t.bg),
+                  variant: CatchTextVariant.titleS,
+                  color: t.bg,
                 ),
               ),
             ),

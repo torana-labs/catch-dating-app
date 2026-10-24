@@ -622,11 +622,11 @@ class SelectedPointSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    CatchText(
                       title,
+                      variant: CatchTextVariant.titleS,
+                      color: t.ink,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.labelL(context, color: t.ink),
                     ),
                     gapH4,
                     CatchText(
