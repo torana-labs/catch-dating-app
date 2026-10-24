@@ -45,7 +45,7 @@ export function CatchAppCaptureImage({
       {hasCaption ? (
         <figcaption className={styles.caption}>
           {caption != null ? <CatchText as="span" variant="supporting">{caption}</CatchText> : null}
-          {disclosure != null ? <CatchText as="small" color="ink2" variant="recordContext">{disclosure}</CatchText> : null}
+          {disclosure != null ? <CatchText as="small" color="ink2" variant="bodyS">{disclosure}</CatchText> : null}
         </figcaption>
       ) : null}
     </figure>
