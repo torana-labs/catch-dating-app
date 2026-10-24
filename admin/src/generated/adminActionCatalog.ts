@@ -369,6 +369,39 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
+      "actionId": "organizer-intake.list-listing-reviews",
+      "callable": "adminListOrganizerListingReviews",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "summary": "List one page of Supply Intake listings awaiting approval, newest first, with what a reviewer needs to approve each.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "organizer-intake.approve-listing",
+      "callable": "adminApproveOrganizerListing",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Approve one Supply Intake listing: publish its organizer page unclaimed and noindex, hidden in the app, record the review, and open its Sales account, opportunity, tasks and activity.",
+      "controlPlane": false
+    },
+    {
       "actionId": "organizer-intake.create-organizer-draft",
       "callable": "adminCreateOrganizerDraftFromCandidate",
       "workflowIds": [
@@ -2113,6 +2146,8 @@ export const adminActionCatalog = {
       "label": "Organizer Intake",
       "guiPath": "/intake/organizers",
       "actions": [
+        "organizer-intake.list-listing-reviews",
+        "organizer-intake.approve-listing",
         "organizer-intake.create-organizer-draft",
         "organizer-intake.record-curation",
         "organizer-intake.resolve-location",
