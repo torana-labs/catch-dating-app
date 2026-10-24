@@ -112,8 +112,9 @@ class _TextCalls extends RecursiveAstVisitor<void> {
       if (node.argumentList.arguments.isEmpty ||
           node.argumentList.arguments.any(
             (arg) => arg is! NamedExpression || arg.name.label.name != 'color',
-          ))
+          )) {
         return null;
+      }
       node = _binding(node.target, seen);
     }
     final slot = _styleProperty(node);
@@ -123,8 +124,9 @@ class _TextCalls extends RecursiveAstVisitor<void> {
           slot.name,
           'TextTheme',
           'package:flutter/src/material/text_theme.dart',
-        ))
+        )) {
       return null;
+    }
     final theme = _styleProperty(_binding(slot.target, seen));
     if (theme == null ||
         theme.name.name != 'textTheme' ||
@@ -132,8 +134,9 @@ class _TextCalls extends RecursiveAstVisitor<void> {
           theme.name,
           'ThemeData',
           'package:flutter/src/material/theme_data.dart',
-        ))
+        )) {
       return null;
+    }
     final lookup = theme.target;
     if (lookup is! MethodInvocation ||
         lookup.methodName.name != 'of' ||
@@ -143,8 +146,9 @@ class _TextCalls extends RecursiveAstVisitor<void> {
           'package:flutter/src/material/theme.dart',
         ) ||
         lookup.argumentList.arguments.length != 1 ||
-        lookup.argumentList.arguments.single.toSource() != 'context')
+        lookup.argumentList.arguments.single.toSource() != 'context') {
       return null;
+    }
     return _materialRoles[slot.name.name];
   }
 
