@@ -4,31 +4,131 @@
   "cards": {
     "default": {
       "path": "/assets/og/default.png",
-      "version": "ab5013ee6fe4",
+      "version": "bb4be98f3ca0",
       "alt": "Catch: Find something worth showing up for",
       "capture": null,
-      "inputHash": "ab5013ee6fe485ae919cf220b5de20e59c2154d609d43e97824cd4050002456e"
+      "inputHash": "bb4be98f3ca06a27559b14c955de1ff28a8f6818e73315914cd69d6d9412e092"
+    },
+    "home": {
+      "path": "/assets/og/home.png",
+      "version": "6319d3716491",
+      "alt": "Catch: Find something worth showing up for",
+      "capture": null,
+      "inputHash": "6319d37164919d641e94900260765558e5ce065b61e3aa195798f059b69326e9"
     },
     "host": {
       "path": "/assets/og/host.png",
-      "version": "780b3235dc38",
+      "version": "68868cc1d51f",
       "alt": "Catch Host: Run great events. Build a business around them.",
       "capture": "host-live-console",
-      "inputHash": "780b3235dc38c23156d4304ea1e414a3b529d1a257dbef8a4d38b763b33aa36a"
+      "inputHash": "68868cc1d51fd4b90138e4d2c14975445833dfcb42212b4ddf225f1e23777279"
     },
     "apply": {
       "path": "/assets/og/apply.png",
-      "version": "d792643bae24",
+      "version": "33db80a4be75",
       "alt": "Catch Host: Apply for a pilot",
       "capture": "host-create-basics",
-      "inputHash": "d792643bae24db51e8cedb91bf014d8a56184bbfbd006b3ad3d78c42ed481cb2"
+      "inputHash": "33db80a4be75cd1d61cad683202630f8d6cc2a0e2215785971764752d357e81c"
+    },
+    "claim": {
+      "path": "/assets/og/claim.png",
+      "version": "14aa2c6af440",
+      "alt": "Catch: Claim your organizer page",
+      "capture": null,
+      "inputHash": "14aa2c6af440ead75f4561aad773ec77d2a785fa51280194aaa58e9d1344a692"
+    },
+    "organizers": {
+      "path": "/assets/og/organizers.png",
+      "version": "85dbe31587eb",
+      "alt": "Catch: Organisers, clubs and communities",
+      "capture": null,
+      "inputHash": "85dbe31587eb8dae09d21c35f428b643044a82840d7312ae38be0799ea8ffab7"
     },
     "form": {
       "path": "/assets/og/form.png",
-      "version": "f2710af6523e",
+      "version": "3057c45bec51",
       "alt": "Catch: Organizer form",
       "capture": null,
-      "inputHash": "f2710af6523e88724db9ae85b97ec6aeca28ad8aba015c37ec07c1dd4558aeff"
+      "inputHash": "3057c45bec513bf2daaebef781cb3b2e2fbef81f273c25c82aebc5de762e70b6"
+    }
+  },
+  "generated": {
+    "version": "acf0e84334de",
+    "fontSource": "664bbeb10522dac35c174a3860aaecad7b1ad3a0fc8b0d26888e26c824ec556d",
+    "colors": {
+      "surface": "#FFFFFF",
+      "ink": "#16140F"
+    },
+    "grounds": {
+      "social-run": {
+        "accent": "#D85A3C",
+        "deep": "#B33B1F"
+      },
+      "running": {
+        "accent": "#C9482E",
+        "deep": "#97321E"
+      },
+      "walking": {
+        "accent": "#6E9A5A",
+        "deep": "#4F743E"
+      },
+      "pickleball": {
+        "accent": "#2F9E7A",
+        "deep": "#1D6E54"
+      },
+      "padel": {
+        "accent": "#2E9AA0",
+        "deep": "#1C6B6F"
+      },
+      "tennis": {
+        "accent": "#4E9A4E",
+        "deep": "#347134"
+      },
+      "badminton": {
+        "accent": "#4F70C8",
+        "deep": "#2E4FA6"
+      },
+      "cycling": {
+        "accent": "#3A6FD0",
+        "deep": "#2251A5"
+      },
+      "spin-class": {
+        "accent": "#3E55C0",
+        "deep": "#2A3C92"
+      },
+      "yoga": {
+        "accent": "#8A5FB0",
+        "deep": "#69408D"
+      },
+      "strength-training": {
+        "accent": "#B0573C",
+        "deep": "#823D28"
+      },
+      "dinner": {
+        "accent": "#C44D6A",
+        "deep": "#9F2F4B"
+      },
+      "pub-quiz": {
+        "accent": "#4356A8",
+        "deep": "#2D3C7C"
+      },
+      "bar-crawl": {
+        "accent": "#B14488",
+        "deep": "#852E64"
+      },
+      "singles-mixer": {
+        "accent": "#D85A6E",
+        "deep": "#C72942"
+      },
+      "open-activity": {
+        "accent": "#7A7166",
+        "deep": "#595045"
+      }
+    },
+    "mark": {
+      "path": "/assets/og/generated/mark.png",
+      "width": 695,
+      "height": 231
     }
   }
 }
