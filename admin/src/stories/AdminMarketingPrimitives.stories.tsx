@@ -32,13 +32,11 @@ import {
   AdminMarketingComposerFooter,
   AdminMarketingComposerHeader,
   AdminMarketingDeliverable,
-  AdminMarketingEditGrid,
   AdminMarketingEventLibraryGrid,
   AdminMarketingExportStatus,
   AdminMarketingFeatureShotCard,
   AdminMarketingFeatureShotGrid,
   AdminMarketingFilePickerButton,
-  AdminMarketingGrid,
   AdminMarketingGuideLayout,
   AdminMarketingHelpText,
   AdminMarketingImageControls,
@@ -944,28 +942,6 @@ export const AdminMarketingStackedSectionsStory: Story = {
   ),
 };
 
-export const AdminMarketingGridStory: Story = {
-  name: "Marketing grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_marketing_grid",
-      states: ["panels"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMarketingGrid>
-        <AdminMarketingPanel icon={<Megaphone size={18} />} title="Copy">
-          <AdminStateRow label="Status" value="Ready" />
-        </AdminMarketingPanel>
-        <AdminMarketingPanel icon={<Palette size={18} />} title="Assets">
-          <AdminStateRow label="Images" value="3" />
-        </AdminMarketingPanel>
-      </AdminMarketingGrid>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminMarketingPanelStory: Story = {
   name: "Marketing panel",
   parameters: {
@@ -1035,30 +1011,6 @@ export const AdminMarketingSectionHeaderStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminMarketingSectionHeader meta={<StatusChip>Draft</StatusChip>} title="Visual direction" />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminMarketingEditGridStory: Story = {
-  name: "Edit grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_marketing_edit_grid",
-      states: ["fields"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminMarketingEditGrid>
-        <AdminMarketingTitleInput ariaLabel="Headline" value="Bring better people together" onChange={() => undefined} />
-        <CatchField
-          recipe="select"
-          title="Tone"
-          values={["warm", "direct"]}
-          itemLabelBuilder={(item) => item === "warm" ? "Warm" : "Direct"}
-          value="warm"
-        />
-      </AdminMarketingEditGrid>
     </AdminWorkspace>
   ),
 };
