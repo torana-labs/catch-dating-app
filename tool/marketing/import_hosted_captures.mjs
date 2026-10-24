@@ -20,8 +20,14 @@ const digest = bytes => `sha256:${crypto.createHash("sha256").update(bytes).dige
 const json = value => Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
 const sha = value => typeof value === "string" && /^[a-f0-9]{40}$/u.test(value);
 const positive = value => typeof value === "string" && /^[1-9][0-9]*$/u.test(value) && Number.isSafeInteger(Number(value));
-// The reusable marketing-captures.yml job; callers prefix it as "<job> / <name>".
-export const CAPTURE_PRODUCER_JOB = "Render and validate 12 canonical iPhone captures";
+// The reusable marketing-captures.yml jobs that produce a bundle; exactly one
+// runs. Callers prefix them as "<job> / <name>".
+export const CAPTURE_PRODUCER_JOBS = Object.freeze([
+  "Render and validate canonical iPhone captures",
+  "Reuse validated canonical iPhone captures",
+]);
+const isProducerJob = name => typeof name === "string" &&
+  CAPTURE_PRODUCER_JOBS.some(producer => name === producer || name.endsWith(` / ${producer}`));
 
 export function validateBinding(binding) {
   assert.match(binding?.repository ?? "", /^[\w.-]+\/[\w.-]+$/u, "Invalid capture repository.");
@@ -44,8 +50,7 @@ export function selectCaptureProducerJob({jobs, binding, artifact}) {
   assert.ok(Array.isArray(jobs), "Missing capture run jobs.");
   const created = Date.parse(artifact?.created_at);
   assert.ok(Number.isFinite(created), "Missing capture artifact creation time.");
-  const producers = jobs.filter(job => job?.name === CAPTURE_PRODUCER_JOB ||
-    (typeof job?.name === "string" && job.name.endsWith(` / ${CAPTURE_PRODUCER_JOB}`)));
+  const producers = jobs.filter(job => isProducerJob(job?.name));
   const matches = producers.filter(job => job.run_id === Number(binding.runId) &&
     job.run_attempt === Number(binding.runAttempt) && job.head_sha === binding.runHeadSha &&
     job.status === "completed" && job.conclusion === "success" &&
@@ -83,27 +88,32 @@ export function verifyArtifactMetadata({binding, artifact, repositoryId, run, wo
 
 // Python's standard ZIP reader checks local names, decompression bounds/overlap
 // and CRCs. Read only the complete allowlist into memory; never extract paths.
-export function readCaptureArchive(bytes, expectedNames) {
+// `exact` (a bundle to import) requires exactly the expected files. Otherwise
+// (an earlier bundle offering seeds) every entry is still checked, but only the
+// expected ones that are present are returned.
+export function readCaptureArchive(bytes, expectedNames, {exact = true} = {}) {
   assert.ok(Buffer.isBuffer(bytes) && bytes.length <= maxBytes && bytes.subarray(0, 4).equals(Buffer.from("PK\x03\x04")), "Invalid capture ZIP.");
   // The manifest, design context and website manifest, two copies of each
   // capture, and the receipt.
-  assert.ok(expectedNames.length >= 6 && expectedNames.length % 2 === 0, "Expected capture files plus their receipt.");
+  if (exact) assert.ok(expectedNames.length >= 6 && expectedNames.length % 2 === 0, "Expected capture files plus their receipt.");
   assert.equal(new Set(expectedNames).size, expectedNames.length, "Duplicate expected capture paths.");
   const script = `import base64, io, json, stat, sys, zipfile
 allowed = json.loads(sys.argv[1])
+exact = sys.argv[2] == 'exact'
 with zipfile.ZipFile(io.BytesIO(sys.stdin.buffer.read())) as archive:
     entries = archive.infolist()
     names = [entry.filename for entry in entries]
-    assert len(names) == len(allowed) and len(set(names)) == len(names) and set(names) == set(allowed), 'Unexpected, missing or duplicate capture ZIP paths'
+    assert len(set(names)) == len(names), 'Duplicate capture ZIP paths'
+    assert not exact or (len(names) == len(allowed) and set(names) == set(allowed)), 'Unexpected, missing or duplicate capture ZIP paths'
     assert sum(entry.file_size for entry in entries) <= 128 * 1024 * 1024, 'Capture ZIP is too large'
     for entry in entries:
         assert not entry.is_dir() and not entry.flag_bits & 1, 'Directory or encrypted capture ZIP entry'
         assert stat.S_IFMT(entry.external_attr >> 16) in (0, stat.S_IFREG), 'Non-regular capture ZIP entry'
         assert entry.file_size <= 16 * 1024 * 1024, 'Capture ZIP entry is too large'
         assert not entry.filename.startswith('/') and '\\\\' not in entry.filename and all(part not in ('', '.', '..') for part in entry.filename.split('/')), 'Unsafe capture ZIP path'
-    print(json.dumps({entry.filename: base64.b64encode(archive.read(entry)).decode('ascii') for entry in entries}))
+    print(json.dumps({entry.filename: base64.b64encode(archive.read(entry)).decode('ascii') for entry in entries if entry.filename in allowed}))
 `;
-  const result = spawnSync("python3", ["-c", script, JSON.stringify(expectedNames)],
+  const result = spawnSync("python3", ["-c", script, JSON.stringify(expectedNames), exact ? "exact" : "subset"],
     {input: bytes, maxBuffer: maxBytes * 2, timeout: 30_000});
   assert.equal(result.status, 0, result.stderr?.toString() || "Cannot verify capture ZIP.");
   return new Map(Object.entries(JSON.parse(result.stdout)).map(([file, value]) => [file, Buffer.from(value, "base64")]));
@@ -204,7 +214,14 @@ function verifyFiles({files, binding}, {built = false, toolChecks = false} = {})
   assert.equal(receipt.exporterSha256, digest(Buffer.from(execute("git", ["show", `${binding.workflowSha}:tool/marketing/export_hosted_captures.mjs`]))).slice(7), "Wrong exporter controller bytes.");
   const pins = fs.readFileSync(fromRepo("tool/ci/toolchain.env"), "utf8");
   assert.equal(receipt.toolchain?.node?.replace(/^v/u, "").split(".")[0], pins.match(/^NODE_VERSION=(.+)$/mu)?.[1], "Wrong capture Node toolchain.");
-  assert.equal(receipt.toolchain?.flutter?.frameworkVersion, pins.match(/^FLUTTER_VERSION=(.+)$/mu)?.[1], "Wrong capture Flutter toolchain.");
+  assert.ok(["render", "reuse"].includes(receipt.mode), "Unknown capture export mode.");
+  if (receipt.mode === "render") {
+    assert.equal(receipt.toolchain?.flutter?.frameworkVersion, pins.match(/^FLUTTER_VERSION=(.+)$/mu)?.[1], "Wrong capture Flutter toolchain.");
+  } else {
+    // The Flutter pin is a render input, so a reused PNG already proves it.
+    assert.equal(receipt.toolchain?.flutter, null, "A reuse bundle records no renderer.");
+    assert.ok(receipt.captures?.every(c => c.disposition === "reused"), "A reuse bundle cannot contain renders.");
+  }
   assert.ok(files.get(manifestPath).equals(context.manifestBytes), "Authored capture manifest differs from consumer source.");
   assert.deepEqual(receipt.files?.map(file => file.path).sort(), context.expectedNames.filter(file => file !== "capture-receipt.json").sort(), "Incomplete or duplicate receipt inventory.");
   for (const file of receipt.files) {

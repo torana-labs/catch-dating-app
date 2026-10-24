@@ -135,9 +135,17 @@ export function readProvenance(bytes) {
   return records[0];
 }
 
+/**
+ * Packages the canonical captures of one exact source. `render` (macOS) renders
+ * whatever is stale. `reuse` (any platform) renders nothing and fails unless
+ * every capture is a valid earlier render of these inputs. `seeds` maps a
+ * capture id to the PNG bytes of an earlier render (a prior CI bundle); the
+ * same checks as a committed PNG decide whether it is reused.
+ */
 export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowSha,
   repository, runId, runAttempt, request, platform = process.platform,
-  sfFont = "/System/Library/Fonts/SFNS.ttf"}) {
+  sfFont = "/System/Library/Fonts/SFNS.ttf", mode = "render", seeds = new Map()}) {
+  if (mode !== "render" && mode !== "reuse") throw new Error("Capture export mode must be render or reuse.");
   for (const sha of [sourceSha, workflowSha]) {
     if (!/^[a-f0-9]{40}$/u.test(sha ?? "")) throw new Error("Full immutable source/workflow SHA required.");
   }
@@ -148,7 +156,7 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
       !/^[1-9][0-9]*$/u.test(runId ?? "") || !/^[1-9][0-9]*$/u.test(runAttempt ?? "")) {
     throw new Error("Repository, run ID and attempt required.");
   }
-  if (platform !== "darwin") throw new Error("Hosted export requires macOS and its native SF font.");
+  if (mode === "render" && platform !== "darwin") throw new Error("Hosted export requires macOS and its native SF font.");
   const root = fs.realpathSync(sourceDir);
   if (!path.isAbsolute(outputDir) || fs.existsSync(outputDir) ||
       outputDir === root || outputDir.startsWith(`${root}${path.sep}`)) {
@@ -173,27 +181,40 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
     regularFile(root, file);
     git("ls-files", "--error-unmatch", "--", file);
   }
-  const fontHash = sha256(fs.readFileSync(sfFont));
-  const flutter = JSON.parse(execute("flutter", ["--version", "--machine"], true));
+  // Reuse renders nothing, so it needs neither Flutter nor the native font: the
+  // Flutter pin is already a render input, and the reused PNGs record their font.
+  const rendering = mode === "render";
+  const flutter = rendering ? JSON.parse(execute("flutter", ["--version", "--machine"], true)) : null;
   const pins = fs.readFileSync(regularFile(root, "tool/ci/toolchain.env"), "utf8");
   const pin = key => pins.match(new RegExp(`^${key}=(.+)$`, "m"))?.[1];
-  if (flutter.frameworkVersion !== pin("FLUTTER_VERSION") ||
+  if ((rendering && flutter.frameworkVersion !== pin("FLUTTER_VERSION")) ||
       process.versions.node.split(".")[0] !== pin("NODE_VERSION")) {
     throw new Error("Installed Node/Flutter versions do not match source toolchain pins.");
+  }
+  for (const [id, bytes] of seeds) {
+    const capture = captures.find(c => c.id === id);
+    if (!capture || !Buffer.isBuffer(bytes)) throw new Error(`Unknown or invalid capture seed: ${id}`);
+    fs.writeFileSync(regularFile(root, capture.sourcePath), bytes);
   }
   // Reuse only current-input, current-font PNGs, byte-for-byte. Never stamp an
   // old image with a new source identity. Older source exporters retain the
   // original render-all path until they support the checked planning protocol.
   const exporterHelp = execute(process.execPath, ["tool/marketing/export_app_screenshots.mjs", "--help"], true);
-  const plan = exporterHelp.includes("--update-stale")
-    ? JSON.parse(execute(process.execPath, ["tool/marketing/export_app_screenshots.mjs", "--plan", "--sf-font", sfFont], true))
-    : captures.map(capture => ({id: capture.id, render: true}));
+  if (!rendering && !exporterHelp.includes("--inputs-only")) throw new Error("Source exporter cannot plan reuse without rendering.");
+  const plan = !rendering
+    ? JSON.parse(execute(process.execPath, ["tool/marketing/export_app_screenshots.mjs", "--plan", "--inputs-only"], true))
+    : exporterHelp.includes("--update-stale")
+      ? JSON.parse(execute(process.execPath, ["tool/marketing/export_app_screenshots.mjs", "--plan", "--sf-font", sfFont], true))
+      : captures.map(capture => ({id: capture.id, render: true}));
   if (!Array.isArray(plan) || plan.length !== captures.length ||
       new Set(plan.map(item => item.id)).size !== captures.length ||
       plan.some(item => typeof item.render !== "boolean" || !captures.some(c => c.id === item.id))) {
     throw new Error("Invalid or incomplete capture reuse plan.");
   }
   const renderIds = new Set(plan.filter(item => item.render).map(item => item.id));
+  if (!rendering && renderIds.size) {
+    throw new Error(`Captures need rendering, which reuse cannot do: ${[...renderIds].join(", ")}`);
+  }
   const reusedBytes = new Map(captures.filter(c => !renderIds.has(c.id)).map(c =>
     [c.id, fs.readFileSync(regularFile(root, c.sourcePath))]));
   for (const capture of captures) {
@@ -219,6 +240,13 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
   ];
   for (const args of commands) execute(process.execPath, args);
   assertSource();
+  // A reused bundle carries the one font its PNGs were rendered with.
+  const fontHash = rendering ? sha256(fs.readFileSync(sfFont)) : (() => {
+    const fonts = new Set(captures.map(capture =>
+      readProvenance(fs.readFileSync(regularFile(root, capture.sourcePath))).nativeFontSha256));
+    if (fonts.size !== 1) throw new Error("Reused captures mix native fonts.");
+    return [...fonts][0];
+  })();
   const allowed = new Set(generatedPaths);
   for (const file of git("diff", "--name-only", "HEAD", "-z").split("\0").filter(Boolean)) {
     if (!allowed.has(file)) throw new Error(`Capture changed source or goldens: ${file}`);
@@ -243,12 +271,12 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
     const bytes = fs.readFileSync(regularFile(root, file));
     return {path: file, bytes: bytes.length, sha256: sha256(bytes)};
   });
-  const receipt = {version: 2, kind: "canonical marketing export; synthetic fixture evidence",
+  const receipt = {version: 2, kind: "canonical marketing export; synthetic fixture evidence", mode,
     sourceSha, sourceTree: git("rev-parse", "HEAD^{tree}"), workflowSha, repository, runId, runAttempt,
     ...(request ? {workflowDefinitionSha: request.workflowDefinitionSha, request} : {}),
     runUrl: `https://github.com/${repository}/actions/runs/${runId}/attempts/${runAttempt}`,
     exporterSha256: sha256(fs.readFileSync(fileURLToPath(import.meta.url))),
-    toolchain: {node: process.version, flutter, os: execute("sw_vers", [], true),
+    toolchain: {node: process.version, flutter, os: rendering ? execute("sw_vers", [], true) : execute("uname", ["-sr"], true),
       architecture: process.arch, runnerImage: process.env.ImageVersion ?? null},
     commands, captures: records, files};
   fs.mkdirSync(outputDir, {recursive: true});
@@ -261,17 +289,44 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
   return receipt;
 }
 
+// The plan job's seeds, laid out at each capture's sourcePath. Only regular
+// files are read; the export then judges them like committed PNGs.
+function seedsFrom(seedDir, sourceDir) {
+  const seeds = new Map();
+  if (!seedDir || !fs.existsSync(seedDir)) return seeds;
+  const manifest = JSON.parse(fs.readFileSync(regularFile(fs.realpathSync(sourceDir), manifestPath), "utf8"));
+  for (const capture of canonicalInventory(manifest)) {
+    const file = path.join(seedDir, capture.sourcePath);
+    if (fs.existsSync(file)) seeds.set(capture.id, fs.readFileSync(regularFile(seedDir, capture.sourcePath)));
+  }
+  return seeds;
+}
+
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
     const request = requestFromEnvironment();
     if (process.argv.includes("--check-request")) {
       console.log(JSON.stringify(request));
+    } else if (process.argv.includes("--plan")) {
+      // Loaded only here: the planner reads GitHub, which other users of this
+      // module never need. It imports this module, so it must load after this
+      // module has finished evaluating; a top-level await here deadlocks.
+      import("./lib/capture_seeds.mjs")
+        .then(({planHostedCapturesForJob}) => planHostedCapturesForJob({request}))
+        .then(summary => console.log(JSON.stringify(summary, null, 2)))
+        .catch(error => {
+          console.error(error.message);
+          process.exitCode = 1;
+        });
     } else {
       const receipt = exportHostedCaptures({sourceDir: process.env.CAPTURE_SOURCE_DIR,
         sourceSha: request.sourceSha, outputDir: process.env.CAPTURE_OUTPUT_DIR,
         workflowSha: request.workflowSha, repository: process.env.GITHUB_REPOSITORY,
-        runId: process.env.GITHUB_RUN_ID, runAttempt: process.env.GITHUB_RUN_ATTEMPT, request});
-      console.log(`Validated ${receipt.captures.length} captures from ${receipt.sourceSha}.`);
+        runId: process.env.GITHUB_RUN_ID, runAttempt: process.env.GITHUB_RUN_ATTEMPT, request,
+        mode: process.argv.includes("--reuse") ? "reuse" : "render",
+        seeds: seedsFrom(process.env.CAPTURE_SEED_DIR, process.env.CAPTURE_SOURCE_DIR)});
+      const reused = receipt.captures.filter(capture => capture.disposition === "reused").length;
+      console.log(`Validated ${receipt.captures.length} captures from ${receipt.sourceSha} (${reused} reused).`);
     }
   } catch (error) {
     console.error(error.message);
