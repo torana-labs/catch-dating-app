@@ -3428,7 +3428,7 @@
       ],
       "checks": [
         "node --check tool/demo/seed_demo_data.mjs",
-        "node --test tool/demo/seed_demo_data_append.test.mjs tool/demo/seed_demo_data_schema.test.mjs"
+        "npm --prefix functions run build && node --test tool/demo/seed_demo_data_append.test.mjs tool/demo/seed_demo_data_schema.test.mjs"
       ],
       "role": "generator"
     },
