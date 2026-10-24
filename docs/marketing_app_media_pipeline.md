@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.10.0
+version: 1.11.0
 updated: 2026-10-24
 owner: marketing_website
 status: active
@@ -35,16 +35,35 @@ node tool/marketing/sync_website_media.mjs --check
 
 ## Website Contract
 
-Website pages render React `CaptureCard` components keyed by
-`data-capture-slot="<capture-id>"`. `website/src/App.tsx` loads
-`/assets/app-screenshots/manifest.json` and swaps in the active asset path,
-caption, alt text, walkthrough step, and status label.
+Pages ask for a capture by slot id and never name an image path:
+`website/src/shared/media/MediaSlot.tsx` renders
+`CatchAppCaptureImage` (`@catch/web-ui`, the website's T4 component for a
+device-framed capture with its caption) for the record with that id. Pages
+receive the records as their `captures` prop.
 
-The capture cards on `/explore/` consume these slots through
-`useMarketingCaptures()`. Capture selection and copy belong to the manifest.
-The homepage hero and `/host/` currently use authored React illustrations;
-regenerating app captures does not update those illustrations. Replacing them
-requires a separate content decision.
+`website/src/app/marketingCaptures.ts` bundles
+`website/public/assets/app-screenshots/manifest.json` at build time, so
+server-rendered pages and link previews include the captures; nothing fetches
+the manifest in the browser. `tool/marketing/sync_website_media.mjs` writes that
+manifest from `capture_manifest.json`, adding each record's framed pixel size
+and the `pages` that show it.
+
+In `capture_manifest.json`, `kind`, `pages` and `scenario` (the demo world,
+event and moment a capture shows, checked against
+`tool/demo/demo_seed/scenarios/`) sit beside the existing presentation fields.
+None of them is a render input.
+
+`website/src/app/marketingCaptures.test.tsx` fails when:
+
+- a page renders an unknown slot;
+- a page renders a slot whose capture doesn't list that page;
+- a capture lists a page that doesn't render it;
+- feature code names an `/assets/app-screenshots/` path;
+- a recorded size differs from the PNG.
+
+The `/host/` hero and the home "For organisers" card show
+`host-live-console`. The per-format phone illustrations on `/host/` stay
+authored until each launch format has a demo world to capture.
 
 Marketing styling imports the shared React web token layer from
 `packages/web-config/styles/catch-web.css`; the generated token CSS itself is
@@ -77,13 +96,25 @@ can conservatively invalidate multiple slots. Adding an asset to a declared
 directory also invalidates captures. No machine-specific font path or font
 bytes are distributed.
 
-The canonical macOS producer renders invalidated inputs and verifies reusable
-images for the exact CI source. Required Marketing validation imports its
+Capture production starts on Linux. The plan job (`export_hosted_captures.mjs
+--plan`) asks the source's own exporter which captures are stale, then looks
+for earlier renders of the same inputs in the newest capture bundles that
+main-line CI uploaded: main's push and nightly runs and main's merge-queue
+runs, from `ci.yml` in this repository, at most five bundles. A bundle PNG
+becomes a seed only when the source's `--plan --inputs-only` accepts it, its
+render revision is an ancestor of the source, and every seed shares one native
+font. If nothing is stale, the Linux reuse job packages those PNGs with no
+Flutter, no font and no macOS runner. Otherwise the macOS render job renders
+what is stale and reuses the rest, checking each seed's font against its own.
+The nightly run always renders everything, which re-checks the macOS font
+that a Linux reuse cannot see. Both producers publish the same bundle and
+binding; neither trusts the plan, and both verify every seed as they verify a
+committed PNG. Required Marketing validation imports its
 immutable artifact before dependency setup, checks and builds. Tools derives
 capture need from selected executable checks, shares the caller's bundle when
 provided, and otherwise starts one producer. Only the affected consumer or the
 full marketing/design bucket imports images; other buckets retain their
-ordinary checks. After importing, Tools verifies all 26 current output bytes
+ordinary checks. After importing, Tools verifies every current output byte
 against the bound archive before and after its check run and reuses only the
 three exact freshness commands already owned by the producer. Syntax, unit,
 framing and authored semantic checks still run. Missing or invalid bindings fail before a build; old tracked
@@ -202,9 +233,12 @@ stable so existing consumers keep their coverage.
 
 ## Hosted Export (CAT159 Enabling Slice)
 
-`.github/workflows/marketing-captures.yml` runs the existing canonical exporter
-on a standard GitHub-hosted `macos-26` runner, with repository-pinned Flutter
-and Node and the runner's local SFNS font. Manual dispatch accepts only a full
+`.github/workflows/marketing-captures.yml` plans on `ubuntu-24.04` (the only job
+that may read Actions), then either renders with the canonical exporter on a
+standard GitHub-hosted `macos-26` runner, with repository-pinned Flutter and Node
+and the runner's local SFNS font, or reuses on `ubuntu-24.04`. Producer jobs
+are named "Render and validate canonical iPhone captures" and "Reuse validated
+canonical iPhone captures"; exactly one runs and the other is skipped. Manual dispatch accepts only a full
 lowercase 40-character source commit SHA from this repository. Applying
 `capture:requested` to an open same-repository PR into `main` selects that
 label event's exact PR head SHA. The source is checked out separately from
@@ -260,7 +294,8 @@ restamped. Only invalidated outputs are removed before rendering. A render/check
 failure prevents artifact upload; there is no stale image fallback. Older source
 exporters without this protocol retain the full-render behavior.
 
-`--plan --sf-font <path>` prints render/reuse reasons; `--update-stale` renders
+`--plan --sf-font <path>` prints render/reuse reasons, and `--plan --inputs-only`
+judges inputs without the native font; `--update-stale` renders
 only invalidated selections. `--update` still forces rendering for intentional
 review. Source dependency changes, new assets, font changes, missing or corrupt
 PNGs all invalidate reuse. Reusing a valid source can repair a missing or stale
@@ -273,7 +308,10 @@ website manifest, design context, and `capture-receipt.json`. The receipt
 records per-file hashes/sizes, embedded PNG provenance, exact source SHA/tree,
 controller and workflow-definition SHAs, validated trigger request, helper hash,
 toolchain/runner identity and run/attempt URL. Receipt version 2 additionally
-records each capture's `rendered`/`reused` disposition and `verifiedSourceSha`.
+records each capture's `rendered`/`reused` disposition and `verifiedSourceSha`,
+and the export `mode`: `render`, which pins Flutter, or `reuse`, which records
+no renderer (the Flutter pin is already a render input) and contains only
+reused captures.
 For reuse, the PNG's `sourceRevision` identifies the original render and must not
 be relabeled as the current render source. Consumers must verify the selected
 source receipt, original provenance, full input validation and byte inventory;

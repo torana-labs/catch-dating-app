@@ -165,7 +165,12 @@ export async function runSupplyIntake({request, pageSource, now}: {
   const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "catch-supply-intake-"));
   try {
     const store = await new runtime.FileOperationsStore(scratch).initialize();
-    const workflow = new runtime.SupplyIntakeWorkflow({inputSnapshotLoader: async () => inputSnapshot});
+    // An intake request reads the pages it was given and plans no market
+    // discovery, so it runs for any city, including one discovery has not
+    // mapped (a nomination's unknown city arrives as "unassigned").
+    const workflow = new runtime.SupplyIntakeWorkflow({inputSnapshotLoader: async () => inputSnapshot,
+      discoveryPlanner: async ({market}: {market: string}) => ({schemaVersion: 1,
+        plannerId: "operations-supply-discovery-v1", market, planned: []})});
     const plan = await workflow.createPlan({market: intake.market,
       through: throughDate(now()), now: startedAt});
     const engine = new runtime.OperationsEngine({store, workflow, clock: now,

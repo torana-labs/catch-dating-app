@@ -121,3 +121,15 @@ test("failures release the lease for a retry, and the last attempt or a contract
   stored = failing.db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
   assert.equal(validateSupplyIntakeRequestsDocument(stored), true, "a failed attempt still satisfies the contract");
 });
+
+test("a request for a city discovery has not mapped still becomes a listing", async () => {
+  // "unassigned" is how a front door records a city it could not place.
+  for (const market of ["unassigned", "kolkata"]) {
+    const {db, writer, deps} = setup({request: request({market})});
+    assert.equal(await processSupplyIntakeRequest(deps, "nom-afterfly-1"), "completed", market);
+    const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+    const listing = writer.items.get(stored.result.listingWorkItemId)!;
+    assert.equal((listing.normalizedPayload as {intake?: {recordType?: string}}).intake?.recordType,
+      "organizer_listing_draft", market);
+  }
+});

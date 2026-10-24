@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.29.0
+version: 1.30.0
 updated: 2026-10-24
 owner: app_architecture
 status: active
@@ -24,7 +24,8 @@ The 2026-10-22 web unification (D16–D17) keeps the website and Admin as
 separate deployables over one shared web system, enforced with stylelint and
 ESLint rather than hand-written scanners. D18 (2026-10-23) gives both
 frameworks one placement rule: the library draws, and features only arrange
-and bind.
+and bind. D19–D21 (2026-10-24) set brand baseline v1: one type scale, one
+button, and who decides consolidation calls.
 
 It is a point-in-time plan, not a parallel architecture document. Durable rules
 ratified here are folded into `docs/app_architecture.md` (and the widget
@@ -797,6 +798,168 @@ Rejected alternatives:
   "screens become assemblies" plan). That puts drawing back into features.
 - **Parity for every library component.** Admin-only and native-only
   components would need twins that no surface renders.
+
+### Brand baseline v1 (D19–D21, decided 2026-10-24)
+
+Owner direction (2026-10-24): consolidate first. Collapse the many loosely
+defined variants into one definition per concept, chosen by expert judgement
+and common practice, so the product converges on one brand style. If a choice
+later disappoints, changing it edits a finite set of library defaults rather
+than hundreds of screens. The owner delegated these calls to the coordinator
+(Claude), who made them from side-by-side review sheets of every current
+version.
+
+Measured on 2026-10-24 against `origin/main` 4b9c3e887. All 47 website and
+Admin route stories were rendered in Chromium, and Flutter was counted from
+source:
+
+- **Type.**
+  - The website renders 149 distinct text styles at 43 sizes and 12 weights.
+    Its Archivo headlines come in 28 sizes from 20 to 83px.
+  - Admin renders 43 styles at 10 sizes and 11 weights. 886 of its 1,218 text
+    elements are smaller than 13px.
+  - The app has 8 headline sizes spread over 7 named styles.
+  - Both frameworks already set Archivo at 78% width. They differ in weight
+    (app 600, website 760) and letter-spacing (app 0, website −0.035em).
+- **Buttons.**
+  - The app has 627 `CatchButton` call sites. They are pills, except 11 that
+    use 14px corners.
+  - The website has 214. Its button component is a pill, but 42 rules in 14
+    page stylesheets restyle it, so pages render 83 buttons with 4px corners,
+    37 pills and 15 flat tabs.
+  - Admin has 317. They have 8px corners at 40px, its table buttons are 28px
+    pills, and none has a hover state.
+
+### D19. One type scale
+
+1. **Display voice.** Archivo stays at 78% width and is set at weight 760.
+   Line height and letter-spacing follow the step, as in the table below.
+   Archivo is only for headlines of 24px and up. Anything smaller uses the
+   function roles in the system font.
+2. **Six display steps on a 1.25 ratio.** These are `CatchText` variants with
+   the same names in both frameworks:
+
+   | Variant | Size | Line height | Letter-spacing |
+   | --- | --- | --- | --- |
+   | `displayXs` | 24px | 1.1 | −0.02em |
+   | `displayS` | 30px | 1.05 | −0.025em |
+   | `displayM` | 38px | 1.05 | −0.03em |
+   | `displayL` | 48px | 1.0 | −0.035em |
+   | `displayXl` | 60px | 1.0 | −0.04em |
+   | `displayXxl` | 72px | 1.0 | −0.04em |
+
+   - The app uses `displayXs` to `displayL`, and `displayXl` only for
+     celebration moments.
+   - The website uses all six. Below 640px wide, `displayXxl` and `displayXl`
+     render two steps down. Its fluid `clamp()` headlines snap to a step at
+     each width.
+   - Existing roles map onto the steps:
+     - `display` (44px) becomes `displayL`.
+     - `headlineS` (26px) becomes `displayXs`.
+     - `clubDisplay` and `eventDisplay` merge into these variants, which
+       settles CAT-235 as its option C. Their step s (22px) and step m (27px)
+       become `displayXs`, step l (32px) becomes `displayS`, and step xl
+       (38px) becomes `displayM`. That keeps the hero's collapsed and expanded
+       titles different sizes.
+     - `eventTitle` and the welcome reel (36px each) become `displayM`.
+     - `consoleTitle` (20px) becomes the function role `title`.
+     - Line heights and weights that callers pass today are dropped.
+3. **Interface text.** The shared function roles stay as they are.
+   - **Weights.** 400 for reading text, 500 for labels and field values, 600
+     for names, titles and buttons. 700 is only for metrics and numerals, and
+     760 only for display. Every other weight snaps to the nearest of these.
+   - **Admin.** Admin uses the same roles, and its reading text is at least
+     13px (`context`). 11–12px is allowed only for mono kickers, status labels
+     and badges. Admin page titles use `title`. D10's compact density scope
+     is not used for type.
+
+### D20. One button
+
+1. **Shape.** Every button has 4px corners (`radius-xs`) in every framework,
+   full-width sheet buttons included. `CatchButtonMode.rounded` retires.
+   - Pills are only for chips, filters, segmented toggles, count badges and the
+     floating map/count control, so the shape tells an action from a filter.
+2. **Variants.**
+   - **Primary** has an ink fill. It keeps its activity-accent option, and
+     React gains the same prop.
+   - **Secondary** has no fill and a 1px border at 42% ink, which turns full
+     ink on hover.
+   - **Quiet** is text only.
+   - **Danger** has a red fill. It is only for the confirming action of a
+     destructive flow.
+
+   On dark surfaces the same variants resolve through the dark theme, so there
+   is no separate light or inverse variant. Variants that retire:
+   - App: `ghost`, `.text` and `.command` become quiet. `dangerSecondary`
+     becomes secondary, because the confirm step carries the destructive
+     meaning. `light` becomes primary inside a dark scope.
+   - Website: `ghost` and `ghost-light` become secondary.
+   - Admin: the ghost button becomes secondary, the link button becomes quiet,
+     and the table action button becomes secondary at size S.
+
+   These are not buttons:
+   - the app's `.selection` becomes a chip;
+   - Admin's `selected` becomes a segmented control;
+   - the website's filter buttons become chips;
+   - the app's `.floating` stays its own component.
+3. **Sizes.**
+
+   | Size | Height | Label | Horizontal padding | Absorbs |
+   | --- | --- | --- | --- | --- |
+   | L (default) | 48px | 15px / 600 | 20px (`s5`) | App 48 and 56, website 48 and 52 |
+   | M | 40px | 15px / 600 | 16px (`s4`) | App 36, website small 40, Admin 40 |
+   | S | 32px | 13px / 600 | 12px (`s3`) | Admin 28, 30 and 34 |
+
+   On touch devices every size keeps the platform's minimum touch target,
+   whatever height it draws.
+4. **States.**
+   - **Hover:** an overlay in the label's colour, 8% on filled buttons and 5%
+     on secondary and quiet.
+   - **Press:** a 14% overlay and a 0.97 scale. There is no scale under reduced
+     motion.
+   - **Keyboard focus:** a 2px ring in ink (paper on dark), offset 2px.
+   - **Disabled:** 40% opacity and a not-allowed cursor.
+   - **Loading:** three dots replace the label at the same width, with busy
+     semantics.
+   - Transitions use 120ms on the standard curve. The website's hover lift
+     (a shadow plus a 1px raise) retires.
+
+### D21. Consolidation decision rights
+
+- **Approved without a packet.** The PR body lists each change from → to,
+  with counts. Visual baselines may update for these changes alone.
+  - Snapping any raw or off-scale value to the nearest existing token. That
+    covers type, spacing, size, radius, colour, elevation and motion duration.
+  - Moving a hand-built element onto the nearest existing library component or
+    variant, together with that component's own rendering and feedback.
+  - Implementing D19 and D20.
+- **The coordinator decides, with no wait for the owner.** These need a Linear
+  packet first:
+  - a new component, variant, prop or token;
+  - a mapping where the nearest option is more than one step away or would
+    change meaning, such as removing a colour that signals state, truncating
+    or dropping content, or restructuring a layout;
+  - retiring a role that has no close equivalent.
+- **The owner decides** product behaviour, copy, and brand identity beyond
+  these library defaults: logo, palette hues and typefaces.
+- **Changing a D19 or D20 default later** is a library change, made once and
+  reviewed with captures. Screens don't change.
+
+Rejected alternatives:
+
+- **Keep the app's steps (22–44px) and its 600 weight.** The website's heroes
+  would shrink to about half their size, and the lighter weight looks thin at
+  78% width above about 30px.
+- **Pill buttons everywhere.** This is the conventional choice. It keeps
+  actions and filters the same shape on all three surfaces, and it would undo
+  the consumer website's newest pages (#704).
+- **Keep 11–12px reading text in Admin.** It fits about one more table row
+  per screen, at the cost of readability over long working sessions.
+- **The owner reviews each packet.** Consolidation waited hours at a time on
+  calls that set no brand direction.
+
+`docs/design_language.md` takes D19 and D20 in the change that updates the
+library defaults.
 
 ## Part 4 — Delivery Program
 

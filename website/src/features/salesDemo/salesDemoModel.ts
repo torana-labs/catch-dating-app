@@ -1,5 +1,5 @@
 import type {SalesDemoSetup} from "../../shared/domain/salesDemoHandoff";
-export type {SalesDemoSetupPlan, SalesDemoSetup, SalesDemoContinuation, SalesDemoContinuationApi} from "../../shared/domain/salesDemoHandoff";
+export type {SalesDemoSetup} from "../../shared/domain/salesDemoHandoff";
 export {salesDemoFormEditorUrl} from "../../shared/domain/salesDemoHandoff";
 export type SalesDemoAction = "reviewApplication" | "prepareReply" |
   "admitGuest" | "requestAssistance";

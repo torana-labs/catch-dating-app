@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {
   lazy,
   Suspense,
@@ -650,7 +650,7 @@ function AdminRouteApp() {
         intakeMode={currentNav === "organizer-intake"}
       >
         <AdminTopbar>
-          <h1>{topbarTitle}</h1>
+          <CatchText as="h1" variant="titleL">{topbarTitle}</CatchText>
           <AdminTopbarActions>
             <AdminEnvironmentStatus
               environment={adminEnvironment}
@@ -978,8 +978,8 @@ function SignInScreen({
     <AdminSignInScreen>
       <AdminSignInPanel>
         <AdminBrandMark size="large">C</AdminBrandMark>
-        <h1>Catch Admin</h1>
-        <p>Internal admin access requires Firebase Auth and an admin claim.</p>
+        <CatchText as="h1" variant="headline">Catch Admin</CatchText>
+        <CatchText as="p" variant="supporting">Internal admin access requires Firebase Auth and an admin claim.</CatchText>
         {error && (
           <StatusBanner
             icon={<AlertTriangle size={17} strokeWidth={1.9} />}
@@ -1064,8 +1064,8 @@ function AuthCheckScreen({
     <AdminSignInScreen>
       <AdminSignInPanel>
         <AdminBrandMark size="large">C</AdminBrandMark>
-        <h1>Checking admin access</h1>
-        <p>{email}</p>
+        <CatchText as="h1" variant="headline">Checking admin access</CatchText>
+        <CatchText as="p" variant="supporting">{email}</CatchText>
         {error ? (
           <StatusBanner
             icon={<AlertTriangle size={17} strokeWidth={1.9} />}
@@ -1104,11 +1104,11 @@ function UnauthorizedAdminScreen({
     <AdminSignInScreen>
       <AdminSignInPanel>
         <AdminBrandMark size="large">C</AdminBrandMark>
-        <h1>Admin claim required</h1>
-        <p>
+        <CatchText as="h1" variant="headline">Admin claim required</CatchText>
+        <CatchText as="p" variant="supporting">
           {email} is signed in, but this Firebase session does not include a
           Catch admin custom claim.
-        </p>
+        </CatchText>
         <AdminSignInMeta>
           <Lock size={17} strokeWidth={1.9} />
           <span>Ask an admin owner to assign a role, then refresh claims.</span>

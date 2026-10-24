@@ -46,4 +46,3 @@ export function buildHomeDiscovery(listings: readonly HostListing[], citySlug: s
   const organisers = [...local, ...publicListings.filter(listing => listing.citySlug !== city.slug)].slice(0, 3);
   return {city, cityEvents, events: category === "all" ? cityEvents : cityEvents.filter(event => event.category === category), organisers};
 }
-export type HomeDiscovery = ReturnType<typeof buildHomeDiscovery>;
