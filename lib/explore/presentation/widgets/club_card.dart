@@ -68,10 +68,9 @@ class ClubCard extends StatelessWidget {
         ],
       ),
     );
-    final content = Hero(
+    final content = CatchHeroViewport(
       tag: clubInteractionHeroTag(club.id),
-      transitionOnUserGestures: true,
-      child: Material(color: Colors.transparent, child: card),
+      child: card,
     );
     return Semantics(
       key: ValueKey<String>('explore-organizer-${club.id}'),
