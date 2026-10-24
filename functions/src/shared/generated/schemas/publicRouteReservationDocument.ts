@@ -196,6 +196,7 @@ export const publicRouteReservationDocumentSchema: Record<string, unknown> = {
         "adminUpdateOrganizerDetails",
         "adminSetOrganizerIndexStatus",
         "adminCreateOrganizerDraftFromCandidate",
+        "adminApproveOrganizerListing",
         "createOrganizer",
         "clubsToOrganizersMigration"
       ],

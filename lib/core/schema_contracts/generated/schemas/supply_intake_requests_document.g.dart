@@ -24,6 +24,7 @@ const schemaSupplyIntakeRequestsDocumentSchema = <String, Object?>{
     'leaseUntil',
     'result',
     'failure',
+    'approval',
     'createdAt',
     'updatedAt',
   ],
@@ -618,6 +619,60 @@ const schemaSupplyIntakeRequestsDocumentSchema = <String, Object?>{
               'type': 'integer',
               'minimum': 1,
               'maximum': 3,
+            },
+          },
+        },
+      ],
+    },
+    'approval': <String, Object?>{
+      'description': 'Set once, when staff approve the listing this request built: the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'null',
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'approvalId',
+            'organizerId',
+            'approvedByUid',
+            'approvedAt',
+            'materialHash',
+            'salesOwnerUid',
+          ],
+          'properties': <String, Object?>{
+            'approvalId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'organizerId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'approvedByUid': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'approvedAt': <String, Object?>{
+              'type': 'string',
+              'format': 'date-time',
+            },
+            'materialHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+            'salesOwnerUid': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 240,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
             },
           },
         },

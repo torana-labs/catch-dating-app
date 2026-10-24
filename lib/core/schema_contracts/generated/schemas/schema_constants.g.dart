@@ -22,6 +22,8 @@ export 'admin_apply_sales_import_history_payload.g.dart';
 export 'admin_apply_sales_import_history_response.g.dart';
 export 'admin_apply_sales_privacy_batch_payload.g.dart';
 export 'admin_apply_sales_privacy_batch_response.g.dart';
+export 'admin_approve_organizer_listing_callable_payload.g.dart';
+export 'admin_approve_organizer_listing_callable_response.g.dart';
 export 'admin_approve_sales_quote_callable_payload.g.dart';
 export 'admin_approve_sales_quote_response.g.dart';
 export 'admin_assign_safety_triage_item_callable_payload.g.dart';

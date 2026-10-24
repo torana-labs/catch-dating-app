@@ -19,7 +19,6 @@ test("the train skips what it should not release", () => {
   for (const [label, change, reason] of [
     ["unsuccessful CI", {eventConclusion: "failure"}, "ci_unsuccessful"],
     ["timed-out CI", {eventConclusion: "timed_out"}, "ci_unsuccessful"],
-    ["a newer merge", {eventSha: "c".repeat(40)}, "superseded_by_newer_main"],
     ["no website validation", {validation: null}, "no_website_validation_for_main_head"],
     ["validation without captures", {validation: {validated: true, captureBinding: null}}, "no_website_validation_for_main_head"],
     ["already live", {lineage: {liveSha: mainSha, alreadyLive: true}}, "already_live"],
@@ -32,6 +31,13 @@ test("the train skips what it should not release", () => {
 test("a newer merge cancelling main's push run leaves the decision to the merge queue evidence", () => {
   assert.equal(planDecision({...base, eventConclusion: "cancelled"}).release, true);
   assert.equal(planDecision({...base, eventConclusion: "cancelled", validation: null}).reason,
+    "no_website_validation_for_main_head");
+});
+
+test("completion of an older commit's CI releases main's validated head", () => {
+  const decision = planDecision({...base, eventSha: "c".repeat(40), eventConclusion: "cancelled"});
+  assert.deepEqual([decision.release, decision.sourceSha], [true, mainSha]);
+  assert.equal(planDecision({...base, eventSha: "c".repeat(40), validation: null}).reason,
     "no_website_validation_for_main_head");
 });
 

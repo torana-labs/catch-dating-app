@@ -565,6 +565,9 @@ export {
   adminCreateOrganizerDraftFromCandidate,
 } from "./admin/organizerDraftFromCandidate";
 export {
+  adminApproveOrganizerListing,
+} from "./admin/organizerListingApproval";
+export {
   adminRecordEventIntakeReviewDecision,
 } from "./admin/eventIntakeReview";
 export {

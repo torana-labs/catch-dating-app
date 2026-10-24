@@ -698,6 +698,7 @@
           "type": "string",
           "enum": [
             "adminCreateOrganizerDraftFromCandidate",
+            "adminApproveOrganizerListing",
             "adminUpdateClubDetails",
             "adminSetClubIndexStatus",
             "adminOrganizerSearchBackfill"

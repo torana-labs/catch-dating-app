@@ -2465,6 +2465,7 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
             'adminCreateOrganizerDraftFromCandidate',
+            'adminApproveOrganizerListing',
             'adminUpdateClubDetails',
             'adminSetClubIndexStatus',
             'adminOrganizerSearchBackfill',

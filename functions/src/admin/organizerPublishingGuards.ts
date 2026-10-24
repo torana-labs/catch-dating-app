@@ -17,6 +17,7 @@ type OrganizerRouteReservationSource =
   "createOrganizer" |
   "hostPublishOrganizer" |
   "adminCreateOrganizerDraftFromCandidate" |
+  "adminApproveOrganizerListing" |
   "adminUpdateClubDetails" | "adminSetClubIndexStatus";
 
 interface ReserveOrganizerCanonicalRouteOptions {

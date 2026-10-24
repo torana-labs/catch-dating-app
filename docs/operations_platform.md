@@ -230,6 +230,36 @@ platform's redelivery. The third failed attempt, or an invalid request or
 policy, is terminal and recorded. `recoverSupplyIntakeRequests` runs hourly
 and picks up queued requests and expired leases whose events were lost.
 
+#### Approval
+
+Staff approve a listing with `adminApproveOrganizerListing`
+(`functions/src/admin/organizerListingApproval.ts`; roles `admin`,
+`adminOwner`, because approval opens Sales records). The reviewer confirms
+the name, public slug, an open launch market and the organizer type, ticks the
+public-web checklist that Organizer Intake decisions use, and quotes the
+listing's `contentHash`; a listing rebuilt since the review is refused. One
+transaction then:
+
+- creates the organizer published, unclaimed and `noindex` (`robots: noindex,
+  follow`), hidden in the app, from the listing's name, description,
+  categories and links (no image until media rights are settled), and reserves
+  its route;
+- records the curation receipt (`create_entity_draft`) and an `approve_public`
+  review decision;
+- sets the request's `approval` (organizer, approver, Sales owner, a hash of
+  what was approved);
+- links the website or partner enquiry the request came from, which credits
+  the partner;
+- opens the Sales account, a `new_enquiry` opportunity, a research task to
+  check the page and its events, a follow-up to invite the organizer to claim
+  it, and a `listing_approved` activity whose `source` names the request.
+
+An associate who nominated the organizer owns its Sales work; otherwise the
+approver does. Approval is idempotent per listing: an identical retry replays,
+and a different approval of the same listing is refused. Indexing and app
+discovery remain later decisions, after the organizer is verified. Matching a
+listing to an organizer Catch already lists is the reviewer's check for now.
+
 ## Reference Layout
 
 ```text

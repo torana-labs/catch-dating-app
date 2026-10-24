@@ -1623,6 +1623,171 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const adminApproveOrganizerListingCallablePayloadChecklistClaimTargetReviewed = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.checklist.claimTargetReviewed',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadChecklistCrawlDisabledReviewed = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.checklist.crawlDisabledReviewed',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadChecklistIdentityReviewed = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.checklist.identityReviewed',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadChecklistImpersonationReviewed = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.checklist.impersonationReviewed',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadChecklistMarketScopeReviewed = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.checklist.marketScopeReviewed',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadChecklistMediaRightsReviewed = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.checklist.mediaRightsReviewed',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadChecklistOwnerSafeCopyReviewed = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.checklist.ownerSafeCopyReviewed',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadChecklistSurfaceInventoryReviewed = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.checklist.surfaceInventoryReviewed',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadChecklistTakedownPathReviewed = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.checklist.takedownPathReviewed',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadContentHash = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadListingWorkItemId = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.listingWorkItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadMarketId = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.marketId',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadName = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.name',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadNote = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.note',
+    maxLength: 500,
+    minLength: 10,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadOrganizerType = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.organizerType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadPublicSlug = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.publicSlug',
+    maxLength: 64,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])\$',
+  );
+
+  static const adminApproveOrganizerListingCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\$',
+  );
+
+  static const adminApproveOrganizerListingCallableResponseApprovalId = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallableResponse.approvalId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^listing-[a-f0-9]{40}\$',
+  );
+
+  static const adminApproveOrganizerListingCallableResponseAppVisibility = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallableResponse.appVisibility',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallableResponseClaimState = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallableResponse.claimState',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallableResponseCreated = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallableResponse.created',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminApproveOrganizerListingCallableResponseIndexStatus = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallableResponse.indexStatus',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallableResponse.organizerId',
+    maxLength: 64,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApproveOrganizerListingCallableResponseOrganizerPath = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallableResponse.organizerPath',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^organizers/[^/]+\$',
+  );
+
+  static const adminApproveOrganizerListingCallableResponsePublishStatus = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallableResponse.publishStatus',
+    required: true,
+  );
+
+  static const adminApproveOrganizerListingCallableResponseSalesOwnerUid = CatchContractFieldConstraints(
+    path: 'adminApproveOrganizerListingCallableResponse.salesOwnerUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const adminApproveSalesQuoteCallablePayloadEvidenceEvidenceId = CatchContractFieldConstraints(
     path: 'adminApproveSalesQuoteCallablePayload.evidence.evidenceId',
     maxLength: 96,
@@ -109762,7 +109927,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerDocument.adminSearch.updatedBySource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['adminCreateOrganizerDraftFromCandidate', 'adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminOrganizerSearchBackfill'],
+    enumValues: <String>['adminCreateOrganizerDraftFromCandidate', 'adminApproveOrganizerListing', 'adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminOrganizerSearchBackfill'],
   );
 
   static const organizerDocumentAppVisibility = CatchContractFieldConstraints(
@@ -140923,7 +141088,7 @@ abstract final class CatchContractConstraints {
     path: 'publicRouteReservationDocument.lastVerifiedSource',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminUpdateOrganizerDetails', 'adminSetOrganizerIndexStatus', 'adminCreateOrganizerDraftFromCandidate', 'createOrganizer', 'clubsToOrganizersMigration'],
+    enumValues: <String>['adminUpdateClubDetails', 'adminSetClubIndexStatus', 'adminUpdateOrganizerDetails', 'adminSetOrganizerIndexStatus', 'adminCreateOrganizerDraftFromCandidate', 'adminApproveOrganizerListing', 'createOrganizer', 'clubsToOrganizersMigration'],
   );
 
   static const publicRouteReservationDocumentOwnerCollection = CatchContractFieldConstraints(
@@ -145409,6 +145574,15 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const salesActivityDocumentSourceApprovalId = CatchContractFieldConstraints(
+    path: 'salesActivityDocument.source.approvalId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const salesActivityDocumentSourceBlueprintId = CatchContractFieldConstraints(
     path: 'salesActivityDocument.source.blueprintId',
     maxLength: 128,
@@ -145448,6 +145622,21 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const salesActivityDocumentSourceOrigin = CatchContractFieldConstraints(
+    path: 'salesActivityDocument.source.origin',
+    required: true,
+    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run', 'none'],
+  );
+
+  static const salesActivityDocumentSourceRequestId = CatchContractFieldConstraints(
+    path: 'salesActivityDocument.source.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const salesActivityDocumentSourceSessionId = CatchContractFieldConstraints(
     path: 'salesActivityDocument.source.sessionId',
     maxLength: 128,
@@ -145469,7 +145658,7 @@ abstract final class CatchContractConstraints {
   static const salesActivityDocumentType = CatchContractFieldConstraints(
     path: 'salesActivityDocument.type',
     required: true,
-    enumValues: <String>['note', 'reply', 'call', 'demo', 'pilot', 'correction', 'outreach_sent_manual', 'claim_requested', 'claim_approved', 'claim_rejected', 'demo_started', 'demo_completed'],
+    enumValues: <String>['note', 'reply', 'call', 'demo', 'pilot', 'correction', 'outreach_sent_manual', 'claim_requested', 'claim_approved', 'claim_rejected', 'demo_started', 'demo_completed', 'listing_approved'],
   );
 
   static const salesCommercialDecisionsDocumentActorUid = CatchContractFieldConstraints(
@@ -157603,6 +157792,56 @@ abstract final class CatchContractConstraints {
     maxLength: 128,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentApprovalApprovalId = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.approval.approvalId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const supplyIntakeRequestsDocumentApprovalApprovedAt = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.approval.approvedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const supplyIntakeRequestsDocumentApprovalApprovedByUid = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.approval.approvedByUid',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const supplyIntakeRequestsDocumentApprovalMaterialHash = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.approval.materialHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentApprovalOrganizerId = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.approval.organizerId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const supplyIntakeRequestsDocumentApprovalSalesOwnerUid = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.approval.salesOwnerUid',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const supplyIntakeRequestsDocumentAttempts = CatchContractFieldConstraints(
@@ -171187,6 +171426,32 @@ abstract final class CatchContractConstraints {
     'adminApplySalesPrivacyBatchResponse.batch.retainedCount': adminApplySalesPrivacyBatchResponseBatchRetainedCount,
     'adminApplySalesPrivacyBatchResponse.batch.status': adminApplySalesPrivacyBatchResponseBatchStatus,
     'adminApplySalesPrivacyBatchResponse.batch.unresolvedCount': adminApplySalesPrivacyBatchResponseBatchUnresolvedCount,
+    'adminApproveOrganizerListingCallablePayload.checklist.claimTargetReviewed': adminApproveOrganizerListingCallablePayloadChecklistClaimTargetReviewed,
+    'adminApproveOrganizerListingCallablePayload.checklist.crawlDisabledReviewed': adminApproveOrganizerListingCallablePayloadChecklistCrawlDisabledReviewed,
+    'adminApproveOrganizerListingCallablePayload.checklist.identityReviewed': adminApproveOrganizerListingCallablePayloadChecklistIdentityReviewed,
+    'adminApproveOrganizerListingCallablePayload.checklist.impersonationReviewed': adminApproveOrganizerListingCallablePayloadChecklistImpersonationReviewed,
+    'adminApproveOrganizerListingCallablePayload.checklist.marketScopeReviewed': adminApproveOrganizerListingCallablePayloadChecklistMarketScopeReviewed,
+    'adminApproveOrganizerListingCallablePayload.checklist.mediaRightsReviewed': adminApproveOrganizerListingCallablePayloadChecklistMediaRightsReviewed,
+    'adminApproveOrganizerListingCallablePayload.checklist.ownerSafeCopyReviewed': adminApproveOrganizerListingCallablePayloadChecklistOwnerSafeCopyReviewed,
+    'adminApproveOrganizerListingCallablePayload.checklist.surfaceInventoryReviewed': adminApproveOrganizerListingCallablePayloadChecklistSurfaceInventoryReviewed,
+    'adminApproveOrganizerListingCallablePayload.checklist.takedownPathReviewed': adminApproveOrganizerListingCallablePayloadChecklistTakedownPathReviewed,
+    'adminApproveOrganizerListingCallablePayload.contentHash': adminApproveOrganizerListingCallablePayloadContentHash,
+    'adminApproveOrganizerListingCallablePayload.listingWorkItemId': adminApproveOrganizerListingCallablePayloadListingWorkItemId,
+    'adminApproveOrganizerListingCallablePayload.marketId': adminApproveOrganizerListingCallablePayloadMarketId,
+    'adminApproveOrganizerListingCallablePayload.name': adminApproveOrganizerListingCallablePayloadName,
+    'adminApproveOrganizerListingCallablePayload.note': adminApproveOrganizerListingCallablePayloadNote,
+    'adminApproveOrganizerListingCallablePayload.organizerType': adminApproveOrganizerListingCallablePayloadOrganizerType,
+    'adminApproveOrganizerListingCallablePayload.publicSlug': adminApproveOrganizerListingCallablePayloadPublicSlug,
+    'adminApproveOrganizerListingCallablePayload.requestId': adminApproveOrganizerListingCallablePayloadRequestId,
+    'adminApproveOrganizerListingCallableResponse.approvalId': adminApproveOrganizerListingCallableResponseApprovalId,
+    'adminApproveOrganizerListingCallableResponse.appVisibility': adminApproveOrganizerListingCallableResponseAppVisibility,
+    'adminApproveOrganizerListingCallableResponse.claimState': adminApproveOrganizerListingCallableResponseClaimState,
+    'adminApproveOrganizerListingCallableResponse.created': adminApproveOrganizerListingCallableResponseCreated,
+    'adminApproveOrganizerListingCallableResponse.indexStatus': adminApproveOrganizerListingCallableResponseIndexStatus,
+    'adminApproveOrganizerListingCallableResponse.organizerId': adminApproveOrganizerListingCallableResponseOrganizerId,
+    'adminApproveOrganizerListingCallableResponse.organizerPath': adminApproveOrganizerListingCallableResponseOrganizerPath,
+    'adminApproveOrganizerListingCallableResponse.publishStatus': adminApproveOrganizerListingCallableResponsePublishStatus,
+    'adminApproveOrganizerListingCallableResponse.salesOwnerUid': adminApproveOrganizerListingCallableResponseSalesOwnerUid,
     'adminApproveSalesQuoteCallablePayload.evidence.evidenceId': adminApproveSalesQuoteCallablePayloadEvidenceEvidenceId,
     'adminApproveSalesQuoteCallablePayload.expectedRevision': adminApproveSalesQuoteCallablePayloadExpectedRevision,
     'adminApproveSalesQuoteCallablePayload.opportunityId': adminApproveSalesQuoteCallablePayloadOpportunityId,
@@ -190740,11 +191005,14 @@ abstract final class CatchContractConstraints {
     'salesActivityDocument.providerConfirmed': salesActivityDocumentProviderConfirmed,
     'salesActivityDocument.recordedAt': salesActivityDocumentRecordedAt,
     'salesActivityDocument.schemaVersion': salesActivityDocumentSchemaVersion,
+    'salesActivityDocument.source.approvalId': salesActivityDocumentSourceApprovalId,
     'salesActivityDocument.source.blueprintId': salesActivityDocumentSourceBlueprintId,
     'salesActivityDocument.source.blueprintRevision': salesActivityDocumentSourceBlueprintRevision,
     'salesActivityDocument.source.claimRequestId': salesActivityDocumentSourceClaimRequestId,
     'salesActivityDocument.source.invitationId': salesActivityDocumentSourceInvitationId,
     'salesActivityDocument.source.kind': salesActivityDocumentSourceKind,
+    'salesActivityDocument.source.origin': salesActivityDocumentSourceOrigin,
+    'salesActivityDocument.source.requestId': salesActivityDocumentSourceRequestId,
     'salesActivityDocument.source.sessionId': salesActivityDocumentSourceSessionId,
     'salesActivityDocument.source.transitionId': salesActivityDocumentSourceTransitionId,
     'salesActivityDocument.type': salesActivityDocumentType,
@@ -192436,6 +192704,12 @@ abstract final class CatchContractConstraints {
     'supplyIntakeRequest.submittedBy.partnerId': supplyIntakeRequestSubmittedByPartnerId,
     'supplyIntakeRequest.submittedBy.role': supplyIntakeRequestSubmittedByRole,
     'supplyIntakeRequest.submittedBy.uid': supplyIntakeRequestSubmittedByUid,
+    'supplyIntakeRequestsDocument.approval.approvalId': supplyIntakeRequestsDocumentApprovalApprovalId,
+    'supplyIntakeRequestsDocument.approval.approvedAt': supplyIntakeRequestsDocumentApprovalApprovedAt,
+    'supplyIntakeRequestsDocument.approval.approvedByUid': supplyIntakeRequestsDocumentApprovalApprovedByUid,
+    'supplyIntakeRequestsDocument.approval.materialHash': supplyIntakeRequestsDocumentApprovalMaterialHash,
+    'supplyIntakeRequestsDocument.approval.organizerId': supplyIntakeRequestsDocumentApprovalOrganizerId,
+    'supplyIntakeRequestsDocument.approval.salesOwnerUid': supplyIntakeRequestsDocumentApprovalSalesOwnerUid,
     'supplyIntakeRequestsDocument.attempts': supplyIntakeRequestsDocumentAttempts,
     'supplyIntakeRequestsDocument.createdAt': supplyIntakeRequestsDocumentCreatedAt,
     'supplyIntakeRequestsDocument.failure.at': supplyIntakeRequestsDocumentFailureAt,

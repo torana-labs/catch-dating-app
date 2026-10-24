@@ -881,6 +881,8 @@ export {adminRecordActionExecutionCallablePayloadSchema} from "./schemas/adminRe
 export {adminDecideOrganizerEventCandidateCallablePayloadSchema} from "./schemas/adminDecideOrganizerEventCandidateInput";
 export {adminNominateOrganizerCallablePayloadSchema} from "./schemas/adminNominateOrganizerInput";
 export {adminNominateOrganizerCallableResponseSchema} from "./schemas/adminNominateOrganizerOutput";
+export {adminApproveOrganizerListingCallablePayloadSchema} from "./schemas/adminApproveOrganizerListingInput";
+export {adminApproveOrganizerListingCallableResponseSchema} from "./schemas/adminApproveOrganizerListingOutput";
 export {adminDecideOrganizerPolicyGapCallablePayloadSchema} from "./schemas/adminDecideOrganizerPolicyGapInput";
 export {adminResolveOrganizerEventLocationCallablePayloadSchema} from "./schemas/adminResolveOrganizerEventLocationInput";
 export {adminSetClubIndexStatusCallablePayloadSchema} from "./schemas/adminSetClubIndexStatusInput";

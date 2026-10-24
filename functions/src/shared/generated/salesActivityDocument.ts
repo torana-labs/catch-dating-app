@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions.
+ * Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions, and the approval of a listing Supply Intake built.
  */
 export type SalesActivityDocument = {
   [k: string]: unknown;
@@ -25,7 +25,8 @@ export type SalesActivityDocument = {
     | "claim_approved"
     | "claim_rejected"
     | "demo_started"
-    | "demo_completed";
+    | "demo_completed"
+    | "listing_approved";
   channel: ("email" | "whatsapp" | "other") | null;
   outcome: "actor_attested_sent" | null;
   providerConfirmed: false;
@@ -45,5 +46,15 @@ export type SalesActivityDocument = {
         blueprintId: string;
         blueprintRevision: number;
         invitationId: string;
+      }
+    | {
+        kind: "supply_intake";
+        requestId: string;
+        approvalId: string;
+        origin:
+          | "admin_nomination"
+          | "sales_inbound_intent"
+          | "discovery_run"
+          | "none";
       };
 };

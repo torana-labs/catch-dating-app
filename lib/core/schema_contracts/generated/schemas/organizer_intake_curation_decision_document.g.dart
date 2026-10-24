@@ -14,7 +14,7 @@ const schemaOrganizerIntakeCurationDecisionDocumentSchema = <String, Object?>{
   'x-firestore-collection': 'organizerIntakeCurationDecisions',
   'x-firestore-path': 'organizerIntakeCurationDecisions/{operationId}',
   'x-document-id-field': 'operationId',
-  'x-owner': 'adminRecordOrganizerCuration and adminCreateOrganizerDraftFromCandidate callables',
+  'x-owner': 'adminRecordOrganizerCuration, adminCreateOrganizerDraftFromCandidate and adminApproveOrganizerListing callables',
   'required': <Object?>[
     'schemaVersion',
     'operationId',

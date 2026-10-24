@@ -21,6 +21,7 @@ export 'callables/admin_apply_event_messaging_budget_callable_request.g.dart';
 export 'callables/admin_apply_sales_import_callable_request.g.dart';
 export 'callables/admin_apply_sales_import_history_request.g.dart';
 export 'callables/admin_apply_sales_privacy_batch_request.g.dart';
+export 'callables/admin_approve_organizer_listing_callable_request.g.dart';
 export 'callables/admin_approve_sales_quote_callable_request.g.dart';
 export 'callables/admin_assign_safety_triage_item_callable_request.g.dart';
 export 'callables/admin_assign_sales_partner_callable_request.g.dart';
