@@ -27,7 +27,7 @@ function Form() {
 
 vi.mock("./usePageLifecycle", () => ({
   useDocumentMeta: vi.fn(), useHashScroll: vi.fn(), useMarketingAnalytics: vi.fn(),
-  useMarketingCaptures: () => ({}), useRevealAnimations: vi.fn(),
+  useRevealAnimations: vi.fn(),
 }));
 vi.mock("./PublicEventListingsProvider", () => ({
   PublicEventListingsProvider: ({children}: {children: ReactNode}) => children,

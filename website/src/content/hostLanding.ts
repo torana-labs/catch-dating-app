@@ -6,9 +6,7 @@ export const hostLandingCopy = {
     title: "Run great events. Build a business around them.",
     body: "Bring bookings, payments, and guest communication together. Get to know your audience, understand what brings them back, and create more opportunities for people to participate and connect.",
     audience: "For independent hosts, growing clubs, community organisers, and event teams. Start with the tools you need.",
-    imageAlt: "An organiser welcoming guests while preparing an event",
     note: "Selected pilots. Hands-on setup. No platform switch required.",
-    visualTitle: "The work behind a great evening", visualItems: ["Guest list ready", "Arrival details shared", "A first hello planned"],
   },
   benefits: {
     title: "Good for your business. Great for your guests.",

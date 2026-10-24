@@ -66,20 +66,39 @@ class DemoWorld {
 
   /// Guests booked and checked in at a named moment.
   ({int booked, int checkedIn}) stateAt(String eventId, String moment) {
+    final guests = guestsAt(eventId, moment);
+    return (
+      booked: guests.length,
+      checkedIn: guests.where((guest) => guest.checkedInAt != null).length,
+    );
+  }
+
+  /// Guests booked and not cancelled at a named moment, in attendance order;
+  /// `checkedInAt` is null until they have checked in by then.
+  List<({String personaId, DateTime bookedAt, DateTime? checkedInAt})> guestsAt(
+    String eventId,
+    String moment,
+  ) {
     final at = moments[moment];
     if (at == null) throw StateError('$id has no moment $moment.');
-    var booked = 0;
-    var checkedIn = 0;
+    final guests =
+        <({String personaId, DateTime bookedAt, DateTime? checkedInAt})>[];
     for (final item in _list(event(eventId)['attendance'])) {
       final record = _map(item);
+      final bookedAt = record['bookedAt']! as String;
       final cancelledAt = record['cancelledAt'] as String?;
       final checkedInAt = record['checkedInAt'] as String?;
-      if ((record['bookedAt']! as String).compareTo(at) > 0) continue;
+      if (bookedAt.compareTo(at) > 0) continue;
       if (cancelledAt != null && cancelledAt.compareTo(at) <= 0) continue;
-      booked += 1;
-      if (checkedInAt != null && checkedInAt.compareTo(at) <= 0) checkedIn += 1;
+      guests.add((
+        personaId: personaIdFor(record['personId']! as String),
+        bookedAt: DateTime.parse(bookedAt),
+        checkedInAt: checkedInAt != null && checkedInAt.compareTo(at) <= 0
+            ? DateTime.parse(checkedInAt)
+            : null,
+      ));
     }
-    return (booked: booked, checkedIn: checkedIn);
+    return guests;
   }
 
   static Map<String, Object?> _map(Object? value) {

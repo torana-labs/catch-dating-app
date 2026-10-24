@@ -17,9 +17,9 @@
   },
   "host": {
     "uid": "sales-demo-host",
-    "personaId": "nyc_jordan_ellis_002",
-    "displayName": "Demo Host",
-    "firstName": "Host",
+    "personaId": "in_meher_bhatia_001",
+    "displayName": "Meher Bhatia",
+    "firstName": "Meher",
     "phoneNumber": "+919000000001",
     "email": "host@example.test"
   },
@@ -50,99 +50,99 @@
   "people": [
     {
       "id": "p01",
-      "personaId": "nyc_maya_shah_001"
+      "personaId": "in_ananya_kulkarni_002"
     },
     {
       "id": "p02",
-      "personaId": "nyc_jordan_ellis_002"
+      "personaId": "in_rohan_desai_003"
     },
     {
       "id": "p03",
-      "personaId": "nyc_sofia_martinez_003"
+      "personaId": "in_tanvi_shetty_004"
     },
     {
       "id": "p04",
-      "personaId": "nyc_ethan_brooks_004"
+      "personaId": "in_kabir_malhotra_005"
     },
     {
       "id": "p05",
-      "personaId": "nyc_aisha_williams_005"
+      "personaId": "in_zoya_merchant_006"
     },
     {
       "id": "p06",
-      "personaId": "nyc_daniel_kim_006"
+      "personaId": "in_nikhil_joshi_007"
     },
     {
       "id": "p07",
-      "personaId": "nyc_priya_desai_007"
+      "personaId": "in_ishita_rao_008"
     },
     {
       "id": "p08",
-      "personaId": "nyc_marcus_chen_008"
+      "personaId": "in_siddharth_menon_009"
     },
     {
       "id": "p09",
-      "personaId": "nyc_chloe_bennett_009"
+      "personaId": "in_riya_fernandes_010"
     },
     {
       "id": "p10",
-      "personaId": "nyc_noah_patel_010"
+      "personaId": "in_aditya_bhosale_011"
     },
     {
       "id": "p11",
-      "personaId": "nyc_olivia_nguyen_011"
+      "personaId": "in_sana_qureshi_012"
     },
     {
       "id": "p12",
-      "personaId": "nyc_caleb_johnson_012"
+      "personaId": "in_vikram_nair_013"
     },
     {
       "id": "p13",
-      "personaId": "nyc_emma_rodriguez_013"
+      "personaId": "in_neha_gupta_014"
     },
     {
       "id": "p14",
-      "personaId": "nyc_liam_oconnor_014"
+      "personaId": "in_farhan_shaikh_015"
     },
     {
       "id": "p15",
-      "personaId": "nyc_nia_okafor_015"
+      "personaId": "in_pooja_iyer_016"
     },
     {
       "id": "p16",
-      "personaId": "nyc_arjun_mehta_016"
+      "personaId": "in_karan_mehra_017"
     },
     {
       "id": "p17",
-      "personaId": "nyc_grace_liu_017"
+      "personaId": "in_aarti_patil_018"
     },
     {
       "id": "p18",
-      "personaId": "nyc_miles_anderson_018"
+      "personaId": "in_dev_sharma_019"
     },
     {
       "id": "p19",
-      "personaId": "nyc_hannah_cohen_019"
+      "personaId": "in_leela_dsouza_020"
     },
     {
       "id": "p20",
-      "personaId": "nyc_andre_baptiste_020"
+      "personaId": "in_rahil_contractor_021"
     },
     {
       "id": "p21",
-      "personaId": "nyc_isabella_romano_021"
+      "personaId": "in_gauri_deshpande_022"
     },
     {
       "id": "p22",
-      "personaId": "nyc_samir_khan_022"
+      "personaId": "in_omkar_jadhav_023"
     },
     {
       "id": "p23",
-      "personaId": "nyc_taylor_reed_023"
+      "personaId": "in_shruti_kale_024"
     },
     {
       "id": "p24",
-      "personaId": "nyc_victor_alvarez_024"
+      "personaId": "in_yash_thakur_025"
     }
   ],
   "events": [

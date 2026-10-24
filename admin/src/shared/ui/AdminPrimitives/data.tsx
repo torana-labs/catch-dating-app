@@ -5,7 +5,7 @@ import type {
   HTMLAttributes,
   ReactNode,
 } from "react";
-import {DataTableControl} from "@catch/web-ui";
+import {CatchText, DataTableControl} from "@catch/web-ui";
 import {Lock} from "lucide-react";
 
 import {
@@ -233,7 +233,7 @@ export function AdminPanel({
       <header className="panel-header">
         <div className="panel-title">
           {icon}
-          <h2>{title}</h2>
+          <CatchText as="h2" variant="titleL">{title}</CatchText>
         </div>
         {action ? <span>{action}</span> : null}
       </header>
@@ -255,7 +255,7 @@ export function Panel({
       <header className="panel-header">
         <div className="panel-title">
           {icon}
-          <h2>{title}</h2>
+          <CatchText as="h2" variant="titleL">{title}</CatchText>
         </div>
         <span>{action}</span>
       </header>
