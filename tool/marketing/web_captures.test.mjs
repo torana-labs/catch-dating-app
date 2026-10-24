@@ -173,6 +173,22 @@ test("a web capture names a real story file and id, Catch's own host and a websi
   }
 });
 
+test("Flutter route coverage accepts web stories but still rejects missing app fixtures", t => {
+  const f = fixture(t);
+  f.write("tool/ui_capture/check_capture_coverage.mjs",
+    fs.readFileSync(fromRepo("tool/ui_capture/check_capture_coverage.mjs")));
+  f.write("tool/ui_capture/route_inventory.json", JSON.stringify({routes: []}));
+  f.write("tool/ui_capture/capture_coverage.json", JSON.stringify({routes: []}));
+  const check = () => f.run("tool/ui_capture/check_capture_coverage.mjs", "--check");
+  f.ok(check());
+  for (const kind of [undefined, "app-capture", "unknown-kind"]) {
+    f.writeManifest({...f.capture, kind, fixtureKey: "missing-app-fixture"});
+    const result = check();
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /missing-app-fixture: active marketing fixture has no capture catalog entry/u);
+  }
+});
+
 function png(width = 1020, height = 1964) {
   function chunk(type, data) {
     const payload = Buffer.concat([Buffer.from(type), data]);
