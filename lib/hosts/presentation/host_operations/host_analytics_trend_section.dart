@@ -213,7 +213,7 @@ class HostAnalyticsBarTile extends StatelessWidget {
                                 width: CatchStroke.hairline,
                               )
                             : null,
-                        duration: Duration.zero,
+                        duration: CatchMotion.standard,
                         child: const SizedBox.shrink(),
                       ),
                     ),
