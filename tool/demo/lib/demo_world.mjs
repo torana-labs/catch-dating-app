@@ -9,6 +9,7 @@ const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../../..");
 const schemaPath = path.join(toolDir, "..", "demo_seed", "schema", "demo_world.schema.json");
 const eventCommonPath = path.join(repoRoot, "contracts", "shared", "event_common.schema.json");
+const personaRoot = path.join(toolDir, "..", "demo_seed", "personas");
 
 // Doors open before the start time; a check-in earlier than this is an error.
 const doorsOpenMinutes = 30;
@@ -129,6 +130,8 @@ function invariantProblems(world) {
   duplicates(world.venues.map((venue) => venue.id)).forEach((id) => problems.push(`venue ${id} is listed twice`));
   duplicates(world.events.map((event) => event.id)).forEach((id) => problems.push(`event ${id} is listed twice`));
 
+  problems.push(...castingProblems(world));
+
   const moments = Object.entries(world.moments);
   for (let index = 1; index < moments.length; index += 1) {
     if (moments[index][1] <= moments[index - 1][1]) {
@@ -168,6 +171,37 @@ function invariantProblems(world) {
     }
   }
   return problems;
+}
+
+// People come from reviewed persona catalogs, from the story's own country.
+function castingProblems(world) {
+  const problems = [];
+  const personas = personasById();
+  const country = world.locale.split("-")[1];
+  const cast = [["host", world.host.personaId], ...world.people.map((person) => [`person ${person.id}`, person.personaId])];
+  for (const [who, personaId] of cast) {
+    const persona = personas.get(personaId);
+    if (!persona) problems.push(`${who} uses unknown persona ${personaId}`);
+    else if (persona.countryCode !== country) problems.push(`${who} persona ${personaId} is from ${persona.countryCode}, not ${country}`);
+  }
+  duplicates(cast.map(([, personaId]) => personaId)).forEach((personaId) => problems.push(`persona ${personaId} is cast twice`));
+  const host = personas.get(world.host.personaId);
+  if (host && (world.host.displayName !== host.displayName || world.host.firstName !== host.firstName)) {
+    problems.push(`host is named ${world.host.displayName}, but persona ${host.id} is ${host.displayName}`);
+  }
+  return problems;
+}
+
+let personaCache;
+function personasById() {
+  if (personaCache) return personaCache;
+  personaCache = new Map();
+  for (const file of fs.readdirSync(personaRoot).filter((name) => name.endsWith("_personas.draft.json")).sort()) {
+    for (const persona of JSON.parse(fs.readFileSync(path.join(personaRoot, file), "utf8")).personas) {
+      personaCache.set(persona.id, persona);
+    }
+  }
+  return personaCache;
 }
 
 let enumCache;

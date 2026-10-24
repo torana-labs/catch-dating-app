@@ -19,14 +19,14 @@ on:
     outputs:
       capture_binding:
         description: Exact source, run, attempt, controller, and immutable artifact identity.
-        value: ${{ jobs.export.outputs.capture_binding }}
+        value: ${{ jobs.export.outputs.capture_binding || jobs.reuse.outputs.capture_binding }}
 
 permissions:
   contents: read
 
 jobs:
-  export:
-    name: Render and validate 12 canonical iPhone captures
+  plan:
+    name: Plan canonical iPhone captures
     if: >-
       inputs.automatic_source_sha != '' ||
       github.event_name == 'workflow_dispatch' ||
@@ -36,6 +36,77 @@ jobs:
        github.event.pull_request.base.ref == 'main' &&
        github.event.pull_request.base.repo.full_name == github.repository &&
        github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      render: ${{ steps.plan.outputs.render }}
+      seeded: ${{ steps.plan.outputs.seeded }}
+    env:
+      CAPTURE_SOURCE_SHA: ${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
+      CAPTURE_WORKFLOW_SHA: ${{ inputs.automatic_source_sha && github.sha || (github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha) }}
+      CAPTURE_AUTOMATIC_SOURCE_SHA: ${{ inputs.automatic_source_sha }}
+      CAPTURE_RUN_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      CAPTURE_WORKFLOW_DEFINITION_SHA: ${{ github.workflow_sha }}
+      CAPTURE_SOURCE_DIR: ${{ github.workspace }}/capture-source
+      TZ: UTC
+    steps:
+      - name: Validate immutable source selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          for sha in "$CAPTURE_SOURCE_SHA" "$CAPTURE_WORKFLOW_SHA" "$CAPTURE_WORKFLOW_DEFINITION_SHA"; do
+            [[ "$sha" =~ ^[a-f0-9]{40}$ ]] || {
+              echo 'Full lowercase source, controller and workflow-definition commit SHAs are required.' >&2
+              exit 1
+            }
+          done
+      - name: Initialize runner output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "CAPTURE_OUTPUT_DIR=$RUNNER_TEMP/canonical-marketing-captures" >> "$GITHUB_ENV"
+          echo "CAPTURE_SEED_DIR=$RUNNER_TEMP/capture-seeds" >> "$GITHUB_ENV"
+      - name: Checkout immutable exporter controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.CAPTURE_WORKFLOW_SHA }}
+          persist-credentials: false
+      - name: Validate capture request and controller identity
+        run: node tool/marketing/export_hosted_captures.mjs --check-request
+      - name: Checkout exact capture source separately
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.CAPTURE_SOURCE_SHA }}
+          path: capture-source
+          # Reused PNGs must prove their original render is an ancestor.
+          fetch-depth: 0
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: plan
+        name: Plan reuse from earlier main-line capture bundles
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tool/marketing/export_hosted_captures.mjs --plan
+      - name: Hand the seeds to the producing job
+        if: ${{ steps.plan.outputs.seeded == 'true' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: capture-seeds-${{ env.CAPTURE_SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CAPTURE_SEED_DIR }}/
+          if-no-files-found: error
+          retention-days: 1
+
+  export:
+    name: Render and validate canonical iPhone captures
+    needs: plan
+    if: ${{ needs.plan.outputs.render == 'true' }}
     concurrency:
       group: marketing-captures-${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
       cancel-in-progress: false
@@ -67,6 +138,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "CAPTURE_OUTPUT_DIR=$RUNNER_TEMP/canonical-marketing-captures" >> "$GITHUB_ENV"
+          echo "CAPTURE_SEED_DIR=$RUNNER_TEMP/capture-seeds" >> "$GITHUB_ENV"
       - name: Checkout immutable exporter controller
         uses: actions/checkout@v6
         with:
@@ -82,6 +154,12 @@ jobs:
           # Reused PNGs must prove their original render is an ancestor.
           fetch-depth: 0
           persist-credentials: false
+      - name: Receive seeds from the plan
+        if: ${{ needs.plan.outputs.seeded == 'true' }}
+        uses: actions/download-artifact@v7
+        with:
+          name: capture-seeds-${{ env.CAPTURE_SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CAPTURE_SEED_DIR }}
       - name: Verify source and matching toolchain pins
         shell: bash
         run: |
@@ -137,5 +215,115 @@ jobs:
             echo "Artifact: $ARTIFACT_ID"
             echo "Digest: $ARTIFACT_DIGEST"
             echo "Download: $ARTIFACT_URL"
-            echo '12 synthetic captures; website copies and provenance validated. No golden baseline update or website publication.'
+            echo 'Synthetic captures; website copies and provenance validated. No golden baseline update or website publication.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  reuse:
+    name: Reuse validated canonical iPhone captures
+    needs: plan
+    if: ${{ needs.plan.outputs.render == 'false' }}
+    concurrency:
+      group: marketing-captures-${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
+      cancel-in-progress: false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      capture_binding: ${{ steps.identity.outputs.capture_binding }}
+    env:
+      CAPTURE_SOURCE_SHA: ${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
+      CAPTURE_WORKFLOW_SHA: ${{ inputs.automatic_source_sha && github.sha || (github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha) }}
+      CAPTURE_AUTOMATIC_SOURCE_SHA: ${{ inputs.automatic_source_sha }}
+      CAPTURE_RUN_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      CAPTURE_WORKFLOW_DEFINITION_SHA: ${{ github.workflow_sha }}
+      CAPTURE_SOURCE_DIR: ${{ github.workspace }}/capture-source
+      TZ: UTC
+    steps:
+      - name: Validate immutable source selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          for sha in "$CAPTURE_SOURCE_SHA" "$CAPTURE_WORKFLOW_SHA" "$CAPTURE_WORKFLOW_DEFINITION_SHA"; do
+            [[ "$sha" =~ ^[a-f0-9]{40}$ ]] || {
+              echo 'Full lowercase source, controller and workflow-definition commit SHAs are required.' >&2
+              exit 1
+            }
+          done
+      - name: Initialize runner output directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "CAPTURE_OUTPUT_DIR=$RUNNER_TEMP/canonical-marketing-captures" >> "$GITHUB_ENV"
+          echo "CAPTURE_SEED_DIR=$RUNNER_TEMP/capture-seeds" >> "$GITHUB_ENV"
+      - name: Checkout immutable exporter controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.CAPTURE_WORKFLOW_SHA }}
+          persist-credentials: false
+      - name: Validate capture request and controller identity
+        run: node tool/marketing/export_hosted_captures.mjs --check-request
+      - name: Checkout exact capture source separately
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.CAPTURE_SOURCE_SHA }}
+          path: capture-source
+          # Reused PNGs must prove their original render is an ancestor.
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Receive seeds from the plan
+        if: ${{ needs.plan.outputs.seeded == 'true' }}
+        uses: actions/download-artifact@v7
+        with:
+          name: capture-seeds-${{ env.CAPTURE_SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CAPTURE_SEED_DIR }}
+      - name: Verify source and matching toolchain pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C "$CAPTURE_SOURCE_DIR" rev-parse HEAD)" = "$CAPTURE_SOURCE_SHA"
+          cmp tool/ci/toolchain.env "$CAPTURE_SOURCE_DIR/tool/ci/toolchain.env"
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Validate and package earlier renders of these exact inputs
+        run: node tool/marketing/export_hosted_captures.mjs --reuse
+      - name: Upload validated immutable capture bundle
+        id: bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: canonical-marketing-${{ env.CAPTURE_SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.CAPTURE_OUTPUT_DIR }}/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Record exact artifact identity
+        id: identity
+        env:
+          ARTIFACT_ID: ${{ steps.bundle.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.bundle.outputs.artifact-digest }}
+          ARTIFACT_URL: ${{ steps.bundle.outputs.artifact-url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const e = process.env;
+          const binding = {repository: e.GITHUB_REPOSITORY, sourceSha: e.CAPTURE_SOURCE_SHA,
+            workflowRef: e.GITHUB_WORKFLOW_REF,
+            workflowSha: e.CAPTURE_WORKFLOW_SHA, workflowDefinitionSha: e.CAPTURE_WORKFLOW_DEFINITION_SHA,
+            eventSha: e.GITHUB_SHA, runHeadSha: e.CAPTURE_RUN_HEAD_SHA,
+            runId: e.GITHUB_RUN_ID, runAttempt: e.GITHUB_RUN_ATTEMPT,
+            artifactId: e.ARTIFACT_ID, artifactDigest: `sha256:${e.ARTIFACT_DIGEST.replace(/^sha256:/, '')}`};
+          fs.appendFileSync(e.GITHUB_OUTPUT, `capture_binding=${JSON.stringify(binding)}\n`);
+          NODE
+          {
+            echo "Source: $CAPTURE_SOURCE_SHA"
+            echo "Exporter controller: $CAPTURE_WORKFLOW_SHA"
+            echo "Workflow definition: $CAPTURE_WORKFLOW_DEFINITION_SHA"
+            echo "Event: $GITHUB_EVENT_NAME ($GITHUB_SHA)"
+            echo "Run/attempt: $GITHUB_RUN_ID/$GITHUB_RUN_ATTEMPT"
+            echo "Artifact: $ARTIFACT_ID"
+            echo "Digest: $ARTIFACT_DIGEST"
+            echo "Download: $ARTIFACT_URL"
+            echo 'Synthetic captures; website copies and provenance validated. No golden baseline update or website publication.'
           } >> "$GITHUB_STEP_SUMMARY"

@@ -10,5 +10,8 @@
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.104.1"
+  },
+  "devDependencies": {
+    "stylelint": "17.16.0"
   }
 }

@@ -19,6 +19,7 @@ import type {
   AdminIntakeWorkbenchDetail,
   AdminIntakeWorkbenchTone,
 } from "./intake";
+import {CatchText} from "@catch/web-ui";
 
 export type AdminIntakeWorkbenchState =
   | "ready"
@@ -180,7 +181,7 @@ function InspectorSection({section}: {section: AdminIntakeInspectorSection}) {
   }
   return (
     <section className="intake-inspector-section">
-      <h4>{section.title}</h4>
+      <CatchText as="h4" variant="titleS">{section.title}</CatchText>
       {section.kind === "evidence" ? <EvidenceRows rows={section.rows} /> : null}
       {section.kind === "checklist" ? <ChecklistRows rows={section.rows} /> : null}
       {section.kind === "impact" ? <ImpactRows rows={section.rows} /> : null}
@@ -480,7 +481,7 @@ export function AdminIntakeReviewWorkbench({
       <header className="intake-batch-command">
         <div className="intake-batch-command-row">
           <div className="intake-batch-title">
-            <h3>{queueTitle}</h3>
+            <CatchText as="h3" variant="sectionTitle">{queueTitle}</CatchText>
             <span>{queueMeta}</span>
           </div>
           {stageControl ? (
@@ -758,8 +759,8 @@ export function AdminIntakeReviewWorkbench({
                 </button>
                 <span aria-hidden="true" className="intake-batch-avatar">{selectedDetail.initials}</span>
                 <div>
-                  <h3>{selectedDetail.title}</h3>
-                  <p>{selectedDetail.subtitle}</p>
+                  <CatchText as="h3" variant="sectionTitle">{selectedDetail.title}</CatchText>
+                  <CatchText as="p" variant="supporting">{selectedDetail.subtitle}</CatchText>
                 </div>
                 <span className={toneClass(selectedDetail.statusTone)}>{selectedDetail.status}</span>
                 {selectedDetail.action}
@@ -767,7 +768,7 @@ export function AdminIntakeReviewWorkbench({
 
               <section className="intake-inspector-blockers">
                 <div>
-                  <h4>Resolution</h4>
+                  <CatchText as="h4" variant="titleS">Resolution</CatchText>
                   <span>
                     {selectedDetail.readiness.complete} of {selectedDetail.readiness.total} checks complete
                   </span>
@@ -795,7 +796,7 @@ export function AdminIntakeReviewWorkbench({
               </div>
 
               <footer className="intake-inspector-actions">
-                <p>{selectedDetail.actionGate}</p>
+                <CatchText as="p" variant="supporting">{selectedDetail.actionGate}</CatchText>
                 <div>{selectedDetail.actions}</div>
               </footer>
             </>

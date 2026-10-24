@@ -21,10 +21,10 @@ import {
   useDocumentMeta,
   useHashScroll,
   useMarketingAnalytics,
-  useMarketingCaptures,
   useRevealAnimations,
 } from "./usePageLifecycle";
 import {isOrganizerSearchPath, marketingRoutePaths} from "./routeRegistry";
+import {marketingCaptures as captures} from "./marketingCaptures";
 import {MarketingConsentBanner} from "../features/marketing/MarketingConsentBanner";
 import {publishedLegalContent} from "../content/legal";
 import {assistanceCredential} from "../features/eventAssistance/eventAssistanceModel";
@@ -176,7 +176,6 @@ function CanonicalMarketingRouteShell() {
     : listing
       ? "listing"
       : fallbackPage;
-  const captures = useMarketingCaptures();
   const navigate = useNavigate();
   const exploreRouteState = exploreRouteStateForSearch(location.search);
   const homeRouteState = homeRouteStateForSearch(location.search);
