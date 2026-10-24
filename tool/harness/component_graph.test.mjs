@@ -541,7 +541,7 @@ test("React workflow routing preserves mixed native and backend ownership", () =
 
 test("backend control routing cannot suppress a changed native app or its release ownership", () => {
   const result = planAffected({changedPaths: [
-    ".github/workflows/_firebase-promote.yml", "apps/host/ios/Runner/Info.plist",
+    ".github/workflows/_backend-deploy.yml", "apps/host/ios/Runner/Info.plist",
   ], graph, mode: "main"});
   assert.ok(result.operations.ciTargets.includes("flutter_build_ios"));
   assert.ok(result.operations.ciTargets.includes("functions"));

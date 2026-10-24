@@ -529,8 +529,7 @@
         "tool/firebase/form_domain_operator.test.mjs",
         "functions/src/organizers/organizerFormDomainRegistry.ts",
         "functions/src/organizers/organizerFormDomainCallables.ts",
-        ".github/workflows/_firebase-promote.yml",
-        ".github/workflows/_cat151-receipt-promote.yml"
+        ".github/workflows/_backend-deploy.yml"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -560,7 +559,7 @@
       "impactPaths": [
         "tool/firebase/affected_function_targets.test.mjs",
         "tool/ci/package_firebase_delivery.mjs",
-        ".github/workflows/_firebase-promote.yml"
+        ".github/workflows/_backend-deploy.yml"
       ],
       "description": "Selects the authorized Functions affected by exact committed module dependencies, with full snapshot and conservative fallback behavior.",
       "checks": [
@@ -607,119 +606,6 @@
       }
     },
     {
-      "id": "ci:host-store-rules-release",
-      "category": "ci",
-      "path": "tool/ci/host_store_rules_release.mjs",
-      "command": "node --test tool/ci/host_store_rules_release.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/host_store_rules_release.test.mjs",
-        ".github/workflows/host-store-rules-release.yml",
-        "tool/ci/delivery_core.mjs",
-        "tool/firebase/check_rules_deployment_drift.mjs",
-        "firestore.rules"
-      ],
-      "description": "Verifies fixed PR592 Host rules recovery, immutable successful CI authority, human production approval, and live predecessor preservation.",
-      "checks": [
-        "node --check tool/ci/host_store_rules_release.mjs",
-        "node --test tool/ci/host_store_rules_release.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/host_store_rules_release.test.mjs",
-        "contains": [
-          "fixed authority rejects foreign, failed, rerun, expired or substituted artifacts",
-          "live drift and changes to unselected releases fail closed"
-        ]
-      }
-    },
-    {
-      "id": "ci:host-deletion-release",
-      "category": "ci",
-      "path": "tool/ci/host_deletion_release.mjs",
-      "command": "node --test tool/ci/host_deletion_release.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/host_deletion_release.test.mjs",
-        ".github/workflows/host-deletion-release.yml",
-        ".github/workflows/_host-deletion-promote.yml",
-        "tool/ci/delivery_core.mjs",
-        "tool/ci/firebase_functions_checkpoint.mjs",
-        "tool/firebase/prepare_functions_params_for_deploy.mjs",
-        "tool/firebase/wait_firestore_indexes_ready.mjs",
-        "tool/harness/lib/workflow_steps.mjs"
-      ],
-      "description": "Verifies the fixed Host account-deletion promotion, immutable CI package, exact DEV receipt, human PROD approval, and preservation of retained runtime and provider configuration.",
-      "checks": [
-        "node --check tool/ci/host_deletion_release.mjs",
-        "node --test tool/ci/host_deletion_release.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/host_deletion_release.test.mjs",
-        "contains": [
-          "Host deletion artifact metadata rejects wrong producer, source, archive and expired evidence",
-          "Host deletion completion and DEV admission reject cross-environment or partial deployment evidence",
-          "Host deletion caller scope predicate rejects mixed profiles and missing DEV evidence"
-        ]
-      }
-    },
-    {
-      "id": "ci:host-acquisition-release",
-      "category": "ci",
-      "path": "tool/ci/host_acquisition_release.mjs",
-      "command": "node --test tool/ci/host_acquisition_release.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/host_acquisition_release.test.mjs",
-        ".github/workflows/host-acquisition-release.yml",
-        ".github/workflows/_host-acquisition-promote.yml",
-        "tool/ci/delivery_core.mjs",
-        "tool/ci/firebase_functions_checkpoint.mjs",
-        "tool/firebase/prepare_functions_params_for_deploy.mjs",
-        "tool/firebase/wait_firestore_indexes_ready.mjs",
-        "tool/harness/lib/workflow_steps.mjs"
-      ],
-      "description": "Verifies the fixed Host acquisition intake release, immutable CI package, exact DEV receipt, human PROD approval, and preservation of retained runtime, provider configuration and unrelated indexes.",
-      "checks": [
-        "node --check tool/ci/host_acquisition_release.mjs",
-        "node --test tool/ci/host_acquisition_release.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/host_acquisition_release.test.mjs",
-        "contains": [
-          "Host acquisition artifact metadata rejects wrong producer, source, archive and expired evidence",
-          "Host acquisition completion and DEV admission reject cross-environment or partial deployment evidence",
-          "Host acquisition caller scope predicate rejects mixed profiles and missing DEV evidence"
-        ]
-      }
-    },
-    {
       "id": "ci:host-measurement-preview",
       "category": "ci",
       "path": "tool/ci/host_measurement_preview.mjs",
@@ -751,129 +637,6 @@
           "measurement preview rejects other callers, reruns and unaccepted CI",
           "measurement package rejects tampering, added files, links and source substitution",
           "measurement serving acceptance requires exact bytes and all privacy headers"
-        ]
-      }
-    },
-    {
-      "id": "ci:cat151-receipt-release",
-      "category": "ci",
-      "path": "tool/ci/cat151_receipt_release.mjs",
-      "command": "node --test tool/ci/cat151_receipt_release.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/cat151_receipt_release.test.mjs",
-        ".github/workflows/selective-backend-release.yml",
-        ".github/workflows/_cat151-receipt-promote.yml",
-        "tool/ci/firebase_functions_checkpoint.mjs",
-        "tool/ci/delivery_core.mjs",
-        "tool/firebase/check_environment_readiness.mjs"
-      ],
-      "alsoCheckIds": [
-        "ci:firebase-delivery-workflow",
-        "ci:firebase-functions-checkpoint"
-      ],
-      "description": "Verifies the fixed CAT151 order receipt release, immutable source artifact, exact predecessors, provider preservation and DEV-to-protected-PROD evidence.",
-      "checks": [
-        "node --check tool/ci/cat151_receipt_release.mjs",
-        "node --test tool/ci/cat151_receipt_release.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/cat151_receipt_release.test.mjs",
-        "contains": [
-          "CAT151 selects only the fixed order creator from the immutable main package",
-          "CAT151 protected workflow admits only fixed mode and chains exact DEV evidence into human PROD"
-        ]
-      }
-    },
-    {
-      "id": "ci:cat151-booking-release",
-      "category": "ci",
-      "path": "tool/ci/cat151_booking_release.mjs",
-      "command": "node --test tool/ci/cat151_booking_release.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/cat151_booking_release.test.mjs",
-        ".github/workflows/selective-backend-release.yml",
-        ".github/workflows/_firebase-promote.yml",
-        "tool/ci/firebase_functions_checkpoint.mjs",
-        "tool/ci/delivery_core.mjs",
-        "tool/firebase/check_environment_readiness.mjs"
-      ],
-      "alsoCheckIds": [
-        "ci:firebase-delivery-workflow",
-        "ci:firebase-functions-checkpoint"
-      ],
-      "description": "Verifies the immutable CAT151 booking writer release scope, predecessor identities, provider preservation and DEV-to-protected-PROD receipt binding.",
-      "checks": [
-        "node --check tool/ci/cat151_booking_release.mjs",
-        "node --test tool/ci/cat151_booking_release.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/cat151_booking_release.test.mjs",
-        "contains": [
-          "CAT151 selects exactly fourteen fixed writers from the immutable main package",
-          "CAT151 protected workflow admits only fixed mode and chains exact DEV evidence into human PROD"
-        ]
-      }
-    },
-    {
-      "id": "ci:selective-backend-release",
-      "category": "ci",
-      "path": "tool/ci/selective_backend_release.mjs",
-      "command": "node --test tool/ci/selective_backend_release.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/selective_backend_release.test.mjs",
-        "tool/firebase/function_release_fingerprints.mjs",
-        "tool/ci/firebase_functions_checkpoint.mjs",
-        "tool/ci/backend_delivery_lanes.mjs",
-        "tool/firebase/wait_firestore_indexes_ready.mjs",
-        "tool/ci/delivery_core.mjs"
-      ],
-      "alsoCheckIds": [
-        "firebase:function-release-fingerprints",
-        "ci:firebase-functions-checkpoint",
-        "firebase:index-readiness-waiter"
-      ],
-      "description": "Tests selective release plans, authenticated baseline adapters and mixed-source per-Function ledgers against independent source, package, materialized params, scoped index readiness and live deployment identities.",
-      "checks": [
-        "node --check tool/ci/selective_backend_release.mjs",
-        "node --test tool/ci/selective_backend_release.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/selective_backend_release.test.mjs",
-        "contains": [
-          "four changed Functions get candidate provenance while 574 real baseline rows remain byte-identical",
-          "authenticated baseline adapter selects five, preserves 574 and keeps index readiness outside Functions authority",
-          "completion rederives every plan field and exact evidence digest from independent preparation",
-          "all unchanged and selected live identities must match; no drift becomes coverage"
         ]
       }
     },
@@ -1035,221 +798,6 @@
           "failing validator fails the step while explicit output retains its JSON",
           "explicit output failure also fails the step"
         ]
-      }
-    },
-    {
-      "id": "ci:backend-source-review",
-      "category": "ci",
-      "path": "tool/ci/backend_source_review.mjs",
-      "command": "node --test tool/ci/backend_source_review.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/backend_source_review.test.mjs",
-        ".github/workflows/ci.yml",
-        ".github/workflows/delivery.yml",
-        ".github/workflows/_firebase-promote.yml",
-        ".github/workflows/selective-backend-release.yml",
-        "tool/firebase/affected_function_targets.mjs"
-      ],
-      "description": "Verifies explicit GitHub backend review against the exact merged source tree before automatic Functions promotion; missing or mismatched evidence retains protected production.",
-      "checks": [
-        "node --check tool/ci/backend_source_review.mjs",
-        "node --test tool/ci/backend_source_review.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/ci/backend_source_review.test.mjs"
-      }
-    },
-    {
-      "id": "ci:firebase-delivery-workflow",
-      "category": "ci",
-      "path": "tool/ci/firebase_delivery_workflow.test.mjs",
-      "command": "node --test tool/ci/firebase_delivery_workflow.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        ".github/workflows/ci.yml",
-        ".github/workflows/functions-ci.yml",
-        ".github/workflows/delivery.yml",
-        ".github/workflows/_firebase-promote.yml",
-        "tool/ci/firebase_delivery_workflow.test.mjs",
-        "tool/deploy_firebase_targets.sh",
-        "functions/scripts/set-callable-invokers-public.cjs",
-        "functions/test/callable-invokers.test.cjs",
-        ".github/workflows/backend-staging.yml",
-        ".github/workflows/backend-rebaseline.yml",
-        ".github/workflows/_backend-rebaseline.yml"
-      ],
-      "description": "Guards the sole automatic backend-delivery path: every completed CI run safely wakes the cursor queue, workflow-generation-bound successful-attempt authorities reference immutable artifact ids and digests, queue discovery performs bounded verification work, promotion is dev-to-protected-prod with an independent monthly staging snapshot, and recovery is source-bound.",
-      "checks": [
-        "node --check tool/ci/firebase_delivery_workflow.test.mjs",
-        "node --test tool/ci/firebase_delivery_workflow.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/firebase_delivery_workflow.test.mjs",
-        "contains": [
-          "CI packages one immutable backend from its exact plan and tested Functions",
-          "Delivery treats every completed CI trigger as a queue wakeup and trusts only exact artifacts",
-          "high-cardinality queue metadata still resolves one cursor and one oldest authority",
-          "promotion is ordered dev to protected prod",
-          "automatic target planning rejects broad and unrelated Firebase products"
-        ]
-      },
-      "alsoCheckIds": [
-        "ci:backend-source-review",
-        "ci:backend-delivery-lanes"
-      ]
-    },
-    {
-      "id": "ci:operator-prod-selective-release",
-      "category": "ci",
-      "path": "tool/ci/operator_prod_release.mjs",
-      "command": "node --test tool/ci/operator_prod_release.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/operator_prod_release.test.mjs",
-        ".github/workflows/selective-backend-release.yml",
-        ".github/workflows/_firebase-promote.yml",
-        "firestore.indexes.json"
-      ],
-      "description": "Pins one reviewer-protected PROD operator release to an immutable CI package, four Function names, five additive indexes, unchanged retained serving identities, and a mixed-source receipt.",
-      "checks": [
-        "node --check tool/ci/operator_prod_release.mjs",
-        "node --test tool/ci/operator_prod_release.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/ci/operator_prod_release.test.mjs"
-      },
-      "alsoCheckIds": [
-        "ci:operator-source-compatibility"
-      ]
-    },
-    {
-      "id": "ci:operator-source-compatibility",
-      "category": "ci",
-      "path": "tool/ci/operator_source_compatibility.mjs",
-      "command": "node --test tool/ci/operator_source_compatibility.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/operator_source_compatibility.test.mjs",
-        ".github/workflows/selective-backend-release.yml",
-        ".github/workflows/_firebase-promote.yml"
-      ],
-      "description": "Verifies only the exact reviewed PR552 source delta against the immutable operator package; rejects all further guarded backend or index drift. No deployment authority.",
-      "checks": [
-        "node --check tool/ci/operator_source_compatibility.mjs",
-        "node --test tool/ci/operator_source_compatibility.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/ci/operator_source_compatibility.test.mjs"
-      }
-    },
-    {
-      "id": "ci:firebase-functions-checkpoint",
-      "category": "ci",
-      "path": "tool/ci/firebase_functions_checkpoint.mjs",
-      "command": "node --test tool/ci/firebase_functions_checkpoint.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/firebase_functions_checkpoint.test.mjs",
-        "tool/ci/backend_delivery_lanes.mjs",
-        "tool/ci/delivery_core.mjs",
-        ".github/workflows/_firebase-promote.yml",
-        "tool/deploy_firebase_targets.sh"
-      ],
-      "alsoCheckIds": [
-        "ci:backend-delivery-lanes",
-        "ci:delivery-core",
-        "ci:firebase-delivery-workflow",
-        "firebase:deploy-target-plan"
-      ],
-      "description": "Verifies exact Functions deployment and Cloud Run serving identities for postconditions-only recovery, with strict source-bound checkpoint archive restoration and unchanged portable v2 fallback.",
-      "checks": [
-        "node --check tool/ci/firebase_functions_checkpoint.mjs",
-        "node --test tool/ci/firebase_functions_checkpoint.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/firebase_functions_checkpoint.test.mjs",
-        "contains": [
-          "changed source, attempt, project, base, targets, params or live revision cannot skip deployment",
-          "restore verifies the complete archive and historical producer before accepting either file",
-          "unchanged v2 core and actual legacy Delivery reader ignore a valid companion and replay the failed stage"
-        ]
-      }
-    },
-    {
-      "id": "ci:backend-delivery-lanes",
-      "category": "ci",
-      "path": "tool/ci/backend_delivery_lanes.mjs",
-      "command": "node --test tool/ci/backend_delivery_lanes.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/backend_delivery_lanes.test.mjs",
-        ".github/workflows/delivery.yml",
-        ".github/workflows/_firebase-promote.yml",
-        ".github/workflows/backend-rebaseline.yml",
-        ".github/workflows/_backend-rebaseline.yml"
-      ],
-      "description": "Verifies independently ordered dev and production progress, exact completed-dev package identity, bootstrap and legacy cutover without weakening immutable delivery authority.",
-      "checks": [
-        "node --check tool/ci/backend_delivery_lanes.mjs",
-        "node --test tool/ci/backend_delivery_lanes.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/ci/backend_delivery_lanes.test.mjs"
       }
     },
     {
@@ -1601,7 +1149,7 @@
         ]
       },
       "impactPaths": [
-        ".github/workflows/_firebase-promote.yml",
+        ".github/workflows/_backend-deploy.yml",
         "tool/firebase/wait_firestore_indexes_ready.test.mjs"
       ],
       "description": "Polls project-bound Firestore composite-index metadata until every desired packaged index is READY, failing closed on terminal states or timeout before dependent backend stages continue.",
@@ -1635,7 +1183,6 @@
         ]
       },
       "impactPaths": [
-        ".github/workflows/_firebase-promote.yml",
         "firestore.indexes.json",
         "tool/contracts/check_firestore_query_indexes.mjs",
         "tool/contracts/check_firestore_query_indexes.test.mjs",
@@ -1673,12 +1220,11 @@
         ]
       },
       "impactPaths": [
-        ".github/workflows/_firebase-promote.yml",
+        ".github/workflows/_backend-deploy.yml",
         "functions/src/organizers/organizerMessagingSetup.ts",
         "functions/src/payments/razorpay.ts",
         "functions/src/search/exploreSearch.ts",
         "functions/scripts/run-local-emulators.cjs",
-        "tool/ci/firebase_delivery_workflow.test.mjs",
         "tool/firebase/prepare_functions_params_for_deploy.test.mjs"
       ],
       "description": "Materializes validated non-secret Firebase Functions parameters only inside the disposable deploy tree, preserving fail-closed WhatsApp provider state for legacy packages while allowing non-interactive parameter discovery.",
@@ -1713,7 +1259,7 @@
       },
       "impactPaths": [
         "functions/src/**",
-        ".github/workflows/_firebase-promote.yml",
+        ".github/workflows/_backend-deploy.yml",
         ".github/workflows/functions-ci.yml",
         "tool/firebase/check_functions_params_coverage.test.mjs",
         "tool/firebase/prepare_functions_params_for_deploy.mjs"
@@ -3967,17 +3513,16 @@
         ]
       },
       "impactPaths": [
-        ".github/workflows/_firebase-promote.yml",
+        ".github/workflows/_backend-deploy.yml",
         "firebase.json",
         "firestore.rules",
         "storage.rules",
-        "tool/ci/firebase_delivery_workflow.test.mjs",
         "tool/firebase/check_rules_deployment_drift.test.mjs"
       ],
       "description": "Compares normalized committed Firestore and Storage rules with every applicable active Firebase Rules release, skipping only when no read credential is available.",
       "checks": [
         "node --check tool/firebase/check_rules_deployment_drift.mjs",
-        "node --test tool/firebase/check_rules_deployment_drift.test.mjs tool/ci/firebase_delivery_workflow.test.mjs",
+        "node --test tool/firebase/check_rules_deployment_drift.test.mjs",
         "node tool/firebase/check_rules_deployment_drift.mjs --env dev"
       ],
       "role": "gate",
@@ -4068,7 +3613,8 @@
         "tool/firebase/environment_readiness.json",
         "tool/firebase/function_binding_intent.mjs",
         "tool/firebase/function_binding_intent.test.mjs",
-        "tool/firebase/prepare_functions_params_for_deploy.mjs"
+        "tool/firebase/prepare_functions_params_for_deploy.mjs",
+        ".github/workflows/_backend-deploy.yml"
       ]
     },
     {
@@ -4367,7 +3913,6 @@
       },
       "impactPaths": [
         "tool/firebase/check_deploy_parity.test.mjs",
-        "tool/ci/firebase_delivery_workflow.test.mjs",
         "tool/deploy_firebase_targets.sh",
         "functions/src/index.ts",
         "functions/src/**/*.ts"
@@ -4375,8 +3920,7 @@
       "description": "Fails after a Functions deploy when a repository export is absent from the selected Firebase environment or a literal defineSecret name is absent from its project, while ignoring extension-owned extras.",
       "checks": [
         "node --check tool/firebase/check_deploy_parity.mjs",
-        "node --test tool/firebase/check_deploy_parity.test.mjs",
-        "node --test tool/ci/firebase_delivery_workflow.test.mjs"
+        "node --test tool/firebase/check_deploy_parity.test.mjs"
       ],
       "role": "gate",
       "vacuityProof": {
@@ -4463,7 +4007,9 @@
         "tool/firebase/check_deploy_ref.mjs",
         "tool/firebase/check_deploy_ref.test.mjs",
         "tool/firebase/check_deploy_parity.mjs",
-        "tool/firebase/check_deploy_parity.test.mjs"
+        "tool/firebase/check_deploy_parity.test.mjs",
+        "functions/scripts/set-callable-invokers-public.cjs",
+        "functions/test/callable-invokers.test.cjs"
       ]
     },
     {
@@ -8775,80 +8321,6 @@
       }
     },
     {
-      "id": "ci:whatsapp-five-release",
-      "category": "ci",
-      "path": "tool/ci/whatsapp_five_release.mjs",
-      "command": "node --test tool/ci/whatsapp_five_release.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/whatsapp_five_release.test.mjs",
-        ".github/workflows/selective-backend-release.yml",
-        ".github/workflows/_firebase-promote.yml",
-        "tool/ci/firebase_delivery_workflow.test.mjs",
-        "tool/ci/firebase_functions_checkpoint.mjs",
-        "tool/ci/delivery_core.mjs"
-      ],
-      "description": "One pinned protected PROD release of only five Catch WhatsApp Functions from the immutable historical package, with closed gates and selected-only physical receipt.",
-      "checks": [
-        "node --check tool/ci/whatsapp_five_release.mjs",
-        "node --test tool/ci/whatsapp_five_release.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/ci/whatsapp_five_release.test.mjs",
-        "contains": [
-          "immutable 580-export package selects exactly the authorized five",
-          "four Catch gates must be explicitly false in the generated deploy params",
-          "selected-only completion binds all five fresh serving revisions and exact params"
-        ]
-      },
-      "alsoCheckIds": [
-        "ci:firebase-delivery-workflow",
-        "ci:firebase-functions-checkpoint"
-      ]
-    },
-    {
-      "id": "ci:wedding-phone-import-release",
-      "category": "ci",
-      "path": "tool/ci/wedding_phone_import_release.mjs",
-      "command": "node --test tool/ci/wedding_phone_import_release.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/ci/wedding_phone_import_release.test.mjs",
-        ".github/workflows/wedding-phone-import-release.yml",
-        ".github/workflows/_firebase-promote.yml"
-      ],
-      "description": "One pinned additive wedding phone import callable, DEV receipt then protected human PROD approval, unchanged retained resources and closed activation controls.",
-      "checks": [
-        "node --check tool/ci/wedding_phone_import_release.mjs",
-        "node --test tool/ci/wedding_phone_import_release.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "self-test",
-        "command": "node --test tool/ci/wedding_phone_import_release.test.mjs"
-      },
-      "alsoCheckIds": [
-        "ci:firebase-functions-checkpoint",
-        "ci:operator-prod-selective-release"
-      ]
-    },
-    {
       "id": "design:host-section-composition",
       "category": "design",
       "path": "tool/design/check_host_section_composition.mjs",
@@ -8958,39 +8430,6 @@
           "artifact download uses only its exact id and rejects attempt races and digest tampering",
           "ZIP rejects missing, duplicate, extra, traversal, absolute, directory and symlink entries",
           "ZIP validates local names and CRCs and rejects prefixed or truncated archives"
-        ]
-      }
-    },
-    {
-      "id": "ci:host-deletion-indexes",
-      "category": "ci",
-      "path": "tool/firebase/host_deletion_indexes.mjs",
-      "command": "node --test tool/firebase/host_deletion_indexes.test.mjs",
-      "safety": "local-test",
-      "status": "active",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
-      "impactPaths": [
-        "tool/firebase/host_deletion_indexes.test.mjs",
-        ".github/workflows/host-deletion-indexes.yml",
-        "tool/ci/host_deletion_release.mjs"
-      ],
-      "description": "Checks the bounded additive Host deletion query indexes and DEV-to-protected-PROD preservation.",
-      "checks": [
-        "node --check tool/firebase/host_deletion_indexes.mjs",
-        "node --test tool/firebase/host_deletion_indexes.test.mjs"
-      ],
-      "role": "gate",
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/firebase/host_deletion_indexes.test.mjs",
-        "contains": [
-          "field patch adds one query scope without dropping inherited indexes or changing TTL",
-          "index repair rejects unrelated runtime and field configuration drift"
         ]
       }
     }
