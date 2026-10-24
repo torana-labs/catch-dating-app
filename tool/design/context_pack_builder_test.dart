@@ -357,7 +357,7 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
         'familyRoles':
             'Archivo is display/brand voice; platform system is prose, user content, and UI; IBM Plex Mono is data.',
         'tracking':
-            'Zero by default. Caps-only mono roles own 0.08-0.18em; welcomeReelHeadline owns the -0.5px display exception.',
+            'Zero by default. Caps-only mono roles own 0.08-0.18em; CatchWelcomeText owns the internal -0.5px display exception.',
         'uppercase':
             'Use uppercase-enforcing owners with kicker, monoCapsLabel, and badgeCaps.',
         'displayVoice':
@@ -888,11 +888,7 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('display', 'voice', CatchTextStyles.display),
   _StyleEntry.single('headline', 'function', CatchTextStyles.headline),
   _StyleEntry.single('headlineS', 'voice', CatchTextStyles.headlineS),
-  _StyleEntry.single(
-    'welcomeReelHeadline',
-    'voice',
-    CatchTextStyles.welcomeReelHeadline,
-  ),
+
   _StyleEntry.single(
     'welcomeIntroBody',
     'voice',

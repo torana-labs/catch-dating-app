@@ -125,8 +125,11 @@ class MediaMessageBody extends StatelessWidget {
         if (imageUrl != null)
           Padding(
             padding: CatchInsets.chatMediaAttachmentBottom,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(CatchRadius.md),
+            child: CatchSurface(
+              duration: Duration.zero,
+              tone: CatchSurfaceTone.transparent,
+              radius: CatchRadius.md,
+              clipBehavior: Clip.antiAlias,
               child: AspectRatio(
                 aspectRatio: CatchAspectRatio.standardPhoto,
                 child: CatchNetworkImage(

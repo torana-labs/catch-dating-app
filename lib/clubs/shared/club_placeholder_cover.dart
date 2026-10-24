@@ -19,13 +19,13 @@ class ClubPlaceholderCover extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = ClubCoverVisualPalette.forClub(context, club);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [palette.start, palette.end],
-        ),
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [palette.start, palette.end],
       ),
       child: Stack(
         fit: StackFit.expand,
@@ -42,21 +42,22 @@ class ClubPlaceholderCover extends StatelessWidget {
               radius: compact ? 16 : 22,
             ),
           ),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  CatchTokens.editorialWhite.withValues(
-                    alpha: CatchOpacity.clubCoverHighlightOverlay,
-                  ),
-                  CatchTokens.editorialBlack.withValues(
-                    alpha: CatchOpacity.clubCoverLowScrim,
-                  ),
-                ],
-              ),
+          CatchSurface(
+            duration: Duration.zero,
+            radius: CatchRadius.none,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                CatchTokens.editorialWhite.withValues(
+                  alpha: CatchOpacity.clubCoverHighlightOverlay,
+                ),
+                CatchTokens.editorialBlack.withValues(
+                  alpha: CatchOpacity.clubCoverLowScrim,
+                ),
+              ],
             ),
+            child: const SizedBox.expand(),
           ),
         ],
       ),

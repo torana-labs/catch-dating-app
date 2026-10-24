@@ -507,36 +507,28 @@ class SalesDemoHostScorecardFixture {
   }
 }
 
-/// Profile projections of every persona cohort capture fixtures may cast.
-const salesDemoProfileProjectionPaths = <String>[
-  'tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json',
-  'tool/demo/demo_seed/personas/india_core_sales_profile_projection.planned.json',
+/// Persona catalogs capture fixtures may cast. Profiles are built from the
+/// catalogs directly; `tool/demo/demo_persona_catalog.mjs` validates them.
+const salesDemoPersonaCatalogPaths = <String>[
+  'tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json',
+  'tool/demo/demo_seed/personas/india_core_sales_personas.draft.json',
 ];
 
 class SalesDemoSyntheticFixtures {
   const SalesDemoSyntheticFixtures._(this._personas);
 
   factory SalesDemoSyntheticFixtures.load({
-    List<String> paths = salesDemoProfileProjectionPaths,
+    List<String> paths = salesDemoPersonaCatalogPaths,
   }) {
     final personas = <String, _SalesDemoPersona>{};
     for (final path in paths) {
       final decoded = jsonDecode(File(path).readAsStringSync());
       final root = _stringMap(decoded, context: path);
-      if (_optionalStringFrom(root, 'kind') !=
-          'sales-demo-persona-profile-projection') {
-        throw StateError(
-          'Expected sales demo persona profile projection in $path.',
-        );
+      if (root['schemaVersion'] != 1 || root['personas'] is! List) {
+        throw StateError('Expected a sales demo persona catalog in $path.');
       }
-      final remotePhotosAvailable = _list(
-        root['assetStatuses'],
-      ).whereType<String>().contains('uploaded');
       for (final persona in _list(root['personas'])) {
-        final mapped = _SalesDemoPersona(
-          _stringMap(persona, context: path),
-          remotePhotosAvailable: remotePhotosAvailable,
-        );
+        final mapped = _SalesDemoPersona(_stringMap(persona, context: path));
         if (personas.containsKey(mapped.id)) {
           throw StateError('Persona ${mapped.id} appears in two cohorts.');
         }
@@ -837,10 +829,9 @@ EventParticipationStatus _participationStatusForIndex(
 String _firstName(String name) => name.trim().split(RegExp(r'\s+')).first;
 
 class _SalesDemoPersona {
-  const _SalesDemoPersona(this._json, {required this.remotePhotosAvailable});
+  const _SalesDemoPersona(this._json);
 
   final Map<String, Object?> _json;
-  final bool remotePhotosAvailable;
 
   String get id => _requiredString('id');
 
@@ -875,10 +866,12 @@ class _SalesDemoPersona {
   }
 
   List<ProfilePhoto> _profilePhotos() {
-    if (!remotePhotosAvailable) return const <ProfilePhoto>[];
     final photos = <ProfilePhoto>[];
-    for (final item in _list(_json['profilePhotos'])) {
+    for (final item in _list(_json['photos'])) {
       final photo = _stringMap(item, context: id);
+      // Only uploaded photos have bytes behind their URLs; planned slots
+      // leave the profile on initials.
+      if (_optionalStringFrom(photo, 'assetStatus') != 'uploaded') continue;
       final position = _optionalIntFrom(photo, 'position') ?? photos.length;
       photos.add(
         ProfilePhoto(
