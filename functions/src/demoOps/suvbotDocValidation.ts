@@ -44,7 +44,10 @@ const contractedPaths: ReadonlyArray<{
   validate: ValidateFunction<unknown>;
 }> = [
   {pattern: /^users\/[^/]+$/u, validate: validateUserProfileDocument},
-  {pattern: /^publicProfiles\/[^/]+$/u, validate: validatePublicProfileDocument},
+  {
+    pattern: /^publicProfiles\/[^/]+$/u,
+    validate: validatePublicProfileDocument,
+  },
   {pattern: /^organizers\/[^/]+$/u, validate: validateOrganizerDocument},
   {pattern: /^events\/[^/]+$/u, validate: validateEventDocument},
   {
@@ -127,7 +130,8 @@ export function schemaSerializable(value: unknown, at: string): unknown {
   }
   if (value === null || typeof value !== "object") return value;
   if (Array.isArray(value)) {
-    return value.map((item, index) => schemaSerializable(item, `${at}[${index}]`));
+    return value.map((item, index) =>
+      schemaSerializable(item, `${at}[${index}]`));
   }
   if (isTimestamp(value)) {
     return {_seconds: value.seconds, _nanoseconds: value.nanoseconds};
@@ -135,7 +139,8 @@ export function schemaSerializable(value: unknown, at: string): unknown {
   const prototype = Object.getPrototypeOf(value);
   if (prototype !== Object.prototype && prototype !== null) {
     throw new Error(
-      `Suvbot write ${at} contains a ${prototype?.constructor?.name ?? "non-plain"} ` +
+      `Suvbot write ${at} contains a ` +
+      `${prototype?.constructor?.name ?? "non-plain"} ` +
       "value; contracted documents use concrete values only."
     );
   }

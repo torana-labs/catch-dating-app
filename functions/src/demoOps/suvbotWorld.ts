@@ -168,7 +168,8 @@ export function parseDemoWorldRequest(
   text: string | undefined
 ): {world: DemoWorld; moment: SuvbotDemoMoment} | null {
   const words = (text ?? "").toLowerCase().split(/[\s/,:]+/u).filter(Boolean);
-  const world = suvbotWorldBundle.worlds.find((item) => words.includes(item.id));
+  const world = suvbotWorldBundle.worlds
+    .find((item) => words.includes(item.id));
   const moment = SUVBOT_DEMO_MOMENTS.find((item) =>
     words.includes(item.id) || words.includes(item.worldMoment.toLowerCase())
   );
@@ -185,8 +186,9 @@ export function parseDemoWorldRequest(
 export function suvbotSeedPrefix(uid: string): string {
   const safe = uid.replace(/[^A-Za-z0-9_-]/gu, "_");
   return safe.length <= 64 ?
-    `suvbot_${safe}` :
-    `suvbot_${createHash("sha256").update(uid).digest("hex").slice(0, 32)}`;
+    `suvbotdemo_${safe}` :
+    `suvbotdemo_${
+      createHash("sha256").update(uid).digest("hex").slice(0, 32)}`;
 }
 
 /**
@@ -198,7 +200,8 @@ export function buildSuvbotWorldPlan(
   input: SuvbotWorldPlanInput
 ): SuvbotWorldPlan {
   const {uid, user, world, now, timestamp} = input;
-  const momentSpec = SUVBOT_DEMO_MOMENTS.find((item) => item.id === input.moment);
+  const momentSpec = SUVBOT_DEMO_MOMENTS
+    .find((item) => item.id === input.moment);
   const civilMoment = momentSpec ? world.moments[momentSpec.worldMoment] : "";
   if (!momentSpec || !civilMoment) {
     throw new Error(`${world.id} has no ${input.moment} moment.`);
@@ -240,7 +243,8 @@ export function buildSuvbotWorldPlan(
   const testerAttends = input.moment === "live" || input.moment === "after";
   const testerGender = isGender(user.gender) ? user.gender : null;
   const firstMoment = Object.values(world.moments).sort()[0];
-  const testerBookedAt = new Date(clock.at(firstMoment).getTime() - 2 * HOUR_MS);
+  const testerBookedAt =
+    new Date(clock.at(firstMoment).getTime() - 2 * HOUR_MS);
   const primaryStart = clock.atDateTime(primary.civilDate, primary.startTime);
   const primaryEnd = clock.atDateTime(primary.civilDate, primary.endTime);
   const testerCheckedInAt = notAfter(
@@ -261,7 +265,9 @@ export function buildSuvbotWorldPlan(
     const participations: ParticipationRow[] = [];
     for (const record of records) {
       const member = cast.get(record.personId);
-      if (!member) throw new Error(`${world.id} has no person ${record.personId}.`);
+      if (!member) {
+        throw new Error(`${world.id} has no person ${record.personId}.`);
+      }
       participations.push({
         uid: member.uid,
         user: member.user,
@@ -386,7 +392,8 @@ export function buildSuvbotWorldPlan(
   });
   if (input.moment !== "before") {
     docs.push({
-      path: `notifications/${uid}/items/suvbot_reminder_${ids.event(primary.id)}`,
+      path: `notifications/${uid}/items/` +
+        `suvbot_reminder_${ids.event(primary.id)}`,
       data: {
         ...marker,
         uid,
@@ -516,7 +523,8 @@ function makeRoomForTester(
     !(record.cancelledAt && record.cancelledAt <= at));
   while (active().length + 1 > capacity) {
     const candidates = active();
-    const notCheckedIn = candidates.filter((record) => !isCheckedInAt(record, at));
+    const notCheckedIn = candidates
+      .filter((record) => !isCheckedInAt(record, at));
     const drop = (notCheckedIn.length > 0 ? notCheckedIn : candidates).at(-1);
     if (!drop) return;
     records.splice(records.indexOf(drop), 1);
@@ -662,7 +670,8 @@ function worldEventDoc(params: {
     constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
     eventPolicy,
     bookedCount: booked.length,
-    checkedInCount: booked.filter((row) => row.doc.status === "attended").length,
+    checkedInCount: booked
+      .filter((row) => row.doc.status === "attended").length,
     waitlistedCount: 0,
     status: "active",
     cancelledAt: null,
@@ -1034,7 +1043,9 @@ function demoPhoneNumber(personaId: string, country: string): string {
  */
 function requireMarket(city: string): CanonicalMarket {
   const market = marketForIdOrAlias(city);
-  if (!market) throw new Error(`Demo world city ${city} is not a known market.`);
+  if (!market) {
+    throw new Error(`Demo world city ${city} is not a known market.`);
+  }
   return market;
 }
 
