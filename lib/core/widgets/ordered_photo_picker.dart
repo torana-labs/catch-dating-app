@@ -697,11 +697,9 @@ class _OrderedPhotoStatusBanner extends StatelessWidget {
                   gapW6,
                 ],
                 Flexible(
-                  child: Text(
+                  child: CatchMetadataText(
                     failed && onRetry != null ? '$label · $retryLabel' : label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.monoLabel(context, color: t.surface),
+                    color: t.surface,
                   ),
                 ),
               ],

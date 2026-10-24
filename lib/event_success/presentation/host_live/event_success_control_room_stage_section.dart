@@ -41,12 +41,7 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
         ),
         if (showVenue) ...[
           gapH4,
-          Text(
-            event.locationName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.monoLabel(context, color: dark.ink2),
-          ),
+          CatchMetadataText(event.locationName, color: dark.ink2),
         ],
       ],
     );

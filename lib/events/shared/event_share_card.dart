@@ -173,15 +173,10 @@ class EventShareCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          event.activitySummaryLabel.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.kicker(
-                            context,
-                            color: t.primaryInk.withValues(
-                              alpha: CatchOpacity.onFillMuted,
-                            ),
+                        CatchKickerText(
+                          label: event.activitySummaryLabel.toUpperCase(),
+                          color: t.primaryInk.withValues(
+                            alpha: CatchOpacity.onFillMuted,
                           ),
                         ),
                         gapH8,

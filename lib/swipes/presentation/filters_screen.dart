@@ -375,9 +375,10 @@ class FiltersSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title.toUpperCase(),
-            style: CatchTextStyles.kicker(context, color: t.ink3),
+          CatchKickerText(
+            label: title.toUpperCase(),
+            color: t.ink3,
+            maxLines: null,
           ),
           gapH10,
           child,

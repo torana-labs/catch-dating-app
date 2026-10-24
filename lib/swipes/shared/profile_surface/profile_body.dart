@@ -276,9 +276,10 @@ class ProfileKickerText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Text(
-      label.toUpperCase(),
-      style: CatchTextStyles.kicker(context, color: color ?? t.ink3),
+    return CatchKickerText(
+      label: label.toUpperCase(),
+      color: color ?? t.ink3,
+      maxLines: null,
     );
   }
 }

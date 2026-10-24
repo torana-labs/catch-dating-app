@@ -20,14 +20,7 @@
       "headlineS": 1
     },
     "lib/chats/presentation/widgets/suvbot_dock.dart": {
-      "fieldRowTitle": 1,
-      "kicker": 1
-    },
-    "lib/clubs/presentation/detail/widgets/club_detail_body.dart": {
-      "monoLabelS": 1
-    },
-    "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart": {
-      "monoLabelS": 2
+      "fieldRowTitle": 1
     },
     "lib/clubs/presentation/detail/widgets/club_host_section.dart": {
       "monoLabel": 1
@@ -42,9 +35,6 @@
       "fieldRowTitle": 1,
       "monoLabelS": 1
     },
-    "lib/clubs/shared/club_host_identity_row.dart": {
-      "kicker": 1
-    },
     "lib/core/celebration/celebration_screen.dart": {
       "display": 2,
       "labelL": 1
@@ -56,7 +46,7 @@
       "labelL": 1
     },
     "lib/core/widgets/ordered_photo_picker.dart": {
-      "monoLabel": 2
+      "monoLabel": 1
     },
     "lib/cross_paths/presentation/cross_paths_explore_card.dart": {
       "mono": 1
@@ -65,14 +55,7 @@
       "monoLabelS": 1
     },
     "lib/dashboard/presentation/widgets/club_posts_home_section.dart": {
-      "fieldRowTitle": 1,
-      "monoLabelS": 1
-    },
-    "lib/dashboard/presentation/widgets/empty_hero_card.dart": {
-      "kicker": 2
-    },
-    "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart": {
-      "kicker": 1
+      "fieldRowTitle": 1
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart": {
       "labelL": 2
@@ -96,7 +79,7 @@
     "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart": {
       "consoleTitle": 1,
       "fieldRowTitle": 1,
-      "monoLabel": 3
+      "monoLabel": 2
     },
     "lib/event_success/presentation/reveal/event_success_countdown_text.dart": {
       "display": 1
@@ -128,9 +111,6 @@
     "lib/events/presentation/widgets/who_is_going_section.dart": {
       "labelL": 1
     },
-    "lib/events/shared/event_share_card.dart": {
-      "kicker": 1
-    },
     "lib/events/shared/event_tiles/event_action_card.dart": {
       "headlineS": 1
     },
@@ -145,16 +125,8 @@
     "lib/explore/presentation/widgets/explore_event_row.dart": {
       "mono": 1
     },
-    "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart": {
-      "kicker": 1
-    },
-    "lib/explore/presentation/widgets/explore_filter_rail.dart": {
-      "kicker": 4
-    },
     "lib/explore/presentation/widgets/featured_event_poster.dart": {
       "eventTitle": 1,
-      "kicker": 1,
-      "kickerLg": 1,
       "monoLabel": 1
     },
     "lib/hosts/presentation/customers/host_customers_list.dart": {
@@ -229,12 +201,8 @@
     "lib/reviews/shared/reviews_section.dart": {
       "labelL": 1
     },
-    "lib/swipes/presentation/filters_screen.dart": {
-      "kicker": 1
-    },
     "lib/swipes/shared/profile_surface/profile_body.dart": {
-      "hint": 1,
-      "kicker": 1
+      "hint": 1
     },
     "lib/user_analytics/shared/user_analytics_section.dart": {
       "labelL": 1

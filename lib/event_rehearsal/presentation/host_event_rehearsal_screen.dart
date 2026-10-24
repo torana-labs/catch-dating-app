@@ -708,12 +708,13 @@ class _RehearsalCoachDock extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                context.l10n.hostEventRehearsalCoachProgress(
+              CatchKickerText(
+                label: context.l10n.hostEventRehearsalCoachProgress(
                   current: task.number,
                   total: 8,
                 ),
-                style: CatchTextStyles.kicker(context, color: t.danger),
+                color: t.danger,
+                maxLines: null,
               ),
               gapH4,
               Text(

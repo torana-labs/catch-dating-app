@@ -67,21 +67,17 @@ class EmptyHeroBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (showWelcomeEyebrow) ...[
-          Text(
-            context.l10n.dashboardEmptyHeroCardTextWelcomeToCatch,
-            style: CatchTextStyles.kicker(
-              context,
-              color: CatchTokens.editorialWhite,
-            ),
+          CatchKickerText(
+            label: context.l10n.dashboardEmptyHeroCardTextWelcomeToCatch,
+            color: CatchTokens.editorialWhite,
+            maxLines: null,
           ),
           gapH28,
         ],
-        Text(
-          context.l10n.dashboardEmptyHeroCardTextNoEventsBooked,
-          style: CatchTextStyles.kicker(
-            context,
-            color: CatchTokens.editorialWhite,
-          ),
+        CatchKickerText(
+          label: context.l10n.dashboardEmptyHeroCardTextNoEventsBooked,
+          color: CatchTokens.editorialWhite,
+          maxLines: null,
         ),
         gapH10,
         CatchText(

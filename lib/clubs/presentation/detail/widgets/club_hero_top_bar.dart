@@ -348,14 +348,7 @@ class ClubHeroHeader extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    kickerLabel,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.monoLabelS(context, color: t.ink),
-                  ),
-                ),
+                Expanded(child: CatchMetadataText(kickerLabel, color: t.ink)),
                 gapW12,
                 CatchAvatar(
                   key: const ValueKey('club-detail-hero-logo-seal'),
@@ -468,12 +461,7 @@ class ClubHeroHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                kickerLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.monoLabelS(context, color: t.ink),
-              ),
+              CatchMetadataText(kickerLabel, color: t.ink),
               gapH8,
               Text(
                 club.name,
