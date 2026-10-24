@@ -4,31 +4,52 @@
   "cards": {
     "default": {
       "path": "/assets/og/default.png",
-      "version": "ab5013ee6fe4",
+      "version": "dd24d850ba79",
       "alt": "Catch: Find something worth showing up for",
       "capture": null,
-      "inputHash": "ab5013ee6fe485ae919cf220b5de20e59c2154d609d43e97824cd4050002456e"
+      "inputHash": "dd24d850ba791023db5345f51df1b07573c039cac9d6d4af930ffd3cbf5627b1"
+    },
+    "home": {
+      "path": "/assets/og/home.png",
+      "version": "e311ae6acdcf",
+      "alt": "Catch: Find something worth showing up for",
+      "capture": null,
+      "inputHash": "e311ae6acdcfda511562dbea6108036985af643cfc50695c124e3b0950329e33"
     },
     "host": {
       "path": "/assets/og/host.png",
-      "version": "780b3235dc38",
+      "version": "f0f4d73dd643",
       "alt": "Catch Host: Run great events. Build a business around them.",
       "capture": "host-live-console",
-      "inputHash": "780b3235dc38c23156d4304ea1e414a3b529d1a257dbef8a4d38b763b33aa36a"
+      "inputHash": "f0f4d73dd6435adf3ca0f402e3932651dc0c83de6baa7405d3fda0079b2c817a"
     },
     "apply": {
       "path": "/assets/og/apply.png",
-      "version": "d792643bae24",
+      "version": "e6dca18c2095",
       "alt": "Catch Host: Apply for a pilot",
       "capture": "host-create-basics",
-      "inputHash": "d792643bae24db51e8cedb91bf014d8a56184bbfbd006b3ad3d78c42ed481cb2"
+      "inputHash": "e6dca18c209570e477bd0a9ddb07e37186e0d9b06cc29406d5cecb08331cda3b"
+    },
+    "claim": {
+      "path": "/assets/og/claim.png",
+      "version": "72715004aa2c",
+      "alt": "Catch: Claim your organizer page",
+      "capture": null,
+      "inputHash": "72715004aa2c2e4e7178684f5dff2b0bbcce37f958fe723286b38dc91d8cc906"
+    },
+    "organizers": {
+      "path": "/assets/og/organizers.png",
+      "version": "84fb2553c835",
+      "alt": "Catch: Organisers, clubs and communities",
+      "capture": null,
+      "inputHash": "84fb2553c835cd42ec9a5b2ac117b5afabfdd00ed4566a2c0c74951b1aed32f2"
     },
     "form": {
       "path": "/assets/og/form.png",
-      "version": "f2710af6523e",
+      "version": "8dce80669826",
       "alt": "Catch: Organizer form",
       "capture": null,
-      "inputHash": "f2710af6523e88724db9ae85b97ec6aeca28ad8aba015c37ec07c1dd4558aeff"
+      "inputHash": "8dce806698263efc0ab5c7a3e76e04301d6626750d5fdaaf042c033a5530bb32"
     }
   }
 }

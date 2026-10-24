@@ -15,11 +15,15 @@ describe("link-preview cards", () => {
     }
   });
 
-  it("gives the Host pages and forms their own card and everything else the brand card", () => {
+  it("gives each shareable page type its own card and everything else the brand card", () => {
+    expect(previewCardFor(pageMeta.home.canonicalPath)).toBe("home");
+    expect(previewCardFor(pageMeta.visitor_discovery.canonicalPath)).toBe("home");
     expect(previewCardFor(pageMeta.host.canonicalPath)).toBe("host");
     expect(previewCardFor(pageMetaForHostPath("/host/apply/")!.canonicalPath)).toBe("apply");
+    expect(previewCardFor(pageMeta.claim.canonicalPath)).toBe("claim");
+    expect(previewCardFor(pageMeta.organizers.canonicalPath)).toBe("organizers");
     expect(previewCardFor(pageMeta.public_form.canonicalPath)).toBe("form");
-    for (const key of ["home", "privacy", "event_invite", "household_rsvp", "not_found"] as const) {
+    for (const key of ["privacy", "terms", "help", "event_invite", "event_booking", "household_rsvp", "not_found"] as const) {
       expect(previewCardFor(pageMeta[key].canonicalPath), key).toBe("default");
     }
   });
