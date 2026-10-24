@@ -358,14 +358,11 @@ class EventDetailTicketSurface extends StatelessWidget {
             ),
             if (!compact) ...[
               const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-              Text(
+              CatchText(
                 _heroSubtitle(event),
+                variant: CatchTextVariant.supportingStrong,
+                color: metaColor,
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: metaColor,
-                ).copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ],
@@ -437,12 +434,10 @@ class HeroTimeChip extends StatelessWidget {
             ),
           ),
           gapH2,
-          Text(
+          CatchText(
             EventFormatters.time(event.localStartTime),
-            style: CatchTextStyles.sectionTitle(
-              context,
-              color: d.ink,
-            ).copyWith(fontWeight: FontWeight.w800),
+            variant: CatchTextVariant.sectionTitle,
+            color: d.ink,
           ),
         ],
       ),
