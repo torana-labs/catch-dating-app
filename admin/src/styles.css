@@ -743,11 +743,6 @@
   margin-block-start: var(--catch-space-s2);
 }
 
-.intake-inspector-list {
-  display: grid;
-  gap: var(--catch-space-s1);
-}
-
 .intake-inspector-row {
   display: flex;
   min-width: 0;

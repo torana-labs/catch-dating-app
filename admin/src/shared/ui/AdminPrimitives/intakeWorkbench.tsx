@@ -19,7 +19,7 @@ import type {
   AdminIntakeWorkbenchDetail,
   AdminIntakeWorkbenchTone,
 } from "./intake";
-import {CatchText} from "@catch/web-ui";
+import {CatchGap, CatchText} from "@catch/web-ui";
 
 export type AdminIntakeWorkbenchState =
   | "ready"
@@ -121,7 +121,7 @@ function toneClass(tone: AdminIntakeWorkbenchTone = "neutral") {
 
 function EvidenceRows({rows}: {rows: AdminIntakeEvidenceRow[]}) {
   return (
-    <div className="intake-inspector-list">
+    <CatchGap size="headerTitleToSubtitle">
       {rows.map((row) => (
         <div className="intake-inspector-row" key={row.id}>
           <div>
@@ -135,13 +135,13 @@ function EvidenceRows({rows}: {rows: AdminIntakeEvidenceRow[]}) {
           <span className={toneClass(row.statusTone)}>{row.status}</span>
         </div>
       ))}
-    </div>
+    </CatchGap>
   );
 }
 
 function ChecklistRows({rows}: {rows: AdminIntakeChecklistRow[]}) {
   return (
-    <div className="intake-inspector-list">
+    <CatchGap size="headerTitleToSubtitle">
       {rows.map((row) => (
         <div className="intake-inspector-row" key={row.id}>
           <span aria-hidden="true" className={row.passed ? "success" : "warning"}>
@@ -153,7 +153,7 @@ function ChecklistRows({rows}: {rows: AdminIntakeChecklistRow[]}) {
           </div>
         </div>
       ))}
-    </div>
+    </CatchGap>
   );
 }
 
