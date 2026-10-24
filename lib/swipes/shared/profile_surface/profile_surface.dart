@@ -273,8 +273,10 @@ class ProfileSurfacePhotoSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: CatchInsets.contentVertical,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
+      child: CatchSurface(
+        duration: Duration.zero,
+        tone: CatchSurfaceTone.transparent,
+        clipBehavior: Clip.antiAlias,
         child: AspectRatio(
           aspectRatio: CatchAspectRatio.portrait4x5,
           child: CatchSkeleton.box(

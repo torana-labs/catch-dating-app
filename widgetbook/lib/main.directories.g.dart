@@ -471,6 +471,8 @@ import 'package:widgetbook_workspace/primitives/contracts/toolbar.dart'
     as _widgetbook_workspace_primitives_contracts_toolbar;
 import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
     as _widgetbook_workspace_primitives_contracts_typography;
+import 'package:widgetbook_workspace/primitives/contracts/welcome_text.dart'
+    as _widgetbook_workspace_primitives_contracts_welcome_text;
 import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
     as _widgetbook_workspace_primitives_distance_ring_use_cases;
 import 'package:widgetbook_workspace/primitives/error_feedback_use_cases.dart'
@@ -15643,6 +15645,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder:
                     _widgetbook_workspace_utility_settings.settingsScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  ),
+  _widgetbook.WidgetbookCategory(
+    name: 'Product materials',
+    children: [
+      _widgetbook.WidgetbookFolder(
+        name: 'Onboarding',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchWelcomeText',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_welcome_text
+                    .catchWelcomeTextContractStates,
               ),
             ],
           ),

@@ -21,6 +21,6 @@ export const consumerHomeCopy = {
     {question: "Are my answers and choices private?", answer: "Private social questionnaire answers and matching choices stay out of organiser guest records. A quiet introduction request goes only to the host who can help. Private event feedback is shared as combined patterns, not your individual answers."},
     {question: "What if I need help?", answer: "Check your event page for organiser contact details and cancellation terms. Visit Catch Help for support with your account or using Catch."},
   ]},
-  host: {eyebrow: "For organisers", title: "Run great events. Build a business around them.", body: "Bring bookings, guest relationships, and the experience itself together with Catch Host.", audience: "For independent hosts, growing clubs, community organisers, and event teams.", alt: "An organiser preparing for an event at a cafe", guestList: "Guest list", illustrative: "Illustrative guest list", names: ["Aditi Sharma", "Rohan Mehta", "Priya Nair", "Arjun Kapoor"], checkedIn: "Checked in", confirmed: "Confirmed"},
+  host: {eyebrow: "For organisers", title: "Run great events. Build a business around them.", body: "Bring bookings, guest relationships, and the experience itself together with Catch Host.", audience: "For independent hosts, growing clubs, community organisers, and event teams."},
   close: "Find your next plan.",
 } as const;

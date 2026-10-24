@@ -6573,26 +6573,28 @@ final _marketingHostReportEvent = hostMarketingIndiaScenario.event(
 final _marketingHostParticipationRepository = FakeEventParticipationRepository()
   ..eventParticipations[_marketingHostLiveEvent.id] = const [];
 final _marketingHostPublicProfileRepository = FakePublicProfileRepository();
-final _marketingHostLiveAttendees = List<EventAttendee>.generate(
-  _marketingHostLiveEvent.signedUpCount,
-  (index) => EventAttendee(
-    id: 'marketing-india-attendee-$index',
-    eventId: _marketingHostLiveEvent.id,
-    clubId: _marketingHostClub.id,
-    organizerId: _captureViewerUid,
-    displayName: 'Guest ${index + 1}',
-    searchName: 'guest ${index + 1}',
-    source: EventAttendeeSource.catchBooking,
-    status: index < _marketingHostLiveEvent.attendedCount
-        ? EventAttendeeStatus.checkedIn
-        : EventAttendeeStatus.registered,
-    createdAt: hostMarketingIndiaScenario.clock('today'),
-    updatedAt: hostMarketingIndiaScenario.clock('live'),
-    checkedInAt: index < _marketingHostLiveEvent.attendedCount
-        ? hostMarketingIndiaScenario.clock('live')
-        : null,
-  ),
-);
+final _marketingHostLiveAttendees = [
+  for (final (index, guest)
+      in hostMarketingIndiaScenario.guestsAt('live').indexed)
+    EventAttendee(
+      id: 'marketing-india-attendee-$index',
+      eventId: _marketingHostLiveEvent.id,
+      clubId: _marketingHostClub.id,
+      organizerId: _captureViewerUid,
+      displayName: _captureFixtures.publicProfile(guest.personaId).name,
+      searchName: _captureFixtures
+          .publicProfile(guest.personaId)
+          .name
+          .toLowerCase(),
+      source: EventAttendeeSource.catchBooking,
+      status: guest.checkedInAt != null
+          ? EventAttendeeStatus.checkedIn
+          : EventAttendeeStatus.registered,
+      createdAt: guest.bookedAt,
+      updatedAt: guest.checkedInAt ?? guest.bookedAt,
+      checkedInAt: guest.checkedInAt,
+    ),
+];
 EventSuccessPlan _marketingHostPlan(Event event, {bool complete = false}) =>
     EventSuccessPlan.fromDraft(
       id: event.id,

@@ -1,7 +1,6 @@
 /** Catch acquisition boundary. This module never reads the DOM or the local bus. */
 export const catchMeasurementVersion = 1 as const;
 export type AcquisitionForm = "member_waitlist" | "host_lead" | "host_application" | "claim";
-export type AcquisitionAudience = "brand" | "organizer" | "attendee";
 export interface MeasurementConsent {
   version: number;
   analytics: boolean;

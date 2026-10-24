@@ -1,9 +1,9 @@
 ---
 doc_id: demo_world_scenarios_spec
-version: 0.1.0
+version: 0.2.0
 updated: 2026-10-24
 owner: marketing_website
-status: proposed
+status: active
 ---
 
 # Demo World Scenarios
@@ -59,9 +59,14 @@ selective rendering) are CAT-239, owned separately.
 5. **Facts are exported, not retyped.** `demoWorldFacts(world, eventId, moment)`
    returns the values copy may quote (guest counts, names, times). Website
    content imports facts instead of typing numbers.
-6. **People come from cohorts.** Guests and hosts reference personas by id. India
-   stories use India personas. Names are fictional, and phone numbers use the
-   reserved demo range `+91 90000 0xxxx`.
+6. **People come from cohorts.** Guests and hosts reference personas by id from
+   the reviewed catalogs in `tool/demo/demo_seed/personas/*_personas.draft.json`.
+   India stories cast from `india-core-sales-personas-v1` (68 people, 34 women and
+   34 men; 21 in Mumbai, 12 each in Pune, Bangalore and Delhi including Gurugram,
+   10 in Hyderabad, 1 in Indore), so each launch-format world can cast 10-14
+   locals. Names are fictional, and phone numbers use the reserved demo range
+   `+91 90000 0xxxx`. Photos are planned slots until generated and uploaded, so
+   captures show initials meanwhile.
 
 ## World format (schemaVersion 2)
 
@@ -113,7 +118,11 @@ scenario first needs them, with the same rule: timestamps in, counts derived.
 
 ## Invariants the validator enforces
 
-- Every `personId`, `personaId` and `venueId` resolves.
+- Every `personId`, `personaId` and `venueId` resolves; personas resolve
+  against the catalogs.
+- Every cast persona comes from the story's country (the `locale` region), no
+  persona is cast twice (host included), and the host's names match the host
+  persona.
 - `checkedInAt` is after `bookedAt` and within the event window (doors may open
   30 minutes early).
 - `booked ≤ capacity` at every moment.
@@ -140,7 +149,10 @@ scenario first needs them, with the same rule: timestamps in, counts derived.
    at follow-up). The Dart reader reads v2. **Acceptance:** the 12 canonical
    captures render pixel-identical to the same commit before the change.
 2. Add India personas (names first, photos later) and swap the story's host and
-   roster to them. Captures change on purpose here and get reviewed.
+   roster to them. Captures change on purpose here and get reviewed. **Done:**
+   `india_core_sales_personas.draft.json` and its planned profile projection;
+   `host-marketing-india` casts Meher Bhatia as host and 20 Mumbai plus 4 Pune
+   guests; capture fixtures load every cohort projection.
 3. Add the TypeScript reader and point the guest-page Storybook stories at the
    world.
 4. Write one world per launch format, each its own small PR that can run in

@@ -8091,6 +8091,225 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminListOrganizerListingReviewsCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallablePayload.cursor',
+    maxLength: 400,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const adminListOrganizerListingReviewsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 50,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseCanApprove = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.canApprove',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.nextCursor',
+    maxLength: 400,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRows = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsKind = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.kind',
+    required: true,
+    enumValues: <String>['nomination', 'self_submission', 'discovery'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingCategories = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.categories',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 12,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingCategoriesItems = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.categories.items',
+    maxLength: 80,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingContentHash = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingDescription = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.description',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingEventCount = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.eventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingFetchedPageCount = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.fetchedPageCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingGaps = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.gaps',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 40,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingGapsItems = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.gaps.items',
+    maxLength: 120,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingLinks = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.links',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingLinksItemsPlatform = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.links.items.platform',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingLinksItemsUrl = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.links.items.url',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingName = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.name',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingPageCount = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.pageCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingResearchNeeded = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.researchNeeded',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsListingWorkItemId = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.listingWorkItemId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsMarketLabel = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.market.label',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsMarketMarketId = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.market.marketId',
+    maxLength: 96,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsMarketOpen = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.market.open',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsMarketSlug = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.market.slug',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsOrigin = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.origin',
+    required: true,
+    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run', 'none'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsRequestId = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.requestId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsSubmittedAt = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.submittedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsSubmittedByRole = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.submittedByRole',
+    required: true,
+    enumValues: <String>['associate', 'partner', 'organizer', 'system'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsSuggestedSlug = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.suggestedSlug',
+    maxLength: 64,
+    minLength: 3,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])\$',
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseUnavailableCount = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.unavailableCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const adminListSalesAccountsCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'adminListSalesAccountsCallablePayload.cursor',
     maxLength: 512,
@@ -172317,6 +172536,37 @@ abstract final class CatchContractConstraints {
     'adminListOrganizerDetailsCallablePayload.limit': adminListOrganizerDetailsCallablePayloadLimit,
     'adminListOrganizerDetailsCallablePayload.publishStatus': adminListOrganizerDetailsCallablePayloadPublishStatus,
     'adminListOrganizerDetailsCallablePayload.query': adminListOrganizerDetailsCallablePayloadQuery,
+    'adminListOrganizerListingReviewsCallablePayload.cursor': adminListOrganizerListingReviewsCallablePayloadCursor,
+    'adminListOrganizerListingReviewsCallablePayload.limit': adminListOrganizerListingReviewsCallablePayloadLimit,
+    'adminListOrganizerListingReviewsCallableResponse.canApprove': adminListOrganizerListingReviewsCallableResponseCanApprove,
+    'adminListOrganizerListingReviewsCallableResponse.nextCursor': adminListOrganizerListingReviewsCallableResponseNextCursor,
+    'adminListOrganizerListingReviewsCallableResponse.rows': adminListOrganizerListingReviewsCallableResponseRows,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.kind': adminListOrganizerListingReviewsCallableResponseRowsItemsKind,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.categories': adminListOrganizerListingReviewsCallableResponseRowsItemsListingCategories,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.categories.items': adminListOrganizerListingReviewsCallableResponseRowsItemsListingCategoriesItems,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.contentHash': adminListOrganizerListingReviewsCallableResponseRowsItemsListingContentHash,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.description': adminListOrganizerListingReviewsCallableResponseRowsItemsListingDescription,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.eventCount': adminListOrganizerListingReviewsCallableResponseRowsItemsListingEventCount,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.fetchedPageCount': adminListOrganizerListingReviewsCallableResponseRowsItemsListingFetchedPageCount,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.gaps': adminListOrganizerListingReviewsCallableResponseRowsItemsListingGaps,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.gaps.items': adminListOrganizerListingReviewsCallableResponseRowsItemsListingGapsItems,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.links': adminListOrganizerListingReviewsCallableResponseRowsItemsListingLinks,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.links.items.platform': adminListOrganizerListingReviewsCallableResponseRowsItemsListingLinksItemsPlatform,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.links.items.url': adminListOrganizerListingReviewsCallableResponseRowsItemsListingLinksItemsUrl,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.name': adminListOrganizerListingReviewsCallableResponseRowsItemsListingName,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.pageCount': adminListOrganizerListingReviewsCallableResponseRowsItemsListingPageCount,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.researchNeeded': adminListOrganizerListingReviewsCallableResponseRowsItemsListingResearchNeeded,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.listingWorkItemId': adminListOrganizerListingReviewsCallableResponseRowsItemsListingWorkItemId,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.market.label': adminListOrganizerListingReviewsCallableResponseRowsItemsMarketLabel,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.market.marketId': adminListOrganizerListingReviewsCallableResponseRowsItemsMarketMarketId,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.market.open': adminListOrganizerListingReviewsCallableResponseRowsItemsMarketOpen,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.market.slug': adminListOrganizerListingReviewsCallableResponseRowsItemsMarketSlug,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.origin': adminListOrganizerListingReviewsCallableResponseRowsItemsOrigin,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.requestId': adminListOrganizerListingReviewsCallableResponseRowsItemsRequestId,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.submittedAt': adminListOrganizerListingReviewsCallableResponseRowsItemsSubmittedAt,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.submittedByRole': adminListOrganizerListingReviewsCallableResponseRowsItemsSubmittedByRole,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.suggestedSlug': adminListOrganizerListingReviewsCallableResponseRowsItemsSuggestedSlug,
+    'adminListOrganizerListingReviewsCallableResponse.unavailableCount': adminListOrganizerListingReviewsCallableResponseUnavailableCount,
     'adminListSalesAccountsCallablePayload.cursor': adminListSalesAccountsCallablePayloadCursor,
     'adminListSalesAccountsCallablePayload.limit': adminListSalesAccountsCallablePayloadLimit,
     'adminListSalesAccountsCallablePayload.ownerUid': adminListSalesAccountsCallablePayloadOwnerUid,

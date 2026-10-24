@@ -123,6 +123,17 @@ function privilegedImport(specifier, sourceRelativePath, sourceLayer, source) {
 function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
   if (layerFor(sourceRelativePath).name === "next-entry" &&
       isInside(path.join(repoRoot, "website/app"), targetAbsolutePath)) return true;
+  // The app-capture records are bundled at build time from the one manifest
+  // tool/marketing/sync_website_media.mjs writes beside the images.
+  if (sourceRelativePath === "app/marketingCaptures.ts" &&
+      targetAbsolutePath === path.join(repoRoot, "website/public/assets/app-screenshots/manifest.json")) return true;
+  // Storybook guest pages read the demo world the app captures read; the
+  // reader's test checks its derivation against the world validator.
+  if (sourceRelativePath.startsWith("stories/fixtures/demoWorld.") && [
+    "tool/demo/demo_seed/scenarios/host-marketing-india.json",
+    "tool/demo/demo_seed/personas/india_core_sales_personas.draft.json",
+    "tool/demo/lib/demo_world.mjs",
+  ].some(target => targetAbsolutePath === path.join(repoRoot, target))) return true;
   if (["server/publicOrganizerProjection.ts", "server/publicExternalEvent.ts"].includes(sourceRelativePath) && [
     "website/scripts/next/organizerProjection.mjs",
     "website/scripts/next/externalEventProjection.mjs",
@@ -408,6 +419,10 @@ function runSelfTest() {
     path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), true);
   assert.equal(allowedExternalImport("app/leak.ts",
     path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), false);
+  assert.equal(allowedExternalImport("stories/fixtures/demoWorld.ts",
+    path.join(repoRoot, "tool/demo/demo_seed/scenarios/host-marketing-india.json")), true);
+  assert.equal(allowedExternalImport("stories/EventOffer.stories.tsx",
+    path.join(repoRoot, "tool/demo/demo_seed/scenarios/host-marketing-india.json")), false);
   assert.deepEqual(layerFor("content/meta.json"), {name: "content"});
   assert.equal(
     violationFor(

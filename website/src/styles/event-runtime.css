@@ -4,10 +4,6 @@
   min-height: 100vh;
 }
 
-.event-runtime-page .site-shell {
-  min-height: 100vh;
-}
-
 .event-runtime {
   --runtime-coral: #ff5a45;
   --runtime-ink: #191919;

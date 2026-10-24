@@ -1,6 +1,17 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_fonts.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+/// Package-internal welcome paint; use CatchWelcomeText from the public API.
+@internal
+TextStyle catchWelcomeTextStyle(Color color) => CatchFonts.voice(
+  fontSize: 36,
+  fontWeight: FontWeight.w600,
+  height: 1.02,
+  letterSpacing: -0.5,
+  color: color,
+);
 
 /// Display-size axis owned by the editorial recipes in [CatchTextStyles].
 enum CatchTextStylesSize {
@@ -112,18 +123,6 @@ abstract final class CatchTextStyles {
     height: 1.10,
     color: color,
   );
-
-  /// Welcome reel and fixed Catch word — the single approved negative-tracking
-  /// display exception from `splash_welcome_spec.md`.
-  static TextStyle welcomeReelHeadline(BuildContext context, {Color? color}) =>
-      _voice(
-        context,
-        size: 36,
-        weight: FontWeight.w600,
-        height: 1.02,
-        letterSpacing: -0.5,
-        color: color,
-      );
 
   /// Brand-led onboarding introduction copy. This is intentionally Archivo;
   /// ordinary app prose remains in the platform function family.

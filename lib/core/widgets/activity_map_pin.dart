@@ -34,11 +34,11 @@ class ActivityMapPin extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (selected && flagLabel != null && flagLabel.isNotEmpty) ...[
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: t.ink,
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-            ),
+          CatchSurface(
+            duration: Duration.zero,
+            tone: CatchSurfaceTone.transparent,
+            radius: CatchRadius.pill,
+            backgroundColor: t.ink,
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: CatchSpacing.s2,
