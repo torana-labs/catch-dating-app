@@ -1,10 +1,13 @@
 // @vitest-environment node
-import {describe, expect, it} from "vitest";
+import {readFileSync} from "node:fs";
+import {afterEach, describe, expect, it, vi} from "vitest";
 import previewCards from "../content/previewCards.json" with {type: "json"};
 import {activityMeta} from "../content/marketing";
 import {buildPublicEventDetailRecords} from "../features/events/eventDetailModel";
 import {hostListings} from "../features/organizers/data";
 import type {HostListing, HostListingCatchEvent} from "../features/organizers/types";
+vi.mock("server-only", () => ({}));
+import {renderGeneratedPreviewCard} from "./generatedPreviewCardImage";
 import {
   generatedPreviewCardFor,
   generatedPreviewCardImage,
@@ -102,5 +105,46 @@ describe("generated link-preview cards", () => {
       ["organizers", "card.png"], ["events", "..", "card.png"], ["events", "a/b", "card.png"], ["f", "form", "card.png"]]) {
       expect(pagePathForGeneratedCard(segments), segments.join("/")).toBeNull();
     }
+  });
+});
+
+describe("drawing a generated card", () => {
+  const card = generatedPreviewCardFor({listingRoute: null, event: eventRecord()})!;
+
+  function size(png: ArrayBuffer) {
+    const bytes = Buffer.from(png);
+    expect(bytes.subarray(1, 4).toString("ascii")).toBe("PNG");
+    return [bytes.readUInt32BE(16), bytes.readUInt32BE(20)];
+  }
+
+  // The renderer itself fetches its bundled wasm, so only poster URLs are answered here.
+  const realFetch = globalThis.fetch;
+  function stubPosters(answer: () => Response) {
+    const fetch = vi.fn((input: string | URL | Request, init?: RequestInit) =>
+      String(input).startsWith("https://") ? Promise.resolve(answer()) : realFetch(input, init));
+    vi.stubGlobal("fetch", fetch);
+    return fetch;
+  }
+  const posterCalls = (fetch: ReturnType<typeof stubPosters>) => fetch.mock.calls.filter(([input]) => String(input).startsWith("https://"));
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("draws a 1200x630 PNG with the committed fonts and wordmark, without any network", async () => {
+    const fetch = stubPosters(() => new Response(null, {status: 500}));
+    expect(size(await renderGeneratedPreviewCard(card))).toEqual([1200, 630]);
+    expect(posterCalls(fetch)).toEqual([]);
+  });
+
+  it("draws a published photo, refusing redirects, and falls back to the ground for anything that is not a JPEG or PNG", async () => {
+    const photo = readFileSync("public/assets/events/social-run-music-hero-960.jpg");
+    let answer = () => new Response(photo, {headers: {"Content-Type": "image/jpeg"}});
+    const fetch = stubPosters(() => answer());
+    const withPhoto = await renderGeneratedPreviewCard({...card, photoUrl: "https://cdn.example/poster.jpg"});
+    expect(posterCalls(fetch)).toEqual([["https://cdn.example/poster.jpg", expect.objectContaining({redirect: "error"})]]);
+    const plain = await renderGeneratedPreviewCard(card);
+    expect(withPhoto.byteLength).toBeGreaterThan(plain.byteLength);
+
+    answer = () => new Response("<html>", {headers: {"Content-Type": "text/html"}});
+    const refused = await renderGeneratedPreviewCard({...card, photoUrl: "https://cdn.example/page"});
+    expect(Buffer.from(refused).equals(Buffer.from(plain))).toBe(true);
   });
 });

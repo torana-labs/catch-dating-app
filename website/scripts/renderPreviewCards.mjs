@@ -3,7 +3,9 @@
 // site's own copy, colour tokens, font, wordmarks and app captures, and
 // records a hash of those inputs per card. --check recomputes the hashes
 // without a browser, so a copy, token, font or capture change that skips a
-// re-render fails CI.
+// re-render fails CI. It also writes the wordmark, colours and fonts that the
+// per-request organiser and event cards (src/server/generatedPreviewCardImage.tsx)
+// draw with, and --check covers those too.
 //
 //   node scripts/renderPreviewCards.mjs --update   # render all cards (from website/)
 //   node scripts/renderPreviewCards.mjs --check    # inputs unchanged?
@@ -30,6 +32,18 @@ const marks = {
   host: "assets/branding/catch_host_splash_mark_light.png",
 };
 const tokenNames = ["bg", "ink", "ink2", "line"];
+const generatedDir = "website/public/assets/og/generated";
+const generatedMarkSource = "assets/branding/catch_splash_mark_dark.png";
+const archivoSource = "packages/catch_ui/assets/fonts/Archivo-Roman-VF.ttf";
+// Satori draws static fonts only. When the Archivo variable font changes, re-cut
+// both instances with fontTools 4.60 and run --update --fonts-recut:
+//   SOURCE_DATE_EPOCH=0 fonttools varLib.instancer packages/catch_ui/assets/fonts/Archivo-Roman-VF.ttf wght=760 wdth=78 -o website/public/assets/og/generated/archivo-card-headline.ttf
+//   SOURCE_DATE_EPOCH=0 fonttools varLib.instancer packages/catch_ui/assets/fonts/Archivo-Roman-VF.ttf wght=480 wdth=100 -o website/public/assets/og/generated/archivo-card-text.ttf
+const generatedFonts = {
+  "archivo-card-headline.ttf": null,
+  "archivo-card-text.ttf": null,
+  "ibm-plex-mono-medium.ttf": "packages/web-config/generated/assets/fonts/IBMPlexMono-Medium.ttf",
+};
 
 // Each card's words come from meta.json, so editing a page title or
 // description changes the card's input hash. The home card lists the event
@@ -88,6 +102,34 @@ export function cardInputHash(card, {meta = readJson(metaPath), tokens = readTok
   return hash.digest("hex");
 }
 
+/** What the generated cards read: tokens, the light wordmark and fonts, with a version over all of it. */
+export function generatedCardAssets(css = readText(tokensPath)) {
+  const value = (name) => {
+    const match = css.match(new RegExp(`${name}:\\s*([^;]+);`));
+    if (!match) throw new Error(`${tokensPath} has no ${name}.`);
+    return match[1].trim();
+  };
+  const activities = [...new Set([...css.matchAll(/--catch-activity-([a-z-]+)-deep:/g)].map((match) => match[1]))];
+  const grounds = Object.fromEntries(activities.map((name) =>
+    [name, {accent: value(`--catch-activity-${name}-accent`), deep: value(`--catch-activity-${name}-deep`)}]));
+  const colors = {surface: value("--catch-color-light-surface"), ink: value("--catch-color-light-ink")};
+  const mark = trimmedMarkPng(generatedMarkSource);
+  const files = {"mark.png": mark.png};
+  for (const [name, source] of Object.entries(generatedFonts)) {
+    const file = source ?? `${generatedDir}/${name}`;
+    if (!fs.existsSync(fromRepo(file))) throw new Error(`${file} is missing; cut it as renderPreviewCards.mjs describes.`);
+    files[name] = fs.readFileSync(fromRepo(file));
+  }
+  const fontSource = crypto.createHash("sha256").update(fs.readFileSync(fromRepo(archivoSource))).digest("hex");
+  const hash = crypto.createHash("sha256").update(JSON.stringify({colors, grounds}));
+  for (const name of Object.keys(files).sort()) hash.update(name).update(files[name]);
+  return {
+    entry: {version: hash.digest("hex").slice(0, 12), fontSource, colors, grounds,
+      mark: {path: "/assets/og/generated/mark.png", width: mark.width, height: mark.height}},
+    files,
+  };
+}
+
 function checkCards() {
   const index = readJson(indexPath);
   const meta = readJson(metaPath);
@@ -107,13 +149,20 @@ function checkCards() {
       if (png.width !== cardWidth || png.height !== cardHeight) problems.push(`${card.id}: ${entry.path} is ${png.width}x${png.height}`);
     }
   }
+  const generated = generatedCardAssets();
+  if (index.generated?.fontSource !== generated.entry.fontSource) problems.push("generated: the Archivo variable font changed; re-cut the card instances as renderPreviewCards.mjs describes");
+  else if (JSON.stringify(index.generated) !== JSON.stringify(generated.entry)) problems.push("generated: tokens, wordmark or fonts changed since the generated-card assets were written");
+  for (const [name, bytes] of Object.entries(generated.files)) {
+    const file = fromRepo(`${generatedDir}/${name}`);
+    if (!fs.existsSync(file) || !fs.readFileSync(file).equals(bytes)) problems.push(`generated: ${name} is missing or stale`);
+  }
   const extra = Object.keys(index.cards).filter((id) => !cards.some((card) => card.id === id));
   if (extra.length) problems.push(`${indexPath} lists unknown cards: ${extra.join(", ")}`);
   if (problems.length) {
     console.error(`Preview cards are stale:\n${problems.map((line) => `  - ${line}`).join("\n")}\nRe-render from website/: node scripts/renderPreviewCards.mjs --update`);
     process.exit(1);
   }
-  console.log(`Preview cards match their inputs (${cards.length} cards).`);
+  console.log(`Preview cards match their inputs (${cards.length} cards and the generated-card assets).`);
 }
 
 async function updateCards() {
@@ -122,7 +171,12 @@ async function updateCards() {
   const tokens = readTokens();
   const font = fs.readFileSync(fromRepo(fontPath)).toString("base64");
   const browser = await chromium.launch({headless: true});
-  const index = {width: cardWidth, height: cardHeight, cards: {}};
+  const generated = generatedCardAssets();
+  const previous = fs.existsSync(fromRepo(indexPath)) ? readJson(indexPath).generated : null;
+  if (previous && previous.fontSource !== generated.entry.fontSource && !process.argv.includes("--fonts-recut")) {
+    throw new Error("The Archivo variable font changed. Re-cut the card instances as renderPreviewCards.mjs describes, then run --update --fonts-recut.");
+  }
+  const index = {width: cardWidth, height: cardHeight, cards: {}, generated: generated.entry};
   try {
     const page = await browser.newPage({viewport: {width: cardWidth, height: cardHeight}, deviceScaleFactor: 1});
     fs.mkdirSync(fromRepo(outputDir), {recursive: true});
@@ -139,6 +193,8 @@ async function updateCards() {
   } finally {
     await browser.close();
   }
+  fs.mkdirSync(fromRepo(generatedDir), {recursive: true});
+  for (const [name, bytes] of Object.entries(generated.files)) fs.writeFileSync(fromRepo(`${generatedDir}/${name}`), bytes);
   fs.writeFileSync(fromRepo(indexPath), `${JSON.stringify(index, null, 2)}\n`);
   console.log(`Rendered ${cards.length} preview cards into ${outputDir}.`);
 }
@@ -169,8 +225,12 @@ ${content.chips.length ? `<ul class="chips">${content.chips.map((chip) => `<li>$
 </main></body></html>`;
 }
 
-/** The splash marks are 1024px squares; crop to the wordmark's alpha bounds. */
 function trimmedMark(file) {
+  return dataUri(trimmedMarkPng(file).png);
+}
+
+/** The splash marks are 1024px squares; crop to the wordmark's alpha bounds. */
+function trimmedMarkPng(file) {
   const source = PNG.sync.read(fs.readFileSync(fromRepo(file)));
   let left = source.width, top = source.height, right = -1, bottom = -1;
   for (let y = 0; y < source.height; y += 1) {
@@ -183,7 +243,7 @@ function trimmedMark(file) {
   if (right < 0) throw new Error(`${file} has no visible mark.`);
   const cropped = new PNG({width: right - left + 1, height: bottom - top + 1});
   PNG.bitblt(source, cropped, left, top, cropped.width, cropped.height, 0, 0);
-  return dataUri(PNG.sync.write(cropped));
+  return {png: PNG.sync.write(cropped), width: cropped.width, height: cropped.height};
 }
 
 function dataUri(png) {

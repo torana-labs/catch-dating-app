@@ -3,6 +3,7 @@ import {readFileSync} from "node:fs";
 import {describe, expect, it} from "vitest";
 import previewCards from "../content/previewCards.json" with {type: "json"};
 import {pageMeta, pageMetaForHostPath} from "../app/pageMeta";
+import {activityMeta} from "../content/marketing";
 import {previewCardFor, previewCardImage, type PreviewCardId} from "./previewCards";
 
 describe("link-preview cards", () => {
@@ -26,6 +27,18 @@ describe("link-preview cards", () => {
     for (const key of ["privacy", "terms", "help", "event_invite", "event_booking", "household_rsvp", "not_found"] as const) {
       expect(previewCardFor(pageMeta[key].canonicalPath), key).toBe("default");
     }
+  });
+
+  it("ships what the generated cards draw with: a ground for every activity colour, the wordmark and the fonts", () => {
+    const {generated} = previewCards;
+    for (const meta of Object.values(activityMeta)) {
+      const name = /--catch-activity-([a-z-]+)-accent/.exec(meta.token)?.[1];
+      expect(generated.grounds, meta.label).toHaveProperty(name!);
+    }
+    for (const file of ["mark.png", "archivo-card-headline.ttf", "archivo-card-text.ttf", "ibm-plex-mono-medium.ttf"]) {
+      expect(readFileSync(`public/assets/og/generated/${file}`).byteLength, file).toBeGreaterThan(0);
+    }
+    expect(generated.colors.ink).toMatch(/^#[0-9A-Fa-f]{6}$/);
   });
 
   it("points chat apps at an absolute, versioned image URL", () => {
