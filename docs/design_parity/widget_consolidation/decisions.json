@@ -8804,6 +8804,22 @@
       "decidedBy": "codex-rule:existing-library-swap+D1",
       "date": "2026-10-24",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:canonical-field-title-alias",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.fieldRowTitle",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyLead for supported Text callers; CatchTextStyles.bodyLead for library carriers. Preserve the old ink fallback explicitly."
+        }
+      ],
+      "rationale": "The handoff exact-recipe rule authorizes absorbing the fieldValue typography recipe into the existing bodyLead variant. The aliases share metrics but default to different colors: every migrated caller preserves fieldRowTitle ink explicitly, including nullable overrides; fieldRowValue already requires a color. Retire the public alias and duplicate specimen/context entry and replace registry references without adding a variant or changing field value geometry.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
     }
   ]
 }

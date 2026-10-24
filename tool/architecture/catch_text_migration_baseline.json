@@ -15,18 +15,8 @@
     "lib/chats/presentation/widgets/event_profile_identity_section.dart": {
       "headlineS": 1
     },
-    "lib/clubs/presentation/detail/widgets/club_host_section.dart": {
-      "monoLabel": 1
-    },
     "lib/clubs/presentation/detail/widgets/club_photo_rail.dart": {
       "monoLabelS": 2
-    },
-    "lib/clubs/presentation/detail/widgets/club_share_card.dart": {
-      "kicker": 1
-    },
-    "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart": {
-      "fieldRowTitle": 1,
-      "monoLabelS": 1
     },
     "lib/core/celebration/celebration_screen.dart": {
       "display": 2

@@ -27,8 +27,8 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 53,
-    "covered": 51,
+    "publicStaticTextStyleMethods": 52,
+    "covered": 50,
     "excluded": 2
   },
   "excluded": {
@@ -537,21 +537,6 @@
         "dark": "#F4F0E8"
       },
       "casePolicy": "mixed"
-    },
-    "fieldRowTitle": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 16.0,
-      "weight": 500,
-      "lineHeight": 1.5,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "casePolicy": "mixed",
-      "aliasOf": "titleS"
     },
     "fieldRowValue": {
       "role": "function",

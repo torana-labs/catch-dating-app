@@ -932,12 +932,6 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('sectionCount', 'data', CatchTextStyles.sectionCount),
   _StyleEntry.single('titleS', 'function', CatchTextStyles.titleS),
   _StyleEntry.single(
-    'fieldRowTitle',
-    'function',
-    CatchTextStyles.fieldRowTitle,
-    aliasOf: 'titleS',
-  ),
-  _StyleEntry.single(
     'fieldRowValue',
     'function',
     (context) => CatchTextStyles.fieldRowValue(

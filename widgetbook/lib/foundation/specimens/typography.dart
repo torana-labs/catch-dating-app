@@ -118,11 +118,6 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.sectionTitle(context),
               ),
               _TypeSpec(
-                'fieldRowTitle',
-                'Event name',
-                CatchTextStyles.fieldRowTitle(context),
-              ),
-              _TypeSpec(
                 'bodyLead',
                 'Review requests before spots are confirmed.',
                 CatchTextStyles.bodyLead(context),

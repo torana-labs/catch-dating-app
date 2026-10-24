@@ -221,18 +221,11 @@ abstract final class CatchTextStyles {
     BuildContext context, {
     required Color color,
     FontWeight? fontWeight,
-  }) => CatchTextStyles.fieldRowTitle(context, color: color).copyWith(
+  }) => CatchTextStyles.bodyLead(context, color: color).copyWith(
     fontSize: CatchFieldTokens.valueFontSize,
     fontWeight: fontWeight,
     height: CatchFieldTokens.valueLineHeight,
   );
-
-  /// CatchField primary text (`.t-title-s` in the design handoff).
-  static TextStyle fieldRowTitle(BuildContext context, {Color? color}) =>
-      _functionProfile(
-        CatchPlatformTokens.typography.fieldValue,
-        color: color ?? CatchTokens.of(context).ink,
-      );
 
   /// Lead-in supporting copy (slightly heavier than [supporting]).
   static TextStyle bodyLead(BuildContext context, {Color? color}) =>
