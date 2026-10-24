@@ -83,13 +83,6 @@
     "type functions/src/shared/bigQuery.ts BigQueryScalar",
     "type functions/src/shared/organizerHosts.ts OrganizerTeamRole",
     "type functions/src/shared/relationshipDocuments.ts ClubMembershipStatus",
-    "type website/src/analytics/catchMeasurement.ts AcquisitionAudience",
-    "type website/src/features/forms/razorpayFormCheckout.ts FormCheckoutCallback",
-    "type website/src/features/home/homeDiscovery.ts HomeDiscovery",
-    "type website/src/features/organizers/types.ts HostListingEventEvidence",
-    "type website/src/features/salesDemo/salesDemoModel.ts SalesDemoContinuation",
-    "type website/src/features/salesDemo/salesDemoModel.ts SalesDemoContinuationApi",
-    "type website/src/features/salesDemo/salesDemoModel.ts SalesDemoSetupPlan",
     "unlisted functions/src/eventSuccess/operations/rcsCallbackStore.test.ts express",
     "unlisted functions/src/eventSuccess/operations/rcsDeliveryWebhook.ts express",
     "unlisted functions/src/eventSuccess/operations/rcsDispatchTestHarness.ts express",
@@ -106,11 +99,7 @@
     "unlisted functions/src/salesAssistant/gateway.test.ts express",
     "unlisted functions/src/salesAssistant/gateway.ts express",
     "unlisted functions/src/waitlist/joinWaitlist.ts express",
-    "unlisted packages/web-config/lint/check-stylelint-suppressions.mjs stylelint",
-    "unlisted packages/web-config/lint/stylelint.test.mjs stylelint",
     "unlisted tool/demo/rsvp_escape/vite.config.mjs @vitejs/plugin-react",
-    "unlisted tool/demo/rsvp_escape/vite.config.mjs vite",
-    "unlisted website/scripts/next/browserAudit.mjs axe-core",
-    "unlisted website/src/features/forms/usePublicFormController.test.tsx @testing-library/user-event"
+    "unlisted tool/demo/rsvp_escape/vite.config.mjs vite"
   ]
 }
