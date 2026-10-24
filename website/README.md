@@ -317,9 +317,7 @@ shares its lock and retires once it observes Next in the live Hosting config.
 Subsequent Next updates use this same preview/promotion pair. Source workflow
 availability alone is not deployment or live acceptance.
 
-The organiser-review index is a separate bounded dependency. Dispatch
-`.github/workflows/website-review-index.yml` from successful current main and
-complete the existing protected `prod` review. It adds only
-`reviews: organizerId ASC / createdAt DESC`, waits for readiness and leaves the
-general backend queue unchanged. Production website promotion refuses a missing
-or unfinished index.
+The organiser-review index (`reviews: organizerId ASC / createdAt DESC`) is part
+of `firestore.indexes.json`, so `Deploy backend` creates it with the rest of the
+backend indexes. Production website promotion refuses a missing or unfinished
+index.
