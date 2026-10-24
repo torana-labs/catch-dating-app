@@ -147,7 +147,9 @@ review/export remains available below. Never manually stamp old PNGs.
 `og:image` cards in `website/public/assets/og/` with Playwright from the site's
 own Archivo font, light colour tokens, the Catch and Catch Host splash marks,
 page copy from `website/src/content/meta.json` and, for the Host cards, an app
-capture from this pipeline. The home card lists the event formats from
+capture from this pipeline. Every card keeps its words and capture inside the
+centre 630px square, because WhatsApp crops small previews to it. The home
+card lists the event formats from
 `src/content/consumerHome.ts` instead of a capture. It writes
 `website/src/content/previewCards.json` with each card's path, alt text and
 input hash. `src/server/previewCards.ts` maps `/` and `/explore/` to the home
@@ -155,6 +157,29 @@ card; `/host/`, `/host/apply/`, `/claim/` (claim lookups included),
 `/organizers/` and `/f/` to their own cards; and every other page to the brand
 card. Page metadata and the private-link shell use that map, with the
 hash prefix as a `?v=` query so chat apps refetch a re-rendered card.
+
+Organiser and event pages draw their own card per request instead.
+`app/og/[...path]/route.ts` serves `/og/<page path>card.png`, and
+`src/server/generatedPreviewCardResponse.ts` resolves that page with
+`resolvePublicRoute`, the same reads the page makes. `generatedPreviewCards.ts`
+takes the words only from that public record: for an event its title, date,
+location, price and organiser; for an organiser its name, city and activity.
+An event's published photo is drawn under an ink scrim. Every other card uses
+its activity's accent-to-deep ground from the colour tokens. Organiser records
+carry no public image yet, so organiser cards always use the ground. Anything
+that is not a published organiser or event, including every private link,
+redirects to the brand card, and the proxy serves `/og/` only on Catch hosts.
+The page's `og:image` adds `?v=` from a hash of everything drawn. The current
+version is cached for an hour at the CDN, so a withdrawn event's card can
+outlive it by up to an hour; an older version is cached for five minutes.
+
+`--update` also writes the wordmark for dark grounds and IBM Plex Mono into
+`public/assets/og/generated/`, beside two static Archivo instances cut with
+fontTools because satori cannot draw variable fonts (the commands are in the
+script). `previewCards.json` records the activity grounds and colours from the
+tokens. `--check` fails when the tokens, wordmark or fonts change without a
+re-run, and when the Archivo variable font changes without re-cutting the
+instances.
 
 `--check` runs in the website `pretypecheck` without a browser. It fails when a
 card's copy, tokens, font, wordmark or renderer changed since it was rendered.
