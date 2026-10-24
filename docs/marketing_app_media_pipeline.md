@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.10.0
+version: 1.11.0
 updated: 2026-10-24
 owner: marketing_website
 status: active
@@ -35,16 +35,35 @@ node tool/marketing/sync_website_media.mjs --check
 
 ## Website Contract
 
-Website pages render React `CaptureCard` components keyed by
-`data-capture-slot="<capture-id>"`. `website/src/App.tsx` loads
-`/assets/app-screenshots/manifest.json` and swaps in the active asset path,
-caption, alt text, walkthrough step, and status label.
+Pages ask for a capture by slot id and never name an image path:
+`website/src/shared/media/MediaSlot.tsx` renders
+`CatchAppCaptureImage` (`@catch/web-ui`, the website's T4 component for a
+device-framed capture with its caption) for the record with that id. Pages
+receive the records as their `captures` prop.
 
-The capture cards on `/explore/` consume these slots through
-`useMarketingCaptures()`. Capture selection and copy belong to the manifest.
-The homepage hero and `/host/` currently use authored React illustrations;
-regenerating app captures does not update those illustrations. Replacing them
-requires a separate content decision.
+`website/src/app/marketingCaptures.ts` bundles
+`website/public/assets/app-screenshots/manifest.json` at build time, so
+server-rendered pages and link previews include the captures; nothing fetches
+the manifest in the browser. `tool/marketing/sync_website_media.mjs` writes that
+manifest from `capture_manifest.json`, adding each record's framed pixel size
+and the `pages` that show it.
+
+In `capture_manifest.json`, `kind`, `pages` and `scenario` (the demo world,
+event and moment a capture shows, checked against
+`tool/demo/demo_seed/scenarios/`) sit beside the existing presentation fields.
+None of them is a render input.
+
+`website/src/app/marketingCaptures.test.tsx` fails when:
+
+- a page renders an unknown slot;
+- a page renders a slot whose capture doesn't list that page;
+- a capture lists a page that doesn't render it;
+- feature code names an `/assets/app-screenshots/` path;
+- a recorded size differs from the PNG.
+
+The `/host/` hero and the home "For organisers" card show
+`host-live-console`. The per-format phone illustrations on `/host/` stay
+authored until each launch format has a demo world to capture.
 
 Marketing styling imports the shared React web token layer from
 `packages/web-config/styles/catch-web.css`; the generated token CSS itself is
