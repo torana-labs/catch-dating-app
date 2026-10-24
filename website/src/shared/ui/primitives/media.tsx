@@ -81,7 +81,12 @@ export function MarketingLoopList({
 export interface CaptureRecord {
   id: string;
   webPath: string;
+  /** Framed PNG size in pixels. */
+  width: number;
+  height: number;
   alt: string;
   caption: string;
   walkthroughStep: string;
+  /** Canonical paths whose pages render this capture. */
+  pages: readonly string[];
 }
