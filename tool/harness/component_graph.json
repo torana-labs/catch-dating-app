@@ -181,10 +181,10 @@
     },
     "backend-delivery-control": {
       "direct": {
-        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint", "ci:cat151-booking-release", "ci:cat151-receipt-release"]},
-        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint", "ci:cat151-booking-release", "ci:cat151-receipt-release"]},
-        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint", "ci:cat151-booking-release", "ci:cat151-receipt-release"]},
-        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint", "ci:cat151-booking-release", "ci:cat151-receipt-release"]}
+        "pr": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "firebase:affected-function-targets"]},
+        "merge_group": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "firebase:affected-function-targets"]},
+        "main": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "firebase:affected-function-targets"]},
+        "nightly": {"ciTargets": ["contracts", "firestore_rules", "functions", "policy_docs", "tools"], "checkIds": ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package", "firebase:affected-function-targets"]}
       },
       "affected": {}
     },
@@ -817,18 +817,8 @@
     {
       "id": "backend-delivery-control",
       "paths": {"include": [
-        "tool/ci/cat151_booking_release.mjs", "tool/ci/cat151_booking_release.test.mjs",
-        "tool/ci/cat151_receipt_release.mjs", "tool/ci/cat151_receipt_release.test.mjs",
-        ".github/workflows/_cat151-receipt-promote.yml",
-        ".github/workflows/selective-backend-release.yml",
-        ".github/workflows/delivery.yml", ".github/workflows/_firebase-promote.yml",
-        ".github/workflows/backend-staging.yml", ".github/workflows/backend-rebaseline.yml",
-        ".github/workflows/_backend-rebaseline.yml",
-        "tool/ci/backend_delivery_lanes.mjs", "tool/ci/backend_delivery_lanes.test.mjs",
-        "tool/ci/firebase_functions_checkpoint.mjs", "tool/ci/firebase_functions_checkpoint.test.mjs",
-        "tool/ci/backend_source_review.mjs", "tool/ci/backend_source_review.test.mjs",
+        ".github/workflows/backend-deploy.yml", ".github/workflows/_backend-deploy.yml",
         "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
-        "tool/ci/firebase_delivery_workflow.test.mjs",
         "functions/scripts/set-callable-invokers-public.cjs", "functions/test/callable-invokers.test.cjs"
       ]},
       "components": ["ci.backend-delivery"],
@@ -852,9 +842,8 @@
     {
       "id": "harness-scoped-control",
       "paths": {"include": [
-        "tool/harness/**/*.test.mjs", "tool/ci/**/*.test.mjs", ".github/workflows/_host-acquisition-promote.yml", ".github/workflows/host-acquisition-release.yml", ".github/workflows/_host-deletion-promote.yml", ".github/workflows/host-deletion-release.yml", ".github/workflows/host-deletion-indexes.yml", ".github/workflows/host-store-rules-release.yml", ".github/workflows/host-measurement-preview.yml", ".github/workflows/website-next-preview.yml", ".github/workflows/website-next-promote.yml", ".github/workflows/website-review-index.yml", ".github/workflows/wedding-phone-import-release.yml", ".github/workflows/admin-website.yml", ".github/workflows/marketing-website.yml", ".github/workflows/host-website.yml", ".github/workflows/_web-hosting-build.yml", ".github/workflows/mobile-internal-release.yml", ".github/workflows/mobile-internal-promote.yml", ".github/workflows/_mobile-platform-authority.yml", ".github/workflows/release-readiness.yml", ".github/workflows/observability-evidence.yml", ".github/workflows/website-production-observability.yml", ".github/workflows/data-validation.yml", ".github/workflows/branch-hygiene.yml", "tool/ci/host_acquisition_release.mjs", "tool/ci/host_deletion_release.mjs", "tool/ci/host_measurement_preview.mjs", "tool/ci/host_store_rules_release.mjs", "tool/ci/wedding_phone_import_release.mjs", "tool/ci/whatsapp_five_release.mjs", "tool/ci/operator_prod_release.mjs", "tool/ci/operator_source_compatibility.mjs", "tool/ci/selective_backend_release.mjs", "tool/ci/mobile_promotion_core.mjs", "tool/ci/wait_main_marketing_validation.mjs", "tool/ci/sales_pr543_source_guard.json"
-      ], "exclude": [
-        "tool/ci/backend_delivery_lanes.test.mjs", "tool/ci/backend_source_review.test.mjs", "tool/ci/cat151_booking_release.test.mjs", "tool/ci/cat151_receipt_release.test.mjs", "tool/ci/firebase_delivery_workflow.test.mjs", "tool/ci/firebase_functions_checkpoint.test.mjs", "tool/ci/package_firebase_delivery.test.mjs", "tool/ci/web_hosting_workflow.test.mjs"
+        "tool/harness/**/*.test.mjs", "tool/ci/**/*.test.mjs", ".github/workflows/host-measurement-preview.yml", ".github/workflows/website-next-preview.yml", ".github/workflows/website-next-promote.yml", ".github/workflows/admin-website.yml", ".github/workflows/marketing-website.yml", ".github/workflows/host-website.yml", ".github/workflows/_web-hosting-build.yml", ".github/workflows/mobile-internal-release.yml", ".github/workflows/mobile-internal-promote.yml", ".github/workflows/_mobile-platform-authority.yml", ".github/workflows/release-readiness.yml", ".github/workflows/observability-evidence.yml", ".github/workflows/website-production-observability.yml", ".github/workflows/data-validation.yml", ".github/workflows/branch-hygiene.yml", "tool/ci/host_measurement_preview.mjs", "tool/ci/mobile_promotion_core.mjs", "tool/ci/wait_main_marketing_validation.mjs"
+      ], "exclude": [ "tool/ci/package_firebase_delivery.test.mjs", "tool/ci/web_hosting_workflow.test.mjs"
       ]},
       "components": ["repo.harness-scoped"],
       "terminal": true

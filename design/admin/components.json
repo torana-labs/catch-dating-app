@@ -1,7 +1,7 @@
 {
   "$schema": "./admin.components.schema.json",
   "version": 43,
-  "updated": "2026-10-19",
+  "updated": "2026-10-24",
   "owner": "admin_dashboard",
   "sourceOfTruth": {
     "architecture": "docs/web_surface_architecture.md",
@@ -1332,25 +1332,6 @@
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
-      "id": "shared_admin_event_supply_detail_stack",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
-      "exportName": "AdminEventSupplyDetailStack",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminEventSupplyDetailStackStory",
-        "states": [
-          "stacked"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
       "id": "shared_admin_event_supply_empty_state",
       "kind": "feature-component",
       "owner": "features/events",
@@ -1757,25 +1738,6 @@
       "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
     },
     {
-      "id": "shared_admin_intake_event_workspace_shell",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
-      "exportName": "AdminIntakeEventWorkspaceShell",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminIntakeEventWorkspaceShellStory",
-        "states": [
-          "event-review"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_intake_gate",
       "kind": "feature-component",
       "owner": "features/intake",
@@ -2037,26 +1999,6 @@
         ]
       },
       "notes": "Responsive action and filter row for intake queue work; only backed filters and operations are exposed."
-    },
-    {
-      "id": "shared_admin_intake_workspace_header",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/marketing-shell.tsx",
-      "exportName": "AdminIntakeWorkspaceHeader",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminIntakeWorkspaceHeaderStory",
-        "states": [
-          "with-actions",
-          "description"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
     },
     {
       "id": "shared_admin_intake_workspace_tabs",
@@ -2428,25 +2370,6 @@
       "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
     },
     {
-      "id": "shared_admin_marketing_edit_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
-      "exportName": "AdminMarketingEditGrid",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
-        "exportName": "AdminMarketingEditGridStory",
-        "states": [
-          "fields"
-        ]
-      },
-      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_marketing_event_library_grid",
       "kind": "feature-component",
       "owner": "features/marketing",
@@ -2538,25 +2461,6 @@
         "exportName": "AdminMarketingFilePickerButtonStory",
         "states": [
           "default"
-        ]
-      },
-      "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_marketing_grid",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/marketing-library.tsx",
-      "exportName": "AdminMarketingGrid",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminMarketingPrimitives.stories.tsx",
-        "exportName": "AdminMarketingGridStory",
-        "states": [
-          "panels"
         ]
       },
       "notes": "Shared admin marketing primitive with deterministic preview coverage in admin/src/stories/AdminMarketingPrimitives.stories.tsx."
@@ -3937,46 +3841,6 @@
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
-      "id": "shared_admin_overview_bar_chart",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewBarChart",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewBarChartStory",
-        "states": [
-          "with-data",
-          "empty"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_overview_line_chart",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewLineChart",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewLineChartStory",
-        "states": [
-          "with-data",
-          "empty"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
       "id": "shared_admin_overview_main_grid",
       "kind": "feature-component",
       "owner": "features/overview",
@@ -3991,65 +3855,6 @@
         "exportName": "AdminOverviewMainGridStory",
         "states": [
           "summary-and-detail"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_signal_bars",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminSignalBars",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminSignalBarsStory",
-        "states": [
-          "neutral",
-          "semantic",
-          "zero"
-        ]
-      },
-      "notes": "Accessible shared labeled bar list with visible values and an explicit scale. Neutral ink is the default; semantic tones are reserved for meaningful severity or status."
-    },
-    {
-      "id": "shared_admin_overview_queue_action_hint",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewQueueActionHint",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewQueueActionHintStory",
-        "states": [
-          "hint"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_overview_queue_columns",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewQueueColumns",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewQueueColumnsStory",
-        "states": [
-          "two-columns"
         ]
       },
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
@@ -4093,26 +3898,6 @@
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
-      "id": "shared_admin_overview_queue_heading",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewQueueHeading",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewQueueHeadingStory",
-        "states": [
-          "count",
-          "owner"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
       "id": "shared_admin_overview_queue_items",
       "kind": "feature-component",
       "owner": "features/overview",
@@ -4127,25 +3912,6 @@
         "exportName": "AdminOverviewQueueItemsStory",
         "states": [
           "stacked"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
-      "id": "shared_admin_overview_queue_list",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewQueueList",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewQueueListStory",
-        "states": [
-          "with-heading"
         ]
       },
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
@@ -4191,25 +3957,6 @@
       "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
-      "id": "shared_admin_overview_value_signals",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/overview.tsx",
-      "exportName": "AdminOverviewValueSignals",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminOverviewValueSignalsStory",
-        "states": [
-          "mixed-tones"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
-    },
-    {
       "id": "shared_admin_panel",
       "kind": "feature-component",
       "owner": "features/marketing",
@@ -4233,44 +3980,6 @@
         "catch.text"
       ],
       "comparisonReason": "Composes CatchText headings inside a framed panel with content and optional actions; it does not implement the text-role atom."
-    },
-    {
-      "id": "shared_admin_panel_actions",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/metrics.tsx",
-      "exportName": "AdminPanelActions",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminPanelActionsStory",
-        "states": [
-          "button-row"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
-    },
-    {
-      "id": "shared_admin_publishing_form_shell",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
-      "exportName": "AdminPublishingFormShell",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminOperationsPrimitives.stories.tsx",
-        "exportName": "AdminPublishingFormShellStory",
-        "states": [
-          "fields"
-        ]
-      },
-      "notes": "Shared admin UI primitive covered by the operations primitives Storybook workbench."
     },
     {
       "id": "shared_admin_publishing_loadbar",

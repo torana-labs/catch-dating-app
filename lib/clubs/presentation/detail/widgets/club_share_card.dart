@@ -59,8 +59,11 @@ class ClubShareCard extends StatelessWidget {
           children: [
             Expanded(
               flex: 4,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(CatchRadius.md),
+              child: CatchSurface(
+                duration: Duration.zero,
+                tone: CatchSurfaceTone.transparent,
+                radius: CatchRadius.md,
+                clipBehavior: Clip.antiAlias,
                 child: ClubShareCover(club: club),
               ),
             ),

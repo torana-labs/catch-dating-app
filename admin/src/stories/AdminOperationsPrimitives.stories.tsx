@@ -34,7 +34,6 @@ import {
   AdminEditorSection,
   AdminFieldGrid,
   AdminEventSupplyDetail,
-  AdminEventSupplyDetailStack,
   AdminEventSupplyEmptyState,
   AdminEventSupplyLinks,
   AdminEventSupplyReviewGrid,
@@ -48,21 +47,12 @@ import {
   AdminFilterBar,
   AdminMutedCell,
   AdminOverviewAnalyticsClearButton,
-  AdminOverviewBarChart,
-  AdminOverviewLineChart,
   AdminOverviewMainGrid,
-  AdminOverviewQueueActionHint,
-  AdminOverviewQueueColumns,
   AdminOverviewQueueDecisionButton,
   AdminOverviewQueueDetailPanel,
-  AdminOverviewQueueHeading,
   AdminOverviewQueueItems,
-  AdminOverviewQueueList,
   AdminOverviewQueueRow,
   AdminOverviewQueueRowActions,
-  AdminOverviewValueSignals,
-  AdminSignalBars,
-  AdminPublishingFormShell,
   AdminPublishingLoadbar,
   AdminQueryList,
   AdminQueryRow,
@@ -130,28 +120,6 @@ export const AdminOverviewMainGridStory: Story = {
   ),
 };
 
-export const AdminOverviewQueueColumnsStory: Story = {
-  name: "Queue columns",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_queue_columns",
-      states: ["two-columns"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewQueueColumns>
-        <AdminOverviewQueueList>
-          <AdminOverviewQueueHeading count="8" owner="Publishing" title="Ready" />
-        </AdminOverviewQueueList>
-        <AdminOverviewQueueDetailPanel>
-          <StateRow label="Selected" value="Organizer packet" />
-        </AdminOverviewQueueDetailPanel>
-      </AdminOverviewQueueColumns>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminOverviewAnalyticsClearButtonStory: Story = {
   name: "Analytics clear button",
   parameters: {
@@ -165,45 +133,6 @@ export const AdminOverviewAnalyticsClearButtonStory: Story = {
       <AdminOverviewAnalyticsClearButton onClick={noop}>
         Clear filters
       </AdminOverviewAnalyticsClearButton>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewQueueListStory: Story = {
-  name: "Queue list",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_queue_list",
-      states: ["with-heading"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewQueueList>
-        <AdminOverviewQueueHeading
-          count="5"
-          owner="Publishing"
-          title="Publishing queue"
-        />
-        <AdminOverviewQueueItems>
-          <AdminOverviewQueueRow intent="neutral">Organizer profile ready</AdminOverviewQueueRow>
-        </AdminOverviewQueueItems>
-      </AdminOverviewQueueList>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewQueueHeadingStory: Story = {
-  name: "Queue heading",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_queue_heading",
-      states: ["count", "owner"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewQueueHeading count="14" owner="Safety" title="Needs review" />
     </AdminWorkspace>
   ),
 };
@@ -265,21 +194,6 @@ export const AdminOverviewQueueRowActionsStory: Story = {
   ),
 };
 
-export const AdminOverviewQueueActionHintStory: Story = {
-  name: "Queue action hint",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_queue_action_hint",
-      states: ["hint"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewQueueActionHint>Review source evidence first</AdminOverviewQueueActionHint>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminOverviewQueueDecisionButtonStory: Story = {
   name: "Queue decision button",
   parameters: {
@@ -311,99 +225,6 @@ export const AdminOverviewQueueDetailPanelStory: Story = {
         <StateRow label="Owner" value="Ops" />
         <StateRow label="Status" value="Needs source check" />
       </AdminOverviewQueueDetailPanel>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewLineChartStory: Story = {
-  name: "Overview line chart",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_line_chart",
-      states: ["with-data", "empty"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewLineChart
-        emptyLabel="No trend data"
-        points={[
-          {label: "Mon", value: 42},
-          {label: "Tue", value: 68},
-          {label: "Wed", value: 57},
-          {label: "Thu", value: 81},
-        ]}
-      />
-      <AdminOverviewLineChart emptyLabel="No trend data" points={[]} />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewBarChartStory: Story = {
-  name: "Overview bar chart",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_bar_chart",
-      states: ["with-data", "empty"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewBarChart
-        emptyLabel="No volume data"
-        points={[
-          {label: "Leads", value: 22},
-          {label: "Ready", value: 15},
-          {label: "Blocked", value: 6},
-        ]}
-      />
-      <AdminOverviewBarChart emptyLabel="No volume data" points={[]} />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminOverviewValueSignalsStory: Story = {
-  name: "Overview value signals",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_overview_value_signals",
-      states: ["mixed-tones"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminOverviewValueSignals
-        signals={[
-          {label: "Readiness", tone: "green", value: 84},
-          {label: "Quality", tone: "teal", value: 71},
-          {label: "Risk", tone: "orange", value: 38},
-          {label: "Blocked", tone: "red", value: 12},
-        ]}
-      />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminSignalBarsStory: Story = {
-  name: "Signal bars",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_signal_bars",
-      states: ["neutral", "semantic", "zero"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminSignalBars
-        ariaLabel="Open cases by queue"
-        eyebrow="Open by queue · aggregate"
-        signals={[
-          {label: "User reports", tone: "neutral", value: 12},
-          {label: "High priority", tone: "red", value: 4},
-          {label: "Medium priority", tone: "orange", value: 2},
-          {label: "Watch", tone: "neutral", value: 0},
-        ]}
-      />
     </AdminWorkspace>
   ),
 };
@@ -487,24 +308,6 @@ export const AdminEventSupplyReviewGridStory: Story = {
           <StateRow label="Source" value="Partner feed" />
         </AdminEventSupplyDetail>
       </AdminEventSupplyReviewGrid>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminEventSupplyDetailStackStory: Story = {
-  name: "Event supply detail stack",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_event_supply_detail_stack",
-      states: ["stacked"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminEventSupplyDetailStack>
-        <StateRow label="Matched organizer" value="Rooftop Social" />
-        <StateRow label="Confidence" value="High" />
-      </AdminEventSupplyDetailStack>
     </AdminWorkspace>
   ),
 };
@@ -974,40 +777,6 @@ export const AdminFeatureDropCaptureThumbStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminFeatureDropCaptureThumb src={imageData} alt="Feature capture thumbnail" />
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminPublishingFormShellStory: Story = {
-  name: "Publishing form shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_publishing_form_shell",
-      states: ["fields"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminPublishingFormShell>
-        <AdminEditorSection>
-          <legend>Publishing details</legend>
-          <AdminFieldGrid columns={1}>
-            <CatchField
-              recipe="input"
-              title="Public title"
-              value="Rooftop Social"
-              onChanged={noop}
-            />
-            <CatchField
-              recipe="input"
-              title="Summary"
-              maxLines={3}
-              value="Verified organizer profile."
-              onChanged={noop}
-            />
-          </AdminFieldGrid>
-        </AdminEditorSection>
-      </AdminPublishingFormShell>
     </AdminWorkspace>
   ),
 };

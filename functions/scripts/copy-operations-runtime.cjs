@@ -41,6 +41,20 @@ function listFiles(base, relative) {
   });
 }
 
+// Other processes import these modules while this runs: Functions test files
+// run in parallel and each refreshes the copy first. A file is therefore only
+// ever replaced whole: an unchanged one is left alone and a changed one is
+// renamed into place, never truncated and rewritten under a reader.
+function replaceIfChanged(source, target) {
+  const bytes = fs.readFileSync(source);
+  if (fs.existsSync(target) && digest(fs.readFileSync(target)) === digest(bytes)) return false;
+  fs.mkdirSync(path.dirname(target), {recursive: true});
+  const temporary = `${target}.${process.pid}.${crypto.randomBytes(6).toString('hex')}.tmp`;
+  fs.writeFileSync(temporary, bytes, {flag: 'wx'});
+  fs.renameSync(temporary, target);
+  return true;
+}
+
 async function main() {
   if (!fs.existsSync(path.join(out, 'index.js'))) {
     throw new Error('Compile Functions before copying the Operations runtime.');
@@ -50,10 +64,7 @@ async function main() {
   for (const file of files) {
     const source = path.join(root, file);
     const target = path.join(out, file);
-    if (!check) {
-      fs.mkdirSync(path.dirname(target), {recursive: true});
-      fs.copyFileSync(source, target);
-    }
+    if (!check) replaceIfChanged(source, target);
     if (!fs.existsSync(target) || digest(fs.readFileSync(source)) !== digest(fs.readFileSync(target))) {
       throw new Error(`Stale Operations runtime dependency: ${file}`);
     }
@@ -74,7 +85,11 @@ async function main() {
   }
   process.stdout.write(`Operations runtime ${check ? 'fresh' : 'copied'}: ${files.length} files.\n`);
 }
-main().catch((error) => {
-  process.stderr.write(`${error.message}\n`);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch((error) => {
+    process.stderr.write(`${error.message}\n`);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = {replaceIfChanged};

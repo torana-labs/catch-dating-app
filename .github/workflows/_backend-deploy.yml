@@ -56,7 +56,7 @@ jobs:
           set -euo pipefail
           git fetch --force origin "refs/tags/deployed/*:refs/tags/deployed/*"
           # A first deploy is full and long, so only a manual run may start it.
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]] &&
+          if [[ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]] &&
               ! git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT" > /dev/null; then
             echo "::notice::$DEPLOY_ENVIRONMENT has no deployed/$DEPLOY_ENVIRONMENT tag; run Deploy backend manually to bootstrap it."
             echo "mode=no-op" >> "$GITHUB_OUTPUT"
@@ -108,7 +108,7 @@ jobs:
           set -euo pipefail
           git fetch --force origin "refs/tags/deployed/*:refs/tags/deployed/*"
           # A first deploy is full and long, so only a manual run may start it.
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]] &&
+          if [[ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]] &&
               ! git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT" > /dev/null; then
             echo "::notice::$DEPLOY_ENVIRONMENT has no deployed/$DEPLOY_ENVIRONMENT tag; run Deploy backend manually to bootstrap it."
             echo "mode=no-op" >> "$GITHUB_OUTPUT"
@@ -153,6 +153,23 @@ jobs:
           node tool/firebase/check_functions_params_coverage.mjs \
             --functions-dir functions --env-file "functions/.env.$project_id"
 
+      # Missing and indeterminate prerequisites both stop before mutation.
+      # Preserve the checker's exit status, including errors without a report.
+      - name: Check this environment is ready for these targets
+        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          DEPLOY_TARGETS: ${{ steps.plan.outputs.targets }}
+        run: |
+          set -euo pipefail
+          mkdir -p build
+          readiness_status=0
+          node tool/firebase/check_environment_readiness.mjs \
+            --env "$DEPLOY_ENVIRONMENT" --targets "$DEPLOY_TARGETS" \
+            --source-root . --source-sha "$GITHUB_SHA" --json > build/readiness.json || readiness_status=$?
+          cat build/readiness.json
+          exit "$readiness_status"
+
       # CI already ran the predeploy test suites for this commit, and the build
       # above produced lib, so deploy from a copy of firebase.json without hooks.
       # New indexes must be READY before Functions that query them deploy.
@@ -182,6 +199,16 @@ jobs:
             ./tool/deploy_firebase_targets.sh "$DEPLOY_ENVIRONMENT" "$remaining" \
               --config firebase.deploy.json --force
           fi
+
+      # Live Firestore and Storage rules must equal this commit's sources before
+      # the tag claims the environment received it.
+      - name: Verify the active rules match this commit
+        if: ${{ steps.plan.outputs.mode != 'no-op' }}
+        env:
+          DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+        run: >-
+          node tool/firebase/check_rules_deployment_drift.mjs
+          --env "$DEPLOY_ENVIRONMENT" --wait-seconds 180 --poll-seconds 10
 
       - name: Record the deployed commit
         env:

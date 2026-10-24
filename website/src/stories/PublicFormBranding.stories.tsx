@@ -1,6 +1,7 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {publicFormsCopy} from "../content/forms";
 import {PublicFormFrame, PublicFormPanel, PublicFormPrivacy} from "../shared/ui/primitives/publicForms";
+import {demoOrganizerName} from "./fixtures/demoWorld";
 
 const meta = {
   title: "Marketing Website/Forms/Organizer branding",
@@ -14,7 +15,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const logo = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="64" viewBox="0 0 300 64"><rect width="64" height="64" rx="8" fill="#174b38"/><text x="32" y="42" text-anchor="middle" fill="white" font-family="Arial" font-size="30">S</text><text x="80" y="30" fill="#174b38" font-family="Arial" font-size="21" font-weight="700">SAKET</text><text x="80" y="51" fill="#174b38" font-family="Arial" font-size="15">RUN CLUB</text></svg>')}`;
+const [logoWord, ...logoRest] = demoOrganizerName.toUpperCase().split(" ");
+const logo = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="300" height="64" viewBox="0 0 300 64"><rect width="64" height="64" rx="8" fill="#174b38"/><text x="32" y="42" text-anchor="middle" fill="white" font-family="Arial" font-size="30">${logoWord[0]}</text><text x="80" y="30" fill="#174b38" font-family="Arial" font-size="21" font-weight="700">${logoWord}</text><text x="80" y="51" fill="#174b38" font-family="Arial" font-size="15">${logoRest.join(" ")}</text></svg>`)}`;
 
 const children = (
   <>
@@ -36,7 +38,7 @@ const children = (
 );
 
 export const NameFallback: Story = {
-  args: {organizerName: "Saket Run Club", embed: false, appearance: "editorial", children},
+  args: {organizerName: demoOrganizerName, embed: false, appearance: "editorial", children},
 };
 export const OrganizerLogo: Story = {
   name: "Uploaded logo (illustrative fixture)",
@@ -49,5 +51,5 @@ export const Embedded: Story = {
   args: {...OrganizerLogo.args, embed: true},
 };
 export const LongOrganizerName: Story = {
-  args: {...NameFallback.args, organizerName: "Saket Run Club — Weekend Runners and Community Events"},
+  args: {...NameFallback.args, organizerName: `${demoOrganizerName} — Trivia Nights, Hosted Socials and Community Events`},
 };

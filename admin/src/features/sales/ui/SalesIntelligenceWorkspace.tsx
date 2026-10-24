@@ -31,7 +31,7 @@ function date(value: string): string {
       year: "numeric"});
 }
 function QueryProblem({message, retry}: {message: string; retry: () => void}) {
-  return <p role="alert">{message} <AdminButton onClick={retry}>Try again</AdminButton></p>;
+  return <CatchText as="p" variant="bodyL" color="inherit" role="alert">{message} <AdminButton onClick={retry}>Try again</AdminButton></CatchText>;
 }
 
 const claimOptions: Array<{value: EvidenceClaim; label: string}> = [
@@ -321,11 +321,11 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       })}
       <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
         <CatchText as="h3" variant="sectionTitle">Review one fit factor</CatchText>
-        {stale ? <p role="alert">This factor or policy changed during your review.
+        {stale ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">This factor or policy changed during your review.
           Your edits are retained. Compare the current review before saving.
           <AdminButton onClick={() => selectFactor(factorId)}>
             Use current factor review</AdminButton>
-        </p> : null}
+        </CatchText> : null}
         <CatchField
           recipe="select"
           title="Factor"
@@ -528,11 +528,11 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       onNextContacts: c.nextContactPage,
       onPreviousContacts: c.previousContactPage,
       onGenerate: c.generate})}
-    {c.jobRequestId ? <p role="status">Preparation status: {
+    {c.jobRequestId ? <CatchText as="p" variant="bodyL" color="inherit" role="status">Preparation status: {
       c.job.data?.status === "completed" ? "Ready for review" :
         c.job.data?.status === "running" ? "Still preparing" :
           c.job.isError ? "Could not confirm status" : "Checking"}{" "}
-      <AdminButton onClick={() => void c.job.refetch()}>Check again</AdminButton></p> : null}
+      <AdminButton onClick={() => void c.job.refetch()}>Check again</AdminButton></CatchText> : null}
     <CatchText as="h3" variant="sectionTitle">Saved drafts</CatchText>
     {c.drafts.isError ? <QueryProblem message="Saved drafts could not load."
       retry={() => void c.drafts.refetch()} /> : null}

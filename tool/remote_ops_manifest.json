@@ -90,7 +90,7 @@
         "prod-hosting",
         "prod"
       ],
-      "purpose": "Automatically promote the exact CI-produced Firebase backend package through dev, staging, and protected prod, resuming the authorized stages in index, Functions, Firestore-rules, and Storage-rules order.",
+      "purpose": "Deploy an exact main commit's Firebase backend to dev on merge, to prod after one protected approval, and to staging monthly, in index, Functions, Firestore-rules and Storage-rules order, deploying only what changed since the environment's deployed/<env> tag.",
       "entrypoints": [
         {
           "kind": "tool-id",
@@ -122,11 +122,11 @@
         },
         {
           "kind": "workflow",
-          "ref": ".github/workflows/delivery.yml"
+          "ref": ".github/workflows/backend-deploy.yml"
         },
         {
           "kind": "workflow",
-          "ref": ".github/workflows/_firebase-promote.yml"
+          "ref": ".github/workflows/_backend-deploy.yml"
         },
         {
           "kind": "config",

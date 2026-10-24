@@ -3,9 +3,9 @@ name: Deploy backend
 # The one path from main to the Firebase backend (indexes, Functions, Firestore
 # and Storage rules). Dev deploys on every backend-relevant merge; prod then
 # deploys the same commit once a prod reviewer approves, and only when the
-# commit changes something prod has not received. Run it manually for prod,
-# dev or staging, optionally as a full deploy. Operator guide:
-# docs/release_operations.md, "Deploy backend".
+# commit changes something prod has not received. Staging refreshes on the
+# first of each month. Run it manually for prod, dev or staging, optionally as
+# a full deploy. Operator guide: docs/release_operations.md, "Deploy backend".
 
 on:
   push:
@@ -24,6 +24,8 @@ on:
       - tool/firebase/**
       - .github/workflows/backend-deploy.yml
       - .github/workflows/_backend-deploy.yml
+  schedule:
+    - cron: '17 2 1 * *'
   workflow_dispatch:
     inputs:
       environment:
@@ -60,7 +62,9 @@ jobs:
       full: ${{ inputs.full == true }}
 
   staging:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' }}
+    if: >-
+      ${{ github.event_name == 'schedule' ||
+        github.event_name == 'workflow_dispatch' && inputs.environment == 'staging' }}
     uses: ./.github/workflows/_backend-deploy.yml
     with:
       environment: staging

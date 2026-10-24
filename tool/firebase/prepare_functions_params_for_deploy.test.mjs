@@ -649,18 +649,15 @@ test("Catch gates reject non-booleans even with complete valid scope", () => {
   }
 });
 
-test("promotion forwards scoped Catch non-secret configuration without secret payloads", () => {
-  const promotion = fs.readFileSync(new URL(
-    "../../.github/workflows/_firebase-promote.yml", import.meta.url), "utf8");
-  const step = promotion.slice(
-    promotion.indexOf("      - name: Materialize non-secret Functions params"),
-    promotion.indexOf("      - name: Gate Functions param coverage"));
-  for (const name of [...Object.keys(catchSender), ...Object.keys(catchReplyScope),
-    "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED",
-    "CATCH_WHATSAPP_REPLIES_ENABLED", "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY"]) {
-    assert.ok(step.includes(name + ": ${{ vars." + name + " }}"));
-  }
-  assert.doesNotMatch(step, /secrets\.|CATCH_WHATSAPP_ACCESS_TOKEN:|CATCH_WHATSAPP_APP_SECRET:|CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN:/);
+test("Deploy backend forwards non-secret configuration without secret payloads", () => {
+  const workflow = fs.readFileSync(new URL(
+    "../../.github/workflows/_backend-deploy.yml", import.meta.url), "utf8");
+  const step = workflow.slice(
+    workflow.indexOf("      - name: Materialize Functions parameters"),
+    workflow.indexOf("\n      - ", workflow.indexOf("      - name: Materialize Functions parameters") + 1));
+  assert.match(step, /ENVIRONMENT_VARIABLES: \$\{\{ toJSON\(vars\) \}\}/);
+  assert.match(step, /prepare_functions_params_for_deploy\.mjs/);
+  assert.doesNotMatch(step, /secrets\.|CATCH_WHATSAPP_ACCESS_TOKEN|CATCH_WHATSAPP_APP_SECRET|CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN/);
 });
 
 test("verified materialization alone owns the canonical deployment digest marker", () => {

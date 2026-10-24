@@ -28,7 +28,7 @@ import {newSalesAccount} from "./sales/account";
 import type {SalesActivity, SalesOpportunity, SalesTask} from "./sales/types";
 
 // Approving creates Sales records, which only admins and admin owners own.
-const listingApprovalRoles = ["admin", "adminOwner"] as const;
+export const listingApprovalRoles = ["admin", "adminOwner"] as const;
 const curationCollection = "organizerIntakeCurationDecisions";
 const reviewDecisionCollection = "organizerIntakeReviewDecisions";
 
