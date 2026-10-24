@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.86.0
+version: 1.86.1
 updated: 2026-10-25
 owner: app_architecture
 status: active
@@ -1269,6 +1269,16 @@ because its glyph looks right.
 `design/tokens/catch.icons.legacy_flutter.json` keeps the pre-Lucide `CatchIcons`
 names as aliases of their roles while call sites migrate. It only shrinks, and
 it is deleted once no call site uses an old name.
+
+#### Phase Icon Role Adoption
+
+Migrate legacy names and direct icon-family references to semantic roles in
+each owned feature slice. The target is zero in every category of
+`tool/design/icon_family_usage_baseline.json`; the baseline belongs to this
+document. `check_icon_family_usage.mjs` rejects growth and requires each
+reduction to be recorded with `--update`. Keep family-specific code inside
+the icon layer, retain the existing vendored-package exemption, and remove
+legacy aliases only after their callers have migrated.
 
 ### Sizing And Constraints
 
