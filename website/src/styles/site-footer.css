@@ -50,7 +50,3 @@
   flex-wrap: wrap;
   gap: var(--catch-space-micro10);
 }
-
-.site-footer__context {
-  grid-column: 1 / -1;
-}
