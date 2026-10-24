@@ -28,6 +28,6 @@ it("does not show past, unpublished, or other-city events and does not invent ba
  expect(data.events).toHaveLength(1);
  expect(data.events[0].availability).toBe("Sold out");
  expect(data.events[0]).not.toHaveProperty("catchExperience");
- expect(data.events[0].illustrative).toBe(true);
+ expect(data.events[0]).toMatchObject({photoUrl: null, activityKind: "socialRun"});
  expect(buildHomeDiscovery([source], "indore", "all", Date.parse("2030-01-01")).events).toEqual([]);
 });

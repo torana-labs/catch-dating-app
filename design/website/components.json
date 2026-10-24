@@ -661,7 +661,7 @@
           "optional-event-content"
         ]
       },
-      "notes": "Shared invitation hero, uncropped event artwork or typographic fallback, host byline, optional itinerary and facts, responsive guest action placements, accessible dialog, and existing registration controls. Guest state and transaction controllers stay feature-owned."
+      "notes": "Shared invitation hero, the uncropped event poster or its activity cover (EventThumbnail), host byline, optional itinerary and facts, responsive guest action placements, accessible dialog, and existing registration controls. Guest state and transaction controllers stay feature-owned."
     },
     {
       "id": "event_detail_hero_section",

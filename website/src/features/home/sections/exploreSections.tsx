@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchField, EventThumbnail} from "@catch/web-ui";
 import {useState} from "react";
 import {ArrowRight, CalendarDays, MapPin, Search, Sparkles, Users} from "lucide-react";
 import {exploreCopy as copy} from "@content/explore";
@@ -6,7 +6,7 @@ import {consumerHomeCopy} from "@content/consumerHome";
 import {activeMarket} from "@content/markets";
 import {interpolateContent as fill} from "@content/interpolate";
 import {Button, ButtonLink, PlainButton, PlainLink} from "../../../shared/ui/primitives";
-import {ConsumerFilters, ConsumerEmpty, ConsumerEventGrid, ConsumerEventLink, ConsumerEventMedia, ConsumerPhotoNote, ConsumerCategory, ConsumerAvailability} from "../../../shared/ui/primitives/consumerHome";
+import {ConsumerFilters, ConsumerEmpty, ConsumerEventGrid, ConsumerEventLink, ConsumerEventMedia, ConsumerCategory, ConsumerAvailability} from "../../../shared/ui/primitives/consumerHome";
 import {ExploreIntro, ExploreSearchForm, ExploreToolbar, ExploreExperience, ExploreResults, ExploreResultsHeading, ExploreBadge, ExploreExperienceFilter, ExploreFooterInvite} from "../../../shared/ui/primitives/explore";
 import type {useExploreController} from "../useExploreController";
 type Controller = ReturnType<typeof useExploreController>;
@@ -50,7 +50,7 @@ export function renderExploreDiscovery(explore: Controller) {
       <ExploreResultsHeading><h2 id="explore-results-title">{copy.results}</h2><p role="status" aria-live="polite">{explore.phase === "ready" ? `${explore.events.length === 1 ? copy.singleCount : fill(copy.count,{count:explore.events.length})} · ${copy.sorted}` : explore.phase === "loading" ? copy.loading : copy.unavailable}</p></ExploreResultsHeading>
       {explore.phase !== "ready" ? <ConsumerEmpty><CalendarDays size={34} aria-hidden="true" /><h3>{explore.phase === "loading" ? copy.loading : copy.unavailable}</h3>{explore.phase === "unavailable" ? <><p>{copy.unavailableBody}</p><Button onClick={() => window.location.reload()}>{copy.retry}</Button></> : null}</ConsumerEmpty> : explore.events.length ?
       <ConsumerEventGrid showAll>{explore.events.map(event => <ConsumerEventLink key={event.eventId} href={event.path}>
-        <ConsumerEventMedia><img src={event.image} alt="" width={600} height={420} loading="lazy" />{event.illustrative ? <ConsumerPhotoNote>{copy.image}</ConsumerPhotoNote> : null}</ConsumerEventMedia>
+        <ConsumerEventMedia><EventThumbnail photoUrl={event.photoUrl} activityKind={event.coverActivityKind} /></ConsumerEventMedia>
         {event.experienceActivities.length ? <ExploreBadge><Sparkles size={14} aria-hidden="true" />{copy.experienceLabel}</ExploreBadge> : null}
         <ConsumerCategory category={event.category}>{consumerHomeCopy.categories.find(item => item.id === event.category)?.label}</ConsumerCategory>
         <h3>{event.title}</h3><p><CalendarDays size={17} aria-hidden="true" />{event.date}</p><p><MapPin size={17} aria-hidden="true" />{event.location} · {event.priceLabel}</p><p><Users size={17} aria-hidden="true" />{fill(copy.by,{name:event.listing.name})}</p>

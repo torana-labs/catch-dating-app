@@ -7,7 +7,10 @@ export interface ClubPlaceholderCoverProps {
   city?: string | null;
   /** A stored activity value; unknown values draw the open format. */
   activityKind: string;
-  /** Small media: the organiser's initials instead of the name and city. */
+  /**
+   * Shows the organiser's initials instead of the name and city. Covers
+   * narrower than 160px switch to the initials on their own.
+   */
   compact?: boolean;
 }
 
@@ -21,11 +24,10 @@ export function ClubPlaceholderCover({name, city, activityKind, compact = false}
   return (
     <span className={styles.cover} aria-hidden="true">
       <EventBackdropImage activityKind={layout.activityKind} mirrored />
-      <span className={styles.type}>
-        {compact ? <span className={styles.monogram}>{layout.monogram}</span> : <>
-          {layout.city ? <span className={styles.city}>{layout.city}</span> : null}
-          <span className={styles.name}>{layout.name}</span>
-        </>}
+      <span className={styles.type} data-compact={compact || undefined}>
+        {layout.city ? <span className={styles.city}>{layout.city}</span> : null}
+        <span className={styles.name}>{layout.name}</span>
+        <span className={styles.monogram}>{layout.monogram}</span>
       </span>
     </span>
   );

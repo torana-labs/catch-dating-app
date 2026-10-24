@@ -17,7 +17,7 @@ describe("ClubCover", () => {
     const {container} = render(<ClubCover {...organiser} />);
 
     expect(container.querySelector("img")).toBeNull();
-    expect(container.textContent).toBe("MumbaiAFTER FLY");
+    expect(container.textContent).toContain("MumbaiAFTER FLY");
   });
 
   it("falls back to the typographic cover when the photo fails to load", () => {
@@ -25,6 +25,6 @@ describe("ClubCover", () => {
 
     fireEvent.error(container.querySelector("img")!);
     expect(container.querySelector("img")).toBeNull();
-    expect(container.textContent).toBe("AF");
+    expect(container.querySelector("[data-compact]")?.textContent).toContain("AF");
   });
 });

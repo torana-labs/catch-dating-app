@@ -10,6 +10,6 @@ export const exploreCopy = {
   noResults: "No events match these filters.", noResultsBody: "Try a different date, format, or search—or include events without the Catch Experience badge.",
   empty: "No upcoming events listed in {city} yet.", emptyBody: "Try another city, or get to know the organisers and communities on Catch.",
   changeCity: "Change city", organisers: "Browse organisers", loading: "Finding upcoming events…", unavailable: "We couldn’t load events right now.", unavailableBody: "Please try again. Your search hasn’t been cleared.", retry: "Try again",
-  external: "Books on {source}", full: "Sold out", closed: "Registration closed", by: "by {name}", image: "Illustrative image",
+  external: "Books on {source}", full: "Sold out", closed: "Registration closed", by: "by {name}",
   hostTitle: "Bringing people together?", hostBody: "Explore tools for your bookings, your guests, and the experience itself.", hostAction: "Explore Catch Host",
 } as const;

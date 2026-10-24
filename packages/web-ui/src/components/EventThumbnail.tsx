@@ -10,6 +10,8 @@ export interface EventThumbnailProps {
   /** Describes the photo; the artwork fallback is decorative. */
   semanticLabel?: string;
   dense?: boolean;
+  /** `contain` shows a whole poster; `cover` fills the box. */
+  fit?: "cover" | "contain";
   loading?: "eager" | "lazy";
 }
 
@@ -17,12 +19,12 @@ export interface EventThumbnailProps {
  * Event media: the uploaded photo, or the activity artwork (G6) when there is
  * none or it fails to load. Never a stand-in photo. Fills its container.
  */
-export function EventThumbnail({photoUrl, activityKind, semanticLabel = "", dense, loading = "lazy"}: EventThumbnailProps) {
+export function EventThumbnail({photoUrl, activityKind, semanticLabel = "", dense, fit = "cover", loading = "lazy"}: EventThumbnailProps) {
   const url = photoUrl?.trim();
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
   if (url && failedUrl !== url) {
     return (
-      <img className={styles.photo} src={url} alt={semanticLabel} loading={loading} decoding="async"
+      <img className={styles.photo} data-fit={fit} src={url} alt={semanticLabel} loading={loading} decoding="async"
         fetchPriority={loading === "eager" ? "high" : undefined} onError={() => setFailedUrl(url)} />
     );
   }

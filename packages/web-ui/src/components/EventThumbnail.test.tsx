@@ -11,6 +11,7 @@ describe("EventThumbnail", () => {
     const photo = screen.getByRole("img", {name: "Supper club poster"});
     expect(photo.getAttribute("src")).toBe("/poster.jpg");
     expect(photo.getAttribute("loading")).toBe("lazy");
+    expect(photo.dataset.fit).toBe("cover");
     expect(container.querySelector("[data-activity-kind]")).toBeNull();
   });
 
@@ -29,9 +30,10 @@ describe("EventThumbnail", () => {
     expect(container.querySelector("[data-activity-kind]")?.getAttribute("data-activity-kind")).toBe("tennis");
   });
 
-  it("loads an above-the-fold photo eagerly at high priority", () => {
-    const {container} = render(<EventThumbnail photoUrl="/poster.jpg" activityKind="dinner" loading="eager" />);
+  it("loads an above-the-fold poster eagerly, whole", () => {
+    const {container} = render(<EventThumbnail photoUrl="/poster.jpg" activityKind="dinner" loading="eager" fit="contain" />);
 
     expect(container.querySelector("img")?.getAttribute("fetchpriority")).toBe("high");
+    expect(container.querySelector("img")?.dataset.fit).toBe("contain");
   });
 });

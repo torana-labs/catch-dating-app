@@ -14,19 +14,6 @@
   display: block; overflow: hidden; border-radius: var(--catch-radius-sm);
   background: var(--website-card-wash); aspect-ratio: .946;
 }
-.event-detail-media img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.event-detail-media--typographic {
-  display: flex; flex-direction: column; justify-content: space-between;
-  padding: var(--catch-space-s8); background: color-mix(in srgb, var(--activity) 15%, var(--website-bg));
-  color: var(--website-text);
-}
-.event-detail-media--typographic > span {
-  font: 12px var(--catch-font-mono), monospace; text-transform: uppercase; letter-spacing: .14em;
-}
-.event-detail-media--typographic > strong {
-  font: 800 clamp(36px, 4vw, 64px)/1 var(--catch-font-head), sans-serif;
-  font-stretch: var(--catch-voice-stretch); letter-spacing: -.04em; overflow-wrap: anywhere;
-}
 .event-detail-ticket__body { min-width: 0; padding-top: var(--catch-space-s2); }
 .event-detail-ticket__body > .ui-label {
   font-family: var(--catch-font-mono), monospace; font-size: 11px; letter-spacing: .16em;

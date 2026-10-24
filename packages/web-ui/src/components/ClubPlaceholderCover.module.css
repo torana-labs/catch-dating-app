@@ -45,6 +45,31 @@
   -webkit-line-clamp: 3;
 }
 
+.monogram,
+.type[data-compact] .city,
+.type[data-compact] .name {
+  display: none;
+}
+
+.type[data-compact] .monogram {
+  display: block;
+}
+
+@container (max-width: 159px) {
+  .type {
+    padding: var(--catch-space-s3);
+  }
+
+  .city,
+  .name {
+    display: none;
+  }
+
+  .monogram {
+    display: block;
+  }
+}
+
 @container (min-width: 600px) {
   .type {
     padding: var(--catch-space-s8);

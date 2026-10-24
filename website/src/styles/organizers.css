@@ -705,9 +705,7 @@
 }
 
 .listing-polaroid__fallback {
-  display: grid;
-  min-height: 360px;
-  place-items: center;
+  aspect-ratio: 18 / 7;
   background: var(--website-bg);
 }
 
@@ -1052,7 +1050,7 @@
   }
 
   .listing-polaroid__fallback {
-    min-height: 250px;
+    aspect-ratio: 16 / 10;
   }
 
   .listing-polaroid__caption {
