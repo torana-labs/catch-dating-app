@@ -85,48 +85,6 @@ export function AdminMarketingOpsShell({
   );
 }
 
-export function AdminIntakeEventWorkspaceShell({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <AdminMarketingOpsShell
-      {...props}
-      className={classNames("intake-event-workspace", className)}
-    >
-      {children}
-    </AdminMarketingOpsShell>
-  );
-}
-
-export function AdminIntakeWorkspaceHeader({
-  actions,
-  children,
-  className = "",
-  eyebrow,
-  title,
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  actions?: ReactNode;
-  children?: ReactNode;
-  eyebrow?: ReactNode;
-  title: ReactNode;
-}) {
-  return (
-    <section {...props} className={classNames("intake-workspace-header", className)}>
-      <div>
-        {eyebrow ? <AdminEyebrow>{eyebrow}</AdminEyebrow> : null}
-        <CatchText as="h2" variant="titleL">{title}</CatchText>
-        {children ? <CatchText as="p" variant="supporting">{children}</CatchText> : null}
-      </div>
-      {actions}
-    </section>
-  );
-}
-
 export function AdminIntakeWorkspaceTabs<T extends string>({
   ariaLabel,
   className = "",
