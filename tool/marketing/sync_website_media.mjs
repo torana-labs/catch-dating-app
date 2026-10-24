@@ -12,6 +12,10 @@ const websitePublicPrefix = "website/public/";
 const websiteScreenshotPrefix = `${websitePublicPrefix}assets/app-screenshots/`;
 const websiteManifestPath = fromRepo(`${websiteScreenshotPrefix}manifest.json`);
 const allowedStatuses = new Set(["active", "pending-fixture", "paused"]);
+const allowedKinds = new Set(["app-capture"]);
+// Framed PNG size per device, so pages reserve the image's space before it loads.
+const deviceFrameSizes = {"iphone-17-pro": {width: 1020, height: 1964}};
+const scenarioRoot = "tool/demo/demo_seed/scenarios";
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
 
@@ -106,7 +110,7 @@ function checkWebsiteMedia(manifest) {
   console.log("Marketing website media is in sync.");
 }
 
-function validateSourceManifest(manifest) {
+export function validateSourceManifest(manifest) {
   const errors = [];
   if (!manifest || typeof manifest !== "object") {
     return ["tool/marketing/capture_manifest.json must contain an object."];
@@ -173,8 +177,45 @@ function validateSourceManifest(manifest) {
     } else if (capture.status === "pending-fixture") {
       requireFile(errors, label, "placeholderPath", capture.placeholderPath);
     }
+    validatePresentation(errors, label, capture);
   }
   return errors;
+}
+
+// Fields for the pages that show a capture. None of them is a render input.
+function validatePresentation(errors, label, capture) {
+  if (capture.kind !== undefined && !allowedKinds.has(capture.kind)) {
+    errors.push(`${label}: kind must be one of ${[...allowedKinds].join(", ")}.`);
+  }
+  if (capture.pages !== undefined) {
+    const pages = Array.isArray(capture.pages) ? capture.pages : [];
+    if (!Array.isArray(capture.pages) || pages.some(page => typeof page !== "string" || !/^\/(?:[a-z0-9-]+\/)*$/.test(page))) {
+      errors.push(`${label}: pages must list canonical paths such as "/host/".`);
+    } else if (new Set(pages).size !== pages.length) {
+      errors.push(`${label}: pages must not repeat a path.`);
+    }
+    if (pages.length > 0 && capture.status !== "active") {
+      errors.push(`${label}: only an active capture can name pages.`);
+    }
+  }
+  if (capture.scenario !== undefined) errors.push(...scenarioProblems(label, capture.scenario));
+}
+
+function scenarioProblems(label, scenario) {
+  const {world, event, moment} = scenario ?? {};
+  if (![world, event, moment].every(value => typeof value === "string" && value !== "")) {
+    return [`${label}: scenario needs world, event and moment.`];
+  }
+  const worldPath = `${scenarioRoot}/${world}.json`;
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(world) || !fs.existsSync(fromRepo(worldPath))) {
+    return [`${label}: scenario world ${world} is not a file under ${scenarioRoot}.`];
+  }
+  const data = readJson(fromRepo(worldPath));
+  if (data.schemaVersion !== 2) return [`${label}: scenario world ${world} is not a schemaVersion 2 demo world.`];
+  const problems = [];
+  if (!(data.events ?? []).some(item => item.id === event)) problems.push(`${label}: ${world} has no event ${event}.`);
+  if (!Object.hasOwn(data.moments ?? {}, moment)) problems.push(`${label}: ${world} has no moment ${moment}.`);
+  return problems;
 }
 
 export function buildWebsiteManifest(manifest) {
@@ -190,9 +231,11 @@ export function buildWebsiteManifest(manifest) {
         surface: capture.surface,
         device: capture.device,
         webPath,
+        ...deviceFrameSizes[capture.device],
         alt: capture.alt,
         caption: `${manifest.previewDisclosure} ${capture.caption}`,
         walkthroughStep: capture.walkthroughStep,
+        pages: capture.pages ?? [],
       };
     });
 

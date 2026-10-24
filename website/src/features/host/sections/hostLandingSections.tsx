@@ -4,8 +4,9 @@ import {hostLandingCopy as copy, hostFormats} from "@content/hostLanding";
 import {hostProductCopy} from "@content/hostProduct";
 import {activeMarket} from "@content/markets";
 import {ButtonLink, PlainLink, DataTable} from "../../../shared/ui/primitives";
+import {MediaSlot, type CaptureSlots} from "../../../shared/media/MediaSlot";
 import {
-  HostLandingHero, HostLandingHeroCopy, HostLandingMedia, HostLandingPhotoMessage,
+  HostLandingHero, HostLandingHeroCopy, HostLandingMedia,
   HostLandingSection, HostLandingHeading, HostLandingNote, HostLandingActions,
   HostLandingBenefits, HostLandingBenefit, HostLandingWorkflow, HostLandingPrompt,
   HostFormatTabs, HostFormatTab, HostFormatPanel, HostFormatStages, HostFormatStage,
@@ -28,7 +29,7 @@ export function renderHostLandingParticipation() {
   </HostLandingSection>;
 }
 
-export function renderHostLandingHero() {
+export function renderHostLandingHero(captures: CaptureSlots) {
   return <HostLandingHero aria-labelledby="host-title">
     <HostLandingHeroCopy>
       <h1 id="host-title">{copy.hero.title}</h1>
@@ -37,10 +38,7 @@ export function renderHostLandingHero() {
       <HostLandingActions><ButtonLink href="/host/apply/">{copy.apply}<ArrowRight size={18} aria-hidden="true" /></ButtonLink><PlainLink href="#how-it-works">{copy.seeHow}<ArrowRight size={17} aria-hidden="true" /></PlainLink></HostLandingActions>
       <HostLandingNote>{copy.hero.note}</HostLandingNote>
     </HostLandingHeroCopy>
-    <HostLandingMedia>
-      <img src="/assets/marketing/home-organiser.jpg" alt={copy.hero.imageAlt} width={1536} height={1024} fetchPriority="high" />
-      <HostLandingPhotoMessage><strong>{copy.hero.visualTitle}</strong>{copy.hero.visualItems.map(item => <p key={item}><CheckCircle2 size={17} aria-hidden="true" />{item}</p>)}</HostLandingPhotoMessage>
-    </HostLandingMedia>
+    <HostLandingMedia variant="capture"><MediaSlot captures={captures} id="host-live-console" loading="eager" /></HostLandingMedia>
   </HostLandingHero>;
 }
 
