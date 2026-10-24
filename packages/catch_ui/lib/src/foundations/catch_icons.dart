@@ -1,448 +1,1947 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Source: design/tokens/catch.icons.json (Lucide 1.55.0).
+// Regenerate with `node tool/design/generate_icon_catalog.mjs`.
+
 import 'package:flutter/foundation.dart'
     show TargetPlatform, defaultTargetPlatform;
-import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Centralised icon facade for Catch.
+/// Catch's icon roles.
 ///
-/// Screens reference Catch-named icons (`CatchIcons.tonight`, not
-/// `PhosphorIcons.moon()`) so a future icon-set swap is a one-file change.
-///
-/// We default to Phosphor Duotone for primary nav / time pills (it carries
-/// the same friendly + modern aesthetic as the moon/sun/sofa scribbles in
-/// the existing time pills) and Phosphor Regular for inline meta + actions
-/// where the slimmer line works better at small sizes. Rounded icons that
-/// don't have a Phosphor equivalent we want fall back to Material rounded.
+/// Features name a role (`CatchIcons.back`), never a glyph of an icon family.
+/// Each role maps to one Lucide glyph in `design/tokens/catch.icons.json`;
+/// changing the family changes that file and the vendored font, not call sites.
 abstract final class CatchIcons {
-  // ── Time pills ───────────────────────────────────────────────────────────
-  static IconData get tonight => PhosphorIconsDuotone.moonStars;
-  static IconData get tomorrow => PhosphorIconsDuotone.sun;
-  static IconData get weekend => PhosphorIconsDuotone.couch;
-  static IconData get thisWeek => PhosphorIconsDuotone.calendarBlank;
-  static IconData get anytime => PhosphorIconsDuotone.infinity;
+  static const String _fontFamily = 'Lucide';
+  static const String _fontPackage = 'catch_ui';
 
-  // ── App tab dock ─────────────────────────────────────────────────────────
-  static IconData get tabHome => PhosphorIconsRegular.house;
-  static IconData get tabHomeFilled => PhosphorIconsFill.house;
-  static IconData get tabExplore => PhosphorIconsRegular.compass;
-  static IconData get tabExploreFilled => PhosphorIconsFill.compass;
-  static IconData get tabCatches => PhosphorIconsRegular.sparkle;
-  static IconData get tabCatchesFilled => PhosphorIconsFill.sparkle;
-  static IconData get tabChats => PhosphorIconsRegular.chatCircle;
-  static IconData get tabChatsFilled => PhosphorIconsFill.chatCircle;
-  static IconData get tabYou => PhosphorIconsRegular.user;
-  static IconData get tabYouFilled => PhosphorIconsFill.user;
-  static IconData get tabEvents => PhosphorIconsRegular.ticket;
-  static IconData get tabEventsFilled => PhosphorIconsFill.ticket;
-  static IconData get tabCustomers => PhosphorIconsRegular.usersThree;
-  static IconData get tabCustomersFilled => PhosphorIconsFill.usersThree;
-  static IconData get tabForms => Icons.note_alt_outlined;
-  static IconData get tabFormsFilled => Icons.note_alt_rounded;
-  static IconData get tabOrganizer => PhosphorIconsRegular.storefront;
-  static IconData get tabOrganizerFilled => PhosphorIconsFill.storefront;
+  // Interface roles: navigation, actions, status and object nouns.
 
-  // ── Distance / location ──────────────────────────────────────────────────
-  static IconData get nearMe => PhosphorIconsBold.navigationArrow;
-  static IconData get nearMeOutlined => PhosphorIconsRegular.navigationArrow;
-  static IconData get pin => PhosphorIconsBold.mapPin;
-  static IconData get pinOutlined => PhosphorIconsRegular.mapPin;
-  static IconData get fitMap => PhosphorIconsRegular.frameCorners;
+  /// Return to the previous screen or step.
+  static IconData get back => const IconData(
+    0xe048,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+    matchTextDirection: true,
+  );
 
-  // ── Filters / chips ──────────────────────────────────────────────────────
-  static IconData get joined => PhosphorIconsRegular.checkCircle;
-  static IconData get joinedFilled => PhosphorIconsFill.checkCircle;
-  static IconData get rated => PhosphorIconsFill.star;
-  static IconData get hosted => PhosphorIconsRegular.shield;
-  static IconData get clear => PhosphorIconsRegular.x;
-  static IconData get clearCircle => PhosphorIconsRegular.xCircle;
+  /// Continue to the next screen or step.
+  static IconData get forward => const IconData(
+    0xe049,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+    matchTextDirection: true,
+  );
 
-  // ── Browse modes / navigation ────────────────────────────────────────────
-  static IconData get map => PhosphorIconsRegular.mapTrifold;
-  static IconData get list => PhosphorIconsBold.list;
-  static IconData get sort => PhosphorIconsRegular.sortAscending;
-  static IconData get search => PhosphorIconsRegular.magnifyingGlass;
-  static IconData get add => PhosphorIconsBold.plus;
-  static IconData get forwardArrow => PhosphorIconsBold.arrowRight;
-  static IconData get backArrow => PhosphorIconsBold.arrowLeft;
-  static IconData get close => PhosphorIconsRegular.x;
-  static IconData get menu => PhosphorIconsBold.list;
-  static IconData get more => PhosphorIconsBold.dotsThree;
+  /// Dismiss a sheet, dialog, banner or overlay.
+  static IconData get close => const IconData(
+    0xe1b2,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
 
-  // ── Detail screen actions ────────────────────────────────────────────────
-  static IconData get share => PhosphorIconsRegular.shareNetwork;
+  /// Clear a field, filter or selection.
+  static IconData get clear => const IconData(
+    0xe084,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Row affordance that opens a detail screen.
+  static IconData get disclosure => const IconData(
+    0xe06f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+    matchTextDirection: true,
+  );
+
+  /// Expand a collapsed section or open a picker.
+  static IconData get expand => const IconData(
+    0xe06d,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Collapse an expanded section.
+  static IconData get collapse => const IconData(
+    0xe070,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Open the linked destination inside Catch.
+  static IconData get goTo => const IconData(
+    0xe04d,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Open a page outside Catch.
+  static IconData get openExternal => const IconData(
+    0xe0b9,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Open more actions.
+  static IconData get more => const IconData(
+    0xe0b6,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Home tab and home destination.
+  static IconData get home => const IconData(
+    0xe0f5,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Explore tab: discover events and clubs.
+  static IconData get explore => const IconData(
+    0xe09b,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A conversation, messaging or the chats tab.
+  static IconData get chat => const IconData(
+    0xe116,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Group discussion, forum or several threads.
+  static IconData get conversations => const IconData(
+    0xe40d,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// One person, a profile or the You tab.
+  static IconData get person => const IconData(
+    0xe19f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Several people: guests, members, customers, groups.
+  static IconData get people => const IconData(
+    0xe1a4,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Events tab, tickets and bookings.
+  static IconData get ticket => const IconData(
+    0xe20f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A confirmed ticket or booking.
+  static IconData get ticketConfirmed => const IconData(
+    0xe5ae,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A Catch activity in general, when no activity kind applies.
+  static IconData get activity => const IconData(
+    0xe20f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Forms tab and form builder.
+  static IconData get forms => const IconData(
+    0xe596,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// An organizer storefront or the organizer tab.
+  static IconData get organizer => const IconData(
+    0xe3e4,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A business, venue partner or organization.
+  static IconData get business => const IconData(
+    0xe290,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Grid or gallery layout.
+  static IconData get grid => const IconData(
+    0xe0ff,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// List layout.
+  static IconData get list => const IconData(
+    0xe106,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Drag to reorder.
+  static IconData get dragHandle => const IconData(
+    0xe0eb,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Close a side panel.
+  static IconData get collapsePanel => const IconData(
+    0xe432,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Open a side panel.
+  static IconData get expandPanel => const IconData(
+    0xe434,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Collapse the navigation sidebar.
+  static IconData get collapseSidebar => const IconData(
+    0xe21c,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Expand the navigation sidebar.
+  static IconData get expandSidebar => const IconData(
+    0xe21d,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Time filter: tonight.
+  static IconData get tonight => const IconData(
+    0xe410,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Time filter: tomorrow.
+  static IconData get tomorrow => const IconData(
+    0xe178,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Time filter: this weekend.
+  static IconData get weekend => const IconData(
+    0xe2c4,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Time filter: this week.
+  static IconData get thisWeek => const IconData(
+    0xe2b9,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Time filter: any time.
+  static IconData get anytime => const IconData(
+    0xe1e7,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Night or late-evening timing.
+  static IconData get night => const IconData(
+    0xe11e,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Evening or golden-hour timing.
+  static IconData get twilight => const IconData(
+    0xe17a,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A place, venue or address.
+  static IconData get location => const IconData(
+    0xe111,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Near me or current location.
+  static IconData get nearMe => const IconData(
+    0xe123,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Fit the map to every pin.
+  static IconData get fitToView => const IconData(
+    0xe257,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Map view.
+  static IconData get map => const IconData(
+    0xe110,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A city or locality.
+  static IconData get city => const IconData(
+    0xe1cc,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Change a location.
+  static IconData get editLocation => const IconData(
+    0xe655,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Directions to a venue.
+  static IconData get directions => const IconData(
+    0xe540,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A route, course or itinerary.
+  static IconData get route => const IconData(
+    0xe53e,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Meeting point or welcome desk.
+  static IconData get meetingPoint => const IconData(
+    0xe238,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Program arrivals.
+  static IconData get arrivals => const IconData(
+    0xe3cd,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Ground transport.
+  static IconData get taxi => const IconData(
+    0xe4fe,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Accommodation.
+  static IconData get hotel => const IconData(
+    0xe3e2,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Luggage and baggage.
+  static IconData get luggage => const IconData(
+    0xe2ca,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Add or create an item.
+  static IconData get add => const IconData(
+    0xe13d,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Add an item inside a list or group.
+  static IconData get create => const IconData(
+    0xe081,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Remove or decrease.
+  static IconData get remove => const IconData(
+    0xe11c,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Remove an item from a list or group.
+  static IconData get removeItem => const IconData(
+    0xe07e,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Search.
+  static IconData get search => const IconData(
+    0xe151,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Search found nothing.
+  static IconData get noResults => const IconData(
+    0xe4ad,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Filters and tuning controls.
+  static IconData get filters => const IconData(
+    0xe29a,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Sort order.
+  static IconData get sort => const IconData(
+    0xe37d,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Edit an item.
+  static IconData get edit => const IconData(
+    0xe1f9,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Write or edit a note.
+  static IconData get note => const IconData(
+    0xe172,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Delete an item.
+  static IconData get delete => const IconData(
+    0xe18e,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Archive an item.
+  static IconData get archive => const IconData(
+    0xe041,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Copy to the clipboard.
+  static IconData get copy => const IconData(
+    0xe09e,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Share a link or item. iOS uses the system share mark.
+  static IconData get share => const IconData(
+    0xe156,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A link or URL.
+  static IconData get link => const IconData(
+    0xe102,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Download a file.
+  static IconData get download => const IconData(
+    0xe0b2,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Upload a file or import data.
+  static IconData get upload => const IconData(
+    0xe091,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Send a message or invite.
+  static IconData get send => const IconData(
+    0xe152,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Save edits.
+  static IconData get saveChanges => const IconData(
+    0xe14d,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Save for later and saved items.
+  static IconData get bookmark => const IconData(
+    0xe060,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Like, favorite or interest.
+  static IconData get like => const IconData(
+    0xe0f2,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Reload or retry.
+  static IconData get refresh => const IconData(
+    0xe145,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Sync with another system.
+  static IconData get sync => const IconData(
+    0xe144,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Reset or start over.
+  static IconData get restart => const IconData(
+    0xe148,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Undo the last change.
+  static IconData get undo => const IconData(
+    0xe2a1,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Redo the last undone change.
+  static IconData get redo => const IconData(
+    0xe2a0,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Swap, exchange or transfer.
+  static IconData get swap => const IconData(
+    0xe24a,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Move up or increase.
+  static IconData get moveUp => const IconData(
+    0xe04a,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Move down or decrease.
+  static IconData get moveDown => const IconData(
+    0xe042,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Shuffle or randomize.
+  static IconData get shuffle => const IconData(
+    0xe15e,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Start or play.
+  static IconData get play => const IconData(
+    0xe13c,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Pause.
+  static IconData get pause => const IconData(
+    0xe07f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Add to calendar.
+  static IconData get addToCalendar => const IconData(
+    0xe2bc,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Add a photo or image.
+  static IconData get addPhoto => const IconData(
+    0xe1f7,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Invite or add a person.
+  static IconData get addPerson => const IconData(
+    0xe1a2,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Add to a list or queue.
+  static IconData get addToList => const IconData(
+    0xe23f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Sign out.
+  static IconData get signOut => const IconData(
+    0xe10e,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Keyboard input.
+  static IconData get keyboard => const IconData(
+    0xe284,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Dismiss the keyboard.
+  static IconData get hideKeyboard => const IconData(
+    0xe5de,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Tap or press here.
+  static IconData get tap => const IconData(
+    0xe1e8,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Visible, preview or peek.
+  static IconData get show => const IconData(
+    0xe0ba,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Hidden or private.
+  static IconData get hide => const IconData(
+    0xe0bb,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Done, included or chosen.
+  static IconData get check => const IconData(
+    0xe06c,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Completed, joined or confirmed state.
+  static IconData get success => const IconData(
+    0xe226,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Selected single-choice option.
+  static IconData get selected => const IconData(
+    0xe345,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Unselected option.
+  static IconData get unselected => const IconData(
+    0xe076,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// More information.
+  static IconData get info => const IconData(
+    0xe0f9,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Help or an explanation.
+  static IconData get help => const IconData(
+    0xe082,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A tip or suggestion.
+  static IconData get tip => const IconData(
+    0xe1c2,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Needs attention.
+  static IconData get warning => const IconData(
+    0xe193,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Something failed or is invalid.
+  static IconData get error => const IconData(
+    0xe077,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Work in progress.
+  static IconData get loading => const IconData(
+    0xe10a,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Waiting, queued or waitlisted.
+  static IconData get pending => const IconData(
+    0xe296,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Time ran out or no longer available.
+  static IconData get expired => const IconData(
+    0xe249,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A time or duration.
+  static IconData get time => const IconData(
+    0xe087,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A countdown or timer.
+  static IconData get timer => const IconData(
+    0xe1e0,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Past activity or an update.
+  static IconData get history => const IconData(
+    0xe1f5,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A repeating event or series.
+  static IconData get recurring => const IconData(
+    0xe636,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Live now.
+  static IconData get live => const IconData(
+    0xe142,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// No connection.
+  static IconData get offline => const IconData(
+    0xe1af,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// An image failed to load.
+  static IconData get imageError => const IconData(
+    0xe1c0,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Blocked or not allowed.
+  static IconData get block => const IconData(
+    0xe051,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Locked, private or permission required.
+  static IconData get locked => const IconData(
+    0xe10b,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Unlocked or open.
+  static IconData get unlocked => const IconData(
+    0xe10c,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Locked until a time or condition is met.
+  static IconData get lockedUntil => const IconData(
+    0xe531,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Verified person, club or host.
+  static IconData get verified => const IconData(
+    0xe241,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Protected, approved or access granted.
+  static IconData get protected => const IconData(
+    0xe1ff,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Safety and trust.
+  static IconData get safety => const IconData(
+    0xe158,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A safety report or alert.
+  static IconData get safetyAlert => const IconData(
+    0xe1fe,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Hosted by, or a host badge.
+  static IconData get host => const IconData(
+    0xe647,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Administrator roles and settings.
+  static IconData get admin => const IconData(
+    0xe342,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Celebration.
+  static IconData get celebrate => const IconData(
+    0xe343,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A quiet highlight, such as the catch window.
+  static IconData get spark => const IconData(
+    0xe47e,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Suggested, automatic or AI-assisted.
+  static IconData get magic => const IconData(
+    0xe412,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Instant or quick.
+  static IconData get instant => const IconData(
+    0xe1b4,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Broadcast or announcement.
+  static IconData get announce => const IconData(
+    0xe235,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Notifications.
+  static IconData get notifications => const IconData(
+    0xe059,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Notifications turned on or active.
+  static IconData get notificationsOn => const IconData(
+    0xe224,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Notifications turned off.
+  static IconData get notificationsOff => const IconData(
+    0xe05a,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Rating or rated.
+  static IconData get rating => const IconData(
+    0xe176,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Feedback or a written review.
+  static IconData get feedback => const IconData(
+    0xe575,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A quotation.
+  static IconData get quote => const IconData(
+    0xe239,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Report, flag or mark.
+  static IconData get flag => const IconData(
+    0xe0d1,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// An event.
+  static IconData get event => const IconData(
+    0xe063,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A date or date picker.
+  static IconData get date => const IconData(
+    0xe2b9,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Event confirmed or available.
+  static IconData get eventConfirmed => const IconData(
+    0xe2b7,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Event unavailable, full or cancelled.
+  static IconData get eventUnavailable => const IconData(
+    0xe2be,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Seats or spots.
+  static IconData get seat => const IconData(
+    0xe2c0,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Check in or registered.
+  static IconData get checkIn => const IconData(
+    0xe1a0,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Person removed or unavailable.
+  static IconData get personRemoved => const IconData(
+    0xe1a3,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Find a person.
+  static IconData get findPerson => const IconData(
+    0xe579,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A username or handle.
+  static IconData get handle => const IconData(
+    0xe04e,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Email.
+  static IconData get email => const IconData(
+    0xe10f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Email verified or read.
+  static IconData get emailRead => const IconData(
+    0xe361,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Phone number or call.
+  static IconData get phone => const IconData(
+    0xe133,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A mobile device or app.
+  static IconData get mobile => const IconData(
+    0xe163,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Birthday or age.
+  static IconData get birthday => const IconData(
+    0xe344,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Height.
+  static IconData get height => const IconData(
+    0xe1c7,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A measurement or distance.
+  static IconData get measure => const IconData(
+    0xe14b,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Women.
+  static IconData get female => const IconData(
+    0xe645,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Men.
+  static IconData get male => const IconData(
+    0xe641,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Gender mix or balance.
+  static IconData get genders => const IconData(
+    0xe646,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Children or family friendly.
+  static IconData get kids => const IconData(
+    0xe2ce,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Smoke free.
+  static IconData get smokeFree => const IconData(
+    0xe2c7,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Drinks.
+  static IconData get drinks => const IconData(
+    0xe2f8,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Food and dining.
+  static IconData get dining => const IconData(
+    0xe2f6,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Fitness.
+  static IconData get fitness => const IconData(
+    0xe3a1,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Education.
+  static IconData get education => const IconData(
+    0xe234,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Work or occupation.
+  static IconData get work => const IconData(
+    0xe062,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Language or translation.
+  static IconData get language => const IconData(
+    0xe0fe,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Website or public web page.
+  static IconData get web => const IconData(
+    0xe0e8,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Vegetarian, plant-based or eco.
+  static IconData get sustainability => const IconData(
+    0xe2de,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Personality, mind or quiz.
+  static IconData get mind => const IconData(
+    0xe3c6,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Say hi or wave.
+  static IconData get wave => const IconData(
+    0xe1d7,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Support, volunteering or care.
+  static IconData get support => const IconData(
+    0xe5b9,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A partner or deal.
+  static IconData get partner => const IconData(
+    0xe5c0,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Membership or ID.
+  static IconData get membership => const IconData(
+    0xe617,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Access key or invite code.
+  static IconData get key => const IconData(
+    0xe4a3,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Password or passcode.
+  static IconData get password => const IconData(
+    0xe21f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A QR code to show.
+  static IconData get qrCode => const IconData(
+    0xe1df,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Scan a QR code.
+  static IconData get scanQr => const IconData(
+    0xe5f6,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Payment, price or payout.
+  static IconData get payment => const IconData(
+    0xe052,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Payment not available.
+  static IconData get paymentUnavailable => const IconData(
+    0xe0aa,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Card payment.
+  static IconData get card => const IconData(
+    0xe0aa,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Wallet, balance or credits.
+  static IconData get wallet => const IconData(
+    0xe204,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Pricing, discount or offer.
+  static IconData get pricing => const IconData(
+    0xe17f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Receipt or invoice.
+  static IconData get receipt => const IconData(
+    0xe5ac,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Balance, fairness or comparison.
+  static IconData get balance => const IconData(
+    0xe212,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Insights and analytics.
+  static IconData get insights => const IconData(
+    0xe2a5,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A bar chart or report.
+  static IconData get chart => const IconData(
+    0xe2a3,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Growth or trend.
+  static IconData get trend => const IconData(
+    0xe191,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Pace, speed or level.
+  static IconData get pace => const IconData(
+    0xe1bf,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Activity log or system health.
+  static IconData get pulse => const IconData(
+    0xe038,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Structure, tree or hierarchy.
+  static IconData get hierarchy => const IconData(
+    0xe125,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Stored data or records.
+  static IconData get data => const IconData(
+    0xe0ad,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A document, description or policy.
+  static IconData get document => const IconData(
+    0xe0cc,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// An image file or media asset.
+  static IconData get imageFile => const IconData(
+    0xe31c,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A photo or image.
+  static IconData get photo => const IconData(
+    0xe0f6,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A photo library or gallery.
+  static IconData get photos => const IconData(
+    0xe5c4,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A checklist.
+  static IconData get checklist => const IconData(
+    0xe1d0,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Task done or submitted.
+  static IconData get taskDone => const IconData(
+    0xe219,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Review queue or fact check.
+  static IconData get review => const IconData(
+    0xe086,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Rules, policy or terms.
+  static IconData get rules => const IconData(
+    0xe45f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Experimental or labs.
+  static IconData get labs => const IconData(
+    0xe0d5,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// A library of saved items.
+  static IconData get library => const IconData(
+    0xe100,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Browse or look up records.
+  static IconData get browse => const IconData(
+    0xe339,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Automated assistant.
+  static IconData get bot => const IconData(
+    0xe1bb,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Brand, theme or styling.
+  static IconData get brand => const IconData(
+    0xe1dd,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Settings.
+  static IconData get settings => const IconData(
+    0xe154,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// An app update is available.
+  static IconData get appUpdate => const IconData(
+    0xe0b2,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Clean up or tidy.
+  static IconData get cleanup => const IconData(
+    0xe666,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  // One glyph per event activity kind in
+  // contracts/shared/event_common.schema.json.
+
+  /// Social run.
+  static IconData get activitySocialRun => const IconData(
+    0xe6db,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Running.
+  static IconData get activityRunning => const IconData(
+    0xe6db,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Walking.
+  static IconData get activityWalking => const IconData(
+    0xe3b9,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Pickleball.
+  static IconData get activityPickleball => const IconData(
+    0xe62f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Padel.
+  static IconData get activityPadel => const IconData(
+    0xe62f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Tennis.
+  static IconData get activityTennis => const IconData(
+    0xe62f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Badminton.
+  static IconData get activityBadminton => const IconData(
+    0xe0be,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Cycling.
+  static IconData get activityCycling => const IconData(
+    0xe1d2,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Spin class.
+  static IconData get activitySpinClass => const IconData(
+    0xe1d2,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Yoga.
+  static IconData get activityYoga => const IconData(
+    0xe2d3,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Strength training.
+  static IconData get activityStrengthTraining => const IconData(
+    0xe3a1,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Pub quiz.
+  static IconData get activityPubQuiz => const IconData(
+    0xe3c6,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Bar crawl.
+  static IconData get activityBarCrawl => const IconData(
+    0xe2cf,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Dinner.
+  static IconData get activityDinner => const IconData(
+    0xe2f6,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Singles mixer.
+  static IconData get activitySinglesMixer => const IconData(
+    0xe2e3,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Open or other activity.
+  static IconData get activityOpenActivity => const IconData(
+    0xe412,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  // Playbook module marks and the badge for events that include Playbook
+  // moments.
+
+  /// Marks an event that includes Playbook moments.
+  static IconData get playbookBadge => const IconData(
+    0xe357,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// First hello.
+  static IconData get playbookFirstHello => const IconData(
+    0xe1d7,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Help me say hi.
+  static IconData get playbookHelpMeSayHi => const IconData(
+    0xe3b8,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Starter pods.
+  static IconData get playbookStarterPods => const IconData(
+    0xe46e,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Rotations.
+  static IconData get playbookRotations => const IconData(
+    0xe149,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Missions.
+  static IconData get playbookMissions => const IconData(
+    0xe180,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Countdown reveals.
+  static IconData get playbookCountdownReveals => const IconData(
+    0xe1e0,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Match clues.
+  static IconData get playbookMatchClues => const IconData(
+    0xe29c,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Balance preview.
+  static IconData get playbookBalancePreview => const IconData(
+    0xe212,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Door check-in.
+  static IconData get playbookDoorCheckIn => const IconData(
+    0xe3d6,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Openers.
+  static IconData get playbookOpeners => const IconData(
+    0xe572,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Welcome script.
+  static IconData get playbookWelcomeScript => const IconData(
+    0xe45f,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Guest feedback.
+  static IconData get playbookGuestFeedback => const IconData(
+    0xe176,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// The recap.
+  static IconData get playbookRecap => const IconData(
+    0xe381,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// Safety layer.
+  static IconData get playbookSafetyLayer => const IconData(
+    0xe1ff,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  static IconData get _shareIos => const IconData(
+    0xe155,
+    fontFamily: _fontFamily,
+    fontPackage: _fontPackage,
+  );
+
+  /// The share role as drawn on [platform], defaulting to the current platform.
   static IconData platformShare({TargetPlatform? platform}) {
-    final effectivePlatform = platform ?? defaultTargetPlatform;
-    return effectivePlatform == TargetPlatform.iOS ? iosShareRounded : share;
+    return switch (platform ?? defaultTargetPlatform) {
+      TargetPlatform.iOS => _shareIos,
+      _ => share,
+    };
   }
 
-  static IconData get calendarAdd => PhosphorIconsRegular.calendarPlus;
-  static IconData get refresh => PhosphorIconsRegular.arrowsClockwise;
-  static IconData get edit => PhosphorIconsRegular.pencilSimple;
-  static IconData get info => PhosphorIconsRegular.info;
-  static IconData get clock => PhosphorIconsRegular.clock;
-
-  // ── Status badges / sashes ───────────────────────────────────────────────
-  static IconData get check => PhosphorIconsRegular.check;
-  static IconData get joinedCheck => PhosphorIconsBold.check;
-
-  /// Verified host/club seal (design-system `ph-fill ph-seal-check`).
-  static IconData get sealCheck => PhosphorIconsFill.sealCheck;
-
-  /// "Go there" affordance for nav actions (View club / open) — `arrow-up-right`.
-  static IconData get arrowUpRight => PhosphorIconsRegular.arrowUpRight;
-
-  /// Peek-at-profile affordance (host request review) — `eye`.
-  static IconData get eye => PhosphorIconsRegular.eye;
-
-  /// Message-host / chat affordance (`chat-circle`).
-  static IconData get chatCircle => PhosphorIconsRegular.chatCircle;
-
-  /// Host broadcast / blast affordance (`megaphone-simple`).
-  static IconData get megaphone => PhosphorIconsFill.megaphoneSimple;
-
-  /// Live/today event broadcast marker used by lifecycle rows.
-  static IconData get eventLive => PhosphorIconsFill.broadcast;
-
-  /// Quiet "matching opens" / catch-window whisper mark (`sparkle`).
-  static IconData get sparkle => PhosphorIconsRegular.sparkle;
-
-  /// Selection-control marks (OptionCard): filled-look check + empty circle.
-  static IconData get checkCircle => PhosphorIconsRegular.checkCircle;
-  static IconData get checkCircleFilled => PhosphorIconsFill.checkCircle;
-  static IconData get fieldSpinner => PhosphorIconsRegular.circleNotch;
-  static IconData get fieldWarning => PhosphorIconsFill.warningCircle;
-  static IconData get circle => PhosphorIconsRegular.circle;
-  static IconData get celebration => Icons.celebration_rounded;
-  static IconData get saved => PhosphorIconsFill.bookmarkSimple;
-  static IconData get savedOutlined => PhosphorIconsRegular.bookmarkSimple;
-  static IconData get hostBadge => PhosphorIconsFill.shield;
-  static IconData get waitlisted => PhosphorIconsRegular.clock;
-  static IconData get statusCellSignal => PhosphorIconsFill.cellSignalFull;
-  static IconData get statusWifi => PhosphorIconsFill.wifiHigh;
-  static IconData get statusBattery => PhosphorIconsFill.batteryFull;
-
-  // ── Empty / error / info ─────────────────────────────────────────────────
-  static IconData get eventBusy => PhosphorIconsRegular.calendarX;
-  static IconData get eventAvailable => PhosphorIconsRegular.calendarCheck;
-
-  // ── Card meta — group counts, ratings ────────────────────────────────────
-  static IconData get group => PhosphorIconsRegular.usersThree;
-  static IconData get spots => PhosphorIconsRegular.armchair;
-
-  // ── Material compatibility aliases ───────────────────────────────────────
-  // Transitional facade entries for app-wide migration off direct `Icons.*`
-  // references. Prefer semantic Catch-named getters above for new code.
-  static IconData get accessTimeRounded => Icons.access_time_rounded;
-  static IconData get accountBalanceWalletOutlined =>
-      Icons.account_balance_wallet_outlined;
-  static IconData get accountTreeOutlined => Icons.account_tree_outlined;
-  static IconData get addCircleOutlineRounded =>
-      Icons.add_circle_outline_rounded;
-  static IconData get addPhotoAlternateOutlined =>
-      Icons.add_photo_alternate_outlined;
-  static IconData get addRounded => Icons.add_rounded;
-  static IconData get adminPanelSettingsOutlined =>
-      Icons.admin_panel_settings_outlined;
-  static IconData get alternateEmailOutlined => Icons.alternate_email_outlined;
-  static IconData get alternateEmailRounded => Icons.alternate_email_rounded;
-  static IconData get arrowBackIosNewRounded =>
-      Icons.arrow_back_ios_new_rounded;
-  static IconData get arrowBackRounded => Icons.arrow_back_rounded;
-  static IconData get arrowForwardRounded => Icons.arrow_forward_rounded;
-  static IconData get assignmentReturnOutlined =>
-      Icons.assignment_return_outlined;
-  static IconData get assignmentTurnedInOutlined =>
-      Icons.assignment_turned_in_outlined;
-  static IconData get autoAwesomeOutlined => Icons.auto_awesome_outlined;
-  static IconData get autoAwesomeRounded => Icons.auto_awesome_rounded;
-  static IconData get autoGraphRounded => Icons.auto_graph_rounded;
-  static IconData get balanceOutlined => Icons.balance_outlined;
-  static IconData get blockOutlined => Icons.block_outlined;
-  static IconData get blockRounded => Icons.block_rounded;
-  static IconData get bolt => Icons.bolt;
-  static IconData get boltRounded => Icons.bolt_rounded;
-  static IconData get bookmarkBorderRounded => Icons.bookmark_border_rounded;
-  static IconData get bookmarkRounded => Icons.bookmark_rounded;
-  static IconData get brightness3Outlined => Icons.brightness_3_outlined;
-  static IconData get brokenImageOutlined => Icons.broken_image_outlined;
-  static IconData get businessOutlined => Icons.business_outlined;
-  static IconData get cakeOutlined => Icons.cake_outlined;
-  static IconData get calendarMonthOutlined => Icons.calendar_month_outlined;
-  static IconData get calendarTodayOutlined => Icons.calendar_today_outlined;
-  static IconData get callOutlined => Icons.call_outlined;
-  static IconData get cancelOutlined => Icons.cancel_outlined;
-  static IconData get cardMembershipOutlined => Icons.card_membership_outlined;
-  static IconData get chatBubbleOutlineRounded =>
-      Icons.chat_bubble_outline_rounded;
-  static IconData get chatBubbleRounded => Icons.chat_bubble_rounded;
-  static IconData get chatOutlined => Icons.chat_outlined;
-  static IconData get checkCircleOutlineRounded =>
-      Icons.check_circle_outline_rounded;
-  static IconData get checkCircleRounded => Icons.check_circle_rounded;
-  static IconData get checkRounded => Icons.check_rounded;
-  static IconData get checklistRounded => Icons.checklist_rounded;
-  static IconData get chevronRightRounded => Icons.chevron_right_rounded;
-  static IconData get childCareOutlined => Icons.child_care_outlined;
-  static IconData get childFriendlyOutlined => Icons.child_friendly_outlined;
-  static IconData get cleaningServicesRounded =>
-      Icons.cleaning_services_rounded;
-  static IconData get closeRounded => Icons.close_rounded;
-  static IconData get cloudOffOutlined => Icons.cloud_off_outlined;
-  static IconData get cloudOffRounded => Icons.cloud_off_rounded;
-  static IconData get cloudUploadOutlined => Icons.cloud_upload_outlined;
-  static IconData get confirmationNumberOutlined =>
-      Icons.confirmation_number_outlined;
-  static IconData get constructionRounded => Icons.construction_rounded;
-  static IconData get contentCopyRounded => Icons.content_copy_rounded;
-  static IconData get creditCardOffRounded => Icons.credit_card_off_rounded;
-  static IconData get dataObjectRounded => Icons.data_object_rounded;
-  static IconData get deleteOutline => Icons.delete_outline;
-  static IconData get deleteOutlineRounded => Icons.delete_outline_rounded;
-  static IconData get descriptionOutlined => Icons.description_outlined;
-  static IconData get pauseCircleOutlineRounded =>
-      Icons.pause_circle_outline_rounded;
-  static IconData get archiveOutlined => Icons.archive_outlined;
-  static IconData get arrowUpwardRounded => Icons.arrow_upward_rounded;
-  static IconData get arrowDownwardRounded => Icons.arrow_downward_rounded;
-  static IconData get directionsBikeRounded => Icons.directions_bike_rounded;
-  static IconData get directionsOutlined => Icons.directions_outlined;
-  static IconData get directionsRun => Icons.directions_run;
-  static IconData get directionsRunOutlined => Icons.directions_run_outlined;
-  static IconData get directionsRunRounded => Icons.directions_run_rounded;
-  static IconData get directionsWalkRounded => Icons.directions_walk_rounded;
-  static IconData get discountOutlined => Icons.discount_outlined;
-  static IconData get diversity3Outlined => Icons.diversity_3_outlined;
-  static IconData get downloadRounded => Icons.download_rounded;
-  static IconData get dragIndicatorRounded => Icons.drag_indicator_rounded;
-  static IconData get ecoOutlined => Icons.eco_outlined;
-  static IconData get editLocationAltOutlined =>
-      Icons.edit_location_alt_outlined;
-  static IconData get editNoteOutlined => Icons.edit_note_outlined;
-  static IconData get editNoteRounded => Icons.edit_note_rounded;
-  static IconData get editOutlined => Icons.edit_outlined;
-  static IconData get emailOutlined => Icons.email_outlined;
-  static const IconData errorOutlineRounded = Icons.error_outline_rounded;
-  static IconData get eventAvailableOutlined => Icons.event_available_outlined;
-  static IconData get eventAvailableRounded => Icons.event_available_rounded;
-  static IconData get eventBusyOutlined => Icons.event_busy_outlined;
-  static IconData get eventBusyRounded => Icons.event_busy_rounded;
-  static IconData get eventOutlined => Icons.event_outlined;
-  static IconData get eventRepeatOutlined => Icons.event_repeat_outlined;
-  static IconData get eventSeatOutlined => Icons.event_seat_outlined;
-  static IconData get expandLessRounded => Icons.expand_less_rounded;
-  static IconData get expandMoreRounded => Icons.expand_more_rounded;
-  static IconData get factCheckOutlined => Icons.fact_check_outlined;
-  static IconData get favoriteBorderRounded => Icons.favorite_border_rounded;
-  static IconData get favoriteOutline => Icons.favorite_outline;
-  static IconData get favoriteOutlineRounded => Icons.favorite_outline_rounded;
-  static IconData get favoriteRounded => Icons.favorite_rounded;
-  static IconData get femaleOutlined => Icons.female_outlined;
-  static IconData get fiberManualRecord => Icons.fiber_manual_record;
-  static IconData get filter9PlusRounded => Icons.filter_9_plus_rounded;
-  static IconData get fitnessCenterOutlined => Icons.fitness_center_outlined;
-  static IconData get fitnessCenterRounded => Icons.fitness_center_rounded;
-  static IconData get flagOutlined => Icons.flag_outlined;
-  static IconData get flagRounded => Icons.flag_rounded;
-  static IconData get formatQuoteRounded => Icons.format_quote_rounded;
-  static IconData get forumOutlined => Icons.forum_outlined;
-  static IconData get forumRounded => Icons.forum_rounded;
-  static IconData get gridViewRounded => Icons.grid_view_rounded;
-  static IconData get groupAddOutlined => Icons.group_add_outlined;
-  static IconData get groupOffOutlined => Icons.group_off_outlined;
-  static IconData get groupOffRounded => Icons.group_off_rounded;
-  static IconData get groupOutlined => Icons.group_outlined;
-  static IconData get groups2Outlined => Icons.groups_2_outlined;
-  static IconData get groups3Outlined => Icons.groups_3_outlined;
-  static IconData get groupsOutlined => Icons.groups_outlined;
-  static IconData get groupsRounded => Icons.groups_rounded;
-  static IconData get heightOutlined => Icons.height_outlined;
-  static IconData get helpOutline => Icons.help_outline;
-  static IconData get helpOutlineRounded => Icons.help_outline_rounded;
-  static IconData get homeOutlined => Icons.home_outlined;
-  static IconData get homeRounded => Icons.home_rounded;
-  static IconData get hourglassDisabledRounded =>
-      Icons.hourglass_disabled_rounded;
-  static IconData get hourglassEmptyRounded => Icons.hourglass_empty_rounded;
-  static IconData get hourglassTopRounded => Icons.hourglass_top_rounded;
-  static IconData get howToRegOutlined => Icons.how_to_reg_outlined;
-  static IconData get imageOutlined => Icons.image_outlined;
-  static IconData get infoOutline => Icons.info_outline;
-  static IconData get infoOutlineRounded => Icons.info_outline_rounded;
-  static IconData get insightsOutlined => Icons.insights_outlined;
-  static IconData get iosShareRounded => Icons.ios_share_rounded;
-  static IconData get keyOutlined => Icons.key_outlined;
-  static IconData get keyboardHideRounded => Icons.keyboard_hide_rounded;
-  static IconData get keyboardOutlined => Icons.keyboard_outlined;
-  static IconData get languageOutlined => Icons.language_outlined;
-  static IconData get lightModeOutlined => Icons.light_mode_outlined;
-  static IconData get lightbulbOutlineRounded =>
-      Icons.lightbulb_outline_rounded;
-  static IconData get linkOutlined => Icons.link_outlined;
-  static IconData get linkRounded => Icons.link_rounded;
-  static IconData get listRounded => Icons.list_rounded;
-  static IconData get localBarOutlined => Icons.local_bar_outlined;
-  static IconData get locationCityOutlined => Icons.location_city_outlined;
-  static IconData get locationOnOutlined => Icons.location_on_outlined;
-  static IconData get locationOnRounded => Icons.location_on_rounded;
-  static IconData get lockClockRounded => Icons.lock_clock_rounded;
-  static IconData get lockOpenOutlined => Icons.lock_open_outlined;
-  static IconData get lockOpenRounded => Icons.lock_open_rounded;
-  static IconData get lockOutline => Icons.lock_outline;
-  static IconData get lockOutlineRounded => Icons.lock_outline_rounded;
-  static IconData get lockRounded => Icons.lock_rounded;
-  static IconData get logoutRounded => Icons.logout_rounded;
-  static IconData get looks5Rounded => Icons.looks_5_rounded;
-  static IconData get maleOutlined => Icons.male_outlined;
-  static IconData get mapOutlined => Icons.map_outlined;
-  static IconData get markEmailReadOutlined => Icons.mark_email_read_outlined;
-  static IconData get moreHorizRounded => Icons.more_horiz_rounded;
-  static IconData get nightlightRound => Icons.nightlight_round;
-  static IconData get nightsStayOutlined => Icons.nights_stay_outlined;
-  static IconData get notificationsActiveOutlined =>
-      Icons.notifications_active_outlined;
-  static IconData get notificationsActiveRounded =>
-      Icons.notifications_active_rounded;
-  static IconData get notificationsNoneRounded =>
-      Icons.notifications_none_rounded;
-  static IconData get notificationsOffOutlined =>
-      Icons.notifications_off_outlined;
-  static IconData get notificationsOffRounded =>
-      Icons.notifications_off_rounded;
-  static IconData get notificationsOutlined => Icons.notifications_outlined;
-  static IconData get notificationsRounded => Icons.notifications_rounded;
-  static IconData get openInNew => Icons.open_in_new;
-  static IconData get openInNewRounded => Icons.open_in_new_rounded;
-  static IconData get panToolAltOutlined => Icons.pan_tool_alt_outlined;
-  static IconData get passwordRounded => Icons.password_rounded;
-  static IconData get paymentsOutlined => Icons.payments_outlined;
-  static IconData get paymentsRounded => Icons.payments_rounded;
-  static IconData get pendingActionsOutlined => Icons.pending_actions_outlined;
-  static IconData get peopleOutline => Icons.people_outline;
-  static IconData get peopleOutlineRounded => Icons.people_outline_rounded;
-  static IconData get personAddAlt1Outlined => Icons.person_add_alt_1_outlined;
-  static IconData get personAddAlt1Rounded => Icons.person_add_alt_1_rounded;
-  static IconData get personOffOutlined => Icons.person_off_outlined;
-  static IconData get personOutlineRounded => Icons.person_outline_rounded;
-  static IconData get personOutlined => Icons.person_outlined;
-  static IconData get personRounded => Icons.person_rounded;
-  static IconData get personSearchOutlined => Icons.person_search_outlined;
-  static IconData get phoneAndroidRounded => Icons.phone_android_rounded;
-  static IconData get phoneIphoneRounded => Icons.phone_iphone_rounded;
-  static IconData get phoneOutlined => Icons.phone_outlined;
-  static IconData get photoLibraryOutlined => Icons.photo_library_outlined;
-  static IconData get placeOutlined => Icons.place_outlined;
-  static IconData get playArrowRounded => Icons.play_arrow_rounded;
-  static IconData get playCircleOutlineRounded =>
-      Icons.play_circle_outline_rounded;
-  static IconData get priceChangeOutlined => Icons.price_change_outlined;
-  static IconData get priorityHighRounded => Icons.priority_high_rounded;
-  static IconData get psychologyAltOutlined => Icons.psychology_alt_outlined;
-  static IconData get qrCode2Outlined => Icons.qr_code_2_outlined;
-  static IconData get qrCode2Rounded => Icons.qr_code_2_rounded;
-  static IconData get qrCodeScannerRounded => Icons.qr_code_scanner_rounded;
-  static IconData get queryStatsRounded => Icons.query_stats_rounded;
-  static IconData get questionAnswerOutlined => Icons.question_answer_outlined;
-  static IconData get queueOutlined => Icons.queue_outlined;
-  static IconData get quizOutlined => Icons.quiz_outlined;
-  static IconData get radioButtonCheckedRounded =>
-      Icons.radio_button_checked_rounded;
-  static IconData get radioButtonUncheckedRounded =>
-      Icons.radio_button_unchecked_rounded;
-  static IconData get rateReviewOutlined => Icons.rate_review_outlined;
-  static IconData get receiptLongOutlined => Icons.receipt_long_outlined;
-  static IconData get refreshRounded => Icons.refresh_rounded;
-  static IconData get redoRounded => Icons.redo_rounded;
-  static IconData get removeCircleOutlineRounded =>
-      Icons.remove_circle_outline_rounded;
-  static IconData get removeRounded => Icons.remove_rounded;
-  static IconData get reportGmailerrorredRounded =>
-      Icons.report_gmailerrorred_rounded;
-  static IconData get restartAltRounded => Icons.restart_alt_rounded;
-  static IconData get restaurantOutlined => Icons.restaurant_outlined;
-  static IconData get routeOutlined => Icons.route_outlined;
-  static IconData get routeRounded => Icons.route_rounded;
-  static IconData get ruleFolderOutlined => Icons.rule_folder_outlined;
-  static IconData get ruleOutlined => Icons.rule_outlined;
-  static IconData get ruleRounded => Icons.rule_rounded;
-  static IconData get saveOutlined => Icons.save_outlined;
-  static IconData get schedule => Icons.schedule;
-  static IconData get scheduleOutlined => Icons.schedule_outlined;
-  static IconData get scheduleRounded => Icons.schedule_rounded;
-  static IconData get schoolOutlined => Icons.school_outlined;
-  static IconData get scienceOutlined => Icons.science_outlined;
-  static IconData get searchOffRounded => Icons.search_off_rounded;
-  static IconData get searchRounded => Icons.search_rounded;
-  static IconData get selfImprovementRounded => Icons.self_improvement_rounded;
-  static IconData get sendRounded => Icons.send_rounded;
-  static IconData get settingsOutlined => Icons.settings_outlined;
-  static IconData get shieldOutlined => Icons.shield_outlined;
-  static IconData get smokeFreeOutlined => Icons.smoke_free_outlined;
-  static IconData get smokeFreeRounded => Icons.smoke_free_rounded;
-  static IconData get spaOutlined => Icons.spa_outlined;
-  static IconData get speedOutlined => Icons.speed_outlined;
-  static IconData get speedRounded => Icons.speed_rounded;
-  static IconData get splitscreenRounded => Icons.splitscreen_rounded;
-  static IconData get sportsTennis => Icons.sports_tennis;
-  static IconData get sportsTennisRounded => Icons.sports_tennis_rounded;
-  static IconData get starBorderRounded => Icons.star_border_rounded;
-  static IconData get starOutlineRounded => Icons.star_outline_rounded;
-  static IconData get starRounded => Icons.star_rounded;
-  static IconData get straightenOutlined => Icons.straighten_outlined;
-  static IconData get straightenRounded => Icons.straighten_rounded;
-  static IconData get styleOutlined => Icons.style_outlined;
-  static IconData get swapHorizRounded => Icons.swap_horiz_rounded;
-  static IconData get syncAltRounded => Icons.sync_alt_rounded;
-  static IconData get syncRounded => Icons.sync_rounded;
-  static IconData get systemUpdateOutlined => Icons.system_update_outlined;
-  static IconData get tableRestaurantOutlined =>
-      Icons.table_restaurant_outlined;
-  static IconData get tableRowsOutlined => Icons.table_rows_outlined;
-  static IconData get timerOutlined => Icons.timer_outlined;
-  static IconData get tipsAndUpdatesOutlined => Icons.tips_and_updates_outlined;
-  static IconData get touchAppRounded => Icons.touch_app_rounded;
-  static IconData get translateRounded => Icons.translate_rounded;
-  static IconData get trendingUpRounded => Icons.trending_up_rounded;
-  static IconData get tune => Icons.tune;
-  static IconData get tuneRounded => Icons.tune_rounded;
-  static IconData get updateRounded => Icons.update_rounded;
-  static IconData get undoRounded => Icons.undo_rounded;
-  static IconData get verifiedRounded => Icons.verified_rounded;
-  static IconData get verifiedUserOutlined => Icons.verified_user_outlined;
-  static IconData get visibilityOffOutlined => Icons.visibility_off_outlined;
-  static IconData get visibilityOutlined => Icons.visibility_outlined;
-  static IconData get volunteerActivismOutlined =>
-      Icons.volunteer_activism_outlined;
-  static IconData get volunteerActivismRounded =>
-      Icons.volunteer_activism_rounded;
-  static IconData get warningAmberRounded => Icons.warning_amber_rounded;
-  static IconData get wavingHandOutlined => Icons.waving_hand_outlined;
-  static IconData get wbSunnyOutlined => Icons.wb_sunny_outlined;
-  static IconData get wbTwilightOutlined => Icons.wb_twilight_outlined;
-  static IconData get wbTwilightRounded => Icons.wb_twilight_rounded;
-  static IconData get wcOutlined => Icons.wc_outlined;
-  static IconData get wifiOffRounded => Icons.wifi_off_rounded;
-  static IconData get workOutline => Icons.work_outline;
-  static IconData get workOutlineRounded => Icons.work_outline_rounded;
-
-  // ── Program transport / arrivals workspace ───────────────────────────────
-  static IconData get flightLanding => PhosphorIconsRegular.airplaneLanding;
-  static IconData get taxi => PhosphorIconsRegular.taxi;
-  static IconData get hotel => PhosphorIconsRegular.buildingApartment;
-  static IconData get luggage => PhosphorIconsRegular.suitcaseRolling;
-  static IconData get flagBanner => PhosphorIconsRegular.flagBanner;
-
-  // ── Activity glyphs — used by event thumbnails ───────────────────────────
-  static IconData get socialRun => PhosphorIconsDuotone.personSimpleRun;
-  static IconData get running => PhosphorIconsRegular.sneakerMove;
-  static IconData get walking => PhosphorIconsRegular.personSimpleWalk;
-  static IconData get cycling => PhosphorIconsRegular.bicycle;
-  static IconData get racquet => PhosphorIconsRegular.tennisBall;
-  static IconData get yoga => PhosphorIconsRegular.flowerLotus;
-  static IconData get strength => PhosphorIconsRegular.barbell;
-  static IconData get pubQuiz => PhosphorIconsRegular.brain;
-  static IconData get barCrawl => PhosphorIconsRegular.beerStein;
-  static IconData get dinner => PhosphorIconsRegular.forkKnife;
-  static IconData get singlesMixer => PhosphorIconsRegular.martini;
-  static IconData get openActivity => PhosphorIconsRegular.sparkle;
+  // Pre-Lucide names kept while call sites migrate to role names. Source:
+  // design/tokens/catch.icons.legacy_flutter.json. Use the role names above in new code.
+  static IconData get accessTimeRounded => time;
+  static IconData get accountBalanceWalletOutlined => wallet;
+  static IconData get accountTreeOutlined => hierarchy;
+  static IconData get addCircleOutlineRounded => create;
+  static IconData get addPhotoAlternateOutlined => addPhoto;
+  static IconData get addRounded => add;
+  static IconData get adminPanelSettingsOutlined => admin;
+  static IconData get alternateEmailOutlined => handle;
+  static IconData get alternateEmailRounded => handle;
+  static IconData get archiveOutlined => archive;
+  static IconData get arrowBackIosNewRounded => back;
+  static IconData get arrowBackRounded => back;
+  static IconData get arrowDownwardRounded => moveDown;
+  static IconData get arrowForwardRounded => forward;
+  static IconData get arrowUpRight => goTo;
+  static IconData get arrowUpwardRounded => moveUp;
+  static IconData get assignmentTurnedInOutlined => taskDone;
+  static IconData get autoAwesomeOutlined => magic;
+  static IconData get autoAwesomeRounded => magic;
+  static IconData get autoGraphRounded => trend;
+  static IconData get backArrow => back;
+  static IconData get balanceOutlined => balance;
+  static IconData get blockOutlined => block;
+  static IconData get blockRounded => block;
+  static IconData get bolt => instant;
+  static IconData get boltRounded => instant;
+  static IconData get bookmarkBorderRounded => bookmark;
+  static IconData get bookmarkRounded => bookmark;
+  static IconData get brightness3Outlined => night;
+  static IconData get brokenImageOutlined => imageError;
+  static IconData get businessOutlined => business;
+  static IconData get cakeOutlined => birthday;
+  static IconData get calendarAdd => addToCalendar;
+  static IconData get calendarMonthOutlined => date;
+  static IconData get calendarTodayOutlined => date;
+  static IconData get callOutlined => phone;
+  static IconData get cardMembershipOutlined => membership;
+  static IconData get celebration => celebrate;
+  static IconData get chatBubbleOutlineRounded => chat;
+  static IconData get chatBubbleRounded => chat;
+  static IconData get chatCircle => chat;
+  static IconData get chatOutlined => chat;
+  static IconData get checkCircle => success;
+  static IconData get checkCircleFilled => success;
+  static IconData get checkCircleOutlineRounded => success;
+  static IconData get checkCircleRounded => success;
+  static IconData get checkRounded => check;
+  static IconData get checklistRounded => checklist;
+  static IconData get chevronRightRounded => disclosure;
+  static IconData get childCareOutlined => kids;
+  static IconData get childFriendlyOutlined => kids;
+  static IconData get circle => unselected;
+  static IconData get cleaningServicesRounded => cleanup;
+  static IconData get clearCircle => clear;
+  static IconData get clock => time;
+  static IconData get closeRounded => close;
+  static IconData get cloudOffOutlined => offline;
+  static IconData get cloudOffRounded => offline;
+  static IconData get cloudUploadOutlined => upload;
+  static IconData get confirmationNumberOutlined => ticket;
+  static IconData get contentCopyRounded => copy;
+  static IconData get creditCardOffRounded => paymentUnavailable;
+  static IconData get deleteOutline => delete;
+  static IconData get deleteOutlineRounded => delete;
+  static IconData get descriptionOutlined => document;
+  static IconData get dinner => activityDinner;
+  static IconData get directionsOutlined => directions;
+  static IconData get directionsRun => activity;
+  static IconData get directionsRunOutlined => activity;
+  static IconData get directionsRunRounded => activity;
+  static IconData get downloadRounded => download;
+  static IconData get dragIndicatorRounded => dragHandle;
+  static IconData get ecoOutlined => sustainability;
+  static IconData get editLocationAltOutlined => editLocation;
+  static IconData get editNoteOutlined => note;
+  static IconData get editNoteRounded => note;
+  static IconData get editOutlined => edit;
+  static IconData get emailOutlined => email;
+  static IconData get errorOutlineRounded => error;
+  static IconData get eventAvailable => eventConfirmed;
+  static IconData get eventAvailableOutlined => eventConfirmed;
+  static IconData get eventAvailableRounded => eventConfirmed;
+  static IconData get eventBusy => eventUnavailable;
+  static IconData get eventBusyOutlined => eventUnavailable;
+  static IconData get eventBusyRounded => eventUnavailable;
+  static IconData get eventLive => live;
+  static IconData get eventOutlined => event;
+  static IconData get eventRepeatOutlined => recurring;
+  static IconData get eventSeatOutlined => seat;
+  static IconData get expandLessRounded => collapse;
+  static IconData get expandMoreRounded => expand;
+  static IconData get eye => show;
+  static IconData get factCheckOutlined => review;
+  static IconData get favoriteBorderRounded => like;
+  static IconData get favoriteOutline => like;
+  static IconData get favoriteOutlineRounded => like;
+  static IconData get favoriteRounded => like;
+  static IconData get femaleOutlined => female;
+  static IconData get fieldSpinner => loading;
+  static IconData get fieldWarning => error;
+  static IconData get fitMap => fitToView;
+  static IconData get fitnessCenterOutlined => fitness;
+  static IconData get fitnessCenterRounded => fitness;
+  static IconData get flagBanner => meetingPoint;
+  static IconData get flagOutlined => flag;
+  static IconData get flagRounded => flag;
+  static IconData get flightLanding => arrivals;
+  static IconData get formatQuoteRounded => quote;
+  static IconData get forumOutlined => conversations;
+  static IconData get forumRounded => conversations;
+  static IconData get forwardArrow => forward;
+  static IconData get gridViewRounded => grid;
+  static IconData get group => people;
+  static IconData get groupAddOutlined => addPerson;
+  static IconData get groupOffOutlined => personRemoved;
+  static IconData get groupOffRounded => personRemoved;
+  static IconData get groupOutlined => people;
+  static IconData get groups2Outlined => people;
+  static IconData get groups3Outlined => people;
+  static IconData get groupsOutlined => people;
+  static IconData get groupsRounded => people;
+  static IconData get heightOutlined => height;
+  static IconData get helpOutline => help;
+  static IconData get helpOutlineRounded => help;
+  static IconData get homeOutlined => home;
+  static IconData get homeRounded => home;
+  static IconData get hostBadge => host;
+  static IconData get hosted => host;
+  static IconData get hourglassDisabledRounded => expired;
+  static IconData get hourglassEmptyRounded => pending;
+  static IconData get hourglassTopRounded => pending;
+  static IconData get howToRegOutlined => checkIn;
+  static IconData get imageOutlined => photo;
+  static IconData get infoOutline => info;
+  static IconData get infoOutlineRounded => info;
+  static IconData get insightsOutlined => insights;
+  static IconData get iosShareRounded => share;
+  static IconData get joinedCheck => check;
+  static IconData get keyOutlined => key;
+  static IconData get keyboardHideRounded => hideKeyboard;
+  static IconData get keyboardOutlined => keyboard;
+  static IconData get languageOutlined => web;
+  static IconData get lightbulbOutlineRounded => tip;
+  static IconData get linkOutlined => link;
+  static IconData get linkRounded => link;
+  static IconData get listRounded => list;
+  static IconData get localBarOutlined => drinks;
+  static IconData get locationCityOutlined => city;
+  static IconData get locationOnOutlined => location;
+  static IconData get locationOnRounded => location;
+  static IconData get lockClockRounded => lockedUntil;
+  static IconData get lockOpenRounded => unlocked;
+  static IconData get lockOutline => locked;
+  static IconData get lockOutlineRounded => locked;
+  static IconData get lockRounded => locked;
+  static IconData get logoutRounded => signOut;
+  static IconData get maleOutlined => male;
+  static IconData get mapOutlined => map;
+  static IconData get markEmailReadOutlined => emailRead;
+  static IconData get moreHorizRounded => more;
+  static IconData get nearMeOutlined => nearMe;
+  static IconData get nightlightRound => night;
+  static IconData get notificationsActiveOutlined => notificationsOn;
+  static IconData get notificationsActiveRounded => notificationsOn;
+  static IconData get notificationsNoneRounded => notifications;
+  static IconData get notificationsOffOutlined => notificationsOff;
+  static IconData get notificationsOffRounded => notificationsOff;
+  static IconData get notificationsOutlined => notifications;
+  static IconData get notificationsRounded => notifications;
+  static IconData get openActivity => activityOpenActivity;
+  static IconData get openInNew => openExternal;
+  static IconData get openInNewRounded => openExternal;
+  static IconData get panToolAltOutlined => tap;
+  static IconData get passwordRounded => password;
+  static IconData get pauseCircleOutlineRounded => pause;
+  static IconData get paymentsOutlined => payment;
+  static IconData get paymentsRounded => payment;
+  static IconData get pendingActionsOutlined => pending;
+  static IconData get peopleOutline => people;
+  static IconData get peopleOutlineRounded => people;
+  static IconData get personAddAlt1Outlined => addPerson;
+  static IconData get personAddAlt1Rounded => addPerson;
+  static IconData get personOffOutlined => personRemoved;
+  static IconData get personOutlineRounded => person;
+  static IconData get personOutlined => person;
+  static IconData get personRounded => person;
+  static IconData get personSearchOutlined => findPerson;
+  static IconData get phoneAndroidRounded => mobile;
+  static IconData get phoneIphoneRounded => mobile;
+  static IconData get phoneOutlined => phone;
+  static IconData get photoLibraryOutlined => photos;
+  static IconData get pin => location;
+  static IconData get pinOutlined => location;
+  static IconData get placeOutlined => location;
+  static IconData get playArrowRounded => play;
+  static IconData get playCircleOutlineRounded => play;
+  static IconData get priceChangeOutlined => pricing;
+  static IconData get psychologyAltOutlined => mind;
+  static IconData get qrCode2Outlined => qrCode;
+  static IconData get qrCode2Rounded => qrCode;
+  static IconData get qrCodeScannerRounded => scanQr;
+  static IconData get questionAnswerOutlined => conversations;
+  static IconData get radioButtonCheckedRounded => selected;
+  static IconData get radioButtonUncheckedRounded => unselected;
+  static IconData get rateReviewOutlined => feedback;
+  static IconData get rated => rating;
+  static IconData get receiptLongOutlined => receipt;
+  static IconData get redoRounded => redo;
+  static IconData get refreshRounded => refresh;
+  static IconData get removeCircleOutlineRounded => removeItem;
+  static IconData get removeRounded => remove;
+  static IconData get restartAltRounded => restart;
+  static IconData get restaurantOutlined => dining;
+  static IconData get routeOutlined => route;
+  static IconData get routeRounded => route;
+  static IconData get ruleFolderOutlined => rules;
+  static IconData get ruleOutlined => rules;
+  static IconData get running => activityRunning;
+  static IconData get saveOutlined => saveChanges;
+  static IconData get saved => bookmark;
+  static IconData get savedOutlined => bookmark;
+  static IconData get schedule => time;
+  static IconData get scheduleOutlined => time;
+  static IconData get scheduleRounded => time;
+  static IconData get schoolOutlined => education;
+  static IconData get scienceOutlined => labs;
+  static IconData get sealCheck => verified;
+  static IconData get searchOffRounded => noResults;
+  static IconData get searchRounded => search;
+  static IconData get sendRounded => send;
+  static IconData get settingsOutlined => settings;
+  static IconData get shieldOutlined => safety;
+  static IconData get smokeFreeOutlined => smokeFree;
+  static IconData get smokeFreeRounded => smokeFree;
+  static IconData get sparkle => spark;
+  static IconData get speedOutlined => pace;
+  static IconData get sportsTennis => activityTennis;
+  static IconData get starBorderRounded => rating;
+  static IconData get starOutlineRounded => rating;
+  static IconData get starRounded => rating;
+  static IconData get straightenOutlined => measure;
+  static IconData get straightenRounded => measure;
+  static IconData get swapHorizRounded => swap;
+  static IconData get syncAltRounded => swap;
+  static IconData get syncRounded => sync;
+  static IconData get systemUpdateOutlined => appUpdate;
+  static IconData get tabChats => chat;
+  static IconData get tabChatsFilled => chat;
+  static IconData get tabCustomers => people;
+  static IconData get tabCustomersFilled => people;
+  static IconData get tabEvents => ticket;
+  static IconData get tabEventsFilled => ticket;
+  static IconData get tabExplore => explore;
+  static IconData get tabExploreFilled => explore;
+  static IconData get tabForms => forms;
+  static IconData get tabHome => home;
+  static IconData get tabHomeFilled => home;
+  static IconData get tabOrganizer => organizer;
+  static IconData get tabOrganizerFilled => organizer;
+  static IconData get tabYou => person;
+  static IconData get tabYouFilled => person;
+  static IconData get tableRestaurantOutlined => dining;
+  static IconData get tableRowsOutlined => list;
+  static IconData get timerOutlined => timer;
+  static IconData get tipsAndUpdatesOutlined => tip;
+  static IconData get touchAppRounded => tap;
+  static IconData get translateRounded => language;
+  static IconData get trendingUpRounded => trend;
+  static IconData get tune => filters;
+  static IconData get tuneRounded => filters;
+  static IconData get undoRounded => undo;
+  static IconData get updateRounded => history;
+  static IconData get verifiedRounded => verified;
+  static IconData get verifiedUserOutlined => verified;
+  static IconData get visibilityOffOutlined => hide;
+  static IconData get visibilityOutlined => show;
+  static IconData get volunteerActivismOutlined => support;
+  static IconData get waitlisted => pending;
+  static IconData get warningAmberRounded => warning;
+  static IconData get wavingHandOutlined => wave;
+  static IconData get wbTwilightOutlined => twilight;
+  static IconData get wcOutlined => genders;
+  static IconData get wifiOffRounded => offline;
+  static IconData get workOutline => work;
+  static IconData get workOutlineRounded => work;
 }

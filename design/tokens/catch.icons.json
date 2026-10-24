@@ -13,6 +13,7 @@
       "fontFamily": "Lucide",
       "fontPackage": "catch_ui",
       "fontAsset": "assets/fonts/lucide/lucide.ttf",
+      "fontSha256": "d4025263e2a86c24b972669e9596c0ace02db50cd3f222ef64a6563e5772695e",
       "codepoints": "packages/catch_ui/assets/fonts/lucide/codepoints.json"
     },
     "react": {
@@ -25,11 +26,11 @@
     "playbook": "Playbook module marks and the badge for events that include Playbook moments."
   },
   "roles": {
-    "back": { "group": "ui", "glyph": "arrow-left", "description": "Return to the previous screen or step." },
-    "forward": { "group": "ui", "glyph": "arrow-right", "description": "Continue to the next screen or step." },
+    "back": { "group": "ui", "glyph": "arrow-left", "mirrorInRtl": true, "description": "Return to the previous screen or step." },
+    "forward": { "group": "ui", "glyph": "arrow-right", "mirrorInRtl": true, "description": "Continue to the next screen or step." },
     "close": { "group": "ui", "glyph": "x", "description": "Dismiss a sheet, dialog, banner or overlay." },
     "clear": { "group": "ui", "glyph": "circle-x", "description": "Clear a field, filter or selection." },
-    "disclosure": { "group": "ui", "glyph": "chevron-right", "description": "Row affordance that opens a detail screen." },
+    "disclosure": { "group": "ui", "glyph": "chevron-right", "mirrorInRtl": true, "description": "Row affordance that opens a detail screen." },
     "expand": { "group": "ui", "glyph": "chevron-down", "description": "Expand a collapsed section or open a picker." },
     "collapse": { "group": "ui", "glyph": "chevron-up", "description": "Collapse an expanded section." },
     "goTo": { "group": "ui", "glyph": "arrow-up-right", "description": "Open the linked destination inside Catch." },

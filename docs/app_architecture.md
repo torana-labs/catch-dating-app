@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.85.0
-updated: 2026-10-24
+version: 1.86.0
+updated: 2026-10-25
 owner: app_architecture
 status: active
 ---
@@ -1236,6 +1236,39 @@ content clamps such as `maxContentWidth`.
 is owned by widget order, overlays, navigators, and route/sheet primitives
 rather than repeated numeric z-index values. Introduce a named stacking
 contract only after two or more surfaces need the same explicit layer ordering.
+
+### Icon Roles
+
+Features name what an icon means, never which glyph draws it.
+`design/tokens/catch.icons.json` is the one catalog of icon roles for every
+framework. Each role (`back`, `checkIn`, `people`, `activityDinner`,
+`playbookRecap`) maps to one glyph of the active family, Lucide, at the same
+version the website's `lucide-react` resolves. Its groups are interface roles,
+one role per event `activityKind`, and the Playbook marks with their badge.
+A role records a `note` where the family has no good match.
+
+`node tool/design/generate_icon_catalog.mjs` writes `CatchIcons` in
+`packages/catch_ui/lib/src/foundations/catch_icons.dart` from the catalog.
+Each role is a getter returning const `IconData` in the Lucide font vendored
+under `packages/catch_ui/assets/fonts/lucide/`, so release builds keep only the
+glyphs in use. The generator's `--check` mode fails when:
+
+- a glyph is missing from the vendored font or from the React package;
+- the font's hash, the catalog's version and the locked React version disagree;
+- an `activityKind` has no role, or has more than one;
+- the generated class is stale.
+
+Every role draws at one stroke weight, the family's default.
+
+To change a glyph, edit its role in the catalog and regenerate. To change the
+family, change the catalog's `family` block and glyph names, vendor that
+family's font and codepoints, and regenerate; call sites do not change. Add a
+role when a meaning has none; never reuse a role for a different meaning
+because its glyph looks right.
+
+`design/tokens/catch.icons.legacy_flutter.json` keeps the pre-Lucide `CatchIcons`
+names as aliases of their roles while call sites migrate. It only shrinks, and
+it is deleted once no call site uses an old name.
 
 ### Sizing And Constraints
 
