@@ -1,0 +1,7 @@
+/* An uploaded photo fills the media box its container shapes. */
+.photo {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}

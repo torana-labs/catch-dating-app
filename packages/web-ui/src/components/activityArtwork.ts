@@ -7,6 +7,7 @@
  * activityArtworkParity.test.ts reads the Flutter sources: the kind-to-pattern
  * map and each pattern's geometry cannot drift from the painter they mirror.
  */
+import {resolveActivityArtworkToken} from "./activityArtworkTokens";
 
 /** Production activity kinds, named after the Flutter `ActivityKind` values. */
 export const catchActivityKinds = [
@@ -239,7 +240,7 @@ function arcPath(cx: number, cy: number, r: number, start: number, sweep: number
   return `M${point(start)}A${round(r)} ${round(r)} 0 ${largeArc} ${clockwise} ${point(end)}`;
 }
 
-export function round(value: number) {
+function round(value: number) {
   return Math.round(value * 100) / 100;
 }
 
@@ -256,6 +257,11 @@ export interface ActivityArtworkSvgOptions {
   height: number;
   /** The app's dense ground, for small or busy media. */
   dense?: boolean;
+  /**
+   * Runs the ground from the top-right corner, so its deep end sits
+   * bottom-left under the organiser cover's type.
+   */
+  mirrored?: boolean;
   /**
    * Turns a token name into its value, e.g. read from
    * packages/web-config/generated/catch-tokens.css. Without it the SVG
@@ -278,6 +284,7 @@ export function activityArtworkSvg({
   width,
   height,
   dense = false,
+  mirrored = false,
   resolveToken,
   glyph,
   idPrefix = "catch-activity-artwork",
@@ -296,12 +303,26 @@ export function activityArtworkSvg({
     ? `<g transform="translate(${round(width - glyphInset - glyphSize)} ${round(height - glyphInset - glyphSize)}) scale(${round(glyphSize / 24)})" style="color:${value(tokens.mark)};opacity:${value(tokens.glyphOpacity)}" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">${glyph}</g>`
     : "";
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`
-    + `<defs><linearGradient id="${gradientId}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="${width}" y2="${height}">${stops}</linearGradient></defs>`
+    + `<defs><linearGradient id="${gradientId}" gradientUnits="userSpaceOnUse" ${gradientAxisAttributes(width, height, mirrored)}>${stops}</linearGradient></defs>`
     + `<rect width="${width}" height="${height}" fill="url(#${gradientId})"/>`
     // Per-mark opacity, like the painter's translucent paint: crossings darken.
     + `<g style="fill:${value(tokens.mark)};stroke:${value(tokens.mark)};fill-opacity:${value(tokens.patternOpacity)};stroke-opacity:${value(tokens.patternOpacity)}" stroke-width="${activityArtworkStrokeWidth}" stroke-linecap="round">${marks}</g>`
     + glyphMarkup
     + "</svg>";
+}
+
+/**
+ * The ground's axis in user space, corner to corner like Flutter's
+ * `LinearGradient(begin: topLeft, end: bottomRight)`, so its bands run
+ * perpendicular to the box's own diagonal.
+ */
+export function activityArtworkGradientAxis(width: number, height: number, mirrored = false) {
+  return mirrored ? {x1: width, y1: 0, x2: 0, y2: height} : {x1: 0, y1: 0, x2: width, y2: height};
+}
+
+function gradientAxisAttributes(width: number, height: number, mirrored: boolean) {
+  const axis = activityArtworkGradientAxis(width, height, mirrored);
+  return `x1="${axis.x1}" y1="${axis.y1}" x2="${axis.x2}" y2="${axis.y2}"`;
 }
 
 /** The app's glyph is 132 logical pixels; smaller boxes scale it down. */
@@ -323,4 +344,27 @@ function markSvg(mark: ActivityArtworkMark) {
   case "path":
     return `<path d="${mark.d}" fill="none"/>`;
   }
+}
+
+export interface ActivityCover {
+  /** Self-contained SVG with literal colours: no CSS, fonts or external references. */
+  svg: string;
+  /** The ground's accent pigment, for a background behind the SVG. */
+  background: string;
+  /** Mark and text colour over the artwork. */
+  ink: string;
+}
+
+/**
+ * The activity cover (G6) for a stored activity value, with the generated
+ * token values filled in, for rendering where no stylesheet loads.
+ */
+export function activityCover(activityKind: string, {width = 1200, height = 630, dense = false} = {}): ActivityCover {
+  const kind = activityKindFromValue(activityKind);
+  const tokens = activityArtworkTokenNames(kind);
+  return {
+    svg: activityArtworkSvg({activityKind: kind, width, height, dense, resolveToken: resolveActivityArtworkToken}),
+    background: resolveActivityArtworkToken(tokens.accent),
+    ink: resolveActivityArtworkToken(tokens.mark),
+  };
 }
