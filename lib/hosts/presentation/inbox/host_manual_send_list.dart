@@ -11,6 +11,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_communication_plan.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -208,9 +209,10 @@ class HostManualSendListBody extends StatelessWidget {
       footer: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
+          CatchText(
             context.l10n.hostManualSendQueueDisclosure,
-            style: CatchTextStyles.proseM(context),
+            variant: CatchTextVariant.bodyM,
+            color: CatchTokens.of(context).ink,
           ),
           if (nextCursor != null) ...[
             gapH12,

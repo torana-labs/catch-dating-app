@@ -59,9 +59,7 @@
   --catch-text-role-color: var(--catch-theme-ink2);
 }
 
-.text[data-variant="bodyL"],
-.text[data-variant="recordBody"],
-.text[data-variant="proseL"] {
+.text[data-variant="bodyL"] {
   --catch-text-size: var(--catch-typography-web-body-size);
   --catch-text-line-height: var(--catch-typography-web-body-line-height);
   --catch-text-weight: var(--catch-typography-web-body-weight);
@@ -69,8 +67,7 @@
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
-.text[data-variant="bodyM"],
-.text[data-variant="proseM"] {
+.text[data-variant="bodyM"] {
   --catch-text-size: var(--catch-typography-web-secondary-size);
   --catch-text-line-height: var(--catch-typography-web-secondary-line-height);
   --catch-text-weight: var(--catch-typography-web-secondary-weight);
@@ -78,8 +75,7 @@
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
-.text[data-variant="bodyS"],
-.text[data-variant="recordContext"] {
+.text[data-variant="bodyS"] {
   --catch-text-size: var(--catch-typography-web-context-size);
   --catch-text-line-height: var(--catch-typography-web-context-line-height);
   --catch-text-weight: var(--catch-typography-web-context-weight);

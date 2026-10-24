@@ -392,11 +392,12 @@ class ClubHeroHeader extends StatelessWidget {
                 ),
                 gapW6,
                 Expanded(
-                  child: Text(
+                  child: CatchText(
                     locationLabel,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.bodyLead(context, color: t.ink2),
+
+                    variant: CatchTextVariant.bodyLead,
+                    color: t.ink2,
                   ),
                 ),
               ],
@@ -500,11 +501,12 @@ class ClubHeroHeader extends StatelessWidget {
                   ),
                   gapW6,
                   Expanded(
-                    child: Text(
+                    child: CatchText(
                       locationLabel,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.bodyLead(context, color: t.ink2),
+
+                      variant: CatchTextVariant.bodyLead,
+                      color: t.ink2,
                     ),
                   ),
                 ],

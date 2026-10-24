@@ -15,6 +15,7 @@ import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_layout.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_setup_page_body.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -275,21 +276,24 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
                         context: AppErrorContext.event,
                       ),
                     if (proposal.unplacedPartyIds.isNotEmpty)
-                      Text(
+                      CatchText(
                         context.l10n.programsLodgingUnplaced(
                           count: proposal.unplacedPartyIds.length,
                         ),
-                        style: CatchTextStyles.recordBody(context),
+                        variant: CatchTextVariant.bodyL,
+                        color: CatchTokens.of(context).ink,
                       ),
                     if (!proposal.searchComplete)
-                      Text(
+                      CatchText(
                         context.l10n.programsLodgingBoundedSearch,
-                        style: CatchTextStyles.recordBody(context),
+                        variant: CatchTextVariant.bodyL,
+                        color: CatchTokens.of(context).ink,
                       ),
                     for (final explanation in proposal.explanations)
-                      Text(
+                      CatchText(
                         explanation,
-                        style: CatchTextStyles.recordBody(context),
+                        variant: CatchTextVariant.bodyL,
+                        color: CatchTokens.of(context).ink,
                       ),
                     CatchButton(
                       label: context.l10n.programsLodgingMembershipTitle,
@@ -452,9 +456,10 @@ class ProgramLodgingExpiredPageBody extends StatelessWidget {
     body: CatchRouteBody.standardViewport(
       child: Column(
         children: [
-          Text(
+          CatchText(
             context.l10n.programsLodgingMembershipExpired,
-            style: CatchTextStyles.recordBody(context),
+            variant: CatchTextVariant.bodyL,
+            color: CatchTokens.of(context).ink,
           ),
           CatchButton(
             label: context.l10n.programsRoomsRefresh,
@@ -532,9 +537,10 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
             CatchSection.containedFieldRows(
               title: l10n.programsLodgingMembershipTitle,
               children: [
-                Text(
+                CatchText(
                   l10n.programsLodgingMembershipHint,
-                  style: CatchTextStyles.recordBody(context),
+                  variant: CatchTextVariant.bodyL,
+                  color: CatchTokens.of(context).ink,
                 ),
                 CatchField<String>.choices(
                   copy: catchFieldCopy(l10n),
@@ -559,9 +565,10 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
                         },
                 ),
                 if (membership != null && active) ...[
-                  Text(
+                  CatchText(
                     membership.label,
-                    style: CatchTextStyles.recordBody(context),
+                    variant: CatchTextVariant.bodyL,
+                    color: CatchTokens.of(context).ink,
                   ),
                   CatchField<String>.choices(
                     copy: catchFieldCopy(l10n),
@@ -577,7 +584,7 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
                     onSelectionChanged: view.busy ? null : onGroupsChanged,
                   ),
                   for (final row in membership.evidence)
-                    Text(
+                    CatchText(
                       l10n.programsLodgingMembershipEvidence(
                         group: groups[requiredString(row, 'groupId')]!,
                         source: requiredString(row, 'sourceLabel'),
@@ -587,19 +594,21 @@ class ProgramLodgingMembershipPageBody extends ConsumerWidget {
                                   : l10n.programsLodgingMembershipExcluded)
                             : l10n.programsLodgingMembershipSuggested,
                       ),
-                      style: CatchTextStyles.recordBody(context),
+                      variant: CatchTextVariant.bodyL,
+                      color: CatchTokens.of(context).ink,
                     ),
                   for (final groupId in membership.groupIds)
                     if (!membership.evidence.any(
                       (e) => e['selected'] == true && e['groupId'] == groupId,
                     ))
-                      Text(
+                      CatchText(
                         l10n.programsLodgingMembershipEvidence(
                           group: groups[groupId]!,
                           source: l10n.programsLodgingMembershipCanonical,
                           status: l10n.programsLodgingMembershipIncluded,
                         ),
-                        style: CatchTextStyles.recordBody(context),
+                        variant: CatchTextVariant.bodyL,
+                        color: CatchTokens.of(context).ink,
                       ),
                   CatchButton(
                     label: l10n.programsLodgingMembershipSave,

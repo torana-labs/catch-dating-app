@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {CheckCircle2, ClipboardList} from "lucide-react";
 import {
@@ -71,7 +71,7 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
     if (saved) selectContact(undefined);
   };
   return <Panel title="People" icon={<ClipboardList size={18} />}>
-    <p>Private contact relationships. A review for drafting never authorizes sending.</p>
+    <CatchText as="p" variant="supporting">Private contact relationships. A review for drafting never authorizes sending.</CatchText>
     {controller.contacts.isPending ? <EmptyState>Loading contacts…</EmptyState> :
       controller.contacts.error ? <EmptyState>Contacts could not be loaded. <AdminButton
         onClick={() => void controller.contacts.refetch()}>Try again</AdminButton></EmptyState> :
@@ -88,7 +88,7 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
       next={Boolean(controller.contacts.data?.nextCursor)}
       onPrevious={controller.previousContactPage} onNext={controller.nextContactPage} />
     <AdminForm onSubmit={(event) => {event.preventDefault(); void create();}}>
-      <h3>Add contact relationship</h3>
+      <CatchText as="h3" variant="sectionTitle">Add contact relationship</CatchText>
       <CatchField recipe="input" title="Name" value={name} onChanged={setName} required />
       <CatchField
         recipe="input"
@@ -128,14 +128,14 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
       <CatchField recipe="input" title={endpointKind === "email" ? "Email address (unverified)" :
         "Phone number (unverified)"} value={endpointValue}
         onChanged={setEndpointValue} keyboardType={endpointKind === "email" ? "emailAddress" : "text"} />
-      <p>These contact details still need review before they can be used.</p>
+      <CatchText as="p" variant="supporting">These contact details still need review before they can be used.</CatchText>
       <AdminButton type="submit" disabled={!name.trim() || !role.trim() ||
         controller.isSaving}>Add contact</AdminButton>
     </AdminForm>
-    {assignedStaffOnly ? <p>Contact restrictions and draft eligibility require an
-      authorized reviewer. Adding contact details never grants permission to send.</p> : null}
+    {assignedStaffOnly ? <CatchText as="p" variant="supporting">Contact restrictions and draft eligibility require an
+      authorized reviewer. Adding contact details never grants permission to send.</CatchText> : null}
     {contacts.length && !assignedStaffOnly ? <AdminForm onSubmit={(event) => {event.preventDefault(); void review();}}>
-      <h3>Contact restriction or draft review</h3>
+      <CatchText as="h3" variant="sectionTitle">Contact restriction or draft review</CatchText>
       <CatchField
         recipe="select"
         title="Contact on this page"
@@ -184,8 +184,8 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
         onChanged={setReason}
         required
       />
-      <p>Draft review is only a private eligibility input. It does not verify an
-        endpoint, consent to send, or provider delivery.</p>
+      <CatchText as="p" variant="supporting">Draft review is only a private eligibility input. It does not verify an
+        endpoint, consent to send, or provider delivery.</CatchText>
       <AdminButton type="submit" disabled={!selected || contactChanged || !reason.trim() ||
         (status === "draft_reviewed" && !evidenceId) || controller.isSaving}>
         Record contact decision
@@ -204,7 +204,7 @@ function EvidenceSuggestion({proposal, controller, assignedStaffOnly}: {
     expectedRevision: proposal.revision, decision, reason: reason.trim(),
   });
   return <Panel title={`${proposal.evidence.claimKey} · ${proposal.status}`} icon={<ClipboardList size={18} />}>
-    <p>{proposal.evidence.normalizedValue || proposal.evidence.excerpt || "No summary supplied."}</p>
+    <CatchText as="p" variant="supporting">{proposal.evidence.normalizedValue || proposal.evidence.excerpt || "No summary supplied."}</CatchText>
     <StateRow label="Source" value={proposal.evidence.sourceRef} />
     <StateRow label="Observed" value={proposal.evidence.observedAt} />
     <StateRow label="Suggested confidence" value={proposal.evidence.confidence} />
@@ -213,7 +213,7 @@ function EvidenceSuggestion({proposal, controller, assignedStaffOnly}: {
     <StateRow label="Valid until" value={proposal.evidence.validThrough ?? "No expiry supplied"} />
     <StateRow label="Submitted by" value={proposal.clientId ? "Assistant" : "Employee"} />
     {proposal.status === "pending" && assignedStaffOnly ?
-      <p>Awaiting authorized evidence review.</p> : proposal.status === "pending" ? <>
+      <CatchText as="p" variant="supporting">Awaiting authorized evidence review.</CatchText> : proposal.status === "pending" ? <>
       <CatchField
         recipe="input"
         title="Review reason"
@@ -256,8 +256,8 @@ function SalesEvidencePanel({detail, controller, assignedStaffOnly}: {
     if (saved) {setSourceRef(""); setValue(""); setExcerpt(""); setSignalId("");}
   };
   return <Panel title="Research evidence" icon={<ClipboardList size={18} />}>
-    <p>Record the source and observation separately from a conclusion. Evidence is
-      private and does not publish claims.</p>
+    <CatchText as="p" variant="supporting">Record the source and observation separately from a conclusion. Evidence is
+      private and does not publish claims.</CatchText>
     {controller.evidence.isPending ? <EmptyState>Loading evidence…</EmptyState> :
       controller.evidence.error ? <EmptyState>Evidence could not be loaded. <AdminButton
         onClick={() => void controller.evidence.refetch()}>Try again</AdminButton></EmptyState> :
@@ -270,8 +270,8 @@ function SalesEvidencePanel({detail, controller, assignedStaffOnly}: {
     <PageControls previous={controller.hasPreviousEvidencePage}
       next={Boolean(controller.evidence.data?.nextCursor)}
       onPrevious={controller.previousEvidencePage} onNext={controller.nextEvidencePage} />
-    <h3>Suggestions to review</h3>
-    <p>Check the source before accepting. Assistant suggestions do not affect qualification until reviewed.</p>
+    <CatchText as="h3" variant="sectionTitle">Suggestions to review</CatchText>
+    <CatchText as="p" variant="supporting">Check the source before accepting. Assistant suggestions do not affect qualification until reviewed.</CatchText>
     {controller.evidenceProposals?.isPending ? <EmptyState>Loading suggestions…</EmptyState> :
       controller.evidenceProposals?.error ? <EmptyState>Suggestions could not be loaded.
         <AdminButton onClick={() => void controller.evidenceProposals.refetch()}>Try again</AdminButton>
@@ -285,7 +285,7 @@ function SalesEvidencePanel({detail, controller, assignedStaffOnly}: {
       next={Boolean(controller.evidenceProposals?.data?.nextCursor)}
       onPrevious={controller.previousProposalPage} onNext={controller.nextProposalPage} />
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <h3>Add reviewed observation</h3>
+      <CatchText as="h3" variant="sectionTitle">Add reviewed observation</CatchText>
       <CatchField
         recipe="select"
         title="Related contact on this page (optional)"
@@ -428,7 +428,7 @@ function SalesSuppressionPanel({detail, controller}: {
         onChanged={setReason}
         required
       />
-      <p>Clearing a hold does not grant permission to draft or send outreach.</p>
+      <CatchText as="p" variant="supporting">Clearing a hold does not grant permission to draft or send outreach.</CatchText>
       <AdminButton type="submit" disabled={!reason.trim() || accountChanged ||
         controller.isSaving}>
         Record account decision
@@ -515,13 +515,13 @@ function SalesTasksPanel({detail, controller, currentUserUid, assignedStaffOnly}
             ...reviewedContacts.map((contact) => ({value: contact.contactId,
               label: contact.displayName}))])}
         />
-        <p>A contact review permits draft consideration only. The server checks
-          current restrictions before recording this task; it does not send anything.</p>
-        {!reviewedContacts.length ? <p role="alert">No reviewed contacts on this page.
+        <CatchText as="p" variant="supporting">A contact review permits draft consideration only. The server checks
+          current restrictions before recording this task; it does not send anything.</CatchText>
+        {!reviewedContacts.length ? <CatchText as="p" variant="supporting" role="alert">No reviewed contacts on this page.
           {assignedStaffOnly ? " Ask an authorized reviewer, or choose Internal research." :
-            " Review a contact in People, or choose Internal research."}</p> : null}
+            " Review a contact in People, or choose Internal research."}</CatchText> : null}
       </> : null}
-      <p>Assigned to you</p>
+      <CatchText as="p" variant="supporting">Assigned to you</CatchText>
       <CatchField
         recipe="input"
         title="Due"
@@ -537,10 +537,10 @@ function SalesTasksPanel({detail, controller, currentUserUid, assignedStaffOnly}
 
 function SalesDraftReadinessPanel() {
   return <Panel title="Outreach draft readiness" icon={<ClipboardList size={18} />}>
-    <p>Private draft generation is waiting for the live eligibility bridge, approved
+    <CatchText as="p" variant="supporting">Private draft generation is waiting for the live eligibility bridge, approved
       evidence clauses, capability and reference checks, and a reviewed CTA set.
       Contact review alone does not enable a draft or a send. Record research and
-      manual activity here while those controls are being integrated.</p>
+      manual activity here while those controls are being integrated.</CatchText>
   </Panel>;
 }
 

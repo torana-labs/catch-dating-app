@@ -236,12 +236,10 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
             maxLines: 5,
             error: instructionsError,
             onChanged: onInstructionsChanged,
-            meta: Text(
+            meta: CatchText(
               l10n.hostOfferPaymentInstructionsHelper,
-              style: CatchTextStyles.supporting(
-                context,
-                color: CatchTokens.of(context).ink2,
-              ),
+              variant: CatchTextVariant.supporting,
+              color: CatchTokens.of(context).ink2,
             ),
           ),
         CatchField.inputActions(

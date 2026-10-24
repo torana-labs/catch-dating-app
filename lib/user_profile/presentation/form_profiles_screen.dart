@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_controller.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,9 +71,10 @@ class FormProfilesSectionList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           l10n.formProfilesDescription,
-          style: CatchTextStyles.proseM(context),
+          variant: CatchTextVariant.bodyM,
+          color: CatchTokens.of(context).ink,
         ),
         gapH24,
         if (state.page.items.isEmpty && state.page.nextCursor == null)

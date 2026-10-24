@@ -174,14 +174,11 @@ class PhotoSlotTile extends StatelessWidget {
                       alpha: CatchOpacity.photoPromptScrim,
                     ),
                     padding: CatchInsets.infoTileContent,
-                    child: Text(
+                    child: CatchText(
                       prompt!.displayPrompt,
-                      style: CatchTextStyles.labelS(
-                        context,
-                        color: CatchTokens.editorialWhite,
-                      ),
+                      variant: CatchTextVariant.statusLabel,
+                      color: CatchTokens.editorialWhite,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),

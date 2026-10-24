@@ -143,7 +143,7 @@ class _RadiusTile extends StatelessWidget {
             ),
           ),
           gapH8,
-          Text(row.name, style: CatchTextStyles.labelM(context)),
+          Text(row.name, style: CatchTextStyles.statusLabel(context)),
           Text(
             '${widgetbookFoundationNumber(row.value)} px',
             style: CatchTextStyles.monoLabelS(context, color: t.ink2),
@@ -202,7 +202,7 @@ class _ElevationTile extends StatelessWidget {
             ),
           ),
           gapH10,
-          Text(name, style: CatchTextStyles.labelM(context)),
+          Text(name, style: CatchTextStyles.statusLabel(context)),
           Text(
             '${shadows.length} shadow${shadows.length == 1 ? '' : 's'}',
             style: CatchTextStyles.monoLabelS(context, color: t.ink2),

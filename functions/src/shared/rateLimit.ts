@@ -571,6 +571,10 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
     maxRequests: 30,
     windowMs: 60 * 1000,
   },
+  adminNominateOrganizer: {
+    maxRequests: 30,
+    windowMs: 60 * 1000,
+  },
   adminCreateMarketingContentDraft: {maxRequests: 30, windowMs: 60 * 1000},
   adminDecideAccessApplication: {maxRequests: 30, windowMs: 60 * 1000},
   adminUpdateClubDetails: {maxRequests: 30, windowMs: 60 * 1000},

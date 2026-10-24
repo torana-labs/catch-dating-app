@@ -19,6 +19,11 @@ const roots = [
   'pubspec.yaml', 'pubspec.lock', 'tool/ci/toolchain.env',
 ];
 const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+// A capture renders from these manifest fields alone. Everything else in an
+// entry (website copy, the pages that show it, scenario pointers and facts) is
+// presentation and never invalidates a render; scenario data enters through
+// its files below.
+const renderFields = ['id', 'status', 'device', 'fixtureKey', 'sourcePath'];
 
 export function captureInputHash(capture) {
   const inputs = new Set(roots);
@@ -69,10 +74,7 @@ export function captureInputHash(capture) {
       }
     }
   }
-  // Website copy and destinations do not enter Flutter or device framing.
-  // Retain all other (including unknown future) fields conservatively.
-  const recipe = {...capture};
-  for (const key of ['alt', 'caption', 'walkthroughStep', 'websitePath', 'placeholderPath']) delete recipe[key];
+  const recipe = Object.fromEntries(renderFields.map(key => [key, capture[key] ?? null]));
   const hash = crypto.createHash('sha256').update(JSON.stringify(recipe));
   for (const file of [...inputs].sort()) {
     hash.update(file).update('\0').update(fs.readFileSync(fromRepo(file))).update('\0');

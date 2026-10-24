@@ -3,7 +3,7 @@ import {createHash} from "node:crypto";
 import fs from "node:fs";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
-import {waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
+import {isMainCiSource, waitMainMarketingValidation} from "../../../tool/ci/wait_main_marketing_validation.mjs";
 import {canonicalRepository} from "../../../tool/lib/canonical_repository.mjs";
 
 export const preview = Object.freeze({
@@ -29,19 +29,22 @@ export function assertPreviewInvocation(env) {
   assert.equal(env.GITHUB_WORKFLOW_REF, `${env.GITHUB_REPOSITORY}/${preview.workflow}@refs/heads/main`);
   sha(env.GITHUB_SHA);
 }
-/** Successful same-source push CI that must also still be the head of main. */
+/** Successful same-source main CI that must also still be the head of main. */
 export function assertSuccessfulSource({run, sourceSha, repository, mainSha}) {
   sha(sourceSha);
   assert.equal(mainSha, sourceSha, "Preview source is no longer current main");
   assertSuccessfulSourceRun({run, sourceSha, repository});
 }
 
-/** Successful same-source push CI on main, whatever main has merged since. */
+/**
+ * Successful same-source CI for a commit on main, whatever main has merged
+ * since: main's push run, or the merge queue run that tested the exact commit
+ * main received. A later merge cancels the first, never the second.
+ */
 export function assertSuccessfulSourceRun({run, sourceSha, repository}) {
   sha(sourceSha);
   assert.equal(run.head_sha, sourceSha);
-  assert.equal(run.head_branch, "main");
-  assert.equal(run.event, "push");
+  assert.ok(isMainCiSource(run), "Source CI must be main's push run or the merge queue run of the same commit");
   assert.equal(run.path?.split("@")[0], ".github/workflows/ci.yml");
   assert.equal(run.repository?.full_name, repository);
   assert.equal(run.head_repository?.full_name, repository);

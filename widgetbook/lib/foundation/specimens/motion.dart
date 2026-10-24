@@ -254,7 +254,7 @@ class _CurveTile extends StatelessWidget {
                 ),
               ),
               gapH10,
-              Text(row.name, style: CatchTextStyles.labelM(context)),
+              Text(row.name, style: CatchTextStyles.statusLabel(context)),
             ],
           ),
         ),

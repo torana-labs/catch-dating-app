@@ -148,7 +148,7 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
                       if (widget.eyebrow != null) ...[
                         Text(
                           widget.eyebrow!.toUpperCase(),
-                          style: CatchTextStyles.labelM(
+                          style: CatchTextStyles.statusLabel(
                             context,
                             color: _celebrationCream.withValues(alpha: 0.9),
                           ).copyWith(fontWeight: FontWeight.w800),
@@ -163,12 +163,10 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
                         ),
                       ),
                       gapH14,
-                      Text(
+                      CatchText(
                         widget.message,
-                        style: CatchTextStyles.bodyL(
-                          context,
-                          color: _celebrationCream.withValues(alpha: 0.92),
-                        ),
+                        variant: CatchTextVariant.bodyL,
+                        color: _celebrationCream.withValues(alpha: 0.92),
                       ),
                       if (details.isNotEmpty) ...[
                         gapH28,
@@ -308,7 +306,7 @@ class PaperCelebrationScaffold extends StatelessWidget {
                     Text(
                       eyebrow!.toUpperCase(),
                       textAlign: TextAlign.center,
-                      style: CatchTextStyles.labelM(
+                      style: CatchTextStyles.statusLabel(
                         context,
                         color: t.primary,
                       ).copyWith(fontWeight: FontWeight.w800),
@@ -324,10 +322,11 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   Align(
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 340),
-                      child: Text(
+                      child: CatchText(
                         message,
                         textAlign: TextAlign.center,
-                        style: CatchTextStyles.proseM(context, color: t.ink2),
+                        variant: CatchTextVariant.bodyM,
+                        color: t.ink2,
                       ),
                     ),
                   ),
@@ -337,10 +336,11 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   ],
                   if (note != null) ...[
                     gapH12,
-                    Text(
+                    CatchText(
                       note!,
                       textAlign: TextAlign.center,
-                      style: CatchTextStyles.supporting(context, color: t.ink3),
+                      variant: CatchTextVariant.supporting,
+                      color: t.ink3,
                     ),
                   ],
                   for (final child in supplementalChildren) ...[gapH18, child],
@@ -453,9 +453,10 @@ class PaperCelebrationDetailRow extends StatelessWidget {
           if (icon != null) ...[Icon(icon, size: 18, color: t.ink3), gapW12],
           SizedBox(
             width: CatchLayout.celebrationDetailLabelWidth,
-            child: Text(
+            child: CatchText(
               detail.label.toUpperCase(),
-              style: CatchTextStyles.labelS(context, color: t.ink2),
+              variant: CatchTextVariant.statusLabel,
+              color: t.ink2,
             ),
           ),
           gapW12,
@@ -549,20 +550,16 @@ class CelebrationDetailRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              CatchText(
                 detail.label,
-                style: CatchTextStyles.labelS(
-                  context,
-                  color: _celebrationInk.withValues(alpha: 0.74),
-                ),
+                variant: CatchTextVariant.statusLabel,
+                color: _celebrationInk.withValues(alpha: 0.74),
               ),
               gapH3,
-              Text(
+              CatchText(
                 detail.value,
-                style: CatchTextStyles.bodyLead(
-                  context,
-                  color: _celebrationInk,
-                ),
+                variant: CatchTextVariant.bodyLead,
+                color: _celebrationInk,
               ),
             ],
           ),
@@ -592,12 +589,10 @@ class CelebrationNote extends StatelessWidget {
             Icon(CatchIcons.boltRounded, color: _celebrationInk, size: 18),
             gapW10,
             Expanded(
-              child: Text(
+              child: CatchText(
                 note,
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: _celebrationInk,
-                ),
+                variant: CatchTextVariant.supporting,
+                color: _celebrationInk,
               ),
             ),
           ],

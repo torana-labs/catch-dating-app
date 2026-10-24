@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useEffect, useLayoutEffect, useRef, useState} from "react";
 import {ClipboardList, Sparkles} from "lucide-react";
 import {
@@ -105,10 +105,10 @@ function IntelligenceBody({organizerId, organizerName, currentUserUid,
     organizerId, api});
   return <>
     <Panel title="Fit and private outreach" icon={<Sparkles size={18} />}>
-      <p>Evidence, reviewed wording and current contact restrictions decide what
-        can be drafted for {organizerName}. Nothing here sends a message.</p>
-      {c.error ? <p role="alert">{c.error}</p> : null}
-      {c.notice ? <p role="status">{c.notice}</p> : null}
+      <CatchText as="p" variant="supporting">Evidence, reviewed wording and current contact restrictions decide what
+        can be drafted for {organizerName}. Nothing here sends a message.</CatchText>
+      {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
+      {c.notice ? <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText> : null}
       {c.pending ? <AdminButton disabled={c.busy}
         onClick={() => void c.retry()}>Retry unchanged request</AdminButton> : null}
       <AdminButton disabled={c.busy || Boolean(c.pending)}
@@ -155,18 +155,18 @@ function PolicyPanel({c}: {c: Controller}) {
     await c.savePolicy(candidate, formRevision);
   };
   return <Panel title="Private fit policy" icon={<Sparkles size={18} />}>
-    <p>An Admin owner sets the seven reviewed factors, evidence kinds and
-      thresholds. No weights or host strategy are supplied by this page.</p>
+    <CatchText as="p" variant="supporting">An Admin owner sets the seven reviewed factors, evidence kinds and
+      thresholds. No weights or host strategy are supplied by this page.</CatchText>
     {existing ? <StateRow label="Current policy"
       value={`${label(existing.status)} · revision ${existing.revision}`} /> :
-      <p>No private fit policy has been saved yet.</p>}
-    {stale ? <p role="alert">This policy changed since it was opened.
-      Refresh and compare before saving.</p> : null}
+      <CatchText as="p" variant="supporting">No private fit policy has been saved yet.</CatchText>}
+    {stale ? <CatchText as="p" variant="supporting" role="alert">This policy changed since it was opened.
+      Refresh and compare before saving.</CatchText> : null}
     {!editing ? <AdminButton disabled={c.busy || Boolean(c.pending)}
       onClick={() => setEditing(true)}>{existing ? "Review policy settings" :
         "Set up private fit policy"}</AdminButton> : null}
     {editing ? <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <h3>Seven factors</h3>
+      <CatchText as="h3" variant="sectionTitle">Seven factors</CatchText>
       {form.factors.map((row, index) => <AdminEditorSection key={index}>
         <legend>Factor {index + 1}</legend>
         <CatchField
@@ -196,7 +196,7 @@ function PolicyPanel({c}: {c: Controller}) {
           inputMode={c.busy || Boolean(c.pending) ? "inactive" : "editable"}
           keyboardType="number"
         />
-        <p>Evidence kinds for factor {index + 1}</p>
+        <CatchText as="p" variant="supporting">Evidence kinds for factor {index + 1}</CatchText>
         {claimOptions.map((option) => <CheckboxField
           key={`${index}-${option.value}`} checked={row.claimKeys.includes(option.value)}
           disabled={c.busy || Boolean(c.pending)}
@@ -205,8 +205,8 @@ function PolicyPanel({c}: {c: Controller}) {
             [...row.claimKeys, option.value] : row.claimKeys.filter((key) =>
               key !== option.value)})} />)}
       </AdminEditorSection>)}
-      <p>Weights must total 100. Current total: {form.factors.reduce((sum,
-        row) => sum + (Number(row.weight) || 0), 0)}.</p>
+      <CatchText as="p" variant="supporting">Weights must total 100. Current total: {form.factors.reduce((sum,
+        row) => sum + (Number(row.weight) || 0), 0)}.</CatchText>
       <CatchField
         recipe="input"
         title="High priority begins at"
@@ -240,11 +240,11 @@ function PolicyPanel({c}: {c: Controller}) {
       />
       {existing && form.factors.some((row, index) => resolvedFactorId(
         row.name, existing.factors[index]?.id) !==
-        existing.factors[index]?.id) ? <p role="alert">Changing a factor name
-        creates a new factor. Its previous ratings will not carry over.</p> : null}
-      {!candidate ? <p role="alert">Enter seven distinct factor names,
+        existing.factors[index]?.id) ? <CatchText as="p" variant="supporting" role="alert">Changing a factor name
+        creates a new factor. Its previous ratings will not carry over.</CatchText> : null}
+      {!candidate ? <CatchText as="p" variant="supporting" role="alert">Enter seven distinct factor names,
         evidence kinds, freshness limits and weights totaling 100. High
-        priority must be above medium priority.</p> : null}
+        priority must be above medium priority.</CatchText> : null}
       <AdminButton type="submit" variant="primary" disabled={!candidate ||
         stale || c.busy || Boolean(c.pending) || (Boolean(existing) && !dirty)}>
         Save reviewed policy</AdminButton>
@@ -296,7 +296,7 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       reason: state === "known" ? null : reason.trim()});
   };
   return <Panel title="Evidence-backed fit" icon={<ClipboardList size={18} />}>
-    {c.catalog.isPending || c.score.isPending ? <p>Checking current fit…</p> : null}
+    {c.catalog.isPending || c.score.isPending ? <CatchText as="p" variant="supporting">Checking current fit…</CatchText> : null}
     {c.catalog.isError ? <QueryProblem message="Current fit policy could not load."
       retry={() => void c.catalog.refetch()} /> : null}
     {c.score.isError ? <QueryProblem message="Current fit could not be evaluated."
@@ -309,8 +309,8 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
       <StateRow label="Current fit" value={score?.score === null ||
         score?.score === undefined ? "Unknown · more reviewed evidence needed" :
         `${score.score.toFixed(1)} / 100 · ${label(score.priority)} priority`} />
-      {score?.status === "review_required" ? <p role="alert">A factor needs
-        review before a priority can be assigned.</p> : null}
+      {score?.status === "review_required" ? <CatchText as="p" variant="supporting" role="alert">A factor needs
+        review before a priority can be assigned.</CatchText> : null}
       {policy.factors.map((item: IntelligenceFactor) => {
         const current = c.catalog.data?.assessments.find((row) =>
           row.factorId === item.id);
@@ -320,7 +320,7 @@ function FitPanel({c, organizerId}: {c: Controller; organizerId: string}) {
               "Unknown · evidence needed"} />;
       })}
       <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-        <h3>Review one fit factor</h3>
+        <CatchText as="h3" variant="sectionTitle">Review one fit factor</CatchText>
         {stale ? <p role="alert">This factor or policy changed during your review.
           Your edits are retained. Compare the current review before saving.
           <AdminButton onClick={() => selectFactor(factorId)}>
@@ -405,8 +405,8 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
     if (result) {setWording(""); setEvidenceId(""); setExpires("");}
   };
   return <Panel title="Reviewed wording" icon={<ClipboardList size={18} />}>
-    <p>Only approved, current sentences can appear in a draft. A reference
-      needs explicit private-mention permission.</p>
+    <CatchText as="p" variant="supporting">Only approved, current sentences can appear in a draft. A reference
+      needs explicit private-mention permission.</CatchText>
     {catalog?.clauses.length ? catalog.clauses.map((row) =>
       <StateRow key={row.clauseId} label={`${label(row.kind)} · ${row.text}`}
         value={<>{label(row.state)} · valid until {date(row.validUntil)}{" "}
@@ -433,7 +433,7 @@ function WordingPanel({c, isAdminOwner}: {c: Controller; isAdminOwner: boolean})
               Withdraw wording</AdminButton> : null}</>} />) :
       <EmptyState>No reviewed wording is available for this host.</EmptyState>}
     {isAdminOwner ? <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <h3>Prepare an exact sentence for review</h3>
+      <CatchText as="h3" variant="sectionTitle">Prepare an exact sentence for review</CatchText>
       <CatchField
         recipe="select"
         title="Sentence purpose"
@@ -533,7 +533,7 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
         c.job.data?.status === "running" ? "Still preparing" :
           c.job.isError ? "Could not confirm status" : "Checking"}{" "}
       <AdminButton onClick={() => void c.job.refetch()}>Check again</AdminButton></p> : null}
-    <h3>Saved drafts</h3>
+    <CatchText as="h3" variant="sectionTitle">Saved drafts</CatchText>
     {c.drafts.isError ? <QueryProblem message="Saved drafts could not load."
       retry={() => void c.drafts.refetch()} /> : null}
     {c.drafts.data?.rows.length ? c.drafts.data.rows.map((row) =>
@@ -547,7 +547,7 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
     {c.draft.isError ? <QueryProblem message="This draft is no longer current."
       retry={() => void c.draft.refetch()} /> : null}
     {selected ? <>
-      <h3>Review exact draft</h3>
+      <CatchText as="h3" variant="sectionTitle">Review exact draft</CatchText>
       {selected.draft.subject ? <StateRow label="Subject"
         value={selected.draft.subject} /> : null}
       <CatchField
@@ -574,7 +574,7 @@ function DraftPanel({c, organizerId}: {c: Controller; organizerId: string}) {
           Approve exact draft</AdminButton>
       </> : <AdminButton disabled={c.busy || Boolean(c.pending)}
         onClick={() => void copy()}>Copy approved text</AdminButton>}
-      {copyStatus ? <p role="status">{copyStatus}</p> : null}
+      {copyStatus ? <CatchText as="p" variant="supporting" role="status">{copyStatus}</CatchText> : null}
     </> : null}
   </Panel>;
 }

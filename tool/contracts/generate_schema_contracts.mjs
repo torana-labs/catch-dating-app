@@ -3676,6 +3676,24 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminDecideOrganizerEventCandidateCallablePayload.ts",
   },
   {
+    name: "AdminNominateOrganizerCallablePayload",
+    source: "callables/admin_nominate_organizer_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminNominateOrganizerCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminNominateOrganizerCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminNominateOrganizerCallableResponse",
+    source: "callable_responses/admin_nominate_organizer_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminNominateOrganizerCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminNominateOrganizerCallableResponse.ts",
+    ],
+  },
+  {
     name: "AdminDecideOrganizerPolicyGapCallablePayload",
     source: "callables/admin_decide_organizer_policy_gap_payload.schema.json",
     typeOutput:

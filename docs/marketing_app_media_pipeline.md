@@ -67,8 +67,11 @@ byte hash, and capture input hash. Inputs include the capture runner/catalog,
 local transitive Dart imports/exports/parts (including production widgets and
 fixtures), canonical scenario/persona JSON, declared assets/fonts, package
 manifests/lock, framing/export tools,
-and pinned toolchain configuration. Website-only alt text, captions, walkthrough
-labels and destination paths are excluded; unknown recipe fields remain hashed.
+and pinned toolchain configuration. Of the capture's manifest entry, only its
+render fields enter the hash: `id`, `status`, `device`, `fixtureKey` and
+`sourcePath`. Every other field, known or new (website copy, destinations,
+pages, scenario pointers, facts, disclosure), is presentation and never
+invalidates a render; scenario data enters through its JSON files.
 The catalog is shared, so an input change
 can conservatively invalidate multiple slots. Adding an asset to a declared
 directory also invalidates captures. No machine-specific font path or font
@@ -90,7 +93,7 @@ The importer checks the artifact ID, digest, repository, canonical workflow,
 source/controller commits, run and current attempt, then the bounded ZIP,
 authored manifest, receipt and every image/input/copy hash before replacing any
 output. It retains the verified ZIP in ignored build output. Postbuild checks
-compare all 12 website PNGs and their manifest with the exact imported bytes.
+compare every website PNG and their manifest with the exact imported bytes.
 The two independently generated organizer-listing projections are allowed only
 at this postbuild stage; authored changes still fail. Routine source changes
 need no generated screenshot commit. Automatic export does not update or accept
@@ -207,7 +210,8 @@ lowercase 40-character source commit SHA from this repository. Applying
 label event's exact PR head SHA. The source is checked out separately from
 the immutable exporter/controller commit. Source and exporter
 toolchain pins must match; dependency resolution enforces the source lockfile.
-A clean source checkout and all 12 active canonical slots are required.
+A clean source checkout and an active manifest of 1 to 100 canonical slots are
+required; the manifest alone sets the count.
 
 Execution prerequisite: integrate the workflow and request validator through
 the existing owner-controlled queue first. Manual dispatch requires the workflow
@@ -245,9 +249,9 @@ cache. `capture:requested` does not start CI, satisfy Required CI or change
 merge/deployment authority.
 
 Use the currently published exact head of each product PR; short SHAs and local
-unpublished Programs commits cannot be dispatched. The job runs at most 12
+unpublished Programs commits cannot be dispatched. The job runs the manifest's
 canonical catalog entries through the real iOS/SF Flutter capture path, frames
-the 12 light marketing exports, regenerates design context, syncs website
+their light marketing exports, regenerates design context, syncs website
 copies, then runs the existing provenance, input freshness, framing and
 copy-byte checks. A per-capture plan reuses only byte-verified PNGs whose full
 render-input fingerprint and native font match. Reused PNGs keep their original
@@ -264,7 +268,7 @@ website copy without rerendering.
 
 The seven-day immutable artifact is named
 `canonical-marketing-<source-sha>-<run-id>-<attempt>`. It contains exactly the
-12 framed source PNGs, their 12 website copies, authored capture manifest,
+manifest's framed source PNGs, their website copies, the authored capture manifest,
 website manifest, design context, and `capture-receipt.json`. The receipt
 records per-file hashes/sizes, embedded PNG provenance, exact source SHA/tree,
 controller and workflow-definition SHAs, validated trigger request, helper hash,

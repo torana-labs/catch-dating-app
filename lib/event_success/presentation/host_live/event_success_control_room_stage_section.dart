@@ -84,9 +84,10 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
                     : CatchTextStyles.display(context, color: dark.ink),
               ),
               gapH14,
-              Text(
+              CatchText(
                 plan.activeStep.hostInstruction,
-                style: CatchTextStyles.bodyL(context, color: dark.ink2),
+                variant: CatchTextVariant.bodyL,
+                color: dark.ink2,
               ),
               if (attendeeExperience case final copy?) ...[
                 gapH12,
@@ -100,12 +101,10 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
                     ),
                     gapW8,
                     Expanded(
-                      child: Text(
+                      child: CatchText(
                         copy,
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: dark.ink2,
-                        ),
+                        variant: CatchTextVariant.supporting,
+                        color: dark.ink2,
                       ),
                     ),
                   ],

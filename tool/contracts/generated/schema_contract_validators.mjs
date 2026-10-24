@@ -877,6 +877,8 @@ import {
   adminListActionExecutionsCallablePayloadSchema,
   adminRecordActionExecutionCallablePayloadSchema,
   adminDecideOrganizerEventCandidateCallablePayloadSchema,
+  adminNominateOrganizerCallablePayloadSchema,
+  adminNominateOrganizerCallableResponseSchema,
   adminDecideOrganizerPolicyGapCallablePayloadSchema,
   adminResolveOrganizerEventLocationCallablePayloadSchema,
   adminSetClubIndexStatusCallablePayloadSchema,
@@ -2150,6 +2152,8 @@ export const validateAdminListIntakeOperationsCallablePayload = ajv.compile(admi
 export const validateAdminListActionExecutionsCallablePayload = ajv.compile(adminListActionExecutionsCallablePayloadSchema);
 export const validateAdminRecordActionExecutionCallablePayload = ajv.compile(adminRecordActionExecutionCallablePayloadSchema);
 export const validateAdminDecideOrganizerEventCandidateCallablePayload = ajv.compile(adminDecideOrganizerEventCandidateCallablePayloadSchema);
+export const validateAdminNominateOrganizerCallablePayload = ajv.compile(adminNominateOrganizerCallablePayloadSchema);
+export const validateAdminNominateOrganizerCallableResponse = ajv.compile(adminNominateOrganizerCallableResponseSchema);
 export const validateAdminDecideOrganizerPolicyGapCallablePayload = ajv.compile(adminDecideOrganizerPolicyGapCallablePayloadSchema);
 export const validateAdminResolveOrganizerEventLocationCallablePayload = ajv.compile(adminResolveOrganizerEventLocationCallablePayloadSchema);
 export const validateAdminSetClubIndexStatusCallablePayload = ajv.compile(adminSetClubIndexStatusCallablePayloadSchema);

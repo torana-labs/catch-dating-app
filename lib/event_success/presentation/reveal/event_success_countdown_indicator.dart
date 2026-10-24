@@ -117,16 +117,12 @@ class EventSuccessCountdownIndicator extends StatelessWidget {
                   Align(
                     alignment:
                         CatchLayout.eventSuccessCountdownCaptionAlignment,
-                    child: Text(
+                    child: CatchText(
                       context
                           .l10n
                           .eventSuccessEventSuccessLiveRevealWidgetsTextSeconds3fb8f1,
-                      style: CatchTextStyles.labelS(
-                        context,
-                        color: t.ink.withValues(
-                          alpha: CatchOpacity.darkPillFill,
-                        ),
-                      ),
+                      variant: CatchTextVariant.statusLabel,
+                      color: t.ink.withValues(alpha: CatchOpacity.darkPillFill),
                     ),
                   ),
                 ],

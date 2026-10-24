@@ -377,9 +377,10 @@ extension _CatchFieldRendering on _CatchFieldState {
                     color: _toneColor(t, primaryFallback: t.ink),
                   ),
                   const SizedBox(height: CatchRecordTokens.titleGap),
-                  Text(
+                  CatchText(
                     inlineMetadata!,
-                    style: CatchTextStyles.recordContext(context),
+                    variant: CatchTextVariant.bodyS,
+                    color: CatchTokens.of(context).ink2,
                   ),
                 ],
               ),

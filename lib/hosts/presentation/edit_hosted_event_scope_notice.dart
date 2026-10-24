@@ -51,9 +51,9 @@ class EditHostedEventScopeNotice extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: Text(
+                      child: CatchText(
                         title,
-                        style: CatchTextStyles.sectionTitle(context),
+                        variant: CatchTextVariant.sectionTitle,
                       ),
                     ),
                     if (scheduleLocked && !isCancelled)
@@ -64,9 +64,10 @@ class EditHostedEventScopeNotice extends StatelessWidget {
                   ],
                 ),
                 gapH4,
-                Text(
+                CatchText(
                   message,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                 ),
               ],
             ),

@@ -107,9 +107,9 @@ class HostResponseDetailSection extends ConsumerWidget {
           color: CatchTokens.of(context).ink,
         ),
         gapH8,
-        Text(
+        CatchText(
           AppTimeFormatters.dateTime(submitted),
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         gapH8,
         Align(
@@ -194,15 +194,15 @@ class HostResponseDetailSection extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (value.revoked)
-                Text(
+                CatchText(
                   context.l10n.hostFormResponseOriginRevoked,
-                  style: CatchTextStyles.supporting(context),
+                  variant: CatchTextVariant.supporting,
                 )
               else if (response != null) ...[
                 if (origins.length == 1)
-                  Text(
+                  CatchText(
                     _originLabel(context, origins.single),
-                    style: CatchTextStyles.supporting(context),
+                    variant: CatchTextVariant.supporting,
                   ),
                 for (final answer in response.answers) ...[
                   HostResponseAnswerRow(
@@ -293,7 +293,11 @@ class HostResponseDetailSection extends ConsumerWidget {
           gapH24,
           CatchSection.divided(
             title: context.l10n.hostApplicationReviewNote,
-            child: Text(note, style: CatchTextStyles.recordBody(context)),
+            child: CatchText(
+              note,
+              variant: CatchTextVariant.bodyL,
+              color: CatchTokens.of(context).ink,
+            ),
           ),
         ],
         gapH24,
@@ -345,13 +349,13 @@ class HostResponseDetailSection extends ConsumerWidget {
           ),
         if (value.canReview) ...[
           gapH16,
-          Text(
+          CatchText(
             application!.reviewStatus == HostApplicationReviewStatus.approved
                 ? value.contactId != null
                       ? context.l10n.hostAudienceApplicationAccepted
                       : context.l10n.hostAudienceApplicationApprovedUnlinked
                 : context.l10n.hostAudienceApplicationAdmission,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         gapH32,

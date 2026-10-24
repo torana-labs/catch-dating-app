@@ -318,6 +318,22 @@ export interface SalesCreateAccountInput {
   requestId: string;
 }
 
+/** A new organizer for Supply Intake; a name, a link, or both. */
+export interface SalesNominateOrganizerInput {
+  requestId: string;
+  name: string | null;
+  market: string;
+  urls: string[];
+  notes: string | null;
+  categories: string[];
+}
+
+export interface SalesNomination {
+  requestId: string;
+  created: boolean;
+  status: "queued";
+}
+
 export interface SalesSetAccountSuppressionInput {
   organizerId: string;
   requestId: string;

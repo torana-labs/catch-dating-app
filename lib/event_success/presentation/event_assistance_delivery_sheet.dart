@@ -86,9 +86,9 @@ class EventAssistanceDeliverySheet extends ConsumerWidget {
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
+                        CatchText(
                           context.l10n.eventAssistanceDeliveryMissing,
-                          style: CatchTextStyles.supporting(context),
+                          variant: CatchTextVariant.supporting,
                         ),
                         CatchButton(
                           label: context.l10n.eventAssistanceDeliveryReload,

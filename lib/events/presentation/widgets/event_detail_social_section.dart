@@ -116,23 +116,19 @@ class GuestWhoIsGoingCard extends StatelessWidget {
                   color: surfaceStyle?.mutedColor ?? t.ink3,
                 ),
                 const SizedBox(width: CatchSpacing.s2),
-                Text(
+                CatchText(
                   context.l10n.eventsEventDetailSocialSectionTextWhoSGoing,
-                  style: CatchTextStyles.titleL(
-                    context,
-                    color: surfaceStyle?.headingColor,
-                  ),
+                  variant: CatchTextVariant.titleL,
+                  color: surfaceStyle?.headingColor,
                 ),
               ],
             ),
             const SizedBox(height: CatchLayout.detailScreenSupportingGap),
           ],
-          Text(
+          CatchText(
             context.l10n.eventsEventDetailSocialSectionTextSignInToSee,
-            style: CatchTextStyles.supporting(
-              context,
-              color: surfaceStyle?.bodyColor ?? t.ink2,
-            ),
+            variant: CatchTextVariant.supporting,
+            color: surfaceStyle?.bodyColor ?? t.ink2,
           ),
         ],
       ),

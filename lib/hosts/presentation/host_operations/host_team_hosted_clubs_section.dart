@@ -40,9 +40,10 @@ class HostTeamHostedClubsSection extends StatelessWidget {
         ),
       ],
       HostTeamHostedClubsEmpty() => <Widget>[
-        Text(
+        CatchText(
           context.l10n.hostsHostClubTeamScreenTextNoHostClubsYet,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          variant: CatchTextVariant.supporting,
+          color: t.ink2,
         ),
       ],
       HostTeamHostedClubsContent(:final clubs) => <Widget>[

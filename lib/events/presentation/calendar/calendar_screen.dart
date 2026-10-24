@@ -309,7 +309,7 @@ class CalendarAgendaSliverSection extends StatelessWidget {
         iconSize: CatchLayout.calendarEmptyIconSize,
         padding: CatchInsets.contentSpacious,
         titleStyle: CatchTextStyles.titleL(context),
-        messageStyle: CatchTextStyles.proseM(
+        messageStyle: CatchTextStyles.supporting(
           context,
           color: CatchTokens.of(context).ink2,
         ),
@@ -684,10 +684,11 @@ class CalendarMonthGrid extends StatelessWidget {
               context.l10n.eventsCalendarScreenVisiblecopyS,
             ])
               Expanded(
-                child: Text(
+                child: CatchText(
                   day,
                   textAlign: TextAlign.center,
-                  style: CatchTextStyles.labelM(context),
+                  variant: CatchTextVariant.statusLabel,
+                  color: CatchTokens.of(context).ink2,
                 ),
               ),
           ],

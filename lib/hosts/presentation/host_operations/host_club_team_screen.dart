@@ -424,10 +424,11 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
               ),
               if (bio?.isNotEmpty == true) ...[
                 gapH16,
-                Text(
+                CatchText(
                   bio!,
                   textAlign: TextAlign.center,
-                  style: CatchTextStyles.proseM(context, color: t.ink2),
+                  variant: CatchTextVariant.bodyM,
+                  color: t.ink2,
                 ),
               ],
             ],

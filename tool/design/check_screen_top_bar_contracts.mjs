@@ -32,7 +32,6 @@ const canonicalRootOwners = new Set([
 const topBarActionOwnerPattern =
   /\b(CatchTopBar\.(?:screen|primaryRail)|CatchRootScreenHeader\.title|CatchTopBar(?:\.(?:route|identity))?)\s*\(/gu;
 const directPillActionPattern = /\bCatchButton(?:\.(?!text\b)[A-Za-z_$][\w$]*)?\s*\(/u;
-const rootTitleStylePattern = /\bCatchTextStyles\.headline[A-Za-z]*\s*\(/gu;
 const rootTextScaleOverridePattern =
   /\b(?:TextScaler\.|textScaler\s*:)/gu;
 const rolePolicies = new Map([
@@ -453,6 +452,19 @@ function collectRawChrome(root) {
   return result;
 }
 
+// A CatchText variant delegates to the identically named foundation recipe.
+// Preserve semantic owner identities across the SDK Text -> CatchText migration.
+function manualHeaderOwners(source) {
+  const owners = [...source.matchAll(manualHeaderOwnerPattern)].map((match) => match[1]);
+  manualHeaderOwnerPattern.lastIndex = 0;
+  for (const call of readCalls(source, "CatchText")) {
+    const variant = readNamedArgument(call.slice(call.indexOf("(")), "variant");
+    const role = /^(?:[A-Za-z_$][\w$]*\.)?CatchTextVariant\.(headline[A-Za-z]*|titleL)$/u.exec(variant ?? "")?.[1];
+    if (role) owners.push(`CatchTextStyles.${role}`);
+  }
+  return [...new Set(owners)];
+}
+
 function collectManualHeaders(root) {
   const result = new Map();
   const libRoot = path.join(root, "lib");
@@ -470,10 +482,7 @@ function collectManualHeaders(root) {
       const bodies = readWidgetClassBodies(source, symbol);
       if (bodies.length === 0) continue;
       const combinedBody = bodies.map((entry) => entry.body).join("\n");
-      const owners = [...combinedBody.matchAll(manualHeaderOwnerPattern)].map(
-        (ownerMatch) => ownerMatch[1],
-      );
-      manualHeaderOwnerPattern.lastIndex = 0;
+      const owners = manualHeaderOwners(combinedBody);
       if (owners.length === 0) continue;
       entries.push({
         symbol,
@@ -566,10 +575,7 @@ function collectScreenChromeClassCandidates(source) {
     const bodies = readWidgetClassBodies(source, symbol);
     if (bodies.length === 0) continue;
     const combinedBody = bodies.map((entry) => entry.body).join("\n");
-    const owners = [...combinedBody.matchAll(manualHeaderOwnerPattern)].map(
-      (ownerMatch) => ownerMatch[1],
-    );
-    manualHeaderOwnerPattern.lastIndex = 0;
+    const owners = manualHeaderOwners(combinedBody);
     if (owners.length === 0) continue;
     candidates.push({symbol, owners: [...new Set(owners)]});
   }
@@ -1484,7 +1490,7 @@ function checkRootHeaderSurface({root, rootHeader, surface, findings}) {
     });
   }
 
-  if (rootTitleStylePattern.test(classBody)) {
+  if (manualHeaderOwners(classBody).some((owner) => /^CatchTextStyles\.headline[A-Za-z]*$/u.test(owner))) {
     findings.push({
       code: "local-root-title-style",
       path: surface.path,
@@ -1493,7 +1499,6 @@ function checkRootHeaderSurface({root, rootHeader, surface, findings}) {
         "must come from the canonical screen-header primitive.",
     });
   }
-  rootTitleStylePattern.lastIndex = 0;
 
   if (rootTextScaleOverridePattern.test(classBody)) {
     findings.push({

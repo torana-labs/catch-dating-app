@@ -81,7 +81,7 @@ class _CatchErrorDetailsAccordionState
                 Expanded(
                   child: Text(
                     widget.label,
-                    style: CatchTextStyles.labelM(
+                    style: CatchTextStyles.statusLabel(
                       context,
                       color: tokens.danger,
                     ),

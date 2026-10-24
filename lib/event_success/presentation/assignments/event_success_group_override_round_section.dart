@@ -42,12 +42,12 @@ class EventSuccessGroupOverrideRoundSection extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
+                child: CatchText(
                   context.l10n
                       .eventSuccessEventSuccessHostOverridesTextRoundValue1(
                         value1: round.roundIndex + 1,
                       ),
-                  style: CatchTextStyles.sectionTitle(context),
+                  variant: CatchTextVariant.sectionTitle,
                 ),
               ),
               CatchButton(
@@ -63,11 +63,12 @@ class EventSuccessGroupOverrideRoundSection extends StatelessWidget {
           ),
           gapH10,
           if (round.groups.isEmpty)
-            Text(
+            CatchText(
               context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesTextNoGroupsInThis,
-              style: CatchTextStyles.supporting(context, color: t.ink3),
+              variant: CatchTextVariant.supporting,
+              color: t.ink3,
             )
           else
             for (final group in round.groups) ...[

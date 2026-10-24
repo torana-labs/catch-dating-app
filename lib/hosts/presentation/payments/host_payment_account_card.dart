@@ -365,12 +365,10 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
+            CatchText(
               l10n.hostsHostPaymentAccountCardTextCatchPaysIndiaHostsThrough,
-              style: CatchTextStyles.supporting(
-                context,
-                color: CatchTokens.of(context).ink2,
-              ),
+              variant: CatchTextVariant.supporting,
+              color: CatchTokens.of(context).ink2,
             ),
             gapH16,
             CatchFieldLanes.single(

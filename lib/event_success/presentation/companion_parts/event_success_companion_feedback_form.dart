@@ -57,7 +57,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
             runSpacing: CatchSpacing.s2,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Text(
+              CatchText(
                 widget.existingFeedback == null
                     ? context
                           .l10n
@@ -65,7 +65,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                     : context
                           .l10n
                           .eventSuccessEventSuccessCompanionFeedbackTextYourFeedbackIsSaved,
-                style: CatchTextStyles.titleL(context),
+                variant: CatchTextVariant.titleL,
               ),
               CatchPrivacyBadge(
                 copy: catchPrivacyBadgeCopy(context.l10n),
@@ -74,11 +74,12 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
             ],
           ),
           gapH4,
-          Text(
+          CatchText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionFeedbackTextThisIsPrivateFirst,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           gapH12,
           RatingRow(
@@ -218,7 +219,7 @@ class RatingRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(label, style: CatchTextStyles.sectionTitle(context)),
+          child: CatchText(label, variant: CatchTextVariant.sectionTitle),
         ),
         for (var i = 1; i <= 5; i++)
           CatchIconAction(
@@ -253,11 +254,11 @@ class CounterRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(
+          child: CatchText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionFeedbackTextPeopleIMet,
-            style: CatchTextStyles.sectionTitle(context),
+            variant: CatchTextVariant.sectionTitle,
           ),
         ),
         CatchIconAction(
@@ -271,11 +272,11 @@ class CounterRow extends StatelessWidget {
             size: CatchIcon.md,
           ),
         ),
-        Text(
+        CatchText(
           context.l10n.eventSuccessEventSuccessCompanionFeedbackTextValue(
             value: value,
           ),
-          style: CatchTextStyles.sectionTitle(context),
+          variant: CatchTextVariant.sectionTitle,
         ),
         CatchIconAction(
           tooltip: context

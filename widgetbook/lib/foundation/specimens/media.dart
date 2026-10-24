@@ -115,7 +115,7 @@ class _IconSizeGrid extends StatelessWidget {
               children: [
                 Icon(CatchIcons.sparkle, size: row.value),
                 gapH8,
-                Text(row.name, style: CatchTextStyles.labelM(context)),
+                Text(row.name, style: CatchTextStyles.statusLabel(context)),
                 Text(
                   widgetbookFoundationNumber(row.value),
                   style: CatchTextStyles.monoLabelS(context),
@@ -157,7 +157,7 @@ class _AspectRatioGrid extends StatelessWidget {
                   ),
                 ),
                 gapH8,
-                Text(row.name, style: CatchTextStyles.labelM(context)),
+                Text(row.name, style: CatchTextStyles.statusLabel(context)),
                 Text(
                   widgetbookFoundationNumber(row.value),
                   style: CatchTextStyles.monoLabelS(context, color: t.ink2),
@@ -218,7 +218,7 @@ class _ActivityGlyphTile extends StatelessWidget {
           Text(
             activity.label,
             textAlign: TextAlign.center,
-            style: CatchTextStyles.labelM(context),
+            style: CatchTextStyles.statusLabel(context),
           ),
         ],
       ),

@@ -18,12 +18,13 @@ class HostCustomerActiveMergesSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final (index, merge) in merges.indexed) ...[
-          Text(
+          CatchText(
             context.l10n.hostCustomersMergedHistoryRow(
               name: merge.sourceDisplayName,
               count: merge.movedFactCount,
             ),
-            style: CatchTextStyles.proseM(context),
+            variant: CatchTextVariant.bodyM,
+            color: CatchTokens.of(context).ink,
           ),
           gapH8,
           CatchButton(

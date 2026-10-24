@@ -306,12 +306,10 @@ class FeaturedEventBody extends StatelessWidget {
             constraints: const BoxConstraints(
               maxWidth: CatchLayout.coverStoryContentMaxWidth,
             ),
-            child: Text(
+            child: CatchText(
               story.body!,
-              style: CatchTextStyles.proseM(
-                context,
-                color: paper.withValues(alpha: CatchOpacity.coverStoryBody),
-              ),
+              variant: CatchTextVariant.bodyM,
+              color: paper.withValues(alpha: CatchOpacity.coverStoryBody),
             ),
           ),
         ],

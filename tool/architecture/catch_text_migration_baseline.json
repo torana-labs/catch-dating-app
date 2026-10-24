@@ -3,72 +3,30 @@
   "owner": "app_architecture",
   "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-7--cross-framework-conformance-react",
   "files": {
-    "lib/auth/presentation/host_auth_card.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
     "lib/auth/presentation/otp_step.dart": {
       "fieldRowTitle": 2,
-      "monoLabel": 1,
-      "sectionTitle": 1,
-      "supporting": 2
+      "monoLabel": 1
     },
     "lib/auth/presentation/phone_step.dart": {
       "fieldRowTitle": 1
     },
-    "lib/chats/presentation/event_chat_participants_screen.dart": {
-      "proseM": 1,
-      "supporting": 1
-    },
     "lib/chats/presentation/event_chat_screen.dart": {
-      "headlineS": 2,
-      "proseM": 1,
-      "recordBody": 3,
-      "sectionTitle": 1,
-      "supporting": 3
-    },
-    "lib/chats/presentation/inbox/event_chat_directory_section.dart": {
-      "recordBody": 1,
-      "sectionTitle": 1
+      "headlineS": 2
     },
     "lib/chats/presentation/widgets/chat_message_list.dart": {
       "badge": 1
     },
-    "lib/chats/presentation/widgets/chat_share_card.dart": {
-      "titleL": 1
-    },
-    "lib/chats/presentation/widgets/event_chat_message_tile.dart": {
-      "proseM": 1,
-      "recordBody": 1,
-      "supporting": 3
-    },
-    "lib/chats/presentation/widgets/event_profile_answer_field.dart": {
-      "fieldLabel": 1,
-      "recordBody": 1
-    },
-    "lib/chats/presentation/widgets/event_profile_editor_section.dart": {
-      "recordBody": 2,
-      "supporting": 7
-    },
     "lib/chats/presentation/widgets/event_profile_identity_section.dart": {
-      "headlineS": 1,
-      "recordBody": 1,
-      "supporting": 1
+      "headlineS": 1
     },
     "lib/chats/presentation/widgets/suvbot_dock.dart": {
       "fieldRowTitle": 1,
-      "kicker": 1,
-      "sectionTitle": 1,
-      "statusLabel": 1,
-      "supporting": 2,
-      "titleL": 1
+      "kicker": 1
     },
     "lib/clubs/presentation/detail/widgets/club_detail_body.dart": {
-      "monoLabelS": 1,
-      "proseL": 1
+      "monoLabelS": 1
     },
     "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart": {
-      "bodyLead": 2,
       "monoLabelS": 2
     },
     "lib/clubs/presentation/detail/widgets/club_host_section.dart": {
@@ -77,45 +35,28 @@
     "lib/clubs/presentation/detail/widgets/club_photo_rail.dart": {
       "monoLabelS": 2
     },
-    "lib/clubs/presentation/detail/widgets/club_schedule_section.dart": {
-      "labelM": 1
-    },
     "lib/clubs/presentation/detail/widgets/club_share_card.dart": {
       "kicker": 1
-    },
-    "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart": {
-      "labelM": 1,
-      "labelS": 1
     },
     "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart": {
       "fieldRowTitle": 1,
       "monoLabelS": 1
     },
     "lib/clubs/shared/club_host_identity_row.dart": {
-      "kicker": 1,
-      "labelM": 1
+      "kicker": 1
     },
     "lib/core/celebration/celebration_screen.dart": {
-      "bodyL": 1,
-      "bodyLead": 1,
       "display": 2,
-      "labelL": 1,
-      "labelS": 2,
-      "proseM": 1,
-      "supporting": 2
+      "labelL": 1
     },
     "lib/core/widgets/activity_map_pin.dart": {
       "badge": 1
     },
     "lib/core/widgets/event_card.dart": {
-      "labelL": 1,
-      "supporting": 1
+      "labelL": 1
     },
     "lib/core/widgets/ordered_photo_picker.dart": {
-      "bodyLead": 1,
-      "monoLabel": 2,
-      "sectionTitle": 1,
-      "supporting": 1
+      "monoLabel": 2
     },
     "lib/cross_paths/presentation/cross_paths_explore_card.dart": {
       "mono": 1
@@ -125,430 +66,87 @@
     },
     "lib/dashboard/presentation/widgets/club_posts_home_section.dart": {
       "fieldRowTitle": 1,
-      "monoLabelS": 1,
-      "supporting": 1
+      "monoLabelS": 1
     },
     "lib/dashboard/presentation/widgets/empty_hero_card.dart": {
-      "headline": 1,
-      "kicker": 2,
-      "supporting": 1
-    },
-    "lib/dashboard/presentation/widgets/event_focus_list.dart": {
-      "titleL": 1
+      "kicker": 2
     },
     "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart": {
-      "kicker": 1,
-      "labelM": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_request_sheet.dart": {
-      "supporting": 2
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_sheet.dart": {
-      "supporting": 2
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_visit_sheet.dart": {
-      "supporting": 2
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_choice_tile.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart": {
-      "recordContext": 3,
-      "sectionTitle": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_delivery_queue_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_delivery_sheet.dart": {
-      "supporting": 2
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_departure_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_page_body.dart": {
-      "supporting": 3
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart": {
-      "recordContext": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_help_queue_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_help_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_membership_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_practice_role_section.dart": {
-      "supporting": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_runtime_preview_section.dart": {
-      "supporting": 2
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_runtime_section.dart": {
-      "supporting": 7
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_settings_section.dart": {
-      "supporting": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_settings_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_staff_edit_section.dart": {
-      "supporting": 3
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart": {
-      "supporting": 3
-    },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_visit_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/assignments/event_success_assignment_reason_notice.dart": {
-      "labelM": 1,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/assignments/event_success_group_override_round_section.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/assignments/event_success_group_override_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/assignments/event_success_rotation_override_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_afterglow_card.dart": {
-      "sectionTitle": 1,
-      "supporting": 3,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_arrival_card.dart": {
-      "sectionTitle": 2,
-      "supporting": 3,
-      "titleL": 2
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_arrival_section.dart": {
-      "labelS": 1,
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_check_in_qr_scanner_sheet.dart": {
-      "sectionTitle": 1,
-      "supporting": 2
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_feedback_form.dart": {
-      "sectionTitle": 3,
-      "supporting": 1,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_group_rotation_slot_row.dart": {
-      "supporting": 1
+      "kicker": 1
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart": {
-      "labelL": 2,
-      "sectionTitle": 1,
-      "supporting": 8,
-      "titleL": 6
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_motion_viewport.dart": {
-      "sectionTitle": 1
+      "labelL": 2
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart": {
       "fieldRowTitle": 1,
-      "labelL": 1,
-      "labelS": 1,
-      "sectionTitle": 3,
-      "supporting": 2,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire_section.dart": {
-      "labelS": 1,
-      "sectionTitle": 1,
-      "supporting": 2,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_rotation_slot_row.dart": {
-      "supporting": 1
+      "labelL": 1
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart": {
       "labelL": 1
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart": {
-      "bodyL": 1,
-      "headline": 1,
-      "labelL": 1,
-      "supporting": 2,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_wingman_section.dart": {
-      "supporting": 3,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/event_assignment_feature_choices_page_body.dart": {
-      "supporting": 4,
-      "supportingStrong": 2
+      "labelL": 1
     },
     "lib/event_success/presentation/event_assistance_checkpoint_request_section.dart": {
-      "labelL": 2,
-      "supporting": 13,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/event_assistance_checkpoint_roster_section.dart": {
-      "supporting": 1
+      "labelL": 2
     },
     "lib/event_success/presentation/event_assistance_checkpoint_section.dart": {
-      "labelL": 1,
-      "supporting": 9,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/event_assistance_checkpoint_visits_section.dart": {
-      "supporting": 2,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/event_assistance_delivery_decision_section.dart": {
-      "supporting": 16
-    },
-    "lib/event_success/presentation/event_assistance_delivery_queue_section.dart": {
-      "supporting": 3
-    },
-    "lib/event_success/presentation/event_assistance_delivery_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/event_assistance_departure_history_section.dart": {
-      "supporting": 3
-    },
-    "lib/event_success/presentation/event_assistance_departure_roster_section.dart": {
-      "supporting": 3
-    },
-    "lib/event_success/presentation/event_assistance_departure_section.dart": {
-      "supporting": 9
-    },
-    "lib/event_success/presentation/event_assistance_group_roster_section.dart": {
-      "supporting": 2
-    },
-    "lib/event_success/presentation/event_assistance_help_decision_section.dart": {
-      "supporting": 10
-    },
-    "lib/event_success/presentation/event_assistance_help_queue_section.dart": {
-      "supporting": 4
-    },
-    "lib/event_success/presentation/event_assistance_help_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/event_assistance_late_join_destination_field.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/event_assistance_late_join_section.dart": {
-      "supporting": 12
-    },
-    "lib/event_success/presentation/event_assistance_live_settings_section.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/event_assistance_membership_section.dart": {
-      "supporting": 15
-    },
-    "lib/event_success/presentation/event_assistance_movement_section.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/event_assistance_runtime_channels_section.dart": {
-      "supporting": 3
-    },
-    "lib/event_success/presentation/event_assistance_runtime_section.dart": {
-      "supporting": 9
-    },
-    "lib/event_success/presentation/event_assistance_sweep_section.dart": {
-      "supporting": 3
-    },
-    "lib/event_success/presentation/event_assistance_visit_section.dart": {
-      "supporting": 5
-    },
-    "lib/event_success/presentation/event_message_preferences_sheet.dart": {
-      "supporting": 3
-    },
-    "lib/event_success/presentation/event_success_conversation_cue_card.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/event_success_conversation_cue_row.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/event_success_room_map.dart": {
-      "labelM": 1,
-      "labelS": 1,
-      "sectionTitle": 1,
-      "supporting": 3,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/event_success_room_setup_section.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/event_success_setup_body.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/host_live/event_success_accountability_section.dart": {
-      "supporting": 2
+      "labelL": 1
     },
     "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart": {
-      "bodyL": 1,
       "consoleTitle": 1,
       "fieldRowTitle": 1,
-      "monoLabel": 3,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/host_live/event_success_presence_section.dart": {
-      "sectionTitle": 2,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/host_live/event_success_room_summary_section.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart": {
-      "supporting": 1,
-      "titleL": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_countdown_indicator.dart": {
-      "labelS": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_countdown_stepper.dart": {
-      "labelS": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_countdown_surface.dart": {
-      "proseM": 1
+      "monoLabel": 3
     },
     "lib/event_success/presentation/reveal/event_success_countdown_text.dart": {
-      "display": 1,
-      "labelS": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_group_rotation_row_list.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart": {
-      "supporting": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_outcome_section.dart": {
-      "sectionTitle": 1,
-      "supporting": 3
-    },
-    "lib/event_success/presentation/reveal/event_success_reveal_header.dart": {
-      "supporting": 1,
-      "titleL": 1
+      "display": 1
     },
     "lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart": {
       "monoLabel": 2
     },
-    "lib/event_success/presentation/reveal/event_success_reveal_waiting_notice.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_rotation_row_list.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_standings_section.dart": {
-      "labelM": 2,
-      "proseM": 1
-    },
-    "lib/events/presentation/calendar/calendar_screen.dart": {
-      "labelM": 1
-    },
-    "lib/events/presentation/event_location_map_body_screen.dart": {
-      "sectionTitle": 1,
-      "supporting": 2
-    },
     "lib/events/presentation/location_picker_screen.dart": {
-      "labelL": 1,
-      "labelM": 1,
-      "supporting": 2
-    },
-    "lib/events/presentation/widgets/event_detail_body.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
+      "labelL": 1
     },
     "lib/events/presentation/widgets/event_detail_dock.dart": {
       "labelL": 1,
       "monoLabel": 1,
-      "numericLarge": 1,
-      "supporting": 2
+      "numericLarge": 1
     },
     "lib/events/presentation/widgets/event_detail_fact_list.dart": {
       "fieldRowTitle": 1,
       "hint": 1,
       "labelL": 1,
       "monoLabelS": 3,
-      "numericMeta": 1,
-      "supporting": 1
+      "numericMeta": 1
     },
     "lib/events/presentation/widgets/event_detail_hero_top_bar.dart": {
       "monoLabel": 2
     },
     "lib/events/presentation/widgets/event_detail_itinerary_row.dart": {
-      "fieldRowTitle": 1,
-      "supporting": 1
-    },
-    "lib/events/presentation/widgets/event_detail_overview_section.dart": {
-      "bodyLead": 1,
-      "sectionTitle": 1,
-      "supporting": 2
-    },
-    "lib/events/presentation/widgets/event_detail_route_section.dart": {
-      "supporting": 1
-    },
-    "lib/events/presentation/widgets/event_detail_social_section.dart": {
-      "supporting": 1,
-      "titleL": 1
+      "fieldRowTitle": 1
     },
     "lib/events/presentation/widgets/who_is_going_section.dart": {
-      "labelL": 1,
-      "sectionTitle": 1,
-      "supporting": 2,
-      "titleL": 1
-    },
-    "lib/events/shared/event_agenda_list.dart": {
-      "labelM": 1
+      "labelL": 1
     },
     "lib/events/shared/event_share_card.dart": {
-      "kicker": 1,
-      "labelS": 2
+      "kicker": 1
     },
     "lib/events/shared/event_tiles/event_action_card.dart": {
-      "headlineS": 1,
-      "supporting": 1
+      "headlineS": 1
     },
     "lib/events/shared/event_tiles/event_date_rail_card.dart": {
       "monoCapsLabel": 1,
-      "monoLabelS": 2,
-      "supporting": 1
+      "monoLabelS": 2
     },
     "lib/events/shared/event_tiles/event_date_tile.dart": {
       "labelL": 1,
-      "statCompact": 1,
-      "statusLabel": 1
-    },
-    "lib/explore/presentation/widgets/club_card.dart": {
-      "supporting": 1
-    },
-    "lib/explore/presentation/widgets/explore_city_picker.dart": {
-      "bodyL": 1
+      "statCompact": 1
     },
     "lib/explore/presentation/widgets/explore_event_row.dart": {
-      "mono": 1,
-      "supporting": 1
+      "mono": 1
     },
     "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart": {
-      "kicker": 1,
-      "titleL": 1
+      "kicker": 1
     },
     "lib/explore/presentation/widgets/explore_filter_rail.dart": {
       "kicker": 4
@@ -557,324 +155,58 @@
       "eventTitle": 1,
       "kicker": 1,
       "kickerLg": 1,
-      "monoLabel": 1,
-      "proseM": 1
-    },
-    "lib/force_update/presentation/update_required_screen.dart": {
-      "bodyLead": 1
-    },
-    "lib/hosts/audience/phone_import/presentation/phone_import_review_screen.dart": {
-      "proseM": 2,
-      "sectionTitle": 1,
-      "supporting": 3
-    },
-    "lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/club_management/create/widgets/club_host_defaults_step.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart": {
-      "supporting": 4
-    },
-    "lib/hosts/presentation/customers/host_contact_merge_review_sheet.dart": {
-      "sectionTitle": 1,
-      "supporting": 6
-    },
-    "lib/hosts/presentation/customers/host_customer_active_merges_section.dart": {
-      "proseM": 1
-    },
-    "lib/hosts/presentation/customers/host_customer_applications_section.dart": {
-      "recordContext": 2,
-      "supporting": 1
-    },
-    "lib/hosts/presentation/customers/host_customer_detail_card.dart": {
-      "metric": 1,
-      "recordContext": 4,
-      "supporting": 5
-    },
-    "lib/hosts/presentation/customers/host_customer_editor.dart": {
-      "supporting": 3
-    },
-    "lib/hosts/presentation/customers/host_customer_memory_section.dart": {
-      "recordContext": 1
-    },
-    "lib/hosts/presentation/customers/host_customer_sources_section.dart": {
-      "recordContext": 1,
-      "supporting": 1
-    },
-    "lib/hosts/presentation/customers/host_customer_submissions_section.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/customers/host_customer_timeline_section.dart": {
-      "recordContext": 3,
-      "supporting": 1
+      "monoLabel": 1
     },
     "lib/hosts/presentation/customers/host_customers_list.dart": {
-      "labelL": 1,
-      "supporting": 1
-    },
-    "lib/hosts/presentation/customers/host_saved_audience_editor.dart": {
-      "recordBody": 2,
-      "recordContext": 1,
-      "supporting": 2
-    },
-    "lib/hosts/presentation/customers/host_saved_audience_section.dart": {
-      "headline": 1,
-      "recordBody": 2,
-      "recordContext": 2,
-      "supporting": 2
-    },
-    "lib/hosts/presentation/customers/host_static_audience_members_editor.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/edit_hosted_event_scope_notice.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/hosts/presentation/event_management/create/host_offer_payment_details_section.dart": {
-      "supporting": 1
+      "labelL": 1
     },
     "lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart": {
-      "labelL": 1,
-      "supporting": 2
-    },
-    "lib/hosts/presentation/event_management/widgets/event_policy_step.dart": {
-      "supporting": 2
-    },
-    "lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/event_management/widgets/where_step.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_automation_rule_editor.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_event_offer_review_section.dart": {
-      "supporting": 9
-    },
-    "lib/hosts/presentation/forms/host_event_offer_workspace_section.dart": {
-      "sectionTitle": 2,
-      "supporting": 12
-    },
-    "lib/hosts/presentation/forms/host_form_admission_section.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_form_analytics_screen.dart": {
-      "headline": 3,
-      "recordBody": 2,
-      "recordContext": 3,
-      "supporting": 5
-    },
-    "lib/hosts/presentation/forms/host_form_automations_screen.dart": {
-      "headline": 1,
-      "recordBody": 1,
-      "recordContext": 1,
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_form_body.dart": {
-      "headline": 1,
-      "recordContext": 1,
-      "supporting": 2
-    },
-    "lib/hosts/presentation/forms/host_form_editor_viewport.dart": {
-      "sectionTitle": 1
-    },
-    "lib/hosts/presentation/forms/host_form_overview_section_list.dart": {
-      "supporting": 2
-    },
-    "lib/hosts/presentation/forms/host_form_payment_detail_sheet.dart": {
-      "supporting": 3
-    },
-    "lib/hosts/presentation/forms/host_form_payment_section.dart": {
-      "proseM": 1,
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_form_payments_section_list.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_form_preview_screen.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_form_questions_page_body.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_form_response_detail_screen.dart": {
-      "supporting": 3
-    },
-    "lib/hosts/presentation/forms/host_form_responses_section.dart": {
-      "supporting": 2
-    },
-    "lib/hosts/presentation/forms/host_form_settings_section_list.dart": {
-      "supporting": 2
-    },
-    "lib/hosts/presentation/forms/host_form_share_screen.dart": {
-      "headline": 2,
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_form_target_section.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_form_templates_screen.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_form_workspace_header.dart": {
-      "supporting": 2,
-      "titleL": 1
-    },
-    "lib/hosts/presentation/forms/host_response_answer_section.dart": {
-      "recordBody": 1,
-      "recordContext": 1
-    },
-    "lib/hosts/presentation/forms/host_response_detail_section.dart": {
-      "recordBody": 1,
-      "supporting": 4
-    },
-    "lib/hosts/presentation/forms/host_response_export_action.dart": {
-      "supporting": 3
-    },
-    "lib/hosts/presentation/forms/host_response_offer_screen.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_response_query_editor_section.dart": {
-      "sectionTitle": 1,
-      "supporting": 1
-    },
-    "lib/hosts/presentation/forms/host_response_query_workspace_section.dart": {
-      "sectionTitle": 1,
-      "supporting": 2
-    },
-    "lib/hosts/presentation/host_operations/host_analytics_trend_section.dart": {
-      "supporting": 4
-    },
-    "lib/hosts/presentation/host_operations/host_club_edit_body.dart": {
-      "labelM": 1
-    },
-    "lib/hosts/presentation/host_operations/host_club_insights_section.dart": {
-      "supporting": 2
+      "labelL": 1
     },
     "lib/hosts/presentation/host_operations/host_club_media_rail.dart": {
       "monoLabel": 1
     },
     "lib/hosts/presentation/host_operations/host_club_organizer_section_list.dart": {
-      "labelL": 1,
-      "supporting": 4
+      "labelL": 1
     },
     "lib/hosts/presentation/host_operations/host_club_team_screen.dart": {
       "fieldRowTitle": 1,
-      "headlineS": 1,
-      "proseM": 1
-    },
-    "lib/hosts/presentation/host_operations/host_team_hosted_clubs_section.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/hosted_event_policy_section.dart": {
-      "supporting": 1
+      "headlineS": 1
     },
     "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart": {
-      "fieldRowTitle": 2,
-      "supporting": 2
+      "fieldRowTitle": 2
     },
     "lib/hosts/presentation/inbox/host_campaign_editor.dart": {
-      "fieldRowTitle": 2,
-      "supporting": 6
-    },
-    "lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/inbox/host_inbox_workspace_section.dart": {
-      "supporting": 3
-    },
-    "lib/hosts/presentation/inbox/host_manual_send_list.dart": {
-      "proseM": 1
-    },
-    "lib/hosts/presentation/inbox/host_new_message_screen.dart": {
-      "supporting": 4
+      "fieldRowTitle": 2
     },
     "lib/hosts/presentation/inbox/host_person_conversation_page_body.dart": {
-      "labelL": 1,
-      "supporting": 6
-    },
-    "lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart": {
-      "proseM": 1,
-      "supporting": 2
-    },
-    "lib/hosts/presentation/payments/host_payment_account_card.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/widgets/host_analytics_observed_stages_section.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/presentation/widgets/host_analytics_presence_section.dart": {
-      "supporting": 3
-    },
-    "lib/hosts/presentation/widgets/host_booking_provider_section.dart": {
-      "supporting": 2
+      "labelL": 1
     },
     "lib/hosts/presentation/widgets/host_event_manage_section.dart": {
       "badge": 1,
       "labelL": 2,
-      "monoLabel": 1,
-      "supporting": 2
+      "monoLabel": 1
     },
     "lib/hosts/presentation/widgets/host_event_private_access_section.dart": {
-      "labelL": 2,
-      "sectionTitle": 1,
-      "supporting": 7
-    },
-    "lib/hosts/presentation/widgets/host_event_tools_rail.dart": {
-      "labelS": 1
+      "labelL": 2
     },
     "lib/hosts/presentation/widgets/host_operational_roster_section.dart": {
-      "meta": 2,
-      "sectionTitle": 1,
-      "supporting": 4
+      "meta": 2
     },
     "lib/hosts/presentation/widgets/host_roster_filter_header.dart": {
-      "labelL": 1,
-      "supporting": 1
-    },
-    "lib/hosts/presentation/widgets/host_tracking_settings_input_section.dart": {
-      "supporting": 4
-    },
-    "lib/hosts/presentation/widgets/participant_table.dart": {
-      "supporting": 1
-    },
-    "lib/hosts/today/personalization/presentation/host_today_focus_page_body.dart": {
-      "bodyL": 1,
-      "supporting": 1,
-      "titleL": 1
-    },
-    "lib/hosts/today/personalization/presentation/host_today_personalization_section.dart": {
-      "supporting": 1,
-      "titleL": 1
+      "labelL": 1
     },
     "lib/hosts/today/presentation/widgets/host_today_body.dart": {
-      "headlineS": 1,
-      "supporting": 1
-    },
-    "lib/hosts/today/presentation/widgets/host_today_event_section.dart": {
-      "eventTitle": 1,
-      "supporting": 1
-    },
-    "lib/image_uploads/shared/photo_slot_tile.dart": {
-      "labelS": 1,
-      "monoLabelS": 1
-    },
-    "lib/image_uploads/shared/profile_photo_editor_screen.dart": {
-      "supporting": 1
-    },
-    "lib/launch_access/presentation/launch_access_application_screen.dart": {
-      "bodyLead": 1,
       "headlineS": 1
     },
-    "lib/onboarding/presentation/pages/onboarding_photos_step.dart": {
-      "supporting": 2
+    "lib/hosts/today/presentation/widgets/host_today_event_section.dart": {
+      "eventTitle": 1
+    },
+    "lib/image_uploads/shared/photo_slot_tile.dart": {
+      "monoLabelS": 1
+    },
+    "lib/launch_access/presentation/launch_access_application_screen.dart": {
+      "headlineS": 1
     },
     "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart": {
       "monoLabel": 1
@@ -888,81 +220,24 @@
       "welcomeIntroBody": 1
     },
     "lib/payments/presentation/payment_confirmation_screen.dart": {
-      "headline": 1,
       "headlineS": 1,
-      "labelL": 2,
-      "labelM": 1,
-      "proseM": 4,
-      "sectionTitle": 2
+      "labelL": 2
     },
     "lib/payments/presentation/payment_history_screen.dart": {
-      "sectionTitle": 1,
-      "statCompact": 1,
-      "supporting": 2,
-      "titleL": 1
-    },
-    "lib/programs/presentation/program_lodging_layout.dart": {
-      "supporting": 1
-    },
-    "lib/programs/presentation/program_lodging_screen.dart": {
-      "recordBody": 8
-    },
-    "lib/programs/presentation/program_lodging_setup_page_body.dart": {
-      "supporting": 7
-    },
-    "lib/programs/presentation/program_operations_notice.dart": {
-      "recordBody": 2,
-      "supporting": 1
-    },
-    "lib/programs/presentation/program_timezone_field.dart": {
-      "supporting": 1
-    },
-    "lib/reviews/presentation/reviews_history_screen.dart": {
-      "labelS": 1
+      "statCompact": 1
     },
     "lib/reviews/shared/reviews_section.dart": {
-      "labelL": 1,
-      "labelS": 1
-    },
-    "lib/safety/presentation/messaging_permissions_screen.dart": {
-      "proseM": 1
-    },
-    "lib/safety/presentation/settings_screen.dart": {
-      "statusLabel": 1
-    },
-    "lib/swipes/presentation/event_recap_screen.dart": {
-      "headline": 1,
-      "labelM": 2,
-      "proseM": 1,
-      "supporting": 2,
-      "titleL": 1
+      "labelL": 1
     },
     "lib/swipes/presentation/filters_screen.dart": {
-      "kicker": 1,
-      "titleL": 1
-    },
-    "lib/swipes/presentation/swipe_screen.dart": {
-      "labelM": 1
+      "kicker": 1
     },
     "lib/swipes/shared/profile_surface/profile_body.dart": {
-      "bodyL": 1,
       "hint": 1,
-      "kicker": 1,
-      "proseM": 1,
-      "supporting": 1
-    },
-    "lib/swipes/shared/profile_surface/profile_reaction_action.dart": {
-      "bodyLead": 1
+      "kicker": 1
     },
     "lib/user_analytics/shared/user_analytics_section.dart": {
-      "labelL": 1,
-      "supporting": 1
-    },
-    "lib/user_profile/presentation/form_profile_review_screen.dart": {
-      "proseM": 1
-    },
-    "lib/user_profile/presentation/form_profiles_screen.dart": {
-      "proseM": 1
+      "labelL": 1
     }
   }
 }

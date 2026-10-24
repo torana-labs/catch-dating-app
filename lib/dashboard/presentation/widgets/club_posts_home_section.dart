@@ -112,16 +112,14 @@ class ClubPostHomeCard extends StatelessWidget {
                       ),
                       gapW6,
                       Expanded(
-                        child: Text(
+                        child: CatchText(
                           context
                               .l10n
                               .dashboardClubPostsHomeSectionTextLinkedEvent,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.supporting(
-                            context,
-                            color: t.ink2,
-                          ),
+
+                          variant: CatchTextVariant.supporting,
+                          color: t.ink2,
                         ),
                       ),
                       Icon(

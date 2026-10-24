@@ -3,7 +3,7 @@ import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {useAdminPendingOperationGuard} from "../../../shared/pendingOperation";
 import {
   createSalesAccount, createSalesCustomField, getSalesAccount,
-  linkSalesInboundIntent,
+  linkSalesInboundIntent, nominateSalesOrganizer,
   listSalesAccounts, listSalesCustomFields,
   listSalesInboundIntents, listSalesOpportunities, listSalesTasks,
   recordSalesActivity, searchCanonicalOrganizers, setSalesCustomFieldValue,
@@ -17,7 +17,7 @@ import {
 import type {
   SalesAccount, SalesCreateAccountInput, SalesCreateCustomFieldInput,
   SalesLinkInboundIntentInput,
-  SalesListAccountsInput,
+  SalesListAccountsInput, SalesNominateOrganizerInput,
   SalesRecordActivityInput,
   SalesResearchStatus, SalesSetCustomFieldValueInput, SalesUpdateAccountInput,
   SalesUpsertOpportunityInput,
@@ -203,6 +203,7 @@ export function useSalesWorkspaceController({
   const proposalMutation = useMutation({mutationFn: reviewSalesEvidenceProposal});
   const accountMutation = useMutation({mutationFn: updateSalesAccount});
   const createAccountMutation = useMutation({mutationFn: createSalesAccount});
+  const nominationMutation = useMutation({mutationFn: nominateSalesOrganizer});
   const taskMutation = useMutation({mutationFn: upsertSalesTask});
   const activityMutation = useMutation({mutationFn: recordSalesActivity});
   const opportunityMutation = useMutation({mutationFn: upsertSalesOpportunity});
@@ -291,6 +292,13 @@ export function useSalesWorkspaceController({
   ) => execute("account-create", input, (requestId) =>
     createAccountMutation.mutateAsync({...input, requestId}),
   "Host added to Sales."), [createAccountMutation, execute]);
+
+  const nominateOrganizer = useCallback((
+    input: Omit<SalesNominateOrganizerInput, "requestId">
+  ) => execute("nomination", input, (requestId) =>
+    nominationMutation.mutateAsync({...input, requestId}),
+  "Nomination queued. Its listing appears in Organizer Intake for review."),
+  [execute, nominationMutation]);
 
   const saveTask = useCallback((
     input: Omit<SalesUpsertTaskInput, "requestId">
@@ -489,15 +497,15 @@ export function useSalesWorkspaceController({
     hasPreviousTaskPage: taskPreviousCursors.length > 0,
     setAccountFilters, nextPage, previousPage,
     hasPreviousPage: previousCursors.length > 0,
-    saveAccount, addAccount, saveTask, logActivity, saveOpportunity,
-    linkInboundIntent,
+    saveAccount, addAccount, nominateOrganizer, saveTask, logActivity,
+    saveOpportunity, linkInboundIntent,
     addCustomField, saveCustomValue,
     saveContact, saveEvidence, saveAccountSuppression, saveContactability,
     previewImport, applyImport, importPreviewPending: importPreviewMutation.isPending,
     previewCompensation, applyCompensation,
     compensationPreviewPending: compensationPreviewMutation.isPending,
     isSaving: proposalMutation.isPending || accountMutation.isPending || createAccountMutation.isPending ||
-      taskMutation.isPending ||
+      nominationMutation.isPending || taskMutation.isPending ||
       activityMutation.isPending || opportunityMutation.isPending ||
       inboundLinkMutation.isPending || createCustomFieldMutation.isPending ||
       setCustomValueMutation.isPending || contactMutation.isPending ||

@@ -86,7 +86,7 @@ class ProgramTimezoneField extends StatelessWidget {
             ),
             const SizedBox(height: CatchSpacing.s2),
             if (options.isEmpty)
-              Text(emptyMessage, style: CatchTextStyles.supporting(context))
+              CatchText(emptyMessage, variant: CatchTextVariant.supporting)
             else
               ConstrainedBox(
                 constraints: BoxConstraints(

@@ -852,6 +852,10 @@ export {
   onSupplyIntakeRequestCreated,
   recoverSupplyIntakeRequests,
 } from "./operations/supplyIntake/triggers";
+export {
+  adminNominateOrganizer,
+  onSalesInboundIntentForIntake,
+} from "./operations/supplyIntake/nominations";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,

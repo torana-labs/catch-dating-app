@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {renderSalesPartnerOffer} from "./salesPartnerOffer";
 import {useEffect, useMemo, useState} from "react";
 import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
@@ -165,8 +165,8 @@ export function SalesWorkspaceScreen({
         </>
       ) : assignedStaffOnly && !staffAreaAllowed ? (
         <Panel title="Assigned Sales access" icon={<ClipboardList size={18} />}>
-          <p>Your role can use Today, Hosts and Pipeline for records currently
-            assigned to you.</p>
+          <CatchText as="p" variant="supporting">Your role can use Today, Hosts and Pipeline for records currently
+            assigned to you.</CatchText>
           <AdminButton onClick={() => onAreaChange("today")}>Go to Today</AdminButton>
         </Panel>
       ) : area === "today" ? (
@@ -233,8 +233,8 @@ function TodayView({
   ];
   return <>
     <Panel title="Today's work" icon={<CalendarDays size={18} />}>
-      <p>Tasks are shown in priority groups from this server page. Open a host to
-        record the outcome and set the next step.</p>
+      <CatchText as="p" variant="supporting">Tasks are shown in priority groups from this server page. Open a host to
+        record the outcome and set the next step.</CatchText>
       <QueryState loading={controller.tasks.isPending} error={controller.tasks.error}
         empty={!rows.length} onRetry={() => void controller.tasks.refetch()} />
     </Panel>
@@ -278,16 +278,16 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
   return <>
   {assignedStaffOnly ? null : renderSalesFitQueueWorkspace(currentUserUid, onOpenHost)}
   {!assignedStaffOnly && showAddHost ? <Panel title="Add a host" icon={<Search size={18} />}>
-    <p>First find the existing organizer identity. Adding it to Sales creates a
-      private record and does not publish a listing or approve a claim.</p>
+    <CatchText as="p" variant="supporting">First find the existing organizer identity. Adding it to Sales creates a
+      private record and does not publish a listing or approve a claim.</CatchText>
     <SearchField ariaLabel="Search existing organizers" icon={<Search size={16} />}
       value={controller.canonicalSearch} placeholder="Organizer name"
       onChange={(value) => {
         controller.setCanonicalSearch(value); setSelectedCanonicalId("");
       }} />
-    {controller.canonicalMatches.isPending ? <p>Searching organizers…</p> : null}
-    {controller.canonicalMatches.error ? <p role="alert">
-      Organizer search failed. Try again.</p> : null}
+    {controller.canonicalMatches.isPending ? <CatchText as="p" variant="supporting">Searching organizers…</CatchText> : null}
+    {controller.canonicalMatches.error ? <CatchText as="p" variant="supporting" role="alert">
+      Organizer search failed. Try again.</CatchText> : null}
     {controller.canonicalMatches.data?.length ? <CatchField recipe="select"
       title="Reviewed organizer" value={selectedCanonicalId}
       onChanged={(value) => setSelectedCanonicalId(value ?? "")} {...selectOptions([
@@ -317,8 +317,8 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
         icon={<Search size={16} />}
         placeholder="One word, at least two letters" value={controller.query}
         onChange={(query) => controller.setAccountFilters({query})} />
-      {!controller.validAccountQuery ? <p role="status">
-        Search one word of 2–80 letters or numbers.</p> : null}
+      {!controller.validAccountQuery ? <CatchText as="p" variant="supporting" role="status">
+        Search one word of 2–80 letters or numbers.</CatchText> : null}
       <CatchField recipe="select" title="Research status" value={controller.researchStatus}
         onChanged={(value) => controller.setAccountFilters({
           researchStatus: (value ?? "") as "all" | SalesResearchStatus,
@@ -376,7 +376,7 @@ function PipelineView({controller, currentUserUid, onOpenHost}: {
 }) {
   const rows = controller.opportunities.data?.rows ?? [];
   return <Panel title="Opportunities" icon={<ClipboardList size={18} />}>
-    <p>Stages describe commercial work. Organizer ownership and product activation are managed separately.</p>
+    <CatchText as="p" variant="supporting">Stages describe commercial work. Organizer ownership and product activation are managed separately.</CatchText>
     <CatchField recipe="select" title="Stage" value={controller.opportunityStage}
       onChanged={(value) => controller.setStageFilter(value ?? "")} {...selectOptions(stageOptions)}
     />
@@ -410,8 +410,8 @@ function ResearchView({controller, onOpenHost, onOpenIntake}: {
   return <>
     <InboundReview controller={controller} onOpenIntake={onOpenIntake} />
     <Panel title="Research review" icon={<Search size={18} />}>
-      <p>Use the host record to capture a sourced summary, owner and next action.
-        Qualification and fit remain separate decisions.</p>
+      <CatchText as="p" variant="supporting">Use the host record to capture a sourced summary, owner and next action.
+        Qualification and fit remain separate decisions.</CatchText>
       <CatchField recipe="select" title="Research status" value={controller.researchStatus}
         onChanged={(value) => controller.setAccountFilters({
           researchStatus: (value ?? "") as "all" | SalesResearchStatus,
@@ -457,8 +457,8 @@ function InboundReview({controller, onOpenIntake}: {
       controller.setIdentitySearch("");}
   };
   return <Panel title="New enquiries and nominations" icon={<Search size={18} />}>
-    <p>These details were entered by the sender. Review the identity before attaching
-      an enquiry to a host; linking does not approve an organizer claim.</p>
+    <CatchText as="p" variant="supporting">These details were entered by the sender. Review the identity before attaching
+      an enquiry to a host; linking does not approve an organizer claim.</CatchText>
     <QueryState loading={controller.inboundIntents.isPending}
       error={controller.inboundIntents.error}
       empty={!controller.inboundIntents.data?.rows.length}
@@ -475,7 +475,7 @@ function InboundReview({controller, onOpenIntake}: {
       onPrevious={controller.previousInboundPage}
       onNext={controller.nextInboundPage} />
     {selected ? <AdminForm onSubmit={(event) => {event.preventDefault(); void link();}}>
-      <h3>Match enquiry from {selected.fullName}</h3>
+      <CatchText as="h3" variant="sectionTitle">Match enquiry from {selected.fullName}</CatchText>
       <SearchField ariaLabel="Search existing hosts for this enquiry"
         icon={<Search size={16} />} placeholder="One name, city, or market word"
         value={controller.identitySearch}
@@ -485,14 +485,14 @@ function InboundReview({controller, onOpenIntake}: {
         {...selectOptions([{value: "", label: "Choose a reviewed match"},
           ...matches.map((row) => ({value: row.organizerId,
             label: `${row.name} · ${row.city || row.marketLabel || "Location unknown"}`}))])} />
-      {controller.identityMatches.isPending ? <p>Searching hosts…</p> : null}
+      {controller.identityMatches.isPending ? <CatchText as="p" variant="supporting">Searching hosts…</CatchText> : null}
       {controller.identitySearch.trim() &&
         !/^[A-Za-z0-9]{2,80}$/u.test(controller.identitySearch.trim()) ?
-        <p role="status">Search one word of 2–80 letters or numbers.</p> : null}
-      {controller.identityMatches.error ? <p role="alert">
-        Host search failed. Try another search.</p> : null}
-      {controller.identityMatches.data?.nextCursor ? <p>
-        More matches exist. Narrow the search before linking.</p> : null}
+        <CatchText as="p" variant="supporting" role="status">Search one word of 2–80 letters or numbers.</CatchText> : null}
+      {controller.identityMatches.error ? <CatchText as="p" variant="supporting" role="alert">
+        Host search failed. Try another search.</CatchText> : null}
+      {controller.identityMatches.data?.nextCursor ? <CatchText as="p" variant="supporting">
+        More matches exist. Narrow the search before linking.</CatchText> : null}
       <AdminToolbar>
         <AdminButton type="submit" variant="primary"
           disabled={!matchId || controller.isSaving}>Link to selected host</AdminButton>
@@ -507,8 +507,8 @@ function PilotsView({controller, onOpenHost}: {
   controller: SalesWorkspaceController; onOpenHost: (id: string) => void;
 }) {
   return <Panel title="Pilots" icon={<ClipboardList size={18} />}>
-    <p>Select a pilot stage to see its opportunities and next commitments. Pilot outcomes
-      require linked evidence before a commercial or reference claim is made.</p>
+    <CatchText as="p" variant="supporting">Select a pilot stage to see its opportunities and next commitments. Pilot outcomes
+      require linked evidence before a commercial or reference claim is made.</CatchText>
     <CatchField recipe="select" title="Pilot stage" value={controller.opportunityStage}
       onChanged={(value) => controller.setStageFilter(value ?? "")} {...selectOptions([
         {value: "", label: "All opportunities"},
@@ -656,10 +656,10 @@ function CustomFieldValueEditor({field, detail, controller}: {
       <CatchField recipe="input" title={field.label} value={textValue} onChanged={update}
         keyboardType={field.type === "number" ? "decimal" :
           field.type === "date" ? "date" : "text"} />}
-    {field.helpText ? <p>{field.helpText}</p> : null}
-    {!validNumber ? <p role="alert">Enter a valid number.</p> : null}
-    {changedElsewhere ? <p role="alert">This value changed elsewhere.
-      Latest saved value: {String(current?.value ?? "Unknown")}.</p> : null}
+    {field.helpText ? <CatchText as="p" variant="supporting">{field.helpText}</CatchText> : null}
+    {!validNumber ? <CatchText as="p" variant="supporting" role="alert">Enter a valid number.</CatchText> : null}
+    {changedElsewhere ? <CatchText as="p" variant="supporting" role="alert">This value changed elsewhere.
+      Latest saved value: {String(current?.value ?? "Unknown")}.</CatchText> : null}
     <AdminButton type="submit" disabled={!dirty || changedElsewhere || !textValue.trim() ||
       !validNumber || controller.isSaving}>Save field</AdminButton>
     {changedElsewhere ? <AdminButton onClick={() => {
@@ -707,11 +707,11 @@ function HostAccountEditor({detail, controller, currentUserUid, assignedStaffOnl
       onClick={() => void save()}>{controller.isSaving ? "Saving…" :
         assignedStaffOnly ? "Save summary" : "Save research"}</AdminButton>
   }>
-    <p>{detail.organizerSummary.name} ·
+    <CatchText as="p" variant="supporting">{detail.organizerSummary.name} ·
       {[detail.organizerSummary.city, detail.organizerSummary.marketLabel]
-        .filter(Boolean).join(", ") || "Location not recorded"}</p>
-    {changedElsewhere ? <p role="alert">This host changed since you started editing.
-      Compare the latest version below; your edits are retained.</p> : null}
+        .filter(Boolean).join(", ") || "Location not recorded"}</CatchText>
+    {changedElsewhere ? <CatchText as="p" variant="supporting" role="alert">This host changed since you started editing.
+      Compare the latest version below; your edits are retained.</CatchText> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
       {assignedStaffOnly ? null : <CatchField recipe="select" title="Research status"
         value={form.researchStatus} {...selectOptions(researchStatusOptions)}
@@ -785,7 +785,7 @@ function HostActivity({detail, controller}: {
             {value: "whatsapp", label: "WhatsApp"},
             {value: "other", label: "Other"},
           ])} />
-        <p>You attest this was sent outside Catch. Delivery is unconfirmed.</p>
+        <CatchText as="p" variant="supporting">You attest this was sent outside Catch. Delivery is unconfirmed.</CatchText>
       </> : null}
       <CatchField recipe="input" title="When" value={occurredAt} onChanged={setOccurredAt}
         keyboardType="datetime" />
@@ -850,7 +850,7 @@ function HostOpportunities({detail, controller, currentUserUid}: {
       </>} />)}
     {!detail.opportunities.length ? <EmptyState>No opportunity recorded yet.</EmptyState> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
-      <h3>{selected ? "Update opportunity" : "New opportunity"}</h3>
+      <CatchText as="h3" variant="sectionTitle">{selected ? "Update opportunity" : "New opportunity"}</CatchText>
       {selected && selected.revision !== selectedRevision ? <p role="alert">
         This opportunity changed while you were editing. Review the latest stage and
         next step before saving.
@@ -875,7 +875,7 @@ function HostOpportunities({detail, controller, currentUserUid}: {
         <CatchField recipe="input" title="Reason for closing or reopening" value={transitionReason}
           onChanged={setTransitionReason} maxLines={3} />
       ) : null}
-      {stage === "closed_won" ? <p>Payment-backed closing is managed in Pilot &amp; terms.</p> : null}
+      {stage === "closed_won" ? <CatchText as="p" variant="supporting">Payment-backed closing is managed in Pilot &amp; terms.</CatchText> : null}
       <CatchField recipe="input" title="Next step" value={nextStep} onChanged={setNextStep} />
       <CatchField recipe="input" title="Due" value={nextStepAt} onChanged={setNextStepAt}
         keyboardType="datetime" />

@@ -173,9 +173,9 @@ class EventSuccessConversationCueCard extends StatelessWidget {
                       runSpacing: CatchSpacing.s2,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Text(
+                        CatchText(
                           title,
-                          style: CatchTextStyles.sectionTitle(context),
+                          variant: CatchTextVariant.sectionTitle,
                         ),
                         CatchBadge(
                           label: moment.label(context.l10n),
@@ -187,12 +187,10 @@ class EventSuccessConversationCueCard extends StatelessWidget {
                     ),
                     if (subtitle != null) ...[
                       const SizedBox(height: CatchSpacing.s1),
-                      Text(
+                      CatchText(
                         subtitle!,
-                        style: CatchTextStyles.supporting(
-                          context,
-                          color: t.ink2,
-                        ),
+                        variant: CatchTextVariant.supporting,
+                        color: t.ink2,
                       ),
                     ],
                   ],

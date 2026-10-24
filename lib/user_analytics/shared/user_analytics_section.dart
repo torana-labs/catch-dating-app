@@ -132,9 +132,10 @@ class UserAnalyticsEmptyState extends StatelessWidget {
                   style: CatchTextStyles.labelL(context, color: t.ink),
                 ),
                 gapH6,
-                Text(
+                CatchText(
                   UserAnalyticsCopy.emptyBody(context.l10n),
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                 ),
               ],
             ),

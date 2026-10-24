@@ -140,12 +140,10 @@ class _HostFollowerUpdateComposerSheetState
           ),
           if (_error != null) ...[
             gapH10,
-            Text(
+            CatchText(
               context.l10n.hostsHostClubToolsTextCouldNotPostThis,
-              style: CatchTextStyles.supporting(
-                context,
-                color: CatchTokens.of(context).danger,
-              ),
+              variant: CatchTextVariant.supporting,
+              color: CatchTokens.of(context).danger,
             ),
           ],
         ],

@@ -179,14 +179,15 @@ class HostEventToolsPageIndicator extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(
+          CatchText(
             context.l10n.hostsHostEventToolsTextValue1OfItemcount(
               value1: selectedIndex + 1,
               itemCount: itemCount,
             ),
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.labelS(context, color: t.ink2),
+
+            variant: CatchTextVariant.statusLabel,
+            color: t.ink2,
           ),
           gapW10,
           Expanded(

@@ -43,9 +43,9 @@ class EventRehearsalEntryPageBody extends StatelessWidget {
           ),
         ),
         gapH8,
-        Text(
+        CatchText(
           l10n.hostRehearsalEntryExplanation,
-          style: CatchTextStyles.supporting(context),
+          variant: CatchTextVariant.supporting,
         ),
         gapH24,
         CatchSection.plain(
@@ -84,18 +84,18 @@ class EventRehearsalEntryPageBody extends StatelessWidget {
         ),
         if (!configuration.hasValidDuration) ...[
           gapH16,
-          Text(
+          CatchText(
             l10n.hostRehearsalDurationLimit,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         if (!configuration.useSimulatedGuests &&
             (configuration.actorCount < 2 ||
                 configuration.actorCount > 50)) ...[
           gapH16,
-          Text(
+          CatchText(
             l10n.hostRehearsalRosterLimit(count: configuration.actorCount),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
       ],

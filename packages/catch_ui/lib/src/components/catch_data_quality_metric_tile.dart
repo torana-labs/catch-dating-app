@@ -36,7 +36,7 @@ class CatchDataQualityMetricTile extends StatelessWidget {
                   data.status == CatchMetricDataStatus.partial
                       ? data.partialBadgeLabel
                       : data.missingBadgeLabel,
-                  style: CatchTextStyles.labelM(context, color: t.ink2),
+                  style: CatchTextStyles.statusLabel(context, color: t.ink2),
                 ),
             ],
           ),

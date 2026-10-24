@@ -538,19 +538,19 @@ class PlaceSuggestionRow extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   title,
-                  style: CatchTextStyles.labelM(context),
+                  variant: CatchTextVariant.statusLabel,
+                  color: CatchTokens.of(context).ink2,
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
                 if (subtitle.isNotEmpty) ...[
                   gapH4,
-                  Text(
+                  CatchText(
                     subtitle,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                    variant: CatchTextVariant.supporting,
+                    color: t.ink2,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ],
@@ -624,9 +624,10 @@ class SelectedPointSection extends StatelessWidget {
                       style: CatchTextStyles.labelL(context, color: t.ink),
                     ),
                     gapH4,
-                    Text(
+                    CatchText(
                       subtitle,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                      variant: CatchTextVariant.supporting,
+                      color: t.ink2,
                     ),
                   ],
                 ),

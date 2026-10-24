@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useEffect, useLayoutEffect, useMemo, useRef, useState} from "react";
 import type {ReactNode} from "react";
 import {
@@ -153,13 +153,13 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
   ];
 
   return <>
-    <p>This editable composition plan chooses current approved wording. It is
+    <CatchText as="p" variant="supporting">This editable composition plan chooses current approved wording. It is
       not the final draft, cannot send a message, and does not grant contact
-      authority. The deterministic server draft still needs separate exact-content review.</p>
-    {!eligible ? <p role="alert">This host needs an active fit policy, a
-      qualified Sales record and clear contact restrictions before drafting.</p> : null}
+      authority. The deterministic server draft still needs separate exact-content review.</CatchText>
+    {!eligible ? <CatchText as="p" variant="supporting" role="alert">This host needs an active fit policy, a
+      qualified Sales record and clear contact restrictions before drafting.</CatchText> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void submit();}}>
-      <h3>Review a first-message composition plan</h3>
+      <CatchText as="h3" variant="sectionTitle">Review a first-message composition plan</CatchText>
       <CatchField
         recipe="select"
         title="Reviewed contact"
@@ -227,7 +227,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
           {value: "message", label: "Message draft"},
         ])}
       />
-      <h3>Composition review</h3>
+      <CatchText as="h3" variant="sectionTitle">Composition review</CatchText>
       <StateRow label="Contact" value={selectedContact?.displayName ?? "Not selected"} />
       <StateRow label="Opportunity" value={selectedOpportunity ?
         `${label(selectedOpportunity.motion)} · ${label(selectedOpportunity.stage)}` :
@@ -241,7 +241,7 @@ function SalesOutreachCompositionReviewBody({organizerId, evaluatedAt,
         disabled={!canSubmit}>{submitting ? "Submitting composition plan" :
           "Review plan and prepare private draft"}</AdminButton>
     </AdminForm>
-    {notice ? <p role="status">{notice}</p> : null}
-    {error ? <p role="alert">{error}</p> : null}
+    {notice ? <CatchText as="p" variant="supporting" role="status">{notice}</CatchText> : null}
+    {error ? <CatchText as="p" variant="supporting" role="alert">{error}</CatchText> : null}
   </>;
 }

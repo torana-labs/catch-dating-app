@@ -147,11 +147,12 @@ class EventPolicyStep extends StatelessWidget {
           gap: 0,
           children: [
             CatchSection.plain(
-              child: Text(
+              child: CatchText(
                 externalBookingMode
                     ? context.l10n.hostsEventPolicyStepExternalOperationsIntro
                     : context.l10n.hostsEventPolicyStepTextConfigureWhoCanBook,
-                style: CatchTextStyles.supporting(context, color: t.primary),
+                variant: CatchTextVariant.supporting,
+                color: t.primary,
               ),
             ),
             CatchSection.fieldRows(
@@ -579,9 +580,10 @@ class EventPolicyStep extends StatelessWidget {
                   return const SizedBox.shrink();
                 }
                 return CatchSection.divided(
-                  child: Text(
+                  child: CatchText(
                     context.l10n.hostsEventPolicyStepTextHostPayoutIsReleased,
-                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                    variant: CatchTextVariant.supporting,
+                    color: t.ink2,
                   ),
                 );
               },

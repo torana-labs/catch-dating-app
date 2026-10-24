@@ -55,9 +55,10 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
                       ),
                     ),
                     gapW6,
-                    Text(
+                    CatchText(
                       entry.$2.$2,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                      variant: CatchTextVariant.supporting,
+                      color: t.ink2,
                     ),
                   ],
                 ),
@@ -66,9 +67,10 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
           ),
           gapH16,
           if (widget.points.isEmpty)
-            Text(
+            CatchText(
               context.l10n.hostsHostAnalyticsTextNoAnalyticsInThisRange,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             )
           else
             SingleChildScrollView(
@@ -98,7 +100,7 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
             ),
           if (selectedPoint != null) ...[
             gapH12,
-            Text(
+            CatchText(
               context.l10n.hostsHostAnalyticsTextPeriodDemandBookings(
                 period: _trendDetailPeriod(
                   selectedPoint.periodStart,
@@ -114,7 +116,8 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
                     0,
               ),
               key: const ValueKey('host-analytics-trend-detail'),
-              style: CatchTextStyles.supporting(context, color: t.ink2),
+              variant: CatchTextVariant.supporting,
+              color: t.ink2,
             ),
           ],
         ],
@@ -212,12 +215,13 @@ class HostAnalyticsBarTile extends StatelessWidget {
               gapH6,
               SizedBox(
                 width: CatchSpacing.s8,
-                child: Text(
+                child: CatchText(
                   label,
                   maxLines: 1,
                   textAlign: TextAlign.center,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.supporting(context, color: t.ink3),
+
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink3,
                 ),
               ),
             ],

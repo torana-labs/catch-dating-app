@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchText, CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {CheckCircle2, Clock3, FileWarning, Lock} from "lucide-react";
 import {
@@ -230,7 +230,7 @@ function OrganizerExternalEventImportPlanView({
                   <AdminEyebrow>
                     {action.platform} / {action.status}
                   </AdminEyebrow>
-                  <h3>{action.proposedReadOnlyEventDraft.eventId}</h3>
+                  <CatchText as="h3" variant="sectionTitle">{action.proposedReadOnlyEventDraft.eventId}</CatchText>
                 </div>
                 <StatusChip tone={action.status === "write_ready" ? "ready" : ""}>
                   {action.action.replaceAll("_", " ")}
@@ -353,7 +353,7 @@ function OrganizerExternalEventLocationResolutionView({
                     <AdminEyebrow>
                       {task.platform} / {task.resolutionState}
                     </AdminEyebrow>
-                    <h3>{task.title}</h3>
+                    <CatchText as="h3" variant="sectionTitle">{task.title}</CatchText>
                   </div>
                   <StatusChip>
                     {task.countryCode}
@@ -522,7 +522,7 @@ function OrganizerExternalEventImportExecutionPlanView({
                   <AdminEyebrow>
                     {(action.targetWriter ?? action.targetCallable ?? "read-only projection")} / {action.status}
                   </AdminEyebrow>
-                  <h3>{action.readOnlyEventProjection?.eventId ?? action.createEventPayload?.eventId ?? action.sourceActionId}</h3>
+                  <CatchText as="h3" variant="sectionTitle">{action.readOnlyEventProjection?.eventId ?? action.createEventPayload?.eventId ?? action.sourceActionId}</CatchText>
                 </div>
                 <StatusChip tone={action.status === "would_publish_read_only" ? "ready" : ""}>
                   {action.sourceAction.replaceAll("_", " ")}
@@ -634,7 +634,7 @@ function OrganizerExternalEventCandidateCard({
           <AdminEyebrow>
             {candidate.platform} / {candidate.reviewStatus}
           </AdminEyebrow>
-          <h3>{candidate.title}</h3>
+          <CatchText as="h3" variant="sectionTitle">{candidate.title}</CatchText>
         </div>
         <StatusChip tone={candidate.reviewStatus === "approved_for_import" ? "ready" : ""}>
           {candidate.entityId}
@@ -772,7 +772,7 @@ function OrganizerIntakeCard({
           <AdminEyebrow>
             {item.priority} / {item.taskType.replaceAll("_", " ")}
           </AdminEyebrow>
-          <h3>{item.displayName}</h3>
+          <CatchText as="h3" variant="sectionTitle">{item.displayName}</CatchText>
         </div>
         <AdminOrganizerIntakeBadges>
           <StatusChip tone={item.projectionStatus}>

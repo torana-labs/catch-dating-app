@@ -103,9 +103,9 @@ class _HostContactMergeReviewSheetState
             ],
             if (_dismissed.isNotEmpty) ...[
               gapH8,
-              Text(
+              CatchText(
                 context.l10n.hostCustomersDismissedDuplicates,
-                style: CatchTextStyles.sectionTitle(context),
+                variant: CatchTextVariant.sectionTitle,
               ),
               gapH12,
               for (final candidate in _dismissed) ...[
@@ -190,30 +190,30 @@ class _HostContactMergeCandidateCardState
               color: CatchTokens.of(context).ink,
             ),
             if (contact.phoneE164 != null)
-              Text(
+              CatchText(
                 contact.phoneE164!,
-                style: CatchTextStyles.supporting(context),
+                variant: CatchTextVariant.supporting,
               ),
             if (contact.email != null)
-              Text(contact.email!, style: CatchTextStyles.supporting(context)),
-            Text(
+              CatchText(contact.email!, variant: CatchTextVariant.supporting),
+            CatchText(
               _sourceLabel(context, contact.primarySource),
-              style: CatchTextStyles.supporting(context),
+              variant: CatchTextVariant.supporting,
             ),
             gapH12,
           ],
-          Text(
+          CatchText(
             candidate.matchKinds
                 .map((kind) => _matchKindLabel(context, kind))
                 .join(' · '),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           gapH4,
-          Text(
+          CatchText(
             context.l10n.hostCustomersMergeSharedEvents(
               count: candidate.sharedEventCount,
             ),
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
           gapH12,
           Wrap(
@@ -353,9 +353,9 @@ class _HostDismissedMergeCandidateCardState
         ),
         if (!widget.candidate.canReopen) ...[
           gapH4,
-          Text(
+          CatchText(
             context.l10n.hostCustomersReopenOwnerOnly,
-            style: CatchTextStyles.supporting(context),
+            variant: CatchTextVariant.supporting,
           ),
         ],
         gapH12,

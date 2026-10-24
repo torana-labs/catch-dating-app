@@ -92,7 +92,7 @@ Widget _sheet(BuildContext context) {
         ),
         Text(
           'Readable prose, set in the platform font for bios and details.',
-          style: CatchTextStyles.proseL(context),
+          style: CatchTextStyles.bodyL(context),
         ),
         const SizedBox(height: CatchSpacing.s2),
         Text(
@@ -144,7 +144,7 @@ Widget _swatch(BuildContext context, String name, Color color) {
           ),
         ),
         const SizedBox(height: 4),
-        Text(name, style: CatchTextStyles.labelS(context)),
+        Text(name, style: CatchTextStyles.statusLabel(context)),
       ],
     ),
   );

@@ -68,11 +68,12 @@ class HostPrivateAccessAsyncBoundary extends StatelessWidget {
             const HostInlineIconSkeleton(),
             gapW12,
             Expanded(
-              child: Text(
+              child: CatchText(
                 context.l10n.hostsHostEventManageScreenTextLoadingInviteAccess,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
+
+                variant: CatchTextVariant.supporting,
+                color: t.ink2,
               ),
             ),
           ],
@@ -176,14 +177,15 @@ class HostPrivateAccessSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    CatchText(
                       context.l10n.hostsHostEventManageScreenTextPrivateAccess,
-                      style: CatchTextStyles.sectionTitle(context),
+                      variant: CatchTextVariant.sectionTitle,
                     ),
                     gapH4,
-                    Text(
+                    CatchText(
                       privateAccessState.description,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
+                      variant: CatchTextVariant.supporting,
+                      color: t.ink2,
                     ),
                   ],
                 ),
@@ -307,9 +309,10 @@ class HostInviteLinksSection extends StatelessWidget {
           ),
         ),
         gapH6,
-        Text(
+        CatchText(
           context.l10n.hostsHostEventManageScreenTextTrackWhichChannelsCreate,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+          variant: CatchTextVariant.supporting,
+          color: t.ink2,
         ),
         if (mutationError != null) ...[
           gapH12,
@@ -322,9 +325,10 @@ class HostInviteLinksSection extends StatelessWidget {
         CatchAsyncBoundary<List<EventInviteLink>>(
           value: linksAsync,
           onRetry: onRetry,
-          loadingBuilder: (_) => Text(
+          loadingBuilder: (_) => CatchText(
             context.l10n.hostsHostEventManageScreenTextLoadingInviteLinks,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
           errorBuilder: (_, error, _, onBoundaryRetry) =>
               CatchLocalizedErrorState(
@@ -334,9 +338,10 @@ class HostInviteLinksSection extends StatelessWidget {
                 onRetry: onBoundaryRetry,
               ),
           builder: (context, links) => links.isEmpty
-              ? Text(
+              ? CatchText(
                   state.emptyCopy,
-                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                  variant: CatchTextVariant.supporting,
+                  color: t.ink2,
                 )
               : Column(
                   children: [
@@ -412,19 +417,21 @@ class HostInviteLinkRow extends StatelessWidget {
         ),
         if (rowState.source != null) ...[
           gapH2,
-          Text(
+          CatchText(
             rowState.source!,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
+
+            variant: CatchTextVariant.supporting,
+            color: t.ink2,
           ),
         ],
         gapH8,
-        Text(
+        CatchText(
           rowState.stats,
           maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.supporting(context, color: t.ink2),
+
+          variant: CatchTextVariant.supporting,
+          color: t.ink2,
         ),
       ],
     );

@@ -22,7 +22,7 @@ const clock = () => new Date(NOW);
 const request = {
   schemaVersion: 1, requestId: "nom-research-1", kind: "nomination", market: "bengaluru",
   seed: {name: "Sunday Striders", urls: [], notes: "Runs in Cubbon Park", categories: ["running"]},
-  submittedBy: {role: "associate", uid: "associate-1", partnerId: null}, submittedAt: NOW,
+  submittedBy: {role: "associate", uid: "associate-1", partnerId: null}, submittedAt: NOW, origin: null,
 };
 const website = `<html><head><title>Sunday Striders</title>
   <meta property="og:image" content="https://striders.example/logo.png"></head>
