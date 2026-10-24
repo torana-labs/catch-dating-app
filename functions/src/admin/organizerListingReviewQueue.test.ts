@@ -46,9 +46,10 @@ async function harness() {
         submittedBy: {role: "associate", uid: "associate-1", partnerId: null}, submittedAt: at, origin: null},
       status: "queued", attempts: 0, leaseUntil: null, result: null, failure: null, approval: null,
       createdAt: at, updatedAt: at});
-    assert.equal(await processSupplyIntakeRequest({db: db as unknown as Firestore, now: () => new Date(at),
-      projectionWriter: writer, putSnapshot: async () => "supply-intake/snapshots/x.json"}, requestId), "completed");
-    const stored = db.read(`${supplyIntakeCollections.requests}/${requestId}`) as {result: {listingWorkItemId: string}};
+    const outcome = await processSupplyIntakeRequest({db: db as unknown as Firestore, now: () => new Date(at),
+      projectionWriter: writer, putSnapshot: async () => "supply-intake/snapshots/x.json"}, requestId);
+    const stored = db.read(`${supplyIntakeCollections.requests}/${requestId}`) as {result: {listingWorkItemId: string}, failure: unknown};
+    assert.equal(outcome, "completed", JSON.stringify(stored.failure));
     db.write(`operationWorkItems/${stored.result.listingWorkItemId}`,
       writer.items.get(stored.result.listingWorkItemId) as unknown as Record<string, unknown>);
   }
