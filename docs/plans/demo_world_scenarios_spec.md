@@ -1,6 +1,6 @@
 ---
 doc_id: demo_world_scenarios_spec
-version: 0.3.0
+version: 0.3.1
 updated: 2026-10-25
 owner: marketing_website
 status: active
@@ -197,8 +197,9 @@ generator with the world's cast as its personas.
      Victor Alvarez, with three events (the next dinner, a live mixer, and the
      previous evening's mixer) at one `live` moment. Derived counts equal the
      old hand-typed ones (0/0/0, 17/7/3, 17/13/2); the capture fixture, the
-     seeder and the website demo listing read it, and every capture that reads
-     it is pixel-identical.
+     seeder and the website demo listing read it. The website scorecard
+     intentionally reflects the corrected catch count below, and its source
+     label is now "Catch demo world"; those snapshots require visual review.
    - The old file's host was named Rohan Mehta but cast as Jordan Ellis, who
      was also a guest, so the host is now the persona the story already fits.
    - Its scorecard (18 mutual matches from 31 catches) couldn't be true, so the
