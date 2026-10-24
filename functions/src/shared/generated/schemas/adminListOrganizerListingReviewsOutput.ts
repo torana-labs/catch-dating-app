@@ -1,0 +1,225 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const adminListOrganizerListingReviewsCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_organizer_listing_reviews_response.schema.json",
+  "title": "AdminListOrganizerListingReviewsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rows",
+    "nextCursor",
+    "unavailableCount",
+    "canApprove"
+  ],
+  "properties": {
+    "rows": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "requestId",
+          "listingWorkItemId",
+          "kind",
+          "submittedByRole",
+          "submittedAt",
+          "origin",
+          "market",
+          "suggestedSlug",
+          "listing"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "listingWorkItemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "kind": {
+            "enum": [
+              "nomination",
+              "self_submission",
+              "discovery"
+            ]
+          },
+          "submittedByRole": {
+            "enum": [
+              "associate",
+              "partner",
+              "organizer",
+              "system"
+            ]
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "origin": {
+            "enum": [
+              "admin_nomination",
+              "sales_inbound_intent",
+              "discovery_run",
+              "none"
+            ]
+          },
+          "market": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "slug",
+              "marketId",
+              "label",
+              "open"
+            ],
+            "properties": {
+              "slug": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "marketId": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 96
+              },
+              "label": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 160
+              },
+              "open": {
+                "type": "boolean",
+                "description": "Whether an organizer can be approved into this market as it stands."
+              }
+            }
+          },
+          "suggestedSlug": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$"
+          },
+          "listing": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "description",
+              "categories",
+              "links",
+              "gaps",
+              "eventCount",
+              "researchNeeded",
+              "contentHash",
+              "pageCount",
+              "fetchedPageCount"
+            ],
+            "properties": {
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 2000
+              },
+              "categories": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "maxLength": 80
+                }
+              },
+              "links": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "platform",
+                    "url"
+                  ],
+                  "properties": {
+                    "platform": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "url": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    }
+                  }
+                }
+              },
+              "gaps": {
+                "type": "array",
+                "maxItems": 40,
+                "items": {
+                  "type": "string",
+                  "maxLength": 120
+                }
+              },
+              "eventCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "researchNeeded": {
+                "type": "boolean"
+              },
+              "contentHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "pageCount": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "fetchedPageCount": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 400
+    },
+    "unavailableCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Completed requests on this page whose listing could not be read."
+    },
+    "canApprove": {
+      "type": "boolean",
+      "description": "Whether the caller's role may approve listings."
+    }
+  }
+} as const;

@@ -88,6 +88,8 @@ export 'admin_list_event_details_callable_payload.g.dart';
 export 'admin_list_external_event_details_callable_payload.g.dart';
 export 'admin_list_intake_operations_callable_payload.g.dart';
 export 'admin_list_organizer_details_callable_payload.g.dart';
+export 'admin_list_organizer_listing_reviews_callable_payload.g.dart';
+export 'admin_list_organizer_listing_reviews_callable_response.g.dart';
 export 'admin_list_sales_accounts_callable_payload.g.dart';
 export 'admin_list_sales_commercial_report_callable_payload.g.dart';
 export 'admin_list_sales_commercial_report_response.g.dart';
