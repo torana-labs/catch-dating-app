@@ -1,6 +1,4 @@
 import {httpsCallable} from "firebase/functions";
-import {validateAdminCallableRequest, validateAdminCallableResponse} from
-  "../../../../generated/validators/adminCallableValidators";
 import type {AdminApproveOrganizerListingCallablePayload} from
   "../../../../generated/contracts/adminApproveOrganizerListingCallablePayload";
 import type {AdminApproveOrganizerListingCallableResponse} from
@@ -17,12 +15,14 @@ export type ListingReview = ListingReviewPage["rows"][number];
 export type ListingApprovalInput = AdminApproveOrganizerListingCallablePayload;
 export type ListingApproval = AdminApproveOrganizerListingCallableResponse;
 
-function call<Request extends object, Response>(name: string, payload: Request): Promise<Response> {
+// The validators are loaded on first call, not bundled into the intake chunk.
+async function call<Request extends object, Response>(name: string, payload: Request): Promise<Response> {
+  const {validateAdminCallableRequest, validateAdminCallableResponse} =
+    await import("../../../../generated/validators/adminCallableValidators");
   validateAdminCallableRequest(name, payload);
-  return httpsCallable<Request, Response>(functions, name)(payload).then((result) => {
-    validateAdminCallableResponse(name, result.data);
-    return result.data;
-  });
+  const result = await httpsCallable<Request, Response>(functions, name)(payload);
+  validateAdminCallableResponse(name, result.data);
+  return result.data;
 }
 
 const sampleListing: ListingReview = {
