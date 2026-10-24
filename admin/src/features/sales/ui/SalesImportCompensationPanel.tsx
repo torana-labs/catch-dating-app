@@ -71,7 +71,7 @@ function CompensationPanel({controller}: {controller: SalesWorkspaceController})
       {plan ? <>
         <CatchText as="p" variant="supporting" role="status">Server plan: {plan.mode.replaceAll("_", " ")} ·
           account revision {plan.accountRevision ?? "unavailable"}</CatchText>
-        <p>Review hash: <code>{plan.previewHash}</code></p>
+        <CatchText as="p" variant="bodyL" color="inherit">Review hash: <code>{plan.previewHash}</code></CatchText>
         {plan.mode === "archive_companion" ?
           <CatchText as="p" variant="supporting">This archives the pristine private Sales companion and holds
             outreach. The canonical organizer and import evidence remain.</CatchText> : null}

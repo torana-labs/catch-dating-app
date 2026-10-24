@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import {createRequire} from "node:module";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
@@ -685,31 +687,81 @@ test("manifest accepts only terminal prerequisite states", () => {
   );
 });
 
-test("backend promotion selects targets before credentials and checks readiness before runtime installation", () => {
-  for (const workflowPath of [".github/workflows/_firebase-promote.yml"]) {
-    const source = fs.readFileSync(path.join(repoRoot, workflowPath), "utf8");
-    const auth = source.indexOf("name: Authenticate to Google Cloud");
-    const parser = source.indexOf("name: Install the pinned source-analysis parser");
-    const selection = source.indexOf("--affected-functions true");
-    const readiness = source.indexOf(
-      "name: Verify environment prerequisites for the approved targets",
-    );
-    assert.ok(auth >= 0, `${workflowPath} authenticates before probing`);
-    assert.ok(parser >= 0 && selection > parser && auth > selection,
-      `${workflowPath} resolves affected targets before credentials`);
-    const parserStep = source.slice(parser, source.indexOf("\n      - ", parser));
-    assert.match(parserStep, /npm ci --ignore-scripts --workspaces=false/);
-    assert.ok(readiness > auth, `${workflowPath} probes after authentication`);
-    for (const expensiveStep of [
-      "run: npm install -g firebase-tools@",
-      "npm --prefix build/delivery/deploy-tree/functions ci",
-      "./tool/deploy_firebase_targets.sh",
-    ]) {
-      const expensiveIndex = source.indexOf(expensiveStep);
-      assert.ok(
-        expensiveIndex > readiness,
-        `${workflowPath} runs readiness before ${expensiveStep}`,
-      );
+test("Deploy backend plans before credentials and checks readiness before any mutation", () => {
+  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_backend-deploy.yml"), "utf8");
+  const deployJob = workflow.slice(workflow.indexOf("\n  deploy:"));
+  const step = (name) => {
+    const at = deployJob.indexOf(`name: ${name}`);
+    assert.ok(at >= 0, name);
+    return at;
+  };
+  const plan = step("Plan from the last deployed commit");
+  const auth = step("Authenticate to Google Cloud");
+  const params = step("Materialize Functions parameters from this environment's variables");
+  const readiness = step("Check this environment is ready for these targets");
+  const deploy = step("Deploy only what changed");
+  assert.ok(plan < auth && auth < params && params < readiness && readiness < deploy);
+  const readinessStep = deployJob.slice(readiness, deployJob.indexOf("\n      - ", readiness));
+  assert.match(readinessStep, /check_environment_readiness\.mjs/u);
+  for (const name of ["Authenticate to Google Cloud", "Materialize Functions parameters from this environment's variables",
+    "Check this environment is ready for these targets", "Deploy only what changed"]) {
+    const at = step(name);
+    assert.match(deployJob.slice(at, deployJob.indexOf("\n      - ", at)), /if: \$\{\{ steps\.plan\.outputs\.mode != 'no-op' \}\}/u,
+      `${name} is skipped when there is nothing to deploy`);
+  }
+});
+
+test("Deploy backend preserves every readiness failure before mutation", (t) => {
+  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_backend-deploy.yml"), "utf8");
+  const start = workflow.indexOf("name: Check this environment is ready for these targets");
+  assert.ok(start >= 0);
+  const step = workflow.slice(start, workflow.indexOf("\n      - ", start));
+  const run = step.match(/        run: \|\n((?:          .*\n|\n)+)/u)?.[1];
+  assert.ok(run?.includes("check_environment_readiness.mjs"), "execute the actual workflow shell");
+  const script = run.replace(/^          /gmu, "");
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-readiness-workflow-"));
+  t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
+  for (const [status, report] of [
+    [0, {status: "ready"}],
+    [1, {status: "not-ready", results: [{id: "secret", status: "not-ready"}]}],
+    [2, {status: "unknown", results: [{id: "iam", status: "unknown"}]}],
+    [2, null],
+    [64, null],
+    [127, null],
+  ]) {
+    const result = spawnSync("bash", ["-c", `
+      node() { printf '%s' "$READINESS_REPORT"; return "$READINESS_EXIT"; }
+      ( ${script} ) && printf 'DEPLOY_REACHED'
+    `], {
+      cwd, encoding: "utf8",
+      env: {...process.env, DEPLOY_ENVIRONMENT: "dev", DEPLOY_TARGETS: "functions:exploreSearch",
+        GITHUB_SHA: "a".repeat(40), READINESS_EXIT: String(status), READINESS_REPORT: report ? JSON.stringify(report) : ""},
+    });
+    assert.equal(result.status, status, `preserve readiness exit ${status}: ${result.stderr}`);
+    assert.equal(result.stdout.includes("DEPLOY_REACHED"), status === 0);
+  }
+});
+
+test("Deploy backend requires manual dispatch to bootstrap an untagged environment", (t) => {
+  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_backend-deploy.yml"), "utf8");
+  const blocks = [...workflow.matchAll(/name: Plan from the last deployed commit[\s\S]*?        run: \|\n((?:          .*\n|\n)+)/gu)];
+  assert.equal(blocks.length, 2, "check both the initial and post-approval plans");
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-deploy-bootstrap-"));
+  t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
+  for (const [index, block] of blocks.entries()) {
+    for (const event of ["push", "schedule", "workflow_dispatch"]) {
+      const output = path.join(cwd, `${index}-${event}.txt`);
+      const result = spawnSync("bash", ["-c", `
+        git() { if [[ "$1" == "rev-parse" ]]; then return 1; fi; }
+        node() { printf 'planner reached\n' >> "$GITHUB_OUTPUT"; }
+        ${block[1].replace(/^          /gmu, "")}
+      `], {
+        cwd, encoding: "utf8",
+        env: {...process.env, GITHUB_EVENT_NAME: event, GITHUB_OUTPUT: output,
+          DEPLOY_ENVIRONMENT: "staging", GITHUB_SHA: "a".repeat(40), FULL: "false"},
+      });
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(fs.readFileSync(output, "utf8"), event === "workflow_dispatch" ? "planner reached\n" : "mode=no-op\n");
     }
   }
 });
@@ -1135,35 +1187,6 @@ test("an active feature identity with unrelated WhatsApp grants fails the explic
   assert.equal(classifyForbiddenSecretAccess({serviceAccount, secret, result: {status: 1, stderr: "PERMISSION_DENIED"}}).status, "unknown");
 });
 
-test("promotion binds the same parameter inputs before deployment and checks the receipt before stage success", () => {
-  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_firebase-promote.yml"), "utf8");
-  const section = (name) => {
-    const start = workflow.indexOf(`      - name: ${name}`);
-    assert.ok(start >= 0);
-    const end = workflow.indexOf("\n      - ", start + 1);
-    return workflow.slice(start, end < 0 ? undefined : end);
-  };
-  const provenance = section("Record names-only Functions parameter provenance");
-  const materialize = section("Materialize non-secret Functions params in the deploy copy");
-  const inputNames = (text) => [...text.matchAll(/^          ([A-Z_]+): \$\{\{ vars\.([A-Z_]+) \}\}$/gm)]
-    .map((match) => { assert.equal(match[1], match[2]); return match[1]; }).sort();
-  assert.deepEqual(inputNames(provenance), inputNames(materialize));
-  assert.ok(inputNames(provenance).includes("EVENT_ASSISTANCE_GUEST_KEY_VERSION"));
-  assert.ok(inputNames(provenance).includes("EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION"));
-  assert.match(provenance, /--provenance-only/);
-  assert.match(materialize, /--provenance build\/delivery\/params-provenance.json/);
-  const readiness = section("Verify environment prerequisites for the approved targets");
-  assert.match(readiness, /--phase candidate/);
-  assert.match(readiness, /--source-root build\/delivery\/source-checkout --source-sha/);
-  const deploy = workflow.indexOf("--functions-deploy-only");
-  const postconditions = workflow.indexOf("--functions-postconditions-only", deploy);
-  const compare = workflow.indexOf("--candidate build/delivery/secret-bindings.json --phase deployed", postconditions);
-  const checkpoint = workflow.indexOf("node tool/ci/delivery_core.mjs checkpoint", compare);
-  assert.ok(deploy > 0 && postconditions > deploy && compare > postconditions && checkpoint > compare);
-  assert.match(workflow.slice(postconditions, checkpoint), /--phase deployed \|\| stage_status=\$\?/);
-  assert.match(workflow, /--params-file/);
-});
-
 test("explicit malformed candidate receipts never fall back to deployed-only readiness", () => {
   for (const invalid of [null, false, 0, "", "text", [], {}]) {
     let probes = 0;
@@ -1192,17 +1215,6 @@ test("deployed config digest covers secret-free functions and never serializes r
     [{...fn, serviceConfig: {...fn.serviceConfig, serviceAccountEmail: "other@catchdates-dev.iam.gserviceaccount.com"}}]]) {
     assert.equal(run(functions).exitCode, 1);
   }
-});
-
-test("promotion checks restored completed Functions and skips materialization for a narrowed no-op", () => {
-  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_firebase-promote.yml"), "utf8");
-  for (const name of ["Materialize non-secret Functions params in the deploy copy", "Gate Functions param coverage before any deploy mutation"]) {
-    assert.ok(workflow.includes(`- name: ${name}\n        if: \${{ steps.verify.outputs.has_functions == 'true' }}`));
-  }
-  const final = workflow.indexOf("- name: Verify deployed configuration including restored completed Functions");
-  const stageLoop = workflow.indexOf("- id: promote");
-  assert.ok(final > stageLoop);
-  assert.match(workflow.slice(final, workflow.indexOf("\n      - ", final + 1)), /--candidate build\/delivery\/secret-bindings.json --phase deployed/);
 });
 
 test("flight credentials remain inactive when the separately controlled policy is blank", () => {
