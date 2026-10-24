@@ -1,4 +1,4 @@
-import {activityKindFromValue} from "@catch/web-ui";
+import {activityKindFromValue} from "@catch/web-ui/artwork";
 import {activeMarket} from "@content/markets";
 import {consumerHomeCopy as copy} from "@content/consumerHome";
 import {buildPublicEventSummaries} from "../organizers/publicDiscovery";
