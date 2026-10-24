@@ -218,6 +218,14 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
   if (!rendering && renderIds.size) {
     throw new Error(`Captures need rendering, which reuse cannot do: ${[...renderIds].join(", ")}`);
   }
+  // Web captures render from a website Storybook built on Linux, with the
+  // pinned Playwright installed for this job alone.
+  const webRenders = captures.filter(c => renderIds.has(c.id) && c.kind === "web-capture");
+  if (webRenders.length && (!storybookDir || !playwrightDir)) {
+    throw new Error(`Web captures need a built Storybook and Playwright: ${webRenders.map(c => c.id).join(", ")}`);
+  }
+  const playwright = webRenders.length ? JSON.parse(fs.readFileSync(path.join(playwrightDir, "node_modules",
+    "playwright", "package.json"), "utf8")).version : null;
   const reusedBytes = new Map(captures.filter(c => !renderIds.has(c.id)).map(c =>
     [c.id, fs.readFileSync(regularFile(root, c.sourcePath))]));
   for (const capture of captures) {
@@ -232,14 +240,6 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
     fs.unlinkSync(path.join(root, capture.websitePath));
   }
   for (const file of [designPath, websiteManifestPath]) fs.unlinkSync(path.join(root, file));
-  // Web captures render from a website Storybook built on Linux, with the
-  // pinned Playwright installed for this job alone.
-  const webRenders = captures.filter(c => renderIds.has(c.id) && c.kind === "web-capture");
-  if (webRenders.length && (!storybookDir || !playwrightDir)) {
-    throw new Error(`Web captures need a built Storybook and Playwright: ${webRenders.map(c => c.id).join(", ")}`);
-  }
-  const playwright = webRenders.length ? JSON.parse(fs.readFileSync(path.join(playwrightDir, "node_modules",
-    "playwright", "package.json"), "utf8")).version : null;
   const commands = [
     ...(renderIds.size ? [["tool/marketing/export_app_screenshots.mjs", "--update",
       "--ids", [...renderIds].join(","), "--sf-font", sfFont,

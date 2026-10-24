@@ -136,9 +136,11 @@ export function renderHostLandingAdoption() {
   </HostLandingSection>;
 }
 
-export function renderHostLandingFaq() {
+export function renderHostLandingFaq(captures: CaptureSlots) {
   return <HostLandingSection variant="faq" aria-labelledby="host-faq-title"><h2 id="host-faq-title">{copy.faqTitle}</h2>
-    {copy.faqs.map(item => <HostLandingDetails key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></HostLandingDetails>)}
+    {copy.faqs.map(item => <HostLandingDetails key={item.question}><summary>{item.question}</summary><p>{item.answer}</p>
+      {"showsBrowserCheckIn" in item ? <HostLandingMedia variant="capture"><MediaSlot captures={captures} id="guest-join-phone" /></HostLandingMedia> : null}
+    </HostLandingDetails>)}
   </HostLandingSection>;
 }
 
