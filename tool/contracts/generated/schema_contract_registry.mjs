@@ -31105,6 +31105,7 @@ export const supplyIntakeRequestsDocumentSchema = {
     "leaseUntil",
     "result",
     "failure",
+    "approval",
     "createdAt",
     "updatedAt"
   ],
@@ -31699,6 +31700,60 @@ export const supplyIntakeRequestsDocumentSchema = {
               "type": "integer",
               "minimum": 1,
               "maximum": 3
+            }
+          }
+        }
+      ]
+    },
+    "approval": {
+      "description": "Set once, when staff approve the listing this request built: the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "approvalId",
+            "organizerId",
+            "approvedByUid",
+            "approvedAt",
+            "materialHash",
+            "salesOwnerUid"
+          ],
+          "properties": {
+            "approvalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvedByUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "materialHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "salesOwnerUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
             }
           }
         }
@@ -37121,7 +37176,7 @@ export const salesActivityDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_activities.schema.json",
   "title": "SalesActivityDocument",
-  "description": "Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions.",
+  "description": "Private timeline with actor-attested manual outreach and server-confirmed canonical claim and synthetic-demo transitions, and the approval of a listing Supply Intake built.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "salesActivities",
@@ -37187,7 +37242,8 @@ export const salesActivityDocumentSchema = {
         "claim_approved",
         "claim_rejected",
         "demo_started",
-        "demo_completed"
+        "demo_completed",
+        "listing_approved"
       ]
     },
     "channel": {
@@ -37302,6 +37358,41 @@ export const salesActivityDocumentSchema = {
               "pattern": "^[A-Za-z0-9_-]{3,128}$"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "requestId",
+            "approvalId",
+            "origin"
+          ],
+          "properties": {
+            "kind": {
+              "const": "supply_intake"
+            },
+            "requestId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "origin": {
+              "enum": [
+                "admin_nomination",
+                "sales_inbound_intent",
+                "discovery_run",
+                "none"
+              ]
+            }
+          }
         }
       ]
     }
@@ -37317,7 +37408,8 @@ export const salesActivityDocumentSchema = {
               "claim_approved",
               "claim_rejected",
               "demo_started",
-              "demo_completed"
+              "demo_completed",
+              "listing_approved"
             ]
           }
         }
@@ -37417,6 +37509,26 @@ export const salesActivityDocumentSchema = {
             "properties": {
               "kind": {
                 "const": "organizer_claim"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "listing_approved"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "kind": {
+                "const": "supply_intake"
               }
             }
           }
@@ -154867,6 +154979,7 @@ export const organizerDocumentSchema = {
           "type": "string",
           "enum": [
             "adminCreateOrganizerDraftFromCandidate",
+            "adminApproveOrganizerListing",
             "adminUpdateClubDetails",
             "adminSetClubIndexStatus",
             "adminOrganizerSearchBackfill"
@@ -238674,6 +238787,7 @@ export const publicRouteReservationDocumentSchema = {
         "adminUpdateOrganizerDetails",
         "adminSetOrganizerIndexStatus",
         "adminCreateOrganizerDraftFromCandidate",
+        "adminApproveOrganizerListing",
         "createOrganizer",
         "clubsToOrganizersMigration"
       ],
@@ -239251,7 +239365,7 @@ export const organizerIntakeCurationDecisionDocumentSchema = {
   "x-firestore-collection": "organizerIntakeCurationDecisions",
   "x-firestore-path": "organizerIntakeCurationDecisions/{operationId}",
   "x-document-id-field": "operationId",
-  "x-owner": "adminRecordOrganizerCuration and adminCreateOrganizerDraftFromCandidate callables",
+  "x-owner": "adminRecordOrganizerCuration, adminCreateOrganizerDraftFromCandidate and adminApproveOrganizerListing callables",
   "required": [
     "schemaVersion",
     "operationId",
@@ -249123,6 +249237,181 @@ export const adminNominateOrganizerCallableResponseSchema = {
     },
     "status": {
       "const": "queued"
+    }
+  }
+};
+
+export const adminApproveOrganizerListingCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_approve_organizer_listing_payload.schema.json",
+  "title": "AdminApproveOrganizerListingCallablePayload",
+  "description": "Staff approve a listing Supply Intake built from a nomination, an organizer's own submission or discovery. One transaction publishes the organizer page claimable and noindex, hidden in the app, records the review decision and receipt, and opens the organizer's Sales account, opportunity, tasks and activity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "listingWorkItemId",
+    "contentHash",
+    "name",
+    "publicSlug",
+    "marketId",
+    "organizerType",
+    "checklist",
+    "note"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "The reviewer's idempotency key; a retry with the same content replays."
+    },
+    "listingWorkItemId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "The listing content the reviewer saw. A listing rebuilt since then is refused."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "publicSlug": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$"
+    },
+    "marketId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "^[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "organizerType": {
+      "type": "string",
+      "enum": [
+        "club",
+        "community",
+        "individual",
+        "eventProducer",
+        "venue",
+        "brand"
+      ],
+      "description": "Canonical organizer classification. Club is one organizer subtype; missing legacy values normalize to club during migration."
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The public-web publication checklist, every item confirmed.",
+      "required": [
+        "identityReviewed",
+        "surfaceInventoryReviewed",
+        "ownerSafeCopyReviewed",
+        "marketScopeReviewed",
+        "mediaRightsReviewed",
+        "crawlDisabledReviewed",
+        "claimTargetReviewed",
+        "takedownPathReviewed",
+        "impersonationReviewed"
+      ],
+      "properties": {
+        "identityReviewed": {
+          "const": true
+        },
+        "surfaceInventoryReviewed": {
+          "const": true
+        },
+        "ownerSafeCopyReviewed": {
+          "const": true
+        },
+        "marketScopeReviewed": {
+          "const": true
+        },
+        "mediaRightsReviewed": {
+          "const": true
+        },
+        "crawlDisabledReviewed": {
+          "const": true
+        },
+        "claimTargetReviewed": {
+          "const": true
+        },
+        "takedownPathReviewed": {
+          "const": true
+        },
+        "impersonationReviewed": {
+          "const": true
+        }
+      }
+    },
+    "note": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 500
+    }
+  },
+  "x-callable-aliases": [
+    "adminApproveOrganizerListing"
+  ]
+};
+
+export const adminApproveOrganizerListingCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_approve_organizer_listing_response.schema.json",
+  "title": "AdminApproveOrganizerListingCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "approvalId",
+    "organizerId",
+    "organizerPath",
+    "created",
+    "publishStatus",
+    "indexStatus",
+    "appVisibility",
+    "claimState",
+    "salesOwnerUid"
+  ],
+  "properties": {
+    "approvalId": {
+      "type": "string",
+      "pattern": "^listing-[a-f0-9]{40}$"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 64
+    },
+    "organizerPath": {
+      "type": "string",
+      "pattern": "^organizers/[^/]+$"
+    },
+    "created": {
+      "type": "boolean",
+      "description": "False when this exact approval had already been applied."
+    },
+    "publishStatus": {
+      "const": "published"
+    },
+    "indexStatus": {
+      "const": "noindex"
+    },
+    "appVisibility": {
+      "const": "hidden"
+    },
+    "claimState": {
+      "const": "unclaimed"
+    },
+    "salesOwnerUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   }
 };

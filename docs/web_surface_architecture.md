@@ -189,16 +189,18 @@ hourly as a fallback:
 1. **Plan** (no credentials). It refuses to run unless the `prod` environment
    requires a reviewer. Then it releases main's head only if that head has
    successful same-source CI with Marketing validation and captures, and is
-   newer than live. Otherwise it records why it skipped: CI failed,
-   superseded by a newer merge, no website validation for the head, or
-   already live. A head without website validation waits for the next
-   website-relevant merge, which releases everything before it.
-   Same-source CI is the merge queue run that tested the exact commit main
+   newer than live. Otherwise it records why it skipped: CI failed, no
+   website validation for the head, or already live. A head without website
+   validation waits for the next website-relevant merge, which releases
+   everything before it.
+   Whichever commit's CI completed, the train considers main's head. Its
+   same-source CI is the merge queue run that tested the exact commit main
    received (`gh-readonly-queue/main/pr-<n>-<base>`), or main's own push run
    for a commit that reached main without the queue. A later merge cancels
    main's push run of a commit (`ci.yml` concurrency) but never its queue run,
    so a busy merge day still releases; plan, preview and promotion all read
-   the same completed run.
+   the same completed run. The hourly schedule is only a fallback: GitHub may
+   delay or drop scheduled runs.
 2. **Preview.** It dispatches `Next Website Preview`, follows that exact run,
    and publishes the preview channel URL.
 3. **Approve.** A job in the protected `prod` environment, whose required

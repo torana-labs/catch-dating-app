@@ -198,6 +198,7 @@ const schemaPublicRouteReservationDocumentSchema = <String, Object?>{
         'adminUpdateOrganizerDetails',
         'adminSetOrganizerIndexStatus',
         'adminCreateOrganizerDraftFromCandidate',
+        'adminApproveOrganizerListing',
         'createOrganizer',
         'clubsToOrganizersMigration',
       ],

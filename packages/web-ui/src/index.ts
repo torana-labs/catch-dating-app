@@ -1,3 +1,5 @@
+export {CatchAppCaptureImage} from "./components/CatchAppCaptureImage";
+export type {CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
 export {CatchField} from "./components/CatchField";
 export type {
   CatchFieldInputProps,

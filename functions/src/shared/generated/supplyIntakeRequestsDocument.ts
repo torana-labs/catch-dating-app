@@ -70,6 +70,17 @@ export interface SupplyIntakeRequestsDocument {
     at: string;
     attempts: number;
   };
+  /**
+   * Set once, when staff approve the listing this request built: the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays.
+   */
+  approval: null | {
+    approvalId: string;
+    organizerId: string;
+    approvedByUid: string;
+    approvedAt: string;
+    materialHash: string;
+    salesOwnerUid: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

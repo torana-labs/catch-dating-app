@@ -22,6 +22,7 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
     "leaseUntil",
     "result",
     "failure",
+    "approval",
     "createdAt",
     "updatedAt"
   ],
@@ -616,6 +617,60 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
               "type": "integer",
               "minimum": 1,
               "maximum": 3
+            }
+          }
+        }
+      ]
+    },
+    "approval": {
+      "description": "Set once, when staff approve the listing this request built: the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays.",
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "approvalId",
+            "organizerId",
+            "approvedByUid",
+            "approvedAt",
+            "materialHash",
+            "salesOwnerUid"
+          ],
+          "properties": {
+            "approvalId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "organizerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvedByUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "approvedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "materialHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "salesOwnerUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
             }
           }
         }

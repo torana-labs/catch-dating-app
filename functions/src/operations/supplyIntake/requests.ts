@@ -43,7 +43,7 @@ export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, 
   }
   const at = now.toISOString();
   tx.create(ref, {schemaVersion: 1, requestId: request.requestId, request, status: "queued", attempts: 0,
-    leaseUntil: null, result: null, failure: null, createdAt: at, updatedAt: at});
+    leaseUntil: null, result: null, failure: null, approval: null, createdAt: at, updatedAt: at});
   return {requestId: request.requestId, created: true};
 }
 

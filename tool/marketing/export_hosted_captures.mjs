@@ -82,8 +82,15 @@ function requestFromEnvironment() {
   return request;
 }
 
+// The manifest decides how many captures there are. The bound keeps one bundle
+// well inside the importer's archive limits.
+export const MAX_CAPTURES = 100;
+
 export function canonicalInventory(manifest) {
-  if (manifest.captures?.length !== 12) throw new Error("Expected exactly 12 canonical captures.");
+  const count = manifest.captures?.length;
+  if (!Number.isInteger(count) || count < 1 || count > MAX_CAPTURES) {
+    throw new Error(`Expected 1 to ${MAX_CAPTURES} canonical captures.`);
+  }
   const ids = new Set();
   const fixtures = new Set();
   for (const capture of manifest.captures) {

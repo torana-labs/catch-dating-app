@@ -28,6 +28,7 @@ import {SalesDemoWorkspace} from "./SalesDemoPanel";
 import {SalesIntelligenceWorkspace} from "./SalesIntelligenceWorkspace";
 import {renderSalesCommercialWorkspace} from "./SalesCommercialWorkspace";
 import {renderSalesFitQueueWorkspace} from "./SalesFitQueueWorkspace";
+import {renderSalesNominationWorkspace} from "./SalesNominationPanel";
 
 import {renderSalesImportedHistory} from "./SalesImportedHistoryPanel";
 import {renderSalesFunnelWorkspace} from "./SalesFunnelWorkspace";
@@ -272,12 +273,13 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
   onOpenHost: (id: string) => void;
   onOpenIntake: () => void;
 }) {
-  const [showAddHost, setShowAddHost] = useState(false);
+  const [opened, setOpened] = useState<"add-host" | "nominate" | null>(null);
   const [selectedCanonicalId, setSelectedCanonicalId] = useState("");
   const rows = controller.accounts.data?.rows ?? [];
   return <>
   {assignedStaffOnly ? null : renderSalesFitQueueWorkspace(currentUserUid, onOpenHost)}
-  {!assignedStaffOnly && showAddHost ? <Panel title="Add a host" icon={<Search size={18} />}>
+  {opened === "nominate" ? renderSalesNominationWorkspace(controller, () => setOpened(null)) : null}
+  {!assignedStaffOnly && opened === "add-host" ? <Panel title="Add a host" icon={<Search size={18} />}>
     <CatchText as="p" variant="supporting">First find the existing organizer identity. Adding it to Sales creates a
       private record and does not publish a listing or approve a claim.</CatchText>
     <SearchField ariaLabel="Search existing organizers" icon={<Search size={16} />}
@@ -304,14 +306,16 @@ function HostsView({controller, currentUserUid, assignedStaffOnly, onOpenHost,
         }).then((saved) => {
           if (saved) onOpenHost(selectedCanonicalId);
         })}>Add selected host to Sales</AdminButton>
+      <AdminButton onClick={() => setOpened("nominate")}>Nominate a new organizer</AdminButton>
       <AdminButton onClick={onOpenIntake}>Review a new organizer in Intake</AdminButton>
-      <AdminButton onClick={() => setShowAddHost(false)}>Cancel</AdminButton>
+      <AdminButton onClick={() => setOpened(null)}>Cancel</AdminButton>
     </AdminToolbar>
   </Panel> : null}
   <Panel title={assignedStaffOnly ? "Assigned hosts" : "Hosts"}
-    icon={<ClipboardList size={18} />} action={assignedStaffOnly ? undefined :
-    <AdminButton onClick={() => setShowAddHost(true)}>Add host</AdminButton>
-  }>
+    icon={<ClipboardList size={18} />} action={<>
+      <AdminButton onClick={() => setOpened("nominate")}>Nominate organizer</AdminButton>
+      {assignedStaffOnly ? null : <AdminButton onClick={() => setOpened("add-host")}>Add host</AdminButton>}
+    </>}>
     <AdminToolbar>
       <SearchField ariaLabel="Search a name, city, or market word"
         icon={<Search size={16} />}

@@ -9,7 +9,8 @@
   "x-firestore-path": "supplyIntakeRequests/{requestId}",
   "x-document-id-field": "requestId",
   "x-owner": "trusted Supply Intake worker",
-  "required": ["schemaVersion", "requestId", "request", "status", "attempts", "leaseUntil", "result", "failure", "createdAt", "updatedAt"],
+  "required": ["schemaVersion", "requestId", "request", "status", "attempts", "leaseUntil", "result", "failure", "approval",
+    "createdAt", "updatedAt"],
   "properties": {
     "schemaVersion": {"const": 1},
     "requestId": {"$ref": "#/definitions/id"},
@@ -58,6 +59,25 @@
             "message": {"type": "string", "maxLength": 500},
             "at": {"type": "string", "format": "date-time"},
             "attempts": {"type": "integer", "minimum": 1, "maximum": 3}
+          }
+        }
+      ]
+    },
+    "approval": {
+      "description": "Set once, when staff approve the listing this request built: the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays.",
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["approvalId", "organizerId", "approvedByUid", "approvedAt", "materialHash", "salesOwnerUid"],
+          "properties": {
+            "approvalId": {"$ref": "#/definitions/id"},
+            "organizerId": {"$ref": "#/definitions/id"},
+            "approvedByUid": {"$ref": "#/definitions/id"},
+            "approvedAt": {"type": "string", "format": "date-time"},
+            "materialHash": {"$ref": "#/definitions/hash"},
+            "salesOwnerUid": {"$ref": "#/definitions/id"}
           }
         }
       ]

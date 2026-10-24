@@ -57,7 +57,7 @@ function setup(stored: Record<string, unknown> = {}) {
   const db = new FakeFirestore();
   db.write(`${supplyIntakeCollections.requests}/nom-afterfly-1`, {schemaVersion: 1, requestId: "nom-afterfly-1",
     request: request(), status: "queued", attempts: 0, leaseUntil: null, result: null, failure: null,
-    createdAt: NOW, updatedAt: NOW, ...stored});
+    approval: null, createdAt: NOW, updatedAt: NOW, ...stored});
   const writer = new MemoryWriter();
   const snapshots: string[] = [];
   const deps = {db: db as unknown as Firestore, now: () => new Date(NOW), projectionWriter: writer,

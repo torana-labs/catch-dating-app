@@ -3694,6 +3694,24 @@ const schemaSpecs = [
     ],
   },
   {
+    name: "AdminApproveOrganizerListingCallablePayload",
+    source: "callables/admin_approve_organizer_listing_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminApproveOrganizerListingCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminApproveOrganizerListingCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminApproveOrganizerListingCallableResponse",
+    source: "callable_responses/admin_approve_organizer_listing_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminApproveOrganizerListingCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminApproveOrganizerListingCallableResponse.ts",
+    ],
+  },
+  {
     name: "AdminDecideOrganizerPolicyGapCallablePayload",
     source: "callables/admin_decide_organizer_policy_gap_payload.schema.json",
     typeOutput:
