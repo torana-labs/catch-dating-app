@@ -44,7 +44,6 @@ import {
   AdminNavGroup,
   AdminNavList,
   AdminPanel,
-  AdminPanelActions,
   AdminProfilePhotoGrid,
   AdminRowTitle,
   AdminSecondaryDisclosure,
@@ -1248,24 +1247,6 @@ export const AdminPanelStory: Story = {
       <AdminPanel icon={<Sparkles size={18} />} span={2} title="Wide panel">
         <AdminWorkbenchNote>Spans the workbench grid.</AdminWorkbenchNote>
       </AdminPanel>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminPanelActionsStory: Story = {
-  name: "Panel actions",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_panel_actions",
-      states: ["button-row"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminPanelActions>
-        <AdminButton>Hold</AdminButton>
-        <AdminButton variant="primary">Approve</AdminButton>
-      </AdminPanelActions>
     </AdminWorkspace>
   ),
 };
