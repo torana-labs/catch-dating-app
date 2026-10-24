@@ -171,18 +171,6 @@ export function AdminMutedCell({
   );
 }
 
-export function AdminPanelActions({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div {...props} className={classNames("admin-panel-actions", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function AdminEventSupplyReviewGrid({
   children,
   className = "",
@@ -190,18 +178,6 @@ export function AdminEventSupplyReviewGrid({
 }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div {...props} className={classNames("event-supply-review-grid", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function AdminEventSupplyDetailStack({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div {...props} className={classNames("event-supply-detail-stack", className)}>
       {children}
     </div>
   );

@@ -20,7 +20,6 @@ import {
   AdminRoadmapListItem,
   AdminSecondaryDisclosure,
   AdminSectionCaption,
-  AdminSignalBars,
   AdminStatusGrid,
   AdminTableRow,
   AdminTag,

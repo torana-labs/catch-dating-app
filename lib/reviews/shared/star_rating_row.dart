@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 
 /// Read-only star row. [rating] is 1-5 (integers for filled stars).
 class StarRatingRow extends StatelessWidget {
-  const StarRatingRow({super.key, required this.rating, this.size = 16});
+  const StarRatingRow({
+    super.key,
+    required this.rating,
+    this.size = CatchIcon.xs,
+  });
 
   final int rating;
   final double size;
@@ -72,8 +76,11 @@ class StarRatingPicker extends StatelessWidget {
               value2: value == 1 ? '' : context.l10n.reviewsStarRatingLabelS,
             ),
             selected: clampedRating == value,
-            child: GestureDetector(
+            child: CatchSurface(
+              duration: Duration.zero,
+              tone: CatchSurfaceTone.transparent,
               key: keyBuilder?.call(value),
+              radius: CatchRadius.none,
               onTap: enabled ? () => onChanged(value) : null,
               child: Padding(
                 padding: CatchInsets.inlineHorizontalTight,
