@@ -934,7 +934,6 @@ function parseArgs(argv) {
     text: null,
     world: null,
     moment: null,
-    syntheticMatches: 3,
     candidateCount: DEFAULT_CROSS_PATHS_DEMO_CANDIDATE_COUNT,
     testPhone: null,
     testCode: null,
@@ -1055,7 +1054,10 @@ function parseArgs(argv) {
     else if (arg === "--personas") args.personas = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--demo-scenario") args.demoScenario = requireValue(argv, ++i, arg);
     else if (arg === "--synthetic-matches") {
-      args.syntheticMatches = Number(requireValue(argv, ++i, arg));
+      throw new Error(
+        "--synthetic-matches is retired: warm-user starts a demo world, " +
+        "whose After moment brings 2-3 catches."
+      );
     } else if (arg === "--candidate-count") {
       args.candidateCount = Number(requireValue(argv, ++i, arg));
     } else {
