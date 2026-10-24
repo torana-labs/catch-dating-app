@@ -1248,7 +1248,8 @@ one role per event `activityKind`, and the Playbook marks with their badge.
 A role records a `note` where the family has no good match.
 
 `node tool/design/generate_icon_catalog.mjs` writes `CatchIcons` in
-`packages/catch_ui/lib/src/foundations/catch_icons.dart` from the catalog.
+`packages/catch_ui/lib/src/foundations/catch_icons.g.dart` from the catalog.
+The stable `catch_icons.dart` facade exports the generated class.
 Each role is a getter returning const `IconData` in the Lucide font vendored
 under `packages/catch_ui/assets/fonts/lucide/`, so release builds keep only the
 glyphs in use. The generator's `--check` mode fails when:

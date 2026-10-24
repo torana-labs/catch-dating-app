@@ -26,7 +26,7 @@ export const inputs = {
 };
 
 export const outputs = {
-  dart: "packages/catch_ui/lib/src/foundations/catch_icons.dart",
+  dart: "packages/catch_ui/lib/src/foundations/catch_icons.g.dart",
 };
 
 // Reserved words cannot name a static member; built-in and contextual

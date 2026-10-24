@@ -8455,7 +8455,8 @@
         "package-lock.json",
         "website/package.json",
         "packages/catch_ui/assets/fonts/**",
-        "packages/catch_ui/lib/src/foundations/catch_icons.dart"
+        "packages/catch_ui/lib/src/foundations/catch_icons.dart",
+        "packages/catch_ui/lib/src/foundations/catch_icons.g.dart"
       ],
       "ciRequirements": {
         "repositoryView": "full",
