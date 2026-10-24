@@ -1,7 +1,7 @@
 ---
 doc_id: demo_world_scenarios_spec
-version: 0.2.1
-updated: 2026-10-24
+version: 0.3.0
+updated: 2026-10-25
 owner: marketing_website
 status: active
 ---
@@ -64,9 +64,11 @@ selective rendering) are CAT-239, owned separately.
    India stories cast from `india-core-sales-personas-v1` (68 people, 34 women and
    34 men; 21 in Mumbai, 12 each in Pune, Bangalore and Delhi including Gurugram,
    10 in Hyderabad, 1 in Indore), so each launch-format world can cast 10-14
-   locals. Names are fictional, and phone numbers use the reserved demo range
-   `+91 90000 0xxxx`. Photos are planned slots until generated and uploaded, so
-   captures show initials meanwhile.
+   locals. New York stories cast from `us-nyc-sales-personas-v1` (24 people).
+   Names are fictional, and phone numbers use the story country's reserved
+   range: `+91 90000 0xxxx` in India, `+1 NXX 555-01xx` in the US. Photos are
+   planned slots until generated and uploaded, so captures show initials
+   meanwhile.
 
 ## World format (schemaVersion 2)
 
@@ -111,10 +113,28 @@ Derived at (event, moment):
 | --- | --- |
 | `booked` | attendance with `bookedAt ≤ moment` and not cancelled by then |
 | `checkedIn` | attendance with `checkedInAt ≤ moment` |
+| `waitlisted` | `waitlist` records with `joinedAt ≤ moment` |
+| `catchSent` | `catches` with `sentAt ≤ moment` |
+| `mutualMatches` | pairs who sent each other a catch by the moment |
+| `chatsStarted` | `chats` with `startedAt ≤ moment` |
 | `phase` | before start = upcoming, within start–end = live, after end = ended |
 
-Waitlist, payment, application and message records join the format when a
-scenario first needs them, with the same rule: timestamps in, counts derived.
+Optional event records, each added when a world first needed it:
+
+| Record | Fields | Added by |
+| --- | --- | --- |
+| `waitlist` | `personId`, `joinedAt` | `us-nyc-host-demo` |
+| `catches` | `personId` (sender), `targetId`, `sentAt` | `us-nyc-host-demo` |
+| `chats` | `personIds` (a pair), `startedAt` | `us-nyc-host-demo` |
+| `reviews` | `personId`, `rating`, `comment`, `createdAt`, `anonymous` | `us-nyc-host-demo` |
+
+Payment, application and message records join the same way, with the same
+rule: timestamps in, counts derived.
+
+A world that seeds demo environments declares the `demo-seed` use and a
+`seedWorld` generator (cities, users per city, event patterns relative to the
+seed time, operator commands). `tool/demo/seed_demo_data.mjs` runs the
+generator with the world's cast as its personas.
 
 ## Invariants the validator enforces
 
@@ -126,20 +146,27 @@ scenario first needs them, with the same rule: timestamps in, counts derived.
 - `checkedInAt` is after `bookedAt` and within the event window (doors may open
   30 minutes early).
 - `booked ≤ capacity` at every moment.
+- A waitlisted guest holds no booking for the same event.
+- Catches go between guests who checked in, after the sender checked in; a
+  chat needs a mutual match and starts after both catches; a review comes from
+  a guest who checked in and is written after the event ends.
+- `seedWorld` is present exactly when `uses` includes `demo-seed`, and its
+  patterns use production activity kinds.
 - Moments are in increasing order, and each one falls on a day the story covers.
 - `activityKind` and `format` values are members of the production enums,
   read from the generated schema contracts, not retyped.
-- No real-looking contact details: phone numbers in the reserved range, email
-  domains `example.test`.
+- No real-looking contact details: the host phone is in the story country's
+  reserved range, email domains are `example.test`.
 
 ## Projections
 
 | Consumer | Reader | Notes |
 | --- | --- | --- |
-| Flutter captures | Dart `DemoWorld` reader in `test/ui_captures/fixtures/` | Replaces per-role events with (event, moment). Existing builders keep producing production types. |
+| Flutter captures | Dart `DemoWorld` reader in `test/ui_captures/fixtures/` | Each Host capture role reads one (event, moment). Existing builders keep producing production types. The New York world converts civil times to UTC instants, as its captures were drawn with. |
 | Website stories | `website/src/stories/fixtures/demoWorld.ts` reading the same JSON | Storybook guest pages (`/join/`, forms, booking) show the same people and event as the app captures. |
 | Website copy | `demoWorldFacts` | The "facts" field in the media manifest names which values a caption or sentence quotes. |
-| Demo environments | `tool/demo` seeding | Later. Seed worlds keep their generator; a world can be seeded as-is. |
+| Website demo listing | `website/scripts/generateOrganizerListings.mjs` | The New York world becomes the Storybook demo organiser listing (`hostListings.demo.json`): events, counts, the event-success summary and reviews, at the world's `live` moment. |
+| Demo environments | `tool/demo/seed_demo_data.mjs` | A world's `seedWorld` generator, cast from the world's people. Older generator scenarios use the New York catalog. |
 
 ## Migration
 
@@ -165,7 +192,21 @@ scenario first needs them, with the same rule: timestamps in, counts derived.
    - `pub-crawl-hyderabad`
 5. Fold `host-demo` (NYC sales seed) and the Widgetbook design fixtures into
    worlds where they show the same entities. Contract fixtures stay separate:
-   they test schema edges, not stories.
+   they test schema edges, not stories. **In progress:**
+   - `us-nyc-host-demo` replaces `host-demo.json`: Sunday Table Club, hosted by
+     Victor Alvarez, with three events (the next dinner, a live mixer, and the
+     previous evening's mixer) at one `live` moment. Derived counts equal the
+     old hand-typed ones (0/0/0, 17/7/3, 17/13/2); the capture fixture, the
+     seeder and the website demo listing read it, and every capture that reads
+     it is pixel-identical.
+   - The old file's host was named Rohan Mehta but cast as Jordan Ellis, who
+     was also a guest, so the host is now the persona the story already fits.
+   - Its scorecard (18 mutual matches from 31 catches) couldn't be true, so the
+     world records 41 catches behind the 18 matches. Its funnel and proof
+     claims were never rendered and are dropped.
+   - The apps had bundled `host-demo.json` and the New York projection since a
+     retired lab read them; nothing reads them now, so they are no longer
+     bundled.
 
 ## Out of scope
 
