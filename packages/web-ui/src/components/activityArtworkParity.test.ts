@@ -63,13 +63,10 @@ describe("activity artwork parity with the Flutter painter", () => {
     expect(artworkTs).toContain('{offset: 0.6, color: "deep"}');
   });
 
-  it("reads opacity tokens that hold the painter's defaults", () => {
-    const pattern = cssToken("--catch-opacity-activity-artwork-pattern");
-    const glyph = cssToken("--catch-opacity-activity-artwork-glyph");
-    // The Dart defaults are literals until EventBackdropImage reads the tokens.
-    for (const [parameter, token, value] of [["patternOpacity", "activityArtworkPattern", pattern], ["iconOpacity", "activityArtworkGlyph", glyph]]) {
-      const declared = backdropDart.match(new RegExp(`this\\.${parameter} = ([\\w.]+),`))?.[1];
-      expect([value, `CatchOpacity.${token}`], parameter).toContain(declared);
+  it("reads the same opacity tokens as the painter's defaults", () => {
+    for (const [parameter, token] of [["patternOpacity", "activityArtworkPattern"], ["iconOpacity", "activityArtworkGlyph"]]) {
+      expect(backdropDart, parameter).toContain(`this.${parameter} = CatchOpacity.${token},`);
+      expect(cssToken(`--catch-opacity-${token.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`), token).toBeDefined();
     }
   });
 });
