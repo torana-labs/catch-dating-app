@@ -823,3 +823,29 @@ test("the nightly run renders everything and consults no earlier bundle", async 
   assert.deepEqual(plan.renderIds.sort(), h.manifest.captures.map(c => c.id).sort());
   assert.deepEqual([plan.seedIds, h.endpoints], [[], []]);
 });
+
+test("the plan command runs end to end as the workflow calls it", t => {
+  const f = fixture(t);
+  const sha = f.options.sourceSha;
+  f.executable("gh", `const endpoint = process.argv.at(-1);
+    const answer = endpoint === "repos/owner/repo" ? {id: 1} :
+      endpoint.endsWith("/actions/workflows/ci.yml") ? {id: 7} : {workflow_runs: []};
+    process.stdout.write(JSON.stringify(answer));`);
+  const directory = path.dirname(f.options.outputDir);
+  const eventPath = path.join(directory, "event.json");
+  fs.writeFileSync(eventPath, JSON.stringify({repository: {full_name: "owner/repo"}, after: sha}));
+  const outputs = path.join(directory, "outputs"), summary = path.join(directory, "summary");
+  const result = spawnSync(process.execPath, ["tool/marketing/export_hosted_captures.mjs", "--plan"], {
+    cwd: f.root, encoding: "utf8",
+    env: {...process.env, GITHUB_EVENT_NAME: "push", GITHUB_EVENT_PATH: eventPath, GITHUB_REPOSITORY: "owner/repo",
+      GITHUB_SHA: sha, GITHUB_WORKFLOW_REF: "owner/repo/.github/workflows/ci.yml@refs/heads/main",
+      CAPTURE_AUTOMATIC_SOURCE_SHA: sha, CAPTURE_WORKFLOW_DEFINITION_SHA: sha, CAPTURE_SOURCE_SHA: sha,
+      CAPTURE_WORKFLOW_SHA: sha, CAPTURE_SOURCE_DIR: f.root, CAPTURE_SEED_DIR: path.join(directory, "seeds"),
+      GITHUB_OUTPUT: outputs, GITHUB_STEP_SUMMARY: summary},
+  });
+  assert.equal(result.status, 0, result.stderr);
+  // No earlier bundle holds these inputs, so every capture goes to the renderer.
+  assert.equal(fs.readFileSync(outputs, "utf8"), "render=true\nseeded=false\n");
+  assert.deepEqual(JSON.parse(result.stdout).renderIds.sort(), f.manifest.captures.map(c => c.id).sort());
+  assert.match(fs.readFileSync(summary, "utf8"), /Reused from earlier CI bundles: none/);
+});

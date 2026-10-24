@@ -309,9 +309,15 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
       console.log(JSON.stringify(request));
     } else if (process.argv.includes("--plan")) {
       // Loaded only here: the planner reads GitHub, which other users of this
-      // module never need.
-      const {planHostedCapturesForJob} = await import("./lib/capture_seeds.mjs");
-      console.log(JSON.stringify(await planHostedCapturesForJob({request}), null, 2));
+      // module never need. It imports this module, so it must load after this
+      // module has finished evaluating; a top-level await here deadlocks.
+      import("./lib/capture_seeds.mjs")
+        .then(({planHostedCapturesForJob}) => planHostedCapturesForJob({request}))
+        .then(summary => console.log(JSON.stringify(summary, null, 2)))
+        .catch(error => {
+          console.error(error.message);
+          process.exitCode = 1;
+        });
     } else {
       const receipt = exportHostedCaptures({sourceDir: process.env.CAPTURE_SOURCE_DIR,
         sourceSha: request.sourceSha, outputDir: process.env.CAPTURE_OUTPUT_DIR,
