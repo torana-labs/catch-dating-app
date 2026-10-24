@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import {createRequire} from "node:module";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
@@ -701,12 +703,42 @@ test("Deploy backend plans before credentials and checks readiness before any mu
   assert.ok(plan < auth && auth < params && params < readiness && readiness < deploy);
   const readinessStep = deployJob.slice(readiness, deployJob.indexOf("\n      - ", readiness));
   assert.match(readinessStep, /check_environment_readiness\.mjs/u);
-  assert.match(readinessStep, /not-ready/u);
   for (const name of ["Authenticate to Google Cloud", "Materialize Functions parameters from this environment's variables",
     "Check this environment is ready for these targets", "Deploy only what changed"]) {
     const at = step(name);
     assert.match(deployJob.slice(at, deployJob.indexOf("\n      - ", at)), /if: \$\{\{ steps\.plan\.outputs\.mode != 'no-op' \}\}/u,
       `${name} is skipped when there is nothing to deploy`);
+  }
+});
+
+test("Deploy backend preserves every readiness failure before mutation", (t) => {
+  const workflow = fs.readFileSync(path.join(repoRoot, ".github/workflows/_backend-deploy.yml"), "utf8");
+  const start = workflow.indexOf("name: Check this environment is ready for these targets");
+  assert.ok(start >= 0);
+  const step = workflow.slice(start, workflow.indexOf("\n      - ", start));
+  const run = step.match(/        run: \|\n((?:          .*\n|\n)+)/u)?.[1];
+  assert.ok(run?.includes("check_environment_readiness.mjs"), "execute the actual workflow shell");
+  const script = run.replace(/^          /gmu, "");
+  const cwd = fs.mkdtempSync(path.join(os.tmpdir(), "catch-readiness-workflow-"));
+  t.after(() => fs.rmSync(cwd, {recursive: true, force: true}));
+  for (const [status, report] of [
+    [0, {status: "ready"}],
+    [1, {status: "not-ready", results: [{id: "secret", status: "not-ready"}]}],
+    [2, {status: "unknown", results: [{id: "iam", status: "unknown"}]}],
+    [2, null],
+    [64, null],
+    [127, null],
+  ]) {
+    const result = spawnSync("bash", ["-c", `
+      node() { printf '%s' "$READINESS_REPORT"; return "$READINESS_EXIT"; }
+      ( ${script} ) && printf 'DEPLOY_REACHED'
+    `], {
+      cwd, encoding: "utf8",
+      env: {...process.env, DEPLOY_ENVIRONMENT: "dev", DEPLOY_TARGETS: "functions:exploreSearch",
+        GITHUB_SHA: "a".repeat(40), READINESS_EXIT: String(status), READINESS_REPORT: report ? JSON.stringify(report) : ""},
+    });
+    assert.equal(result.status, status, `preserve readiness exit ${status}: ${result.stderr}`);
+    assert.equal(result.stdout.includes("DEPLOY_REACHED"), status === 0);
   }
 });
 

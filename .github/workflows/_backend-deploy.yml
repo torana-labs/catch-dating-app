@@ -153,10 +153,8 @@ jobs:
           node tool/firebase/check_functions_params_coverage.mjs \
             --functions-dir functions --env-file "functions/.env.$project_id"
 
-      # A target this environment is not ready for (missing secret, TTL, IAM)
-      # stops the run before any mutation. Prerequisites the check cannot
-      # confirm in time only warn: Firebase and the parity check still verify
-      # secrets during and after the deploy.
+      # Missing and indeterminate prerequisites both stop before mutation.
+      # Preserve the checker's exit status, including errors without a report.
       - name: Check this environment is ready for these targets
         if: ${{ steps.plan.outputs.mode != 'no-op' }}
         env:
@@ -165,19 +163,12 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p build
+          readiness_status=0
           node tool/firebase/check_environment_readiness.mjs \
             --env "$DEPLOY_ENVIRONMENT" --targets "$DEPLOY_TARGETS" \
-            --source-root . --source-sha "$GITHUB_SHA" --json > build/readiness.json || true
-          statuses() { jq -r --arg s "$1" '[.. | objects | select(has("id") and .status == $s) | .id] | .[]' build/readiness.json; }
-          blocked="$(statuses not-ready)"
-          if [[ -n "$blocked" ]]; then
-            echo "::error::$DEPLOY_ENVIRONMENT is not ready for these targets: $(paste -sd, <<< "$blocked")"
-            exit 1
-          fi
-          unknown="$(statuses unknown)"
-          if [[ -n "$unknown" ]]; then
-            echo "::warning::Readiness could not confirm: $(paste -sd, <<< "$unknown")"
-          fi
+            --source-root . --source-sha "$GITHUB_SHA" --json > build/readiness.json || readiness_status=$?
+          cat build/readiness.json
+          exit "$readiness_status"
 
       # CI already ran the predeploy test suites for this commit, and the build
       # above produced lib, so deploy from a copy of firebase.json without hooks.
