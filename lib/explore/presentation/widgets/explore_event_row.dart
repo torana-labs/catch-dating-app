@@ -101,11 +101,10 @@ class ExploreExternalEventRow extends StatelessWidget {
               ],
             ),
             gapH8,
-            Text(
+            CatchText(
               event.title,
+              variant: CatchTextVariant.displayXs,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.displayXs(context),
             ),
             gapH4,
             CatchText(

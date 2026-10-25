@@ -136,12 +136,7 @@ class EventCard extends StatelessWidget {
               ],
             ),
             gapH10,
-            Text(
-              title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.displayXs(context),
-            ),
+            CatchText(title, variant: CatchTextVariant.displayXs, maxLines: 2),
             gapH6,
             CatchText(
               subtitle,

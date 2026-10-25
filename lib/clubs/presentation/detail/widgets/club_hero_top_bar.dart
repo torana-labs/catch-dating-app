@@ -353,14 +353,14 @@ class ClubHeroHeader extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            Text(
+            CatchText(
               club.name,
               key: ValueKey(
                 context.l10n.clubsClubHeroAppBarTextClubDetailExpandedTitle,
               ),
+              variant: CatchTextVariant.displayS,
+              color: t.ink,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.displayS(context, color: t.ink),
             ),
             const SizedBox(height: CatchLayout.clubDetailHeroTitleLocationGap),
             Row(
@@ -452,14 +452,14 @@ class ClubHeroHeader extends StatelessWidget {
             children: [
               CatchMetadataText(kickerLabel, color: t.ink),
               gapH8,
-              Text(
+              CatchText(
                 club.name,
                 key: ValueKey(
                   context.l10n.clubsClubHeroAppBarTextClubDetailExpandedTitle,
                 ),
+                variant: CatchTextVariant.displayS,
+                color: t.ink,
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.displayS(context, color: t.ink),
               ),
               const SizedBox(
                 height: CatchLayout.clubDetailHeroTitleLocationGap,

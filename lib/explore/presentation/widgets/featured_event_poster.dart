@@ -289,9 +289,10 @@ class FeaturedEventBody extends StatelessWidget {
           ),
           const SizedBox(height: CatchSpacing.s3),
         ],
-        Text(
+        CatchText(
           story.title,
-          style: CatchTextStyles.displayM(context, color: paper),
+          variant: CatchTextVariant.displayM,
+          color: paper,
         ),
         if (story.body != null && story.body!.isNotEmpty) ...[
           const SizedBox(height: CatchSpacing.micro14),

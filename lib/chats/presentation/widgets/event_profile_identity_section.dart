@@ -73,9 +73,9 @@ class _EventProfileIdentitySectionState
               gapW16,
             ],
             Expanded(
-              child: Text(
+              child: CatchText(
                 profile.displayName,
-                style: CatchTextStyles.displayXs(context),
+                variant: CatchTextVariant.displayXs,
               ),
             ),
           ],

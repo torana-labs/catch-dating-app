@@ -33,11 +33,11 @@ class EventRehearsalEntryPageBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        CatchText(
           source == null
               ? l10n.hostRehearsalEntrySample
               : l10n.hostRehearsalEntryUpcoming,
-          style: CatchTextStyles.displayS(context),
+          variant: CatchTextVariant.displayS,
         ),
         gapH8,
         CatchText(

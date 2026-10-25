@@ -102,11 +102,10 @@ class EventActionCard extends StatelessWidget {
                 EventActionCardHeader(badges: badges, indexLabel: indexLabel),
                 if (headerAccessory != null) ...[gapH10, headerAccessory!],
                 gapH12,
-                Text(
+                CatchText(
                   title ?? event.title,
+                  variant: CatchTextVariant.displayXs,
                   maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.displayXs(context),
                 ),
                 if (subtitle != null && subtitle!.trim().isNotEmpty) ...[
                   gapH4,

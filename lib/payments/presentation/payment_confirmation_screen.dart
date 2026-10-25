@@ -347,10 +347,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
               ),
             ),
             gapH14,
-            Text(
-              title,
-              style: CatchTextStyles.displayXs(context, color: t.ink),
-            ),
+            CatchText(title, variant: CatchTextVariant.displayXs, color: t.ink),
             gapH8,
             CatchText(message, variant: CatchTextVariant.bodyM, color: t.ink2),
             gapH18,

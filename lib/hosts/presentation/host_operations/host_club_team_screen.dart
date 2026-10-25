@@ -402,10 +402,10 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
                 borderColor: t.primarySoft,
               ),
               gapH16,
-              Text(
+              CatchText(
                 profile.displayName,
+                variant: CatchTextVariant.displayXs,
                 textAlign: TextAlign.center,
-                style: CatchTextStyles.displayXs(context),
               ),
               if (roleTitle?.isNotEmpty == true) ...[
                 gapH8,

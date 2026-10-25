@@ -212,11 +212,11 @@ class EventPhotoHeroSurface extends StatelessWidget {
                 child: HeroActivityBadge(visual: visual),
               ),
               const SizedBox(height: CatchSpacing.s3),
-              Text(
+              CatchText(
                 event.title,
+                variant: CatchTextVariant.displayS,
+                color: d.ink,
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.displayS(context, color: d.ink),
               ),
             ],
           ),
@@ -336,11 +336,11 @@ class EventDetailTicketSurface extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            CatchText(
               event.title,
+              variant: CatchTextVariant.displayS,
+              color: titleColor,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.displayS(context, color: titleColor),
             ),
             if (!compact) ...[
               const SizedBox(height: CatchLayout.detailScreenInlineRowGap),

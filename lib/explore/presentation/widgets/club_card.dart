@@ -127,11 +127,10 @@ class ExploreFeedClubRow extends StatelessWidget {
               children: [
                 CatchMetadataText(state.rowKicker, color: palette.accent),
                 gapH4,
-                Text(
+                CatchText(
                   state.title,
+                  variant: CatchTextVariant.displayXs,
                   maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.displayXs(context),
                 ),
                 gapH4,
                 OrganizerAuthorityBadge(

@@ -548,13 +548,13 @@ class EventChatPageBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             gapH24,
-            Text(
+            CatchText(
               access.membershipUnavailable
                   ? l.eventChatMembershipRemoved
                   : !access.isRoomOpen
                   ? l.eventChatNotOpen
                   : l.eventChatJoinTitle,
-              style: CatchTextStyles.displayXs(context),
+              variant: CatchTextVariant.displayXs,
             ),
             gapH16,
             CatchText(
@@ -627,9 +627,9 @@ class EventChatPageBody extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
+                        CatchText(
                           l.eventChatEmptyTitle,
-                          style: CatchTextStyles.displayXs(context),
+                          variant: CatchTextVariant.displayXs,
                         ),
                         gapH12,
                         CatchText(
