@@ -61,17 +61,17 @@
     "web:ui-lint:check": "node tool/run.mjs check web:react-ui-lint"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/coverage-v8": "^4.1.12",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "knip": "6.42.1",
     "picomatch": "^4.0.7",
     "pngjs": "^7.0.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "typescript": "^6.0.3"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.64.5"
+    "@rollup/rollup-linux-x64-gnu": "4.65.0"
   }
 }
