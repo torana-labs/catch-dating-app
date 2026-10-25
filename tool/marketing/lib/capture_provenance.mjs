@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fromRepo, repoRoot} from '../../lib/repo_paths.mjs';
+import {webCaptureInputHash} from './web_capture_inputs.mjs';
 
 // Provenance travels inside the PNG; there is no second capture registry.
 const chunkType = 'caPt';
@@ -26,6 +27,7 @@ const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const renderFields = ['id', 'status', 'device', 'fixtureKey', 'sourcePath'];
 
 export function captureInputHash(capture) {
+  if (capture.kind === 'web-capture') return webCaptureInputHash(capture);
   const inputs = new Set(roots);
   // These canonical fixtures load JSON at runtime rather than through imports.
   for (const directory of ['tool/demo/demo_seed/scenarios', 'tool/demo/demo_seed/personas']) addTree(directory, inputs);
@@ -97,8 +99,8 @@ export function stampCapture(capture, captureId, fontPath) {
   const revision = spawnSync('git', ['rev-parse', 'HEAD'], {cwd: repoRoot, encoding: 'utf8'});
   if (revision.status !== 0) throw new Error('Cannot resolve capture source revision.');
   const provenance = {
-    version: 1, captureId, fixtureKey: capture.fixtureKey,
-    device: capture.device, platform: 'ios', outputScale: 2,
+    version: 1, ...recipeIdentity(capture, captureId),
+    device: capture.device, outputScale: 2,
     sourceRevision: revision.stdout.trim(),
     inputSha256: captureInputHash(capture),
     nativeFontSha256: digest(fs.readFileSync(fontPath)),
@@ -123,8 +125,9 @@ export function validateCaptureBytes(capture, captureId, bytes, {fontPath} = {})
     const records = chunks.filter(chunk => chunk.type === chunkType);
     if (records.length !== 1) throw new Error('Missing or duplicate render provenance; regenerate with the canonical exporter.');
     const record = JSON.parse(records[0].data.toString('utf8'));
-    if (record.version !== 1 || record.captureId !== captureId || record.fixtureKey !== capture.fixtureKey ||
-        record.device !== capture.device || record.platform !== 'ios' || record.outputScale !== 2 ||
+    const identity = recipeIdentity(capture, captureId);
+    if (record.version !== 1 || Object.entries(identity).some(([key, value]) => record[key] !== value) ||
+        record.device !== capture.device || record.outputScale !== 2 ||
         !/^[a-f0-9]{40}$/u.test(record.sourceRevision) || !/^[a-f0-9]{64}$/u.test(record.nativeFontSha256)) {
       throw new Error('Render provenance does not match the catalog/native iPhone recipe.');
     }
@@ -133,6 +136,15 @@ export function validateCaptureBytes(capture, captureId, bytes, {fontPath} = {})
     if (record.inputSha256 !== captureInputHash(capture)) throw new Error('Capture inputs changed; regenerate and inspect before syncing.');
     return [];
   } catch (error) { return [`${capture.id}: ${error.message}`]; }
+}
+
+// What a render claims to show: an app catalog entry on iOS, or a website
+// Storybook story in iPhone Safari (WebKit). `captureId` is the catalog id or
+// the story id.
+function recipeIdentity(capture, captureId) {
+  return capture.kind === 'web-capture'
+    ? {kind: 'web-capture', captureId, address: capture.address, platform: 'ios-safari'}
+    : {captureId, fixtureKey: capture.fixtureKey, platform: 'ios'};
 }
 
 function assertFrame(capture, width, height) {

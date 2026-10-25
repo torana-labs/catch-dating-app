@@ -19,9 +19,13 @@
       // install; only a whole-repository run can see those workspace configs.
       "ignoreDependencies": ["@vitest/coverage-v8"]
     },
-    "admin": {},
+    "admin": {
+      // ESLint loads its app config implicitly from the CLI's working directory.
+      "entry": ["eslint.config.mjs"]
+    },
     "website": {
       "entry": [
+        "eslint.config.mjs",
         // Loaded by their HTML document or an embed script tag, not an ESM import.
         "measurement-runtime/catch-acquisition-runtime.js",
         "public/form-embed-resize.js",
@@ -72,7 +76,10 @@
     // modules through createFunctionsRequire(), rooted at functions/.
     "tool/firebase/form_domain_operator.mjs": ["unlisted", "unresolved"],
     // The Tools lane installs Playwright through its "playwright" setup step.
-    "tool/web/check_storybook_visuals.mjs": ["unlisted"]
+    "tool/web/check_storybook_visuals.mjs": ["unlisted"],
+    // marketing-captures.yml installs the lockfile-pinned Playwright package
+    // separately on macOS and passes its directory to this renderer.
+    "tool/marketing/lib/web_capture_render.mjs": ["unlisted"]
   },
   "ignoreExportsUsedInFile": true,
   "ignoreBinaries": [
