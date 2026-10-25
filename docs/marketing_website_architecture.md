@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.16.0
-updated: 2026-10-24
+version: 0.16.1
+updated: 2026-10-25
 owner: marketing_website
 status: active
 ---
@@ -262,8 +262,9 @@ The website is already split out of the old monolithic shell:
 - `tool/marketing/check_website_routes.mjs` validates route URL, metadata,
   static output, generated listing coverage, and referenced Storybook
   `parameters.catchRoute` declarations.
-- `tool/web/check_react_ui_primitives.mjs` prevents feature/app/story code from
-  hand-rolling native interactive controls outside shared primitive owners.
+- `tool/web/check_react_ui.mjs` runs the shared ESLint UI preset. Production
+  raw markup and drawing props remain exact shrink-only debt until migrated
+  into `@catch/web-ui`; story/test controls retain shared-owner boundaries.
 - `tool/web/check_react_component_governance.mjs` prevents React app/feature
   code from hand-rolling governed component families. Its `--families-json`
   output is generated on demand and documents the known-family blocklist
@@ -644,14 +645,14 @@ aggregation points:
 
 7. Interactive controls go through shared primitives.
 
-   Feature, app, and Storybook code must not render raw `<button>`, `<a>`,
-   `<input>`, `<select>`, or `<textarea>` elements. Use the website shared UI
-   primitives, add a new primitive there when the concept is genuinely missing,
-   or add a temporary `react-ui-primitive-allow: <debt-id>` comment with a
-   removal plan. The gate is:
+   Production drawing belongs in `@catch/web-ui`; existing raw markup is
+   shrink-only debt. New controls compose existing library components.
+   Missing component families follow the D17 decision path. Story/test
+   controls retain their shared-owner boundary. Inline allow markers do not
+   bypass the preset. The gate is:
 
    ```sh
-   node tool/run.mjs check web:react-ui-primitives
+   node tool/run.mjs check web:react-ui-lint
    ```
 
 8. Governed component families and class names go through shared primitives.
@@ -662,7 +663,7 @@ aggregation points:
    `website/src/shared/site`, or `admin/src/shared/ui`. The class-name gate is:
 
    ```sh
-   node tool/run.mjs check web:react-classname-boundaries
+   node tool/run.mjs check web:react-ui-lint
    ```
 
    The canonical governed-family list is printed on demand by
@@ -1091,13 +1092,18 @@ website/src/
 
 10. Keep React primitive enforcement active.
 
-   Website and admin code now share the first React UI primitive scanner:
-   `node tool/run.mjs check web:react-ui-primitives`. Expand it before adding
-   new local button/link/input/select/textarea variants in feature code.
+   Website and admin share `node tool/run.mjs check web:react-ui-lint`.
+   The ESLint preset owns production raw elements and JSX className/style
+   props. App suppressions must equal current source and never exceed accepted
+   main. Table/image families remain deferred under D17. Do not add inline
+   allow markers. Resolve debt, then run ESLint's `--prune-suppressions` CLI.
 
 11. Keep React component-family enforcement active.
 
-   Website and admin code share `node tool/run.mjs check web:react-classname-boundaries` plus `node tool/run.mjs check web:react-component-governance`. The class-name scanner blocks feature/app/story `className` usage outside shared primitive owner files. The component scanner emits its current family view on demand with `node tool/web/check_react_component_governance.mjs --families-json`; no generated family snapshot is tracked. This is a known-family blocklist: passing it does not classify novel shells, so repeated new component drift must become a scanner family before handoff.
+   The separate `node tool/run.mjs check web:react-component-governance` gate
+   still owns governed component families. It prints its current family view
+   with `--families-json`; no generated family snapshot is tracked. It remains
+   a known-family blocklist, so add repeated new shell drift to that scanner.
 
 12. Keep cross-surface primitive decisions classified.
 
@@ -1136,7 +1142,7 @@ Run:
    ```sh
    node tool/run.mjs check marketing:website-routes
    node tool/run.mjs check marketing:website-components
-   node tool/run.mjs check web:react-ui-primitives
+   node tool/run.mjs check web:react-ui-lint
    node tool/run.mjs check web:react-component-governance
    node tool/run.mjs check web:react-query-state
    npm --workspace catch-marketing run typecheck
