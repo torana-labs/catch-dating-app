@@ -592,13 +592,17 @@ async function startPreset({
   preset: {moment: SuvbotDemoMoment; matchThreads: boolean; paid?: boolean};
 }): Promise<string> {
   const user = await requireUser(db, uid);
+  const worldMoment = SUVBOT_DEMO_MOMENTS
+    .find((item) => item.id === preset.moment)?.worldMoment;
   const world = homeDemoWorld(user.city, (candidate) =>
-    !preset.paid ||
-      candidate.events.some((event) => event.priceInPaise > 0));
+    worldMoment !== undefined &&
+    candidate.moments[worldMoment] !== undefined &&
+    (!preset.paid ||
+      candidate.events.some((event) => event.priceInPaise > 0)));
   if (!world) {
     return preset.paid ?
-      "No paid demo world is bundled yet." :
-      "No demo world is bundled yet.";
+      `No paid demo world is bundled for ${preset.moment} yet.` :
+      `No demo world is bundled for ${preset.moment} yet.`;
   }
   return startWorld({
     db, uid, operationId, deps, world,
