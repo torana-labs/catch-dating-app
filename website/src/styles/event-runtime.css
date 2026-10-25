@@ -46,7 +46,7 @@
 
 .event-runtime__practice-banner {
   background: color-mix(in srgb, var(--runtime-coral) 16%, white);
-  border: 1px solid color-mix(in srgb, var(--runtime-coral) 42%, white);
+  border: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--runtime-coral) 42%, white);
   border-radius: var(--catch-radius-md);
   color: var(--runtime-ink);
   font-weight: 700;
@@ -58,13 +58,13 @@
 
 .event-runtime__panel {
   background: var(--runtime-paper);
-  border: 1px solid #ded9d0;
+  border: var(--catch-stroke-hairline) solid #ded9d0;
   border-radius: 28px;
   box-shadow: 0 20px 60px rgb(35 28 20 / 9%);
   margin: clamp(var(--catch-space-s5), 8vh, 90px) auto 0;
   max-width: 560px;
   overflow: hidden;
-  padding: clamp(var(--catch-space-s7), 7vw, 52px);
+  padding: clamp(var(--catch-space-s7), 7vw, var(--catch-space-s12));
   position: relative;
 }
 
@@ -138,11 +138,11 @@
 
 .event-runtime .choice-chip {
   background: #fff;
-  border: 1px solid #cfc8bd;
+  border: var(--catch-stroke-hairline) solid #cfc8bd;
   border-radius: var(--catch-radius-pill);
   color: var(--runtime-ink);
   min-height: 40px;
-  padding: var(--catch-space-s2) 13px;
+  padding: var(--catch-space-s2) var(--catch-space-micro14);
 }
 
 .event-runtime .choice-chip.is-selected {
@@ -200,7 +200,7 @@
   display: flex;
   gap: var(--catch-space-s5);
   justify-content: space-between;
-  padding: clamp(var(--catch-space-s6), 7vw, 42px);
+  padding: clamp(var(--catch-space-s6), 7vw, var(--catch-space-s11));
 }
 
 .event-runtime__live-header .event-runtime__kicker {
@@ -220,7 +220,7 @@
   flex: 0 0 auto;
   font-size: .7rem;
   font-weight: 850;
-  padding: var(--catch-space-s2) 11px;
+  padding: var(--catch-space-s2) var(--catch-space-s3);
   text-transform: uppercase;
 }
 
@@ -379,11 +379,11 @@
 
 .event-runtime__module {
   background: var(--runtime-paper);
-  border: 1px solid #ded9d0;
-  border-radius: 22px;
+  border: var(--catch-stroke-hairline) solid #ded9d0;
+  border-radius: var(--catch-radius-lg);
   display: grid;
   gap: var(--catch-space-s4);
-  padding: clamp(22px, 6vw, 34px);
+  padding: clamp(var(--catch-space-s6), 6vw, var(--catch-space-s9));
 }
 
 .event-runtime__module--coral {
@@ -410,7 +410,7 @@
 
 .event-runtime__notice-stack p {
   background: color-mix(in srgb, var(--runtime-paper) 88%, transparent);
-  border: 1px solid #ded9d0;
+  border: var(--catch-stroke-hairline) solid #ded9d0;
   border-radius: var(--catch-radius-md);
   margin: 0;
   padding: var(--catch-space-s3) var(--catch-space-s4);
@@ -436,7 +436,7 @@
 
 .event-runtime__assignments article {
   background: rgb(255 255 255 / 40%);
-  border-radius: 16px;
+  border-radius: var(--catch-radius-md);
   padding: var(--catch-space-micro18);
 }
 
@@ -450,7 +450,7 @@
 
 .event-runtime__room-map {
   background: rgb(255 253 248 / 82%);
-  border: 1px solid rgb(34 17 14 / 14%);
+  border: var(--catch-stroke-hairline) solid rgb(34 17 14 / 14%);
   border-radius: var(--catch-radius-md);
   color: var(--runtime-ink);
   display: grid;
@@ -485,7 +485,7 @@
 .event-runtime__room-map-legend {
   display: grid;
   flex: 0 0 auto;
-  gap: 5px;
+  gap: var(--catch-space-micro6);
 }
 
 .event-runtime__room-map-legend span {
@@ -519,11 +519,11 @@
 
 .event-runtime__room-map-unit {
   align-items: center;
-  border: 1px solid #cfc8bd;
+  border: var(--catch-stroke-hairline) solid #cfc8bd;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 5px;
+  padding: var(--catch-space-micro6);
   position: absolute;
   transform: scale(.84);
 }
@@ -547,7 +547,7 @@
 }
 
 .event-runtime__room-map-unit--zone {
-  border-radius: 18px 7px var(--catch-radius-lg) 10px;
+  border-radius: var(--catch-radius-lg) var(--catch-radius-sm) var(--catch-radius-lg) var(--catch-radius-interactive-tile);
   border-style: dashed;
 }
 
@@ -571,7 +571,7 @@
 
 .event-runtime__route-map {
   background: rgb(255 253 248 / 82%);
-  border: 1px solid rgb(34 17 14 / 14%);
+  border: var(--catch-stroke-hairline) solid rgb(34 17 14 / 14%);
   border-radius: var(--catch-radius-md);
   display: grid;
   gap: var(--catch-space-s2);
@@ -582,7 +582,7 @@
 .event-runtime__route-map svg {
   aspect-ratio: 16 / 9;
   background: #f4efe6;
-  border-radius: 10px;
+  border-radius: var(--catch-radius-interactive-tile);
   width: 100%;
 }
 
@@ -645,9 +645,9 @@
   }
 
   .event-runtime__panel {
-    border-radius: 22px;
+    border-radius: var(--catch-radius-lg);
     margin-top: var(--catch-space-s3);
-    padding: var(--catch-space-s7) 22px;
+    padding: var(--catch-space-s7) var(--catch-space-s6);
   }
 
   .event-runtime__live {
