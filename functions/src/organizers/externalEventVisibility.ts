@@ -40,7 +40,9 @@ export async function syncExternalEventAppVisibility(
     return 0;
   }
   const db = deps.firestore();
-  // firestore-index: externalEvents (canonicalHostId:ASCENDING,__name__:ASCENDING)
+  /* firestore-index: externalEvents (
+    canonicalHostId:ASCENDING, __name__:ASCENDING
+  ) */
   const query = db.collection("externalEvents")
     .where("canonicalHostId", "==", organizerId)
     .orderBy(admin.firestore.FieldPath.documentId())
