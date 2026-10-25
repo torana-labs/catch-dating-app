@@ -126,20 +126,21 @@ function Controlled() {
 }
 
 /**
- * The arrows step through chapters and report the change. The chapter in the
- * viewport's middle starts active, so the step is checked relative to it.
+ * The arrows step through chapters and report the change, and a step holds
+ * against the observer until the reader scrolls. The chapter in the
+ * viewport's middle starts active, so the play first steps back to the start.
  */
 export const Arrows: Story = {
   parameters: {catchComponent: {id: "shared_scroll_story", routeIds: storyRoutes, states: ["arrows", "controlled"]}},
   render: () => <Controlled />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    const activeChapter = () => Number(canvas.getByText(/^Active chapter: \d+$/).textContent?.match(/\d+/)?.[0]);
-    const start = activeChapter();
-    const forward = start < chapters.length;
-    await userEvent.click(canvas.getByRole("button", {name: forward ? "Next moment" : "Previous moment"}));
-    await expect(activeChapter()).toBe(forward ? start + 1 : start - 1);
-    await expect(canvas.getByRole("button", {name: forward ? "Previous moment" : "Next moment"})).toBeEnabled();
+    const previous = canvas.getByRole("button", {name: "Previous moment"});
+    while (!(previous as HTMLButtonElement).disabled) await userEvent.click(previous);
+    await expect(canvas.getByText("Active chapter: 1")).toBeVisible();
+    await userEvent.click(canvas.getByRole("button", {name: "Next moment"}));
+    await expect(canvas.getByText("Active chapter: 2")).toBeVisible();
+    await expect(previous).toBeEnabled();
   },
 };
 

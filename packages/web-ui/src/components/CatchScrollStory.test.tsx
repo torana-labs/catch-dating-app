@@ -60,6 +60,19 @@ describe("CatchScrollStory", () => {
     expect(screen.getByRole("listitem", {current: "step"}).textContent).toBe("Invite them back");
   });
 
+  it("holds an arrow step until the reader scrolls again", () => {
+    render(<CatchScrollStory {...labels} chapters={chapters} />);
+    fireEvent.click(screen.getByRole("button", {name: "Next moment"}));
+    act(() => notify([{isIntersecting: true, target: observed[2]}]));
+    expect(screen.getByRole("listitem", {current: "step"}).textContent).toBe("Check in");
+    fireEvent.keyDown(window, {key: "Enter"});
+    act(() => notify([{isIntersecting: true, target: observed[2]}]));
+    expect(screen.getByRole("listitem", {current: "step"}).textContent).toBe("Check in");
+    fireEvent.wheel(window);
+    act(() => notify([{isIntersecting: true, target: observed[2]}]));
+    expect(screen.getByRole("listitem", {current: "step"}).textContent).toBe("Invite them back");
+  });
+
   it("reports changes and follows a controlled index", () => {
     const change = vi.fn();
     const {rerender} = render(<CatchScrollStory {...labels} activeIndex={1} chapters={chapters} onActiveIndexChange={change} />);

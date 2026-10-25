@@ -46,9 +46,11 @@ const twoDigits = (value: number) => String(value).padStart(2, "0");
 // The strip, 58% to 68% down the viewport, in which a chapter becomes active.
 const activeStrip = "-58% 0px -32% 0px";
 
-// After an arrow step, chapters scrolling past the strip on the way to the
-// target must not take over; scrolling stops counting once it settles.
-const stepSettleMs = 900;
+// After an arrow step the chosen chapter holds until the reader scrolls
+// again, so chapters passing the strip on the way, or resting in it beside
+// the target, cannot take over.
+const scrollIntentEvents = ["wheel", "touchmove", "keydown"] as const;
+const scrollKeys = new Set([" ", "ArrowDown", "ArrowUp", "End", "Home", "PageDown", "PageUp"]);
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && typeof window.matchMedia === "function" &&
@@ -72,7 +74,7 @@ export function CatchScrollStory({
 }: CatchScrollStoryProps) {
   const [ownIndex, setOwnIndex] = useState(0);
   const chapterRefs = useRef<(HTMLLIElement | null)[]>([]);
-  const steppingUntil = useRef(0);
+  const stepHeld = useRef(false);
   const last = Math.max(0, chapters.length - 1);
   const active = Math.min(Math.max(activeIndex ?? ownIndex, 0), last);
 
@@ -86,9 +88,18 @@ export function CatchScrollStory({
   };
 
   useEffect(() => {
+    const release = (event: Event) => {
+      if (event instanceof KeyboardEvent && !scrollKeys.has(event.key)) return;
+      stepHeld.current = false;
+    };
+    scrollIntentEvents.forEach((type) => window.addEventListener(type, release, {passive: true}));
+    return () => scrollIntentEvents.forEach((type) => window.removeEventListener(type, release));
+  }, []);
+
+  useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return undefined;
     const observer = new IntersectionObserver((entries) => {
-      if (Date.now() < steppingUntil.current) return;
+      if (stepHeld.current) return;
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         const index = chapterRefs.current.indexOf(entry.target as HTMLLIElement);
@@ -104,9 +115,8 @@ export function CatchScrollStory({
 
   const step = (index: number) => {
     activate.current(index);
-    const smooth = !prefersReducedMotion();
-    steppingUntil.current = smooth ? Date.now() + stepSettleMs : 0;
-    chapterRefs.current[index]?.scrollIntoView({behavior: smooth ? "smooth" : "auto", block: "center"});
+    stepHeld.current = true;
+    chapterRefs.current[index]?.scrollIntoView({behavior: prefersReducedMotion() ? "auto" : "smooth", block: "center"});
   };
 
   return (
