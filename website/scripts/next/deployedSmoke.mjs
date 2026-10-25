@@ -5,6 +5,7 @@ import {hostLandingCopy} from "../../src/content/hostLanding.ts";
 import {exploreCopy} from "../../src/content/explore.ts";
 import {organiserDirectoryCopy} from "../../src/content/organiserDirectory.ts";
 import {PUBLIC_PAGE_CACHE_CONTROL} from "../../src/app/next/publicPageCache.ts";
+import {productionProbeContracts} from "../probeProduction.mjs";
 /** Home and the organiser, event and Explore families; never Host, legal, claim or private routes. */
 export function sharedCachePage(path) {
   return path === "/" || /^\/(?:explore|organizers|events)\/(?:[^?#]*)$/u.test(path);
@@ -55,6 +56,14 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
   assert.match(privatePage.response.headers.get("x-robots-tag"), /noindex/u);
   assert.match(privatePage.response.headers.get("cache-control"), /no-store/u);
   assert.doesNotMatch(privatePage.text, /next-release-private-marker/u);
+  // The preview always serves current main, so it proves the shell keeps its
+  // route family's metadata through the real Hosting and Cloud Run rewrite.
+  // Promotion may release older source; the production probe watches live.
+  if (/--next-candidate-/u.test(base)) {
+    const form = productionProbeContracts.find(contract => contract.path.startsWith("/f/"));
+    assert.ok(privatePage.text.includes(`<title>${form.title}</title>`), "Private shell lost its route-family title");
+    assert.ok(privatePage.text.includes(`rel="canonical" href="https://catchdates.com${form.canonicalPath}"`), "Private shell lost its canonical");
+  }
   const robots = await get("/robots.txt");
   assert.ok(robots.text.includes(live ? "Allow: /" : "Disallow: /"));
   assert.ok((await get("/sitemap.xml")).text.includes("https://catchdates.com/"));
