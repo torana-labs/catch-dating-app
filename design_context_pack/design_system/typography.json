@@ -27,8 +27,8 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 48,
-    "covered": 46,
+    "publicStaticTextStyleMethods": 49,
+    "covered": 47,
     "excluded": 2
   },
   "excluded": {
@@ -123,13 +123,13 @@
       },
       "casePolicy": "mixed"
     },
-    "display": {
+    "displayXs": {
       "role": "voice",
       "family": "Archivo",
-      "size": 44.0,
-      "weight": 600,
-      "lineHeight": 0.98,
-      "tracking": 0.0,
+      "size": 24.0,
+      "weight": 760,
+      "lineHeight": 1.1,
+      "tracking": -0.48,
       "fontStyle": "normal",
       "defaultColor": {
         "light": "#16140F",
@@ -138,7 +138,127 @@
       "fontVariations": [
         {
           "axis": "wght",
-          "value": 600.0
+          "value": 760.0
+        },
+        {
+          "axis": "wdth",
+          "value": 78.0
+        }
+      ],
+      "casePolicy": "mixed"
+    },
+    "displayS": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 30.0,
+      "weight": 760,
+      "lineHeight": 1.05,
+      "tracking": -0.75,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 760.0
+        },
+        {
+          "axis": "wdth",
+          "value": 78.0
+        }
+      ],
+      "casePolicy": "mixed"
+    },
+    "displayM": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 38.0,
+      "weight": 760,
+      "lineHeight": 1.05,
+      "tracking": -1.14,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 760.0
+        },
+        {
+          "axis": "wdth",
+          "value": 78.0
+        }
+      ],
+      "casePolicy": "mixed"
+    },
+    "displayL": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 48.0,
+      "weight": 760,
+      "lineHeight": 1.0,
+      "tracking": -1.6800000000000002,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 760.0
+        },
+        {
+          "axis": "wdth",
+          "value": 78.0
+        }
+      ],
+      "casePolicy": "mixed"
+    },
+    "displayXl": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 60.0,
+      "weight": 760,
+      "lineHeight": 1.0,
+      "tracking": -2.4,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 760.0
+        },
+        {
+          "axis": "wdth",
+          "value": 78.0
+        }
+      ],
+      "casePolicy": "mixed"
+    },
+    "displayXxl": {
+      "role": "voice",
+      "family": "Archivo",
+      "size": 72.0,
+      "weight": 760,
+      "lineHeight": 1.0,
+      "tracking": -2.88,
+      "fontStyle": "normal",
+      "defaultColor": {
+        "light": "#16140F",
+        "dark": "#F4F0E8"
+      },
+      "fontVariations": [
+        {
+          "axis": "wght",
+          "value": 760.0
         },
         {
           "axis": "wdth",
@@ -161,30 +281,6 @@
       },
       "casePolicy": "mixed"
     },
-    "headlineS": {
-      "role": "voice",
-      "family": "Archivo",
-      "size": 26.0,
-      "weight": 600,
-      "lineHeight": 1.1,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 600.0
-        },
-        {
-          "axis": "wdth",
-          "value": 78.0
-        }
-      ],
-      "casePolicy": "mixed"
-    },
     "titleL": {
       "role": "function",
       "family": "Roboto",
@@ -197,228 +293,6 @@
         "light": "#16140F",
         "dark": "#F4F0E8"
       },
-      "casePolicy": "mixed"
-    },
-    "clubDisplay": {
-      "role": "voice",
-      "casePolicy": "mixed",
-      "parametric": true,
-      "samples": {
-        "s": {
-          "role": "voice",
-          "family": "Archivo",
-          "size": 22.0,
-          "weight": 600,
-          "lineHeight": 1.0,
-          "tracking": 0.0,
-          "fontStyle": "normal",
-          "defaultColor": {
-            "light": "#16140F",
-            "dark": "#F4F0E8"
-          },
-          "fontVariations": [
-            {
-              "axis": "wght",
-              "value": 600.0
-            },
-            {
-              "axis": "wdth",
-              "value": 78.0
-            }
-          ]
-        },
-        "m": {
-          "role": "voice",
-          "family": "Archivo",
-          "size": 27.0,
-          "weight": 600,
-          "lineHeight": 1.0,
-          "tracking": 0.0,
-          "fontStyle": "normal",
-          "defaultColor": {
-            "light": "#16140F",
-            "dark": "#F4F0E8"
-          },
-          "fontVariations": [
-            {
-              "axis": "wght",
-              "value": 600.0
-            },
-            {
-              "axis": "wdth",
-              "value": 78.0
-            }
-          ]
-        },
-        "l": {
-          "role": "voice",
-          "family": "Archivo",
-          "size": 32.0,
-          "weight": 600,
-          "lineHeight": 1.0,
-          "tracking": 0.0,
-          "fontStyle": "normal",
-          "defaultColor": {
-            "light": "#16140F",
-            "dark": "#F4F0E8"
-          },
-          "fontVariations": [
-            {
-              "axis": "wght",
-              "value": 600.0
-            },
-            {
-              "axis": "wdth",
-              "value": 78.0
-            }
-          ]
-        },
-        "xl": {
-          "role": "voice",
-          "family": "Archivo",
-          "size": 38.0,
-          "weight": 600,
-          "lineHeight": 1.0,
-          "tracking": 0.0,
-          "fontStyle": "normal",
-          "defaultColor": {
-            "light": "#16140F",
-            "dark": "#F4F0E8"
-          },
-          "fontVariations": [
-            {
-              "axis": "wght",
-              "value": 600.0
-            },
-            {
-              "axis": "wdth",
-              "value": 78.0
-            }
-          ]
-        }
-      }
-    },
-    "eventDisplay": {
-      "role": "voice",
-      "casePolicy": "mixed",
-      "parametric": true,
-      "samples": {
-        "s": {
-          "role": "voice",
-          "family": "Archivo",
-          "size": 22.0,
-          "weight": 600,
-          "lineHeight": 1.0,
-          "tracking": 0.0,
-          "fontStyle": "normal",
-          "defaultColor": {
-            "light": "#16140F",
-            "dark": "#F4F0E8"
-          },
-          "fontVariations": [
-            {
-              "axis": "wght",
-              "value": 600.0
-            },
-            {
-              "axis": "wdth",
-              "value": 78.0
-            }
-          ]
-        },
-        "m": {
-          "role": "voice",
-          "family": "Archivo",
-          "size": 27.0,
-          "weight": 600,
-          "lineHeight": 1.0,
-          "tracking": 0.0,
-          "fontStyle": "normal",
-          "defaultColor": {
-            "light": "#16140F",
-            "dark": "#F4F0E8"
-          },
-          "fontVariations": [
-            {
-              "axis": "wght",
-              "value": 600.0
-            },
-            {
-              "axis": "wdth",
-              "value": 78.0
-            }
-          ]
-        },
-        "l": {
-          "role": "voice",
-          "family": "Archivo",
-          "size": 32.0,
-          "weight": 600,
-          "lineHeight": 1.0,
-          "tracking": 0.0,
-          "fontStyle": "normal",
-          "defaultColor": {
-            "light": "#16140F",
-            "dark": "#F4F0E8"
-          },
-          "fontVariations": [
-            {
-              "axis": "wght",
-              "value": 600.0
-            },
-            {
-              "axis": "wdth",
-              "value": 78.0
-            }
-          ]
-        },
-        "xl": {
-          "role": "voice",
-          "family": "Archivo",
-          "size": 38.0,
-          "weight": 600,
-          "lineHeight": 1.0,
-          "tracking": 0.0,
-          "fontStyle": "normal",
-          "defaultColor": {
-            "light": "#16140F",
-            "dark": "#F4F0E8"
-          },
-          "fontVariations": [
-            {
-              "axis": "wght",
-              "value": 600.0
-            },
-            {
-              "axis": "wdth",
-              "value": 78.0
-            }
-          ]
-        }
-      }
-    },
-    "eventTitle": {
-      "role": "voice",
-      "family": "Archivo",
-      "size": 36.0,
-      "weight": 700,
-      "lineHeight": 1.0,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 700.0
-        },
-        {
-          "axis": "wdth",
-          "value": 78.0
-        }
-      ],
       "casePolicy": "mixed"
     },
     "sectionTitle": {
