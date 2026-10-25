@@ -6,7 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   for (final dark in [false, true]) {
-    testWidgets('secondary danger is neutral until interaction, dark=$dark', (
+    // D20 folds dangerSecondary into secondary: the confirm step carries the
+    // destructive meaning, and hover-only colour never reaches touch screens.
+    testWidgets('secondary danger renders as secondary, dark=$dark', (
       tester,
     ) async {
       await tester.pumpWidget(
@@ -51,7 +53,7 @@ void main() {
       await mouse.addPointer(location: Offset.zero);
       await mouse.moveTo(tester.getCenter(label));
       await tester.pumpAndSettle();
-      expect(tester.widget<Text>(label).style?.color, tokens.danger);
+      expect(tester.widget<Text>(label).style?.color, tokens.ink);
       await mouse.removePointer();
     });
   }

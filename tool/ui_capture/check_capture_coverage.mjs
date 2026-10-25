@@ -151,7 +151,9 @@ function validateCoverage({
 
   const activeMarketingFixtureKeys = new Set(
     (marketingManifest.captures ?? [])
-      .filter((capture) => capture.status === "active")
+      // Web captures name website stories; their recipes are validated by the
+      // marketing exporter, not the Flutter screen capture catalog.
+      .filter((capture) => capture.status === "active" && capture.kind !== "web-capture")
       .map((capture) => capture.fixtureKey)
   );
   const catalogMarketingFixtureKeys = new Set(

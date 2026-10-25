@@ -72,7 +72,10 @@
     // modules through createFunctionsRequire(), rooted at functions/.
     "tool/firebase/form_domain_operator.mjs": ["unlisted", "unresolved"],
     // The Tools lane installs Playwright through its "playwright" setup step.
-    "tool/web/check_storybook_visuals.mjs": ["unlisted"]
+    "tool/web/check_storybook_visuals.mjs": ["unlisted"],
+    // marketing-captures.yml installs the lockfile-pinned Playwright package
+    // separately on macOS and passes its directory to this renderer.
+    "tool/marketing/lib/web_capture_render.mjs": ["unlisted"]
   },
   "ignoreExportsUsedInFile": true,
   "ignoreBinaries": [
