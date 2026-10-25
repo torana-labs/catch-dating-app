@@ -1,0 +1,44 @@
+/*
+ * Website v2 split (CAT-248). The rail widths are the boards' 380px booking
+ * rail and 420px organiser rail. Columns stack when the `catch-page`
+ * container is narrower than the expanded window size (840px; see
+ * CatchBand.module.css).
+ */
+.split {
+  --catch-split-gap: var(--catch-space-s12);
+  --catch-split-columns: minmax(0, 1fr) minmax(0, 1fr);
+  display: grid;
+  grid-template-columns: var(--catch-split-columns);
+  gap: var(--catch-split-gap);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.column {
+  min-width: 0;
+}
+
+.split[data-gap="compact"] { --catch-split-gap: var(--catch-space-s8); }
+.split[data-gap="regular"] { --catch-split-gap: var(--catch-space-s12); }
+.split[data-gap="wide"] { --catch-split-gap: var(--catch-space-s16); }
+
+.split[data-ratio="even"] { --catch-split-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.split[data-ratio="sevenFive"] { --catch-split-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.split[data-ratio="narrowRail"] { --catch-split-rail: 380px; }
+.split[data-ratio="wideRail"] { --catch-split-rail: 420px; }
+.split[data-rail-side="start"] { --catch-split-columns: var(--catch-split-rail) minmax(0, 1fr); }
+.split[data-rail-side="end"] { --catch-split-columns: minmax(0, 1fr) var(--catch-split-rail); }
+
+.split[data-align="start"] { align-items: start; }
+.split[data-align="center"] { align-items: center; }
+.split[data-align="end"] { align-items: end; }
+.split[data-align="stretch"] { align-items: stretch; }
+
+@container catch-page (width < 840px) {
+  .split[data-ratio] { grid-template-columns: minmax(0, 1fr); }
+  .split[data-gap="compact"] { --catch-split-gap: var(--catch-space-s6); }
+  .split[data-gap="regular"] { --catch-split-gap: var(--catch-space-s8); }
+  .split[data-gap="wide"] { --catch-split-gap: var(--catch-space-s10); }
+}

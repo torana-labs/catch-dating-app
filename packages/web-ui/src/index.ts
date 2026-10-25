@@ -1,5 +1,13 @@
 export {CatchAppCaptureImage} from "./components/CatchAppCaptureImage";
 export type {CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
+export {CatchBand} from "./components/CatchBand";
+export type {
+  CatchBandElement,
+  CatchBandGround,
+  CatchBandProps,
+  CatchBandSpacing,
+  CatchBandWidth,
+} from "./components/CatchBand";
 export {CatchCheckboxInput} from "./components/CatchCheckboxInput";
 export type {CatchCheckboxInputProps} from "./components/CatchCheckboxInput";
 export * from "./artwork";
@@ -31,6 +39,14 @@ export type {
   CatchGapProps,
   CatchGapSize,
 } from "./components/CatchGap";
+export {CatchGrid} from "./components/CatchGrid";
+export type {
+  CatchGridAlignment,
+  CatchGridColumns,
+  CatchGridCompactColumns,
+  CatchGridElement,
+  CatchGridProps,
+} from "./components/CatchGrid";
 export {CatchInset} from "./components/CatchInset";
 export type {CatchInsetElement, CatchInsetPadding, CatchInsetProps} from "./components/CatchInset";
 export {CatchPageBody} from "./components/CatchPageBody";
@@ -39,12 +55,33 @@ export type {
   CatchPageBodyProps,
   CatchSpacingStep,
 } from "./components/CatchPageBody";
+export {CatchScrollStory} from "./components/CatchScrollStory";
+export type {
+  CatchScrollStoryChapter,
+  CatchScrollStoryMediaSide,
+  CatchScrollStoryProps,
+} from "./components/CatchScrollStory";
+export {CatchScroller} from "./components/CatchScroller";
+export type {
+  CatchScrollerEdge,
+  CatchScrollerItemWidth,
+  CatchScrollerProps,
+} from "./components/CatchScroller";
 export {CatchSectionList} from "./components/CatchSectionList";
 export type {
   CatchSectionListElement,
   CatchSectionListEmptyPolicy,
   CatchSectionListProps,
 } from "./components/CatchSectionList";
+export {CatchSplit} from "./components/CatchSplit";
+export type {
+  CatchSplitAlignment,
+  CatchSplitElement,
+  CatchSplitGap,
+  CatchSplitProps,
+  CatchSplitRailSide,
+  CatchSplitRatio,
+} from "./components/CatchSplit";
 export {CatchText} from "./components/CatchText";
 export type {
   CatchTextAlign,

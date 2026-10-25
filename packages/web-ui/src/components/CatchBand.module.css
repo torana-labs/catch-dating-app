@@ -1,0 +1,110 @@
+/*
+ * Website v2 band (CAT-248). Grounds read the generated palette ground tokens
+ * and remap the theme ink roles, so library text inside takes the ground's
+ * inks. The band is the `catch-page` container every Website v2 layout
+ * queries. 840px is the expanded window size
+ * (--catch-window-size-expanded-min-width); a container query cannot read a
+ * custom property, so websiteLayoutTokens.test.ts pins the literal.
+ */
+.band {
+  container: catch-page / inline-size;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  background: var(--catch-band-fill);
+  color: var(--catch-theme-ink);
+}
+
+.band[data-ground] {
+  --catch-theme-ink: var(--catch-band-ink);
+  --catch-theme-ink2: var(--catch-band-ink-secondary);
+}
+
+.band[data-ground="white"] {
+  --catch-band-fill: var(--catch-ground-white-fill);
+  --catch-band-ink: var(--catch-ground-white-ink);
+  --catch-band-ink-secondary: var(--catch-ground-white-ink-secondary);
+}
+
+.band[data-ground="paper"] {
+  --catch-band-fill: var(--catch-ground-paper-fill);
+  --catch-band-ink: var(--catch-ground-paper-ink);
+  --catch-band-ink-secondary: var(--catch-ground-paper-ink-secondary);
+}
+
+.band[data-ground="ink"] {
+  --catch-band-fill: var(--catch-ground-ink-fill);
+  --catch-band-ink: var(--catch-ground-ink-ink);
+  --catch-band-ink-secondary: var(--catch-ground-ink-ink-secondary);
+}
+
+.band[data-ground="coral"] {
+  --catch-band-fill: var(--catch-ground-coral-fill);
+  --catch-band-ink: var(--catch-ground-coral-ink);
+  --catch-band-ink-secondary: var(--catch-ground-coral-ink-secondary);
+}
+
+.band[data-ground="pink"] {
+  --catch-band-fill: var(--catch-ground-pink-fill);
+  --catch-band-ink: var(--catch-ground-pink-ink);
+  --catch-band-ink-secondary: var(--catch-ground-pink-ink-secondary);
+}
+
+.band[data-ground="yellow"] {
+  --catch-band-fill: var(--catch-ground-yellow-fill);
+  --catch-band-ink: var(--catch-ground-yellow-ink);
+  --catch-band-ink-secondary: var(--catch-ground-yellow-ink-secondary);
+}
+
+.band[data-ground="mint"] {
+  --catch-band-fill: var(--catch-ground-mint-fill);
+  --catch-band-ink: var(--catch-ground-mint-ink);
+  --catch-band-ink-secondary: var(--catch-ground-mint-ink-secondary);
+}
+
+.band[data-ground="indigo"] {
+  --catch-band-fill: var(--catch-ground-indigo-fill);
+  --catch-band-ink: var(--catch-ground-indigo-ink);
+  --catch-band-ink-secondary: var(--catch-ground-indigo-ink-secondary);
+}
+
+.band[data-ground="magenta"] {
+  --catch-band-fill: var(--catch-ground-magenta-fill);
+  --catch-band-ink: var(--catch-ground-magenta-ink);
+  --catch-band-ink-secondary: var(--catch-ground-magenta-ink-secondary);
+}
+
+/* The gutter is the boards' 40px desktop margin, 20px on a phone. */
+.inner {
+  --catch-band-gutter: var(--catch-space-s10);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+}
+
+.inner[data-width="content"] {
+  max-width: calc(var(--catch-website-content-max) + (2 * var(--catch-band-gutter)));
+  padding-inline: var(--catch-band-gutter);
+}
+
+/*
+ * Spacious is the boards' 112px section rhythm. The spacing scale stops at
+ * s16, so it is s16 + s12 until a section-rhythm token exists.
+ */
+.inner[data-pt="compact"] { padding-top: var(--catch-space-s8); }
+.inner[data-pt="regular"] { padding-top: var(--catch-space-s16); }
+.inner[data-pt="spacious"] { padding-top: calc(var(--catch-space-s16) + var(--catch-space-s12)); }
+.inner[data-pb="compact"] { padding-bottom: var(--catch-space-s8); }
+.inner[data-pb="regular"] { padding-bottom: var(--catch-space-s16); }
+.inner[data-pb="spacious"] { padding-bottom: calc(var(--catch-space-s16) + var(--catch-space-s12)); }
+
+@container catch-page (width < 840px) {
+  .inner { --catch-band-gutter: var(--catch-space-s5); }
+  .inner[data-pt="compact"] { padding-top: var(--catch-space-s6); }
+  .inner[data-pt="regular"] { padding-top: var(--catch-space-s10); }
+  .inner[data-pt="spacious"] { padding-top: var(--catch-space-s16); }
+  .inner[data-pb="compact"] { padding-bottom: var(--catch-space-s6); }
+  .inner[data-pb="regular"] { padding-bottom: var(--catch-space-s10); }
+  .inner[data-pb="spacious"] { padding-bottom: var(--catch-space-s16); }
+}

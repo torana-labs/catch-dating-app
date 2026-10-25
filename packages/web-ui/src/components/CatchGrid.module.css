@@ -1,0 +1,39 @@
+/*
+ * Website v2 grid (CAT-248). Gaps read the CatchGaps tokens; the compact
+ * column count applies when the `catch-page` container is narrower than the
+ * expanded window size (840px; see CatchBand.module.css).
+ */
+.grid {
+  --catch-grid-columns: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--catch-grid-columns), minmax(0, 1fr));
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  min-width: 0;
+}
+
+.grid[data-columns="2"] { --catch-grid-columns: 2; }
+.grid[data-columns="3"] { --catch-grid-columns: 3; }
+.grid[data-columns="4"] { --catch-grid-columns: 4; }
+
+.grid[data-align="stretch"] { align-items: stretch; }
+.grid[data-align="start"] { align-items: start; }
+
+.grid[data-gap="headerTitleToSubtitle"] { gap: var(--catch-gap-header-title-to-subtitle); }
+.grid[data-gap="inline"] { gap: var(--catch-gap-inline); }
+.grid[data-gap="related"] { gap: var(--catch-gap-related); }
+.grid[data-gap="formField"] { gap: var(--catch-gap-form-field); }
+.grid[data-gap="section"] { gap: var(--catch-gap-section); }
+.grid[data-gap="majorSection"] { gap: var(--catch-gap-major-section); }
+
+@container catch-page (width < 840px) {
+  .grid[data-compact-columns="1"] { --catch-grid-columns: 1; }
+  .grid[data-compact-columns="2"] { --catch-grid-columns: 2; }
+}

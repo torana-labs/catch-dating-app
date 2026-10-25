@@ -1,0 +1,195 @@
+/*
+ * Website v2 scroll story (CAT-248), after the host page's "On the night"
+ * journey. Colours come from the theme ink roles a CatchBand remaps and the
+ * palette accents; the phone arrangement applies below the expanded window
+ * size (840px; see CatchBand.module.css).
+ */
+.story {
+  --catch-scroll-story-accent: var(--catch-theme-ink);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--catch-space-s12);
+  align-items: start;
+  margin: 0;
+}
+
+/* The accent itself clears AA on the ink ground; light grounds take its deep shade. */
+.story[data-accent="coral"] { --catch-scroll-story-accent: var(--catch-palette-coral-deep); }
+.story[data-accent="pink"] { --catch-scroll-story-accent: var(--catch-palette-pink-deep); }
+.story[data-accent="yellow"] { --catch-scroll-story-accent: var(--catch-palette-yellow-deep); }
+.story[data-accent="mint"] { --catch-scroll-story-accent: var(--catch-palette-mint-deep); }
+.story[data-accent="indigo"] { --catch-scroll-story-accent: var(--catch-palette-indigo-deep); }
+.story[data-accent="magenta"] { --catch-scroll-story-accent: var(--catch-palette-magenta-deep); }
+[data-catch-theme="dark"] .story[data-accent="coral"] { --catch-scroll-story-accent: var(--catch-palette-coral); }
+[data-catch-theme="dark"] .story[data-accent="pink"] { --catch-scroll-story-accent: var(--catch-palette-pink); }
+[data-catch-theme="dark"] .story[data-accent="yellow"] { --catch-scroll-story-accent: var(--catch-palette-yellow); }
+[data-catch-theme="dark"] .story[data-accent="mint"] { --catch-scroll-story-accent: var(--catch-palette-mint); }
+[data-catch-theme="dark"] .story[data-accent="indigo"] { --catch-scroll-story-accent: var(--catch-palette-indigo); }
+[data-catch-theme="dark"] .story[data-accent="magenta"] { --catch-scroll-story-accent: var(--catch-palette-magenta); }
+
+.pinned {
+  position: sticky;
+  top: var(--catch-space-s12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--catch-space-s4);
+  min-width: 0;
+}
+
+.story[data-media-side="end"] .pinned { grid-column: 2; grid-row: 1; }
+.story[data-media-side="end"] .chapters { grid-column: 1; grid-row: 1; }
+
+.controls {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--catch-space-s3);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 380px;
+}
+
+.arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--catch-interaction-ios-minimum-extent);
+  height: var(--catch-interaction-ios-minimum-extent);
+  margin: 0;
+  padding: 0;
+  border: var(--catch-stroke-emphasis) solid color-mix(in srgb, currentColor 30%, transparent);
+  border-radius: var(--catch-radius-pill);
+  background: transparent;
+  color: var(--catch-theme-ink);
+  cursor: pointer;
+  transition: background-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.arrow svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.25;
+}
+
+.arrow:hover:not(:disabled) { background: color-mix(in srgb, currentColor 8%, transparent); }
+
+.arrow:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-stroke-focus-ring);
+}
+
+.arrow:disabled {
+  cursor: not-allowed;
+  opacity: var(--catch-field-disabled-opacity);
+}
+
+.now {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  text-align: center;
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+}
+
+.position {
+  color: var(--catch-scroll-story-accent);
+  font-size: var(--catch-typography-web-context-size);
+  font-weight: 600;
+  line-height: var(--catch-typography-web-context-line-height);
+}
+
+.title {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--catch-theme-ink);
+  font-size: var(--catch-typography-web-secondary-size);
+  font-weight: 600;
+  line-height: var(--catch-typography-web-secondary-line-height);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progress {
+  display: flex;
+  gap: var(--catch-space-micro6);
+  width: 100%;
+  max-width: 380px;
+}
+
+.segment {
+  flex: 1 1 0;
+  height: var(--catch-space-s1);
+  border-radius: var(--catch-radius-pill);
+  background: color-mix(in srgb, var(--catch-theme-ink) 18%, transparent);
+  transition: background-color var(--catch-motion-base) var(--catch-motion-standard-curve);
+}
+
+.segment[data-reached] { background: var(--catch-scroll-story-accent); }
+
+.media {
+  display: grid;
+  width: min(100%, 320px);
+}
+
+.frame {
+  grid-area: 1 / 1;
+  min-width: 0;
+  opacity: 0;
+  transition: opacity var(--catch-motion-base) var(--catch-motion-standard-curve);
+}
+
+.frame[data-active] { opacity: 1; }
+
+.chapters {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chapter {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 440px;
+}
+
+/* Inactive chapters recede to the ground's secondary ink, which still clears AA. */
+.chapter:not([data-active]) { --catch-theme-ink: var(--catch-theme-ink2); }
+
+@container catch-page (width < 840px) {
+  .story { display: block; }
+
+  .pinned {
+    top: 0;
+    z-index: var(--catch-layer-sticky);
+    gap: var(--catch-space-s3);
+    margin-inline: calc(-1 * var(--catch-band-gutter, var(--catch-layout-page-gutter)));
+    padding: var(--catch-space-s3) var(--catch-band-gutter, var(--catch-layout-page-gutter));
+    background: var(--catch-band-fill, var(--catch-theme-bg));
+  }
+
+  .media { width: 180px; }
+
+  .chapter {
+    justify-content: flex-start;
+    min-height: 64vh;
+    padding-top: var(--catch-space-s6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arrow,
+  .segment,
+  .frame { transition: none; }
+}
