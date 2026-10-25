@@ -15359,6 +15359,25 @@
           "CatchHeroImage"
         ]
       },
+      "react": {
+        "symbol": "CatchHeroImage",
+        "file": "packages/web-ui/src/components/CatchHeroImage.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchHeroImage.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "photo",
+            "scrim",
+            "no-scrim",
+            "image-error",
+            "fallback-gradient",
+            "dark"
+          ]
+        },
+        "notes": "Fills the caller's box like Flutter's Stack. The photo takes CatchGradedImage's grade as a CSS filter with multiply and screen tint layers, deeper under a dark theme. framed is web-only: the v2 event page's media frame, 16:10 at radius lg and 4:3 below 840px. Without semanticLabel the photo is decorative."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -17056,6 +17075,27 @@
           "CatchIndexRow"
         ]
       },
+      "react": {
+        "symbol": "CatchIndexRow",
+        "file": "packages/web-ui/src/components/CatchIndexRow.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchIndexRow.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "selected",
+            "leading",
+            "trailing",
+            "stacked",
+            "link",
+            "disabled",
+            "dark"
+          ]
+        },
+        "notes": "onTap makes the row a button and the web-only href makes it a link; with neither it is passive, as Flutter disables it. selected is aria-current. Leading and trailing stay passive inside a link or button row. Keyboard focus adds an inset ring on the web, where the 4% overlay alone is too faint. The footer lays its children in one wrapping line 8px apart."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -17116,6 +17156,28 @@
             "required": false,
             "dartType": "String?",
             "tsType": "string"
+          },
+          {
+            "name": "subtitle",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "footer",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "titleMaxLines",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "dartType": "int",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -17123,12 +17185,17 @@
           "selected",
           "leading",
           "trailing",
+          "stacked",
           "disabled"
         ],
         "slots": [
           {
             "name": "leading",
             "kind": "optional-leading-widget"
+          },
+          {
+            "name": "footer",
+            "kind": "optional-footer-widget"
           },
           {
             "name": "trailing",
@@ -17144,6 +17211,7 @@
         ],
         "dartRoles": [
           "CatchTextStyles.titleL",
+          "CatchTextStyles.supporting",
           "CatchLayout.eventTypeIndexRowHeight"
         ],
         "goldens": [],

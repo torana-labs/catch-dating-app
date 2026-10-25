@@ -1,0 +1,93 @@
+/*
+ * Flutter CatchHeroImage. The photo takes CatchGradedImage's warm matte grade:
+ * saturate, contrast and brightness, then CatchPhotoGradeColors multiplied
+ * into the shadows and screened into the highlights, deeper on dark. Without a
+ * photo it paints CatchImageFallbackSurface.hero. CatchMediaOverlay.detailHero
+ * lays editorial black at 10%, 16% and 70% from top to bottom. Framed, it is
+ * the v2 event page's media: 16:10 at radius lg, 4:3 below 840px.
+ */
+.hero {
+  --catch-hero-grade: saturate(0.78) contrast(1.04) brightness(0.97);
+  --catch-hero-shadow: color-mix(in srgb, white, #C9542F 7.84%);
+  --catch-hero-highlight: color-mix(in srgb, black, #F3C778 5.88%);
+
+  position: relative;
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.hero[data-framed] {
+  height: auto;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--catch-radius-lg);
+}
+
+@container catch-page (width < 840px) {
+  .hero[data-framed] { aspect-ratio: 4 / 3; }
+}
+
+:where([data-catch-theme="dark"]) .hero {
+  --catch-hero-grade: saturate(0.76) contrast(1.05) brightness(0.94);
+  --catch-hero-shadow: color-mix(in srgb, white, #C9542F 12.16%);
+  --catch-hero-highlight: color-mix(in srgb, black, #F3C778 7.84%);
+}
+
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .hero {
+  --catch-hero-grade: saturate(0.78) contrast(1.04) brightness(0.97);
+  --catch-hero-shadow: color-mix(in srgb, white, #C9542F 7.84%);
+  --catch-hero-highlight: color-mix(in srgb, black, #F3C778 5.88%);
+}
+
+.graded {
+  position: absolute;
+  inset: 0;
+  isolation: isolate;
+}
+
+.graded::before,
+.graded::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.graded::before {
+  background: var(--catch-hero-shadow);
+  mix-blend-mode: multiply;
+}
+
+.graded::after {
+  background: var(--catch-hero-highlight);
+  mix-blend-mode: screen;
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: var(--catch-hero-grade);
+}
+
+.fallback {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom right,
+    var(--catch-theme-accent),
+    color-mix(in srgb, var(--catch-theme-accent), var(--catch-theme-ink) 36%),
+    color-mix(in srgb, var(--catch-theme-primary), var(--catch-theme-ink) 50%));
+}
+
+.hero[data-scrim]::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, black 10%, transparent) 0%,
+    color-mix(in srgb, black 16%, transparent) 45%,
+    color-mix(in srgb, black 70%, transparent) 100%);
+  pointer-events: none;
+  content: "";
+}
