@@ -282,8 +282,10 @@ class EventDetailTicketSurface extends StatelessWidget {
         : t.ink2;
     final lineColor = isSpotlight ? d.line : t.line2;
 
-    return ColoredBox(
-      color: bodyColor,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: bodyColor,
       child: CatchTicket.hero(
         lineColor: lineColor,
         mediaBuilder: (context, compact) => Stack(
@@ -356,14 +358,11 @@ class EventDetailTicketSurface extends StatelessWidget {
             ),
             if (!compact) ...[
               const SizedBox(height: CatchLayout.detailScreenInlineRowGap),
-              Text(
+              CatchText(
                 _heroSubtitle(event),
+                variant: CatchTextVariant.supportingStrong,
+                color: metaColor,
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.supporting(
-                  context,
-                  color: metaColor,
-                ).copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ],
@@ -435,12 +434,10 @@ class HeroTimeChip extends StatelessWidget {
             ),
           ),
           gapH2,
-          Text(
+          CatchText(
             EventFormatters.time(event.localStartTime),
-            style: CatchTextStyles.sectionTitle(
-              context,
-              color: d.ink,
-            ).copyWith(fontWeight: FontWeight.w800),
+            variant: CatchTextVariant.sectionTitle,
+            color: d.ink,
           ),
         ],
       ),

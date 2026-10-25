@@ -295,9 +295,9 @@ class ProgramOperationReviewSheet extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
+                  CatchText(
                     _operationLabel(context, entry),
-                    style: Theme.of(context).textTheme.titleSmall,
+                    variant: CatchTextVariant.supportingStrong,
                   ),
                   CatchText(
                     AppTimeFormatters.dateTime(entry.createdAt),

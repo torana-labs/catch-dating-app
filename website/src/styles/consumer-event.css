@@ -4,9 +4,6 @@
 .consumer-event-page .event-detail-hero { padding: 0 var(--consumer-gutter) var(--catch-space-s11); }
 .consumer-event-page .event-detail-hero__inner { max-width: 1280px; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(var(--catch-space-s8),5vw,72px); }
 .consumer-event-page .event-detail-media { border-radius: 5px; aspect-ratio: 1; background: var(--catch-color-light-primary-soft); }
-.consumer-event-page .event-detail-media--typographic { padding: var(--catch-space-s8); color: var(--website-text); background: var(--catch-color-light-primary-soft); }
-.consumer-event-page .event-detail-media--typographic > strong { font-family: var(--catch-font-voice),sans-serif; font-size: clamp(38px,4.5vw,68px); font-stretch: 78%; }
-.consumer-event-page .event-detail-media--typographic > span { line-height: 1.5; }
 .consumer-event-page .event-detail-ticket__body { padding: var(--catch-space-s1) 0 0; }
 .consumer-event-page .event-detail-ticket__body > .ui-label { display: block; margin-bottom: var(--catch-space-s3); color: var(--website-text-muted); }
 .consumer-event-page .event-detail-ticket__body > a:has(.explore-badge) { display: inline-block; min-height: 32px; }
@@ -57,8 +54,6 @@
   .consumer-event-page .event-detail-hero { padding-bottom: 30px; }
   .consumer-event-page .event-detail-hero__inner { grid-template-columns: 1fr; gap: var(--catch-space-s7); }
   .consumer-event-page .event-detail-media { aspect-ratio: 1.35; }
-  .consumer-event-page .event-detail-media--typographic { padding: var(--catch-space-s6); }
-  .consumer-event-page .event-detail-media--typographic > strong { font-size: 42px; }
   .consumer-event-page .event-detail-ticket__body h1 { font-size: clamp(38px,11vw,56px); }
   .consumer-event-page .event-detail-body { grid-template-columns: 1fr; gap: var(--catch-space-s7); }
   .consumer-event-page .event-detail-body h2 { font-size: 30px; }

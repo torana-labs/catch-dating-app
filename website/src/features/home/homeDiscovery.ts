@@ -1,3 +1,4 @@
+import {activityKindFromValue} from "@catch/web-ui/artwork";
 import {activeMarket} from "@content/markets";
 import {consumerHomeCopy as copy} from "@content/consumerHome";
 import {buildPublicEventSummaries} from "../organizers/publicDiscovery";
@@ -24,12 +25,6 @@ export function categoryForActivity(kind: string): HomeCategory {
   if (/bar|crawl|mixer|night/i.test(kind)) return "nights";
   return "all";
 }
-export function homeEditorialImage(category: HomeCategory) {
-  if (category === "food") return "/assets/marketing/home-dinner.jpg";
-  if (category === "sport") return "/assets/marketing/home-pickleball.jpg";
-  if (category === "runs") return "/assets/events/social-run-music-hero-960.jpg";
-  return "/assets/marketing/catch-hero-event-960.jpg";
-}
 export function buildHomeDiscovery(listings: readonly HostListing[], citySlug: string, category: HomeCategory, now: number) {
   const city = activeMarket.cities.find(item => item.slug === citySlug) ?? activeMarket.cities[0];
   const publicListings = listings.filter(isPubliclyReadableListing);
@@ -39,7 +34,7 @@ export function buildHomeDiscovery(listings: readonly HostListing[], citySlug: s
     .map(event => {
       const detail = details.get(event.id)!;
       const format = categoryForActivity(detail.activityKind);
-      return {...event, category: format, image: detail.photoUrl || homeEditorialImage(format), illustrative: !detail.photoUrl,
+      return {...event, category: format, photoUrl: detail.photoUrl ?? null, activityKind: activityKindFromValue(detail.activityKind),
         availability: detail.bookedCount >= detail.capacityLimit ? copy.events.soldOut : detail.publicRegistrationEnabled !== true ? copy.events.closed : null};
     });
   const local = publicListings.filter(listing => listing.citySlug === city.slug);

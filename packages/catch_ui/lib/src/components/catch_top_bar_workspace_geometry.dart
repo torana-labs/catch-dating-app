@@ -112,7 +112,11 @@ extension _WorkspaceTopBarGeometry on CatchTopBar {
           _textHeight(
                 context,
                 action.label,
-                action.textStyle ?? CatchTextStyles.labelL(context),
+                action.textStyle ??
+                    CatchTextStyles.titleS(
+                      context,
+                      color: CatchTokens.of(context).ink,
+                    ),
                 math.max(1, labelWidth),
               ) +
               padding.vertical,

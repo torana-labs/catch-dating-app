@@ -10,7 +10,7 @@
       "role": "host",
       "label": "Club host",
       "phone": "+910000000002",
-      "scenario": "host-demo"
+      "scenario": "us-nyc-host-demo"
     },
     {
       "role": "power_runner",

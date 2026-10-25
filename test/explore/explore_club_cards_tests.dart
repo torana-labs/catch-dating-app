@@ -225,7 +225,7 @@ void _registerExploreClubCardsTests() {
     );
 
     expect(find.text('4.9 · 61 REVIEWS'), findsOneWidget);
-    expect(find.text('Hosted by'), findsOneWidget);
+    expect(find.text('HOSTED BY'), findsOneWidget);
     expect(find.text('Asha Shah'), findsOneWidget);
     expect(find.text('View organizer'), findsNothing);
     expect(

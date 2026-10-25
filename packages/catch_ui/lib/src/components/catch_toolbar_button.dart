@@ -57,7 +57,13 @@ class CatchToolbarButton extends StatefulWidget {
 
   static Size _labelSize(BuildContext context, String label) {
     final painter = TextPainter(
-      text: TextSpan(text: label, style: CatchTextStyles.labelL(context)),
+      text: TextSpan(
+        text: label,
+        style: CatchTextStyles.titleS(
+          context,
+          color: CatchTokens.of(context).ink,
+        ),
+      ),
       textDirection: Directionality.of(context),
       textScaler: MediaQuery.textScalerOf(context),
       maxLines: 1,
@@ -80,7 +86,7 @@ class _CatchToolbarButtonState extends State<CatchToolbarButton> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final enabled = widget.onPressed != null;
-    final style = CatchTextStyles.labelL(
+    final style = CatchTextStyles.titleS(
       context,
       color: enabled ? t.ink : t.ink3,
     );

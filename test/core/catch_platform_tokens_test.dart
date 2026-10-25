@@ -32,7 +32,10 @@ void main() {
           home: Builder(
             builder: (context) {
               name = CatchTextStyles.sectionTitle(context);
-              field = CatchTextStyles.fieldRowTitle(context);
+              field = CatchTextStyles.bodyLead(
+                context,
+                color: CatchTokens.of(context).ink,
+              );
               return const SizedBox.shrink();
             },
           ),

@@ -159,8 +159,13 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
         children: [
           Positioned.fill(child: PaymentCheckoutHeader(event: event)),
           Positioned.fill(
-            child: ColoredBox(
-              color: t.ink.withValues(alpha: CatchOpacity.paymentCheckoutScrim),
+            child: CatchSurface(
+              duration: Duration.zero,
+              radius: CatchRadius.none,
+              backgroundColor: t.ink.withValues(
+                alpha: CatchOpacity.paymentCheckoutScrim,
+              ),
+              child: const SizedBox.shrink(),
             ),
           ),
           Align(
@@ -327,8 +332,10 @@ class PaymentCheckoutSheet extends StatelessWidget {
               child: SizedBox(
                 width: CatchLayout.paymentCheckoutMedallionExtent,
                 height: CatchLayout.paymentCheckoutMedallionExtent,
-                child: ColoredBox(
-                  color: medallionFill,
+                child: CatchSurface(
+                  duration: Duration.zero,
+                  radius: CatchRadius.none,
+                  backgroundColor: medallionFill,
                   child: Icon(
                     failed
                         ? CatchIcons.errorOutlineRounded
@@ -576,11 +583,11 @@ class PaymentConfirmationBody extends StatelessWidget {
                               radius: CatchRadius.sm,
                             ),
                             gapH8,
-                            Text(
+                            CatchText(
                               actions[index].label,
-                              style: CatchTextStyles.labelL(context),
+                              variant: CatchTextVariant.titleS,
+                              color: CatchTokens.of(context).ink,
                               maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -694,9 +701,10 @@ class PaymentReferralBanner extends StatelessWidget {
               ],
             ),
           ),
-          Text(
+          CatchText(
             context.l10n.paymentsPaymentConfirmationScreenTextShare,
-            style: CatchTextStyles.labelL(context, color: t.primary),
+            variant: CatchTextVariant.titleS,
+            color: t.primary,
           ),
         ],
       ),

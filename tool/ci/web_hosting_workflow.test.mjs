@@ -211,8 +211,6 @@ test("caller triggers cover the exact build dependency closure", () => {
     "firebase/prod/host/**",
     "packages/phosphor_flutter/**",
     "tool/app_targets.json",
-    "tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json",
-    "tool/demo/demo_seed/scenarios/host-demo.json",
     "tool/platform/resolve_app_target.mjs",
     "tool/use_firebase_environment.sh",
     "tool/validate_firebase_environment.sh",

@@ -928,7 +928,6 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   for (const [name, command] of [
     ["Build marketing website", "npm run web:marketing:build"],
     ["Build marketing Storybook", "npm --workspace catch-marketing run build:storybook"],
-    ["Run marketing and shared web UI visual regression", "npm --workspace catch-marketing run test:visual"],
     ["Run marketing Storybook accessibility gate", "npm --workspace catch-marketing run test:storybook:a11y"],
   ]) {
     const step = namedStep(react, name);
@@ -940,9 +939,28 @@ test("Tools reuses only marketing builds and browser checks owned by the require
     /if: \$\{\{ inputs.surface == 'marketing' && !inputs.skip_deployable_build \}\}/u);
   assert.match(namedStep(react, "Build marketing Storybook"),
     /if: \$\{\{ inputs.surface == 'marketing' && \(github\.event_name != 'pull_request' \|\| inputs\.update_visual_baselines\) \}\}/u);
-  // Pull requests skip screenshots; merge_group, main and deploy runs compare every story.
-  for (const name of ["Run marketing and shared web UI visual regression", "Run admin visual regression"]) {
-    assert.match(namedStep(react, name), /!inputs\.update_visual_baselines && github\.event_name != 'pull_request' \}\}/u, name);
+  // Pull requests skip screenshots; merge_group, main and deploy runs render every story
+  // and report pixel changes without failing. Render errors still fail the step.
+  const marketingVisuals = namedStep(react, "Report marketing and shared web UI visual changes");
+  assert.match(marketingVisuals, /^          node tool\/web\/check_storybook_visuals\.mjs --surface website --report$/mu);
+  assert.match(marketingVisuals, /^          node tool\/web\/check_storybook_visuals\.mjs --surface webui --report$/mu);
+  assert.ok(namedStep(react, "Report admin visual changes")
+    .includes("run: node tool/web/check_storybook_visuals.mjs --surface admin --report"));
+  for (const [name, id] of [
+    ["Report marketing and shared web UI visual changes", "marketing-visual-check"],
+    ["Report admin visual changes", "admin-visual-check"],
+  ]) {
+    const step = namedStep(react, name);
+    assert.match(step, new RegExp(`id: ${id}\\n`, "u"), name);
+    assert.match(step, /!inputs\.update_visual_baselines && github\.event_name != 'pull_request' \}\}/u, name);
+    assert.doesNotMatch(step, /continue-on-error|--check/u, name);
+  }
+  for (const [name, id] of [
+    ["Upload marketing visual diagnostics", "marketing-visual-check"],
+    ["Upload admin visual diagnostics", "admin-visual-check"],
+  ]) {
+    assert.ok(namedStep(react, name).includes(
+      `if: \${{ always() && (steps.${id}.outcome == 'failure' || steps.${id}.outputs.has_changes == 'true') }}`), name);
   }
   assert.match(namedStep(react, "Build admin Storybook"),
     /if: \$\{\{ inputs.surface == 'admin' && \(github\.event_name != 'pull_request' \|\| inputs\.update_visual_baselines\) \}\}/u);
@@ -956,7 +974,7 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.equal(scripts["test:visual"], "node ../tool/web/check_storybook_visuals.mjs --surface website --check && node ../tool/web/check_storybook_visuals.mjs --surface webui --check");
   assert.equal(scripts["test:storybook:a11y"], "STORYBOOK_DISABLE_TELEMETRY=1 vitest run --project=storybook");
   const registered = toolsManifest.tools.find((tool) => tool.id === "web:storybook-visuals");
-  assert.ok(registered.checks.includes("npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check"));
+  assert.ok(registered.checks.includes("npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report"));
   const siteBuild = toolsManifest.tools.find((tool) => tool.id === "marketing:website-build");
   for (const command of [
     "node --test website/scripts/checkOrganizerBuildOutputs.test.mjs",
@@ -1314,18 +1332,26 @@ test("Widgetbook first pass selects every package suite and preserves golden obl
   assert.equal(steps[first].run, "(cd widgetbook && flutter test --concurrency=1 test)");
   assert.equal(steps[second].run, "(cd widgetbook && flutter test --concurrency=1 test/primitive_goldens_test.dart)");
   assert.equal(steps.filter((step) => step.run === steps[first].run).length, 1);
-  for (const name of [steps[first].name, "Flutter goldens (0.30% raster tolerance)"]) {
+  for (const name of [steps[first].name, "Flutter goldens (report pixel changes)"]) {
     assert.doesNotMatch(namedStep(source, name), /(?:if:|continue-on-error:|--update-goldens)/u);
   }
+  // Golden pixel changes are reported through the shared comparator, never failed.
+  for (const name of [steps[first].name, steps[second].name, "Flutter goldens (report pixel changes)"]) {
+    assert.ok(namedStep(source, name).includes(
+      "CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv"), name);
+  }
+  const report = namedStep(source, "Report golden pixel changes");
+  assert.ok(report.includes("if: ${{ always() && steps.flutter-goldens.outcome != 'skipped' }}"));
+  assert.match(report, />> "\$GITHUB_STEP_SUMMARY"/u);
   // The repeat render is a corpus property, checked by nightly full validation only.
   const determinism = namedStep(source, steps[second].name);
   assert.match(determinism,
     /^        if: \$\{\{ github\.event_name == 'schedule' \|\| github\.event_name == 'workflow_dispatch' \}\}$/mu);
   assert.doesNotMatch(determinism, /(?:continue-on-error:|--update-goldens)/u);
-  assert.equal(steps.find((step) => step.name === "Flutter goldens (0.30% raster tolerance)").run,
+  assert.equal(steps.find((step) => step.name === "Flutter goldens (report pixel changes)").run,
     "flutter test --concurrency=1 test/goldens");
   const upload = namedStep(source, "Retain golden failure diffs");
-  assert.match(upload, /if: failure\(\)/u);
+  assert.ok(upload.includes("if: ${{ failure() || steps.golden-report.outputs.has_changes == 'true' }}"));
   assert.match(upload, /uses: actions\/upload-artifact@/u);
   assert.match(upload, /path: test\/goldens\/failures\//u);
 });
@@ -1348,7 +1374,7 @@ process.exit(Number(process.env.FAKE_FLUTTER_EXIT));
     for (const [name, target, cwd] of [
       ["Widgetbook package suites (pass 1)", "test", packageRoot],
       ["Widgetbook corpus goldens (pass 2, determinism)", "test/primitive_goldens_test.dart", packageRoot],
-      ["Flutter goldens (0.30% raster tolerance)", "test/goldens", root],
+      ["Flutter goldens (report pixel changes)", "test/goldens", root],
     ]) {
       const step = steps.find((entry) => entry.name === name);
       assert.ok(step?.run, name);
