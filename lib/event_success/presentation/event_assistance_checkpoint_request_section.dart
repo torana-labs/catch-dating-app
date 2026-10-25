@@ -6,6 +6,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoin
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_visits_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -155,7 +156,11 @@ class _EventAssistanceCheckpointRequestSectionState
         ],
         if (widget.observationSummary case final summary?) ...[
           gapH8,
-          Text(summary, style: CatchTextStyles.labelL(context)),
+          CatchText(
+            summary,
+            variant: CatchTextVariant.titleS,
+            color: CatchTokens.of(context).ink,
+          ),
         ],
         if (ready) ...[
           if (widget.members.any((m) => !m.accountedFor)) ...[
@@ -334,14 +339,18 @@ class _EventAssistanceCheckpointRequestSectionState
                       EventAssistanceCheckpointPhase.retryRequired) &&
               decision != null) ...[
             gapH8,
-            Text(switch (decision) {
-              CloseCheckpointRequest() =>
-                l10n.eventAssistanceCheckpointRequestClose,
-              ReopenCheckpointRequest() =>
-                l10n.eventAssistanceCheckpointRequestReopen,
-              ReassignCheckpointReporter() =>
-                l10n.eventAssistanceCheckpointRequestReassign,
-            }, style: CatchTextStyles.labelL(context)),
+            CatchText(
+              switch (decision) {
+                CloseCheckpointRequest() =>
+                  l10n.eventAssistanceCheckpointRequestClose,
+                ReopenCheckpointRequest() =>
+                  l10n.eventAssistanceCheckpointRequestReopen,
+                ReassignCheckpointReporter() =>
+                  l10n.eventAssistanceCheckpointRequestReassign,
+              },
+              variant: CatchTextVariant.titleS,
+              color: CatchTokens.of(context).ink,
+            ),
             gapH8,
             if (decision case ReassignCheckpointReporter(
               :final reporterId,

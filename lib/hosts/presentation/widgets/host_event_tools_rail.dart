@@ -191,8 +191,11 @@ class HostEventToolsPageIndicator extends StatelessWidget {
           ),
           gapW10,
           Expanded(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
+            child: CatchSurface(
+              duration: Duration.zero,
+              tone: CatchSurfaceTone.transparent,
+              radius: CatchRadius.pill,
+              clipBehavior: Clip.antiAlias,
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: CatchSpacing.micro6,

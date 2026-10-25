@@ -467,11 +467,11 @@ class HostEventSummaryRow extends StatelessWidget {
                   children: [
                     labelText,
                     gapH2,
-                    Text(
+                    CatchText(
                       value,
+                      variant: CatchTextVariant.titleS,
+                      color: CatchTokens.of(context).ink,
                       maxLines: 1,
-                      style: CatchTextStyles.labelL(context),
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -486,12 +486,12 @@ class HostEventSummaryRow extends StatelessWidget {
               gapW10,
               Expanded(
                 flex: 3,
-                child: Text(
+                child: CatchText(
                   value,
+                  variant: CatchTextVariant.titleS,
+                  color: CatchTokens.of(context).ink,
                   maxLines: 1,
-                  style: CatchTextStyles.labelL(context),
                   textAlign: TextAlign.right,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],

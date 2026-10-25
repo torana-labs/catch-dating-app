@@ -432,29 +432,39 @@ expect_code_count \
   1
 
 probe_path="$probe_root/lib/core/widgets/text_migration_lint_probe.dart"
-stage_probe "CatchText steer rejects covered direct roles" <<'DART'
+stage_probe "CatchText steer rejects covered roles, Material slots and local aliases" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as fw;
 
-Widget textMigrationProbe(BuildContext context) => Column(children: [
-  Text('Covered role', style: CatchTextStyles.supporting(context)),
-  fw.Text('Clamped role', maxLines: 1, overflow: TextOverflow.ellipsis,
-    style: CatchTextStyles.sectionTitle(context)),
-]);
+Widget textMigrationProbe(BuildContext context) {
+  final textTheme = fw.Theme.of(context).textTheme;
+  final metadataStyle = CatchTextStyles.supporting(context);
+  return Column(children: [
+    Text('Covered role', style: CatchTextStyles.supporting(context)),
+    fw.Text('Clamped role', maxLines: 1, overflow: TextOverflow.ellipsis,
+      style: CatchTextStyles.sectionTitle(context)),
+    Text('Material slot', style: fw.Theme.of(context).textTheme.titleMedium),
+    Text('Weight normalization', style: fw.Theme.of(context).textTheme.titleSmall),
+    Text('Theme alias', style: textTheme.bodySmall?.copyWith(color: Colors.red)),
+    Text('Style alias', style: metadataStyle),
+  ]);
+}
 DART
-expect_probe exact catch_text_requires_style 2
+expect_probe exact catch_text_requires_style 6
 
 stage_probe "CatchText steer leaves unsupported APIs and library text legal" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-Widget textMigrationCleanProbe(BuildContext context) => Column(children: [
+Widget textMigrationCleanProbe(BuildContext context, TextTheme suppliedTheme) => Column(children: [
   const CatchText('Library text', variant: CatchTextVariant.supporting),
   Text('Uncovered role', style: CatchTextStyles.mono(context)),
   Text('Extra API', semanticsLabel: 'Details', style: CatchTextStyles.supporting(context)),
   Text('Clipped text', maxLines: 1, style: CatchTextStyles.supporting(context)),
   Text('Modified role', style: CatchTextStyles.supporting(context).copyWith(color: null)),
+  Text('Public theme', style: suppliedTheme.titleMedium),
+  Text('Modified metrics', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 99)),
 ]);
 DART
 expect_probe exact catch_text_requires_style 0

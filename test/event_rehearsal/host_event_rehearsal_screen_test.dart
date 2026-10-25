@@ -155,7 +155,7 @@ void main() {
     expect(find.text('Setup'), findsNothing);
     expect(find.text('Report'), findsNothing);
     expect(find.text('Live guest phone'), findsNothing);
-    expect(find.textContaining('Task 3 of 8'), findsOneWidget);
+    expect(find.textContaining('TASK 3 OF 8'), findsOneWidget);
 
     await tester.tap(find.text('Room'));
     await tester.pump();
@@ -344,7 +344,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Room'), findsOneWidget);
-    expect(find.textContaining('Task 4 of 8'), findsOneWidget);
+    expect(find.textContaining('TASK 4 OF 8'), findsOneWidget);
     expect(find.text('Place Maya in the current round'), findsOneWidget);
     expect(find.text('Maya Shah'), findsWidgets);
     expect(find.textContaining('Move to Table'), findsOneWidget);

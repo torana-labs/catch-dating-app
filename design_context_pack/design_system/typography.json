@@ -27,8 +27,8 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 53,
-    "covered": 51,
+    "publicStaticTextStyleMethods": 48,
+    "covered": 46,
     "excluded": 2
   },
   "excluded": {
@@ -177,30 +177,6 @@
         {
           "axis": "wght",
           "value": 600.0
-        },
-        {
-          "axis": "wdth",
-          "value": 78.0
-        }
-      ],
-      "casePolicy": "mixed"
-    },
-    "welcomeIntroBody": {
-      "role": "voice",
-      "family": "Archivo",
-      "size": 15.0,
-      "weight": 400,
-      "lineHeight": 1.48,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 400.0
         },
         {
           "axis": "wdth",
@@ -445,54 +421,6 @@
       ],
       "casePolicy": "mixed"
     },
-    "consoleTitle": {
-      "role": "voice",
-      "family": "Archivo",
-      "size": 20.0,
-      "weight": 800,
-      "lineHeight": 1.15,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 800.0
-        },
-        {
-          "axis": "wdth",
-          "value": 78.0
-        }
-      ],
-      "casePolicy": "mixed"
-    },
-    "hint": {
-      "role": "voice",
-      "family": "Archivo",
-      "size": 16.5,
-      "weight": 600,
-      "lineHeight": 1.25,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "fontVariations": [
-        {
-          "axis": "wght",
-          "value": 600.0
-        },
-        {
-          "axis": "wdth",
-          "value": 78.0
-        }
-      ],
-      "casePolicy": "mixed"
-    },
     "sectionTitle": {
       "role": "function",
       "family": "Roboto",
@@ -537,21 +465,6 @@
         "dark": "#F4F0E8"
       },
       "casePolicy": "mixed"
-    },
-    "fieldRowTitle": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 16.0,
-      "weight": 500,
-      "lineHeight": 1.5,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "casePolicy": "mixed",
-      "aliasOf": "titleS"
     },
     "fieldRowValue": {
       "role": "function",
@@ -636,21 +549,6 @@
         "dark": "#BAB2A7"
       },
       "casePolicy": "mixed"
-    },
-    "labelL": {
-      "role": "function",
-      "family": "Roboto",
-      "size": 14.0,
-      "weight": 700,
-      "lineHeight": 1.4285714285714286,
-      "tracking": 0.0,
-      "fontStyle": "normal",
-      "defaultColor": {
-        "light": "#16140F",
-        "dark": "#F4F0E8"
-      },
-      "casePolicy": "mixed",
-      "aliasOf": "titleS"
     },
     "fieldLabel": {
       "role": "function",

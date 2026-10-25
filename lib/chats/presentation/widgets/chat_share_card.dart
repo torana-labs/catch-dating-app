@@ -143,14 +143,11 @@ class ShareCardHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              CatchText(
                 chatContextStampFor(event),
+                variant: CatchTextVariant.statusLabel,
+                color: accent,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.statusLabel(
-                  context,
-                  color: accent,
-                ).copyWith(fontWeight: FontWeight.w800),
               ),
               gapH3,
               CatchText(

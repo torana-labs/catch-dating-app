@@ -98,9 +98,9 @@ class EventRehearsalRuntimePreviewSection extends StatelessWidget {
           ),
         ],
         if (showOutcomes) ...[
-          Text(
+          CatchText(
             l.hostEventRehearsalUpdatesScript,
-            style: Theme.of(context).textTheme.titleMedium,
+            variant: CatchTextVariant.sectionTitle,
           ),
           gapH8,
           CatchText(

@@ -146,12 +146,7 @@ class ClubHostRow extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: CatchSpacing.s1),
-              Text(
-                meta,
-                style: CatchTextStyles.monoLabel(context),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
+              CatchMetadataText(meta, color: CatchTokens.of(context).ink2),
             ],
           ),
         ),

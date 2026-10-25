@@ -84,8 +84,10 @@ class CompanionArrivalSection extends StatelessWidget {
                   math.sin(angle) * 0.84,
                 ),
                 child: ClipOval(
-                  child: ColoredBox(
-                    color: color,
+                  child: CatchSurface(
+                    duration: Duration.zero,
+                    radius: CatchRadius.none,
+                    backgroundColor: color,
                     child: SizedBox.square(dimension: filled ? 7 : 4),
                   ),
                 ),

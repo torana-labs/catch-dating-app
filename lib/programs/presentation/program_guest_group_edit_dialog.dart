@@ -111,9 +111,9 @@ class _ProgramGuestGroupEditDialogState
                 setState(() => _hotelId = selection.firstOrNull),
           )
         else
-          Text(
+          CatchText(
             context.l10n.programsGuestsNoHotelsAvailable,
-            style: Theme.of(context).textTheme.bodySmall,
+            variant: CatchTextVariant.bodyS,
           ),
       ],
     ),

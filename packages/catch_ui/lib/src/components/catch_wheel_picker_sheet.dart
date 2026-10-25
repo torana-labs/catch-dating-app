@@ -62,7 +62,7 @@ class CatchWheelPickerSheet extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         textAlign: TextAlign.center,
-                        style: CatchTextStyles.labelL(context, color: t.ink),
+                        style: CatchTextStyles.titleS(context, color: t.ink),
                       ),
                     ),
                     Align(
