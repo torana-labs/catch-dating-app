@@ -282,7 +282,7 @@ class ClubBellButton extends StatelessWidget {
         onPressed: enabled ? onPressed : null,
         child: isLoading
             ? SizedBox.square(
-                dimension: CatchIcon.md,
+                dimension: CatchIconSize.md,
                 child: CatchLoadingIndicator(color: foreground),
               )
             : Icon(

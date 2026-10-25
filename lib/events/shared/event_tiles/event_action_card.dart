@@ -227,7 +227,7 @@ class EventActionList extends StatelessWidget {
           CatchButton(
             key: actions[index].key,
             label: actions[index].label,
-            leading: Icon(actions[index].icon, size: CatchIcon.md),
+            leading: Icon(actions[index].icon, size: CatchIconSize.md),
             variant: actions[index].variant,
             accentColor: actions[index].accentColor,
             fullWidth: true,

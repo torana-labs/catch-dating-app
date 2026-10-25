@@ -11,7 +11,7 @@ export 'src/components/catch_section_tokens.dart';
 export 'src/components/catch_startup_tokens.dart';
 export 'src/components/catch_welcome_tokens.dart';
 export 'src/primitives/catch_aspect_ratio.dart';
-export 'src/primitives/catch_icon.dart';
+export 'src/primitives/catch_icon_size.dart';
 export 'src/primitives/catch_radius.dart';
 export 'src/primitives/catch_spacing.dart';
 export 'src/primitives/catch_stroke.dart';

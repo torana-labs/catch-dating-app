@@ -32,7 +32,7 @@ class MapOverlayTopBar extends StatelessWidget {
                   onPressed: onBack ?? () => Navigator.of(context).maybePop(),
                   child: Icon(
                     CatchIcons.arrowBackIosNewRounded,
-                    size: CatchIcon.md,
+                    size: CatchIconSize.md,
                   ),
                 ),
                 const Spacer(),

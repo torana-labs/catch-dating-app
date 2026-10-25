@@ -103,7 +103,7 @@ class HostTodayEventSection extends StatelessWidget {
           CatchButton(
             key: const ValueKey<String>('host-today-rehearse-event'),
             label: context.l10n.hostTodayRehearseThisEvent,
-            leading: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
+            leading: Icon(CatchIcons.scienceOutlined, size: CatchIconSize.sm),
             fullWidth: true,
             mode: CatchButtonMode.rounded,
             variant: CatchButtonVariant.secondary,
@@ -221,7 +221,7 @@ class HostTodayEventMetricTile extends StatelessWidget {
           backgroundColor: accent!.soft,
           borderColor: Colors.transparent,
           size: CatchSpacing.s12,
-          iconSize: CatchIcon.md,
+          iconSize: CatchIconSize.md,
           radius: CatchRadius.pill,
         ),
         gapW12,

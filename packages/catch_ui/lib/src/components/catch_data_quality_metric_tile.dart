@@ -30,7 +30,7 @@ class CatchDataQualityMetricTile extends StatelessWidget {
             runSpacing: CatchSpacing.s2,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Icon(data.icon, size: CatchIcon.sm, color: t.ink2),
+              Icon(data.icon, size: CatchIconSize.sm, color: t.ink2),
               if (data.status != CatchMetricDataStatus.ready)
                 Text(
                   data.status == CatchMetricDataStatus.partial

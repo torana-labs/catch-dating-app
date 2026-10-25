@@ -36,7 +36,7 @@ class EventRehearsalChoiceTile extends StatelessWidget {
                 icon: icon!,
                 iconColor: CatchTokens.of(context).ink,
                 size: CatchSpacing.s10,
-                iconSize: CatchIcon.sm,
+                iconSize: CatchIconSize.sm,
               ),
               gapW16,
             ],
@@ -58,7 +58,7 @@ class EventRehearsalChoiceTile extends StatelessWidget {
                     : expanded!
                     ? CatchIcons.expandLessRounded
                     : CatchIcons.expandMoreRounded,
-                size: CatchIcon.md,
+                size: CatchIconSize.md,
                 color: CatchTokens.of(context).ink2,
               ),
             ),

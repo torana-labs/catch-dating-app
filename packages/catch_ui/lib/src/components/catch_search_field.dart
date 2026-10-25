@@ -447,7 +447,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                           child: Center(
                                             child: Icon(
                                               CatchIcons.search,
-                                              size: CatchIcon.md,
+                                              size: CatchIconSize.md,
                                               color: foreground,
                                             ),
                                           ),

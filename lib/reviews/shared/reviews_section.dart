@@ -227,7 +227,7 @@ class ReviewsPreviewSection extends StatelessWidget {
               if (avgRating != null) ...[
                 StarRatingRow(
                   rating: avgRating.round(),
-                  size: CatchIcon.rating,
+                  size: CatchIconSize.rating,
                 ),
                 gapW4,
                 CatchText(
@@ -265,8 +265,8 @@ class ReviewsPreviewSection extends StatelessWidget {
                 ? CatchEmptyStateVariant.stacked
                 : CatchEmptyStateVariant.inline,
             iconSize: emptyPresentation == ReviewsEmptyPresentation.standalone
-                ? CatchIcon.tile
-                : CatchIcon.row,
+                ? CatchIconSize.tile
+                : CatchIconSize.row,
             iconContainerSize:
                 emptyPresentation == ReviewsEmptyPresentation.standalone
                 ? null
@@ -352,7 +352,7 @@ class ReviewCard extends StatelessWidget {
                     ),
                     StarRatingRow(
                       rating: review.rating,
-                      size: CatchIcon.rating,
+                      size: CatchIconSize.rating,
                     ),
                   ],
                 ),
@@ -365,7 +365,7 @@ class ReviewCard extends StatelessWidget {
                     onPressed: onEdit!,
                     child: Icon(
                       CatchIcons.editOutlined,
-                      size: CatchIcon.xs,
+                      size: CatchIconSize.xs,
                       color: t.primary,
                     ),
                   ),
@@ -382,7 +382,7 @@ class ReviewCard extends StatelessWidget {
                     onPressed: onRespond!,
                     child: Icon(
                       CatchIcons.rateReviewOutlined,
-                      size: CatchIcon.xs,
+                      size: CatchIconSize.xs,
                       color: t.primary,
                     ),
                   ),

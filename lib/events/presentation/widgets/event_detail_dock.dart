@@ -538,7 +538,7 @@ class EventDockStatusText extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: t.primary, size: CatchIcon.md),
+        Icon(icon, color: t.primary, size: CatchIconSize.md),
         gapW6,
         CatchText(
           label,

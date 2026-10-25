@@ -93,7 +93,7 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
                   children: [
                     Icon(
                       CatchIcons.phoneIphoneRounded,
-                      size: CatchIcon.md,
+                      size: CatchIconSize.md,
                       color: dark.ink2,
                     ),
                     gapW8,

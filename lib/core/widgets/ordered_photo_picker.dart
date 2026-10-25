@@ -301,7 +301,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
                       : null,
                   leading: Icon(
                     CatchIcons.addPhotoAlternateOutlined,
-                    size: CatchIcon.sm,
+                    size: CatchIconSize.sm,
                   ),
                 ),
               ],
@@ -532,7 +532,7 @@ class OrderedPhotoTile extends StatelessWidget {
                     child: Center(
                       child: Icon(
                         CatchIcons.brokenImageOutlined,
-                        size: CatchIcon.tile,
+                        size: CatchIconSize.tile,
                         color: t.ink2,
                       ),
                     ),
@@ -557,7 +557,7 @@ class OrderedPhotoTile extends StatelessWidget {
                       onPressed: onRemove,
                       child: Icon(
                         CatchIcons.closeRounded,
-                        size: CatchIcon.sm,
+                        size: CatchIconSize.sm,
                         color: t.ink,
                       ),
                     ),
@@ -608,8 +608,8 @@ class OrderedPhotoTile extends StatelessWidget {
                       alpha: CatchOpacity.imageEditControlFill,
                     ),
                     borderColor: Colors.transparent,
-                    size: CatchIcon.row,
-                    iconSize: CatchIcon.sm,
+                    size: CatchIconSize.row,
+                    iconSize: CatchIconSize.sm,
                     radius: CatchRadius.pill,
                   ),
                 ),
@@ -688,7 +688,7 @@ class _OrderedPhotoStatusBanner extends StatelessWidget {
             children: [
               if (activelyUploading) ...[
                 SizedBox.square(
-                  dimension: CatchIcon.xs,
+                  dimension: CatchIconSize.xs,
                   child: CatchLoadingIndicator(color: t.surface),
                 ),
                 gapW6,
@@ -742,7 +742,7 @@ class OrderedPhotoAddTile extends StatelessWidget {
                   children: [
                     Icon(
                       CatchIcons.addPhotoAlternateOutlined,
-                      size: CatchIcon.hero,
+                      size: CatchIconSize.hero,
                       color: t.ink2,
                     ),
                     if (showLabel) ...[

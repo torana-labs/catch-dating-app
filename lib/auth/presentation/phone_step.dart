@@ -392,7 +392,7 @@ class PhoneCountryCodePicker extends StatelessWidget {
                     gapW4,
                     Icon(
                       CatchIcons.expandMoreRounded,
-                      size: CatchIcon.sm,
+                      size: CatchIconSize.sm,
                       color: t.ink3,
                     ),
                   ],

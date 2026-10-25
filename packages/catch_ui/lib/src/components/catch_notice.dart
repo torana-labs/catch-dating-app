@@ -55,7 +55,7 @@ class CatchNotice extends StatelessWidget {
             child: Icon(
               CatchIcons.closeRounded,
               color: palette.secondary,
-              size: CatchIcon.md,
+              size: CatchIconSize.md,
             ),
           );
 
@@ -136,7 +136,7 @@ class CatchNotice extends StatelessWidget {
                           child: Icon(
                             notice.icon,
                             color: palette.icon,
-                            size: CatchIcon.control,
+                            size: CatchIconSize.control,
                           ),
                         ),
                       ),

@@ -234,7 +234,7 @@ class RatingRow extends StatelessWidget {
                   ? CatchIcons.starRounded
                   : CatchIcons.starBorderRounded,
               color: i <= value ? t.gold : t.ink3,
-              size: CatchIcon.md,
+              size: CatchIconSize.md,
             ),
           ),
       ],
@@ -269,7 +269,7 @@ class CounterRow extends StatelessWidget {
           child: Icon(
             CatchIcons.removeCircleOutlineRounded,
             color: value <= 0 ? t.ink3 : t.ink2,
-            size: CatchIcon.md,
+            size: CatchIconSize.md,
           ),
         ),
         CatchText(
@@ -286,7 +286,7 @@ class CounterRow extends StatelessWidget {
           child: Icon(
             CatchIcons.addCircleOutlineRounded,
             color: t.ink2,
-            size: CatchIcon.md,
+            size: CatchIconSize.md,
           ),
         ),
       ],

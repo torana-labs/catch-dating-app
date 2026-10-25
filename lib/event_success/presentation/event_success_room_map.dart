@@ -666,8 +666,8 @@ class _EventSuccessRoomLegendItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         CatchSurface(
-          width: CatchIcon.md,
-          height: CatchIcon.md,
+          width: CatchIconSize.md,
+          height: CatchIconSize.md,
           radius: CatchRadius.pill,
           backgroundColor: t.surface,
           borderSpec: CatchBorderSpec(
@@ -677,7 +677,7 @@ class _EventSuccessRoomLegendItem extends StatelessWidget {
           ),
           child: icon == null
               ? const SizedBox.shrink()
-              : Icon(icon, size: CatchIcon.micro, color: color),
+              : Icon(icon, size: CatchIconSize.micro, color: color),
         ),
         gapW4,
         CatchText(label, variant: CatchTextVariant.statusLabel, color: t.ink2),
@@ -785,7 +785,7 @@ class _EventSuccessMapUnit extends StatelessWidget {
                       invalid
                           ? CatchIcons.blockRounded
                           : CatchIcons.warningAmberRounded,
-                      size: CatchIcon.sm,
+                      size: CatchIconSize.sm,
                       color: invalid ? t.ink3 : t.warning,
                     ),
                 ],
@@ -923,7 +923,7 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
         child: unavailable
             ? Icon(
                 CatchIcons.blockRounded,
-                size: CatchIcon.micro,
+                size: CatchIconSize.micro,
                 color: t.ink3,
               )
             : const SizedBox.shrink(),

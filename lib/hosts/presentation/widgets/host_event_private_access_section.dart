@@ -452,7 +452,7 @@ class HostInviteLinkRow extends StatelessWidget {
             status: (rowState.actionsDisabled)
                 ? CatchIconActionStatus.disabled
                 : CatchIconActionStatus.enabled,
-            child: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.sm),
+            child: Icon(CatchIcons.contentCopyRounded, size: CatchIconSize.sm),
           ),
         ),
         if (rowState.showDisableAction) ...[
@@ -468,7 +468,7 @@ class HostInviteLinkRow extends StatelessWidget {
                   : CatchIconActionStatus.enabled,
               child: Icon(
                 CatchIcons.hourglassDisabledRounded,
-                size: CatchIcon.sm,
+                size: CatchIconSize.sm,
               ),
             ),
           ),

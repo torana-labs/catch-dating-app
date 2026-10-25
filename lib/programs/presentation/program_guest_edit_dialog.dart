@@ -111,7 +111,7 @@ class _ProgramGuestEditDialogState extends State<ProgramGuestEditDialog> {
             CatchFieldRow.standard(
               body: CatchText(household.label, variant: CatchTextVariant.bodyM),
               trailing: _householdId == household.householdId
-                  ? Icon(CatchIcons.checkRounded, size: CatchIcon.md)
+                  ? Icon(CatchIcons.checkRounded, size: CatchIconSize.md)
                   : null,
               onTap: () => setState(
                 () => _householdId = _householdId == household.householdId
@@ -133,7 +133,7 @@ class _ProgramGuestEditDialogState extends State<ProgramGuestEditDialog> {
                 variant: CatchTextVariant.bodyM,
               ),
               trailing: _groupIds.contains(group.groupId)
-                  ? Icon(CatchIcons.checkRounded, size: CatchIcon.md)
+                  ? Icon(CatchIcons.checkRounded, size: CatchIconSize.md)
                   : null,
               onTap: () => setState(
                 () => _groupIds.contains(group.groupId)

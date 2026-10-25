@@ -198,7 +198,7 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
                       label: context.l10n.programsTeamGrant,
                       leading: Icon(
                         CatchIcons.howToRegOutlined,
-                        size: CatchIcon.md,
+                        size: CatchIconSize.md,
                       ),
                       variant: CatchButtonVariant.secondary,
                       size: CatchButtonSize.md,
@@ -208,7 +208,10 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
                     ),
                     CatchButton(
                       label: context.l10n.programsTeamInvite,
-                      leading: Icon(CatchIcons.sendRounded, size: CatchIcon.md),
+                      leading: Icon(
+                        CatchIcons.sendRounded,
+                        size: CatchIconSize.md,
+                      ),
                       variant: CatchButtonVariant.secondary,
                       size: CatchButtonSize.md,
                       onPressed: _pending
@@ -436,7 +439,7 @@ class _ProgramStaffAccessDialogState extends State<ProgramStaffAccessDialog> {
               variant: CatchTextVariant.bodyM,
             ),
             trailing: _duties.contains(duty)
-                ? Icon(CatchIcons.checkRounded, size: CatchIcon.md)
+                ? Icon(CatchIcons.checkRounded, size: CatchIconSize.md)
                 : null,
             onTap: () => setState(
               () => _duties.contains(duty)

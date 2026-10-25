@@ -124,7 +124,7 @@ class ActivitySection extends ConsumerWidget {
               message: context
                   .l10n
                   .dashboardActivitySectionMessageNewCatchesBookingsAnd,
-              iconSize: CatchIcon.emptyState,
+              iconSize: CatchIconSize.emptyState,
               titleStyle: CatchTextStyles.titleL(context),
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
             ),
@@ -214,8 +214,8 @@ class NotificationRowSkeleton extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchSkeleton.box(
-            width: CatchIcon.md,
-            height: CatchIcon.md,
+            width: CatchIconSize.md,
+            height: CatchIconSize.md,
             radius: CatchRadius.sm,
           ),
           gapW12,

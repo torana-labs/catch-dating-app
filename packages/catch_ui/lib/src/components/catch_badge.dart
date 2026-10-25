@@ -348,7 +348,7 @@ class _BadgeMetrics {
         ),
         minHeight: 0,
         gap: CatchSpacing.s1,
-        iconSize: CatchIcon.sm,
+        iconSize: CatchIconSize.sm,
         dotSize: CatchSpacing.micro6,
         centerContent: false,
         textStyle: (context, color) =>
@@ -360,7 +360,7 @@ class _BadgeMetrics {
         padding: CatchInsets.compactControlContent,
         minHeight: 0,
         gap: CatchSpacing.s1,
-        iconSize: CatchIcon.sm,
+        iconSize: CatchIconSize.sm,
         dotSize: CatchSpacing.micro6,
         centerContent: false,
         textStyle: functional
@@ -376,7 +376,7 @@ class _BadgeMetrics {
         ),
         minHeight: 0,
         gap: CatchSpacing.s1,
-        iconSize: CatchIcon.micro,
+        iconSize: CatchIconSize.micro,
         dotSize: CatchSpacing.micro6,
         centerContent: false,
         textStyle: (context, color) =>
@@ -391,7 +391,7 @@ class _BadgeMetrics {
         ),
         minHeight: 0,
         gap: CatchSpacing.s1,
-        iconSize: CatchIcon.badge,
+        iconSize: CatchIconSize.badge,
         dotSize: CatchSpacing.micro6,
         centerContent: false,
         textStyle: functional
@@ -407,7 +407,7 @@ class _BadgeMetrics {
         ),
         minHeight: 0,
         gap: CatchSpacing.s1,
-        iconSize: CatchIcon.sm,
+        iconSize: CatchIconSize.sm,
         dotSize: CatchLayout.badgeMdDotExtent,
         centerContent: false,
         textStyle: functional

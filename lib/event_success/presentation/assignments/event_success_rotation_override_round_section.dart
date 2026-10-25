@@ -160,7 +160,7 @@ class EventSuccessRotationPairFieldLanes extends StatelessWidget {
           child: Icon(
             CatchIcons.deleteOutlineRounded,
             color: CatchTokens.of(context).danger,
-            size: CatchIcon.md,
+            size: CatchIconSize.md,
           ),
         ),
       ],

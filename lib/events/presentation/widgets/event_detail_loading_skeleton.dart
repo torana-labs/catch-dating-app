@@ -98,7 +98,7 @@ class EventDetailHeroSkeleton extends StatelessWidget {
               children: [
                 CatchSkeleton.box(
                   width: CatchLayout.skeletonTextShortWidth,
-                  height: CatchIcon.sm,
+                  height: CatchIconSize.sm,
                   radius: CatchRadius.pill,
                 ),
                 gapH12,
@@ -195,7 +195,7 @@ class TicketStubTileSkeleton extends StatelessWidget {
           gapH8,
           CatchSkeleton.box(
             width: CatchLayout.skeletonTextTitleWidth,
-            height: CatchIcon.sm,
+            height: CatchIconSize.sm,
             radius: CatchRadius.pill,
           ),
         ],
@@ -323,8 +323,8 @@ class EventDetailMechanismSkeleton extends StatelessWidget {
             Row(
               children: [
                 CatchSkeleton.box(
-                  width: CatchIcon.control,
-                  height: CatchIcon.control,
+                  width: CatchIconSize.control,
+                  height: CatchIconSize.control,
                   radius: CatchRadius.pill,
                 ),
                 gapW12,
@@ -353,7 +353,7 @@ class EventDetailSocialSkeleton extends StatelessWidget {
       child: Row(
         children: [
           for (var index = 0; index < 4; index++) ...[
-            CatchSkeleton.circle(size: CatchIcon.avatarLg),
+            CatchSkeleton.circle(size: CatchIconSize.avatarLg),
             if (index < 3) gapW8,
           ],
           gapW16,
@@ -382,7 +382,7 @@ class EventDetailCompanionSkeleton extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchSkeleton.circle(size: CatchIcon.control),
+          CatchSkeleton.circle(size: CatchIconSize.control),
           gapW12,
           Expanded(
             child: Column(

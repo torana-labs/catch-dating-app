@@ -61,7 +61,7 @@ class EventSuccessCountdownNotice extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: t.gold, size: CatchIcon.md),
+          Icon(icon, color: t.gold, size: CatchIconSize.md),
           gapW10,
           Expanded(
             child: Column(

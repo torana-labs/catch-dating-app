@@ -8,7 +8,7 @@ class StarRatingRow extends StatelessWidget {
   const StarRatingRow({
     super.key,
     required this.rating,
-    this.size = CatchIcon.xs,
+    this.size = CatchIconSize.xs,
   });
 
   final int rating;

@@ -269,7 +269,7 @@ class EventDetailMapCard extends StatelessWidget {
                       Icon(
                         CatchIcons.chevronRightRounded,
                         color: t.ink2,
-                        size: CatchIcon.xs,
+                        size: CatchIconSize.xs,
                       ),
                     ],
                   ],
@@ -396,10 +396,10 @@ class EventDetailFactList extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: CatchIcon.row,
+                width: CatchIconSize.row,
                 child: Icon(
                   _eventDetailFactIcon(row.icon, activityIcon: activity.glyph),
-                  size: CatchIcon.md,
+                  size: CatchIconSize.md,
                   color: iconColor,
                 ),
               ),
@@ -572,7 +572,7 @@ class EventDetailPhotoTile extends StatelessWidget {
                 duration: Duration.zero,
                 radius: CatchRadius.none,
                 backgroundColor: backgroundColor,
-                child: Icon(icon, color: iconColor, size: CatchIcon.lg),
+                child: Icon(icon, color: iconColor, size: CatchIconSize.lg),
               )
             : CatchSurface(
                 duration: Duration.zero,
@@ -582,7 +582,7 @@ class EventDetailPhotoTile extends StatelessWidget {
                   photo!.thumbnailOrUrl,
                   key: ValueKey('event-photo-strip-image-$index'),
                   errorBuilder: (_, _, _) =>
-                      Icon(icon, color: iconColor, size: CatchIcon.lg),
+                      Icon(icon, color: iconColor, size: CatchIconSize.lg),
                 ),
               ),
       ),
@@ -651,7 +651,7 @@ class TicketStubTile extends StatelessWidget {
                   top: 0,
                   child: Icon(
                     cell.icon,
-                    size: CatchIcon.heroSignalChip,
+                    size: CatchIconSize.heroSignalChip,
                     color: t.ink3,
                   ),
                 ),

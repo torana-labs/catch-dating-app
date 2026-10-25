@@ -87,7 +87,7 @@ class ExploreExternalEventRow extends StatelessWidget {
                 EventActivityBadge(
                   visual: visual,
                   size: 26,
-                  iconSize: CatchIcon.sm,
+                  iconSize: CatchIconSize.sm,
                 ),
                 gapW8,
                 Expanded(
@@ -134,7 +134,10 @@ class ExploreExternalEventRow extends StatelessWidget {
                 gapW12,
                 CatchButton(
                   label: state.actionLabel,
-                  leading: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
+                  leading: Icon(
+                    CatchIcons.arrowUpRight,
+                    size: CatchIconSize.sm,
+                  ),
                   size: CatchButtonSize.md,
                   variant: CatchButtonVariant.secondary,
                   onPressed: !state.hasExternalLink

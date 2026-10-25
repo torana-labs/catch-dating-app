@@ -342,7 +342,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _pendingExternalLink ==
                             _SettingsExternalLinkAction.hostApp
                         ? const SizedBox.square(
-                            dimension: CatchIcon.control,
+                            dimension: CatchIconSize.control,
                             child: CatchLoadingIndicator(),
                           )
                         : null,
@@ -574,7 +574,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           _pendingExternalLink ==
                               _SettingsExternalLinkAction.privacyPolicy
                           ? const SizedBox.square(
-                              dimension: CatchIcon.control,
+                              dimension: CatchIconSize.control,
                               child: CatchLoadingIndicator(),
                             )
                           : null,
@@ -595,7 +595,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     tone: CatchFieldTone.danger,
                     actions: state.mutations.deletingAccount
                         ? const SizedBox.square(
-                            dimension: CatchIcon.control,
+                            dimension: CatchIconSize.control,
                             child: CatchLoadingIndicator(),
                           )
                         : null,
@@ -617,7 +617,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           _pendingExternalLink ==
                               _SettingsExternalLinkAction.helpSupport
                           ? const SizedBox.square(
-                              dimension: CatchIcon.control,
+                              dimension: CatchIconSize.control,
                               child: CatchLoadingIndicator(),
                             )
                           : null,
@@ -639,7 +639,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           _pendingExternalLink ==
                               _SettingsExternalLinkAction.terms
                           ? const SizedBox.square(
-                              dimension: CatchIcon.control,
+                              dimension: CatchIconSize.control,
                               child: CatchLoadingIndicator(),
                             )
                           : null,
@@ -668,7 +668,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     tone: CatchFieldTone.danger,
                     actions: state.mutations.signingOut
                         ? const SizedBox.square(
-                            dimension: CatchIcon.control,
+                            dimension: CatchIconSize.control,
                             child: CatchLoadingIndicator(),
                           )
                         : null,
@@ -752,7 +752,7 @@ class BlockedAccountsSkeleton extends StatelessWidget {
           for (var index = 0; index < 3; index++) ...[
             Row(
               children: [
-                CatchSkeleton.circle(size: CatchIcon.avatarLg),
+                CatchSkeleton.circle(size: CatchIconSize.avatarLg),
                 gapW12,
                 Expanded(
                   child: Column(

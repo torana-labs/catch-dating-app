@@ -107,7 +107,11 @@ class _ActivityColorTile extends StatelessWidget {
           padding: CatchInsets.contentDense,
           child: Row(
             children: [
-              Icon(activity.glyph, color: activity.deep, size: CatchIcon.md),
+              Icon(
+                activity.glyph,
+                color: activity.deep,
+                size: CatchIconSize.md,
+              ),
               gapW10,
               Expanded(
                 child: Column(

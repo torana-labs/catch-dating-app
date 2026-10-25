@@ -95,7 +95,7 @@ class _CatchErrorDetailsAccordionState
                   child: Icon(
                     CatchIcons.chevronRightRounded,
                     color: tokens.danger,
-                    size: CatchIcon.sm,
+                    size: CatchIconSize.sm,
                   ),
                 ),
               ],

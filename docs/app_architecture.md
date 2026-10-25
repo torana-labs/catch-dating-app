@@ -1216,7 +1216,7 @@ remain in `lib/core/theme` until their Phase 3 disposition.
 
 | Tier | Owner | Examples | Use when |
 |---|---|---|---|
-| Primitive scale | `package:catch_tokens/catch_tokens.dart` | `CatchSpacing`, `CatchRadius`, `CatchStroke`, `CatchMotion`, `CatchOpacity`, `CatchIcon` | A reusable value is part of the global visual scale. |
+| Primitive scale | `package:catch_tokens/catch_tokens.dart` | `CatchSpacing`, `CatchRadius`, `CatchStroke`, `CatchMotion`, `CatchOpacity`, `CatchIconSize` | A reusable value is part of the global visual scale. |
 | Semantic layout role | `package:catch_tokens/catch_tokens.dart` or a shared primitive | `CatchGaps.section`, `CatchInsets.pageBody`, `CatchLayout.maxContentWidth` | A value describes a repeated relationship or viewport/content contract. |
 | Expressive palette role | `ActivityPalette` / `CatchTokens` theme extensions | activity swatches, functional status colors, photo grade overlays | Color communicates activity, state, or theme meaning rather than decoration. |
 | Component contract | Owning component or primitive | profile tab body padding, ticket geometry, control shell sizing | A value is tied to one component family and should not become a global token yet. |
@@ -1302,7 +1302,7 @@ owning source line rather than through a count allowance:
 
 Constant dimensions are allowed only for:
 
-- icon sizes through `CatchIcon.{sm,md,lg}`;
+- icon sizes through `CatchIconSize.{sm,md,lg}`;
 - hairlines/dividers (`1` px) and `0`;
 - spacing gaps through `CatchSpacing` or `gapH*`/`gapW*`;
 - radii through named tokens, and UI boundaries through semantic

@@ -210,7 +210,7 @@ with an existing exact-or-nearest token when the value is skeleton/jitter
 noise; otherwise escalate with a proposed token name. Never add tokens
 yourself except where an order names one explicitly. Report every fix in the
 work-order decision ledger and PR summary.
-*Evidence: `size: 11` → CatchIcon.micro; MapPill 0.93 alpha; raw skeleton
+*Evidence: `size: 11` → CatchIconSize.micro; MapPill 0.93 alpha; raw skeleton
 title widths.*
 
 ## What stays with the review session (no rule possible)

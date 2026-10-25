@@ -86,7 +86,7 @@ class DraftCard extends StatelessWidget {
                 ? const HostInlineIconSkeleton()
                 : Icon(
                     CatchIcons.deleteOutlineRounded,
-                    size: CatchIcon.control,
+                    size: CatchIconSize.control,
                     color: t.ink2,
                   ),
           ),

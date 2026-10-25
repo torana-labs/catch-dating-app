@@ -95,7 +95,7 @@ class CompanionPaperNavigationRow extends StatelessWidget {
                 onPressed: canPop ? () => _popCompanion(context) : null,
                 child: Icon(
                   CatchIcons.arrowBackRounded,
-                  size: CatchIcon.md,
+                  size: CatchIconSize.md,
                   color: canPop ? t.ink3 : t.line2,
                 ),
               ),
@@ -493,7 +493,7 @@ class CompanionExpectationRow extends StatelessWidget {
       children: [
         Padding(
           padding: CatchInsets.inlineIconTopTight,
-          child: Icon(item.icon, size: CatchIcon.sm, color: t.ink3),
+          child: Icon(item.icon, size: CatchIconSize.sm, color: t.ink3),
         ),
         gapW12,
         Expanded(
@@ -521,7 +521,7 @@ class CompanionPrivacySection extends StatelessWidget {
         children: [
           Icon(
             CatchIcons.lockOutlineRounded,
-            size: CatchIcon.sm,
+            size: CatchIconSize.sm,
             color: t.ink2,
           ),
           gapW8,

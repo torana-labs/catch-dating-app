@@ -1,5 +1,5 @@
 import 'package:catch_tokens/generated/catch_design_tokens.g.dart';
-import 'package:catch_tokens/src/primitives/catch_icon.dart';
+import 'package:catch_tokens/src/primitives/catch_icon_size.dart';
 import 'package:catch_tokens/src/primitives/catch_radius.dart';
 import 'package:catch_tokens/src/primitives/catch_spacing.dart';
 import 'package:catch_tokens/src/primitives/catch_stroke.dart';
@@ -17,7 +17,7 @@ abstract final class CatchFieldTokens {
   static const double rowHorizontalPadding = CatchSpacing.s4;
   static const double dividedRowBleed = CatchSpacing.micro10;
   static const double rowVerticalPadding = CatchSpacing.s3;
-  static const double leadingIconExtent = CatchIcon.md;
+  static const double leadingIconExtent = CatchIconSize.md;
   static const double leadingGap = CatchSpacing.micro14;
   static const double textLaneInset = leadingIconExtent + leadingGap;
   static double get captionExtent => captionFontSize * supportLineHeight;

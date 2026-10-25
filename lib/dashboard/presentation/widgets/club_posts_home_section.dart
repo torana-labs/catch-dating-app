@@ -102,7 +102,7 @@ class ClubPostHomeCard extends StatelessWidget {
                     children: [
                       Icon(
                         CatchIcons.eventOutlined,
-                        size: CatchIcon.sm,
+                        size: CatchIconSize.sm,
                         color: t.ink2,
                       ),
                       gapW6,
@@ -119,7 +119,7 @@ class ClubPostHomeCard extends StatelessWidget {
                       ),
                       Icon(
                         CatchIcons.chevronRightRounded,
-                        size: CatchIcon.sm,
+                        size: CatchIconSize.sm,
                         color: t.ink3,
                       ),
                     ],

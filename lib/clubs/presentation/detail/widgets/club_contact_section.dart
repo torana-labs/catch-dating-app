@@ -40,7 +40,7 @@ class ClubContactSection extends StatelessWidget {
             onTap: onContactSelected != null
                 ? () => unawaited(onContactSelected!(action))
                 : null,
-            actions: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
+            actions: Icon(CatchIcons.arrowUpRight, size: CatchIconSize.sm),
           ),
       ],
     );

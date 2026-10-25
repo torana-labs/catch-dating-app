@@ -707,7 +707,7 @@ class _CompanionOthersInRoomTextState extends State<CompanionOthersInRoomText>
               children: [
                 Icon(
                   CatchIcons.groups3Outlined,
-                  size: CatchIcon.xs,
+                  size: CatchIconSize.xs,
                   color: t.primary,
                 ),
                 gapW6,

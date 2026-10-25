@@ -135,7 +135,7 @@ class ShareCardHeader extends StatelessWidget {
           backgroundColor: t.surface,
           borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),
           size: CatchLayout.chatShareCardHeaderIconExtent,
-          iconSize: CatchIcon.md,
+          iconSize: CatchIconSize.md,
           radius: CatchRadius.pill,
         ),
         gapW10,

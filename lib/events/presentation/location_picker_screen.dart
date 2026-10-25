@@ -405,7 +405,10 @@ class MapPickerSearchRow extends StatelessWidget {
             alpha: CatchOpacity.locationPickerTopChromeFill,
           ),
           onPressed: onBack,
-          child: Icon(CatchIcons.arrowBackIosNewRounded, size: CatchIcon.md),
+          child: Icon(
+            CatchIcons.arrowBackIosNewRounded,
+            size: CatchIconSize.md,
+          ),
         ),
         gapW12,
         Expanded(child: searchPanel),
@@ -456,12 +459,12 @@ class PlaceSearchSection extends StatelessWidget {
                 .eventsLocationPickerScreenPlaceholderSearchForAMeeting,
             errorText: errorText,
             size: CatchFieldSize.floating,
-            leading: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
+            leading: Icon(CatchIcons.searchRounded, size: CatchIconSize.md),
             suffixText: stateText,
             trailing: isPending
                 ? const Center(
                     child: SizedBox.square(
-                      dimension: CatchIcon.md,
+                      dimension: CatchIconSize.md,
                       child: CircularProgressIndicator(
                         strokeWidth: CatchStroke.focusRing,
                       ),
@@ -534,7 +537,7 @@ class PlaceSuggestionRow extends StatelessWidget {
             child: Icon(
               CatchIcons.placeOutlined,
               color: t.ink2,
-              size: CatchIcon.md,
+              size: CatchIconSize.md,
             ),
           ),
           gapW12,
@@ -613,7 +616,7 @@ class SelectedPointSection extends StatelessWidget {
                 hasSelection
                     ? CatchIcons.checkCircleOutlineRounded
                     : CatchIcons.touchAppRounded,
-                size: CatchIcon.control,
+                size: CatchIconSize.control,
                 color: hasSelection ? t.success : t.ink2,
               ),
               gapW12,

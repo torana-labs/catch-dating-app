@@ -139,7 +139,7 @@ class ClubHostRow extends StatelessWidget {
                     const SizedBox(width: CatchSpacing.micro6),
                     Icon(
                       CatchIcons.sealCheck,
-                      size: CatchIcon.sm,
+                      size: CatchIconSize.sm,
                       color: ownerSealColor,
                     ),
                   ],
@@ -159,7 +159,7 @@ class ClubHostRow extends StatelessWidget {
               onPressed: onMessage,
               child: Icon(
                 CatchIcons.chatBubbleOutlineRounded,
-                size: CatchIcon.control,
+                size: CatchIconSize.control,
                 color: t.primary,
               ),
             ),
@@ -169,7 +169,7 @@ class ClubHostRow extends StatelessWidget {
           gapW8,
           Icon(
             CatchIcons.chevronRightRounded,
-            size: CatchIcon.lg,
+            size: CatchIconSize.lg,
             color: t.ink3,
           ),
         ],

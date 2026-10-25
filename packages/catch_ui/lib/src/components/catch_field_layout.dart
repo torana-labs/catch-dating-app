@@ -65,7 +65,7 @@ final class CatchRecordLayout extends CatchFieldLayout {
       height: CatchRecordTokens.avatarExtent,
       radius: CatchRadius.pill,
       backgroundColor: tone.withValues(alpha: CatchOpacity.subtleFill),
-      child: Icon(icon, size: CatchIcon.md, color: tone),
+      child: Icon(icon, size: CatchIconSize.md, color: tone),
     );
   }
 

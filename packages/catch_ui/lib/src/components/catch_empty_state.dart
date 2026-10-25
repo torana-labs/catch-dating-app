@@ -107,7 +107,7 @@ class CatchEmptyState extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (iconData != null) ...[
-                      Icon(iconData, size: CatchIcon.md, color: t.ink3),
+                      Icon(iconData, size: CatchIconSize.md, color: t.ink3),
                       gapW8,
                     ],
                     Expanded(

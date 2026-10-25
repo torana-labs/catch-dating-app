@@ -574,7 +574,7 @@ class VibeTile extends StatelessWidget {
                     backgroundColor: t.primary,
                     child: Icon(
                       CatchIcons.checkRounded,
-                      size: CatchIcon.xs,
+                      size: CatchIconSize.xs,
                       color: t.primaryInk,
                     ),
                   ),
@@ -605,7 +605,10 @@ class RecapProfilePhoto extends StatelessWidget {
         radius: CatchRadius.none,
         duration: Duration.zero,
         child: Align(
-          child: Icon(CatchIcons.personRounded, size: CatchIcon.fallbackAvatar),
+          child: Icon(
+            CatchIcons.personRounded,
+            size: CatchIconSize.fallbackAvatar,
+          ),
         ),
       );
     }

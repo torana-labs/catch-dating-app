@@ -43,7 +43,7 @@ class CatchToolbarButton extends StatefulWidget {
       math.min(
         maxWidth,
         labelSize.width +
-            CatchIcon.md +
+            CatchIconSize.md +
             CatchToolbarMetrics.gap +
             CatchSpacing.s3 * 2,
       ),
@@ -157,7 +157,7 @@ class _CatchToolbarButtonState extends State<CatchToolbarButton> {
                     children: [
                       Icon(
                         widget.icon,
-                        size: CatchIcon.md,
+                        size: CatchIconSize.md,
                         color: enabled ? t.ink : t.ink3,
                       ),
                       const SizedBox(width: CatchToolbarMetrics.gap),

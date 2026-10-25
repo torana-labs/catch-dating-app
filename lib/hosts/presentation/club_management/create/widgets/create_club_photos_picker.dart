@@ -236,7 +236,7 @@ class ClubProfileImageTile extends StatelessWidget {
               interactive
                   ? CatchIcons.addPhotoAlternateOutlined
                   : CatchIcons.imageOutlined,
-              size: CatchIcon.hero,
+              size: CatchIconSize.hero,
               color: t.ink2,
             ),
             if (interactive &&

@@ -17,7 +17,7 @@ class ConversationCueRow extends StatelessWidget {
             padding: _conversationCueIconInset,
             child: Icon(
               CatchIcons.arrowForwardRounded,
-              size: CatchIcon.xs,
+              size: CatchIconSize.xs,
               color: t.ink3,
             ),
           ),

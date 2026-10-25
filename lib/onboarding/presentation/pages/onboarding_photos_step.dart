@@ -143,7 +143,11 @@ class OnboardingPhotosStep extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(CatchIcons.bolt, size: CatchIcon.xs, color: t.accent),
+                  Icon(
+                    CatchIcons.bolt,
+                    size: CatchIconSize.xs,
+                    color: t.accent,
+                  ),
                   gapW8,
                   Expanded(
                     child: CatchText(
