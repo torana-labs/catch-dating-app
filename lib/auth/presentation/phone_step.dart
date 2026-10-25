@@ -386,12 +386,10 @@ class PhoneCountryCodePicker extends StatelessWidget {
                         width: CatchSpacing.s6,
                       ),
                     gapW8,
-                    Text(
+                    CatchText(
                       selected?.dialCode ?? countryCode,
-                      style: CatchTextStyles.fieldRowTitle(
-                        context,
-                        color: t.ink,
-                      ),
+                      variant: CatchTextVariant.bodyLead,
+                      color: t.ink,
                     ),
                     gapW4,
                     Icon(

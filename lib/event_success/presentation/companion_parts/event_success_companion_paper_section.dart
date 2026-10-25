@@ -102,12 +102,13 @@ class CompanionPaperNavigationRow extends StatelessWidget {
             ),
             gapW8,
             Expanded(
-              child: Text(
+              child: CatchText(
                 context
                     .l10n
                     .eventSuccessEventSuccessCompanionSharedTextEventCompanion,
+                variant: CatchTextVariant.bodyLead,
+                color: CatchTokens.of(context).ink,
                 textAlign: TextAlign.center,
-                style: CatchTextStyles.fieldRowTitle(context),
               ),
             ),
             gapW8,
@@ -200,8 +201,11 @@ class CompanionPaperTicket extends StatelessWidget {
           backgroundColor: t.surface,
           borderRole: CatchBorderRole.separator,
           boxShadow: CatchElevation.card,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(CatchRadius.md),
+          child: CatchSurface(
+            duration: Duration.zero,
+            tone: CatchSurfaceTone.transparent,
+            radius: CatchRadius.md,
+            clipBehavior: Clip.antiAlias,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -362,11 +366,11 @@ class CompanionPaperTicketRow extends StatelessWidget {
           color: t.ink3,
         ),
         gapH6,
-        Text(
+        CatchText(
           value,
+          variant: CatchTextVariant.titleS,
+          color: CatchTokens.of(context).ink,
           maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.labelL(context),
         ),
       ],
     );

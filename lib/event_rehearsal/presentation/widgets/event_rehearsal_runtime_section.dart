@@ -102,7 +102,7 @@ class _EventRehearsalRuntimeSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        CatchText(
           widget.phase == RehearsalSettingsPhase.retryRequired
               ? l.eventAssistanceRuntimePending
               : busy
@@ -114,7 +114,7 @@ class _EventRehearsalRuntimeSectionState
               : view.runtime!.status == RehearsalAutomationStatus.paused
               ? l.eventAssistanceRuntimePaused
               : l.eventAssistanceRuntimeConfigured,
-          style: Theme.of(context).textTheme.titleLarge,
+          variant: CatchTextVariant.titleL,
         ),
         gapH12,
         CatchText(

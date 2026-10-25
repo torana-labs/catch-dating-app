@@ -274,11 +274,11 @@ for (const file of [...walkSourceFiles(websiteSrcRoot),
       violations.push({source: sourceRelativePath, specifier,
         reason: "privileged runtime packages must remain in server modules"});
     }
-    if (specifier.startsWith("@catch/web-ui/")) {
+    if (webUiDeepImport(specifier)) {
       violations.push({
         source: sourceRelativePath,
         specifier,
-        reason: "shared web UI must be imported from @catch/web-ui without deep imports",
+        reason: "shared web UI must be imported from @catch/web-ui or an entry its package.json exports, without deep imports",
       });
       continue;
     }
@@ -373,7 +373,20 @@ ownership, and environment-access boundaries.
 `);
 }
 
+/** A subpath @catch/web-ui's package.json exports is public API, not a deep import. */
+function webUiDeepImport(specifier, exportsMap = webUiPackageExports()) {
+  if (!specifier.startsWith("@catch/web-ui/")) return false;
+  return !Object.hasOwn(exportsMap, `./${specifier.slice("@catch/web-ui/".length)}`);
+}
+
+function webUiPackageExports() {
+  return JSON.parse(fs.readFileSync(path.join(repoRoot, "packages/web-ui/package.json"), "utf8")).exports ?? {};
+}
+
 function runSelfTest() {
+  assert.equal(webUiDeepImport("@catch/web-ui"), false);
+  assert.equal(webUiDeepImport("@catch/web-ui/artwork", {".": {}, "./artwork": {}}), false);
+  assert.equal(webUiDeepImport("@catch/web-ui/src/components/CatchText", {".": {}, "./artwork": {}}), true);
   // Analytics services may share pure contracts, never UI or feature state.
   assert.deepEqual(layerFor("analytics/hostServerConsent.ts"), {name: "service"});
   assert.deepEqual(layerFor("shared/contracts/generated/hostAcquisitionConsentHttpRequest.ts"), {name: "contract"});

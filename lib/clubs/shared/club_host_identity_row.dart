@@ -85,12 +85,7 @@ class ClubHostIdentityRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                eyebrow,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.kicker(context, color: t.ink3),
-              ),
+              CatchKickerText(label: eyebrow, color: t.ink3),
               gapH2,
               CatchText(
                 hostName,

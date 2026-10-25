@@ -74,11 +74,10 @@ class UpdateRequiredBody extends StatelessWidget {
               color: t.primary,
             ),
             gapH32,
-            Text(
+            CatchText(
               context.l10n.forceUpdateUpdateRequiredScreenTextUpdateRequired,
-              style: CatchTextStyles.headline(
-                context,
-              ).copyWith(fontWeight: FontWeight.bold),
+              variant: CatchTextVariant.headline,
+              color: CatchTokens.of(context).ink,
               textAlign: TextAlign.center,
             ),
             gapH12,

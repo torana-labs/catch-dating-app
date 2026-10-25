@@ -83,12 +83,6 @@ export const eventDetailCopy = {
       reviews: "Organizer reviews",
       members: "Members",
     },
-    media: {
-      alt:
-        "Catch members gathering at an evening social event; illustrative activity photography, not organizer-supplied event media.",
-      src: "/assets/events/social-run-music-hero.jpg",
-      mobileSrcSet: "/assets/events/social-run-music-hero-960.jpg",
-    },
   },
   details: {
     eyebrow: "Event details",

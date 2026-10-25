@@ -690,13 +690,12 @@ class _PrivateEventCreateScreenState
                           ),
                         ),
                         gapH4,
-                        Text(
+                        CatchText(
                           widget.returnToResponsesOnSave
                               ? context.l10n.hostsPrivateEventReturnToReviewHint
                               : context.l10n.hostsPrivateEventSaveHint,
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.copyWith(color: t.ink2),
+                          variant: CatchTextVariant.bodyM,
+                          color: t.ink2,
                         ),
                         if (_error != null) ...[
                           gapH4,

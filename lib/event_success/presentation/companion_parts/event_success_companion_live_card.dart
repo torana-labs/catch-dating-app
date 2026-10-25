@@ -431,9 +431,10 @@ class IncludeMeField extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(
+          child: CatchText(
             label,
-            style: CatchTextStyles.labelL(context, color: t.surface),
+            variant: CatchTextVariant.titleS,
+            color: t.surface,
           ),
         ),
         CatchToggleInput(
@@ -726,11 +727,11 @@ class StageSectionHeader extends StatelessWidget {
         Icon(icon, size: CatchIcon.md, color: color),
         gapW6,
         Expanded(
-          child: Text(
+          child: CatchText(
             label,
+            variant: CatchTextVariant.titleS,
+            color: color,
             maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.labelL(context, color: color),
           ),
         ),
       ],
