@@ -69,6 +69,10 @@ evidence and scoped live approvals remain prerequisites for activation.
 
 ## Function inventory
 
+These rows name current `src/index.ts` exports, including exports that remain
+dormant pending activation. Historical Function names belong in prose outside
+the inventory.
+
 | Function | File | Purpose |
 |----------|------|---------|
 | `onHostContactSummaryChanged` / `onHostContactTraitsSummaryChanged` / `onHostContactChannelSummaryChanged` / `onHostContactVocabularySummaryChanged` / `onHostAudienceSummaryCoverageChanged` / `onHostFormSummaryChanged` / `onHostEventSummaryChanged` / `onHostGroupSummaryChanged` / `onHostResponseSummaryChanged` / `onHostApplicationSummaryChanged` / `onHostApplicationEvidenceSummaryChanged` / `onHostApplicationGrantSummaryChanged` / `onHostResponseConversionSummaryChanged` / `onHostResponseSourceLabelSummaryChanged` / `onHostResponseContactOriginChanged` | `src/hostReadModels/triggers.ts` | Current-source, organizer-scoped People/Forms/private Events/Groups/Responses read-model reconciliation; views are SDK-readable metadata, never mutation or permission authority. |
@@ -114,6 +118,7 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `previewEventOffers` / `commitEventOffers` / `mutateEventOffer` / `getEventOffer` / `listEventOffers` / `prepareEventOfferHandoff` / `getEventOfferConfiguration` / `configureEventOfferPreferences` / `previewEventOfferPreferences` | `src/organizerEventOffers/` | Reviewed event-specific offers and manual bank-reference review; private storage, historical payment snapshots, no admission/provider effects |
 | `createPrivateEventSetup` / `updatePrivateEventBasics` / `updatePrivateEventPreferences` / `getPrivateEventSetup` / `listPrivateEventSetups` / `updatePrivateEventDetails` / `listOfferEventTargets` | `src/events/progressiveSetup/` | Manager-only basic event setup, private event-local payment/preferences snapshots and sanitized reopen; mutations remain closed pending privacy migration |
 | `queryOrganizerFormResponses` | `src/organizerResponseQuery/` | Manager-only bounded typed filtering/sorting, safe display page and structured stale-result errors |
+| `getOrganizerEventSetupDefaults` / `updateOrganizerEventSetupDefaults` | `src/organizers/eventSetupDefaults/callables.ts` | Current-manager read and revision-fenced save of event setup defaults; no provider activation |
 | `createEvent` / `updateEvent` / `cancelEvent` / `deleteEvent` | `src/events/` | Host-owned event mutation surface |
 | `upsertOrganizerEventVenue` | `src/events/organizerEventVenues.ts` | Create, update, archive, or restore one organizer-owned reusable event venue |
 | `publishEventLivePosition` | `src/events/eventLivePositions.ts` | Publish or clear a short-lived foreground Host/operator position when the event route policy and exact operator grant allow it |
@@ -123,17 +128,11 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `setEventPublication` / `reconcilePrivateEventSeats` | `src/events/progressiveSetup/callables.ts` | Manager-only revision-fenced publish/unpublish and bounded reviewed seat reconciliation with exact-command retry/discard |
 | `joinEventWaitlist` / `leaveEventWaitlist` | `src/events/` | Join or leave a full event's waitlist |
 | `placeDetails` / `placesAutocomplete` | `src/places/` | Google Places lookup seam for event locations |
-| `createClub` | `src/clubs/` | Create a club and follow it as host |
 | `createOrganizer` | `src/organizers/` | Create a canonical organizer and follow it as owner |
-| `updateClub` / `archiveClub` / `deleteClub` | `src/clubs/` | Host-owned club mutation surface |
 | `updateOrganizer` / `archiveOrganizer` / `deleteOrganizer` | `src/organizers/` | Organizer-owned canonical mutation surface |
-| `addClubHost` / `removeClubHost` | `src/clubs/` | Host management surface |
 | `addOrganizerManager` / `removeOrganizerManager` / `transferOrganizerOwnership` | `src/organizers/` | Organizer team and ownership management surface |
-| `joinClub` / `leaveClub` / `setClubNotificationPreference` | `src/clubs/` | Join/leave a club and manage member notifications |
 | `followOrganizer` / `unfollowOrganizer` / `setOrganizerNotificationPreference` | `src/organizers/` | Follow/unfollow an organizer and manage follower notifications |
-| `createClubPost` | `src/clubs/` | Host-only follower update with weekly quota and activity fan-out |
 | `createOrganizerPost` | `src/organizers/` | Moderated, idempotent organizer follower update with quota, durable delivery operation and bounded immediate fan-out |
-| `requestClubClaim` / `adminDecideClubClaim` | `src/clubs/clubClaims.ts` | Public organizer claim submission and audited admin decision |
 | `requestOrganizerClaim` / `adminDecideOrganizerClaim` | `src/organizers/organizerClaims.ts` | Canonical organizer claim submission and audited admin decision |
 | `startOrganizerConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a viewer conversation with an organizer |
 | `sendEventBroadcast` | `src/events/` | Host-only, event-scoped Activity and preference-gated push broadcast with an idempotent receipt and organizer Sends projection |
@@ -245,7 +244,6 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `applyProgramFunctionInvitations` / `recordProgramFunctionRsvp` | `src/programRsvp/programRsvpCallables.ts` | Function-scoped RSVP invitation application and organizer/host RSVP recording |
 | `issueProgramHouseholdRsvpLink` / `getProgramHouseholdRsvpView` / `submitProgramHouseholdRsvp` / `programHouseholdItineraryIcs` | `src/programRsvp/householdRsvp.ts` | Token-scoped household RSVP: signed link issuance, bounded view, household submission, and ICS itinerary export |
 | `upsertOrganizerMoment` / `armOrganizerMoment` / `pauseOrganizerMoment` / `resumeOrganizerMoment` / `runOrganizerMoment` / `listOrganizerMoments` | `src/moments/momentCallables.ts` | Unified moment lifecycle: draft/arm/pause/resume/list plus requestKey-idempotent manual fire, with approve-the-rule-once semantics |
-| `organizerMomentSweep` / `programTravelLegMoments` | `src/moments/momentSchedule.ts` | Scheduled sweep that provisions system defaults and fires due planned runs, and a travel-leg trigger that emits moment facts on leg diffs |
 | `upsertProgramFunction` / `upsertProgramPickupPoint` / `upsertProgramHotel` / `upsertTransportVendor` / `listTransportVendors` | `src/programs/programResources.ts` | Program functions, pickup stations, hotels, and organizer transport vendors |
 | `upsertProgramTravelLeg` / `upsertProgramTravelParty` | `src/transport/programTravel.ts` | Planner-owned travel legs and ride-together parties |
 | `importProgramManifest` | `src/programs/programManifestImport.ts` | Preview/commit guest manifest import with externalReference dedup, household/party label matching, and receipt-backed idempotent convergence |
@@ -298,9 +296,6 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminDecideSafetyTriageItem` | `src/admin/safetyTriage.ts` | Admin audited safety queue reviewed/dismissed status decision |
 | `adminGetAccessApplicationDetails` | `src/admin/accessApplications.ts` | Admin read-only launch access application detail and overlap signals |
 | `adminListOrganizerClaimRequests` / `adminGetOrganizerClaimRequestDetails` | `src/admin/clubClaimReview.ts` | Admin pending organizer claim queue and review-safe evidence detail |
-| `adminListClubDetails` | `src/admin/clubDetails.ts` | Admin canonical `clubs/{id}` organizer directory |
-| `adminGetClubDetails` | `src/admin/clubDetails.ts` | Admin-safe canonical organizer detail snapshot |
-| `adminUpdateClubDetails` | `src/admin/clubDetails.ts` | Admin audited owner-safe organizer field patch |
 | `adminSetOrganizerIndexStatus` | `src/admin/clubIndexing.ts` | Admin audited organizer index/noindex publishing decision |
 | `adminListEventDetails` | `src/admin/eventDetails.ts` | Admin canonical `events/{id}` directory for event publishing ops |
 | `adminGetEventDetails` | `src/admin/eventDetails.ts` | Admin-safe canonical event detail snapshot |
@@ -339,8 +334,8 @@ enter previews.
 | Function | File | Trigger |
 |----------|------|---------|
 | `syncPublicProfile` | `src/profiles/` | `users/{userId}` onWrite — mirrors public fields + age gate |
-| `syncClubMemberStats` | `src/clubs/` | `clubMemberships/{membershipId}` onWrite — recomputes `memberCount` |
 | `syncOrganizerFollowerStats` | `src/clubs/` | `organizerFollowers/{followerId}` onWrite — recomputes canonical follower totals |
+| `programTravelLegMoments` | `src/moments/momentSchedule.ts` | Travel-leg writes emit Moment facts on leg changes |
 | `onSalesInboundIntentForIntake` | `src/operations/supplyIntake/nominations.ts` | `salesInboundIntents/{intentId}` onCreate — a website host application or partner nomination that names an organizer or a link also becomes a Supply Intake request (deterministic id, idempotent) |
 | `onSupplyIntakeRequestCreated` | `src/operations/supplyIntake/triggers.ts` | `supplyIntakeRequests/{requestId}` onCreate — leases the request, gathers its pages, runs Supply Intake and imports the reviewable listing; retries until the third failure |
 | `onSupplyIntakeListingApproved` | `src/operations/supplyIntake/eventPublicationTrigger.ts` | `supplyIntakeRequests/{requestId}` onUpdate — when a request is first both completed and approved, publishes the imported events the event publication policy allows; receipts keyed on the request make redelivery replay |
@@ -389,7 +384,7 @@ enter previews.
 
 | Function | File | Schedule |
 |----------|------|----------|
-| `sendEventReminders` | `src/events/` | Every 15 minutes — writes reminder activity and push notifications |
+| `organizerMomentSweep` | `src/moments/momentSchedule.ts` | Every 5 minutes — provisions default event-start reminder Moments and fires due runs |
 | `expireCrossPathsInvitations` | `src/crossPaths/` | Every 15 minutes — expires stale pending Cross Paths invitations |
 | `expireCrossPathsPairHolds` | `src/crossPaths/` | Every 5 minutes — releases expired companion reservations and invalidates their invitation receipt |
 | `retryOrganizerAutomations` | `src/organizers/organizerFormAutomations.ts` | Every minute — resumes due automation runs and expired leases with bounded retries and per-action deduplication |
