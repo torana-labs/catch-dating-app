@@ -409,10 +409,11 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
               ),
               if (roleTitle?.isNotEmpty == true) ...[
                 gapH8,
-                Text(
+                CatchText(
                   roleTitle!,
+                  variant: CatchTextVariant.bodyLead,
+                  color: t.ink2,
                   textAlign: TextAlign.center,
-                  style: CatchTextStyles.fieldRowTitle(context, color: t.ink2),
                 ),
               ],
               gapH12,

@@ -37,8 +37,10 @@ class MapPreview extends StatelessWidget {
     final coordinate = this.coordinate;
     if (coordinate == null || !enableNetworkTiles) {
       final t = CatchTokens.of(context);
-      return ColoredBox(
-        color: t.bg,
+      return CatchSurface(
+        duration: Duration.zero,
+        radius: CatchRadius.none,
+        backgroundColor: t.bg,
         child: Center(
           child: Padding(
             padding: CatchInsets.content,

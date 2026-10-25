@@ -178,9 +178,9 @@ class ProgramFunctionCountsRow extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
+                child: CatchText(
                   name ?? counts.functionId,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  variant: CatchTextVariant.sectionTitle,
                 ),
               ),
               CatchBadge.functional(
@@ -251,9 +251,9 @@ class ProgramHotelOccupancyRow extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             name ?? occupancy.hotelId,
-            style: Theme.of(context).textTheme.titleMedium,
+            variant: CatchTextVariant.sectionTitle,
           ),
           gapH8,
           CatchMetaRow(

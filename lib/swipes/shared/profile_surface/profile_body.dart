@@ -54,8 +54,10 @@ class ProfileBody extends StatelessWidget {
         ? null
         : ActivityPalette.resolve(context, data.kickerActivity!);
 
-    return ColoredBox(
-      color: t.bg,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: t.bg,
       child: NotificationListener<OverscrollNotification>(
         onNotification: (notification) {
           if (notification.depth == 0 &&
@@ -276,9 +278,10 @@ class ProfileKickerText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Text(
-      label.toUpperCase(),
-      style: CatchTextStyles.kicker(context, color: color ?? t.ink3),
+    return CatchKickerText(
+      label: label.toUpperCase(),
+      color: color ?? t.ink3,
+      maxLines: null,
     );
   }
 }
@@ -316,11 +319,10 @@ class ProfileCompatibilitySection extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: CatchSpacing.s1),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: markColor,
-                      borderRadius: BorderRadius.circular(CatchRadius.pill),
-                    ),
+                  child: CatchSurface(
+                    backgroundColor: markColor,
+                    borderRadius: BorderRadius.circular(CatchRadius.pill),
+                    duration: Duration.zero,
                     child: const SizedBox.square(
                       dimension: CatchSpacing.micro6,
                     ),
@@ -328,9 +330,10 @@ class ProfileCompatibilitySection extends StatelessWidget {
                 ),
                 gapW12,
                 Expanded(
-                  child: Text(
+                  child: CatchText(
                     reason,
-                    style: CatchTextStyles.hint(context, color: t.ink),
+                    variant: CatchTextVariant.sectionTitle,
+                    color: t.ink,
                   ),
                 ),
               ],
@@ -505,8 +508,10 @@ class ProfilePhotoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final reaction = section.reaction;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(CatchRadius.lg),
+    return CatchSurface(
+      duration: Duration.zero,
+      tone: CatchSurfaceTone.transparent,
+      clipBehavior: Clip.antiAlias,
       child: AspectRatio(
         aspectRatio: CatchAspectRatio.portrait4x5,
         child: Stack(
@@ -567,7 +572,12 @@ class ProfileDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: CatchStroke.hairline,
-      child: ColoredBox(color: color),
+      child: CatchSurface(
+        duration: Duration.zero,
+        radius: CatchRadius.none,
+        backgroundColor: color,
+        child: const SizedBox.shrink(),
+      ),
     );
   }
 }

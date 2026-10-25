@@ -115,7 +115,6 @@
       "Icon": 1
     },
     "lib/clubs/presentation/detail/widgets/club_detail_body.dart": {
-      "ColoredBox": 1,
       "Icon": 2
     },
     "lib/clubs/presentation/detail/widgets/club_detail_dock.dart": {
@@ -124,7 +123,6 @@
     "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart": {
       "ClipRSuperellipse": 1,
       "ClipRect": 1,
-      "ColoredBox": 2,
       "CustomClipper": 1,
       "Icon": 4,
       "Material": 1,
@@ -137,11 +135,6 @@
     "lib/clubs/presentation/detail/widgets/club_photo_rail.dart": {
       "ColoredBox": 1,
       "Icon": 1
-    },
-    "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart": {
-      "BorderRadius": 1,
-      "ClipRRect": 1,
-      "GestureDetector": 1
     },
     "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart": {
       "Icon": 1
@@ -158,12 +151,8 @@
       "Opacity": 2
     },
     "lib/core/celebration/celebration_screen.dart": {
-      "Border": 4,
       "BorderRadius": 3,
-      "BoxDecoration": 6,
-      "Container": 2,
-      "DecoratedBox": 4,
-      "Icon": 7
+      "Icon": 5
     },
     "lib/core/presentation/app_shell.dart": {
       "Border": 1,
@@ -185,18 +174,11 @@
       "LinearGradient": 1,
       "Radius": 1
     },
-    "lib/core/widgets/event_card.dart": {
-      "Border": 1,
-      "BoxDecoration": 1,
-      "DecoratedBox": 1
-    },
     "lib/core/widgets/ordered_photo_picker.dart": {
-      "CircleBorder": 3,
-      "ColoredBox": 1,
+      "CircleBorder": 1,
       "Icon": 5,
       "Image": 1,
-      "InkWell": 2,
-      "Material": 3,
+      "Material": 1,
       "Tooltip": 3
     },
     "lib/core/widgets/splash_screen.dart": {
@@ -220,11 +202,7 @@
     "lib/event_rehearsal/presentation/widgets/event_rehearsal_choice_tile.dart": {
       "Icon": 1
     },
-    "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart": {
-      "ColoredBox": 1
-    },
     "lib/event_rehearsal/presentation/widgets/event_rehearsal_guest_link_section.dart": {
-      "ColoredBox": 1,
       "Icon": 3
     },
     "lib/event_success/presentation/assignments/event_success_assignment_reason_notice.dart": {
@@ -258,12 +236,9 @@
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_arrival_section.dart": {
       "ClipOval": 1,
-      "ColoredBox": 1,
       "Icon": 1
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_check_in_qr_scanner_sheet.dart": {
-      "BorderRadius": 1,
-      "ClipRRect": 1,
       "Icon": 2,
       "Tooltip": 1
     },
@@ -278,15 +253,12 @@
       "BorderRadius": 1
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart": {
-      "BorderRadius": 1,
-      "ClipRRect": 1,
       "CustomPaint": 3,
       "Icon": 4,
       "Tooltip": 1
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_questionnaire_section.dart": {
-      "BorderRadius": 2,
-      "ClipRRect": 1,
+      "BorderRadius": 1,
       "Tooltip": 1
     },
     "lib/event_success/presentation/companion_parts/event_success_companion_reveal_overlay.dart": {
@@ -331,21 +303,11 @@
       "VerticalDivider": 1
     },
     "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart": {
-      "ColoredBox": 1,
       "Icon": 1
-    },
-    "lib/event_success/presentation/host_live/event_success_exclusion_alert_banner.dart": {
-      "ColoredBox": 1
-    },
-    "lib/event_success/presentation/host_live/event_success_host_live_page_body.dart": {
-      "ColoredBox": 1
     },
     "lib/event_success/presentation/host_live/event_success_room_summary_section.dart": {
       "Divider": 1,
       "VerticalDivider": 1
-    },
-    "lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart": {
-      "ColoredBox": 1
     },
     "lib/event_success/presentation/reveal/event_success_countdown_indicator.dart": {
       "CustomPaint": 1,
@@ -379,16 +341,13 @@
       "Border": 1,
       "BorderSide": 1,
       "BoxDecoration": 1,
-      "ColoredBox": 1,
       "DecoratedBox": 1,
       "GestureDetector": 1
     },
     "lib/events/presentation/event_location_map_body_screen.dart": {
-      "ColoredBox": 1,
       "Icon": 2
     },
     "lib/events/presentation/location_picker_screen.dart": {
-      "ColoredBox": 1,
       "Icon": 4
     },
     "lib/events/presentation/widgets/event_detail_body.dart": {
@@ -401,27 +360,15 @@
       "Icon": 1
     },
     "lib/events/presentation/widgets/event_detail_fact_list.dart": {
-      "Border": 1,
-      "BorderRadius": 4,
-      "BoxDecoration": 1,
-      "ClipRRect": 2,
-      "ColoredBox": 3,
+      "BorderRadius": 1,
       "CustomPaint": 2,
-      "Icon": 5,
-      "Ink": 1,
-      "InkWell": 1,
-      "Material": 1
+      "Icon": 5
     },
     "lib/events/presentation/widgets/event_detail_hero_top_bar.dart": {
-      "ColoredBox": 1,
       "Icon": 5,
       "LinearGradient": 1
     },
-    "lib/events/presentation/widgets/event_detail_itinerary_row.dart": {
-      "ColoredBox": 1
-    },
     "lib/events/presentation/widgets/event_detail_loading_skeleton.dart": {
-      "ColoredBox": 1,
       "Divider": 1,
       "VerticalDivider": 1
     },
@@ -443,8 +390,6 @@
     },
     "lib/events/shared/event_agenda_list.dart": {
       "BorderRadius": 1,
-      "BoxDecoration": 1,
-      "Container": 1,
       "Radius": 1
     },
     "lib/events/shared/event_check_in_celebration_screen.dart": {
@@ -453,44 +398,28 @@
     "lib/events/shared/event_joined_celebration_screen.dart": {
       "Icon": 1
     },
-    "lib/events/shared/event_share_card.dart": {
-      "ColoredBox": 1
-    },
     "lib/events/shared/event_tiles/event_action_card.dart": {
-      "BoxDecoration": 1,
-      "DecoratedBox": 1,
       "Icon": 1,
       "LinearGradient": 2
     },
     "lib/events/shared/event_tiles/event_date_rail_card.dart": {
-      "ColoredBox": 1,
       "CustomClipper": 1,
       "CustomPaint": 3,
       "CustomPainter": 3,
       "Icon": 1
     },
     "lib/events/shared/event_tiles/event_date_tile.dart": {
-      "Border": 1,
-      "BorderRadius": 4,
-      "BoxDecoration": 2,
-      "Ink": 2,
-      "InkWell": 2,
-      "Material": 2
+      "BorderRadius": 2
     },
     "lib/explore/presentation/explore_map_screen.dart": {
       "Icon": 1
     },
     "lib/explore/presentation/widgets/club_card.dart": {
-      "BorderRadius": 1,
-      "ClipRRect": 1,
-      "Icon": 1,
-      "Material": 1
+      "Icon": 1
     },
     "lib/explore/presentation/widgets/explore_city_picker.dart": {
       "BorderRadius": 1,
-      "Icon": 2,
-      "InkWell": 1,
-      "Material": 1
+      "Icon": 2
     },
     "lib/explore/presentation/widgets/explore_clear_button.dart": {
       "Icon": 1
@@ -507,9 +436,6 @@
     },
     "lib/explore/presentation/widgets/explore_feed_empty_state.dart": {
       "Icon": 1
-    },
-    "lib/explore/presentation/widgets/explore_header.dart": {
-      "ColoredBox": 1
     },
     "lib/explore/presentation/widgets/explore_screen_empty_state.dart": {
       "Icon": 1
@@ -532,9 +458,6 @@
       "Icon": 1
     },
     "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart": {
-      "ColoredBox": 1,
-      "Container": 1,
-      "GestureDetector": 1,
       "Icon": 1,
       "Image": 1
     },
@@ -547,9 +470,6 @@
     "lib/hosts/presentation/edit_hosted_event_screen.dart": {
       "Icon": 1,
       "Opacity": 1
-    },
-    "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart": {
-      "ColoredBox": 1
     },
     "lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart": {
       "Icon": 2
@@ -569,9 +489,6 @@
     },
     "lib/hosts/presentation/forms/host_form_builder_screen.dart": {
       "Icon": 2
-    },
-    "lib/hosts/presentation/forms/host_form_editor_viewport.dart": {
-      "ColoredBox": 1
     },
     "lib/hosts/presentation/forms/host_form_overview_section_list.dart": {
       "Icon": 1
@@ -593,11 +510,7 @@
       "Icon": 1
     },
     "lib/hosts/presentation/host_operations/host_analytics_trend_section.dart": {
-      "BorderRadius": 4,
-      "BorderSide": 1,
-      "InkWell": 1,
-      "Material": 3,
-      "RoundedRectangleBorder": 1
+      "BorderRadius": 4
     },
     "lib/hosts/presentation/host_operations/host_club_media_rail.dart": {
       "Border": 1,
@@ -634,8 +547,6 @@
       "Icon": 2
     },
     "lib/hosts/presentation/widgets/host_event_tools_rail.dart": {
-      "BorderRadius": 1,
-      "ClipRRect": 1,
       "GestureDetector": 1
     },
     "lib/hosts/presentation/widgets/host_operational_roster_section.dart": {
@@ -671,18 +582,13 @@
     },
     "lib/image_uploads/shared/photo_slot_tile.dart": {
       "BorderRadius": 1,
-      "CircleBorder": 2,
-      "ColoredBox": 2,
       "CustomPaint": 2,
       "CustomPainter": 2,
       "Icon": 4,
-      "InkWell": 2,
-      "Material": 2,
       "Tooltip": 2
     },
     "lib/image_uploads/shared/profile_photo_editor_screen.dart": {
       "ClipRect": 1,
-      "ColoredBox": 2,
       "Icon": 3,
       "Image": 1
     },
@@ -690,7 +596,6 @@
       "Icon": 2
     },
     "lib/locations/shared/map_preview.dart": {
-      "ColoredBox": 1,
       "Icon": 1
     },
     "lib/matches/shared/match_celebration_dialog.dart": {
@@ -715,7 +620,6 @@
     },
     "lib/payments/presentation/payment_confirmation_screen.dart": {
       "BorderRadius": 1,
-      "ColoredBox": 2,
       "Icon": 5,
       "LinearGradient": 1,
       "Opacity": 1,
@@ -724,7 +628,6 @@
     "lib/payments/presentation/payment_history_screen.dart": {
       "BorderRadius": 2,
       "Icon": 1,
-      "InkWell": 1,
       "Radius": 1,
       "RoundedRectangleBorder": 1
     },
@@ -776,9 +679,6 @@
     "lib/programs/presentation/program_workspace_surface.dart": {
       "Icon": 8
     },
-    "lib/public_profile/presentation/public_profile_screen.dart": {
-      "ColoredBox": 1
-    },
     "lib/reviews/shared/reviews_section.dart": {
       "Icon": 2,
       "Tooltip": 2
@@ -789,7 +689,6 @@
     },
     "lib/swipes/presentation/event_recap_screen.dart": {
       "CircleAvatar": 1,
-      "Container": 1,
       "Icon": 2,
       "LinearGradient": 1,
       "Tooltip": 1
@@ -806,11 +705,7 @@
       "Tooltip": 1
     },
     "lib/swipes/shared/profile_surface/profile_body.dart": {
-      "BorderRadius": 2,
-      "BoxDecoration": 1,
-      "ClipRRect": 1,
-      "ColoredBox": 2,
-      "DecoratedBox": 1,
+      "BorderRadius": 1,
       "Icon": 1,
       "Image": 1
     },

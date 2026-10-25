@@ -233,7 +233,6 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final diagnostic = forceUpdateDevelopmentDiagnostic(error);
     final l10n = context.l10n;
 
@@ -249,24 +248,23 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
               children: [
                 Icon(CatchIcons.cloudOffOutlined, size: 48),
                 gapH24,
-                Text(
+                CatchText(
                   l10n.sharedForceUpdateCheckErrorTitle,
-                  style: textTheme.headlineSmall,
+                  variant: CatchTextVariant.titleL,
                   textAlign: TextAlign.center,
                 ),
                 gapH12,
-                Text(
+                CatchText(
                   l10n.sharedForceUpdateCheckErrorBody,
-                  style: textTheme.bodyMedium,
+                  variant: CatchTextVariant.bodyM,
                   textAlign: TextAlign.center,
                 ),
                 if (diagnostic != null) ...[
                   gapH12,
-                  Text(
+                  CatchText(
                     diagnostic,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                    variant: CatchTextVariant.bodyS,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     textAlign: TextAlign.center,
                   ),
                 ],

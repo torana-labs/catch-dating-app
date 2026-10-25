@@ -331,9 +331,9 @@ class ProgramDoorPageBody extends StatelessWidget {
                         body: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            CatchText(
                               entry.payload['displayName']! as String,
-                              style: Theme.of(context).textTheme.titleMedium,
+                              variant: CatchTextVariant.sectionTitle,
                             ),
                             gapH4,
                             CatchBadge(
@@ -408,9 +408,9 @@ class ProgramDoorPageBody extends StatelessWidget {
                         body: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            CatchText(
                               _journalLine(context, entry),
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              variant: CatchTextVariant.bodyM,
                             ),
                             CatchMetaRow(
                               icon: CatchIcons.clock,
@@ -490,10 +490,7 @@ class ProgramDoorGuestRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            guest.displayName,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          CatchText(guest.displayName, variant: CatchTextVariant.sectionTitle),
           CatchMetaRow(icon: CatchIcons.group, label: _meta(context)),
           gapH4,
           Wrap(
