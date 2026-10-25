@@ -638,6 +638,9 @@ export {validateClubClaimRequestDocument} from "./validators/clubClaimRequestDoc
 export {validateEventDocument} from "./validators/eventDocument";
 export {validateEventPlanChangeDocument} from "./validators/eventPlanChangeDocument";
 export {validateExternalEventDocument} from "./validators/externalEventDocument";
+export {validateOrganizerPublicPageDocument} from "./validators/organizerPublicPageDocument";
+export {validateEventPublicPageDocument} from "./validators/eventPublicPageDocument";
+export {validatePublicPageBuildDocument} from "./validators/publicPageBuildDocument";
 export {validateEventPrivateAccessDocument} from "./validators/eventPrivateAccessDocument";
 export {validateEventInviteLinkDocument} from "./validators/eventInviteLinkDocument";
 export {validateEventInviteLinkSecretDocument} from "./validators/eventInviteLinkSecretDocument";

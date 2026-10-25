@@ -210,6 +210,14 @@ export {syncOrganizerNextEvent} from "./organizers/syncOrganizerNextEvent";
 export {syncExternalEventVisibility} from
   "./organizers/externalEventVisibility";
 export {
+  onPublicPageEventWritten,
+  onPublicPageExternalEventWritten,
+  onPublicPageOrganizerWritten,
+  onPublicPageReviewWritten,
+  reconcilePublicPages,
+  refreshPublicPageFollowers,
+} from "./publicPages/triggers";
+export {
   archiveOrganizer,
   deleteOrganizer,
   updateOrganizer,
