@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 108,
-  "updated": "2026-10-24",
+  "version": 109,
+  "updated": "2026-10-25",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -3523,6 +3523,153 @@
         ]
       },
       "notes": "Website T4 under D18. Same symbol as Flutter ClubCover (catch.club_cover); becomes its react record when that registry is free: the organiser's photo, or ClubPlaceholderCover when there is none or it fails to load. Never a stand-in photo or a grey box. Flutter binds a Club; the website binds the public listing's name, city and activity. Search aliases: OrganizerCover, OrganizerImage, ClubImage."
+    },
+    {
+      "id": "shared_band",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "host",
+        "organizer_listing_canonical",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/layout",
+      "source": "packages/web-ui/src/components/CatchBand.tsx",
+      "exportName": "CatchBand",
+      "css": [
+        "packages/web-ui/src/components/CatchBand.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchBand.stories.tsx",
+        "exportName": "Grounds",
+        "states": [
+          "grounds",
+          "ink-dark-theme",
+          "spacing-roles",
+          "phone-rhythm",
+          "full-width",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-248). A full-width Website v2 section on the white, paper, ink or an accent ground from the CAT-245 palette tokens; it remaps the theme ink roles to the ground's inks, resolves the ink ground through the dark theme, sets the 112/64/32px section rhythm, and declares the catch-page container that CatchSplit, CatchGrid, CatchScroller and CatchScrollStory query for their phone arrangement below 840px. Search aliases: PageSection, Section, SectionBand, ColorBand, ColourBlock, GroundSection, FullBleedSection, Stripe."
+    },
+    {
+      "id": "shared_split",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "host",
+        "organizer_listing_canonical",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/layout",
+      "source": "packages/web-ui/src/components/CatchSplit.tsx",
+      "exportName": "CatchSplit",
+      "css": [
+        "packages/web-ui/src/components/CatchSplit.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchSplit.stories.tsx",
+        "exportName": "Ratios",
+        "states": [
+          "ratios",
+          "rails",
+          "phone-stack",
+          "gaps",
+          "stretch",
+          "board-reference-organiser",
+          "board-reference-event"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-248). Two columns at 1:1, 7:5, or a 380px (booking) or 420px (organiser) rail on either side; they stack in source order when the page is narrower than 840px, snapped from the boards' 900px to the expanded window size. Search aliases: TwoColumn, TwoColumns, Columns, SplitLayout, SideBySide, Sidebar, SidebarLayout, RailLayout."
+    },
+    {
+      "id": "shared_grid",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "host",
+        "organizer_listing_canonical",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/layout",
+      "source": "packages/web-ui/src/components/CatchGrid.tsx",
+      "exportName": "CatchGrid",
+      "css": [
+        "packages/web-ui/src/components/CatchGrid.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchGrid.stories.tsx",
+        "exportName": "Columns",
+        "states": [
+          "columns",
+          "compact-columns",
+          "list",
+          "start-aligned",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-248). Two, three or four equal columns, one or two on a page narrower than 840px, spaced with a CatchGaps role; as ul or ol it wraps each child in a list item. Search aliases: GridLayout, ResponsiveGrid, TileGrid, CardGrid, Columns, MasonryGrid."
+    },
+    {
+      "id": "shared_scroller",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "host"
+      ],
+      "owner": "shared/layout",
+      "source": "packages/web-ui/src/components/CatchScroller.tsx",
+      "exportName": "CatchScroller",
+      "css": [
+        "packages/web-ui/src/components/CatchScroller.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchScroller.stories.tsx",
+        "exportName": "ItemWidths",
+        "states": [
+          "item-widths",
+          "page-edge",
+          "grow",
+          "keyboard-focus",
+          "no-edge",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-248). A keyboard-focusable sideways rail whose items snap to its start; a page-edge rail pads its first item to the content edge of a full-width CatchBand while items scroll to the viewport edge. Search aliases: Carousel, HorizontalScroll, Rail, Slider, ScrollRow, Shelf, HorizontalList, Swiper."
+    },
+    {
+      "id": "shared_scroll_story",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "host"
+      ],
+      "owner": "shared/layout",
+      "source": "packages/web-ui/src/components/CatchScrollStory.tsx",
+      "exportName": "CatchScrollStory",
+      "css": [
+        "packages/web-ui/src/components/CatchScrollStory.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchScrollStory.stories.tsx",
+        "exportName": "OnInk",
+        "states": [
+          "ink-ground",
+          "media-end",
+          "light-ground",
+          "media-start",
+          "arrows",
+          "controlled",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-248). Pinned media beside chapters: the chapter crossing the viewport's middle becomes active, arrows step through chapters with a polite position announcement, inactive chapters recede to the ground's secondary ink (AA), and below 840px the media and controls pin to the top of the band. Search aliases: ScrollytellingSection, StickyStory, PinnedMedia, Walkthrough, StepThrough, FeatureTour, Chapters."
     }
   ]
 }
