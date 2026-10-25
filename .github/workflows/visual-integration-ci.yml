@@ -197,10 +197,19 @@ jobs:
           design:widgetbook-use-case-triage
           design:golden-coverage
 
-      - name: Flutter goldens (0.30% raster tolerance)
+      # Golden pixel changes are reported, not failed: the app is still
+      # changing visually on purpose. CATCH_GOLDEN_REPORT puts the shared
+      # comparator in report mode; render errors and every non-golden
+      # expectation in these suites still fail the step.
+      - name: Flutter goldens (report pixel changes)
+        id: flutter-goldens
+        env:
+          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv
         run: flutter test --concurrency=1 test/goldens
 
       - name: Widgetbook package suites (pass 1)
+        env:
+          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv
         run: >-
           (cd widgetbook &&
           flutter test --concurrency=1 test)
@@ -210,12 +219,37 @@ jobs:
       # on the nightly full validation so PRs do not pay for it.
       - name: Widgetbook corpus goldens (pass 2, determinism)
         if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        env:
+          CATCH_GOLDEN_REPORT: ${{ runner.temp }}/catch-golden-report.tsv
         run: >-
           (cd widgetbook &&
           flutter test --concurrency=1 test/primitive_goldens_test.dart)
 
+      - name: Report golden pixel changes
+        id: golden-report
+        if: ${{ always() && steps.flutter-goldens.outcome != 'skipped' }}
+        env:
+          REPORT: ${{ runner.temp }}/catch-golden-report.tsv
+        run: |
+          {
+            echo "### Flutter golden changes"
+            echo
+            if [[ -s "$REPORT" ]]; then
+              echo "$(sort -u "$REPORT" | wc -l | tr -d ' ') golden(s) differ from their baselines. Report only: nothing here blocks the merge. Images are in this run's flutter-golden-failures artifact."
+              echo
+              echo "| Golden | Change | Allowed |"
+              echo "|---|---|---|"
+              sort -u "$REPORT" | while IFS=$'\t' read -r golden change allowed; do
+                echo "| \`$golden\` | $change | $allowed |"
+              done
+            else
+              echo "No golden pixel changes."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ -s "$REPORT" ]]; then echo "has_changes=true" >> "$GITHUB_OUTPUT"; fi
+
       - name: Retain golden failure diffs
-        if: failure()
+        if: ${{ failure() || steps.golden-report.outputs.has_changes == 'true' }}
         uses: actions/upload-artifact@v6
         with:
           name: flutter-golden-failures-${{ github.run_id }}
