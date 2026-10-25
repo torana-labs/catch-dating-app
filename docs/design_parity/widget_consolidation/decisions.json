@@ -8862,6 +8862,132 @@
       "decidedBy": "codex-rule:exact-text-role-identity",
       "date": "2026-10-25",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-241:fixed-metadata-api-screen-rebuild-deferral",
+      "decision": "defer-to-rebuild",
+      "canonicalSymbol": "CatchMetadataText",
+      "members": [
+        {
+          "name": "lib/auth/presentation/otp_step.dart:368",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/clubs/presentation/detail/widgets/club_photo_rail.dart:48",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/clubs/presentation/detail/widgets/club_photo_rail.dart:53",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/core/widgets/ordered_photo_picker.dart:593",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/dashboard/presentation/widgets/activity_section.dart:303",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart:68",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart:114",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart:38",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart:126",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_dock.dart:467",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_fact_list.dart:528",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_fact_list.dart:533",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_fact_list.dart:616",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart:404",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart:430",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/shared/event_tiles/event_date_rail_card.dart:285",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/shared/event_tiles/event_date_rail_card.dart:567",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/shared/event_tiles/event_date_rail_card.dart:587",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/explore/presentation/widgets/featured_event_poster.dart:343",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/hosts/presentation/host_operations/host_club_media_rail.dart:56",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/hosts/presentation/widgets/host_event_manage_section.dart:105",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/image_uploads/shared/photo_slot_tile.dart:262",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart:151",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        }
+      ],
+      "rationale": "Coordinator chose option 1 now: preserve all 23 wrapping/alignment sites as recorded debt with target zero and keep CatchMetadataText name/API/tier fixed. At each screen rebuild, features may arrange a one-line component with Align or row/column alignment only after captures prove the longest real value fits at the largest supported text scale. Multiline metadata requires a separate packet; no textAlign or maxLines prop is approved. Source: CAT-241 coordinator comment 8c4c50cc-1e4f-4637-bc33-253c821779f6, 2026-10-24. Original locations listed above are historical identifiers from the packet, not an assertion of current line numbers.",
+      "decidedBy": "owner-delegated:2026-10-24 -> claude",
+      "date": "2026-10-24",
+      "status": "deferred"
     }
   ]
 }

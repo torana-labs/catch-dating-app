@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-10-24",
+  "updated": "2026-10-25",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
     "componentContracts": "design/components/catch.components.json",
