@@ -1,15 +1,13 @@
 import worldJson from "../../../../tool/demo/demo_seed/scenarios/host-marketing-india.json";
 import personaJson from "../../../../tool/demo/demo_seed/personas/india_core_sales_personas.draft.json";
-import {buildPublicEventDetailRecords, type EventDetailRecord} from "../../features/events/eventDetailModel";
-import {projectLivePublicCatchEvent} from "../../features/organizers/publicCatchEventProjection";
-import type {HostListing} from "../../features/organizers/types";
-import {hostListings} from "./hostListings";
 
 // Reader for the Mumbai demo world and the India persona catalog, so Storybook
 // guest pages show the same people and event as the app captures. Guest state
 // is derived from the timestamped attendance records with the rule in
 // eventStateAt of tool/demo/lib/demo_world.mjs.
 // See docs/plans/demo_world_scenarios_spec.md.
+// Web captures import this file, so it reads only the world and personas; the
+// website listing projection of the world is in demoWorldListing.ts.
 
 interface DemoWorld {
   id: string;
@@ -23,7 +21,7 @@ interface DemoWorld {
   people: {id: string; personaId: string}[];
   events: DemoWorldEvent[];
 }
-interface DemoWorldEvent {
+export interface DemoWorldEvent {
   id: string;
   name: string;
   description: string;
@@ -55,7 +53,7 @@ export interface DemoGuest {
   checkedIn: boolean;
 }
 
-const world: DemoWorld = worldJson;
+export const world: DemoWorld = worldJson;
 const personas: readonly DemoPersona[] = personaJson.personas;
 
 /** The world's one event: Saturday Trivia Social. */
@@ -114,85 +112,6 @@ export function venueLabel(eventId: string) {
   return `${venue.name}, ${venue.area}`;
 }
 
-/**
- * The organiser's public listing at a moment. Identity and events come from
- * the world; publication policy comes from the generated Catch demo listing.
- */
-export function organizerListingAt(moment: DemoMoment): HostListing {
-  const policy = hostListings.find((listing) => listing.dataOrigin === "catchDemo");
-  if (!policy) throw new Error("Missing generated Catch demo listing.");
-  const {organizer} = world;
-  const city = cityLabel();
-  const slug = organizer.name.toLowerCase().replace(/[^a-z0-9]+/gu, "-").replace(/^-|-$/gu, "");
-  const path = `/organizers/${organizer.city}/${slug}/`;
-  const events = world.events.map((event) => catchEventAt(event, moment));
-  const next = events.find((event) => event.timeline === "upcoming");
-  const formats = organizer.tags.map((tag) => `${tag[0].toUpperCase()}${tag.slice(1)}`);
-  return {
-    ...policy,
-    id: organizer.id,
-    name: organizer.name,
-    slug,
-    city,
-    citySlug: organizer.city,
-    region: city,
-    country: new Intl.DisplayNames(["en"], {type: "region"}).of(world.locale.split("-")[1]) ?? "",
-    path,
-    headline: `${organizer.name} in ${city}`,
-    description: organizer.description,
-    sourceSummary: `${organizer.name} is a first-party Catch demo organiser with app-created events.`,
-    logo: {...policy.logo, text: organizer.name.split(/\s+/u).map((word) => word[0]).join("").slice(0, 2)},
-    formats,
-    facts: [
-      {label: "Location", value: `${organizer.area}, ${city}`},
-      {label: "Host", value: world.host.displayName},
-      ...(next ? [{label: "Next event", value: next.date}] : []),
-      {label: "Built in Catch", value: "App-created club"},
-    ],
-    metrics: {nextEventAt: next?.startTime ?? null, nextEventLabel: next?.title ?? null},
-    host: {name: world.host.displayName, role: "Owner", avatarUrl: null},
-    catchEvents: events,
-    externalEvents: [],
-    eventSuccessSummary: null,
-    eventEvidence: [],
-    reviews: [],
-    sources: [{type: "catch_demo", label: "Catch demo world", detail: `Demo world ${world.id}.`, confidence: "high"}],
-    claim: {href: `${path}#events`, label: "View events"},
-    searchText: [organizer.name, city, organizer.area, world.host.displayName, ...formats,
-      ...events.map((event) => event.title)].join(" ").toLowerCase(),
-  };
-}
-
-/** An event's public detail record as a visitor would see it at a moment. */
-export function eventDetailAt(eventId: string, moment: DemoMoment): EventDetailRecord {
-  const record = buildPublicEventDetailRecords([organizerListingAt(moment)], momentMillis(moment))
-    .find((candidate) => candidate.eventId === eventId);
-  if (!record) throw new Error(`${world.id} event ${eventId} is not publicly readable.`);
-  return record;
-}
-
-// The website reads Catch events through the same projection it applies to
-// published Firestore documents, so the labels match production.
-function catchEventAt(event: DemoWorldEvent, moment: DemoMoment) {
-  const venue = requireVenue(event);
-  const {startMillis, endMillis} = eventTimesMillis(event.id);
-  const timestamp = (millis: number) => ({toMillis: () => millis});
-  const projected = projectLivePublicCatchEvent(event.id, {
-    publicationState: "published", status: "active", organizerId: world.organizer.id,
-    name: event.name, description: event.description,
-    startTime: timestamp(startMillis), endTime: timestamp(endMillis), eventTimezone: world.timeZone,
-    meetingLocation: {name: venue.name, address: `${venue.area}, ${cityLabel()}`,
-      latitude: venue.lat, longitude: venue.lng, notes: venue.directions},
-    eventFormat: {activityKind: event.activityKind, customActivityLabel: event.customActivityLabel},
-    capacityLimit: event.capacity, bookedCount: eventStateAt(event.id, moment).booked,
-    checkedInCount: eventStateAt(event.id, moment).checkedIn,
-    priceInPaise: event.priceInPaise, currency: world.currency,
-    publicRegistrationEnabled: true, publicRegistrationMode: event.priceInPaise ? "paid" : "free",
-  }, momentMillis(moment));
-  if (!projected) throw new Error(`${world.id} event ${event.id} fails the public event projection.`);
-  return projected.event;
-}
-
 function activeAttendance(event: DemoWorldEvent, at: string) {
   return event.attendance.filter((record) =>
     record.bookedAt <= at && !(record.cancelledAt && record.cancelledAt <= at));
@@ -206,7 +125,7 @@ function guest(personId: string): Omit<DemoGuest, "checkedIn"> {
   return {personId, firstName, lastName, displayName};
 }
 
-function cityLabel() {
+export function cityLabel() {
   const host = personas.find((persona) => persona.id === world.host.personaId);
   if (!host) throw new Error(`${world.id} host has no persona.`);
   return host.cityLabel;
@@ -218,7 +137,7 @@ function requireEvent(eventId: string) {
   return event;
 }
 
-function requireVenue(event: DemoWorldEvent) {
+export function requireVenue(event: DemoWorldEvent) {
   const venue = world.venues.find((candidate) => candidate.id === event.venueId);
   if (!venue) throw new Error(`${world.id} has no venue ${event.venueId}.`);
   return venue;
