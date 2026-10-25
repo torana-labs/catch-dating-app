@@ -374,12 +374,15 @@
       "applies_to": [
         "website/src/**",
         "admin/src/**",
-        "tool/web/check_react_ui_primitives.mjs",
+        "tool/web/check_react_ui.mjs",
         "package.json",
         "website/package.json",
-        "admin/package.json"
+        "admin/package.json",
+        "packages/web-config/lint/**",
+        "website/eslint-suppressions.json",
+        "admin/eslint-suppressions.json"
       ],
-      "instruction": "React feature, app, and story code must not render native interactive elements such as button, anchor, input, select, or textarea directly. Route those elements through the shared UI primitive owner for the surface, or add a temporary react-ui-primitive-allow override with a stable debt id and removal plan. Run node tool/run.mjs check web:react-ui-primitives before handoff.",
+      "instruction": "React production UI composes library components instead of raw markup or className/style overrides. The shared ESLint preset records existing production debt in each app eslint-suppressions.json; counts must match source and may never grow above accepted main. Table/image families wait for their styled components (D17). Story/test control and class-name ownership guards remain in the preset. Run node tool/run.mjs check web:react-ui-lint before handoff.",
       "sunset_when": [
         "The React primitive scanner is enforced in CI for website and admin",
         "The remaining form/table/layout component families have equivalent registry-backed scanners"
@@ -391,7 +394,8 @@
       ],
       "enforcement": [
         {
-          "stage": "manual",
+          "tool": "web:react-ui-lint",
+          "stage": "scanner-gate",
           "docAnchor": "tool/policy/rules.json"
         }
       ]
@@ -407,7 +411,7 @@
       "applies_to": [
         "website/src/**",
         "admin/src/**",
-        "tool/web/check_react_classname_boundaries.mjs",
+        "tool/web/check_react_ui.mjs",
         "tool/web/check_react_component_governance.mjs",
         "package.json",
         "website/package.json",
@@ -421,7 +425,7 @@
         "tool/web/check_admin_components.mjs",
         "design/admin/components.json"
       ],
-      "instruction": "React feature, app, and story code must route governed component families through shared primitives instead of rendering the shell directly. Marketing website exported uppercase feature components must be declared in design/website/components.json or made private, so route/section/supporting components remain registry-backed. Admin feature UI files may export route/workspace entry components such as *Screen and *Workspace; reusable panels, cards, lists, badges, and sections belong in admin/src/shared/ui or stay private. Admin route/workspace entries, shared admin primitives, and admin feedback providers must be declared in design/admin/components.json. Every exported React component in website, admin and @catch/web-ui maps to a registry concept, a T4 owner or deletion in the generated inventory (web:shared-ui-adoption; --write saves build/react_component_inventory.json); a shared-layer export that matches a registered contract by name or renders its @catch/web-ui implementation records componentId, or comparedWith with a comparisonReason, in its surface registry. Do not pass className directly outside shared UI/site primitive owner files; move the style decision into a primitive or use a temporary react-classname-boundary-allow override with a stable debt id and removal plan. The scanner owns its governed families in source and emits a current view with `node tool/web/check_react_component_governance.mjs --families-json`; do not check in a duplicate generated registry. The family scanner is a known-family blocklist: passing it does not classify novel component shells, so repeated new shell drift must become a scanner family before handoff. Run `node tool/run.mjs check marketing:website-components`, `node tool/run.mjs check web:admin-feature-exports`, `node tool/run.mjs check web:admin-components`, `node tool/run.mjs check web:react-classname-boundaries`, `node tool/run.mjs check web:react-component-governance`, and `node tool/run.mjs check web:shared-ui-adoption` before handoff.",
+      "instruction": "React feature, app, and story code must route governed component families through shared primitives instead of rendering the shell directly. Marketing website exported uppercase feature components must be declared in design/website/components.json or made private, so route/section/supporting components remain registry-backed. Admin feature UI files may export route/workspace entry components such as *Screen and *Workspace; reusable panels, cards, lists, badges, and sections belong in admin/src/shared/ui or stay private. Admin route/workspace entries, shared admin primitives, and admin feedback providers must be declared in design/admin/components.json. Every exported React component in website, admin and @catch/web-ui maps to a registry concept, a T4 owner or deletion in the generated inventory (web:shared-ui-adoption; --write saves build/react_component_inventory.json); a shared-layer export that matches a registered contract by name or renders its @catch/web-ui implementation records componentId, or comparedWith with a comparisonReason, in its surface registry. Production drawing belongs in @catch/web-ui. The shared ESLint preset ratchets raw elements and className/style props against existing app suppressions; do not add inline allow markers or grow recorded debt. The scanner owns its governed families in source and emits a current view with `node tool/web/check_react_component_governance.mjs --families-json`; do not check in a duplicate generated registry. The family scanner is a known-family blocklist: passing it does not classify novel component shells, so repeated new shell drift must become a scanner family before handoff. Run `node tool/run.mjs check marketing:website-components`, `node tool/run.mjs check web:admin-feature-exports`, `node tool/run.mjs check web:admin-components`, `node tool/run.mjs check web:react-ui-lint`, `node tool/run.mjs check web:react-component-governance`, and `node tool/run.mjs check web:shared-ui-adoption` before handoff.",
       "sunset_when": [
         "The React component-governance scanner is enforced in CI for website and admin",
         "Form groups, filters, nav rails, layout shells, metric cards, and status blocks have equivalent registry-backed scanners or documented non-governed classifications"
@@ -431,8 +435,8 @@
           "type": "manual"
         }
       ],
-      "version": "2.6.128",
-      "updated": "2026-10-19",
+      "version": "2.6.129",
+      "updated": "2026-10-25",
       "enforcement": [
         {
           "tool": "marketing:website-components",
@@ -450,7 +454,7 @@
           "docAnchor": "docs/admin_dashboard_user_stories_and_component_catalogue.md#base-component-catalogue"
         },
         {
-          "tool": "web:react-classname-boundaries",
+          "tool": "web:react-ui-lint",
           "stage": "scanner-gate",
           "docAnchor": "tool/policy/rules.json"
         },
@@ -3438,6 +3442,6 @@
       ]
     }
   },
-  "version": "2.13.0",
-  "updated": "2026-09-05"
+  "version": "2.13.1",
+  "updated": "2026-10-25"
 }

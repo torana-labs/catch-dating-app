@@ -1,6 +1,6 @@
 {
-  "version": 146,
-  "updated": "2026-10-24",
+  "version": 147,
+  "updated": "2026-10-25",
   "owner": "agent_operating_model",
   "skills": [
     {
@@ -69,7 +69,7 @@
         "marketing:website-routes",
         "marketing:website-components",
         "web:react-architecture-boundaries",
-        "web:react-ui-primitives",
+        "web:react-ui-lint",
         "web:react-component-governance",
         "marketing:website-build",
         "marketing:app-media-sync",
@@ -79,7 +79,7 @@
         "node tool/run.mjs check marketing:website-routes",
         "node tool/run.mjs check marketing:website-components",
         "node tool/run.mjs check web:react-architecture-boundaries",
-        "node tool/run.mjs check web:react-ui-primitives",
+        "node tool/run.mjs check web:react-ui-lint",
         "node tool/run.mjs check web:react-component-governance",
         "npm --workspace catch-marketing run typecheck",
         "npm --workspace catch-marketing run build",
@@ -136,7 +136,7 @@
       ],
       "required_tools": [
         "web:react-architecture-boundaries",
-        "web:react-ui-primitives",
+        "web:react-ui-lint",
         "web:react-component-governance",
       "web:shared-ui-adoption",
       "web:react-controller-test-targets",
@@ -152,7 +152,7 @@
       ],
       "required_commands": [
         "node tool/run.mjs check web:react-architecture-boundaries",
-        "node tool/run.mjs check web:react-ui-primitives",
+        "node tool/run.mjs check web:react-ui-lint",
         "node tool/run.mjs check web:react-component-governance",
       "node tool/run.mjs check web:shared-ui-adoption",
       "node tool/run.mjs check web:react-controller-test-targets",
