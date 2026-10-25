@@ -165,7 +165,7 @@
   },
   "src/styles/public-forms.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 72
+      "count": 52
     },
     "declaration-property-value-allowed-list": {
       "count": 16
