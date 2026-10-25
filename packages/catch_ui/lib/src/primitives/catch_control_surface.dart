@@ -128,7 +128,7 @@ class CatchControlSurface extends StatelessWidget {
       decoration: BoxDecoration(
         color: _fillColor(t),
         borderRadius: radius,
-        boxShadow: status == CatchControlSurfaceStatus.focused
+        boxShadow: enabled && status == CatchControlSurfaceStatus.focused
             ? CatchElevation.focusRing(t)
             : CatchElevation.none,
       ),
@@ -145,7 +145,11 @@ class CatchControlSurface extends StatelessWidget {
             color: Colors.transparent,
             borderRadius: radius,
             clipBehavior: Clip.antiAlias,
-            child: InkWell(onTap: onTap, borderRadius: radius, child: content),
+            child: InkWell(
+              onTap: enabled ? onTap : null,
+              borderRadius: radius,
+              child: content,
+            ),
           );
 
     if (!semanticButton) return tappable;
