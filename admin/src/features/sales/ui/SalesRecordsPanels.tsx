@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchGap, CatchText, CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {CheckCircle2, ClipboardList} from "lucide-react";
 import {
@@ -16,8 +16,8 @@ import type {SalesAccountDetail, SalesContact, SalesEvidence, SalesEvidencePropo
 function PageControls({previous, next, onPrevious, onNext}: {
   previous: boolean; next: boolean; onPrevious: () => void; onNext: () => void;
 }) {
-  return <p><AdminButton disabled={!previous} onClick={onPrevious}>Previous</AdminButton>{" "}
-    <AdminButton disabled={!next} onClick={onNext}>Next</AdminButton></p>;
+  return <CatchGap direction="horizontal" size="inline" wrap><AdminButton disabled={!previous} onClick={onPrevious}>Previous</AdminButton>{" "}
+    <AdminButton disabled={!next} onClick={onNext}>Next</AdminButton></CatchGap>;
 }
 
 function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
@@ -148,10 +148,10 @@ function SalesPeoplePanel({detail, controller, assignedStaffOnly}: {
       />
       {selected ? <StateRow label="Current status" value={
         selected.relationship.contactabilityStatus.replaceAll("_", " ")} /> : null}
-      {contactChanged ? <p role="alert">This contact decision changed since you opened
+      {contactChanged ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">This contact decision changed since you opened
         it. Compare the current status before recording another decision. <AdminButton
           type="button" onClick={() => selectContact(selected)}>Use latest contact
-          decision</AdminButton></p> : null}
+          decision</AdminButton></CatchText> : null}
       <CatchField
         recipe="select"
         title="New status"
@@ -404,10 +404,10 @@ function SalesSuppressionPanel({detail, controller}: {
   };
   return <Panel title="Account restriction" icon={<ClipboardList size={18} />}>
     <StateRow label="Current status" value={detail.account.suppressionStatus ?? "clear"} />
-    {accountChanged ? <p role="alert">This host record changed since you opened
+    {accountChanged ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">This host record changed since you opened
       the restriction form. Compare the current status before recording another
       decision. <AdminButton type="button" onClick={useLatest}>Use latest account
-      decision</AdminButton></p> : null}
+      decision</AdminButton></CatchText> : null}
     <AdminForm onSubmit={(event) => {event.preventDefault(); void save();}}>
       <CatchField
         recipe="select"

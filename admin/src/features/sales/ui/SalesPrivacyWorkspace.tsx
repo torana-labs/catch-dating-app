@@ -88,9 +88,9 @@ function PrivacyEntry({actorUid, organizerId, organizerName, api}: {
         </AdminButton>
       </AdminForm>
       {matches.isPending && submitted ? <CatchText as="p" variant="supporting">Searching hosts…</CatchText> : null}
-      {matches.isError ? <p role="alert">Host search failed. {" "}
+      {matches.isError ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">Host search failed. {" "}
         <AdminButton onClick={() => void matches.refetch()}>Try again</AdminButton>
-      </p> : null}
+      </CatchText> : null}
       {matches.data?.length === 0 ? <EmptyState>No matching hosts.</EmptyState> :
         null}
       {matches.data?.length ? <ul>{matches.data.map((row) =>
@@ -192,14 +192,14 @@ function OwnerPrivacyCase({actorUid, organizerId, organizerName, api,
       cleanup. It does not delete product organizers, Forms, finance evidence,
       audit records, external exports, or copies held by other systems.</CatchText>
     {c.caseQuery.isPending ? <CatchText as="p" variant="supporting">Loading the current privacy case…</CatchText> : null}
-    {c.caseQuery.isError ? <p role="alert">The current case could not be loaded.
+    {c.caseQuery.isError ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">The current case could not be loaded.
       {" "}<AdminButton onClick={() => void c.caseQuery.refetch()}>
-        Try again</AdminButton></p> : null}
+        Try again</AdminButton></CatchText> : null}
     {c.error ? <CatchText as="p" variant="supporting" role="alert">{c.error}</CatchText> : null}
     {c.notice ? <CatchText as="p" variant="supporting" role="status">{c.notice}</CatchText> : null}
-    {c.pending ? <p role="alert">Outcome unconfirmed. {" "}
+    {c.pending ? <CatchText as="p" variant="bodyL" color="inherit" role="alert">Outcome unconfirmed. {" "}
       <AdminButton disabled={c.busy} onClick={() => void c.retryPending()}>
-        Retry the same request</AdminButton></p> : null}
+        Retry the same request</AdminButton></CatchText> : null}
     {ownerCase && !ownerCase.restricted ? <AdminForm onSubmit={(event) => {
       event.preventDefault();
       if (confirm === organizerName && reason.trim()) void c.restrict(reason.trim());

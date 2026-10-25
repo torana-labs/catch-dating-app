@@ -2,7 +2,6 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// The expressive "activity color" layer — the *only* chroma in Catch's
 /// otherwise black-and-white system (see `docs/design_language.md` §3). One
@@ -119,29 +118,24 @@ class ActivityPalette extends ThemeExtension<ActivityPalette> {
     ActivityKind.openActivity,
   ];
 
-  static const Map<ActivityKind, IconData> glyphs = <ActivityKind, IconData>{
-    ActivityKind.socialRun: PhosphorIconsRegular.sneakerMove,
-    // Registry (components/activity/kinds.js): running='person-simple-run'.
-    // sneaker-move is reserved for socialRun only.
-    ActivityKind.running: PhosphorIconsRegular.personSimpleRun,
-    ActivityKind.walking: PhosphorIconsRegular.personSimpleWalk,
-    // Registry: pickleball='ping-pong', padel/tennis='tennis-ball'.
-    ActivityKind.pickleball: PhosphorIconsRegular.pingPong,
-    ActivityKind.padel: PhosphorIconsRegular.tennisBall,
-    ActivityKind.tennis: PhosphorIconsRegular.tennisBall,
-    // Registry: badminton='shuttlecock'; phosphor 2.1.0 ships no shuttlecock,
-    // so `feather` is the nearest shuttlecock-evoking glyph (and distinct from
-    // the tennis-ball racquet cluster). Swap to a bespoke emblem when added.
-    ActivityKind.badminton: PhosphorIconsRegular.feather,
-    ActivityKind.cycling: PhosphorIconsRegular.bicycle,
-    ActivityKind.spinClass: PhosphorIconsRegular.bicycle,
-    ActivityKind.yoga: PhosphorIconsRegular.flowerLotus,
-    ActivityKind.strengthTraining: PhosphorIconsRegular.barbell,
-    ActivityKind.pubQuiz: PhosphorIconsRegular.brain,
-    ActivityKind.barCrawl: PhosphorIconsRegular.beerStein,
-    ActivityKind.dinner: PhosphorIconsRegular.forkKnife,
-    ActivityKind.singlesMixer: PhosphorIconsRegular.martini,
-    ActivityKind.openActivity: PhosphorIconsRegular.sparkle,
+  /// The icon role for each activity, from `design/tokens/catch.icons.json`.
+  static final Map<ActivityKind, IconData> glyphs = <ActivityKind, IconData>{
+    ActivityKind.socialRun: CatchIcons.activitySocialRun,
+    ActivityKind.running: CatchIcons.activityRunning,
+    ActivityKind.walking: CatchIcons.activityWalking,
+    ActivityKind.pickleball: CatchIcons.activityPickleball,
+    ActivityKind.padel: CatchIcons.activityPadel,
+    ActivityKind.tennis: CatchIcons.activityTennis,
+    ActivityKind.badminton: CatchIcons.activityBadminton,
+    ActivityKind.cycling: CatchIcons.activityCycling,
+    ActivityKind.spinClass: CatchIcons.activitySpinClass,
+    ActivityKind.yoga: CatchIcons.activityYoga,
+    ActivityKind.strengthTraining: CatchIcons.activityStrengthTraining,
+    ActivityKind.pubQuiz: CatchIcons.activityPubQuiz,
+    ActivityKind.barCrawl: CatchIcons.activityBarCrawl,
+    ActivityKind.dinner: CatchIcons.activityDinner,
+    ActivityKind.singlesMixer: CatchIcons.activitySinglesMixer,
+    ActivityKind.openActivity: CatchIcons.activityOpenActivity,
   };
 
   /// Activity pigments generated from the canonical design-token JSON

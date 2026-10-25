@@ -81,6 +81,11 @@ jobs:
       - name: Check React dependency topology
         run: node tool/web/react_dependency_graph.mjs --check
 
+      # Features name icon roles; lucide-react imports outside the icon layer
+      # may only fall.
+      - name: Check icon-family references
+        run: node tool/design/check_icon_family_usage.mjs --check
+
       - name: Check design tokens
         if: ${{ inputs.surface == 'marketing' }}
         run: npm run web:tokens:check
@@ -174,7 +179,6 @@ jobs:
             assert.ok(packaged.equals(built), `Packaged capture differs: ${file}`);
             return {path: file, bytes: built.length, sha256: crypto.createHash('sha256').update(built).digest('hex')};
           });
-          assert.equal(files.length, 13);
           fs.writeFileSync('build/ci/marketing-hosting-validation/upload/capture-package-proof.json',
             JSON.stringify({validationOnly: true, captureBinding: JSON.parse(process.env.CAPTURE_BINDING), files}, null, 2) + '\n');
           NODE

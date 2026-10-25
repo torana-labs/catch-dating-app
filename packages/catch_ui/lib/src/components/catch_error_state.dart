@@ -13,7 +13,7 @@ class CatchErrorState extends StatelessWidget {
     super.key,
     required this.title,
     required this.message,
-    this.icon = CatchIcons.errorOutlineRounded,
+    this.icon,
     this.onRetry,
     this.retryLabel,
     this.actions = const [],
@@ -25,7 +25,9 @@ class CatchErrorState extends StatelessWidget {
 
   final String title;
   final String message;
-  final IconData icon;
+
+  /// Defaults to [CatchIcons.error].
+  final IconData? icon;
   final VoidCallback? onRetry;
 
   /// Caller-resolved label, required when [onRetry] is supplied.
@@ -41,7 +43,7 @@ class CatchErrorState extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         CatchIconTile.error(
-          icon: icon,
+          icon: icon ?? CatchIcons.error,
           size: isCompact ? 48 : 64,
           iconSize: isCompact ? 24 : 30,
         ),
