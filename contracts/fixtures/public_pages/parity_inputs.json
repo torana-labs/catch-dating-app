@@ -1,0 +1,2455 @@
+{
+  "description": "Shared inputs for the public page parity check. The website reader (website/src/server/publicPageParity.test.ts) writes parity_expected.json from these; the Functions read-model projector (functions/src/publicPages/parity.test.ts) must produce the same output.",
+  "now": 1778716800000,
+  "liveMarkets": [
+    "indore",
+    "mumbai"
+  ],
+  "cases": [
+    {
+      "name": "unclaimed organizer with every event and review variant",
+      "organizer": {
+        "id": "next-proof",
+        "data": {
+          "name": "Next proof organizer",
+          "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+          "location": "in-mp-indore",
+          "locationCityId": "in-mp-indore",
+          "locationMarketId": "in-mp-indore",
+          "cityName": "Indore",
+          "regionName": "Madhya Pradesh",
+          "countryCode": "IN",
+          "countryName": "India",
+          "area": "Race Course Road",
+          "hostUserId": null,
+          "hostName": null,
+          "hostAvatarUrl": null,
+          "ownerUserId": null,
+          "hostUserIds": [],
+          "hostProfiles": [],
+          "createdAt": {
+            "_seconds": 1778803200,
+            "_nanoseconds": 0
+          },
+          "imageUrl": "https://example.test/club.jpg",
+          "profileImageUrl": "https://example.test/club-profile.jpg",
+          "tags": [
+            "social",
+            "beginner-friendly",
+            "indore"
+          ],
+          "rating": 4.5,
+          "reviewCount": 4,
+          "nextEventAt": {
+            "_seconds": 1778889600,
+            "_nanoseconds": 0
+          },
+          "nextEventLabel": "Saturday Morning Event",
+          "instagramHandle": "racecourseevents",
+          "phoneNumber": "+918800000001",
+          "email": "race.course@example.test",
+          "status": "active",
+          "archived": false,
+          "archivedAt": null,
+          "archiveReason": null,
+          "organizerType": "eventProducer",
+          "organizerPhotos": [],
+          "followerCount": 7,
+          "ownership": {
+            "state": "programmatic",
+            "ownerUserId": null,
+            "primaryHostUserId": null,
+            "hostUserIds": [],
+            "claimedAt": null,
+            "claimedByUid": null
+          },
+          "claim": {
+            "state": "unclaimed",
+            "claimHref": "/organizers/next-proof/#claim",
+            "lastClaimRequestId": null
+          },
+          "publicPage": {
+            "slug": "next-proof",
+            "citySlug": "indore",
+            "canonicalPath": "/organizers/next-proof/",
+            "publishStatus": "published",
+            "indexStatus": "indexReady",
+            "robots": "index, follow",
+            "seoTitle": null,
+            "seoDescription": null,
+            "lastRenderedAt": null
+          },
+          "verifiedReviewCount": 2
+        }
+      },
+      "catchEvents": [
+        {
+          "id": "open-upcoming",
+          "data": {
+            "name": "Sunrise Social 5K",
+            "startTime": {
+              "_seconds": 1778889600,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1778893800,
+              "_nanoseconds": 0
+            },
+            "meetingPoint": "Race Course Road gate",
+            "meetingLocation": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            },
+            "startingPointLat": 22.7196,
+            "startingPointLng": 75.8577,
+            "locationDetails": "Meet near the main gate.",
+            "itinerary": [
+              {
+                "id": "gather",
+                "kind": "gather",
+                "offsetMinutes": 0,
+                "durationMinutes": 15,
+                "title": "Gather at the main gate"
+              },
+              {
+                "id": "run",
+                "kind": "activity",
+                "offsetMinutes": 15,
+                "title": "Social 5K"
+              }
+            ],
+            "eventFormat": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "pacePods",
+              "defaultPlaybookId": "social_run_light",
+              "activityDetails": {
+                "publicDetails": {
+                  "included": "Coffee after the run.",
+                  "accessibility": "Flat route.",
+                  "requirements": "Bring water."
+                }
+              }
+            },
+            "distanceKm": 5,
+            "pace": "easy",
+            "capacityLimit": 12,
+            "description": "Easy social 5K with coffee after.",
+            "priceInPaise": 0,
+            "bookedCount": 4,
+            "checkedInCount": 0,
+            "waitlistedCount": 0,
+            "status": "active",
+            "cancelledAt": null,
+            "cancellationReason": null,
+            "genderCounts": {
+              "man": 2,
+              "woman": 2
+            },
+            "cohortCounts": {
+              "menInterestedInWomen": 2,
+              "womenInterestedInMen": 2
+            },
+            "waitlistedCohortCounts": {},
+            "discoveryCityName": "indore",
+            "discoveryMarketId": "in-mp-indore",
+            "discoveryActivityKind": "socialRun",
+            "discoveryGeoCell": "283:948",
+            "discoveryHasOpenSpots": true,
+            "discoveryAvailability": "open",
+            "discoveryOpenCohorts": [
+              "menInterestedInWomen",
+              "womenInterestedInMen",
+              "queerOrOpen",
+              "nonBinaryOrOther"
+            ],
+            "discoveryWaitlistCohorts": [],
+            "discoveryInviteRequired": false,
+            "discoveryMembershipRequired": false,
+            "discoveryManualApprovalRequired": false,
+            "discoveryMinAge": 21,
+            "discoveryMaxAge": 45,
+            "organizerId": "next-proof",
+            "publicationState": "published",
+            "currency": "INR",
+            "eventTimezone": "Asia/Kolkata",
+            "publicRegistrationEnabled": true,
+            "publicRegistrationMode": "free",
+            "eventPolicy": {
+              "admission": {
+                "format": "open",
+                "inviteRequired": false,
+                "membershipRequired": false,
+                "manualApprovalRequired": false,
+                "privateAccessPolicy": {
+                  "mode": "none"
+                },
+                "waitlistPolicy": {
+                  "mode": "rankedOffer"
+                }
+              },
+              "pricing": {
+                "basePriceInPaise": 0
+              },
+              "cancellation": {
+                "policyId": "flexible"
+              }
+            },
+            "eventPhotos": [
+              {
+                "url": "https://cdn.example.com/pending.jpg",
+                "position": 0,
+                "moderation": {
+                  "status": "pending"
+                }
+              },
+              {
+                "url": "https://cdn.example.com/approved.jpg",
+                "position": 1,
+                "moderation": {
+                  "status": "approved"
+                }
+              }
+            ],
+            "catchExperienceActivities": [
+              "introductions",
+              "rotations"
+            ],
+            "constraints": {
+              "minAge": 21,
+              "maxAge": 45
+            }
+          }
+        },
+        {
+          "id": "mixer-restricted",
+          "data": {
+            "name": "",
+            "startTime": {
+              "_seconds": 1779283800,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1779294600,
+              "_nanoseconds": 0
+            },
+            "meetingPoint": "Race Course Road gate",
+            "meetingLocation": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            },
+            "startingPointLat": 22.7196,
+            "startingPointLng": 75.8577,
+            "locationDetails": "Meet near the main gate.",
+            "itinerary": [
+              {
+                "id": "gather",
+                "kind": "gather",
+                "offsetMinutes": 0,
+                "durationMinutes": 15,
+                "title": "Gather at the main gate"
+              },
+              {
+                "id": "run",
+                "kind": "activity",
+                "offsetMinutes": 15,
+                "title": "Social 5K"
+              }
+            ],
+            "eventFormat": {
+              "version": 1,
+              "activityKind": "singlesMixer",
+              "interactionModel": "rotations",
+              "defaultPlaybookId": "mixer"
+            },
+            "distanceKm": 5,
+            "pace": "easy",
+            "capacityLimit": 12,
+            "description": "Easy social 5K with coffee after.",
+            "priceInPaise": 0,
+            "bookedCount": 4,
+            "checkedInCount": 0,
+            "waitlistedCount": 0,
+            "status": "active",
+            "cancelledAt": null,
+            "cancellationReason": null,
+            "genderCounts": {
+              "man": 2,
+              "woman": 2
+            },
+            "cohortCounts": {
+              "menInterestedInWomen": 2,
+              "womenInterestedInMen": 2
+            },
+            "waitlistedCohortCounts": {},
+            "discoveryCityName": "indore",
+            "discoveryMarketId": "in-mp-indore",
+            "discoveryActivityKind": "socialRun",
+            "discoveryGeoCell": "283:948",
+            "discoveryHasOpenSpots": true,
+            "discoveryAvailability": "open",
+            "discoveryOpenCohorts": [
+              "menInterestedInWomen",
+              "womenInterestedInMen",
+              "queerOrOpen",
+              "nonBinaryOrOther"
+            ],
+            "discoveryWaitlistCohorts": [],
+            "discoveryInviteRequired": false,
+            "discoveryMembershipRequired": false,
+            "discoveryManualApprovalRequired": false,
+            "discoveryMinAge": 21,
+            "discoveryMaxAge": 45,
+            "organizerId": "next-proof",
+            "publicationState": "published",
+            "currency": "INR",
+            "eventTimezone": "Asia/Kolkata",
+            "constraints": {
+              "minAge": 25,
+              "maxAge": 40,
+              "maxMen": 10,
+              "maxWomen": 10
+            }
+          }
+        },
+        {
+          "id": "paid-past",
+          "data": {
+            "name": "Evening tempo run",
+            "startTime": {
+              "_seconds": 1777638600,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1777644000,
+              "_nanoseconds": 0
+            },
+            "meetingPoint": "Race Course Road gate",
+            "meetingLocation": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            },
+            "startingPointLat": 22.7196,
+            "startingPointLng": 75.8577,
+            "locationDetails": "Meet near the main gate.",
+            "itinerary": [
+              {
+                "id": "gather",
+                "kind": "gather",
+                "offsetMinutes": 0,
+                "durationMinutes": 15,
+                "title": "Gather at the main gate"
+              },
+              {
+                "id": "run",
+                "kind": "activity",
+                "offsetMinutes": 15,
+                "title": "Social 5K"
+              }
+            ],
+            "eventFormat": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "pacePods",
+              "defaultPlaybookId": "social_run_light"
+            },
+            "distanceKm": 5,
+            "pace": "easy",
+            "capacityLimit": 12,
+            "description": "Easy social 5K with coffee after.",
+            "priceInPaise": 49900,
+            "bookedCount": 4,
+            "checkedInCount": 9,
+            "waitlistedCount": 2,
+            "status": "active",
+            "cancelledAt": null,
+            "cancellationReason": null,
+            "genderCounts": {
+              "man": 2,
+              "woman": 2
+            },
+            "cohortCounts": {
+              "menInterestedInWomen": 2,
+              "womenInterestedInMen": 2
+            },
+            "waitlistedCohortCounts": {},
+            "discoveryCityName": "indore",
+            "discoveryMarketId": "in-mp-indore",
+            "discoveryActivityKind": "socialRun",
+            "discoveryGeoCell": "283:948",
+            "discoveryHasOpenSpots": true,
+            "discoveryAvailability": "open",
+            "discoveryOpenCohorts": [
+              "menInterestedInWomen",
+              "womenInterestedInMen",
+              "queerOrOpen",
+              "nonBinaryOrOther"
+            ],
+            "discoveryWaitlistCohorts": [],
+            "discoveryInviteRequired": false,
+            "discoveryMembershipRequired": false,
+            "discoveryManualApprovalRequired": false,
+            "discoveryMinAge": 21,
+            "discoveryMaxAge": 45,
+            "organizerId": "next-proof",
+            "publicationState": "published",
+            "currency": "INR",
+            "eventTimezone": "Asia/Kolkata",
+            "publicRegistrationEnabled": true,
+            "publicRegistrationMode": "paid",
+            "eventPolicy": {
+              "admission": {
+                "format": "open",
+                "inviteRequired": false,
+                "membershipRequired": false,
+                "manualApprovalRequired": false,
+                "privateAccessPolicy": {
+                  "mode": "none"
+                },
+                "waitlistPolicy": {
+                  "mode": "rankedOffer"
+                }
+              },
+              "pricing": {
+                "basePriceInPaise": 49900
+              },
+              "cancellation": {
+                "policyId": "flexible"
+              }
+            },
+            "photoUrl": "https://cdn.example.com/cover.jpg"
+          }
+        },
+        {
+          "id": "legacy-club-only",
+          "data": {
+            "name": "Legacy club event",
+            "startTime": {
+              "_seconds": 1778889600,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1778893800,
+              "_nanoseconds": 0
+            },
+            "meetingPoint": "Race Course Road gate",
+            "meetingLocation": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            },
+            "startingPointLat": 22.7196,
+            "startingPointLng": 75.8577,
+            "locationDetails": "Meet near the main gate.",
+            "itinerary": [
+              {
+                "id": "gather",
+                "kind": "gather",
+                "offsetMinutes": 0,
+                "durationMinutes": 15,
+                "title": "Gather at the main gate"
+              },
+              {
+                "id": "run",
+                "kind": "activity",
+                "offsetMinutes": 15,
+                "title": "Social 5K"
+              }
+            ],
+            "eventFormat": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "pacePods",
+              "defaultPlaybookId": "social_run_light"
+            },
+            "distanceKm": 5,
+            "pace": "easy",
+            "capacityLimit": 12,
+            "description": "Easy social 5K with coffee after.",
+            "priceInPaise": 0,
+            "bookedCount": 4,
+            "checkedInCount": 0,
+            "waitlistedCount": 0,
+            "status": "active",
+            "cancelledAt": null,
+            "cancellationReason": null,
+            "genderCounts": {
+              "man": 2,
+              "woman": 2
+            },
+            "cohortCounts": {
+              "menInterestedInWomen": 2,
+              "womenInterestedInMen": 2
+            },
+            "waitlistedCohortCounts": {},
+            "discoveryCityName": "indore",
+            "discoveryMarketId": "in-mp-indore",
+            "discoveryActivityKind": "socialRun",
+            "discoveryGeoCell": "283:948",
+            "discoveryHasOpenSpots": true,
+            "discoveryAvailability": "open",
+            "discoveryOpenCohorts": [
+              "menInterestedInWomen",
+              "womenInterestedInMen",
+              "queerOrOpen",
+              "nonBinaryOrOther"
+            ],
+            "discoveryWaitlistCohorts": [],
+            "discoveryInviteRequired": false,
+            "discoveryMembershipRequired": false,
+            "discoveryManualApprovalRequired": false,
+            "discoveryMinAge": 21,
+            "discoveryMaxAge": 45,
+            "publicationState": "published",
+            "currency": "INR",
+            "eventTimezone": "Asia/Kolkata",
+            "clubId": "next-proof"
+          }
+        },
+        {
+          "id": "draft-event",
+          "data": {
+            "name": "Sunrise Social 5K",
+            "startTime": {
+              "_seconds": 1778889600,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1778893800,
+              "_nanoseconds": 0
+            },
+            "meetingPoint": "Race Course Road gate",
+            "meetingLocation": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            },
+            "startingPointLat": 22.7196,
+            "startingPointLng": 75.8577,
+            "locationDetails": "Meet near the main gate.",
+            "itinerary": [
+              {
+                "id": "gather",
+                "kind": "gather",
+                "offsetMinutes": 0,
+                "durationMinutes": 15,
+                "title": "Gather at the main gate"
+              },
+              {
+                "id": "run",
+                "kind": "activity",
+                "offsetMinutes": 15,
+                "title": "Social 5K"
+              }
+            ],
+            "eventFormat": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "pacePods",
+              "defaultPlaybookId": "social_run_light"
+            },
+            "distanceKm": 5,
+            "pace": "easy",
+            "capacityLimit": 12,
+            "description": "Easy social 5K with coffee after.",
+            "priceInPaise": 0,
+            "bookedCount": 4,
+            "checkedInCount": 0,
+            "waitlistedCount": 0,
+            "status": "active",
+            "cancelledAt": null,
+            "cancellationReason": null,
+            "genderCounts": {
+              "man": 2,
+              "woman": 2
+            },
+            "cohortCounts": {
+              "menInterestedInWomen": 2,
+              "womenInterestedInMen": 2
+            },
+            "waitlistedCohortCounts": {},
+            "discoveryCityName": "indore",
+            "discoveryMarketId": "in-mp-indore",
+            "discoveryActivityKind": "socialRun",
+            "discoveryGeoCell": "283:948",
+            "discoveryHasOpenSpots": true,
+            "discoveryAvailability": "open",
+            "discoveryOpenCohorts": [
+              "menInterestedInWomen",
+              "womenInterestedInMen",
+              "queerOrOpen",
+              "nonBinaryOrOther"
+            ],
+            "discoveryWaitlistCohorts": [],
+            "discoveryInviteRequired": false,
+            "discoveryMembershipRequired": false,
+            "discoveryManualApprovalRequired": false,
+            "discoveryMinAge": 21,
+            "discoveryMaxAge": 45,
+            "organizerId": "next-proof",
+            "publicationState": "draft",
+            "currency": "INR",
+            "eventTimezone": "Asia/Kolkata"
+          }
+        },
+        {
+          "id": "cancelled-event",
+          "data": {
+            "name": "Sunrise Social 5K",
+            "startTime": {
+              "_seconds": 1778889600,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1778893800,
+              "_nanoseconds": 0
+            },
+            "meetingPoint": "Race Course Road gate",
+            "meetingLocation": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            },
+            "startingPointLat": 22.7196,
+            "startingPointLng": 75.8577,
+            "locationDetails": "Meet near the main gate.",
+            "itinerary": [
+              {
+                "id": "gather",
+                "kind": "gather",
+                "offsetMinutes": 0,
+                "durationMinutes": 15,
+                "title": "Gather at the main gate"
+              },
+              {
+                "id": "run",
+                "kind": "activity",
+                "offsetMinutes": 15,
+                "title": "Social 5K"
+              }
+            ],
+            "eventFormat": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "pacePods",
+              "defaultPlaybookId": "social_run_light"
+            },
+            "distanceKm": 5,
+            "pace": "easy",
+            "capacityLimit": 12,
+            "description": "Easy social 5K with coffee after.",
+            "priceInPaise": 0,
+            "bookedCount": 4,
+            "checkedInCount": 0,
+            "waitlistedCount": 0,
+            "status": "cancelled",
+            "cancelledAt": null,
+            "cancellationReason": null,
+            "genderCounts": {
+              "man": 2,
+              "woman": 2
+            },
+            "cohortCounts": {
+              "menInterestedInWomen": 2,
+              "womenInterestedInMen": 2
+            },
+            "waitlistedCohortCounts": {},
+            "discoveryCityName": "indore",
+            "discoveryMarketId": "in-mp-indore",
+            "discoveryActivityKind": "socialRun",
+            "discoveryGeoCell": "283:948",
+            "discoveryHasOpenSpots": true,
+            "discoveryAvailability": "open",
+            "discoveryOpenCohorts": [
+              "menInterestedInWomen",
+              "womenInterestedInMen",
+              "queerOrOpen",
+              "nonBinaryOrOther"
+            ],
+            "discoveryWaitlistCohorts": [],
+            "discoveryInviteRequired": false,
+            "discoveryMembershipRequired": false,
+            "discoveryManualApprovalRequired": false,
+            "discoveryMinAge": 21,
+            "discoveryMaxAge": 45,
+            "organizerId": "next-proof",
+            "publicationState": "published",
+            "currency": "INR",
+            "eventTimezone": "Asia/Kolkata"
+          }
+        },
+        {
+          "id": "synthetic-event",
+          "data": {
+            "name": "Sunrise Social 5K",
+            "startTime": {
+              "_seconds": 1778889600,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1778893800,
+              "_nanoseconds": 0
+            },
+            "meetingPoint": "Race Course Road gate",
+            "meetingLocation": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            },
+            "startingPointLat": 22.7196,
+            "startingPointLng": 75.8577,
+            "locationDetails": "Meet near the main gate.",
+            "itinerary": [
+              {
+                "id": "gather",
+                "kind": "gather",
+                "offsetMinutes": 0,
+                "durationMinutes": 15,
+                "title": "Gather at the main gate"
+              },
+              {
+                "id": "run",
+                "kind": "activity",
+                "offsetMinutes": 15,
+                "title": "Social 5K"
+              }
+            ],
+            "eventFormat": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "pacePods",
+              "defaultPlaybookId": "social_run_light"
+            },
+            "distanceKm": 5,
+            "pace": "easy",
+            "capacityLimit": 12,
+            "description": "Easy social 5K with coffee after.",
+            "priceInPaise": 0,
+            "bookedCount": 4,
+            "checkedInCount": 0,
+            "waitlistedCount": 0,
+            "status": "active",
+            "cancelledAt": null,
+            "cancellationReason": null,
+            "genderCounts": {
+              "man": 2,
+              "woman": 2
+            },
+            "cohortCounts": {
+              "menInterestedInWomen": 2,
+              "womenInterestedInMen": 2
+            },
+            "waitlistedCohortCounts": {},
+            "discoveryCityName": "indore",
+            "discoveryMarketId": "in-mp-indore",
+            "discoveryActivityKind": "socialRun",
+            "discoveryGeoCell": "283:948",
+            "discoveryHasOpenSpots": true,
+            "discoveryAvailability": "open",
+            "discoveryOpenCohorts": [
+              "menInterestedInWomen",
+              "womenInterestedInMen",
+              "queerOrOpen",
+              "nonBinaryOrOther"
+            ],
+            "discoveryWaitlistCohorts": [],
+            "discoveryInviteRequired": false,
+            "discoveryMembershipRequired": false,
+            "discoveryManualApprovalRequired": false,
+            "discoveryMinAge": 21,
+            "discoveryMaxAge": 45,
+            "organizerId": "next-proof",
+            "publicationState": "published",
+            "currency": "INR",
+            "eventTimezone": "Asia/Kolkata",
+            "synthetic": true
+          }
+        },
+        {
+          "id": "mismatched-club",
+          "data": {
+            "name": "Sunrise Social 5K",
+            "startTime": {
+              "_seconds": 1778889600,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1778893800,
+              "_nanoseconds": 0
+            },
+            "meetingPoint": "Race Course Road gate",
+            "meetingLocation": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            },
+            "startingPointLat": 22.7196,
+            "startingPointLng": 75.8577,
+            "locationDetails": "Meet near the main gate.",
+            "itinerary": [
+              {
+                "id": "gather",
+                "kind": "gather",
+                "offsetMinutes": 0,
+                "durationMinutes": 15,
+                "title": "Gather at the main gate"
+              },
+              {
+                "id": "run",
+                "kind": "activity",
+                "offsetMinutes": 15,
+                "title": "Social 5K"
+              }
+            ],
+            "eventFormat": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "pacePods",
+              "defaultPlaybookId": "social_run_light"
+            },
+            "distanceKm": 5,
+            "pace": "easy",
+            "capacityLimit": 12,
+            "description": "Easy social 5K with coffee after.",
+            "priceInPaise": 0,
+            "bookedCount": 4,
+            "checkedInCount": 0,
+            "waitlistedCount": 0,
+            "status": "active",
+            "cancelledAt": null,
+            "cancellationReason": null,
+            "genderCounts": {
+              "man": 2,
+              "woman": 2
+            },
+            "cohortCounts": {
+              "menInterestedInWomen": 2,
+              "womenInterestedInMen": 2
+            },
+            "waitlistedCohortCounts": {},
+            "discoveryCityName": "indore",
+            "discoveryMarketId": "in-mp-indore",
+            "discoveryActivityKind": "socialRun",
+            "discoveryGeoCell": "283:948",
+            "discoveryHasOpenSpots": true,
+            "discoveryAvailability": "open",
+            "discoveryOpenCohorts": [
+              "menInterestedInWomen",
+              "womenInterestedInMen",
+              "queerOrOpen",
+              "nonBinaryOrOther"
+            ],
+            "discoveryWaitlistCohorts": [],
+            "discoveryInviteRequired": false,
+            "discoveryMembershipRequired": false,
+            "discoveryManualApprovalRequired": false,
+            "discoveryMinAge": 21,
+            "discoveryMaxAge": 45,
+            "organizerId": "next-proof",
+            "publicationState": "published",
+            "currency": "INR",
+            "eventTimezone": "Asia/Kolkata",
+            "clubId": "someone-else"
+          }
+        },
+        {
+          "id": "reversed-times",
+          "data": {
+            "name": "Sunrise Social 5K",
+            "startTime": {
+              "_seconds": 1778889600,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1778803200,
+              "_nanoseconds": 0
+            },
+            "meetingPoint": "Race Course Road gate",
+            "meetingLocation": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            },
+            "startingPointLat": 22.7196,
+            "startingPointLng": 75.8577,
+            "locationDetails": "Meet near the main gate.",
+            "itinerary": [
+              {
+                "id": "gather",
+                "kind": "gather",
+                "offsetMinutes": 0,
+                "durationMinutes": 15,
+                "title": "Gather at the main gate"
+              },
+              {
+                "id": "run",
+                "kind": "activity",
+                "offsetMinutes": 15,
+                "title": "Social 5K"
+              }
+            ],
+            "eventFormat": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "pacePods",
+              "defaultPlaybookId": "social_run_light"
+            },
+            "distanceKm": 5,
+            "pace": "easy",
+            "capacityLimit": 12,
+            "description": "Easy social 5K with coffee after.",
+            "priceInPaise": 0,
+            "bookedCount": 4,
+            "checkedInCount": 0,
+            "waitlistedCount": 0,
+            "status": "active",
+            "cancelledAt": null,
+            "cancellationReason": null,
+            "genderCounts": {
+              "man": 2,
+              "woman": 2
+            },
+            "cohortCounts": {
+              "menInterestedInWomen": 2,
+              "womenInterestedInMen": 2
+            },
+            "waitlistedCohortCounts": {},
+            "discoveryCityName": "indore",
+            "discoveryMarketId": "in-mp-indore",
+            "discoveryActivityKind": "socialRun",
+            "discoveryGeoCell": "283:948",
+            "discoveryHasOpenSpots": true,
+            "discoveryAvailability": "open",
+            "discoveryOpenCohorts": [
+              "menInterestedInWomen",
+              "womenInterestedInMen",
+              "queerOrOpen",
+              "nonBinaryOrOther"
+            ],
+            "discoveryWaitlistCohorts": [],
+            "discoveryInviteRequired": false,
+            "discoveryMembershipRequired": false,
+            "discoveryManualApprovalRequired": false,
+            "discoveryMinAge": 21,
+            "discoveryMaxAge": 45,
+            "organizerId": "next-proof",
+            "publicationState": "published",
+            "currency": "INR",
+            "eventTimezone": "Asia/Kolkata"
+          }
+        }
+      ],
+      "externalEvents": [
+        {
+          "id": "ext-public",
+          "data": {
+            "schemaVersion": 1,
+            "eventId": "ext-public",
+            "canonicalHostId": "next-proof",
+            "compatibilityClubId": "next-proof",
+            "title": "Takeoff: Run + Rave",
+            "description": "Reviewed external event listing.",
+            "startTime": {
+              "_seconds": 1742041800,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1742052600,
+              "_nanoseconds": 0
+            },
+            "timezone": "Asia/Kolkata",
+            "meetingPoint": "Nehru Stadium",
+            "meetingLocation": {
+              "name": "Nehru Stadium",
+              "address": "Nehru Stadium, Indore, Madhya Pradesh",
+              "placeId": "ChIJ-afterfly-indore",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Matched to source listing and map result."
+            },
+            "locationDetails": "Nehru Stadium, Indore, Madhya Pradesh",
+            "photoUrl": "https://images.lumacdn.com/event-afterfly.jpg",
+            "activity": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "openFormat",
+              "source": "heuristic"
+            },
+            "price": {
+              "displayText": "0 INR",
+              "parsedPriceInPaise": 0,
+              "currency": "INR"
+            },
+            "status": "active",
+            "publicationStatus": "public",
+            "organizerCapabilities": {
+              "mode": "unclaimed_read_only",
+              "bookable": false,
+              "paymentsEnabled": false,
+              "waitlistEnabled": false,
+              "hostContactEnabled": false,
+              "claimable": true,
+              "reviewPolicy": "after_event_end"
+            },
+            "booking": {
+              "mode": "external_outbound_only",
+              "catchBookingEnabled": false,
+              "catchPaymentsEnabled": false,
+              "catchReservationsEnabled": false,
+              "catchWaitlistEnabled": false,
+              "externalLinks": [
+                {
+                  "platform": "luma",
+                  "url": "https://luma.com/pxgmph3b",
+                  "linkType": "booking_or_event_page",
+                  "sourceEventKey": "luma:event:pxgmph3b",
+                  "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+                  "primary": true
+                },
+                {
+                  "platform": "partiful",
+                  "url": "https://partiful.com/e/run-rave",
+                  "linkType": "booking_or_event_page",
+                  "sourceEventKey": "partiful:event:run-rave",
+                  "candidateId": "2026-06-17-afterfly-partiful-events:run-rave",
+                  "primary": false
+                }
+              ]
+            },
+            "discovery": {
+              "citySlug": "indore",
+              "countryCode": "IN",
+              "availability": "read_only_external",
+              "manualApprovalRequired": true,
+              "appVisibility": "discoverable"
+            },
+            "dedupe": {
+              "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
+              "primaryCandidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "duplicateCandidateIds": [
+                "2026-06-17-afterfly-partiful-events:run-rave"
+              ],
+              "conflictPolicy": "single_read_only_event_with_multiple_outbound_links"
+            },
+            "externalSource": {
+              "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "sourceEventKey": "luma:event:pxgmph3b",
+              "sourceEventId": "pxgmph3b",
+              "platform": "luma",
+              "eventUrl": "https://luma.com/pxgmph3b",
+              "sourceUrl": "https://luma.com/pxgmph3b"
+            },
+            "review": {
+              "eventReviewBatchId": "2026-06-17-afterfly-event-review",
+              "reviewer": "admin@example.com",
+              "decidedAt": "2026-06-17",
+              "note": "Reviewed for future import.",
+              "importPolicyAcknowledged": true,
+              "ownerSafeCopyReviewed": true,
+              "blockerResolutions": []
+            },
+            "createdAt": {
+              "_seconds": 1781740800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": {
+              "_seconds": 1781740800,
+              "_nanoseconds": 0
+            }
+          }
+        },
+        {
+          "id": "ext-taken-down",
+          "data": {
+            "schemaVersion": 1,
+            "eventId": "ext-taken-down",
+            "canonicalHostId": "next-proof",
+            "compatibilityClubId": "next-proof",
+            "title": "Takeoff: Run + Rave",
+            "description": "Reviewed external event listing.",
+            "startTime": {
+              "_seconds": 1742041800,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1742052600,
+              "_nanoseconds": 0
+            },
+            "timezone": "Asia/Kolkata",
+            "meetingPoint": "Nehru Stadium",
+            "meetingLocation": {
+              "name": "Nehru Stadium",
+              "address": "Nehru Stadium, Indore, Madhya Pradesh",
+              "placeId": "ChIJ-afterfly-indore",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Matched to source listing and map result."
+            },
+            "locationDetails": "Nehru Stadium, Indore, Madhya Pradesh",
+            "photoUrl": "https://images.lumacdn.com/event-afterfly.jpg",
+            "activity": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "openFormat",
+              "source": "heuristic"
+            },
+            "price": {
+              "displayText": "0 INR",
+              "parsedPriceInPaise": 0,
+              "currency": "INR"
+            },
+            "status": "active",
+            "publicationStatus": "takenDown",
+            "organizerCapabilities": {
+              "mode": "unclaimed_read_only",
+              "bookable": false,
+              "paymentsEnabled": false,
+              "waitlistEnabled": false,
+              "hostContactEnabled": false,
+              "claimable": true,
+              "reviewPolicy": "after_event_end"
+            },
+            "booking": {
+              "mode": "external_outbound_only",
+              "catchBookingEnabled": false,
+              "catchPaymentsEnabled": false,
+              "catchReservationsEnabled": false,
+              "catchWaitlistEnabled": false,
+              "externalLinks": [
+                {
+                  "platform": "luma",
+                  "url": "https://luma.com/pxgmph3b",
+                  "linkType": "booking_or_event_page",
+                  "sourceEventKey": "luma:event:pxgmph3b",
+                  "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+                  "primary": true
+                },
+                {
+                  "platform": "partiful",
+                  "url": "https://partiful.com/e/run-rave",
+                  "linkType": "booking_or_event_page",
+                  "sourceEventKey": "partiful:event:run-rave",
+                  "candidateId": "2026-06-17-afterfly-partiful-events:run-rave",
+                  "primary": false
+                }
+              ]
+            },
+            "discovery": {
+              "citySlug": "indore",
+              "countryCode": "IN",
+              "availability": "read_only_external",
+              "manualApprovalRequired": true,
+              "appVisibility": "discoverable"
+            },
+            "dedupe": {
+              "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
+              "primaryCandidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "duplicateCandidateIds": [
+                "2026-06-17-afterfly-partiful-events:run-rave"
+              ],
+              "conflictPolicy": "single_read_only_event_with_multiple_outbound_links"
+            },
+            "externalSource": {
+              "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "sourceEventKey": "luma:event:pxgmph3b",
+              "sourceEventId": "pxgmph3b",
+              "platform": "luma",
+              "eventUrl": "https://luma.com/pxgmph3b",
+              "sourceUrl": "https://luma.com/pxgmph3b"
+            },
+            "review": {
+              "eventReviewBatchId": "2026-06-17-afterfly-event-review",
+              "reviewer": "admin@example.com",
+              "decidedAt": "2026-06-17",
+              "note": "Reviewed for future import.",
+              "importPolicyAcknowledged": true,
+              "ownerSafeCopyReviewed": true,
+              "blockerResolutions": []
+            },
+            "createdAt": {
+              "_seconds": 1781740800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": {
+              "_seconds": 1781740800,
+              "_nanoseconds": 0
+            }
+          }
+        },
+        {
+          "id": "ext-synthetic",
+          "data": {
+            "schemaVersion": 1,
+            "eventId": "ext-synthetic",
+            "canonicalHostId": "next-proof",
+            "compatibilityClubId": "next-proof",
+            "title": "Takeoff: Run + Rave",
+            "description": "Reviewed external event listing.",
+            "startTime": {
+              "_seconds": 1742041800,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1742052600,
+              "_nanoseconds": 0
+            },
+            "timezone": "Asia/Kolkata",
+            "meetingPoint": "Nehru Stadium",
+            "meetingLocation": {
+              "name": "Nehru Stadium",
+              "address": "Nehru Stadium, Indore, Madhya Pradesh",
+              "placeId": "ChIJ-afterfly-indore",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Matched to source listing and map result."
+            },
+            "locationDetails": "Nehru Stadium, Indore, Madhya Pradesh",
+            "photoUrl": "https://images.lumacdn.com/event-afterfly.jpg",
+            "activity": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "openFormat",
+              "source": "heuristic"
+            },
+            "price": {
+              "displayText": "0 INR",
+              "parsedPriceInPaise": 0,
+              "currency": "INR"
+            },
+            "status": "active",
+            "publicationStatus": "public",
+            "organizerCapabilities": {
+              "mode": "unclaimed_read_only",
+              "bookable": false,
+              "paymentsEnabled": false,
+              "waitlistEnabled": false,
+              "hostContactEnabled": false,
+              "claimable": true,
+              "reviewPolicy": "after_event_end"
+            },
+            "booking": {
+              "mode": "external_outbound_only",
+              "catchBookingEnabled": false,
+              "catchPaymentsEnabled": false,
+              "catchReservationsEnabled": false,
+              "catchWaitlistEnabled": false,
+              "externalLinks": [
+                {
+                  "platform": "luma",
+                  "url": "https://luma.com/pxgmph3b",
+                  "linkType": "booking_or_event_page",
+                  "sourceEventKey": "luma:event:pxgmph3b",
+                  "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+                  "primary": true
+                },
+                {
+                  "platform": "partiful",
+                  "url": "https://partiful.com/e/run-rave",
+                  "linkType": "booking_or_event_page",
+                  "sourceEventKey": "partiful:event:run-rave",
+                  "candidateId": "2026-06-17-afterfly-partiful-events:run-rave",
+                  "primary": false
+                }
+              ]
+            },
+            "discovery": {
+              "citySlug": "indore",
+              "countryCode": "IN",
+              "availability": "read_only_external",
+              "manualApprovalRequired": true,
+              "appVisibility": "discoverable"
+            },
+            "dedupe": {
+              "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
+              "primaryCandidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "duplicateCandidateIds": [
+                "2026-06-17-afterfly-partiful-events:run-rave"
+              ],
+              "conflictPolicy": "single_read_only_event_with_multiple_outbound_links"
+            },
+            "externalSource": {
+              "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "sourceEventKey": "luma:event:pxgmph3b",
+              "sourceEventId": "pxgmph3b",
+              "platform": "luma",
+              "eventUrl": "https://luma.com/pxgmph3b",
+              "sourceUrl": "https://luma.com/pxgmph3b"
+            },
+            "review": {
+              "eventReviewBatchId": "2026-06-17-afterfly-event-review",
+              "reviewer": "admin@example.com",
+              "decidedAt": "2026-06-17",
+              "note": "Reviewed for future import.",
+              "importPolicyAcknowledged": true,
+              "ownerSafeCopyReviewed": true,
+              "blockerResolutions": []
+            },
+            "createdAt": {
+              "_seconds": 1781740800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": {
+              "_seconds": 1781740800,
+              "_nanoseconds": 0
+            },
+            "synthetic": true
+          }
+        },
+        {
+          "id": "ext-catch-booking",
+          "data": {
+            "schemaVersion": 1,
+            "eventId": "ext-catch-booking",
+            "canonicalHostId": "next-proof",
+            "compatibilityClubId": "next-proof",
+            "title": "Takeoff: Run + Rave",
+            "description": "Reviewed external event listing.",
+            "startTime": {
+              "_seconds": 1742041800,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1742052600,
+              "_nanoseconds": 0
+            },
+            "timezone": "Asia/Kolkata",
+            "meetingPoint": "Nehru Stadium",
+            "meetingLocation": {
+              "name": "Nehru Stadium",
+              "address": "Nehru Stadium, Indore, Madhya Pradesh",
+              "placeId": "ChIJ-afterfly-indore",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Matched to source listing and map result."
+            },
+            "locationDetails": "Nehru Stadium, Indore, Madhya Pradesh",
+            "photoUrl": "https://images.lumacdn.com/event-afterfly.jpg",
+            "activity": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "openFormat",
+              "source": "heuristic"
+            },
+            "price": {
+              "displayText": "0 INR",
+              "parsedPriceInPaise": 0,
+              "currency": "INR"
+            },
+            "status": "active",
+            "publicationStatus": "public",
+            "organizerCapabilities": {
+              "mode": "unclaimed_read_only",
+              "bookable": false,
+              "paymentsEnabled": false,
+              "waitlistEnabled": false,
+              "hostContactEnabled": false,
+              "claimable": true,
+              "reviewPolicy": "after_event_end"
+            },
+            "booking": {
+              "mode": "external_outbound_only",
+              "catchBookingEnabled": true,
+              "catchPaymentsEnabled": false,
+              "catchReservationsEnabled": false,
+              "catchWaitlistEnabled": false,
+              "externalLinks": [
+                {
+                  "platform": "luma",
+                  "url": "https://luma.com/pxgmph3b",
+                  "linkType": "booking_or_event_page",
+                  "sourceEventKey": "luma:event:pxgmph3b",
+                  "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+                  "primary": true
+                },
+                {
+                  "platform": "partiful",
+                  "url": "https://partiful.com/e/run-rave",
+                  "linkType": "booking_or_event_page",
+                  "sourceEventKey": "partiful:event:run-rave",
+                  "candidateId": "2026-06-17-afterfly-partiful-events:run-rave",
+                  "primary": false
+                }
+              ]
+            },
+            "discovery": {
+              "citySlug": "indore",
+              "countryCode": "IN",
+              "availability": "read_only_external",
+              "manualApprovalRequired": true,
+              "appVisibility": "discoverable"
+            },
+            "dedupe": {
+              "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
+              "primaryCandidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "duplicateCandidateIds": [
+                "2026-06-17-afterfly-partiful-events:run-rave"
+              ],
+              "conflictPolicy": "single_read_only_event_with_multiple_outbound_links"
+            },
+            "externalSource": {
+              "candidateId": "2026-06-17-afterfly-luma-events:pxgmph3b",
+              "sourceEventKey": "luma:event:pxgmph3b",
+              "sourceEventId": "pxgmph3b",
+              "platform": "luma",
+              "eventUrl": "https://luma.com/pxgmph3b",
+              "sourceUrl": "https://luma.com/pxgmph3b"
+            },
+            "review": {
+              "eventReviewBatchId": "2026-06-17-afterfly-event-review",
+              "reviewer": "admin@example.com",
+              "decidedAt": "2026-06-17",
+              "note": "Reviewed for future import.",
+              "importPolicyAcknowledged": true,
+              "ownerSafeCopyReviewed": true,
+              "blockerResolutions": []
+            },
+            "createdAt": {
+              "_seconds": 1781740800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": {
+              "_seconds": 1781740800,
+              "_nanoseconds": 0
+            }
+          }
+        }
+      ],
+      "reviews": [
+        {
+          "id": "review-verified",
+          "data": {
+            "organizerId": "next-proof",
+            "eventId": "open-upcoming",
+            "reviewerUserId": "runner-1",
+            "reviewerName": "Runner One",
+            "rating": 5,
+            "comment": "Well organized event with clear pacing.",
+            "createdAt": {
+              "_seconds": 1778572800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": null,
+            "moderationStatus": "published",
+            "verificationStatus": "verified",
+            "source": "catchEvent",
+            "isAnonymous": false
+          }
+        },
+        {
+          "id": "review-public",
+          "data": {
+            "organizerId": "next-proof",
+            "eventId": null,
+            "reviewerUserId": "runner-1",
+            "reviewerName": "Walk-in guest",
+            "rating": 4,
+            "comment": "Well organized event with clear pacing.",
+            "createdAt": {
+              "_seconds": 1778486400,
+              "_nanoseconds": 0
+            },
+            "updatedAt": null,
+            "moderationStatus": "published",
+            "verificationStatus": "unverified",
+            "source": "publicListing",
+            "isAnonymous": false
+          }
+        },
+        {
+          "id": "review-anonymous",
+          "data": {
+            "organizerId": "next-proof",
+            "eventId": "paid-past",
+            "reviewerUserId": "runner-1",
+            "reviewerName": "Runner One",
+            "rating": 3,
+            "comment": "Well organized event with clear pacing.",
+            "createdAt": {
+              "_seconds": 1777708800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": null,
+            "moderationStatus": "published",
+            "verificationStatus": "verified",
+            "source": "catchEvent",
+            "isAnonymous": true,
+            "ownerResponse": {
+              "hostName": "Next proof",
+              "message": "Thanks for coming.",
+              "updatedAt": {
+                "_seconds": 1777795200,
+                "_nanoseconds": 0
+              },
+              "hostAvatarUrl": "https://cdn.example.com/host.jpg"
+            }
+          }
+        },
+        {
+          "id": "review-pending",
+          "data": {
+            "organizerId": "next-proof",
+            "eventId": "event-1",
+            "reviewerUserId": "runner-1",
+            "reviewerName": "Runner One",
+            "rating": 5,
+            "comment": "Well organized event with clear pacing.",
+            "createdAt": {
+              "_seconds": 1778716800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": null,
+            "moderationStatus": "pending",
+            "verificationStatus": "verified",
+            "source": "catchEvent",
+            "isAnonymous": false
+          }
+        },
+        {
+          "id": "review-synthetic",
+          "data": {
+            "organizerId": "next-proof",
+            "eventId": "event-1",
+            "reviewerUserId": "runner-1",
+            "reviewerName": "Runner One",
+            "rating": 5,
+            "comment": "Well organized event with clear pacing.",
+            "createdAt": {
+              "_seconds": 1778716800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": null,
+            "moderationStatus": "published",
+            "verificationStatus": "verified",
+            "source": "catchEvent",
+            "isAnonymous": false,
+            "synthetic": true
+          }
+        },
+        {
+          "id": "review-zero",
+          "data": {
+            "organizerId": "next-proof",
+            "eventId": "event-1",
+            "reviewerUserId": "runner-1",
+            "reviewerName": "Runner One",
+            "rating": 0,
+            "comment": "Well organized event with clear pacing.",
+            "createdAt": {
+              "_seconds": 1778716800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": null,
+            "moderationStatus": "published",
+            "verificationStatus": "verified",
+            "source": "catchEvent",
+            "isAnonymous": false
+          }
+        },
+        {
+          "id": "review-elsewhere",
+          "data": {
+            "organizerId": "someone-else",
+            "eventId": "event-1",
+            "reviewerUserId": "runner-1",
+            "reviewerName": "Runner One",
+            "rating": 5,
+            "comment": "Well organized event with clear pacing.",
+            "createdAt": {
+              "_seconds": 1778716800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": null,
+            "moderationStatus": "published",
+            "verificationStatus": "verified",
+            "source": "catchEvent",
+            "isAnonymous": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "owner-created organizer in another live market",
+      "organizer": {
+        "id": "owner-made",
+        "data": {
+          "name": "Owner Made Club",
+          "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+          "location": "in-mh-mumbai",
+          "locationCityId": "in-mp-indore",
+          "locationMarketId": "in-mp-indore",
+          "cityName": "Mumbai",
+          "regionName": "Madhya Pradesh",
+          "countryCode": "IN",
+          "countryName": "India",
+          "area": "Race Course Road",
+          "hostUserId": null,
+          "hostName": null,
+          "hostAvatarUrl": null,
+          "ownerUserId": null,
+          "hostUserIds": [],
+          "hostProfiles": [],
+          "createdAt": {
+            "_seconds": 1778803200,
+            "_nanoseconds": 0
+          },
+          "imageUrl": "https://example.test/club.jpg",
+          "profileImageUrl": "https://example.test/club-profile.jpg",
+          "tags": [
+            "social",
+            "beginner-friendly",
+            "indore"
+          ],
+          "rating": 4.5,
+          "reviewCount": 4,
+          "nextEventAt": {
+            "_seconds": 1778889600,
+            "_nanoseconds": 0
+          },
+          "nextEventLabel": "Saturday Morning Event",
+          "instagramHandle": "racecourseevents",
+          "phoneNumber": "+918800000001",
+          "email": "race.course@example.test",
+          "status": "active",
+          "archived": false,
+          "archivedAt": null,
+          "archiveReason": null,
+          "organizerType": "eventProducer",
+          "organizerPhotos": [],
+          "followerCount": 212,
+          "ownership": {
+            "state": "userCreated",
+            "ownerUserId": null,
+            "primaryHostUserId": null,
+            "hostUserIds": [],
+            "claimedAt": null,
+            "claimedByUid": null
+          },
+          "claim": {
+            "state": "verified",
+            "claimHref": "/organizers/owner-made/",
+            "lastClaimRequestId": null
+          },
+          "publicPage": {
+            "slug": "owner-made",
+            "citySlug": "mumbai",
+            "canonicalPath": "/organizers/owner-made/",
+            "publishStatus": "published",
+            "indexStatus": "indexed",
+            "robots": "index, follow",
+            "seoTitle": null,
+            "seoDescription": null,
+            "lastRenderedAt": null
+          },
+          "verifiedReviewCount": 2
+        }
+      },
+      "catchEvents": [
+        {
+          "id": "owner-upcoming",
+          "data": {
+            "name": "Saturday social",
+            "startTime": {
+              "_seconds": 1778889600,
+              "_nanoseconds": 0
+            },
+            "endTime": {
+              "_seconds": 1778893800,
+              "_nanoseconds": 0
+            },
+            "meetingPoint": "Race Course Road gate",
+            "meetingLocation": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            },
+            "startingPointLat": 22.7196,
+            "startingPointLng": 75.8577,
+            "locationDetails": "Meet near the main gate.",
+            "itinerary": [
+              {
+                "id": "gather",
+                "kind": "gather",
+                "offsetMinutes": 0,
+                "durationMinutes": 15,
+                "title": "Gather at the main gate"
+              },
+              {
+                "id": "run",
+                "kind": "activity",
+                "offsetMinutes": 15,
+                "title": "Social 5K"
+              }
+            ],
+            "eventFormat": {
+              "version": 1,
+              "activityKind": "socialRun",
+              "interactionModel": "pacePods",
+              "defaultPlaybookId": "social_run_light"
+            },
+            "distanceKm": 5,
+            "pace": "easy",
+            "capacityLimit": 12,
+            "description": "Easy social 5K with coffee after.",
+            "priceInPaise": 0,
+            "bookedCount": 4,
+            "checkedInCount": 0,
+            "waitlistedCount": 0,
+            "status": "active",
+            "cancelledAt": null,
+            "cancellationReason": null,
+            "genderCounts": {
+              "man": 2,
+              "woman": 2
+            },
+            "cohortCounts": {
+              "menInterestedInWomen": 2,
+              "womenInterestedInMen": 2
+            },
+            "waitlistedCohortCounts": {},
+            "discoveryCityName": "indore",
+            "discoveryMarketId": "in-mp-indore",
+            "discoveryActivityKind": "socialRun",
+            "discoveryGeoCell": "283:948",
+            "discoveryHasOpenSpots": true,
+            "discoveryAvailability": "open",
+            "discoveryOpenCohorts": [
+              "menInterestedInWomen",
+              "womenInterestedInMen",
+              "queerOrOpen",
+              "nonBinaryOrOther"
+            ],
+            "discoveryWaitlistCohorts": [],
+            "discoveryInviteRequired": false,
+            "discoveryMembershipRequired": false,
+            "discoveryManualApprovalRequired": false,
+            "discoveryMinAge": 21,
+            "discoveryMaxAge": 45,
+            "organizerId": "owner-made",
+            "publicationState": "published",
+            "currency": "INR",
+            "eventTimezone": "Asia/Kolkata"
+          }
+        }
+      ],
+      "externalEvents": [],
+      "reviews": [
+        {
+          "id": "owner-review",
+          "data": {
+            "organizerId": "owner-made",
+            "eventId": "owner-upcoming",
+            "reviewerUserId": "runner-1",
+            "reviewerName": "Runner One",
+            "rating": 5,
+            "comment": "Well organized event with clear pacing.",
+            "createdAt": {
+              "_seconds": 1778716800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": null,
+            "moderationStatus": "published",
+            "verificationStatus": "verified",
+            "source": "catchEvent",
+            "isAnonymous": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "suppressed claim",
+      "organizer": {
+        "id": "suppressed",
+        "data": {
+          "name": "Next proof organizer",
+          "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+          "location": "in-mp-indore",
+          "locationCityId": "in-mp-indore",
+          "locationMarketId": "in-mp-indore",
+          "cityName": "Indore",
+          "regionName": "Madhya Pradesh",
+          "countryCode": "IN",
+          "countryName": "India",
+          "area": "Race Course Road",
+          "hostUserId": null,
+          "hostName": null,
+          "hostAvatarUrl": null,
+          "ownerUserId": null,
+          "hostUserIds": [],
+          "hostProfiles": [],
+          "createdAt": {
+            "_seconds": 1778803200,
+            "_nanoseconds": 0
+          },
+          "imageUrl": "https://example.test/club.jpg",
+          "profileImageUrl": "https://example.test/club-profile.jpg",
+          "tags": [
+            "social",
+            "beginner-friendly",
+            "indore"
+          ],
+          "rating": 4.5,
+          "reviewCount": 4,
+          "nextEventAt": {
+            "_seconds": 1778889600,
+            "_nanoseconds": 0
+          },
+          "nextEventLabel": "Saturday Morning Event",
+          "instagramHandle": "racecourseevents",
+          "phoneNumber": "+918800000001",
+          "email": "race.course@example.test",
+          "status": "active",
+          "archived": false,
+          "archivedAt": null,
+          "archiveReason": null,
+          "organizerType": "eventProducer",
+          "organizerPhotos": [],
+          "followerCount": 7,
+          "ownership": {
+            "state": "programmatic",
+            "ownerUserId": null,
+            "primaryHostUserId": null,
+            "hostUserIds": [],
+            "claimedAt": null,
+            "claimedByUid": null
+          },
+          "claim": {
+            "state": "suppressed",
+            "claimHref": "/organizers/suppressed/",
+            "lastClaimRequestId": null
+          },
+          "publicPage": {
+            "slug": "suppressed",
+            "citySlug": "indore",
+            "canonicalPath": "/organizers/suppressed/",
+            "publishStatus": "published",
+            "indexStatus": "indexReady",
+            "robots": "index, follow",
+            "seoTitle": null,
+            "seoDescription": null,
+            "lastRenderedAt": null
+          },
+          "verifiedReviewCount": 2
+        }
+      },
+      "catchEvents": [],
+      "externalEvents": [],
+      "reviews": []
+    },
+    {
+      "name": "draft page",
+      "organizer": {
+        "id": "draft",
+        "data": {
+          "name": "Next proof organizer",
+          "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+          "location": "in-mp-indore",
+          "locationCityId": "in-mp-indore",
+          "locationMarketId": "in-mp-indore",
+          "cityName": "Indore",
+          "regionName": "Madhya Pradesh",
+          "countryCode": "IN",
+          "countryName": "India",
+          "area": "Race Course Road",
+          "hostUserId": null,
+          "hostName": null,
+          "hostAvatarUrl": null,
+          "ownerUserId": null,
+          "hostUserIds": [],
+          "hostProfiles": [],
+          "createdAt": {
+            "_seconds": 1778803200,
+            "_nanoseconds": 0
+          },
+          "imageUrl": "https://example.test/club.jpg",
+          "profileImageUrl": "https://example.test/club-profile.jpg",
+          "tags": [
+            "social",
+            "beginner-friendly",
+            "indore"
+          ],
+          "rating": 4.5,
+          "reviewCount": 4,
+          "nextEventAt": {
+            "_seconds": 1778889600,
+            "_nanoseconds": 0
+          },
+          "nextEventLabel": "Saturday Morning Event",
+          "instagramHandle": "racecourseevents",
+          "phoneNumber": "+918800000001",
+          "email": "race.course@example.test",
+          "status": "active",
+          "archived": false,
+          "archivedAt": null,
+          "archiveReason": null,
+          "organizerType": "eventProducer",
+          "organizerPhotos": [],
+          "followerCount": 7,
+          "ownership": {
+            "state": "programmatic",
+            "ownerUserId": null,
+            "primaryHostUserId": null,
+            "hostUserIds": [],
+            "claimedAt": null,
+            "claimedByUid": null
+          },
+          "claim": {
+            "state": "unclaimed",
+            "claimHref": "/organizers/draft/#claim",
+            "lastClaimRequestId": null
+          },
+          "publicPage": {
+            "slug": "draft",
+            "citySlug": "indore",
+            "canonicalPath": "/organizers/draft/",
+            "publishStatus": "draft",
+            "indexStatus": "indexReady",
+            "robots": "index, follow",
+            "seoTitle": null,
+            "seoDescription": null,
+            "lastRenderedAt": null
+          },
+          "verifiedReviewCount": 2
+        }
+      },
+      "catchEvents": [],
+      "externalEvents": [],
+      "reviews": []
+    },
+    {
+      "name": "removed page",
+      "organizer": {
+        "id": "removed",
+        "data": {
+          "name": "Next proof organizer",
+          "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+          "location": "in-mp-indore",
+          "locationCityId": "in-mp-indore",
+          "locationMarketId": "in-mp-indore",
+          "cityName": "Indore",
+          "regionName": "Madhya Pradesh",
+          "countryCode": "IN",
+          "countryName": "India",
+          "area": "Race Course Road",
+          "hostUserId": null,
+          "hostName": null,
+          "hostAvatarUrl": null,
+          "ownerUserId": null,
+          "hostUserIds": [],
+          "hostProfiles": [],
+          "createdAt": {
+            "_seconds": 1778803200,
+            "_nanoseconds": 0
+          },
+          "imageUrl": "https://example.test/club.jpg",
+          "profileImageUrl": "https://example.test/club-profile.jpg",
+          "tags": [
+            "social",
+            "beginner-friendly",
+            "indore"
+          ],
+          "rating": 4.5,
+          "reviewCount": 4,
+          "nextEventAt": {
+            "_seconds": 1778889600,
+            "_nanoseconds": 0
+          },
+          "nextEventLabel": "Saturday Morning Event",
+          "instagramHandle": "racecourseevents",
+          "phoneNumber": "+918800000001",
+          "email": "race.course@example.test",
+          "status": "active",
+          "archived": false,
+          "archivedAt": null,
+          "archiveReason": null,
+          "organizerType": "eventProducer",
+          "organizerPhotos": [],
+          "followerCount": 7,
+          "ownership": {
+            "state": "programmatic",
+            "ownerUserId": null,
+            "primaryHostUserId": null,
+            "hostUserIds": [],
+            "claimedAt": null,
+            "claimedByUid": null
+          },
+          "claim": {
+            "state": "unclaimed",
+            "claimHref": "/organizers/removed/#claim",
+            "lastClaimRequestId": null
+          },
+          "publicPage": {
+            "slug": "removed",
+            "citySlug": "indore",
+            "canonicalPath": "/organizers/removed/",
+            "publishStatus": "removed",
+            "indexStatus": "indexReady",
+            "robots": "index, follow",
+            "seoTitle": null,
+            "seoDescription": null,
+            "lastRenderedAt": null
+          },
+          "verifiedReviewCount": 2
+        }
+      },
+      "catchEvents": [],
+      "externalEvents": [],
+      "reviews": []
+    },
+    {
+      "name": "market not live",
+      "organizer": {
+        "id": "delhi",
+        "data": {
+          "name": "Next proof organizer",
+          "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+          "location": "in-mp-indore",
+          "locationCityId": "in-mp-indore",
+          "locationMarketId": "in-mp-indore",
+          "cityName": "Indore",
+          "regionName": "Madhya Pradesh",
+          "countryCode": "IN",
+          "countryName": "India",
+          "area": "Race Course Road",
+          "hostUserId": null,
+          "hostName": null,
+          "hostAvatarUrl": null,
+          "ownerUserId": null,
+          "hostUserIds": [],
+          "hostProfiles": [],
+          "createdAt": {
+            "_seconds": 1778803200,
+            "_nanoseconds": 0
+          },
+          "imageUrl": "https://example.test/club.jpg",
+          "profileImageUrl": "https://example.test/club-profile.jpg",
+          "tags": [
+            "social",
+            "beginner-friendly",
+            "indore"
+          ],
+          "rating": 4.5,
+          "reviewCount": 4,
+          "nextEventAt": {
+            "_seconds": 1778889600,
+            "_nanoseconds": 0
+          },
+          "nextEventLabel": "Saturday Morning Event",
+          "instagramHandle": "racecourseevents",
+          "phoneNumber": "+918800000001",
+          "email": "race.course@example.test",
+          "status": "active",
+          "archived": false,
+          "archivedAt": null,
+          "archiveReason": null,
+          "organizerType": "eventProducer",
+          "organizerPhotos": [],
+          "followerCount": 7,
+          "ownership": {
+            "state": "programmatic",
+            "ownerUserId": null,
+            "primaryHostUserId": null,
+            "hostUserIds": [],
+            "claimedAt": null,
+            "claimedByUid": null
+          },
+          "claim": {
+            "state": "unclaimed",
+            "claimHref": "/organizers/delhi/#claim",
+            "lastClaimRequestId": null
+          },
+          "publicPage": {
+            "slug": "delhi",
+            "citySlug": "delhi-ncr",
+            "canonicalPath": "/organizers/delhi/",
+            "publishStatus": "published",
+            "indexStatus": "indexReady",
+            "robots": "index, follow",
+            "seoTitle": null,
+            "seoDescription": null,
+            "lastRenderedAt": null
+          },
+          "verifiedReviewCount": 2
+        }
+      },
+      "catchEvents": [],
+      "externalEvents": [],
+      "reviews": []
+    },
+    {
+      "name": "synthetic organizer",
+      "organizer": {
+        "id": "demo",
+        "data": {
+          "name": "Next proof organizer",
+          "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+          "location": "in-mp-indore",
+          "locationCityId": "in-mp-indore",
+          "locationMarketId": "in-mp-indore",
+          "cityName": "Indore",
+          "regionName": "Madhya Pradesh",
+          "countryCode": "IN",
+          "countryName": "India",
+          "area": "Race Course Road",
+          "hostUserId": null,
+          "hostName": null,
+          "hostAvatarUrl": null,
+          "ownerUserId": null,
+          "hostUserIds": [],
+          "hostProfiles": [],
+          "createdAt": {
+            "_seconds": 1778803200,
+            "_nanoseconds": 0
+          },
+          "imageUrl": "https://example.test/club.jpg",
+          "profileImageUrl": "https://example.test/club-profile.jpg",
+          "tags": [
+            "social",
+            "beginner-friendly",
+            "indore"
+          ],
+          "rating": 4.5,
+          "reviewCount": 4,
+          "nextEventAt": {
+            "_seconds": 1778889600,
+            "_nanoseconds": 0
+          },
+          "nextEventLabel": "Saturday Morning Event",
+          "instagramHandle": "racecourseevents",
+          "phoneNumber": "+918800000001",
+          "email": "race.course@example.test",
+          "status": "active",
+          "archived": false,
+          "archivedAt": null,
+          "archiveReason": null,
+          "organizerType": "eventProducer",
+          "organizerPhotos": [],
+          "followerCount": 7,
+          "ownership": {
+            "state": "programmatic",
+            "ownerUserId": null,
+            "primaryHostUserId": null,
+            "hostUserIds": [],
+            "claimedAt": null,
+            "claimedByUid": null
+          },
+          "claim": {
+            "state": "unclaimed",
+            "claimHref": "/organizers/demo/#claim",
+            "lastClaimRequestId": null
+          },
+          "publicPage": {
+            "slug": "demo",
+            "citySlug": "indore",
+            "canonicalPath": "/organizers/demo/",
+            "publishStatus": "published",
+            "indexStatus": "indexReady",
+            "robots": "index, follow",
+            "seoTitle": null,
+            "seoDescription": null,
+            "lastRenderedAt": null
+          },
+          "verifiedReviewCount": 2,
+          "synthetic": true
+        }
+      },
+      "catchEvents": [],
+      "externalEvents": [],
+      "reviews": []
+    },
+    {
+      "name": "archived organizer",
+      "organizer": {
+        "id": "archived",
+        "data": {
+          "name": "Next proof organizer",
+          "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+          "location": "in-mp-indore",
+          "locationCityId": "in-mp-indore",
+          "locationMarketId": "in-mp-indore",
+          "cityName": "Indore",
+          "regionName": "Madhya Pradesh",
+          "countryCode": "IN",
+          "countryName": "India",
+          "area": "Race Course Road",
+          "hostUserId": null,
+          "hostName": null,
+          "hostAvatarUrl": null,
+          "ownerUserId": null,
+          "hostUserIds": [],
+          "hostProfiles": [],
+          "createdAt": {
+            "_seconds": 1778803200,
+            "_nanoseconds": 0
+          },
+          "imageUrl": "https://example.test/club.jpg",
+          "profileImageUrl": "https://example.test/club-profile.jpg",
+          "tags": [
+            "social",
+            "beginner-friendly",
+            "indore"
+          ],
+          "rating": 4.5,
+          "reviewCount": 4,
+          "nextEventAt": {
+            "_seconds": 1778889600,
+            "_nanoseconds": 0
+          },
+          "nextEventLabel": "Saturday Morning Event",
+          "instagramHandle": "racecourseevents",
+          "phoneNumber": "+918800000001",
+          "email": "race.course@example.test",
+          "status": "active",
+          "archived": true,
+          "archivedAt": null,
+          "archiveReason": null,
+          "organizerType": "eventProducer",
+          "organizerPhotos": [],
+          "followerCount": 7,
+          "ownership": {
+            "state": "programmatic",
+            "ownerUserId": null,
+            "primaryHostUserId": null,
+            "hostUserIds": [],
+            "claimedAt": null,
+            "claimedByUid": null
+          },
+          "claim": {
+            "state": "unclaimed",
+            "claimHref": "/organizers/archived/#claim",
+            "lastClaimRequestId": null
+          },
+          "publicPage": {
+            "slug": "archived",
+            "citySlug": "indore",
+            "canonicalPath": "/organizers/archived/",
+            "publishStatus": "published",
+            "indexStatus": "indexReady",
+            "robots": "index, follow",
+            "seoTitle": null,
+            "seoDescription": null,
+            "lastRenderedAt": null
+          },
+          "verifiedReviewCount": 2
+        }
+      },
+      "catchEvents": [],
+      "externalEvents": [],
+      "reviews": []
+    },
+    {
+      "name": "noindex page stays readable",
+      "organizer": {
+        "id": "noindex",
+        "data": {
+          "name": "Next proof organizer",
+          "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+          "location": "in-mp-indore",
+          "locationCityId": "in-mp-indore",
+          "locationMarketId": "in-mp-indore",
+          "cityName": "Indore",
+          "regionName": "Madhya Pradesh",
+          "countryCode": "IN",
+          "countryName": "India",
+          "area": "Race Course Road",
+          "hostUserId": null,
+          "hostName": null,
+          "hostAvatarUrl": null,
+          "ownerUserId": null,
+          "hostUserIds": [],
+          "hostProfiles": [],
+          "createdAt": {
+            "_seconds": 1778803200,
+            "_nanoseconds": 0
+          },
+          "imageUrl": "https://example.test/club.jpg",
+          "profileImageUrl": "https://example.test/club-profile.jpg",
+          "tags": [
+            "social",
+            "beginner-friendly",
+            "indore"
+          ],
+          "rating": 4.5,
+          "reviewCount": 4,
+          "nextEventAt": {
+            "_seconds": 1778889600,
+            "_nanoseconds": 0
+          },
+          "nextEventLabel": "Saturday Morning Event",
+          "instagramHandle": "racecourseevents",
+          "phoneNumber": "+918800000001",
+          "email": "race.course@example.test",
+          "status": "active",
+          "archived": false,
+          "archivedAt": null,
+          "archiveReason": null,
+          "organizerType": "eventProducer",
+          "organizerPhotos": [],
+          "followerCount": 7,
+          "ownership": {
+            "state": "programmatic",
+            "ownerUserId": null,
+            "primaryHostUserId": null,
+            "hostUserIds": [],
+            "claimedAt": null,
+            "claimedByUid": null
+          },
+          "claim": {
+            "state": "unclaimed",
+            "claimHref": "/organizers/noindex/#claim",
+            "lastClaimRequestId": null
+          },
+          "publicPage": {
+            "slug": "noindex",
+            "citySlug": "indore",
+            "canonicalPath": "/organizers/noindex/",
+            "publishStatus": "published",
+            "indexStatus": "noindex",
+            "robots": "noindex, follow",
+            "seoTitle": null,
+            "seoDescription": null,
+            "lastRenderedAt": null
+          },
+          "verifiedReviewCount": 2
+        }
+      },
+      "catchEvents": [],
+      "externalEvents": [],
+      "reviews": [
+        {
+          "id": "noindex-review",
+          "data": {
+            "organizerId": "noindex",
+            "eventId": "event-1",
+            "reviewerUserId": "runner-1",
+            "reviewerName": "Runner One",
+            "rating": 5,
+            "comment": "Well organized event with clear pacing.",
+            "createdAt": {
+              "_seconds": 1778716800,
+              "_nanoseconds": 0
+            },
+            "updatedAt": null,
+            "moderationStatus": "published",
+            "verificationStatus": "verified",
+            "source": "catchEvent",
+            "isAnonymous": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "contract-invalid document",
+      "organizer": {
+        "id": "invalid",
+        "data": {
+          "name": "Next proof organizer",
+          "description": "Social Indore events for easy kilometres, coffee stops, and reliable weekend training.",
+          "location": "in-mp-indore",
+          "locationCityId": "in-mp-indore",
+          "locationMarketId": "in-mp-indore",
+          "cityName": "Indore",
+          "regionName": "Madhya Pradesh",
+          "countryCode": "IN",
+          "countryName": "India",
+          "area": "Race Course Road",
+          "hostUserId": null,
+          "hostName": null,
+          "hostAvatarUrl": null,
+          "ownerUserId": null,
+          "hostUserIds": [],
+          "hostProfiles": [],
+          "createdAt": {
+            "_seconds": 1778803200,
+            "_nanoseconds": 0
+          },
+          "imageUrl": "https://example.test/club.jpg",
+          "profileImageUrl": "https://example.test/club-profile.jpg",
+          "tags": [
+            "social",
+            "beginner-friendly",
+            "indore"
+          ],
+          "rating": 4.5,
+          "reviewCount": 4,
+          "nextEventAt": {
+            "_seconds": 1778889600,
+            "_nanoseconds": 0
+          },
+          "nextEventLabel": "Saturday Morning Event",
+          "instagramHandle": "racecourseevents",
+          "phoneNumber": "+918800000001",
+          "email": "race.course@example.test",
+          "status": "active",
+          "archived": false,
+          "archivedAt": null,
+          "archiveReason": null,
+          "organizerType": "eventProducer",
+          "organizerPhotos": [],
+          "followerCount": 7,
+          "ownership": {
+            "state": "programmatic",
+            "ownerUserId": null,
+            "primaryHostUserId": null,
+            "hostUserIds": [],
+            "claimedAt": null,
+            "claimedByUid": null
+          },
+          "claim": {
+            "state": "unclaimed",
+            "claimHref": "/organizers/invalid/#claim",
+            "lastClaimRequestId": null
+          },
+          "publicPage": {
+            "slug": "invalid",
+            "citySlug": "indore",
+            "canonicalPath": "/organizers/invalid/",
+            "publishStatus": "published",
+            "indexStatus": "indexReady",
+            "robots": "index, follow",
+            "seoTitle": null,
+            "seoDescription": null,
+            "lastRenderedAt": null
+          },
+          "verifiedReviewCount": 2,
+          "privateToken": "x"
+        }
+      },
+      "catchEvents": [],
+      "externalEvents": [],
+      "reviews": []
+    }
+  ]
+}
