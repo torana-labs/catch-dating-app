@@ -34,6 +34,16 @@ export interface DemoWorldEvent {
   priceInPaise: number;
   guestPerspective?: {viewer: string; wingmanTarget: string};
   attendance: DemoWorldAttendance[];
+  waitlist?: Array<{personId: string; joinedAt: string}>;
+  catches?: Array<{personId: string; targetId: string; sentAt: string}>;
+  chats?: Array<{personIds: [string, string]; startedAt: string}>;
+  reviews?: Array<{
+    personId: string;
+    rating: number;
+    comment: string;
+    createdAt: string;
+    anonymous: boolean;
+  }>;
 }
 
 export interface DemoWorld {
@@ -75,6 +85,26 @@ export interface DemoWorld {
   }>;
   people: Array<{id: string; personaId: string}>;
   events: DemoWorldEvent[];
+  seedWorld?: {
+    description: string;
+    cities: string[];
+    usersPerCity: number;
+    clubsPerCity: number;
+    eventsPerClub: number;
+    anchorsPerRun: number;
+    preferPaidEvents: boolean;
+    eventPatterns: Array<{
+      kind: "upcomingFree" | "upcomingPaid" | "upcomingFull" |
+        "upcomingWaitlist" | "pastOpen" | "pastOld";
+      offsetHours: number;
+      price: number;
+      capacity: number;
+      durationMinutes: number;
+      activityKind: string;
+      meetingPointKey: string;
+    }>;
+    recommendedCommands: string[];
+  };
 }
 
 export interface DemoWorldPersona {
@@ -107,6 +137,7 @@ export interface SuvbotWorldBundle {
 export interface DemoWorldEventState {
   booked: number;
   checkedIn: number;
+  waitlisted: number;
   capacity: number;
   phase: "upcoming" | "live" | "ended";
 }
@@ -134,6 +165,8 @@ export function eventStateAt(
   return {
     booked: active.length,
     checkedIn: active.filter((record) => isCheckedInAt(record, at)).length,
+    waitlisted: (event.waitlist ?? [])
+      .filter((record) => record.joinedAt <= at).length,
     capacity: event.capacity,
     phase: at < start ? "upcoming" : at < end ? "live" : "ended",
   };

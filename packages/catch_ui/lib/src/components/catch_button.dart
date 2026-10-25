@@ -345,7 +345,7 @@ class _CatchButtonState extends State<CatchButton> {
           ? effectiveDisabledColor
           : color;
       final effectiveTextStyle =
-          widget.textStyle ?? CatchTextStyles.labelL(context);
+          widget.textStyle ?? CatchTextStyles.titleS(context);
       final labelText = Text(
         widget.label,
         textAlign: TextAlign.center,

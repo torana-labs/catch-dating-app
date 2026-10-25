@@ -50,11 +50,11 @@ class ClubIndexRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  CatchText(
                     club.name,
+                    variant: CatchTextVariant.bodyLead,
+                    color: t.ink,
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
                   ),
                   gapH8,
                   Wrap(
@@ -71,12 +71,7 @@ class ClubIndexRow extends StatelessWidget {
                     ],
                   ),
                   gapH6,
-                  Text(
-                    _clubIndexMetaLabel(club),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-                  ),
+                  CatchMetadataText(_clubIndexMetaLabel(club), color: t.ink3),
                 ],
               ),
             ),

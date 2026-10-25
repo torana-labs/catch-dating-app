@@ -54,8 +54,11 @@ class _EventCheckInQrScannerSheetState
             ),
             gapH10,
             Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(CatchRadius.sm),
+              child: CatchSurface(
+                duration: Duration.zero,
+                tone: CatchSurfaceTone.transparent,
+                radius: CatchRadius.sm,
+                clipBehavior: Clip.antiAlias,
                 child: Stack(
                   fit: StackFit.expand,
                   children: [

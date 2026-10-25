@@ -748,7 +748,12 @@ class CalendarStatDivider extends StatelessWidget {
       child: SizedBox(
         width: CatchStroke.hairline,
         height: CatchLayout.calendarStatDividerHeight,
-        child: ColoredBox(color: t.line),
+        child: CatchSurface(
+          duration: Duration.zero,
+          radius: CatchRadius.none,
+          backgroundColor: t.line,
+          child: const SizedBox.shrink(),
+        ),
       ),
     );
   }

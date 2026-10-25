@@ -535,8 +535,10 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
           ],
         ),
       };
-      return ColoredBox(
-        color: CatchTokens.of(context).bg,
+      return CatchSurface(
+        duration: Duration.zero,
+        radius: CatchRadius.none,
+        backgroundColor: CatchTokens.of(context).bg,
         child: SingleChildScrollView(
           padding: CatchInsets.pageBody,
           child: roomBody,

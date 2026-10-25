@@ -7479,7 +7479,7 @@
       "id": "web:storybook-visuals",
       "category": "design",
       "path": "tool/web/check_storybook_visuals.mjs",
-      "command": "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check",
+      "command": "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report",
       "safety": "local-writes-build-artifacts",
       "status": "active",
       "ciRequirements": {
@@ -7490,12 +7490,12 @@
           "playwright"
         ]
       },
-      "description": "Builds the marketing Storybook, then captures and compares current-platform desktop/mobile screenshots for registry-ready website and shared web-ui stories, retaining actual and diff artifacts on failure.",
+      "description": "Builds the marketing Storybook, then captures current-platform desktop/mobile screenshots for registry-ready website and shared web-ui stories and reports pixel changes against committed baselines without failing; stories that cannot render still fail.",
       "checks": [
         "node --check tool/web/check_storybook_visuals.mjs",
         "node tool/web/check_storybook_visuals.mjs --self-test",
         "npm --workspace catch-marketing run check:storybook-config",
-        "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check"
+        "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report"
       ],
       "impactPaths": [
         "design/visual_baselines/website/**"

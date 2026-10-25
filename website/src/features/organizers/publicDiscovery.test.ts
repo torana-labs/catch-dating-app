@@ -9,8 +9,10 @@ import type {
 } from "./types";
 import {
   activityForKind,
+  activityKindForListing,
   buildPublicEventSummaries,
   buildPublicSearchSuggestions,
+  coverPhotoForListing,
   eventActionCardForListing,
   externalEventActionCardForListing,
 } from "./publicDiscovery";
@@ -136,5 +138,26 @@ describe("public discovery models", () => {
       "external_event_source",
       "external_event_claim",
     ]);
+  });
+});
+
+describe("organiser cover inputs", () => {
+  const base: HostListing = {...hostListings[0], category: "Community", formats: [], catchEvents: [], externalEvents: []};
+  const event = {...(hostListings[0].catchEvents?.[0] ?? {}), id: "e1", activityKind: "pickleball", photoUrl: null} as HostListingCatchEvent;
+
+  it("draws the organiser's event activity first", () => {
+    expect(activityKindForListing({...base, category: "Run club", catchEvents: [event]})).toBe("pickleball");
+  });
+
+  it("reads the category and formats when there are no events", () => {
+    expect(activityKindForListing({...base, category: "Progressive techno run club"})).toBe("socialRun");
+    expect(activityKindForListing({...base, formats: ["Supper club"]})).toBe("dinner");
+    expect(activityKindForListing(base)).toBe("openActivity");
+  });
+
+  it("uses the first published event photo as the organiser's imagery", () => {
+    expect(coverPhotoForListing({...base, catchEvents: [event, {...event, id: "e2", photoUrl: "https://example.test/poster.jpg"}]}))
+      .toBe("https://example.test/poster.jpg");
+    expect(coverPhotoForListing(base)).toBeNull();
   });
 });

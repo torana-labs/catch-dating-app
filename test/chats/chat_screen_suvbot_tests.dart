@@ -85,7 +85,7 @@ void _registerChatScreenSuvbotTests() {
       expect(find.text('No typing needed'), findsOneWidget);
       expect(find.text('Refresh all'), findsOneWidget);
       expect(find.text('Check setup'), findsOneWidget);
-      expect(find.text('Create a test state'), findsOneWidget);
+      expect(find.text('CREATE A TEST STATE'), findsOneWidget);
       expect(find.text('Signups'), findsOneWidget);
       expect(find.text('Post-event'), findsOneWidget);
       expect(find.text('Chats'), findsOneWidget);

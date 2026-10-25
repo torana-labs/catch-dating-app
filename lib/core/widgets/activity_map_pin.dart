@@ -44,12 +44,7 @@ class ActivityMapPin extends StatelessWidget {
                 horizontal: CatchSpacing.s2,
                 vertical: CatchSpacing.s1,
               ),
-              child: Text(
-                flagLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.badge(context, color: t.primaryInk),
-              ),
+              child: CatchMetadataText(flagLabel, color: t.primaryInk),
             ),
           ),
           const SizedBox(height: CatchSpacing.micro2),
