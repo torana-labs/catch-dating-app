@@ -1,0 +1,39 @@
+/* Native checked/described/segmented recipes, using existing token families. */
+.field { display: grid; gap: var(--catch-space-s2); min-width: 0; }
+.choices { display: flex; flex-wrap: wrap; gap: var(--catch-space-s2); min-width: 0; }
+.described { display: grid; gap: var(--catch-space-s2); min-width: 0; }
+.segmented { display: flex; align-items: center; min-width: 0; position: relative; color: var(--catch-theme-ink); }
+.segmented[data-divider] { border-bottom: var(--catch-stroke-hairline) solid var(--catch-theme-line); }
+.rail { display: flex; align-items: stretch; flex: 1; min-width: 0; overflow-x: auto; gap: var(--catch-space-micro18); }
+.segmented[data-variant="mono"] .rail { gap: var(--catch-space-s4); }
+.segmented[data-variant="operational"] .rail { gap: var(--catch-space-s1); }
+.segmented[data-variant="summary"] .rail { flex-wrap: wrap; gap: var(--catch-space-s2); overflow: visible; }
+.rail[data-scrollable] { flex-wrap: nowrap !important; overflow-x: auto !important; }
+.option {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  min-width: var(--catch-interaction-ios-minimum-extent); min-height: var(--catch-interaction-ios-minimum-extent);
+  box-sizing: border-box; margin: 0; padding: var(--catch-space-s2) var(--catch-space-s1);
+  border: 0; border-bottom: var(--catch-space-micro2) solid transparent; border-radius: var(--catch-radius-sm);
+  background: transparent; color: var(--catch-theme-ink2); font: inherit; cursor: pointer;
+  transition: background-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+.option[data-selected] { color: var(--catch-theme-ink); border-bottom-color: var(--catch-choice-accent, var(--catch-theme-ink)); }
+.option .label { font-family: var(--catch-font-function); font-size: var(--catch-typography-web-control-size); font-weight: 500; line-height: var(--catch-typography-web-control-line-height); white-space: nowrap; }
+.option[data-selected] .label { font-weight: 600; }
+.segmented[data-variant="mono"] .label { font-family: var(--catch-typography-brand-mono-label-family); font-size: var(--catch-typography-brand-mono-label-size); line-height: var(--catch-typography-brand-mono-label-line-height); font-weight: var(--catch-typography-brand-mono-label-weight); letter-spacing: var(--catch-typography-brand-mono-label-tracking); }
+.segmented[data-variant="operational"] .option { flex: 1 0 max-content; padding-inline: var(--catch-space-s2); border: var(--catch-stroke-hairline) solid transparent; border-radius: var(--catch-radius-pill); }
+.segmented[data-variant="operational"] .option[data-selected] { background: var(--catch-theme-surface); border-color: var(--catch-theme-line); box-shadow: var(--catch-elevation-card); }
+.segmented[data-variant="operational"] .label { font-size: var(--catch-typography-web-secondary-size); line-height: var(--catch-typography-web-secondary-line-height); font-weight: 700; }
+.segmented[data-variant="summary"] { border-bottom: 0; }
+.segmented[data-variant="summary"] .option { min-width: var(--catch-interaction-ios-minimum-extent); border: 0; border-radius: var(--catch-radius-sm); padding: var(--catch-space-s2) var(--catch-space-s3); }
+.segmented[data-variant="summary"] .option[data-selected] { background: var(--catch-theme-primary); color: var(--catch-theme-primary-ink); }
+.segmented[data-variant="summary"] .label { white-space: normal; overflow-wrap: anywhere; font-size: var(--catch-typography-web-secondary-size); line-height: var(--catch-typography-web-secondary-line-height); }
+.option::before { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; content: ""; }
+.option:enabled:hover::before { background: currentColor; opacity: 0.05; }
+.option:enabled:active::before { background: currentColor; opacity: 0.14; }
+.option:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); outline-offset: calc(-1 * var(--catch-stroke-focus-ring)); }
+.option:disabled { cursor: default; opacity: 0.40; }
+.option .icon { display: inline-flex; flex: none; width: 14px; height: 14px; margin-inline-end: var(--catch-space-s2); }
+.option .icon svg { width: 100%; height: 100%; }
+.trailing { flex: none; margin-inline-start: var(--catch-space-s3); }
+@media (prefers-reduced-motion: reduce) { .option { transition: none; } }
