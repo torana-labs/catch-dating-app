@@ -17,6 +17,12 @@ import {
   loadScenarioConfig,
 } from "./demo_seed_scenario_catalog.mjs";
 import {
+  DEFAULT_PERSONA_CATALOG_PATH,
+  loadPersonaCatalog,
+  personaProfileProjection,
+} from "./demo_persona_catalog.mjs";
+import {isDemoWorld} from "./lib/demo_world.mjs";
+import {
   assertValidSchemaPayload,
   validateActivityNotificationDocument,
   validateChatMessageDocument,
@@ -59,10 +65,7 @@ const {
 const DEFAULT_SEED_PREFIX = "demo_beta_2026";
 const DEFAULT_MAX_BATCH_WRITES = 450;
 const MATCH_MESSAGE_LIMIT = 18;
-const DEFAULT_PERSONA_PROFILE_PROJECTION_PATH = path.join(
-  repoRoot,
-  "tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json"
-);
+const personaCatalogRoot = path.join(toolDir, "demo_seed", "personas");
 
 const profilePromptsById = promptsById(profilePromptCatalog);
 const photoPromptsById = promptsById(photoPromptCatalog);
@@ -233,9 +236,35 @@ function promptsById(catalog) {
   return new Map(catalog.prompts.map((prompt) => [prompt.id, prompt]));
 }
 
-export function loadSeedPersonaProfileProjection(
-  filePath = DEFAULT_PERSONA_PROFILE_PROJECTION_PATH
-) {
+/**
+ * Synthetic seed identities as a profile projection: an explicit projection
+ * file (for example one generated with uploaded photos only), else the
+ * personas a demo world casts, else the New York catalog for generator
+ * scenarios without a cast. Catalog projections keep every photo slot.
+ */
+export function loadSeedPersonaProfileProjection({filePath = null, personaIds = null} = {}) {
+  if (filePath) return readSeedPersonaProfileProjection(filePath);
+  const catalogPaths = personaIds ?
+    fs.readdirSync(personaCatalogRoot)
+      .filter((name) => name.endsWith("_personas.draft.json"))
+      .sort()
+      .map((name) => path.join(personaCatalogRoot, name)) :
+    [DEFAULT_PERSONA_CATALOG_PATH];
+  const cast = personaIds ? new Set(personaIds) : null;
+  const personas = catalogPaths
+    .flatMap((catalogPath) =>
+      personaProfileProjection(loadPersonaCatalog(catalogPath), {assetStatuses: "all"}).personas)
+    .filter((persona) => !cast || cast.has(persona.id));
+  if (cast && personas.length !== cast.size) {
+    throw new Error("Every persona a seeded world casts must come from a persona catalog.");
+  }
+  for (const [index, persona] of personas.entries()) {
+    validateSeedPersonaProjection(persona, {source: `seed personas[${index}]`});
+  }
+  return {kind: "sales-demo-persona-profile-projection", personas};
+}
+
+function readSeedPersonaProfileProjection(filePath) {
   const resolvedPath = path.resolve(repoRoot, filePath);
   const projection = JSON.parse(fs.readFileSync(resolvedPath, "utf8"));
   if (projection?.kind !== "sales-demo-persona-profile-projection") {
@@ -500,9 +529,10 @@ export async function main(argv = process.argv.slice(2)) {
     db,
     anchorProfiles.map((profile) => profile.uid)
   );
-  const personaProjection = loadSeedPersonaProfileProjection(
-    args.personaProfileProjection
-  );
+  const personaProjection = loadSeedPersonaProfileProjection({
+    filePath: args.personaProfileProjection,
+    personaIds: scenario.castPersonaIds,
+  });
   const seed = buildSeed({
     scenarioName: args.scenario,
     scenario,
@@ -578,7 +608,7 @@ function parseArgs(argv) {
     deleteOnly: false,
     appendAnchors: false,
     emulatorHost: null,
-    personaProfileProjection: DEFAULT_PERSONA_PROFILE_PROJECTION_PATH,
+    personaProfileProjection: null,
     json: false,
     includeScheduleLocks: false,
     help: false,
@@ -650,6 +680,8 @@ function resolveSeedScenario(name) {
   return normalizeSeedWorldScenario(config);
 }
 
+// A demo world's generator casts the world's own people and host; an older
+// generator-only scenario draws from the default persona catalog.
 function normalizeSeedWorldScenario(config) {
   return {
     description: config.seedWorld.description ?? config.description,
@@ -661,7 +693,9 @@ function normalizeSeedWorldScenario(config) {
     anchorsPerRun: config.seedWorld.anchorsPerRun,
     preferPaidEvents: config.seedWorld.preferPaidEvents === true,
     eventPatterns: config.seedWorld.eventPatterns ?? null,
-    salesDemo: config.salesDemo ?? null,
+    castPersonaIds: isDemoWorld(config) ?
+      [config.host.personaId, ...config.people.map((person) => person.personaId)] :
+      null,
   };
 }
 
@@ -3474,9 +3508,11 @@ Options:
                                  Usually unnecessary for demo worlds because
                                  Functions query canonical event/participation docs.
   --persona-profile-projection <path>
-                                 Checked sales demo profile projection used for
-                                 synthetic seed identities. Default:
-                                 ${path.relative(repoRoot, DEFAULT_PERSONA_PROFILE_PROJECTION_PATH)}.
+                                 Profile projection file to use for synthetic
+                                 seed identities, e.g. one generated by
+                                 demo_ops persona-profile-projection. Default:
+                                 the world's cast, or for generator scenarios
+                                 ${path.relative(repoRoot, DEFAULT_PERSONA_CATALOG_PATH)}.
   --allow-prod                   Required when writing to the prod Firebase project.
   --emulator                     Use FIRESTORE_EMULATOR_HOST=127.0.0.1:8080.
   --emulator-host <host:port>    Use a custom Firestore emulator host.

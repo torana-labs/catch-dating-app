@@ -23,8 +23,7 @@ final salesDemoHostScenario = SalesDemoHostScenarioFixture.load();
 
 final _ageReferenceDate = DateTime(2026, 5, 31);
 
-// This named capture story reuses the canonical reader and fixture builders.
-// It does not change the global host-demo seed world or persona projection.
+// The Mumbai marketing story reuses the same reader and fixture builders.
 final hostMarketingIndiaScenario = HostMarketingIndiaScenarioFixture.load();
 
 const hostMarketingIndiaEventId = 'event-host-trivia-store-demo';
@@ -35,6 +34,16 @@ const hostCaptureRoleMoments = <String, String>{
   'hostToday': 'today',
   'hostLiveConsole': 'live',
   'hostPostEventReport': 'followUp',
+};
+
+/// The New York host sales demo: one moment, three events, each Host capture
+/// role showing one of them.
+const salesDemoHostWorldPath =
+    'tool/demo/demo_seed/scenarios/us-nyc-host-demo.json';
+const salesDemoHostRoles = <String, ({String eventId, String moment})>{
+  'hostEventSetup': (eventId: 'event-host-setup-sales-demo', moment: 'live'),
+  'hostLiveConsole': (eventId: 'event-host-live-console', moment: 'live'),
+  'hostPostEventReport': (eventId: 'event-host-post-report', moment: 'live'),
 };
 
 class HostMarketingIndiaScenarioFixture {
@@ -76,8 +85,11 @@ class HostMarketingIndiaScenarioFixture {
     return HostMarketingIndiaScenarioFixture._(
       SalesDemoHostScenarioFixture.fromDemoWorld(
         world,
-        eventId: hostMarketingIndiaEventId,
-        roleMoments: hostCaptureRoleMoments,
+        roles: {
+          for (final MapEntry(key: role, value: moment)
+              in hostCaptureRoleMoments.entries)
+            role: (eventId: hostMarketingIndiaEventId, moment: moment),
+        },
       ),
       Map.unmodifiable(narrative),
       world,
@@ -222,117 +234,92 @@ class SalesDemoHostScenarioFixture {
     required this.wingmanTargetPersonaId,
   });
 
+  /// The New York host sales demo world. Its civil times become UTC
+  /// instants, as the host roster captures were drawn with.
   factory SalesDemoHostScenarioFixture.load({
-    String path = 'tool/demo/demo_seed/scenarios/host-demo.json',
-  }) {
-    final root = _stringMap(
-      jsonDecode(File(path).readAsStringSync()),
-      context: path,
-    );
-    final salesDemo = _stringMap(root['salesDemo'], context: '$path.salesDemo');
-    final eventSuccess = _stringMap(
-      salesDemo['eventSuccess'],
-      context: '$path.salesDemo.eventSuccess',
-    );
-    final events = <String, SalesDemoHostEventFixture>{};
-    for (final item in _list(salesDemo['events'])) {
-      final event = SalesDemoHostEventFixture._fromJson(
-        _stringMap(item, context: '$path.salesDemo.events'),
-      );
-      events[event.role] = event;
-    }
-    return SalesDemoHostScenarioFixture._(
-      id: _requiredStringFrom(root, 'id'),
-      referenceNow: DateTime.parse(
-        _requiredStringFrom(salesDemo, 'referenceNow'),
-      ),
-      host: SalesDemoHostUserFixture._fromJson(
-        _stringMap(salesDemo['host'], context: '$path.salesDemo.host'),
-      ),
-      club: SalesDemoHostClubFixture._fromJson(
-        _stringMap(salesDemo['club'], context: '$path.salesDemo.club'),
-      ),
-      eventsByRole: Map.unmodifiable(events),
-      rosterPersonaIds: List.unmodifiable(
-        _list(salesDemo['rosterPersonaIds']).whereType<String>(),
-      ),
-      defaultCheckedInCount: _requiredIntFrom(
-        eventSuccess,
-        'defaultCheckedInCount',
-      ),
-      defaultWaitlistedCount: _requiredIntFrom(
-        eventSuccess,
-        'defaultWaitlistedCount',
-      ),
-      viewerPersonaId: _requiredStringFrom(eventSuccess, 'viewerPersonaId'),
-      wingmanTargetPersonaId: _requiredStringFrom(
-        eventSuccess,
-        'wingmanTargetPersonaId',
-      ),
-    );
-  }
+    String path = salesDemoHostWorldPath,
+  }) => SalesDemoHostScenarioFixture.fromDemoWorld(
+    DemoWorld.load(path),
+    roles: salesDemoHostRoles,
+    instants: true,
+  );
 
-  /// Builds the per-role events from one demo world event: each role shows
-  /// the world's state at its moment, so counts come from guest records.
+  /// Builds the per-role events from demo world events: each role shows one
+  /// event at one moment, so counts come from guest records. The live console
+  /// role's event supplies the guest perspective and roster defaults.
+  /// [instants] converts civil times in the world's time zone to UTC;
+  /// otherwise they stay local civil fields.
   factory SalesDemoHostScenarioFixture.fromDemoWorld(
     DemoWorld world, {
-    required String eventId,
-    required Map<String, String> roleMoments,
+    required Map<String, ({String eventId, String moment})> roles,
+    bool instants = false,
   }) {
-    final event = world.event(eventId);
-    final venue = world.venueFor(eventId);
-    final civilDate = _requiredStringFrom(event, 'civilDate');
+    final clock = instants ? world.instant : world.civil;
+    final live = roles['hostLiveConsole']!;
     final perspective = _stringMap(
-      event['guestPerspective'],
+      world.event(live.eventId)['guestPerspective'],
       context: '${world.id}.guestPerspective',
     );
+    final liveState = world.stateAt(live.eventId, live.moment);
     final organizer = world.organizer;
+    final referenceMoment = world.moments[roles.values.first.moment]!;
     return SalesDemoHostScenarioFixture._(
       id: world.id,
-      referenceNow: DateTime.parse(world.moments[roleMoments.values.first]!),
+      referenceNow: clock(
+        referenceMoment.substring(0, 10),
+        referenceMoment.substring(11, 16),
+      ),
       host: SalesDemoHostUserFixture._fromJson(world.host),
       club: SalesDemoHostClubFixture._fromJson({
         ...organizer,
         'location': organizer['city'],
       }),
       eventsByRole: Map.unmodifiable({
-        for (final MapEntry(key: role, value: moment) in roleMoments.entries)
-          role: SalesDemoHostEventFixture._(
-            role: role,
-            id: eventId,
-            activityKind: _activityKindFromName(
-              _requiredStringFrom(event, 'activityKind'),
-            ),
-            startTime: world.civil(
-              civilDate,
-              _requiredStringFrom(event, 'startTime'),
-            ),
-            endTime: world.civil(
-              civilDate,
-              _requiredStringFrom(event, 'endTime'),
-            ),
-            meetingPoint: _requiredStringFrom(venue, 'name'),
-            locationDetails: _requiredStringFrom(venue, 'directions'),
-            startingPointLat: _requiredDoubleFrom(venue, 'lat'),
-            startingPointLng: _requiredDoubleFrom(venue, 'lng'),
-            capacityLimit: _requiredIntFrom(event, 'capacity'),
-            bookedCount: world.stateAt(eventId, moment).booked,
-            checkedInCount: world.stateAt(eventId, moment).checkedIn,
-            waitlistedCount: 0,
-            priceInPaise: _requiredIntFrom(event, 'priceInPaise'),
-            description: _requiredStringFrom(event, 'description'),
-            scorecard: null,
-          ),
+        for (final MapEntry(key: role, value: (:eventId, :moment))
+            in roles.entries)
+          role: _roleEvent(world, role, eventId, moment, clock),
       }),
       rosterPersonaIds: List.unmodifiable(world.personaIds),
-      defaultCheckedInCount: world.stateAt(eventId, 'live').checkedIn,
-      defaultWaitlistedCount: 0,
+      defaultCheckedInCount: liveState.checkedIn,
+      defaultWaitlistedCount: liveState.waitlisted,
       viewerPersonaId: world.personaIdFor(
         _requiredStringFrom(perspective, 'viewer'),
       ),
       wingmanTargetPersonaId: world.personaIdFor(
         _requiredStringFrom(perspective, 'wingmanTarget'),
       ),
+    );
+  }
+
+  static SalesDemoHostEventFixture _roleEvent(
+    DemoWorld world,
+    String role,
+    String eventId,
+    String moment,
+    DateTime Function(String date, String time) clock,
+  ) {
+    final event = world.event(eventId);
+    final venue = world.venueFor(eventId);
+    final civilDate = _requiredStringFrom(event, 'civilDate');
+    final state = world.stateAt(eventId, moment);
+    return SalesDemoHostEventFixture._(
+      role: role,
+      id: eventId,
+      activityKind: _activityKindFromName(
+        _requiredStringFrom(event, 'activityKind'),
+      ),
+      startTime: clock(civilDate, _requiredStringFrom(event, 'startTime')),
+      endTime: clock(civilDate, _requiredStringFrom(event, 'endTime')),
+      meetingPoint: _requiredStringFrom(venue, 'name'),
+      locationDetails: _requiredStringFrom(venue, 'directions'),
+      startingPointLat: _requiredDoubleFrom(venue, 'lat'),
+      startingPointLng: _requiredDoubleFrom(venue, 'lng'),
+      capacityLimit: _requiredIntFrom(event, 'capacity'),
+      bookedCount: state.booked,
+      checkedInCount: state.checkedIn,
+      waitlistedCount: state.waitlisted,
+      priceInPaise: _requiredIntFrom(event, 'priceInPaise'),
+      description: _requiredStringFrom(event, 'description'),
     );
   }
 
@@ -440,35 +427,7 @@ class SalesDemoHostEventFixture {
     required this.waitlistedCount,
     required this.priceInPaise,
     required this.description,
-    required this.scorecard,
   });
-
-  factory SalesDemoHostEventFixture._fromJson(Map<String, Object?> json) {
-    return SalesDemoHostEventFixture._(
-      role: _requiredStringFrom(json, 'role'),
-      id: _requiredStringFrom(json, 'id'),
-      activityKind: _activityKindFromName(
-        _requiredStringFrom(json, 'activityKind'),
-      ),
-      startTime: DateTime.parse(_requiredStringFrom(json, 'startTime')),
-      endTime: DateTime.parse(_requiredStringFrom(json, 'endTime')),
-      meetingPoint: _requiredStringFrom(json, 'meetingPoint'),
-      locationDetails: _requiredStringFrom(json, 'locationDetails'),
-      startingPointLat: _requiredDoubleFrom(json, 'startingPointLat'),
-      startingPointLng: _requiredDoubleFrom(json, 'startingPointLng'),
-      capacityLimit: _requiredIntFrom(json, 'capacityLimit'),
-      bookedCount: _requiredIntFrom(json, 'bookedCount'),
-      checkedInCount: _requiredIntFrom(json, 'checkedInCount'),
-      waitlistedCount: _requiredIntFrom(json, 'waitlistedCount'),
-      priceInPaise: _requiredIntFrom(json, 'priceInPaise'),
-      description: _requiredStringFrom(json, 'description'),
-      scorecard: json['scorecard'] == null
-          ? null
-          : SalesDemoHostScorecardFixture._fromJson(
-              _stringMap(json['scorecard'], context: 'scorecard'),
-            ),
-    );
-  }
 
   final String role;
   final String id;
@@ -485,26 +444,6 @@ class SalesDemoHostEventFixture {
   final int waitlistedCount;
   final int priceInPaise;
   final String description;
-  final SalesDemoHostScorecardFixture? scorecard;
-}
-
-class SalesDemoHostScorecardFixture {
-  const SalesDemoHostScorecardFixture._(this._json);
-
-  factory SalesDemoHostScorecardFixture._fromJson(Map<String, Object?> json) =>
-      SalesDemoHostScorecardFixture._(Map.unmodifiable(json));
-
-  final Map<String, Object?> _json;
-
-  int intValue(String key) => _requiredIntFrom(_json, key);
-
-  double doubleValue(String key) => _requiredDoubleFrom(_json, key);
-
-  Map<String, Object?>? mapValue(String key) {
-    final value = _json[key];
-    if (value == null) return null;
-    return _stringMap(value, context: key);
-  }
 }
 
 /// Persona catalogs capture fixtures may cast. Profiles are built from the
