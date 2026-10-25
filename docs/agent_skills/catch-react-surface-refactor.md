@@ -1,7 +1,7 @@
 ---
 doc_id: agent_skill_catch_react_surface_refactor
-version: 1.3.0
-updated: 2026-10-24
+version: 1.3.1
+updated: 2026-10-25
 owner: agent_operating_model
 status: active
 ---
@@ -36,7 +36,7 @@ Loop:
    genuinely remote.
 6. Do not hand-roll interactive controls in feature code. Use the surface's
    shared UI primitive owner and run:
-   `node tool/run.mjs check web:react-ui-primitives`.
+   `node tool/run.mjs check web:react-ui-lint`.
 7. Do not hand-roll governed component families in feature code. Print the scanner's current governed-family view on demand with `node tool/web/check_react_component_governance.mjs --families-json`; do not check in a generated reader snapshot. Run `node tool/run.mjs check web:react-component-governance`. This scanner is a known-family blocklist: passing it does not classify novel shell families automatically, so repeated new shell drift must be added to the scanner before handoff.
    Run `node tool/run.mjs check web:shared-ui-adoption` whenever a React
    component export changes: it maps every exported component to a registry
@@ -84,7 +84,7 @@ Loop:
 Required checks for a cross-React pass:
 
 ```sh
-node tool/run.mjs check web:react-ui-primitives
+node tool/run.mjs check web:react-ui-lint
 node tool/run.mjs check web:react-component-governance
 node tool/run.mjs check web:shared-ui-adoption
 node tool/run.mjs check web:react-controller-test-targets

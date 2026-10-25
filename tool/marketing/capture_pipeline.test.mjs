@@ -17,7 +17,8 @@ function fixture(t) {
     return file;
   };
   for (const name of ['tool/lib/repo_paths.mjs', 'tool/marketing/sync_website_media.mjs',
-    'tool/marketing/export_app_screenshots.mjs', 'tool/marketing/lib/capture_provenance.mjs', 'tool/ui_capture/run_captures.mjs']) {
+    'tool/marketing/export_app_screenshots.mjs', 'tool/marketing/lib/capture_provenance.mjs',
+    'tool/marketing/lib/web_capture_inputs.mjs', 'tool/ui_capture/run_captures.mjs']) {
     write(name, fs.readFileSync(fromRepo(name)));
   }
   const capture = {

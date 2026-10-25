@@ -12,7 +12,6 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 typedef EventFocusClubNameBuilder = String? Function(Event event);
 typedef EventFocusEventCallback = void Function(Event event);
@@ -309,21 +308,21 @@ class EventFocusCard extends StatelessWidget {
                     ),
                   ),
             tone: CatchBadgeTone.brand,
-            icon: PhosphorIconsFill.heart,
+            icon: CatchIcons.like,
           ),
           EventActionCardBadge(
             label: context.l10n.dashboardEventFocusListLabelAttendeesCheckedIn(
               attendedCount: item.attendedCount ?? item.event.attendedCount,
             ),
             tone: CatchBadgeTone.neutral,
-            icon: CatchIcons.group,
+            icon: CatchIcons.people,
           ),
         ],
         if (item.needsReview)
           EventActionCardBadge(
             label: context.l10n.dashboardEventFocusRailLabelReviewPending,
             tone: CatchBadgeTone.warning,
-            icon: PhosphorIconsRegular.pencilLine,
+            icon: CatchIcons.feedback,
           ),
       ],
       metaRows: compact
@@ -331,7 +330,7 @@ class EventFocusCard extends StatelessWidget {
           : [
               [
                 CatchMetaEntry(
-                  icon: CatchIcons.clock,
+                  icon: CatchIcons.time,
                   label: context.l10n
                       .dashboardEventFocusRailLabelShortweekdayDayShortmonthTimerangelabel(
                         shortWeekday: EventFormatters.shortWeekday(
@@ -347,7 +346,7 @@ class EventFocusCard extends StatelessWidget {
               ],
               [
                 CatchMetaEntry(
-                  icon: CatchIcons.pinOutlined,
+                  icon: CatchIcons.location,
                   label: item.event.locationName,
                 ),
               ],
@@ -357,7 +356,7 @@ class EventFocusCard extends StatelessWidget {
                   label: item.event.activitySummaryLabel,
                 ),
                 CatchMetaEntry(
-                  icon: CatchIcons.group,
+                  icon: CatchIcons.people,
                   label: context.l10n
                       .dashboardEventFocusRailLabelSignedupcountCapacitylimit(
                         signedUpCount: item.event.signedUpCount,
@@ -419,12 +418,12 @@ extension on EventFocusAction {
 
   IconData get icon {
     return switch (this) {
-      EventFocusAction.viewEvent => CatchIcons.forwardArrow,
-      EventFocusAction.checkIn => CatchIcons.pin,
-      EventFocusAction.directions => PhosphorIconsRegular.compass,
-      EventFocusAction.addToCalendar => CatchIcons.calendarAdd,
-      EventFocusAction.swipe => PhosphorIconsFill.heart,
-      EventFocusAction.review => PhosphorIconsRegular.pencilLine,
+      EventFocusAction.viewEvent => CatchIcons.forward,
+      EventFocusAction.checkIn => CatchIcons.location,
+      EventFocusAction.directions => CatchIcons.directions,
+      EventFocusAction.addToCalendar => CatchIcons.addToCalendar,
+      EventFocusAction.swipe => CatchIcons.like,
+      EventFocusAction.review => CatchIcons.feedback,
     };
   }
 
