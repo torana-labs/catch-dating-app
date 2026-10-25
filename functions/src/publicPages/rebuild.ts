@@ -413,3 +413,52 @@ export async function refreshPublicPageFollowerCounts(
   }
   return stale;
 }
+
+export interface ScopePlan {
+  organizerId: string;
+  organizerPage: "create" | "update" | "unchanged" | "delete" | "absent";
+  eventPages: {create: number; update: number; unchanged: number;
+    delete: number};
+}
+
+/**
+ * What a rebuild would change for one organizer, read-only. The backfill
+ * script prints these before it writes anything.
+ */
+export async function planOrganizerScope(
+  db: Firestore, organizerId: string, now: number
+): Promise<ScopePlan> {
+  const pages = buildOrganizerScope(
+    await readOrganizerScope(db, organizerId, now));
+  const eventPages = db.collection(collections.eventPages);
+  const [current, owned, targets] = await Promise.all([
+    db.collection(collections.organizerPages).doc(organizerId).get(),
+    eventPages.where("organizerId", "==", organizerId).select().get(),
+    getAllInChunks(db, pages.eventPages.map((page) =>
+      eventPages.doc(page.eventId))),
+  ]);
+  const plan: ScopePlan = {organizerId,
+    organizerPage: pages.organizerPage ?
+      !current.exists ? "create" :
+        current.get("contentHash") === contentHash(pages.organizerPage) ?
+          "unchanged" : "update" :
+      current.exists ? "delete" : "absent",
+    eventPages: {create: 0, update: 0, unchanged: 0, delete: 0}};
+  const keep = new Set(pages.eventPages.map((page) => page.eventId));
+  pages.eventPages.forEach((page, index) => {
+    const target = targets[index];
+    if (!target.exists) plan.eventPages.create++;
+    else if (target.get("contentHash") === contentHash(page)) {
+      plan.eventPages.unchanged++;
+    } else plan.eventPages.update++;
+  });
+  plan.eventPages.delete =
+    owned.docs.filter((doc) => !keep.has(doc.id)).length;
+  return plan;
+}
+
+export function planChanges(plan: ScopePlan): boolean {
+  return !["unchanged", "absent"].includes(plan.organizerPage) ||
+    plan.eventPages.create + plan.eventPages.update +
+      plan.eventPages.delete > 0;
+}

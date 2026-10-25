@@ -44,23 +44,22 @@ export function hydrate(value: unknown): unknown {
     .map(([key, item]) => [key, hydrate(item)]));
 }
 
-export function parityInputs(): {
+export interface ParityInputs {
   now: number;
   liveMarkets: string[];
   cases: ParityCase[];
-} {
-  const inputs = readPublicPageFixture("parity_inputs.json") as {
-    now: number;
-    liveMarkets: string[];
-    cases: ParityCase[];
-  };
-  return {...inputs, cases: inputs.cases.map((parity) => ({
+}
+
+export function parityInputs(): ParityInputs {
+  const inputs = readPublicPageFixture("parity_inputs.json") as ParityInputs;
+  const cases = inputs.cases.map((parity) => ({
     ...parity,
     organizer: hydrateDocument(parity.organizer),
     catchEvents: parity.catchEvents.map(hydrateDocument),
     externalEvents: parity.externalEvents.map(hydrateDocument),
     reviews: parity.reviews.map(hydrateDocument),
-  }))};
+  }));
+  return {...inputs, cases};
 }
 
 function hydrateDocument(doc: FixtureDocument): FixtureDocument {
