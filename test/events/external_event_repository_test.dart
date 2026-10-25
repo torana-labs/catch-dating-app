@@ -79,6 +79,15 @@ void main() {
           startTime: now.add(const Duration(days: 2)),
           activityKind: ActivityKind.yoga,
         );
+        // The organizer is hidden in the app, so the event is website-only.
+        await _seedExternalEvent(
+          firestore,
+          id: 'external-app-hidden',
+          citySlug: 'mumbai',
+          appVisibility: 'hidden',
+          startTime: now.add(const Duration(days: 2)),
+          activityKind: ActivityKind.yoga,
+        );
         await _seedExternalEvent(
           firestore,
           id: 'external-dinner',
@@ -171,6 +180,7 @@ Future<void> _seedExternalEvent(
   ActivityKind activityKind = ActivityKind.openActivity,
   String publicationStatus = 'public',
   String status = 'active',
+  String appVisibility = 'discoverable',
 }) {
   return firestore.collection('externalEvents').doc(id).set({
     'schemaVersion': 1,
@@ -233,6 +243,7 @@ Future<void> _seedExternalEvent(
       'countryCode': 'IN',
       'availability': 'read_only_external',
       'manualApprovalRequired': true,
+      'appVisibility': appVisibility,
     },
     'dedupe': {
       'normalizedEventKey': id,

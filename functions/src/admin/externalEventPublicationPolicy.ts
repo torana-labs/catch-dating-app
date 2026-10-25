@@ -50,6 +50,20 @@ export function assertMatchingPublicationReceipt(
   );
 }
 
+/**
+ * App discovery follows the organizer: an event is discoverable in the app
+ * only while its organizer is. Anything but an explicit "discoverable" hides.
+ * @param {Record<string, unknown>} organizer Organizer document.
+ * @return {"hidden" | "discoverable"} The event's app visibility.
+ */
+export function externalEventAppVisibilityFor(
+  organizer: Record<string, unknown>
+): ExternalEventDocument["discovery"]["appVisibility"] {
+  return organizer.appVisibility === "discoverable" ?
+    "discoverable" :
+    "hidden";
+}
+
 export function assertExternalEventOrganizerAuthority(
   eventId: string,
   document: ExternalEventDocument,
@@ -62,10 +76,11 @@ export function assertExternalEventOrganizerAuthority(
       `External event ${eventId} is not attributed to its canonical organizer.`
     );
   }
-  if (organizer.appVisibility !== "discoverable") {
+  if (document.discovery.appVisibility !==
+    externalEventAppVisibilityFor(organizer)) {
     throw new HttpsError(
       "failed-precondition",
-      "An app-visible external event cannot exceed a hidden organizer."
+      "External event app visibility must match its canonical organizer."
     );
   }
   const market = marketForIdOrAlias(

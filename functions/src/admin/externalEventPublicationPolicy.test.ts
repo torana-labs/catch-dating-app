@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   assertExternalEventOrganizerAuthority,
   assertMatchingPublicationReceipt,
+  externalEventAppVisibilityFor,
   publicationInputHash,
   publicationReceiptId,
 } from "./externalEventPublicationPolicy";
@@ -39,7 +40,11 @@ test("external event authority enforces organizer market and capabilities",
   () => {
     const document = {
       canonicalHostId: "organizer-1",
-      discovery: {citySlug: "mumbai", countryCode: "IN"},
+      discovery: {
+        citySlug: "mumbai",
+        countryCode: "IN",
+        appVisibility: "discoverable",
+      },
       organizerCapabilities: {
         mode: "unclaimed_read_only",
         bookable: false,
@@ -84,3 +89,47 @@ test("external event authority enforces organizer market and capabilities",
       (error) => (error as {code?: string}).code === "failed-precondition"
     );
   });
+
+test("external event app visibility follows its organizer", () => {
+  const capabilities = {
+    mode: "unclaimed_read_only",
+    bookable: false,
+    paymentsEnabled: false,
+    waitlistEnabled: false,
+    hostContactEnabled: false,
+    claimable: true,
+    reviewPolicy: "after_event_end",
+  };
+  const documentFor = (appVisibility: string) => ({
+    canonicalHostId: "organizer-1",
+    discovery: {citySlug: "mumbai", countryCode: "IN", appVisibility},
+    organizerCapabilities: capabilities,
+    booking: {
+      catchBookingEnabled: false,
+      catchPaymentsEnabled: false,
+      catchReservationsEnabled: false,
+      catchWaitlistEnabled: false,
+    },
+  });
+  const organizer = (appVisibility: string | undefined) => ({
+    locationMarketId: "in-mh-mumbai",
+    appVisibility,
+    ownership: {state: "programmatic"},
+    claim: {state: "unclaimed"},
+    supplyCapabilities: capabilities,
+  });
+  // An organizer hidden in the app publishes events hidden in the app.
+  assert.doesNotThrow(() => assertExternalEventOrganizerAuthority(
+    "event-1", documentFor("hidden") as never, "organizer-1",
+    organizer("hidden")));
+  assert.equal(externalEventAppVisibilityFor(organizer(undefined)), "hidden");
+  for (const [event, owner] of [["discoverable", "hidden"],
+    ["hidden", "discoverable"]]) {
+    assert.throws(
+      () => assertExternalEventOrganizerAuthority(
+        "event-1", documentFor(event) as never, "organizer-1",
+        organizer(owner)),
+      (error) => (error as {code?: string}).code === "failed-precondition"
+    );
+  }
+});

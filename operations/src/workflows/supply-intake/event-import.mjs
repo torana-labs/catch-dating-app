@@ -42,7 +42,7 @@ const ACTIVITY_PATTERNS = [
 
 /**
  * @param {{event: object, workItemId: string, organizer: null | {organizerId: string,
- *   claimable: boolean}, review: {reviewerUid: string, decidedAt: string, note: string | null,
+ *   claimable: boolean, appVisibility: "hidden" | "discoverable"}, review: {reviewerUid: string, decidedAt: string, note: string | null,
  *   ownerSafeCopyReviewed: boolean, importPolicyAcknowledged: boolean,
  *   blockerResolutions: Array<{blockerCode: string, outcome: string, policyGapDecisionId: string | null,
  *   note: string}>}, duplicates?: object[], citySlug: string | null, now: string}} input
@@ -115,7 +115,9 @@ function externalEventDocument({event, eventId, organizer, review, duplicates, c
     booking: {mode: "external_outbound_only", catchBookingEnabled: false, catchPaymentsEnabled: false,
       catchReservationsEnabled: false, catchWaitlistEnabled: false,
       externalLinks: outboundLinks([event, ...duplicates])},
-    discovery: {citySlug, countryCode: "IN", availability: "read_only_external", manualApprovalRequired: true},
+    // App discovery follows the organizer; the website applies its page and search controls.
+    discovery: {citySlug, countryCode: "IN", availability: "read_only_external", manualApprovalRequired: true,
+      appVisibility: organizer.appVisibility === "discoverable" ? "discoverable" : "hidden"},
     dedupe: {normalizedEventKey: event.eventKey, primaryCandidateId: event.eventKey,
       duplicateCandidateIds: [...new Set(duplicates.map((duplicate) => duplicate.eventKey))].sort().slice(0, 24),
       conflictPolicy: "single_read_only_event_with_multiple_outbound_links"},

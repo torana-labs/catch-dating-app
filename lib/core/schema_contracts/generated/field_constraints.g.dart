@@ -79287,6 +79287,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const externalEventDocumentDiscoveryAppVisibility = CatchContractFieldConstraints(
+    path: 'externalEventDocument.discovery.appVisibility',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hidden', 'discoverable'],
+  );
+
   static const externalEventDocumentDiscoveryAvailability = CatchContractFieldConstraints(
     path: 'externalEventDocument.discovery.availability',
     required: true,
@@ -182110,6 +182117,7 @@ abstract final class CatchContractConstraints {
     'externalEventDocument.dedupe.normalizedEventKey': externalEventDocumentDedupeNormalizedEventKey,
     'externalEventDocument.dedupe.primaryCandidateId': externalEventDocumentDedupePrimaryCandidateId,
     'externalEventDocument.description': externalEventDocumentDescription,
+    'externalEventDocument.discovery.appVisibility': externalEventDocumentDiscoveryAppVisibility,
     'externalEventDocument.discovery.availability': externalEventDocumentDiscoveryAvailability,
     'externalEventDocument.discovery.citySlug': externalEventDocumentDiscoveryCitySlug,
     'externalEventDocument.discovery.countryCode': externalEventDocumentDiscoveryCountryCode,

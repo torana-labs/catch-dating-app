@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.174.0
-updated: 2026-10-22
+version: 1.175.0
+updated: 2026-10-25
 owner: recursive_audit_loop
 status: active
 ---
@@ -4331,9 +4331,20 @@ work queues such as Indore + Mumbai. Existing event docs can be repaired with
 default and requires `--allow-prod` when applying against prod.
 
 External event supply uses `externalEvents/{eventId}`. These records are
-sourced from reviewed organizer-intake candidates, preserve source/dedupe
-attribution, carry a fail-closed organizer capability snapshot, and keep Catch
-booking, payments, reservations, waitlists, and host contact disabled.
+sourced from events Supply Intake imported for a published organizer, preserve
+source/dedupe attribution, carry a fail-closed organizer capability snapshot,
+and keep Catch booking, payments, reservations, waitlists, and host contact
+disabled.
+
+An external event is never more visible than its organizer. The website joins
+each event to its published organizer and renders it with that organizer's
+robots, so page publication and search indexing follow the organizer at read
+time. App discovery lists events by city without reading organizers, so each
+event carries `discovery.appVisibility`, equal to its organizer's
+`appVisibility` at publication and kept in step by `syncExternalEventVisibility`
+when the organizer changes. The app queries only `discoverable` events; an
+approved but unverified listing (hidden in the app) shows its events on the
+website only.
 `adminListExternalEventDetails` lists that collection for admin event-supply
 review with the same bounded launch-city and time-window filters.
 

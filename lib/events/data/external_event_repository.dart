@@ -93,7 +93,7 @@ class ExternalEventRepository {
     ExternalEventDiscoveryQuery query, {
     DocumentSnapshot<ExternalEvent>? startAfter,
   }) {
-    // firestore-index: externalEvents (discovery.citySlug:ASCENDING,publicationStatus:ASCENDING,status:ASCENDING,startTime:ASCENDING)
+    // firestore-index: externalEvents (discovery.citySlug:ASCENDING,discovery.appVisibility:ASCENDING,publicationStatus:ASCENDING,status:ASCENDING,startTime:ASCENDING)
     return withBackendErrorContext(
       () async {
         if (query.citySlug.isEmpty) {
@@ -103,8 +103,10 @@ class ExternalEventRepository {
           >();
         }
 
+        // Events of an organizer hidden in the app stay on the website only.
         Query<ExternalEvent> firestoreQuery = _eventsRef
             .where('discovery.citySlug', isEqualTo: query.citySlug)
+            .where('discovery.appVisibility', isEqualTo: 'discoverable')
             .where('publicationStatus', isEqualTo: 'public')
             .where('status', isEqualTo: 'active')
             .where(

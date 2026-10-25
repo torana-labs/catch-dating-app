@@ -68,7 +68,8 @@
     "citySlug": "indore",
     "countryCode": "IN",
     "availability": "read_only_external",
-    "manualApprovalRequired": true
+    "manualApprovalRequired": true,
+    "appVisibility": "discoverable"
   },
   "dedupe": {
     "normalizedEventKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave",
