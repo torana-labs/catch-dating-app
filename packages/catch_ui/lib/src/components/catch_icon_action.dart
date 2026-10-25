@@ -225,7 +225,7 @@ class _CatchIconActionState extends State<CatchIconAction> {
           glyph != null &&
           (glyph is! Icon ||
               glyph.color != null ||
-              (glyph.size != null && glyph.size != CatchIcon.md));
+              (glyph.size != null && glyph.size != CatchIconSize.md));
       if (invalidGlyph ||
           widget.accent != null ||
           widget.emphasis != CatchIconActionEmphasis.adaptive ||
@@ -290,7 +290,7 @@ class _CatchIconActionState extends State<CatchIconAction> {
     final iconTheme = IconThemeData(
       color: palette.foreground,
       size: toolbar
-          ? CatchIcon.md
+          ? CatchIconSize.md
           : (size * CatchLayout.iconButtonGlyphScale).roundToDouble(),
       fill: filled ? 1.0 : null,
     );
@@ -321,7 +321,7 @@ class _CatchIconActionState extends State<CatchIconAction> {
                 widget.child ??
                 Icon(
                   widget._toolbarIcon,
-                  size: CatchIcon.md,
+                  size: CatchIconSize.md,
                   color: widget.foregroundColor ?? (enabled ? t.ink : t.ink3),
                 ),
           ),

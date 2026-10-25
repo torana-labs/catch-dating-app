@@ -341,7 +341,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
                         ? CatchIcons.errorOutlineRounded
                         : CatchIcons.receiptLongOutlined,
                     color: medallionColor,
-                    size: CatchIcon.statusMedallion,
+                    size: CatchIconSize.statusMedallion,
                   ),
                 ),
               ),
@@ -576,7 +576,7 @@ class PaymentConfirmationBody extends StatelessWidget {
                               backgroundColor: t.primarySoft,
                               borderColor: t.primarySoft,
                               size: _iconBoxSize,
-                              iconSize: CatchIcon.md,
+                              iconSize: CatchIconSize.md,
                               radius: CatchRadius.sm,
                             ),
                             gapH8,

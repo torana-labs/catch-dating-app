@@ -42,8 +42,8 @@ describe("CatchField parity", () => {
   });
 
   it("sizes the leading lane as CatchFieldTokens.leadingIconExtent", () => {
-    expect(dartConstant(fieldTokensDart, "leadingIconExtent")).toBe("CatchIcon.md");
-    const iconDart = read("../../../catch_tokens/lib/src/primitives/catch_icon.dart");
+    expect(dartConstant(fieldTokensDart, "leadingIconExtent")).toBe("CatchIconSize.md");
+    const iconDart = read("../../../catch_tokens/lib/src/primitives/catch_icon_size.dart");
     const extent = Number(dartConstant(iconDart, "md"));
     expect(cssValue("--catch-field-leading-extent")).toBe(`${extent}px`);
   });

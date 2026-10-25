@@ -70,7 +70,7 @@ class UpdateRequiredBody extends StatelessWidget {
           children: [
             Icon(
               CatchIcons.systemUpdateOutlined,
-              size: CatchIcon.forceUpdate,
+              size: CatchIconSize.forceUpdate,
               color: t.primary,
             ),
             gapH32,

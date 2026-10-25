@@ -1,7 +1,7 @@
 import 'package:catch_tokens/src/primitives/catch_spacing.dart';
 
 /// Icon sizing and stroke guidance from the component catalog.
-abstract final class CatchIcon {
+abstract final class CatchIconSize {
   static const double badge = CatchSpacing.s3;
   static const double rating = 13.0;
   static const double micro = 11.0;

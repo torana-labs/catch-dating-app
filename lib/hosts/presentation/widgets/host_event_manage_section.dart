@@ -99,7 +99,11 @@ class HostFullCapacityBanner extends StatelessWidget {
       radius: CatchRadius.md,
       child: Row(
         children: [
-          Icon(CatchIcons.lockRounded, color: t.surface, size: CatchIcon.md),
+          Icon(
+            CatchIcons.lockRounded,
+            color: t.surface,
+            size: CatchIconSize.md,
+          ),
           gapW10,
           Expanded(
             child: Text(
@@ -443,7 +447,7 @@ class HostEventSummaryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final iconWidget = Icon(icon, color: t.ink2, size: CatchIcon.md);
+    final iconWidget = Icon(icon, color: t.ink2, size: CatchIconSize.md);
     final labelText = CatchText(
       label,
       maxLines: 1,

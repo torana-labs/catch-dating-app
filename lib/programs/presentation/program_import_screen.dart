@@ -200,7 +200,7 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
                         : table.fileName,
                     leading: Icon(
                       CatchIcons.cloudUploadOutlined,
-                      size: CatchIcon.md,
+                      size: CatchIconSize.md,
                     ),
                     variant: CatchButtonVariant.secondary,
                     onPressed: _pending ? null : _pickFile,
@@ -263,7 +263,7 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
                       label: context.l10n.programsImportPreview,
                       leading: Icon(
                         CatchIcons.checklistRounded,
-                        size: CatchIcon.md,
+                        size: CatchIconSize.md,
                       ),
                       variant: CatchButtonVariant.secondary,
                       onPressed:
@@ -281,7 +281,7 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
                         label: context.l10n.programsImportCommit,
                         leading: Icon(
                           CatchIcons.checkRounded,
-                          size: CatchIcon.md,
+                          size: CatchIconSize.md,
                         ),
                         onPressed: _pending ? null : () => _run('commit'),
                       ),

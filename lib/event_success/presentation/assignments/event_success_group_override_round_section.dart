@@ -147,7 +147,7 @@ class EventSuccessGroupOverrideFieldLanes extends StatelessWidget {
                 child: Icon(
                   CatchIcons.deleteOutlineRounded,
                   color: t.danger,
-                  size: CatchIcon.md,
+                  size: CatchIconSize.md,
                 ),
               ),
             ],
@@ -232,7 +232,7 @@ class EventSuccessGroupMemberField extends StatelessWidget {
               .l10n
               .eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee,
           onPressed: onRemove,
-          child: Icon(CatchIcons.closeRounded, size: CatchIcon.md),
+          child: Icon(CatchIcons.closeRounded, size: CatchIconSize.md),
         ),
       ],
     );

@@ -236,7 +236,7 @@ class CompanionStageNavigationRow extends StatelessWidget {
             onPressed: canPop ? () => _popCompanion(context) : null,
             child: Icon(
               CatchIcons.arrowBackRounded,
-              size: CatchIcon.md,
+              size: CatchIconSize.md,
               color: canPop
                   ? foreground
                   : foreground.withValues(
@@ -386,7 +386,7 @@ class CompanionPrivacyText extends StatelessWidget {
         children: [
           Icon(
             CatchIcons.lockOutlineRounded,
-            size: CatchIcon.md,
+            size: CatchIconSize.md,
             color: stageTheme.foreground.withValues(
               alpha: CatchOpacity.eventSuccessProminent,
             ),

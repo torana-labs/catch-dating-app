@@ -177,13 +177,13 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
                             Row(
                               children: [
                                 CatchSkeleton.box(
-                                  width: CatchIcon.sm,
-                                  height: CatchIcon.sm,
+                                  width: CatchIconSize.sm,
+                                  height: CatchIconSize.sm,
                                 ),
                                 const Spacer(),
                                 CatchSkeleton.box(
                                   width: CatchSpacing.s8,
-                                  height: CatchIcon.sm,
+                                  height: CatchIconSize.sm,
                                   radius: CatchRadius.pill,
                                 ),
                               ],
@@ -263,8 +263,8 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CatchSkeleton.box(
-                      width: CatchIcon.sm,
-                      height: CatchIcon.sm,
+                      width: CatchIconSize.sm,
+                      height: CatchIconSize.sm,
                     ),
                     gapW12,
                     Expanded(child: CatchSkeleton.textBlock(lines: 2)),
@@ -286,8 +286,8 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CatchSkeleton.box(
-                      width: CatchIcon.md,
-                      height: CatchIcon.md,
+                      width: CatchIconSize.md,
+                      height: CatchIconSize.md,
                     ),
                     gapW12,
                     Expanded(child: CatchSkeleton.textBlock(lines: 2)),

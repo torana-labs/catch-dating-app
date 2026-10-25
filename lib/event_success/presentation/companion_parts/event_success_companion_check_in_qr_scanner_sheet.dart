@@ -45,7 +45,7 @@ class _EventCheckInQrScannerSheetState
                     onPressed: () => Navigator.of(context).maybePop(),
                     child: Icon(
                       CatchIcons.closeRounded,
-                      size: CatchIcon.md,
+                      size: CatchIconSize.md,
                       color: t.ink2,
                     ),
                   ),

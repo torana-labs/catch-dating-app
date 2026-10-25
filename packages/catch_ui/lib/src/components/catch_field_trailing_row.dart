@@ -28,7 +28,7 @@ class CatchFieldTrailingRow extends StatelessWidget {
         final t = CatchTokens.of(context);
         final resolvedColor = color ?? t.ink3;
         return IconTheme(
-          data: IconThemeData(color: resolvedColor, size: CatchIcon.md),
+          data: IconThemeData(color: resolvedColor, size: CatchIconSize.md),
           child: DefaultTextStyle.merge(
             style: CatchTextStyles.bodyLead(context, color: resolvedColor),
             child: child,
@@ -59,7 +59,7 @@ class CatchFieldTrailingRow extends StatelessWidget {
       Widget? fallback;
       if (child != null) {
         fallback = IconTheme(
-          data: IconThemeData(color: t.ink3, size: CatchIcon.md),
+          data: IconThemeData(color: t.ink3, size: CatchIconSize.md),
           child: DefaultTextStyle.merge(
             style: CatchTextStyles.bodyLead(context, color: t.ink3),
             child: child,
@@ -79,7 +79,7 @@ class CatchFieldTrailingRow extends StatelessWidget {
           if (value.text.isEmpty) return fallback ?? const SizedBox.shrink();
           return IconButton(
             tooltip: clearTooltip,
-            icon: Icon(CatchIcons.closeRounded, size: CatchIcon.xs),
+            icon: Icon(CatchIcons.closeRounded, size: CatchIconSize.xs),
             onPressed: () {
               controller.clear();
               onChanged?.call('');
@@ -237,7 +237,7 @@ class CatchFieldTrailingRow extends StatelessWidget {
     topPadding: topPadding,
     builder: (context) => Icon(
       CatchIcons.checkCircle,
-      size: CatchIcon.md,
+      size: CatchIconSize.md,
       color: CatchTokens.of(context).success,
     ),
   );

@@ -155,7 +155,7 @@ void main() {
     expect(text.overflow, isNull);
     expect(
       tester.getSize(find.byType(CatchStatusIndicator)),
-      const Size.square(CatchIcon.unsavedDot),
+      const Size.square(CatchIconSize.unsavedDot),
     );
     expect(tester.getSize(find.byType(CatchStatusRow)).height, greaterThan(60));
     expect(tester.takeException(), isNull);

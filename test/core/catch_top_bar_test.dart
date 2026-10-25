@@ -459,7 +459,7 @@ void main() {
     );
     expect(
       tester.widget<Icon>(find.byIcon(CatchIcons.settingsOutlined)).size,
-      CatchIcon.md,
+      CatchIconSize.md,
     );
     expect(find.bySemanticsLabel('Settings'), findsOneWidget);
   });

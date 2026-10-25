@@ -115,7 +115,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                 children: [
                   Icon(
                     CatchIcons.nearMeOutlined,
-                    size: CatchIcon.md,
+                    size: CatchIconSize.md,
                     color: t.primary,
                   ),
                   gapW8,
@@ -340,7 +340,7 @@ class FirstHelloMissionEditor extends StatelessWidget {
             children: [
               Icon(
                 CatchIcons.questionAnswerOutlined,
-                size: CatchIcon.md,
+                size: CatchIconSize.md,
                 color: t.primary,
               ),
               gapW8,

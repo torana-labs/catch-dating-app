@@ -161,7 +161,7 @@ class EventShareCard extends StatelessWidget {
                         alpha: CatchOpacity.subtleBorder,
                       ),
                       size: CatchLayout.richShareCardHeaderIconExtent,
-                      iconSize: CatchIcon.md,
+                      iconSize: CatchIconSize.md,
                       radius: CatchRadius.pill,
                     ),
                   ),

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:catch_tokens/src/components/catch_field_tokens.dart';
-import 'package:catch_tokens/src/primitives/catch_icon.dart';
+import 'package:catch_tokens/src/primitives/catch_icon_size.dart';
 import 'package:catch_tokens/src/primitives/catch_radius.dart';
 import 'package:catch_tokens/src/primitives/catch_spacing.dart';
 import 'package:catch_tokens/src/primitives/catch_stroke.dart';
@@ -126,7 +126,7 @@ abstract final class CatchLayout {
   static const double clubDetailHeroLoadingExtent =
       clubDetailHeroNoCoverPhoneHeight + clubDetailHeroCaptionExtent;
   static double clubDetailHeroLocationTextWidthFor(double captionWidth) =>
-      (captionWidth - CatchIcon.md - CatchSpacing.micro6)
+      (captionWidth - CatchIconSize.md - CatchSpacing.micro6)
           .clamp(0.0, double.infinity)
           .toDouble();
 
@@ -254,14 +254,15 @@ abstract final class CatchLayout {
         countBadgeBorderWidth * 2;
   }
 
-  static const double countPillIconSize = CatchIcon.sm + CatchSpacing.micro2;
+  static const double countPillIconSize =
+      CatchIconSize.sm + CatchSpacing.micro2;
   static const double countPillMinExtent = CatchSpacing.s11;
   static const double countPillLabelVerticalPadding =
       CatchSpacing.micro10 + CatchStroke.hairline;
   static const double settingsRowVerticalPadding =
       CatchSpacing.s3 + CatchStroke.hairline;
   static const double settingsRowDividerIconInset = fieldRowTextLaneInset;
-  static const double settingsRowChevronIconSize = CatchIcon.xs;
+  static const double settingsRowChevronIconSize = CatchIconSize.xs;
   static const double clubProfileImagePickerExtent = 120.0;
   static const double clubCoverThumbnailExtent = 64.0;
   static const double posterRadius = CatchSpacing.micro6;
@@ -300,7 +301,7 @@ abstract final class CatchLayout {
   static const double clubMemberSealCompactExtent = CatchSpacing.s16;
   static const double clubMemberSealExtent = 70.0;
   static const double countryCodeSelectorWidth = 136.0;
-  static const double activityLoadingIndicatorExtent = CatchIcon.md;
+  static const double activityLoadingIndicatorExtent = CatchIconSize.md;
   static const double analyticsMetricPreviewWidth = 220.0;
   static const double rosterFilterTileMinHeight = 56.0;
   // Shared roster board (design-system components/hosting/RosterBoard).
@@ -371,7 +372,7 @@ abstract final class CatchLayout {
   static const double eventActivityGlyphExtent =
       CatchSpacing.s12 + CatchSpacing.s2;
   static const double eventActivityGlyphIconSize =
-      CatchIcon.lg + CatchSpacing.micro2;
+      CatchIconSize.lg + CatchSpacing.micro2;
   static const double eventHeroBadgeExtent = 56.0;
   static const double eventHeroBadgeRadius = eventHeroBadgeExtent / 2;
   static const double eventHeroBadgeIconSize = 26.0;
@@ -480,7 +481,7 @@ abstract final class CatchLayout {
   static const double sheetViewportMaxHeightFraction = 0.9;
   static const double skeletonCardHeight = 120.0;
   static const double skeletonCardCompactHeight = 96.0;
-  static const double skeletonTextHeight = CatchIcon.sm;
+  static const double skeletonTextHeight = CatchIconSize.sm;
   static const double skeletonCircleExtent = CatchSpacing.s12;
   static const double avatarRowExtent = 42.0;
   static const double skeletonAvatarCompactExtent = avatarRowExtent;
@@ -576,7 +577,8 @@ abstract final class CatchLayout {
   static const double tabRailHeight = 44.0;
 
   /// Leading glyph plus its readable separation inside an option label.
-  static double get optionGroupIconSlotExtent => CatchIcon.sm + CatchSpacing.s2;
+  static double get optionGroupIconSlotExtent =>
+      CatchIconSize.sm + CatchSpacing.s2;
   static const double topBarHeight = 56.0;
   static const double topBarLargeHeight = 104.0;
   static const double topBarLargeTextActionReserve =

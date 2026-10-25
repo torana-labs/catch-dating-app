@@ -268,7 +268,10 @@ class ProgramWorkspaceStationTile extends StatelessWidget {
                 children: [
                   CatchButton(
                     label: context.l10n.programsWorkspacePickupEdit,
-                    leading: Icon(CatchIcons.editOutlined, size: CatchIcon.sm),
+                    leading: Icon(
+                      CatchIcons.editOutlined,
+                      size: CatchIconSize.sm,
+                    ),
                     variant: CatchButtonVariant.secondary,
                     size: CatchButtonSize.md,
                     onPressed: onEdit,
@@ -336,7 +339,10 @@ class ProgramWorkspaceHotelTile extends StatelessWidget {
                 children: [
                   CatchButton(
                     label: context.l10n.programsWorkspaceHotelEdit,
-                    leading: Icon(CatchIcons.editOutlined, size: CatchIcon.sm),
+                    leading: Icon(
+                      CatchIcons.editOutlined,
+                      size: CatchIconSize.sm,
+                    ),
                     variant: CatchButtonVariant.secondary,
                     size: CatchButtonSize.md,
                     onPressed: onEdit,

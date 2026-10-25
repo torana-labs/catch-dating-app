@@ -496,7 +496,7 @@ class _CatchButtonState extends State<CatchButton> {
               padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
               child: IconTheme(
                 data: IconThemeData(
-                  size: CatchIcon.sm,
+                  size: CatchIconSize.sm,
                   color: _enabled ? t.ink : t.ink3,
                 ),
                 child: Row(

@@ -114,7 +114,7 @@ class SuvbotDock extends StatelessWidget {
                               : () => unawaited(onAction(helpAction)),
                           child: Icon(
                             CatchIcons.helpOutlineRounded,
-                            size: CatchIcon.md,
+                            size: CatchIconSize.md,
                             color: pending ? t.ink3 : t.ink2,
                           ),
                         ),
@@ -359,7 +359,7 @@ class SuvbotResetActionRow extends StatelessWidget {
               child: Icon(
                 _iconFor(action.icon),
                 color: tone,
-                size: CatchIcon.row,
+                size: CatchIconSize.row,
               ),
             ),
             gapW12,
@@ -386,7 +386,7 @@ class SuvbotResetActionRow extends StatelessWidget {
             Icon(
               CatchIcons.chevronRightRounded,
               color: action.destructive ? t.danger : t.ink3,
-              size: CatchIcon.sm,
+              size: CatchIconSize.sm,
             ),
           ],
         ),

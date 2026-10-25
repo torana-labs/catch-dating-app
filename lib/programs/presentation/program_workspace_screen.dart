@@ -537,14 +537,20 @@ class ProgramWorkspaceFunctionTile extends StatelessWidget {
                 children: [
                   CatchButton(
                     label: context.l10n.programsWorkspaceFunctionEdit,
-                    leading: Icon(CatchIcons.editOutlined, size: CatchIcon.sm),
+                    leading: Icon(
+                      CatchIcons.editOutlined,
+                      size: CatchIconSize.sm,
+                    ),
                     variant: CatchButtonVariant.secondary,
                     size: CatchButtonSize.md,
                     onPressed: onEdit,
                   ),
                   CatchButton(
                     label: context.l10n.programsWorkspaceFunctionInvitations,
-                    leading: Icon(CatchIcons.sendRounded, size: CatchIcon.sm),
+                    leading: Icon(
+                      CatchIcons.sendRounded,
+                      size: CatchIconSize.sm,
+                    ),
                     variant: CatchButtonVariant.secondary,
                     size: CatchButtonSize.md,
                     onPressed: onInvitations,

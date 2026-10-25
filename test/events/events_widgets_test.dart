@@ -1080,7 +1080,7 @@ class _TestPickerTile extends StatelessWidget {
       semanticButton: true,
       child: Row(
         children: [
-          Icon(icon, size: CatchIcon.control, color: t.ink2),
+          Icon(icon, size: CatchIconSize.control, color: t.ink2),
           gapW12,
           Expanded(
             child: Text(
@@ -1092,7 +1092,7 @@ class _TestPickerTile extends StatelessWidget {
           ),
           Icon(
             CatchIcons.chevronRightRounded,
-            size: CatchIcon.md,
+            size: CatchIconSize.md,
             color: t.ink3,
           ),
         ],

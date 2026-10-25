@@ -289,7 +289,7 @@ class ClubNextRunBanner extends StatelessWidget {
         backgroundColor: activity.soft,
         child: Row(
           children: [
-            Icon(activity.glyph, size: CatchIcon.sm, color: activity.deep),
+            Icon(activity.glyph, size: CatchIconSize.sm, color: activity.deep),
             gapW10,
             Expanded(
               child: CatchMetadataText(
@@ -300,7 +300,7 @@ class ClubNextRunBanner extends StatelessWidget {
             gapW10,
             Icon(
               CatchIcons.arrowForwardRounded,
-              size: CatchIcon.sm,
+              size: CatchIconSize.sm,
               color: activity.deep,
             ),
           ],

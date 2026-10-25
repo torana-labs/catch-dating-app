@@ -8,7 +8,7 @@ class CatchImageFallbackSurface extends StatelessWidget {
     this.backgroundColor,
     this.iconColor,
     this.icon,
-    this.iconSize = CatchIcon.md,
+    this.iconSize = CatchIconSize.md,
   }) : _hero = false;
 
   /// Branded no-photo paint for a hero image. The image assembly owns any
@@ -17,7 +17,7 @@ class CatchImageFallbackSurface extends StatelessWidget {
     : backgroundColor = null,
       iconColor = null,
       icon = null,
-      iconSize = CatchIcon.md,
+      iconSize = CatchIconSize.md,
       _hero = true;
 
   final Color? backgroundColor;

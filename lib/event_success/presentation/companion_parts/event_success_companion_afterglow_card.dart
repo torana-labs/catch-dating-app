@@ -120,7 +120,7 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
               children: [
                 Icon(
                   CatchIcons.lockOutlineRounded,
-                  size: CatchIcon.md,
+                  size: CatchIconSize.md,
                   color: t.primary,
                 ),
                 gapW8,
@@ -266,7 +266,11 @@ class _AfterglowBeatRowState extends State<AfterglowBeatRow>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(beat.icon, size: CatchIcon.control, color: t.primary),
+                  Icon(
+                    beat.icon,
+                    size: CatchIconSize.control,
+                    color: t.primary,
+                  ),
                   gapW10,
                   Expanded(
                     child: Column(

@@ -207,7 +207,7 @@ class WhoIsGoingEmptyState extends StatelessWidget {
         children: [
           Icon(
             CatchIcons.groups2Outlined,
-            size: CatchIcon.control,
+            size: CatchIconSize.control,
             color: surfaceStyle?.mutedColor ?? t.ink3,
           ),
           gapW12,
@@ -262,7 +262,7 @@ class SwipeWindowBanner extends StatelessWidget {
         children: [
           Icon(
             icon,
-            size: CatchIcon.xs,
+            size: CatchIconSize.xs,
             color: surfaceStyle?.primaryColor ?? t.primary,
           ),
           gapW8,

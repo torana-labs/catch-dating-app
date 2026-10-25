@@ -86,7 +86,7 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
               : null,
           child: Icon(
             widget.icon ?? CatchIcons.moreHorizRounded,
-            size: CatchIcon.md,
+            size: CatchIconSize.md,
           ),
         );
       },

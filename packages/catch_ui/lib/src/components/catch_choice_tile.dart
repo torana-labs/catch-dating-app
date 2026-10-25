@@ -80,7 +80,7 @@ class _CatchChoiceTileState extends State<CatchChoiceTile> {
             padding: const EdgeInsets.only(top: CatchStroke.hairline),
             child: Icon(
               widget.selected ? CatchIcons.checkCircle : CatchIcons.circle,
-              size: CatchIcon.lg,
+              size: CatchIconSize.lg,
               color: widget.selected ? t.ink : t.ink3,
             ),
           ),

@@ -332,11 +332,15 @@ class _CatchChipState extends State<CatchChip> {
     }
 
     final trailing = widget._variant == _CatchChipVariant.removable
-        ? Icon(CatchIcons.closeRounded, color: foreground, size: CatchIcon.sm)
+        ? Icon(
+            CatchIcons.closeRounded,
+            color: foreground,
+            size: CatchIconSize.sm,
+          )
         : null;
     final iconSize = widget._variant == _CatchChipVariant.activity
         ? CatchLayout.activityChipIconSize
-        : CatchIcon.sm;
+        : CatchIconSize.sm;
     final iconGap = widget._variant == _CatchChipVariant.activity
         ? CatchLayout.activityChipIconGap
         : CatchSpacing.s2;

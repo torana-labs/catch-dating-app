@@ -87,7 +87,7 @@ class EventDetailHeroTopBar extends StatelessWidget {
               child: Icon(
                 CatchIcons.backArrow,
                 color: d.ink,
-                size: CatchIcon.md,
+                size: CatchIconSize.md,
               ),
             ),
           ),
@@ -109,7 +109,7 @@ class EventDetailHeroTopBar extends StatelessWidget {
                             platform: Theme.of(context).platform,
                           ),
                           color: d.ink,
-                          size: CatchIcon.md,
+                          size: CatchIconSize.md,
                         ),
                       ),
                     ),
@@ -124,7 +124,7 @@ class EventDetailHeroTopBar extends StatelessWidget {
                         child: Icon(
                           CatchIcons.calendarAdd,
                           color: d.ink,
-                          size: CatchIcon.md,
+                          size: CatchIconSize.md,
                         ),
                       ),
                     ),
@@ -141,7 +141,7 @@ class EventDetailHeroTopBar extends StatelessWidget {
                     child: Icon(
                       isSaved ? CatchIcons.saved : CatchIcons.savedOutlined,
                       color: d.ink,
-                      size: CatchIcon.md,
+                      size: CatchIconSize.md,
                     ),
                   ),
                 ],

@@ -150,7 +150,10 @@ class _HostTodayHorizonAndActions extends StatelessWidget {
                     'host-today-start-dress-rehearsal',
                   ),
                   label: context.l10n.hostEventRehearsalEntryTitle,
-                  leading: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
+                  leading: Icon(
+                    CatchIcons.scienceOutlined,
+                    size: CatchIconSize.sm,
+                  ),
                   variant: CatchButtonVariant.ghost,
                   size: CatchButtonSize.md,
                   onPressed: onStartRehearsal,

@@ -51,7 +51,7 @@ class BlockedAccountsSection extends StatelessWidget {
               title: context.l10n.safetySettingsScreenTitleNoBlockedAccounts,
               message:
                   context.l10n.safetySettingsScreenMessagePeopleYouBlockWill,
-              iconSize: CatchIcon.tile,
+              iconSize: CatchIconSize.tile,
               titleStyle: CatchTextStyles.sectionTitle(context),
               messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
             ),

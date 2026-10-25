@@ -115,7 +115,7 @@ class HostTodayEmptyState extends StatelessWidget {
           CatchIconTile.empty(
             icon: CatchIcons.eventBusy,
             variant: CatchIconTileVariant.bubble,
-            iconSize: CatchIcon.md,
+            iconSize: CatchIconSize.md,
             size: CatchSpacing.s12,
           ),
           gapH20,
@@ -138,7 +138,7 @@ class HostTodayEmptyState extends StatelessWidget {
               CatchButton(
                 key: const ValueKey<String>('host-today-create-event'),
                 label: context.l10n.hostsHostEventsListLabelNewEvent,
-                leading: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                leading: Icon(CatchIcons.addRounded, size: CatchIconSize.sm),
                 size: CatchButtonSize.md,
                 onPressed: onCreateEvent,
               ),
@@ -152,7 +152,10 @@ class HostTodayEmptyState extends StatelessWidget {
               CatchButton(
                 key: const ValueKey<String>('host-today-start-dress-rehearsal'),
                 label: context.l10n.hostEventRehearsalEntryTitle,
-                leading: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
+                leading: Icon(
+                  CatchIcons.scienceOutlined,
+                  size: CatchIconSize.sm,
+                ),
                 variant: CatchButtonVariant.ghost,
                 size: CatchButtonSize.md,
                 onPressed: onStartRehearsal,

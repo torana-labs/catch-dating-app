@@ -255,7 +255,7 @@ class ParticipantDecisionButton extends StatelessWidget {
       borderColor: color.withValues(alpha: CatchOpacity.mutedBorderUrgent),
       size: CatchLayout.rosterDecideTargetExtent,
       tooltip: label,
-      child: Icon(icon, size: CatchIcon.sm, color: color),
+      child: Icon(icon, size: CatchIconSize.sm, color: color),
     );
   }
 }
@@ -350,7 +350,7 @@ class ParticipantTable extends StatelessWidget {
             ? (context) => Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(CatchIcons.group, size: CatchIcon.md, color: t.ink3),
+                  Icon(CatchIcons.group, size: CatchIconSize.md, color: t.ink3),
                   const SizedBox(width: CatchSpacing.micro10),
                   Expanded(
                     child: Column(

@@ -504,9 +504,9 @@ class HostTeamProfileSection extends StatelessWidget {
             icon: CatchIcons.businessOutlined,
             actions: creatingProfile
                 ? const SizedBox.square(
-                    dimension: CatchIcon.md,
+                    dimension: CatchIconSize.md,
                     child: CatchLoadingIndicator(
-                      strokeWidth: CatchIcon.strokeSm,
+                      strokeWidth: CatchIconSize.strokeSm,
                     ),
                   )
                 : null,

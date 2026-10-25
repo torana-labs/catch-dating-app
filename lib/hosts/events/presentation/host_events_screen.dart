@@ -262,7 +262,7 @@ class _HostEventsRouteScaffoldState
           actions: [
             CatchButton(
               label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-              leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+              leading: Icon(CatchIcons.addRounded, size: CatchIconSize.md),
               size: CatchButtonSize.md,
               onPressed: () =>
                   context.pushNamed(Routes.hostCreateClubScreen.name),

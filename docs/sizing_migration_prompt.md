@@ -110,7 +110,7 @@ genuinely fixed art — never to silence the scanner.
 - **Behavior-preserving only.** The layout should look the same at text scale 1.0;
   it should merely stop clipping at 1.5/2.0. Don't restructure widgets beyond the swap.
 - **Stay out of exempt dirs:** never edit `lib/core/theme/**`, `lib/design_fixtures/**`, `*explore_concept*`.
-- **Icon sizes** always go through `CatchIcon.{sm,md,lg,...}`, never a raw number.
+- **Icon sizes** always go through `CatchIconSize.{sm,md,lg,...}`, never a raw number.
 
 ## Step 4 — verify (after every 5–10 files, and at the end)
 ```bash

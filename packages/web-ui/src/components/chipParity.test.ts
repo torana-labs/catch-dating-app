@@ -7,7 +7,7 @@ const dart = read("../../../catch_ui/lib/src/components/catch_chip.dart");
 const css = read("./CatchChip.module.css");
 const ts = read("./CatchChip.tsx");
 const layout = read("../../../catch_tokens/lib/src/semantic/catch_layout.dart");
-const icons = read("../../../catch_tokens/lib/src/primitives/catch_icon.dart");
+const icons = read("../../../catch_tokens/lib/src/primitives/catch_icon_size.dart");
 const tokens = read("../../../web-config/generated/catch-tokens.css");
 const opacity = read("../../../catch_tokens/lib/src/semantic/catch_opacity.dart");
 function luminance(hex: string) {

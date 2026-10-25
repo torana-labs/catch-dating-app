@@ -34,7 +34,7 @@ class ClubPhotoRail extends StatelessWidget {
                         errorBuilder: (_, _, _) => Icon(
                           CatchIcons.groupsOutlined,
                           color: t.ink2,
-                          size: CatchIcon.lg,
+                          size: CatchIconSize.lg,
                         ),
                       ),
                     ),

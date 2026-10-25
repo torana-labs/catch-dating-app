@@ -165,7 +165,7 @@ class CrossPathsEventContextCard extends StatelessWidget {
               EventActivityBadge(
                 visual: visual,
                 size: compact ? 30 : 38,
-                iconSize: CatchIcon.sm,
+                iconSize: CatchIconSize.sm,
               ),
               gapW10,
               Expanded(
@@ -198,7 +198,7 @@ class CrossPathsEventContextCard extends StatelessWidget {
           gapH10,
           CatchButton(
             label: context.l10n.crossPathsExploreCardActionSeeEvent,
-            leading: Icon(CatchIcons.forwardArrow, size: CatchIcon.sm),
+            leading: Icon(CatchIcons.forwardArrow, size: CatchIconSize.sm),
             size: CatchButtonSize.md,
             variant: CatchButtonVariant.secondary,
             fullWidth: true,
@@ -340,7 +340,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                                 CrossPathsInvitationStatus.accepted
                             ? CatchIcons.chatBubbleOutlineRounded
                             : CatchIcons.favoriteOutline,
-                        size: CatchIcon.sm,
+                        size: CatchIconSize.sm,
                       ),
                       fullWidth: true,
                       status: (mutation.isLoading)

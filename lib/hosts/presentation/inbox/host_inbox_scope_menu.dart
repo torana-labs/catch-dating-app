@@ -96,7 +96,7 @@ class _HostInboxScopeMenuState extends State<HostInboxScopeMenu> {
                       gapW8,
                       Icon(
                         CatchIcons.expandMoreRounded,
-                        size: CatchIcon.sm,
+                        size: CatchIconSize.sm,
                         color: t.ink3,
                       ),
                     ],

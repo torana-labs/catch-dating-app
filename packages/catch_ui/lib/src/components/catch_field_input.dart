@@ -313,7 +313,7 @@ class CatchFieldInput extends StatelessWidget {
             prefixIcon: _usesRowPrefixIcon || configuration.leading == null
                 ? null
                 : IconTheme(
-                    data: IconThemeData(color: t.ink3, size: CatchIcon.md),
+                    data: IconThemeData(color: t.ink3, size: CatchIconSize.md),
                     child: configuration.leading!,
                   ),
             suffixIconConstraints: _suffixIconConstraints,
