@@ -68,10 +68,9 @@ class ClubCard extends StatelessWidget {
         ],
       ),
     );
-    final content = Hero(
+    final content = CatchHeroViewport(
       tag: clubInteractionHeroTag(club.id),
-      transitionOnUserGestures: true,
-      child: Material(color: Colors.transparent, child: card),
+      child: card,
     );
     return Semantics(
       key: ValueKey<String>('explore-organizer-${club.id}'),
@@ -112,10 +111,11 @@ class ExploreFeedClubRow extends StatelessWidget {
             // gives the cover determinate constraints — an AspectRatio here gets
             // unbounded width (Row) and height (SliverList) and cannot lay out.
             dimension: CatchLayout.clubCoverThumbnailExtent,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(
-                CatchLayout.clubCoverCompactMediaRadius,
-              ),
+            child: CatchSurface(
+              duration: Duration.zero,
+              tone: CatchSurfaceTone.transparent,
+              radius: CatchLayout.clubCoverCompactMediaRadius,
+              clipBehavior: Clip.antiAlias,
               child: ClubCover(club: club, compact: true),
             ),
           ),

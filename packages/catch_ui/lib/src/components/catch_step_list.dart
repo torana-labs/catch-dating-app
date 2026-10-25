@@ -99,7 +99,10 @@ class CatchStepList extends StatelessWidget {
                       children: [
                         Text(
                           steps[i].title,
-                          style: CatchTextStyles.fieldRowTitle(context),
+                          style: CatchTextStyles.bodyLead(
+                            context,
+                            color: CatchTokens.of(context).ink,
+                          ),
                         ),
                         if (steps[i].body != null) ...[
                           const SizedBox(height: CatchSpacing.micro3),

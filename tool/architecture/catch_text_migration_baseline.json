@@ -4,11 +4,7 @@
   "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-7--cross-framework-conformance-react",
   "files": {
     "lib/auth/presentation/otp_step.dart": {
-      "fieldRowTitle": 2,
       "monoLabel": 1
-    },
-    "lib/auth/presentation/phone_step.dart": {
-      "fieldRowTitle": 1
     },
     "lib/chats/presentation/event_chat_screen.dart": {
       "headlineS": 2
@@ -19,44 +15,17 @@
     "lib/chats/presentation/widgets/event_profile_identity_section.dart": {
       "headlineS": 1
     },
-    "lib/chats/presentation/widgets/suvbot_dock.dart": {
-      "fieldRowTitle": 1,
-      "kicker": 1
-    },
-    "lib/clubs/presentation/detail/widgets/club_detail_body.dart": {
-      "monoLabelS": 1
-    },
-    "lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart": {
-      "monoLabelS": 2
-    },
-    "lib/clubs/presentation/detail/widgets/club_host_section.dart": {
-      "monoLabel": 1
-    },
     "lib/clubs/presentation/detail/widgets/club_photo_rail.dart": {
       "monoLabelS": 2
     },
-    "lib/clubs/presentation/detail/widgets/club_share_card.dart": {
-      "kicker": 1
-    },
-    "lib/clubs/presentation/discovery/widgets/club_list_tile_parts/directory_card.dart": {
-      "fieldRowTitle": 1,
-      "monoLabelS": 1
-    },
-    "lib/clubs/shared/club_host_identity_row.dart": {
-      "kicker": 1
-    },
     "lib/core/celebration/celebration_screen.dart": {
-      "display": 2,
-      "labelL": 1
+      "display": 2
     },
     "lib/core/widgets/activity_map_pin.dart": {
       "badge": 1
     },
-    "lib/core/widgets/event_card.dart": {
-      "labelL": 1
-    },
     "lib/core/widgets/ordered_photo_picker.dart": {
-      "monoLabel": 2
+      "monoLabel": 1
     },
     "lib/cross_paths/presentation/cross_paths_explore_card.dart": {
       "mono": 1
@@ -64,39 +33,8 @@
     "lib/dashboard/presentation/widgets/activity_section.dart": {
       "monoLabelS": 1
     },
-    "lib/dashboard/presentation/widgets/club_posts_home_section.dart": {
-      "fieldRowTitle": 1,
-      "monoLabelS": 1
-    },
-    "lib/dashboard/presentation/widgets/empty_hero_card.dart": {
-      "kicker": 2
-    },
-    "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart": {
-      "kicker": 1
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_live_card.dart": {
-      "labelL": 2
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart": {
-      "fieldRowTitle": 1,
-      "labelL": 1
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart": {
-      "labelL": 1
-    },
-    "lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart": {
-      "labelL": 1
-    },
-    "lib/event_success/presentation/event_assistance_checkpoint_request_section.dart": {
-      "labelL": 2
-    },
-    "lib/event_success/presentation/event_assistance_checkpoint_section.dart": {
-      "labelL": 1
-    },
     "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart": {
-      "consoleTitle": 1,
-      "fieldRowTitle": 1,
-      "monoLabel": 3
+      "monoLabel": 2
     },
     "lib/event_success/presentation/reveal/event_success_countdown_text.dart": {
       "display": 1
@@ -104,32 +42,16 @@
     "lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart": {
       "monoLabel": 2
     },
-    "lib/events/presentation/location_picker_screen.dart": {
-      "labelL": 1
-    },
     "lib/events/presentation/widgets/event_detail_dock.dart": {
-      "labelL": 1,
       "monoLabel": 1,
       "numericLarge": 1
     },
     "lib/events/presentation/widgets/event_detail_fact_list.dart": {
-      "fieldRowTitle": 1,
-      "hint": 1,
-      "labelL": 1,
       "monoLabelS": 3,
       "numericMeta": 1
     },
     "lib/events/presentation/widgets/event_detail_hero_top_bar.dart": {
       "monoLabel": 2
-    },
-    "lib/events/presentation/widgets/event_detail_itinerary_row.dart": {
-      "fieldRowTitle": 1
-    },
-    "lib/events/presentation/widgets/who_is_going_section.dart": {
-      "labelL": 1
-    },
-    "lib/events/shared/event_share_card.dart": {
-      "kicker": 1
     },
     "lib/events/shared/event_tiles/event_action_card.dart": {
       "headlineS": 1
@@ -139,62 +61,27 @@
       "monoLabelS": 2
     },
     "lib/events/shared/event_tiles/event_date_tile.dart": {
-      "labelL": 1,
       "statCompact": 1
     },
     "lib/explore/presentation/widgets/explore_event_row.dart": {
       "mono": 1
     },
-    "lib/explore/presentation/widgets/explore_event_type_browse_grid.dart": {
-      "kicker": 1
-    },
-    "lib/explore/presentation/widgets/explore_filter_rail.dart": {
-      "kicker": 4
-    },
     "lib/explore/presentation/widgets/featured_event_poster.dart": {
       "eventTitle": 1,
-      "kicker": 1,
-      "kickerLg": 1,
       "monoLabel": 1
-    },
-    "lib/hosts/presentation/customers/host_customers_list.dart": {
-      "labelL": 1
-    },
-    "lib/hosts/presentation/event_management/widgets/create_event_photo_picker.dart": {
-      "labelL": 1
     },
     "lib/hosts/presentation/host_operations/host_club_media_rail.dart": {
       "monoLabel": 1
     },
-    "lib/hosts/presentation/host_operations/host_club_organizer_section_list.dart": {
-      "labelL": 1
-    },
     "lib/hosts/presentation/host_operations/host_club_team_screen.dart": {
-      "fieldRowTitle": 1,
       "headlineS": 1
-    },
-    "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart": {
-      "fieldRowTitle": 2
-    },
-    "lib/hosts/presentation/inbox/host_campaign_editor.dart": {
-      "fieldRowTitle": 2
-    },
-    "lib/hosts/presentation/inbox/host_person_conversation_page_body.dart": {
-      "labelL": 1
     },
     "lib/hosts/presentation/widgets/host_event_manage_section.dart": {
       "badge": 1,
-      "labelL": 2,
       "monoLabel": 1
-    },
-    "lib/hosts/presentation/widgets/host_event_private_access_section.dart": {
-      "labelL": 2
     },
     "lib/hosts/presentation/widgets/host_operational_roster_section.dart": {
       "meta": 2
-    },
-    "lib/hosts/presentation/widgets/host_roster_filter_header.dart": {
-      "labelL": 1
     },
     "lib/hosts/today/presentation/widgets/host_today_body.dart": {
       "headlineS": 1
@@ -216,28 +103,11 @@
       "mono": 1,
       "statDisplay": 2
     },
-    "lib/onboarding/presentation/pages/onboarding_welcome_body.dart": {
-      "welcomeIntroBody": 1
-    },
     "lib/payments/presentation/payment_confirmation_screen.dart": {
-      "headlineS": 1,
-      "labelL": 2
+      "headlineS": 1
     },
     "lib/payments/presentation/payment_history_screen.dart": {
       "statCompact": 1
-    },
-    "lib/reviews/shared/reviews_section.dart": {
-      "labelL": 1
-    },
-    "lib/swipes/presentation/filters_screen.dart": {
-      "kicker": 1
-    },
-    "lib/swipes/shared/profile_surface/profile_body.dart": {
-      "hint": 1,
-      "kicker": 1
-    },
-    "lib/user_analytics/shared/user_analytics_section.dart": {
-      "labelL": 1
     }
   }
 }

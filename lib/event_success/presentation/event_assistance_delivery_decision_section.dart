@@ -45,9 +45,9 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           item.displayName ?? l10n.eventAssistanceDeliveryUnknownGuest,
-          style: Theme.of(context).textTheme.headlineSmall,
+          variant: CatchTextVariant.titleL,
         ),
         gapH8,
         CatchText(

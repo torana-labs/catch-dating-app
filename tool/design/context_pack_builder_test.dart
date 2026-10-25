@@ -889,11 +889,6 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('headline', 'function', CatchTextStyles.headline),
   _StyleEntry.single('headlineS', 'voice', CatchTextStyles.headlineS),
 
-  _StyleEntry.single(
-    'welcomeIntroBody',
-    'voice',
-    CatchTextStyles.welcomeIntroBody,
-  ),
   _StyleEntry.single('titleL', 'function', CatchTextStyles.titleL),
   _StyleEntry(
     name: 'clubDisplay',
@@ -926,17 +921,10 @@ final _styleRegistry = <_StyleEntry>[
     },
   ),
   _StyleEntry.single('eventTitle', 'voice', CatchTextStyles.eventTitle),
-  _StyleEntry.single('consoleTitle', 'voice', CatchTextStyles.consoleTitle),
-  _StyleEntry.single('hint', 'voice', CatchTextStyles.hint),
+
   _StyleEntry.single('sectionTitle', 'function', CatchTextStyles.sectionTitle),
   _StyleEntry.single('sectionCount', 'data', CatchTextStyles.sectionCount),
   _StyleEntry.single('titleS', 'function', CatchTextStyles.titleS),
-  _StyleEntry.single(
-    'fieldRowTitle',
-    'function',
-    CatchTextStyles.fieldRowTitle,
-    aliasOf: 'titleS',
-  ),
   _StyleEntry.single(
     'fieldRowValue',
     'function',
@@ -950,12 +938,7 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('bodyM', 'function', CatchTextStyles.bodyM),
   _StyleEntry.single('bodyS', 'function', CatchTextStyles.bodyS),
   _StyleEntry.single('supporting', 'function', CatchTextStyles.supporting),
-  _StyleEntry.single(
-    'labelL',
-    'function',
-    CatchTextStyles.labelL,
-    aliasOf: 'titleS',
-  ),
+
   _StyleEntry.single('fieldLabel', 'function', CatchTextStyles.fieldLabel),
   _StyleEntry.single('statusLabel', 'function', CatchTextStyles.statusLabel),
   _StyleEntry.single('buttonSm', 'function', CatchTextStyles.buttonSm),

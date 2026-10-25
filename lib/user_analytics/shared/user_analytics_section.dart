@@ -127,9 +127,10 @@ class UserAnalyticsEmptyState extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   UserAnalyticsCopy.emptyTitle(context.l10n),
-                  style: CatchTextStyles.labelL(context, color: t.ink),
+                  variant: CatchTextVariant.titleS,
+                  color: t.ink,
                 ),
                 gapH6,
                 CatchText(

@@ -272,11 +272,10 @@ class PrivateEventSetupScreen extends StatelessWidget {
                     ),
                     if (!readOnly) gapH4,
                     if (!readOnly)
-                      Text(
+                      CatchText(
                         context.l10n.hostsPrivateEventRosterNote,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.bodyMedium?.copyWith(color: t.ink2),
+                        variant: CatchTextVariant.bodyM,
+                        color: t.ink2,
                       ),
                   ],
                 ),

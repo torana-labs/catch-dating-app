@@ -79,9 +79,9 @@ class EventTypeBrowseBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            context.l10n.exploreExploreEventTypeBrowseGridTextByActivity,
-            style: CatchTextStyles.kicker(context),
+          CatchKickerText(
+            label: context.l10n.exploreExploreEventTypeBrowseGridTextByActivity,
+            maxLines: null,
           ),
           gapH16,
           ActivityTypeList(
