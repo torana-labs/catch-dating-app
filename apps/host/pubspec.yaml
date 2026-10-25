@@ -35,5 +35,3 @@ flutter:
     - assets/branding/catch_hosts_logo.png
     - assets/audio/event_success/
     - assets/audio/celebration/
-    - tool/demo/demo_seed/scenarios/host-demo.json
-    - tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json
