@@ -99,7 +99,7 @@
   },
   "src/styles/host-landing.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 326
+      "count": 219
     },
     "declaration-property-value-allowed-list": {
       "count": 36
