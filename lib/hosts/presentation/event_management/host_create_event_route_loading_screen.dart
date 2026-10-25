@@ -95,8 +95,10 @@ class CreateEventDockSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return ColoredBox(
-      color: t.bg,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: t.bg,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

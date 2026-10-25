@@ -200,31 +200,31 @@ class CityOptionTile extends StatelessWidget {
       label: context.l10n.exploreExploreCityPickerLabelSelectLabel(
         label: city.label,
       ),
-      child: Material(
-        color: selected ? t.primarySoft : Colors.transparent,
+      child: CatchSurface(
+        backgroundColor: selected ? t.primarySoft : Colors.transparent,
+        radius: CatchRadius.none,
         borderRadius: BorderRadius.circular(CatchRadius.sm),
         clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: CatchInsets.listBody,
-            child: Row(
-              children: [
-                Expanded(
-                  child: CatchText(
-                    city.label,
-                    variant: CatchTextVariant.bodyL,
-                    color: selected ? t.primary : t.ink,
-                  ),
+        onTap: onTap,
+        duration: Duration.zero,
+        child: Padding(
+          padding: CatchInsets.listBody,
+          child: Row(
+            children: [
+              Expanded(
+                child: CatchText(
+                  city.label,
+                  variant: CatchTextVariant.bodyL,
+                  color: selected ? t.primary : t.ink,
                 ),
-                if (selected)
-                  Icon(
-                    CatchIcons.checkRounded,
-                    size: CatchIcon.md,
-                    color: t.primary,
-                  ),
-              ],
-            ),
+              ),
+              if (selected)
+                Icon(
+                  CatchIcons.checkRounded,
+                  size: CatchIcon.md,
+                  color: t.primary,
+                ),
+            ],
           ),
         ),
       ),

@@ -423,14 +423,12 @@ class RecapHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             state.kicker,
-            style: CatchTextStyles.statusLabel(
-              context,
-              color: t.surface.withValues(
-                alpha: CatchOpacity.eventRecapHeroKicker,
-              ),
-            ).copyWith(fontWeight: FontWeight.w800),
+            variant: CatchTextVariant.statusLabel,
+            color: t.surface.withValues(
+              alpha: CatchOpacity.eventRecapHeroKicker,
+            ),
           ),
           gapH10,
           CatchText(
@@ -602,10 +600,13 @@ class RecapProfilePhoto extends StatelessWidget {
   Widget build(BuildContext context) {
     final photoUrl = profile?.primaryPhotoThumbnailUrl;
     if (photoUrl == null) {
-      return Container(
-        color: CatchTokens.of(context).primarySoft,
-        alignment: Alignment.center,
-        child: Icon(CatchIcons.personRounded, size: CatchIcon.fallbackAvatar),
+      return CatchSurface(
+        backgroundColor: CatchTokens.of(context).primarySoft,
+        radius: CatchRadius.none,
+        duration: Duration.zero,
+        child: Align(
+          child: Icon(CatchIcons.personRounded, size: CatchIcon.fallbackAvatar),
+        ),
       );
     }
     return CatchNetworkImage(photoUrl);

@@ -180,9 +180,10 @@ class HostCrmChannelRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        CatchText(
           '$label · $value',
-          style: CatchTextStyles.labelL(context, color: t.ink),
+          variant: CatchTextVariant.titleS,
+          color: t.ink,
         ),
         gapH4,
         CatchText(status, variant: CatchTextVariant.supporting, color: t.ink2),

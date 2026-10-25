@@ -137,15 +137,20 @@ class HostTodayEventMetadataRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final metadataStyle = CatchTextStyles.supporting(context, color: t.ink2);
-    final time = Text(
+
+    final time = CatchText(
       context.l10n.hostsHostTodayTextEventdaylabelTime(
         eventDayLabel: _eventDayLabel(context, event, now),
         time: EventFormatters.time(event.startTime),
       ),
-      style: metadataStyle,
+      variant: CatchTextVariant.supporting,
+      color: t.ink2,
     );
-    final location = Text(event.locationName, style: metadataStyle);
+    final location = CatchText(
+      event.locationName,
+      variant: CatchTextVariant.supporting,
+      color: t.ink2,
+    );
     return Wrap(
       spacing: CatchSpacing.s3,
       runSpacing: CatchSpacing.s1,

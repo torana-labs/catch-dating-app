@@ -86,10 +86,12 @@ class EventActionCard extends StatelessWidget {
           if (topAccentColors != null && topAccentColors!.isNotEmpty)
             SizedBox(
               height: CatchSpacing.micro6,
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: topAccentColors!),
-                ),
+              child: CatchSurface(
+                tone: CatchSurfaceTone.transparent,
+                gradient: LinearGradient(colors: topAccentColors!),
+                radius: CatchRadius.none,
+                duration: Duration.zero,
+                child: const SizedBox.shrink(),
               ),
             ),
           Padding(

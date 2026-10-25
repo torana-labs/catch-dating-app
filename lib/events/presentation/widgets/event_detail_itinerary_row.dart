@@ -75,7 +75,12 @@ class ItineraryRow extends StatelessWidget {
                       ),
                       child: SizedBox(
                         width: CatchStroke.underline,
-                        child: ColoredBox(color: railColor),
+                        child: CatchSurface(
+                          duration: Duration.zero,
+                          radius: CatchRadius.none,
+                          backgroundColor: railColor,
+                          child: const SizedBox.shrink(),
+                        ),
                       ),
                     ),
                   ),
@@ -89,12 +94,10 @@ class ItineraryRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  CatchText(
                     step.title,
-                    style: CatchTextStyles.fieldRowTitle(
-                      context,
-                      color: titleColor,
-                    ),
+                    variant: CatchTextVariant.bodyLead,
+                    color: (titleColor) ?? CatchTokens.of(context).ink,
                   ),
                   if (step.detail case final detail?) ...[
                     const SizedBox(height: CatchSpacing.micro2),

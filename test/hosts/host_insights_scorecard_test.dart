@@ -118,7 +118,8 @@ void main() {
     );
     expect(firstBar, findsOneWidget);
     await tester.ensureVisible(firstBar);
-    tester.widget<HostAnalyticsBarTile>(firstBar).onTap();
+    await tester.pump();
+    await tester.tap(firstBar);
     await pumpFeatureUi(tester);
     final detail = find.byKey(
       const ValueKey('host-analytics-trend-detail'),
