@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 2,
+  "id": "dinner-indiranagar",
+  "label": "Indiranagar Supper Club",
+  "description": "Fictional Indiranagar supper club seating ten strangers at one table, each approved before booking, used by the dinner launch-format captures. Draft capture input, never a seed world or an availability claim.",
+  "uses": [
+    "marketing-capture"
+  ],
+  "locale": "en-IN",
+  "timeZone": "Asia/Kolkata",
+  "currency": "INR",
+  "moments": {
+    "planning": "2026-10-20T11:00:00",
+    "today": "2026-10-24T15:00:00",
+    "live": "2026-10-24T20:15:00",
+    "followUp": "2026-10-25T10:00:00"
+  },
+  "host": {
+    "uid": "dinner-indiranagar-host",
+    "personaId": "in_nitin_bhat_040",
+    "displayName": "Nitin Bhat",
+    "firstName": "Nitin",
+    "phoneNumber": "+919000000301",
+    "email": "host@example.test"
+  },
+  "organizer": {
+    "id": "club-dinner-indiranagar",
+    "name": "Second Helping Supper Club",
+    "description": "Fictional Indiranagar supper club where the host approves each request and seats strangers at one table.",
+    "city": "bangalore",
+    "area": "Indiranagar",
+    "tags": [
+      "dinner",
+      "supper-club",
+      "hosted"
+    ],
+    "memberCount": 0,
+    "rating": 0,
+    "reviewCount": 0
+  },
+  "venues": [
+    {
+      "id": "second-helping-dining-room",
+      "name": "Second Helping Dining Room",
+      "area": "Indiranagar",
+      "lat": 12.9698,
+      "lng": 77.6389,
+      "directions": "Ring the bell at the blue gate. Dinner is on the first floor."
+    }
+  ],
+  "people": [
+    {
+      "id": "p01",
+      "personaId": "in_pallavi_gowda_039"
+    },
+    {
+      "id": "p02",
+      "personaId": "in_karthik_subramanian_038"
+    },
+    {
+      "id": "p03",
+      "personaId": "in_meghana_shenoy_037"
+    },
+    {
+      "id": "p04",
+      "personaId": "in_anirudh_iyengar_042"
+    },
+    {
+      "id": "p05",
+      "personaId": "in_divya_reddy_026"
+    },
+    {
+      "id": "p06",
+      "personaId": "in_rahul_krishnan_027"
+    },
+    {
+      "id": "p07",
+      "personaId": "in_lavanya_hegde_028"
+    },
+    {
+      "id": "p08",
+      "personaId": "in_akash_gowda_029"
+    },
+    {
+      "id": "p09",
+      "personaId": "in_fatima_siddiqui_041"
+    },
+    {
+      "id": "p10",
+      "personaId": "in_rohit_kamath_044"
+    },
+    {
+      "id": "p11",
+      "personaId": "in_tara_nambiar_043"
+    }
+  ],
+  "events": [
+    {
+      "id": "event-dinner-table-for-ten",
+      "name": "Table for Ten",
+      "description": "A fictional Saturday supper for ten strangers who asked to join. Guests share food and seating notes when they book, change seats once between courses, and leave private feedback the next morning.",
+      "venueId": "second-helping-dining-room",
+      "civilDate": "2026-10-24",
+      "startTime": "19:30",
+      "endTime": "22:30",
+      "activityKind": "dinner",
+      "format": {
+        "interactionModel": "seatedTable",
+        "admissionPreset": "openCapacity",
+        "playbookId": "dinner_table_mixer",
+        "selectedModuleIds": [
+          "qr_check_in",
+          "host_script",
+          "guided_rotations",
+          "decomposed_feedback",
+          "safety_controls"
+        ],
+        "hostGoal": "Approve a table of ten strangers, cook around every food note from booking, and move seats once between courses."
+      },
+      "capacity": 10,
+      "priceInPaise": 250000,
+      "attendance": [
+        {
+          "personId": "p01",
+          "bookedAt": "2026-10-19T21:10:00",
+          "checkedInAt": "2026-10-24T19:06:00"
+        },
+        {
+          "personId": "p02",
+          "bookedAt": "2026-10-19T21:40:00",
+          "checkedInAt": "2026-10-24T19:12:00"
+        },
+        {
+          "personId": "p03",
+          "bookedAt": "2026-10-20T08:45:00",
+          "checkedInAt": "2026-10-24T19:09:00"
+        },
+        {
+          "personId": "p04",
+          "bookedAt": "2026-10-20T09:30:00",
+          "checkedInAt": "2026-10-24T19:18:00"
+        },
+        {
+          "personId": "p05",
+          "bookedAt": "2026-10-20T19:15:00",
+          "checkedInAt": "2026-10-24T19:15:00"
+        },
+        {
+          "personId": "p06",
+          "bookedAt": "2026-10-21T08:20:00",
+          "checkedInAt": "2026-10-24T19:24:00"
+        },
+        {
+          "personId": "p07",
+          "bookedAt": "2026-10-21T13:05:00",
+          "checkedInAt": "2026-10-24T19:21:00"
+        },
+        {
+          "personId": "p08",
+          "bookedAt": "2026-10-21T20:50:00",
+          "checkedInAt": "2026-10-24T20:25:00"
+        },
+        {
+          "personId": "p09",
+          "bookedAt": "2026-10-22T09:40:00",
+          "checkedInAt": "2026-10-24T19:27:00"
+        },
+        {
+          "personId": "p10",
+          "bookedAt": "2026-10-22T18:30:00",
+          "cancelledAt": "2026-10-23T12:15:00"
+        },
+        {
+          "personId": "p11",
+          "bookedAt": "2026-10-23T17:45:00",
+          "checkedInAt": "2026-10-24T19:33:00"
+        }
+      ]
+    }
+  ]
+}

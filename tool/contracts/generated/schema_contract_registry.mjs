@@ -188504,7 +188504,7 @@ export const externalEventDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/external_events.schema.json",
   "title": "ExternalEventDocument",
-  "description": "Read-only external event document stored at externalEvents/{eventId}. These records are sourced from reviewed organizer intake candidates and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.",
+  "description": "Read-only external event document stored at externalEvents/{eventId}. These records are sourced from events Supply Intake imported for a published organizer and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "externalEvents",
@@ -189013,7 +189013,8 @@ export const externalEventDocumentSchema = {
         "citySlug",
         "countryCode",
         "availability",
-        "manualApprovalRequired"
+        "manualApprovalRequired",
+        "appVisibility"
       ],
       "properties": {
         "citySlug": {
@@ -189047,6 +189048,14 @@ export const externalEventDocumentSchema = {
         "manualApprovalRequired": {
           "type": "boolean",
           "const": true
+        },
+        "appVisibility": {
+          "type": "string",
+          "enum": [
+            "hidden",
+            "discoverable"
+          ],
+          "description": "The attributed organizer's app visibility, copied at publication and kept in step when it changes, so app discovery never shows an event whose organizer is hidden in the app. The website applies the organizer's page and search controls itself."
         }
       }
     },

@@ -239,10 +239,10 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 52
+      "count": 50
     },
     "react/forbid-elements": {
-      "count": 115
+      "count": 79
     }
   },
   "src/shared/ui/AdminPrimitives/marketing-composer.tsx": {

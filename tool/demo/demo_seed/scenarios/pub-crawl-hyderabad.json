@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 2,
+  "id": "pub-crawl-hyderabad",
+  "label": "Hyderabad Pub Crawl",
+  "description": "Fictional Friday pub crawl in Hyderabad: small groups walk four stops from Jubilee Hills to Banjara Hills. Draft capture input, never a seed world or an availability claim.",
+  "uses": [
+    "marketing-capture"
+  ],
+  "locale": "en-IN",
+  "timeZone": "Asia/Kolkata",
+  "currency": "INR",
+  "moments": {
+    "planning": "2026-10-20T11:00:00",
+    "today": "2026-10-23T16:00:00",
+    "live": "2026-10-23T21:05:00",
+    "followUp": "2026-10-24T10:30:00"
+  },
+  "host": {
+    "uid": "pub-crawl-hyderabad-host",
+    "personaId": "in_sameer_hussain_062",
+    "displayName": "Sameer Hussain",
+    "firstName": "Sameer",
+    "phoneNumber": "+919000000601",
+    "email": "host@example.test"
+  },
+  "organizer": {
+    "id": "club-pub-crawl-hyderabad",
+    "name": "Deccan Evening Socials",
+    "description": "Fictional Hyderabad organizer that hosts small-group evenings across Jubilee Hills and Banjara Hills.",
+    "city": "hyderabad",
+    "area": "Jubilee Hills",
+    "tags": [
+      "pub-crawl",
+      "hosted",
+      "small-groups"
+    ],
+    "memberCount": 0,
+    "rating": 0,
+    "reviewCount": 0
+  },
+  "venues": [
+    {
+      "id": "kesar-courtyard",
+      "name": "Kesar Courtyard",
+      "area": "Jubilee Hills",
+      "lat": 17.4318,
+      "lng": 78.4074,
+      "directions": "First stop. Come in through the courtyard gate; the host is at the long table with the group list."
+    },
+    {
+      "id": "lantern-terrace",
+      "name": "Lantern Terrace",
+      "area": "Jubilee Hills",
+      "lat": 17.429,
+      "lng": 78.413,
+      "directions": "Second stop, about ten minutes on foot. The terrace is up the stairs on the left."
+    },
+    {
+      "id": "monsoon-room",
+      "name": "Monsoon Room",
+      "area": "Jubilee Hills",
+      "lat": 17.4258,
+      "lng": 78.4192,
+      "directions": "Third stop, about ten minutes on foot. Groups meet again at the front door before going in."
+    },
+    {
+      "id": "banyan-rooftop",
+      "name": "Banyan Rooftop",
+      "area": "Banjara Hills",
+      "lat": 17.4215,
+      "lng": 78.4258,
+      "directions": "Last stop, about twelve minutes on foot. Take the lift to the top floor; cabs home leave from the front gate."
+    }
+  ],
+  "people": [
+    {
+      "id": "p01",
+      "personaId": "in_harini_kondapalli_061"
+    },
+    {
+      "id": "p02",
+      "personaId": "in_vamsi_kodali_064"
+    },
+    {
+      "id": "p03",
+      "personaId": "in_pranavi_gunda_065"
+    },
+    {
+      "id": "p04",
+      "personaId": "in_lakshmi_pothula_067"
+    },
+    {
+      "id": "p05",
+      "personaId": "in_sindhu_chowdary_034"
+    },
+    {
+      "id": "p06",
+      "personaId": "in_abhinav_varma_035"
+    },
+    {
+      "id": "p07",
+      "personaId": "in_ayesha_baig_063"
+    },
+    {
+      "id": "p08",
+      "personaId": "in_tejas_naidu_068"
+    },
+    {
+      "id": "p09",
+      "personaId": "in_rishi_malpani_066"
+    }
+  ],
+  "events": [
+    {
+      "id": "event-friday-pub-crawl-hyderabad",
+      "name": "Friday Pub Crawl",
+      "description": "A fictional hosted pub crawl in small groups of four. Four stops, each a short walk apart: Kesar Courtyard in Jubilee Hills at 19:30 for the welcome and groups, Lantern Terrace at 20:25, Monsoon Room at 21:20, and Banyan Rooftop in Banjara Hills at 22:15 for the recap. Free to join: order what you like at each stop, and every stop has food and a full zero-proof menu. The host books cabs home at the end.",
+      "venueId": "kesar-courtyard",
+      "civilDate": "2026-10-23",
+      "startTime": "19:30",
+      "endTime": "23:00",
+      "activityKind": "barCrawl",
+      "customActivityLabel": "Pub crawl",
+      "format": {
+        "interactionModel": "freeFormMixer",
+        "admissionPreset": "openCapacity",
+        "playbookId": "host_led_social",
+        "selectedModuleIds": [
+          "host_script",
+          "micro_pods",
+          "social_missions"
+        ],
+        "hostGoal": "Keep each group together between stops, so everyone has talked with their whole group before the last stop."
+      },
+      "capacity": 12,
+      "priceInPaise": 0,
+      "guestPerspective": {
+        "viewer": "p03",
+        "wingmanTarget": "p08"
+      },
+      "attendance": [
+        {
+          "personId": "p01",
+          "bookedAt": "2026-10-20T11:40:00",
+          "checkedInAt": "2026-10-23T19:04:00"
+        },
+        {
+          "personId": "p02",
+          "bookedAt": "2026-10-20T13:05:00",
+          "checkedInAt": "2026-10-23T19:09:00"
+        },
+        {
+          "personId": "p03",
+          "bookedAt": "2026-10-20T18:20:00",
+          "checkedInAt": "2026-10-23T19:12:00"
+        },
+        {
+          "personId": "p04",
+          "bookedAt": "2026-10-20T21:45:00",
+          "checkedInAt": "2026-10-23T19:15:00"
+        },
+        {
+          "personId": "p05",
+          "bookedAt": "2026-10-21T08:15:00",
+          "cancelledAt": "2026-10-22T22:10:00"
+        },
+        {
+          "personId": "p06",
+          "bookedAt": "2026-10-21T19:30:00",
+          "checkedInAt": "2026-10-23T19:21:00"
+        },
+        {
+          "personId": "p07",
+          "bookedAt": "2026-10-22T12:50:00",
+          "checkedInAt": "2026-10-23T19:24:00"
+        },
+        {
+          "personId": "p08",
+          "bookedAt": "2026-10-22T20:05:00",
+          "checkedInAt": "2026-10-23T19:28:00"
+        },
+        {
+          "personId": "p09",
+          "bookedAt": "2026-10-23T10:25:00",
+          "checkedInAt": "2026-10-23T19:36:00"
+        }
+      ]
+    }
+  ]
+}

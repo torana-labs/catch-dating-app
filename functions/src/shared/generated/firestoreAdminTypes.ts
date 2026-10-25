@@ -13011,7 +13011,7 @@ export interface EventPlanChangeDocument {
 }
 
 /**
- * Read-only external event document stored at externalEvents/{eventId}. These records are sourced from reviewed organizer intake candidates and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.
+ * Read-only external event document stored at externalEvents/{eventId}. These records are sourced from events Supply Intake imported for a published organizer and may link to external booking platforms, but they never enable Catch booking, payments, reservations, waitlists, attendance, or schedule locks.
  */
 export interface ExternalEventDocument {
   schemaVersion: 1;
@@ -13095,6 +13095,10 @@ export interface ExternalEventDocument {
     countryCode: string | null;
     availability: "read_only_external";
     manualApprovalRequired: true;
+    /**
+     * The attributed organizer's app visibility, copied at publication and kept in step when it changes, so app discovery never shows an event whose organizer is hidden in the app. The website applies the organizer's page and search controls itself.
+     */
+    appVisibility: "hidden" | "discoverable";
   };
   dedupe: {
     normalizedEventKey: string;

@@ -341,6 +341,7 @@ enter previews.
 | `onSupplyIntakeRequestCreated` | `src/operations/supplyIntake/triggers.ts` | `supplyIntakeRequests/{requestId}` onCreate — leases the request, gathers its pages, runs Supply Intake and imports the reviewable listing; retries until the third failure |
 | `syncOrganizerNextEvent` | `src/clubs/` | `events/{eventId}` onWrite — recomputes organizer next-event projection |
 | `syncAlgoliaOrganizerIndex` | `src/search/` | `organizers/{organizerId}` onWrite — synchronizes organizer discovery search records |
+| `syncExternalEventVisibility` | `src/organizers/externalEventVisibility.ts` | `organizers/{organizerId}` onWrite — when the organizer's app visibility changes (or it is deleted), sets `discovery.appVisibility` on its `externalEvents` to match, so app discovery never shows an event whose organizer is hidden |
 | `onSwipeCreated` | `src/matching/` | `profileDecisions/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
 | `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread conversation flag + FCM |

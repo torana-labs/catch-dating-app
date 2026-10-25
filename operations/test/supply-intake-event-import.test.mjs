@@ -48,7 +48,8 @@ const event = (overrides = {}) => ({
   attendanceMode: "offline", organizerName: "BlrDroid", organizerUrl: "https://luma.com/blrdroid",
   adapterId: "luma", evidenceFields: ["title", "startAt"], alsoListedAt: [], ...overrides,
 });
-const organizer = {organizerId: "organizer-blrdroid", claimable: true};
+// An approved listing's organizer: published on the web, hidden in the app.
+const organizer = {organizerId: "organizer-blrdroid", claimable: true, appVisibility: "hidden"};
 const review = (overrides = {}) => ({reviewerUid: "staff-1", decidedAt: NOW, note: null,
   ownerSafeCopyReviewed: true, importPolicyAcknowledged: true, blockerResolutions: [], ...overrides});
 const plan = (overrides = {}) => planListingEventImport({event: event(), workItemId: "wi-event-1", organizer,
@@ -67,6 +68,9 @@ test("a complete, reviewed event plans a read-only external event that satisfies
     [["luma", "https://luma.com/1dfd73wq", true]]);
   assert.equal(doc.price.displayText, "Free");
   assert.equal(doc.discovery.manualApprovalRequired, true);
+  assert.equal(doc.discovery.appVisibility, "hidden", "an app-hidden organizer's event stays out of the app");
+  assert.equal(plan({organizer: {...organizer, appVisibility: "discoverable"}}).document.discovery.appVisibility,
+    "discoverable");
   assert.equal(doc.startTime._seconds, Date.parse("2026-11-01T04:00:00.000Z") / 1000);
   assert.equal(result.eventId, externalEventId(event(), organizer.organizerId), "the id is stable across re-plans");
 });

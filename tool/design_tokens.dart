@@ -266,8 +266,11 @@ String _buildDartTokens(_TokenRegistry registry) {
     );
   }
 
+  buffer.writeln('}');
+  _writeColorGroup(buffer, registry, 'palette', 'GeneratedCatchPaletteTokens');
+  _writeColorGroup(buffer, registry, 'ground', 'GeneratedCatchGroundTokens');
+  _writeColorGroup(buffer, registry, 'format', 'GeneratedCatchFormatTokens');
   buffer
-    ..writeln('}')
     ..writeln()
     ..writeln('abstract final class GeneratedCatchWebsiteTokens {');
 
@@ -1140,6 +1143,33 @@ void _writeFoundationTokens(StringBuffer buffer, _TokenRegistry registry) {
     'windowSize',
     'GeneratedCatchWindowSizeTokens',
   );
+}
+
+/// A colour group at any depth, emitted as Colors named by their path below
+/// the group: `ground.coral.inkSecondary` becomes `coralInkSecondary`.
+void _writeColorGroup(
+  StringBuffer buffer,
+  _TokenRegistry registry,
+  String group,
+  String className,
+) {
+  final tokens = registry.tokens.values
+      .where((t) => t.path.length > 1 && t.path[0] == group)
+      .toList();
+  if (tokens.isEmpty) throw FormatException('Missing $group tokens.');
+  buffer
+    ..writeln()
+    ..writeln('abstract final class $className {');
+  for (final token in tokens) {
+    if (token.type != 'color') {
+      throw FormatException('Unsupported $group token: ${token.referencePath}');
+    }
+    buffer.writeln(
+      '  static const Color ${_camel(token.path.skip(1))} = '
+      '${_dartColorValue(registry.resolvedValue(token))};',
+    );
+  }
+  buffer.writeln('}');
 }
 
 /// A flat group of plain numbers, emitted as doubles named by their keys.

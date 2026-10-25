@@ -207,6 +207,8 @@ export {
 export {syncOrganizerFollowerStats} from
   "./organizers/syncOrganizerFollowerStats";
 export {syncOrganizerNextEvent} from "./organizers/syncOrganizerNextEvent";
+export {syncExternalEventVisibility} from
+  "./organizers/externalEventVisibility";
 export {
   archiveOrganizer,
   deleteOrganizer,
