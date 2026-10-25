@@ -105,6 +105,18 @@ test("the closure follows imports, aliases, workspaces, JSON, CSS and public ass
   assert.match(f.run("closure.mjs", f.capture.story.file).stderr, /Cannot resolve \.\/nowhere/u);
 });
 
+test("a web capture can't read the listings the production build replaces", t => {
+  const f = fixture(t);
+  f.write("website/src/generated/hostListings.demo.json", "[]");
+  f.write("website/src/stories/fixtures/listing.ts", 'import listings from "../../generated/hostListings.demo.json";\nexport const count = listings.length;\n');
+  f.write("website/src/stories/fixtures/world.ts", 'import world from "../../../../tool/demo/world.json" with {type: "json"};\nimport {count} from "./listing";\nexport const name = `${world.name} ${count}`;\n');
+  const result = f.run("closure.mjs", f.capture.story.file);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, new RegExp(["website/src/stories/WebCaptures.stories.tsx", "website/src/stories/fixtures/world.ts",
+    "website/src/stories/fixtures/listing.ts", "website/src/generated/hostListings.demo.json"].join(" -> "), "u"));
+  assert.match(f.run("hash.mjs", JSON.stringify(f.capture)).stderr, /replaced by the production build's listing snapshot/u);
+});
+
 test("only what changes pixels changes a web capture's input hash", t => {
   const f = fixture(t);
   const base = f.hash(f.capture);

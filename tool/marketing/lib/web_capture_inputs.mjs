@@ -28,12 +28,25 @@ const sourceExtensions = [".ts", ".tsx", ".js", ".mjs", ".jsx", ".json"];
 const rendererPackages = ["playwright", "playwright-core"];
 // A capture renders from these manifest fields alone; copy and pages don't count.
 export const webRenderFields = ["id", "kind", "status", "device", "story", "address", "sourcePath"];
+// The production marketing build replaces these generated organiser listings
+// with its Firestore snapshot before it checks the imported captures against
+// their inputs again (import_hosted_captures.mjs --check-dist), so no capture
+// may read them.
+export const buildReplacedListings = Object.freeze([
+  "website/src/generated/hostListings.json", "website/src/generated/hostListings.demo.json",
+]);
 
 /** Files and external package versions a web capture's story depends on. */
 export function webCaptureClosure(storyFile) {
   const files = new Set();
   const externals = new Map();
   const queue = [storyFile, viteConfig, ...treeFiles(storybookConfig)];
+  // The file that first reached each input, to name the chain to a refused one.
+  const importer = new Map(queue.map(file => [file, null]));
+  const enqueue = (file, from) => {
+    if (!importer.has(file)) importer.set(file, from);
+    queue.push(file);
+  };
   const lock = readLock();
   const workspaces = workspacePackages();
   for (let index = 0; index < queue.length; index += 1) {
@@ -46,16 +59,21 @@ export function webCaptureClosure(storyFile) {
     const source = fs.readFileSync(fromRepo(file), "utf8");
     for (const specifier of extension === ".css" ? cssReferences(source) : moduleReferences(source)) {
       const resolved = resolve(specifier, file, workspaces);
-      if (resolved.file) queue.push(resolved.file);
+      if (resolved.file) enqueue(resolved.file, file);
       else if (resolved.external) externals.set(resolved.external, packageVersion(lock, resolved.external));
     }
     // Pages also load files from public/ by absolute path at runtime.
     if (extension !== ".css") {
       for (const match of source.matchAll(/["'`](\/assets\/[^"'`$?#\s]+)/gu)) {
         const asset = `website/public${match[1]}`;
-        if (fs.existsSync(fromRepo(asset)) && fs.statSync(fromRepo(asset)).isFile()) queue.push(asset);
+        if (fs.existsSync(fromRepo(asset)) && fs.statSync(fromRepo(asset)).isFile()) enqueue(asset, file);
       }
     }
+  }
+  for (const file of buildReplacedListings.filter(listing => files.has(listing))) {
+    const chain = [file];
+    while (importer.get(chain[0])) chain.unshift(importer.get(chain[0]));
+    throw new Error(`Web capture input ${file} is replaced by the production build's listing snapshot: ${chain.join(" -> ")}`);
   }
   for (const name of rendererPackages) externals.set(name, packageVersion(lock, name));
   return {files, externals};

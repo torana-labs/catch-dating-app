@@ -8,6 +8,7 @@ import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {canonicalInventory, readProvenance} from "./export_hosted_captures.mjs";
 import {validateCaptureBytes} from "./lib/capture_provenance.mjs";
+import {buildReplacedListings} from "./lib/web_capture_inputs.mjs";
 import {buildWebsiteManifest} from "./sync_website_media.mjs";
 import {replaceCatalogInventory} from "../design/generate_widget_catalog.mjs";
 
@@ -133,9 +134,7 @@ function sourceFiles() {
   return {manifestBytes, manifest, captures, generated, expectedNames: [manifestPath, ...generated, "capture-receipt.json"]};
 }
 
-const buildListingOutputs = new Set([
-  "website/src/generated/hostListings.json", "website/src/generated/hostListings.demo.json",
-]);
+const buildListingOutputs = new Set(buildReplacedListings);
 
 export function verifyCaptureFiles({files, binding}) {
   return verifyFiles({files, binding});
