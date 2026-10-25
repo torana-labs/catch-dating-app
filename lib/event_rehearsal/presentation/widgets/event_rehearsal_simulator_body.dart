@@ -291,7 +291,7 @@ class EventRehearsalRecapSection extends StatelessWidget {
                 CatchButton(
                   label: context.l10n.hostEventRehearsalExport,
                   size: CatchButtonSize.md,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   onPressed: isLoading ? null : onExport,
                 ),
               ],

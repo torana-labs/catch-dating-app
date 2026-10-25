@@ -56,7 +56,7 @@ void main() {
           (background.b * 255).round(),
           255,
         ],
-        reason: 'Scrolling content must never paint through a ghost action.',
+        reason: 'Scrolling content must never paint through a quiet action.',
       );
     });
   }
@@ -99,7 +99,7 @@ void main() {
                     CatchButton(
                       label: 'Previous',
                       onPressed: () {},
-                      variant: CatchButtonVariant.ghost,
+                      variant: CatchButtonVariant.quiet,
                       fullWidth: true,
                     ),
                   ],

@@ -333,7 +333,7 @@ class _EventAssistanceDepartureSectionState
         gapH12,
         CatchButton(
           label: l10n.eventAssistanceVisitDone,
-          variant: CatchButtonVariant.ghost,
+          variant: CatchButtonVariant.quiet,
           status: busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
           onPressed: busy ? null : widget.onDone,
         ),

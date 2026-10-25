@@ -40,7 +40,7 @@ class HostStepperDock extends StatelessWidget {
     final previousButton = CatchButton(
       label: context.l10n.hostsWizardPrevious,
       onPressed: isLoading ? null : onPrevious,
-      variant: CatchButtonVariant.ghost,
+      variant: CatchButtonVariant.quiet,
       leading: Icon(CatchIcons.arrowBackRounded),
       foregroundColor: t.primary,
       fullWidth: true,

@@ -148,7 +148,7 @@ class HostGuestIntakeSettingsField extends StatelessWidget {
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterAddGuest,
                   onPressed: importing ? null : onAddGuest,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   leading: Icon(CatchIcons.personAddAlt1Outlined),
                 ),
                 CatchButton(
@@ -157,7 +157,7 @@ class HostGuestIntakeSettingsField extends StatelessWidget {
                   status: (creatingHandoff)
                       ? CatchButtonStatus.loading
                       : CatchButtonStatus.idle,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   leading: Icon(CatchIcons.alternateEmailOutlined),
                 ),
               ],
@@ -569,7 +569,7 @@ class HostRosterInsightRail extends StatelessWidget {
           label: context.l10n.hostsOperationalRosterInsightsRetry,
           onPressed: onRetry,
           size: CatchButtonSize.md,
-          variant: CatchButtonVariant.ghost,
+          variant: CatchButtonVariant.quiet,
         ),
       ],
     ),
@@ -633,7 +633,7 @@ class HostRosterInsightRail extends StatelessWidget {
                   label: context.l10n.hostsOperationalRosterInsightsRetry,
                   onPressed: onRetry,
                   size: CatchButtonSize.md,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                 ),
               ],
             ),

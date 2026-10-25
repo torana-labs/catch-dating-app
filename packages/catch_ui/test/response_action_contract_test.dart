@@ -24,7 +24,7 @@ void main() {
                 ),
                 CatchButton(
                   label: 'Decline',
-                  variant: CatchButtonVariant.dangerSecondary,
+                  variant: CatchButtonVariant.secondary,
                   onPressed: () {},
                 ),
               ],

@@ -155,7 +155,7 @@ class EventRehearsalRuntimePreviewSection extends StatelessWidget {
             CatchButton(
               key: const ValueKey('practice.addOutcome'),
               label: l.hostEventRehearsalUpdatesAddOutcome,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: () => onChanged(
                 draft.copy(
                   outcomes: [...draft.outcomes, rehearsalOutcomeChoices.first],
@@ -168,7 +168,7 @@ class EventRehearsalRuntimePreviewSection extends StatelessWidget {
             CatchButton(
               key: const ValueKey('practice.removeOutcome'),
               label: l.hostEventRehearsalUpdatesRemoveOutcome,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: () => onChanged(
                 draft.copy(
                   outcomes: draft.outcomes.sublist(

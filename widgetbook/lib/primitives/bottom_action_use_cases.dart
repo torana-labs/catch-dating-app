@@ -54,7 +54,7 @@ Widget bottomActionOverlayStates(BuildContext context) =>
                       CatchButton(
                         label: 'Previous',
                         onPressed: () {},
-                        variant: CatchButtonVariant.ghost,
+                        variant: CatchButtonVariant.quiet,
                         fullWidth: true,
                       ),
                     ],

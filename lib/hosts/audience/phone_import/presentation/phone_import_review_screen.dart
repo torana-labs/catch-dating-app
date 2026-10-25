@@ -337,7 +337,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
                 CatchButton(
                   key: const ValueKey('phone-import-discard'),
                   label: context.l10n.phoneImportDiscard,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   onPressed: controller.interactionLocked
                       ? null
                       : controller.discard,
@@ -363,7 +363,7 @@ class PhoneImportReviewScreen extends StatelessWidget {
                 CatchButton(
                   key: const ValueKey('phone-import-dismiss'),
                   label: context.l10n.phoneImportDismiss,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   onPressed: () => _dismissSaved(context, live),
                 ),
               ],

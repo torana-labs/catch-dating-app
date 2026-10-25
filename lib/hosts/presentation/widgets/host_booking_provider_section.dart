@@ -141,7 +141,7 @@ class HostBookingProviderSection extends StatelessWidget {
                           context.l10n.hostsOperationalRosterProviderDisconnect,
                       onPressed: mutationPending ? null : onDisconnect,
                       size: CatchButtonSize.md,
-                      variant: CatchButtonVariant.ghost,
+                      variant: CatchButtonVariant.quiet,
                     ),
                   ],
                 ),

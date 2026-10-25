@@ -156,7 +156,7 @@ class HostTodayEmptyState extends StatelessWidget {
                   CatchIcons.scienceOutlined,
                   size: CatchIconSize.sm,
                 ),
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 size: CatchButtonSize.md,
                 onPressed: onStartRehearsal,
               ),

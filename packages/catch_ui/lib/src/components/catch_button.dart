@@ -10,14 +10,9 @@ import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-enum CatchButtonVariant {
-  primary,
-  secondary,
-  ghost,
-  danger,
-  dangerSecondary,
-  light,
-}
+/// D20 variants. `quiet` is the unboxed action; `light` is primary on a dark
+/// ground until dark scopes carry their own primary.
+enum CatchButtonVariant { primary, secondary, quiet, danger, light }
 
 enum CatchButtonSize { sm, md, lg }
 
@@ -158,7 +153,7 @@ class CatchButton extends StatefulWidget {
        _floatingIcon = null,
        value = null,
        count = null,
-       variant = CatchButtonVariant.ghost,
+       variant = CatchButtonVariant.quiet,
        size = CatchButtonSize.lg,
        mode = CatchButtonMode.rounded,
        status = CatchButtonStatus.idle,
@@ -241,7 +236,7 @@ class CatchButton extends StatefulWidget {
        value = null,
        count = null,
        trailing = null,
-       variant = CatchButtonVariant.ghost,
+       variant = CatchButtonVariant.quiet,
        size = CatchButtonSize.lg,
        mode = CatchButtonMode.rounded,
        status = CatchButtonStatus.idle,
@@ -550,9 +545,7 @@ class _CatchButtonState extends State<CatchButton> {
       foreground: widget.foregroundColor,
       border: widget.borderColor,
     );
-    final outlined =
-        widget.variant == CatchButtonVariant.secondary ||
-        widget.variant == CatchButtonVariant.dangerSecondary;
+    final outlined = widget.variant == CatchButtonVariant.secondary;
     final engaged = _enabled && (_hovered || _pressed);
     // Outlines share the control border and turn full ink while engaged.
     final border = CatchBorder.resolve(
@@ -773,14 +766,12 @@ class _ButtonPalette {
         foreground: t.primaryInk,
         border: Colors.transparent,
       ),
-      // D20 folds dangerSecondary in: the confirm step carries the danger.
-      CatchButtonVariant.secondary ||
-      CatchButtonVariant.dangerSecondary => _ButtonPalette(
+      CatchButtonVariant.secondary => _ButtonPalette(
         background: Colors.transparent,
         foreground: t.ink,
         border: CatchBorder.resolve(t, CatchBorderRole.control).color,
       ),
-      CatchButtonVariant.ghost => _ButtonPalette(
+      CatchButtonVariant.quiet => _ButtonPalette(
         background: Colors.transparent,
         foreground: t.ink,
         border: Colors.transparent,

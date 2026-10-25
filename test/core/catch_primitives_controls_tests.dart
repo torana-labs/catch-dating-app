@@ -582,7 +582,7 @@ void _registerCatchPrimitivesControlsTests() {
             CatchButton(
               label: 'Ghost',
               onPressed: null,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
             ),
             CatchButton(
               label: 'Danger',

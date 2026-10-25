@@ -374,7 +374,7 @@ class _ProgramLodgingScreenState extends ConsumerState<ProgramLodgingScreen> {
                     ),
                     CatchButton(
                       label: context.l10n.programsRoomsRefresh,
-                      variant: CatchButtonVariant.ghost,
+                      variant: CatchButtonVariant.quiet,
                       onPressed: view.busy || retry != null
                           ? null
                           : _controller.refresh,
