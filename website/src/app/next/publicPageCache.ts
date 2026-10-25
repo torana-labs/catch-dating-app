@@ -8,6 +8,12 @@ import type {PageKey} from "../pageMeta";
  */
 export const PUBLIC_PAGE_CACHE_SECONDS = 60;
 export const PUBLIC_PAGE_CACHE_CONTROL = `public, s-maxage=${PUBLIC_PAGE_CACHE_SECONDS}`;
+/**
+ * The proxy marks an authorized page before it renders. The server promotes
+ * the mark to PUBLIC_PAGE_CACHE_CONTROL only on a 200, so a render that fails
+ * after the preflight keeps Next's no-store 500. The mark never leaves.
+ */
+export const PUBLIC_PAGE_CACHE_MARK = "x-catch-public-page";
 
 // Organiser, event and city-aware discovery pages render the same HTML for
 // every viewer. Claim, booking, follow, signed-in and private-shell routes stay

@@ -4,6 +4,11 @@ import {consumerHomeCopy} from "../../src/content/consumerHome.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
 import {exploreCopy} from "../../src/content/explore.ts";
 import {organiserDirectoryCopy} from "../../src/content/organiserDirectory.ts";
+import {PUBLIC_PAGE_CACHE_CONTROL} from "../../src/app/next/publicPageCache.ts";
+/** Home and the organiser, event and Explore families; never Host, legal, claim or private routes. */
+export function sharedCachePage(path) {
+  return path === "/" || /^\/(?:explore|organizers|events)\/(?:[^?#]*)$/u.test(path);
+}
 export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch} = {}) {
   assert.match(base ?? "", /^https:\/\/(?:catchdates\.com|catch-dating-app-64e51--next-(?:candidate|release)-[a-z0-9-]+\.web\.app)$/u);
   assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u);
@@ -12,6 +17,14 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
   async function get(path, status = 200, source = true) {
     const response = await fetchImpl(`${base}${path}`, {redirect: "manual", signal: AbortSignal.timeout(30_000)});
     assert.equal(response.status, status, `${path} HTTP status`);
+    // A shared cache may hold only an authorized catalog page, for one minute.
+    // Older releases send no-store there, so promotion stays release-neutral.
+    // Static association files are Hosting's, not the runtime's, policy.
+    const cache = response.headers.get("cache-control") ?? "";
+    if (source && /public|s-maxage/u.test(cache)) {
+      assert.equal(cache, PUBLIC_PAGE_CACHE_CONTROL, `${path} shared cache policy`);
+      assert.ok(status === 200 && sharedCachePage(path), `${path} must not enter a shared cache`);
+    }
     if (source) {
       assert.equal(response.headers.get("x-catch-release"), sourceSha, `${path} is not the selected release`);
       if (!live) assert.match(response.headers.get("x-robots-tag") ?? "", /noindex/u);
