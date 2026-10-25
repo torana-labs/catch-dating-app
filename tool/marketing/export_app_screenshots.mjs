@@ -34,9 +34,9 @@ if (command === "--help" || command === "-h" || command === "help") {
 } else if (command === "--plan") {
   printRenderPlan();
 } else if (command === "--update-stale") {
-  updateExports(true);
+  await updateExports(true);
 } else if (command === "--update" || command === "update") {
-  updateExports();
+  await updateExports();
 } else {
   console.error(`Unknown command: ${command}`);
   printHelp();
@@ -46,16 +46,24 @@ if (command === "--help" || command === "-h" || command === "help") {
 function listExports() {
   const {manifest, catalog} = loadContext();
   for (const capture of manifest.captures) {
-    const entry = findCatalogEntry(catalog, capture.fixtureKey);
     console.log(
       [
         capture.id.padEnd(28),
         capture.status.padEnd(16),
         capture.device.padEnd(14),
-        entry ? entry.id : "<missing-catalog>",
+        renderSourceId(catalog, capture) ?? "<missing-catalog>",
       ].join(" ")
     );
   }
+}
+
+// App captures render a catalog entry; web captures render a website story.
+function isWebCapture(capture) {
+  return capture.kind === "web-capture";
+}
+
+function renderSourceId(catalog, capture) {
+  return isWebCapture(capture) ? capture.story?.id ?? null : findCatalogEntry(catalog, capture.fixtureKey)?.id ?? null;
 }
 
 function checkExports() {
@@ -123,17 +131,16 @@ function checkDesignJson() {
 
 function buildDesignJson(manifest, catalog) {
   const captures = (manifest.captures ?? []).map((capture) => {
-    const entry = findCatalogEntry(catalog, capture.fixtureKey);
+    const entry = isWebCapture(capture) ? null : findCatalogEntry(catalog, capture.fixtureKey);
     const deviceFrame = deviceFrameSpec(capture.device);
     return {
-      type: "marketing-app-capture",
-      id: capture.id,
-      status: capture.status,
-      audience: capture.audience,
-      surface: capture.surface,
-      fixtureKey: capture.fixtureKey,
-      captureId: entry?.id ?? null,
-      routeIds: entry?.routeIds ?? [],
+      ...(isWebCapture(capture)
+        ? {type: "marketing-web-capture", id: capture.id, status: capture.status, audience: capture.audience,
+          surface: capture.surface, story: capture.story, address: capture.address,
+          captureId: capture.story?.id ?? null, routeIds: capture.routeId ? [capture.routeId] : []}
+        : {type: "marketing-app-capture", id: capture.id, status: capture.status, audience: capture.audience,
+          surface: capture.surface, fixtureKey: capture.fixtureKey,
+          captureId: entry?.id ?? null, routeIds: entry?.routeIds ?? []}),
       device: deviceFrame,
       assets: {
         sourcePath: capture.sourcePath,
@@ -153,7 +160,7 @@ function buildDesignJson(manifest, catalog) {
     generatedBy: "tool/marketing/export_app_screenshots.mjs --design-json",
     coordinateSystem: "px",
     description:
-      "Figma/AI-friendly design context for app-derived marketing screenshots.",
+      "Figma/AI-friendly design context for marketing captures of the app and of website pages in iPhone Safari.",
     captures,
   };
 }
@@ -177,26 +184,42 @@ function printRenderPlan() {
   // macOS render job checks the font again before it reuses anything.
   const fontPath = args.includes("--inputs-only") ? undefined : nativeFont();
   console.log(JSON.stringify(selectCaptures(manifest).map(capture => {
-    const entry = findCatalogEntry(catalog, capture.fixtureKey);
-    const reasons = validateCapture(capture, entry.id, {fontPath});
-    return {id: capture.id, render: reasons.length > 0, reasons};
+    const reasons = validateCapture(capture, renderSourceId(catalog, capture), {fontPath});
+    return {id: capture.id, kind: isWebCapture(capture) ? "web-capture" : "app-capture", render: reasons.length > 0, reasons};
   }), null, 2));
 }
 
-function updateExports(staleOnly = false) {
+async function updateExports(staleOnly = false) {
   const {manifest, catalog} = loadContext();
   const errors = validateExports(manifest, catalog, {requireSources: false});
   if (errors.length > 0) fail("Marketing app screenshot export failed.", errors);
 
   const sfFont = nativeFont();
   const selectedCaptures = selectCaptures(manifest).filter(capture => !staleOnly ||
-    validateCapture(capture, findCatalogEntry(catalog, capture.fixtureKey).id, {fontPath: sfFont}).length > 0);
+    validateCapture(capture, renderSourceId(catalog, capture), {fontPath: sfFont}).length > 0);
   if (selectedCaptures.length === 0) {
     console.log("No active marketing captures selected.");
     return;
   }
 
-  const selected = selectedCaptures.map((capture) => ({
+  const webCaptures = selectedCaptures.filter(isWebCapture);
+  if (webCaptures.length > 0) {
+    const inputHashes = new Map(webCaptures.map(capture => [capture.id, captureInputHash(capture)]));
+    // Loaded only when rendering: Playwright is installed for this step alone.
+    const {renderWebCaptures} = await import("./lib/web_capture_render.mjs");
+    await renderWebCaptures(webCaptures, {storybook: valueAfter("--storybook") ?? undefined,
+      playwrightDir: valueAfter("--playwright-dir") ?? undefined});
+    for (const capture of webCaptures) {
+      if (captureInputHash(capture) !== inputHashes.get(capture.id)) {
+        fail("Capture inputs changed during rendering.", ["Rerun the exporter from a stable source tree."]);
+      }
+      stampCapture(capture, capture.story.id, sfFont);
+    }
+  }
+  const appCaptures = selectedCaptures.filter(capture => !isWebCapture(capture));
+  if (appCaptures.length === 0) return;
+
+  const selected = appCaptures.map((capture) => ({
     capture,
     entry: findCatalogEntry(catalog, capture.fixtureKey),
     inputHash: captureInputHash(capture),
@@ -275,6 +298,16 @@ function validateExports(manifest, catalog, {requireSources}) {
       );
     }
 
+    if (isWebCapture(capture)) {
+      errors.push(...validateWebRecipe(capture));
+      if (requireSources) {
+        errors.push(...(fs.existsSync(fromRepo(capture.sourcePath))
+          ? validateCapture(capture, capture.story?.id)
+          : [`${capture.id}: sourcePath is missing at ${capture.sourcePath}; run node tool/marketing/export_app_screenshots.mjs --update.`]));
+      }
+      continue;
+    }
+
     const matches = catalog.filter(entry => entry.marketingFixtureKeys.includes(capture.fixtureKey));
     if (matches.length > 1) errors.push(`${capture.id}: fixtureKey must map to exactly one catalog entry.`);
     const entry = matches[0];
@@ -297,6 +330,26 @@ function validateExports(manifest, catalog, {requireSources}) {
         `${capture.id}: sourcePath is missing at ${capture.sourcePath}; run node tool/marketing/export_app_screenshots.mjs --update.`
       );
     }
+  }
+  return errors;
+}
+
+// A web capture names the story it renders and the address Safari shows.
+function validateWebRecipe(capture) {
+  const errors = [];
+  const {file, id} = capture.story ?? {};
+  if (typeof file !== "string" || !/^website\/src\/stories\/[A-Za-z0-9]+\.stories\.tsx$/u.test(file) || !fs.existsSync(fromRepo(file))) {
+    errors.push(`${capture.id}: story.file must be an existing website/src/stories/*.stories.tsx file.`);
+  }
+  if (typeof id !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*--[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(id)) {
+    errors.push(`${capture.id}: story.id must be a Storybook story id.`);
+  }
+  if (typeof capture.address !== "string" || !/^catchdates\.com$/u.test(capture.address)) {
+    errors.push(`${capture.id}: address must be the host Safari shows, catchdates.com.`);
+  }
+  const routes = JSON.parse(fs.readFileSync(fromRepo("design/website/routes.json"), "utf8")).routes ?? [];
+  if (!routes.some(route => route.id === capture.routeId)) {
+    errors.push(`${capture.id}: routeId must name a route in design/website/routes.json.`);
   }
   return errors;
 }
@@ -332,21 +385,14 @@ function validateDesignJson(doc, manifest, catalog) {
       continue;
     }
     const prefix = `captures[${index}] ${capture.id}`;
-    for (const field of [
-      "type",
-      "id",
-      "status",
-      "audience",
-      "surface",
-      "fixtureKey",
-      "captureId",
-    ]) {
+    const web = isWebCapture(manifestCapture);
+    for (const field of ["type", "id", "status", "audience", "surface", web ? "address" : "fixtureKey", "captureId"]) {
       if (typeof capture[field] !== "string" || capture[field].length === 0) {
         errors.push(`${prefix}: ${field} must be a non-empty string.`);
       }
     }
-    if (capture.type !== "marketing-app-capture") {
-      errors.push(`${prefix}: type must be marketing-app-capture.`);
+    if (capture.type !== (web ? "marketing-web-capture" : "marketing-app-capture")) {
+      errors.push(`${prefix}: type must be ${web ? "marketing-web-capture" : "marketing-app-capture"}.`);
     }
     if (!Array.isArray(capture.routeIds) || capture.routeIds.length === 0) {
       errors.push(`${prefix}: routeIds must be a non-empty array.`);
@@ -356,7 +402,10 @@ function validateDesignJson(doc, manifest, catalog) {
         errors.push(`${prefix}: routeIds must contain only non-empty strings.`);
       }
     }
-    const catalogEntry = findCatalogEntry(catalog, manifestCapture.fixtureKey);
+    const catalogEntry = web ? null : findCatalogEntry(catalog, manifestCapture.fixtureKey);
+    if (web && capture.captureId !== manifestCapture.story?.id) {
+      errors.push(`${prefix}: captureId must match story ${manifestCapture.story?.id}.`);
+    }
     if (catalogEntry && capture.captureId !== catalogEntry.id) {
       errors.push(`${prefix}: captureId must match catalog entry ${catalogEntry.id}.`);
     }

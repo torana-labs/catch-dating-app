@@ -14,7 +14,7 @@ export function HostPage({captures}: {captures: CaptureSlots}) {
       {renderHostLandingParticipation()}
       {renderHostLandingInsights()}
       {renderHostLandingAdoption()}
-      {renderHostLandingFaq()}
+      {renderHostLandingFaq(captures)}
       {renderHostLandingClose()}
     </WebsitePageMain>
     <PublicSiteFooter />

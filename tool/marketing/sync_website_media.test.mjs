@@ -29,7 +29,7 @@ test("pages are unique canonical paths on active captures only", () => {
   assert.match(validateSourceManifest(manifestWith({pages: ["/host"]})).join("\n"), /canonical paths/);
   assert.match(validateSourceManifest(manifestWith({pages: ["/", "/"]})).join("\n"), /must not repeat/);
   assert.match(validateSourceManifest(manifestWith({status: "paused"})).join("\n"), /only an active capture can name pages/);
-  assert.match(validateSourceManifest(manifestWith({kind: "photo"})).join("\n"), /kind must be one of app-capture/);
+  assert.match(validateSourceManifest(manifestWith({kind: "photo"})).join("\n"), /kind must be one of app-capture, web-capture/);
 });
 
 test("website records carry the framed size and the pages that show them", () => {
@@ -39,4 +39,13 @@ test("website records carry the framed size and the pages that show them", () =>
   assert.deepEqual(record.pages, liveConsole.pages);
   assert.equal(record.caption, `${authored.previewDisclosure} ${liveConsole.caption}`);
   assert.equal("scenario" in record, false);
+});
+
+test("a web capture names its story and address instead of a catalog fixture", () => {
+  const web = {kind: "web-capture", fixtureKey: undefined, address: "catchdates.com",
+    story: {file: "website/src/stories/WebCaptures.stories.tsx", id: "marketing-website-web-captures--join-phone-check-in"}};
+  assert.deepEqual(validateSourceManifest(manifestWith(web)), []);
+  assert.match(validateSourceManifest(manifestWith({...web, story: undefined})).join("\n"), /story needs the stories file/);
+  assert.match(validateSourceManifest(manifestWith({...web, address: undefined})).join("\n"), /address is required/);
+  assert.match(validateSourceManifest(manifestWith({fixtureKey: undefined})).join("\n"), /fixtureKey is required/);
 });
