@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.38.0
-updated: 2026-10-24
+version: 0.38.2
+updated: 2026-10-25
 owner: web_platform
 status: active
 ---
@@ -124,20 +124,13 @@ identities are retained as workflow artifacts for browser and host-forwarding
 acceptance. A successful preview deployment is not production cutover or proof
 of authenticated/payment flows; the existing cutover gates above still apply.
 
-### Bounded organiser-review index release
+### Organiser-review index
 
-The public organiser review query needs the additive `reviews` collection index
-`organizerId ASC / createdAt DESC`. `Website Review Index` releases only that
-checked-in definition from current main after successful CI. It preserves the
-existing `prod` human-review environment and both `backend-delivery` and
-`firebase-prod` locks. A post-approval source check runs before OIDC, and another
-check immediately precedes creation. It creates only when missing, waits for
-`READY`, rejects failed or ambiguous index metadata and preserves unselected
-index identities/definitions in before/after evidence. It does not deploy
-Functions/rules, change data/IAM, advance a backend cursor or enable the general
-Delivery workflow. A partial/unknown creation result stops; a new dispatch must
-reinspect current metadata. Next production promotion reads this exact index and
-refuses to proceed until it is ready.
+The public organiser review query needs the `reviews` collection index
+`organizerId ASC / createdAt DESC`. It is checked in to `firestore.indexes.json`,
+so Deploy backend creates it with the other indexes and waits for `READY`
+([release operations](release_operations.md#deploy-backend)). Next production
+promotion reads this exact index and refuses to proceed until it is ready.
 
 ### Exact-container production promotion
 
@@ -572,8 +565,11 @@ only `firebase.ts` to import the generated callable types.
   or only the app shell renders are `feature-component` entries owned by that
   feature. Imports use `@catch/web-ui`; deep package imports are blocked by
   both app boundary gates.
-- `tool/web/check_react_ui_primitives.mjs` enforces the first React primitive
-  guard for `website/`, `admin/`, and `webui`.
+- `tool/web/check_react_ui.mjs` runs the shared ESLint UI preset for both
+  apps. Production raw elements and JSX drawing props (`className`, `style`)
+  have exact per-file suppressions that may only shrink from accepted main.
+  Table/image families wait for their styled components (D17); library source
+  draws freely. Story/test control and class-name ownership guards remain.
 - `tool/web/check_storybook_visuals.mjs` resolves registry entries marked
   `ready` against built Storybook indexes and compares fixed desktop/mobile
   captures under `design/visual_baselines/<surface>/<platform>/`. Repeatable
@@ -668,17 +664,15 @@ through `docs/agent_skills/catch-react-surface-refactor.md`.
   passes data and callbacks to their props. A one-off is a T4 component under
   `packages/web-ui/src/components/`, registered in the registry of the one
   surface that renders it. It never stays private inside a feature.
-- Keep shared UI primitives centralized. Feature, app, and Storybook code must
-  not render raw `<button>`, `<a>`, `<input>`, `<select>`, or `<textarea>`
-  controls. Add missing neutral controls to the owning shared primitive module
-  instead of styling them per screen.
+- Production drawing belongs in `@catch/web-ui`. Existing app/shared drawing
+  remains counted debt until migrated; new raw markup and drawing props fail
+  the ESLint ratchet. Story/test controls retain their shared-owner boundary.
 - Shared keyboard focus behavior starts in
   `packages/web-config/styles/catch-web.css`. Surface CSS may style a composite
   wrapper with `:focus-within`, but it must not remove a native outline without
   an equally visible token-backed replacement.
-- Keep governed component families centralized. Feature, app, and Storybook code
-  must not pass `className` directly outside shared primitive owner files. Run
-  `node tool/run.mjs check web:react-classname-boundaries` before handoff. The
+- Keep governed component families centralized. Run the shared ESLint preset
+  with `node tool/run.mjs check web:react-ui-lint` before handoff. The
   scanner-owned family registry is `tool/web/check_react_component_governance.mjs`;
   its current family view is printed on demand with `--families-json`. Run
   `node tool/run.mjs check web:react-component-governance` before handoff. This

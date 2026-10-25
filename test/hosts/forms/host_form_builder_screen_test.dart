@@ -72,7 +72,7 @@ void main() {
     );
     expect(find.text('Add question'), findsOneWidget);
     expect(find.text('Reorder questions'), findsNothing);
-    expect(find.byIcon(Icons.drag_indicator_rounded), findsNWidgets(2));
+    expect(find.byIcon(CatchIcons.dragHandle), findsNWidgets(2));
     expect(find.text('Form settings'), findsOneWidget);
     expect(find.text('2 questions · Ready to publish?'), findsOneWidget);
     expect(find.text('Review & publish'), findsOneWidget);
@@ -104,24 +104,15 @@ void main() {
       everyElement(CatchIconActionVariant.bordered),
     );
     expect(
-      find.descendant(
-        of: topBar,
-        matching: find.byIcon(CatchIcons.arrowBackIosNewRounded),
-      ),
+      find.descendant(of: topBar, matching: find.byIcon(CatchIcons.back)),
       findsOneWidget,
     );
     expect(
-      find.descendant(
-        of: topBar,
-        matching: find.byIcon(CatchIcons.visibilityOutlined),
-      ),
+      find.descendant(of: topBar, matching: find.byIcon(CatchIcons.show)),
       findsOneWidget,
     );
     expect(
-      find.descendant(
-        of: topBar,
-        matching: find.byIcon(CatchIcons.moreHorizRounded),
-      ),
+      find.descendant(of: topBar, matching: find.byIcon(CatchIcons.more)),
       findsOneWidget,
     );
     expect(
@@ -159,7 +150,7 @@ void main() {
         'Review & publish',
       );
 
-      await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+      await tester.tap(find.byIcon(CatchIcons.more));
       await pumpFeatureUi(tester);
       expect(find.text('Preview'), findsOneWidget);
       expect(tester.takeException(), isNull);

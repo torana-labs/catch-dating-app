@@ -25,7 +25,13 @@ flutter:
   assets:
     - assets/fonts/OFL-Archivo.txt
     - assets/fonts/OFL-IBMPlexMono.txt
+    - assets/fonts/lucide/LICENSE
   fonts:
+    # Icon roles (CatchIcons) draw from this font. It is generated with
+    # design/tokens/catch.icons.json; see tool/design/generate_icon_catalog.mjs.
+    - family: Lucide
+      fonts:
+        - asset: assets/fonts/lucide/lucide.ttf
     - family: Archivo
       fonts:
         - asset: assets/fonts/Archivo-Roman-VF.ttf

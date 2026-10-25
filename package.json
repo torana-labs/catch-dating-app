@@ -24,10 +24,8 @@
     "web:shared-ui-adoption:check": "node tool/run.mjs check web:shared-ui-adoption",
     "web:controller-tests:check": "node tool/run.mjs check web:react-controller-test-targets",
     "web:admin-components:check": "node tool/run.mjs check web:admin-components",
-    "web:class-name-boundaries:check": "node tool/run.mjs check web:react-classname-boundaries",
     "web:architecture-boundaries:check": "node tool/run.mjs check web:react-architecture-boundaries",
     "web:website-import-boundaries:check": "node tool/run.mjs check web:website-import-boundaries",
-    "web:ui-primitives:check": "node tool/run.mjs check web:react-ui-primitives",
     "web:query-state:check": "node tool/run.mjs check web:react-query-state",
     "web:marketing:dev": "npm --workspace catch-marketing run dev",
     "web:marketing:build": "npm --workspace catch-marketing run build",
@@ -37,7 +35,7 @@
     "web:marketing:storybook:build": "npm --workspace catch-marketing run build:storybook",
     "web:marketing:typecheck": "npm --workspace catch-marketing run typecheck",
     "web:build": "npm run web:marketing:build && npm run web:admin:build",
-    "web:typecheck": "npm run web:architecture-boundaries:check && npm run web:website-import-boundaries:check && npm run web:ui-primitives:check && npm run web:class-name-boundaries:check && npm run web:component-governance:check && npm run web:shared-ui-adoption:check && npm run web:controller-tests:check && npm run web:admin-feature-exports:check && npm run web:admin-components:check && npm run web:query-state:check && npm run web:ui:typecheck && npm run web:marketing:typecheck && npm run web:admin:typecheck",
+    "web:typecheck": "npm run web:architecture-boundaries:check && npm run web:website-import-boundaries:check && npm run web:ui-lint:check && npm run web:component-governance:check && npm run web:shared-ui-adoption:check && npm run web:controller-tests:check && npm run web:admin-feature-exports:check && npm run web:admin-components:check && npm run web:query-state:check && npm run web:ui:typecheck && npm run web:marketing:typecheck && npm run web:admin:typecheck",
     "web:tokens": "dart run tool/design_tokens.dart",
     "web:tokens:check": "dart run tool/design_tokens.dart --check",
     "audit:backend-errors:check": "dart tool/audit/backend_error_candidates.dart --check",
@@ -59,7 +57,8 @@
     "design:todo-summary:check": "node tool/design/check_comprehensive_todo_summary.mjs --check",
     "design:parity:check": "node tool/design/check_design_parity.mjs --check",
     "design:public-surfaces:check": "node tool/design/check_public_surface_behavior.mjs --strict",
-    "web:admin-feature-exports:check": "node tool/run.mjs check web:admin-feature-exports"
+    "web:admin-feature-exports:check": "node tool/run.mjs check web:admin-feature-exports",
+    "web:ui-lint:check": "node tool/run.mjs check web:react-ui-lint"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.11",

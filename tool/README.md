@@ -661,29 +661,19 @@ node tool/firebase/check_environment_readiness.mjs \
   --env staging --targets functions:getCrossPathsSuggestions
 ```
 
-The reusable Firebase promotion workflow runs this gate after the downloaded
-package and affected target selection are verified and before Functions runtime
-dependency installation, Firebase CLI installation, or remote mutation. The
-pinned source-analysis parser is installed without lifecycle scripts before
-artifact verification and before cloud authentication.
+`Deploy backend` (`.github/workflows/backend-deploy.yml`) runs this gate after
+planning and parameter materialization and before any remote mutation. A
+not-ready prerequisite stops the run; one the probe cannot confirm only warns.
 
-Routine backend promotion is dev → protected production.
-`backend-staging.yml` separately validates and refreshes a full staging snapshot
-on the first day of each month at 02:17 UTC, with a main-only manual trigger.
-Staging never advances the production queue cursor.
+The backend deploys from an exact `main` commit through `Deploy backend`.
+- **Dev** deploys on every backend-relevant merge.
+- **Prod** deploys after one protected approval.
+- **Staging** refreshes on the first day of each month at 02:17 UTC.
 
-Backend queue selection is artifact-authority based. `Required CI` publishes a
-`catch.ci-delivery-authority/v3` document only after the current main attempt
-owns its exact plan/package artifacts; it records the CI workflow id, run
-number/id/attempt, source SHA, and immutable artifact ids/names/digests.
-`Delivery` scans artifact metadata once, then downloads and verifies one v4
-cursor and one oldest pending authority. It compares run numbers only within
-the same workflow id and requires the selected plan base SHA to equal the
-cursor SHA. Missing/expired authorities and workflow-generation changes fail
-closed instead of skipping queue work.
+Each environment's last deployed commit is the Git tag `deployed/<env>`; see
+`docs/release_operations.md`, "Deploy Backend".
 
-Admin, standalone Host, and Marketing Hosting use the same exact-byte principle without joining
-the backend mutation queue. `_web-hosting-build.yml` produces one environment-
+Admin, standalone Host, and Marketing Hosting keep exact-artifact promotion. `_web-hosting-build.yml` produces one environment-
 bound React or Host Flutter web bundle and `tool/ci/package_web_hosting.mjs` projects it into a
 single-target, lifecycle-hook-free Firebase package with a strict file inventory.
 `_web-hosting-promote.yml` downloads only the recorded artifact id, verifies the
@@ -693,8 +683,8 @@ pinned Firebase CLI before credentials; it never installs source dependencies,
 rebuilds frontend bytes, or rematerializes organizer data. Recovery is terminal-source-
 bound, current-main-only, and rejects older attempts at the same SHA.
 
-`tool/firebase/affected_function_targets.mjs` narrows a verified package for
-promotion from exact Git base/source objects and transitive TypeScript module
+`tool/firebase/affected_function_targets.mjs` plans each `Deploy backend` run
+from exact Git base/source objects and transitive TypeScript module
 dependencies, excluding whole-declaration type-only imports and exports.
 Functions runtime imports use individual generated schemas, validators and
 catalogs; the schema/type boundary gate rejects aggregate runtime imports.
@@ -925,6 +915,15 @@ Organizer listing generation produces two explicit projections: deployable
 
 ## React Web Architecture Gates
 
+The shared ESLint UI preset replaces the old raw-control and class-name scans.
+Run `node tool/run.mjs check web:react-ui-lint` for both apps. Production
+markup and JSX drawing props have app-local bulk suppressions; the checker
+rejects new debt, stale counts and growth above accepted `origin/main`.
+Table/image families wait for styled library components under D17. Do not add
+inline allow markers. After resolving debt, prune with
+`npm exec --workspace website -- eslint 'src/**/*.{js,jsx,ts,tsx}' --prune-suppressions`
+(or `--workspace admin`). Initial counts are seeded once; they only shrink.
+
 The React website/admin surfaces share scanners for route ownership, UI
 primitive ownership, governed component families, and server-state ownership.
 The query-state scanner is a baseline-backed ratchet: current manual async
@@ -935,7 +934,7 @@ reviewed change with a source-level rationale.
 
 ```sh
 node tool/run.mjs check web:react-architecture-boundaries
-node tool/run.mjs check web:react-ui-primitives
+node tool/run.mjs check web:react-ui-lint
 node tool/run.mjs check web:react-component-governance
 node tool/run.mjs check web:react-query-state
 node tool/run.mjs check web:shared-ui-adoption

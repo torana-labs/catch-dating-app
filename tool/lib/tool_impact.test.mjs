@@ -68,7 +68,8 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
     "admin/src/shared/query/queryClient.test.tsx", "admin/src/shared/query/queryClient.tsx",
     "admin/src/shared/query/queryKeys.ts",
   ];
-  const expectedIds = [...productionManifest.ciImpact.mandatoryCheckIds, scanner.id].sort();
+  const expectedIds = [...productionManifest.ciImpact.mandatoryCheckIds, scanner.id,
+    "design:icon-family-usage", "web:react-ui-lint"].sort();
   const cases = [...inputs.map((file) => [file]), cat50Paths,
     [...cat50Paths, "tool/docs/check_doc_metadata.mjs"]];
   for (const changedPaths of cases) {
@@ -86,9 +87,14 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
   }
 });
 
-test("Admin pending owner removal fails closed and unrelated Admin changes stay narrow", () => {
+test("removing all Admin source readers fails closed and unrelated Admin changes stay narrow", () => {
   const broken = structuredClone(productionManifest);
-  delete broken.tools.find((entry) => entry.id === "web:admin-pending-operations").impactPaths;
+  // Remove every declared reader, including the shared ESLint preset. This
+  // keeps the vacuity probe complete when another app-wide check is added.
+  const readers = broken.tools.filter((entry) => entry.impactPaths?.some((pattern) =>
+    matchesGlobPath("admin/src/app/App.tsx", pattern)));
+  assert.ok(readers.some((entry) => entry.id === "web:react-ui-lint"));
+  for (const reader of readers) delete reader.impactPaths;
   const result = planAffectedToolChecks({changedPaths: ["admin/src/app/App.tsx"],
     manifest: broken, componentGraph: productionGraph});
   assert.equal(result.mode, "full");
@@ -99,6 +105,7 @@ test("Admin pending owner removal fails closed and unrelated Admin changes stay 
   const mixed = planAffectedToolChecks({changedPaths: [unrelated, "tool/docs/check_doc_metadata.mjs"],
     manifest: productionManifest, componentGraph: productionGraph});
   assert.equal(mixed.mode, "affected");
+  // Non-Tools Admin paths keep their scanner in the React lane.
   assert.deepEqual(mixed.toolIds, [...productionManifest.ciImpact.mandatoryCheckIds].sort());
 });
 
@@ -349,12 +356,26 @@ test("formerly unmapped inputs select every check that reads them without full f
   }
 });
 
+test("Widgetbook test source selects the icon scanner and fails closed without its owner", () => {
+  const changedPaths = ["widgetbook/test/primitive_goldens_test.dart"];
+  const plan = planAffectedToolChecks({changedPaths, manifest: productionManifest,
+    componentGraph: productionGraph});
+  assert.equal(plan.mode, "affected");
+  assert.deepEqual(plan.toolIds,
+    [...productionManifest.ciImpact.mandatoryCheckIds, "design:icon-family-usage"].sort());
+  const broken = structuredClone(productionManifest);
+  delete broken.tools.find(entry => entry.id === "design:icon-family-usage").impactPaths;
+  const unowned = planAffectedToolChecks({changedPaths, manifest: broken,
+    componentGraph: productionGraph});
+  assert.equal(unowned.mode, "full");
+  assert.deepEqual(unowned.unmappedPaths, changedPaths);
+});
+
 test("Tools-lane inputs that no registered check reads still fail closed", () => {
-  // Only React-lane visual checks, Flutter tests or Operations tests read these.
+  // Only React-lane visual checks or Operations tests read these.
   for (const changedPath of [
     "design/visual_baselines/admin/linux/admin-shared-primitives--metric-card-story.mobile.png",
     "design/visual_baselines/webui/linux/catch-web-ui--button.desktop.png",
-    "widgetbook/test/primitive_goldens_test.dart",
     "operations/test/test-runner.test.mjs",
   ]) {
     const plan = planAffectedToolChecks({changedPaths: [changedPath], manifest: productionManifest,
@@ -528,7 +549,7 @@ test("React dependency graph changes keep a bounded root npm closure", () => {
 
 test("backend deploy helper repairs preserve checks with only Node and root npm setup", () => {
   const changedPaths = [
-    "tool/ci/firebase_delivery_workflow.test.mjs",
+    "tool/firebase/affected_function_targets.test.mjs",
     "tool/deploy_firebase_targets.sh",
   ];
   const plan = planAffectedToolChecks({
@@ -1017,13 +1038,13 @@ test("shared controls and unknown companions still force full backend validation
     "package-lock.json", "unowned-input.xyz",
   ]) {
     const plan = planAffectedToolChecks({
-      changedPaths: [".github/workflows/_firebase-promote.yml", companion],
+      changedPaths: [".github/workflows/_backend-deploy.yml", companion],
       manifest: productionManifest, componentGraph: productionGraph,
     });
     assert.equal(plan.mode, "full", companion);
   }
   assert.equal(planAffectedToolChecks({
-    changedPaths: [".github/workflows/_firebase-promote.yml"],
+    changedPaths: [".github/workflows/_backend-deploy.yml"],
     manifest: productionManifest, componentGraph: productionGraph, mode: "nightly", full: true,
   }).mode, "full");
 });
