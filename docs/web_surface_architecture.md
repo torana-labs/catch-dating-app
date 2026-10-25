@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.40.0
-updated: 2026-10-25
+version: 0.41.0
+updated: 2026-10-26
 owner: web_platform
 status: active
 ---
@@ -47,10 +47,12 @@ the Consumer Flutter application.
 
 ## Next.js candidate and cutover boundary
 
-The public website has a Next.js 16 App Router candidate alongside the current
-Vite/Firebase Hosting deployment. `npm run build --workspace catch-marketing`
-validates/builds both; deployment still consumes `website/dist`. This does not
-switch main traffic or change the consumer Flutter/admin applications.
+The public website is a Next.js 16 App Router render on Cloud Run. Production
+has served it since 20 October 2026, released through the train below.
+`npm run build --workspace catch-marketing` still validates and builds the Vite
+`website/dist` artifact too, which is the rollback build
+([release operations](release_operations.md#website-rollback-to-the-static-vite-build)).
+The consumer Flutter and admin applications are unchanged.
 
 The candidate uses Node 24 and standalone output, including traced monorepo
 packages plus public/static assets. `website/Dockerfile` and its adjacent
@@ -68,12 +70,12 @@ runtime environment override cannot promote an unconfigured preview. Local accep
 loopback Firestore emulator. Docker execution itself requires separate evidence;
 a passing local standalone build is not a container/deployment proof.
 
-The proposed adapter is Firebase Hosting to Cloud Run.
-`website/next-hosting.preview.json` proposes service `catch-website-next-preview`
-in `asia-south1`, keeps the existing direct Function rewrites and redirects,
-and is for a reviewed Hosting preview channel only. It is not wired into the
-production deploy workflow and has not been deployed. Its service name is a
-proposal, not evidence that the service or identity exists. Preserve
+The adapter is Firebase Hosting to Cloud Run.
+`website/next-hosting.preview.json` configures the preview service
+`catch-website-next-preview` in `asia-south1` and keeps the existing direct
+Function rewrites and redirects. It is deployed only to the reviewed
+`next-candidate` preview channel; promotion derives the production
+configuration from it ([below](#exact-container-production-promotion)). Preserve
 existing app-association files, Auth helpers, redirects, and the two direct
 HTTP Function rewrites before any Next catch-all. The standalone HTTP gateway
 is useful for isolated previews; production should retain direct Function
@@ -87,6 +89,11 @@ tenant ownership or document publication; those gates remain independent.
 Local, customer and unrelated runtime hosts ignore forwarding. Missing,
 ambiguous or unknown forwarded origins retain the private shell/noindex policy.
 Do not infer the visitor origin from Next's normalized URL.
+On Cloud Run the proxy's rewrite to the private shell is internal, and the
+shell handler sees the visitor's original URL without the rewrite's `?surface=`.
+The shell therefore takes its route family from the original path. Local and
+container runs proxy the rewrite back to themselves and keep the query, so only
+the deployed preview's smoke check proves the family metadata.
 An explicitly configured preview hostname only enables the public server surface;
 private/custom-form acceptance still needs a recognized Hosting preview origin.
 
@@ -119,7 +126,7 @@ with one CPU, 512 MiB, concurrency 40, a 30-second timeout and zero-to-one
 instances. The `catch-website` Artifact Registry repository holds the tested
 image, deployed by digest. Only the `next-candidate` Firebase Hosting preview
 channel is published, expiring after three days. Production traffic and the
-current static release remain unchanged. Preview runtime/service/image/channel
+live release remain unchanged. Preview runtime/service/image/channel
 identities are retained as workflow artifacts for browser and host-forwarding
 acceptance. A successful preview deployment is not production cutover or proof
 of authenticated/payment flows; the existing cutover gates above still apply.
@@ -146,7 +153,10 @@ with the read-only identity. No image is rebuilt during promotion.
 
 The production service is `catch-website-next` in `asia-south1`, with the same
 read-only identity, one CPU, 512 MiB, concurrency 40, a 30-second timeout and
-zero-to-three instances. The workflow records the current live Hosting version
+up to three instances. One instance is kept warm, so a cold visit from an
+Instagram bio does not wait for start-up. That uses the service-level `--min 1`,
+which counts only revisions receiving traffic. A revision-level minimum would
+keep every Hosting-pinned tagged revision running and billed. The workflow records the current live Hosting version
 as its rollback target. It retains the existing API rewrites, redirects, static
 assets and association files while changing the catch-all to the production
 service with `pinTag: true`. An expiring `next-release` channel exercises the
@@ -507,13 +517,18 @@ collections, a crossed catalog bound returns 503 only on `/`, `/explore/`,
 serving. `website/scripts/next/lifecycleAcceptance.mjs` and
 `failureAcceptance.mjs` exercise both behaviors against the isolated emulator.
 
-There is no cross-request or process cache. Unpublishing takes effect on the
-next server request for discovery routes, and as soon as the read-model
-trigger has rebuilt the organizer's pages (seconds) for organizer and event
-routes. A rebuild that read older sources than the last committed one is
-discarded, so it cannot revive a withdrawn page. Open tabs
-refresh `/api/public-catalog` every 25 seconds and withhold content once a
-read is 30 seconds old (`website/scripts/next/lifecycleAcceptance.mjs`).
+There is no server-side cross-request or process cache. Firebase Hosting's CDN
+keeps the rendered HTML of home, Explore, organiser and event pages for up to
+60 seconds
+([marketing website architecture](marketing_website_architecture.md#nextjs-public-rendering-migration)).
+Unpublishing takes effect on the next server render for discovery routes, and
+as soon as the read-model trigger has rebuilt the organizer's pages (seconds)
+for organizer and event routes. Cached HTML can lag by up to the CDN window. A
+rebuild that read older sources than the last committed one is discarded, so it
+cannot revive a withdrawn page. The browser checks `/api/public-catalog` as soon
+as a page loads and removes withdrawn content at once. Open tabs then refresh
+every 25 seconds and withhold content once a read is 30 seconds old
+(`website/scripts/next/lifecycleAcceptance.mjs`).
 Caching is a separate decision with two forms: accept a bounded staleness
 window for withdrawals, or invalidate from the backend when a listing or event
 is published or withdrawn. The second needs backend Functions delivery.
