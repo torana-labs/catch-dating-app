@@ -1,0 +1,110 @@
+/* Interim component geometry mirrors Dart; chipParity.test.ts pins its values. */
+.chip {
+  --catch-chip-icon-size: 14px;
+  --catch-chip-activity-icon-size: 15px;
+  --catch-chip-activity-icon-gap: 7px;
+  --catch-chip-check-size: 12px;
+  --catch-chip-fill-accent: var(--catch-chip-activity-accent, var(--catch-theme-primary));
+  --catch-chip-solid-ink: var(--catch-chip-activity-ink, var(--catch-theme-primary-ink));
+  --catch-chip-resting-border: color-mix(in srgb, var(--catch-theme-ink3) 90%, var(--catch-theme-ink));
+
+  display: inline-flex;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  vertical-align: middle;
+}
+.chip.control {
+  align-items: center;
+  justify-content: center;
+  min-width: var(--catch-interaction-ios-minimum-extent);
+  min-height: var(--catch-interaction-ios-minimum-extent);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--catch-radius-pill);
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  text-transform: none;
+  cursor: pointer;
+}
+.chip .surface {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  gap: var(--catch-space-s2);
+  box-sizing: border-box;
+  padding: var(--catch-space-s2) var(--catch-space-micro14);
+  border: var(--catch-stroke-hairline) solid var(--catch-theme-line2);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-surface);
+  color: var(--catch-theme-ink);
+  transition: background-color var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    box-shadow var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    transform var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    opacity var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+.chip[data-recipe="selectable"] .surface,
+.chip[data-recipe="choice"] .surface,
+.chip[data-recipe="activity"] .surface { padding: var(--catch-space-micro10) var(--catch-space-s4); }
+.chip.control .surface { border-color: var(--catch-chip-resting-border); }
+.chip[data-selected] .surface {
+  border-color: var(--catch-chip-fill-accent);
+  background: var(--catch-chip-fill-accent);
+  color: var(--catch-chip-solid-ink);
+  box-shadow: 0 3px 14px color-mix(in srgb, var(--catch-theme-ink) 8%, transparent);
+}
+.chip[data-recipe="activity"] .surface {
+  gap: var(--catch-chip-activity-icon-gap);
+  border-color: transparent;
+  background: var(--catch-chip-activity-soft);
+  color: var(--catch-chip-activity-deep);
+}
+:global([data-catch-theme="dark"]) .chip {
+  --catch-chip-fill-accent: var(--catch-chip-activity-accent-dark, var(--catch-theme-primary));
+  --catch-chip-solid-ink: var(--catch-chip-activity-ink-dark, var(--catch-theme-primary-ink));
+  --catch-chip-resting-border: var(--catch-theme-ink3);
+}
+:global([data-catch-theme="dark"]) .chip[data-recipe="activity"] .surface {
+  background: var(--catch-chip-activity-soft-dark);
+  color: var(--catch-chip-activity-accent-dark);
+}
+.chip[data-recipe="activity"][data-emphasis="solid"] .surface {
+  background: var(--catch-chip-fill-accent);
+  color: var(--catch-chip-solid-ink);
+}
+.chip .surface > span:not(.icon) { min-width: 0; overflow-wrap: anywhere; }
+.chip .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--catch-chip-icon-size);
+  height: var(--catch-chip-icon-size);
+}
+.chip[data-recipe="activity"] .icon { width: var(--catch-chip-activity-icon-size); height: var(--catch-chip-activity-icon-size); }
+.chip .icon[data-check] { width: var(--catch-chip-check-size); height: var(--catch-chip-check-size); }
+.chip .icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: var(--catch-stroke-emphasis); stroke-linecap: round; stroke-linejoin: round; }
+.chip .surface::before { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; content: ""; }
+.chip.control:enabled:hover .surface::before { background: currentColor; opacity: var(--catch-opacity-control-overlay-hover); }
+.chip.control:enabled:active .surface::before { background: currentColor; opacity: 0.08; }
+.chip.control:enabled:active .surface { transform: scale(0.97); }
+.chip.control:focus-visible { outline: none; }
+.chip.control:focus-visible .surface {
+  border-color: var(--catch-theme-primary);
+  box-shadow: inset 0 0 0 var(--catch-stroke-hairline) var(--catch-theme-primary),
+    0 0 0 var(--catch-space-micro3) var(--catch-theme-primary-soft);
+}
+.chip[data-disabled] { cursor: default; opacity: 0.40; }
+.chip[data-disabled]:not([data-selected]):not([data-recipe="activity"]) .surface { border-color: var(--catch-theme-line2); }
+@media (prefers-reduced-motion: reduce) {
+  .chip .surface { transition: none; }
+}
+
+.chip .semanticLabel { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
