@@ -1,8 +1,4 @@
-import {
-  AggregateField,
-  FieldPath,
-  Timestamp,
-} from "firebase-admin/firestore";
+import {FieldPath, Timestamp} from "firebase-admin/firestore";
 import {logger} from "firebase-functions";
 import {canonicalMarkets} from "../locations/marketConfig";
 import {validateEventPublicPageDocument} from
@@ -83,31 +79,39 @@ const emptyCounts = (): ReviewCounts => ({
   distribution: {"1": 0, "2": 0, "3": 0, "4": 0, "5": 0},
 });
 
-/** Published-review aggregates, filtered as the organizer stats are. */
+/**
+ * Published-review aggregates, filtered as the organizer stats are. Counts
+ * per rating, all and verified, need only equality filters, so no
+ * composite index; the verified average follows from the verified counts.
+ */
 async function readReviewCounts(
   db: Firestore, organizerId: string
 ): Promise<ReviewCounts> {
   const published = db.collection("reviews")
     .where("organizerId", "==", organizerId)
     .where("moderationStatus", "==", "published");
+  const verified = published.where("verificationStatus", "==", "verified");
   const ratings = ["1", "2", "3", "4", "5"] as const;
-  const [all, verified, ...byRating] = await Promise.all([
-    published.count().get(),
-    published.where("verificationStatus", "==", "verified").aggregate({
-      count: AggregateField.count(),
-      average: AggregateField.average("rating"),
-    }).get(),
-    ...ratings.map((rating) =>
-      published.where("rating", "==", Number(rating)).count().get()),
+  const count = async (query: FirebaseFirestore.Query) =>
+    (await query.count().get()).data().count;
+  const [all, byRating, verifiedByRating] = await Promise.all([
+    count(published),
+    Promise.all(ratings.map((rating) =>
+      count(published.where("rating", "==", Number(rating))))),
+    Promise.all(ratings.map((rating) =>
+      count(verified.where("rating", "==", Number(rating))))),
   ]);
   const distribution = emptyCounts().distribution;
   ratings.forEach((rating, index) => {
-    distribution[rating] = byRating[index].data().count;
+    distribution[rating] = byRating[index];
   });
+  const verifiedCount = verifiedByRating.reduce((sum, item) => sum + item, 0);
+  const verifiedTotal = verifiedByRating.reduce((sum, item, index) =>
+    sum + item * (index + 1), 0);
   return {
-    count: all.data().count,
-    verifiedCount: verified.data().count,
-    verifiedAverage: verified.data().average ?? null,
+    count: all,
+    verifiedCount,
+    verifiedAverage: verifiedCount ? verifiedTotal / verifiedCount : null,
     distribution,
   };
 }

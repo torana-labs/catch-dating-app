@@ -131,8 +131,11 @@ test("publishing builds valid organizer and event pages once",
         events.map((doc) => doc.data())]);
       assert(!serialized.includes("race.course@example.test"));
       assert(!serialized.includes("+918800000001"));
-      assert.deepEqual(page.get("reviewSummary.distribution"),
-        {"1": 0, "2": 0, "3": 1, "4": 1, "5": 2});
+      // Five published reviews; the rating averages the three verified
+      // ones with a 1-5 rating (3, 5 and 5).
+      assert.deepEqual(page.get("reviewSummary"), {readState: "enabled",
+        rating: 13 / 3, count: 5, verifiedCount: 3,
+        distribution: {"1": 0, "2": 0, "3": 1, "4": 1, "5": 2}});
 
       const again = await rebuildOrganizerScope(h.db, h.organizerId,
         {now: at(1000), fanOut: false});
