@@ -125,21 +125,30 @@ function Controlled() {
   );
 }
 
+const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
+
 /**
  * The arrows step through chapters and report the change, and a step holds
- * against the observer until the reader scrolls. The chapter in the
- * viewport's middle starts active, so the play first steps back to the start.
+ * against the observer until the reader scrolls. The observer's first report
+ * picks the chapter in the viewport's middle, so the play lets that report
+ * land, takes one step to hold it, then steps back to the start and forward.
  */
 export const Arrows: Story = {
   parameters: {catchComponent: {id: "shared_scroll_story", routeIds: storyRoutes, states: ["arrows", "controlled"]}},
   render: () => <Controlled />,
   play: async ({canvasElement}) => {
     const canvas = within(canvasElement);
-    const previous = canvas.getByRole("button", {name: "Previous moment"});
-    while (!(previous as HTMLButtonElement).disabled) await userEvent.click(previous);
-    await expect(canvas.getByText("Active chapter: 1")).toBeVisible();
-    await userEvent.click(canvas.getByRole("button", {name: "Next moment"}));
-    await expect(canvas.getByText("Active chapter: 2")).toBeVisible();
+    const previous = canvas.getByRole("button", {name: "Previous moment"}) as HTMLButtonElement;
+    const next = canvas.getByRole("button", {name: "Next moment"}) as HTMLButtonElement;
+    // The first intersection report is delivered after a rendering update;
+    // nothing scrolls before the first step, so no later report can follow.
+    await nextFrame();
+    await nextFrame();
+    await userEvent.click(next.disabled ? previous : next);
+    while (!previous.disabled) await userEvent.click(previous);
+    await expect(await canvas.findByText("Active chapter: 1")).toBeVisible();
+    await userEvent.click(next);
+    await expect(await canvas.findByText("Active chapter: 2")).toBeVisible();
     await expect(previous).toBeEnabled();
   },
 };
