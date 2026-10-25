@@ -1,4 +1,0 @@
-analyzer:
-  exclude:
-    # The example is an independent package and is analyzed from its own root.
-    - example/**

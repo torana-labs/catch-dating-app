@@ -1399,7 +1399,7 @@ test("capture provenance inputs add lightweight freshness without changing sourc
     "packages/catch_tokens/pubspec.yaml", "packages/catch_tokens/lib/example.dart",
     "packages/catch_ui/lib/example.dart", "packages/catch_ui/assets/example.png",
     "packages/catch_ui_lints/pubspec.yaml", "packages/catch_ui_lints/lib/example.dart",
-    "packages/phosphor_flutter/lib/example.dart", "packages/example/pubspec.yaml",
+    "packages/example/pubspec.yaml",
     "packages/example/lib/example.dart", "packages/example/assets/example.png",
     "tool/ui_capture/run_captures.mjs", "tool/lib/repo_paths.mjs",
     "tool/demo/demo_seed/scenarios/host-demo.json",

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.86.1
+version: 1.86.2
 updated: 2026-10-25
 owner: app_architecture
 status: active
@@ -61,8 +61,9 @@ section under 120 lines.
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
 
 Shared foundations are imported through `package:catch_ui/catch_ui.dart`.
-The package owns its branded fonts and licenses and depends only on Flutter,
-`catch_tokens`, Phosphor, and `skeletonizer` pinned to 2.1.3. Loading wrappers
+The package owns its branded fonts, the vendored icon font and their licenses,
+and depends only on Flutter, `catch_tokens`, and `skeletonizer` pinned to
+2.1.3. Loading wrappers
 use Skeletonizer as their single engine for explicit shapes and real-layout
 skeletons, with shared token colors, timing, effect, reduced-motion handling,
 and loading semantics. The separate `shimmer` package is removed in the same
@@ -3648,10 +3649,9 @@ resolution, state, and rendering files remain within 800 lines.
 `lib/routing/go_router.dart` is exempt from the line budget entirely: the route
 inventory requires every `GoRoute` construction to live in that single file, so
 its length tracks route count and is bounded by the route and widget
-inventories rather than a line ratchet. Known generated suffixes, configured
-localization outputs, and exact vendored icon-generator outputs are excluded; a
-directory named `generated` or a generated-file comment alone grants no
-exemption.
+inventories rather than a line ratchet. Known generated suffixes and configured
+localization outputs are excluded; a directory named `generated` or a
+generated-file comment alone grants no exemption.
 
 ## Enforcement And Overrides
 

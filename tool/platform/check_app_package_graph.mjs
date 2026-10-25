@@ -18,8 +18,8 @@ export const packageGraphPolicy = Object.freeze({
   },
   catch_ui: {
     projectRoot: "packages/catch_ui",
-    requiredPackages: ["flutter", "catch_tokens", "phosphor_flutter", "skeletonizer"],
-    allowedPackages: ["flutter", "catch_tokens", "phosphor_flutter", "skeletonizer"],
+    requiredPackages: ["flutter", "catch_tokens", "skeletonizer"],
+    allowedPackages: ["flutter", "catch_tokens", "skeletonizer"],
     requiredVersions: {skeletonizer: "2.1.3"},
     forbiddenPackages: [],
     requiredPlugins: [],
