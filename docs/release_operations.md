@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.15.0
+version: 2.16.0
 updated: 2026-10-25
 owner: recursive_audit_loop
 status: active
@@ -701,7 +701,9 @@ bytes before OIDC, preserves the prior live version, tests an expiring productio
 channel and clones that exact Hosting version to live. It shares the marketing
 Hosting lock; the legacy promoter checks actual live runtime ownership and
 skips static mutation after Next takes over. See `docs/web_surface_architecture.md`
-for the preview, production limits, rollback and acceptance contracts. `prod-mobile` is approval-free and `main`-only; it contains
+for the preview, production limits, rollback and acceptance contracts, and
+[Website rollback to the static Vite build](#website-rollback-to-the-static-vite-build)
+for the operator steps. `prod-mobile` is approval-free and `main`-only; it contains
 only mobile signing, Maps, App Store Connect, and Play-publisher credentials.
 The producer has a matching fail-closed ref guard. Store mutation is isolated in
 the exact promoter, whose four role/platform targets each have their own bounded
@@ -1726,6 +1728,47 @@ publishes a complete immutable artifact set.
 If a `Deploy backend` run fails, fix forward: merge the fix or re-run the
 workflow. The `deployed/<env>` tag only moves after success, so the next run
 redeploys everything since the last successful deploy.
+
+### Website rollback to the static Vite build
+
+`catchdates.com` has served the Next runtime since 20 October 2026. Fix forward
+through the release train when you can. Roll back to the static Vite build only
+when the Next runtime is failing and a fix cannot be released quickly. The owner
+decides; it changes production traffic. Run it from a shell signed in to
+`firebase` and `gcloud` with production Hosting rights.
+
+1. Find the newest static version that live Hosting has served. This lists
+   only finalized versions without the `catch-website-next` catch-all; on
+   25 October 2026 it was `95ea758d07cb4ac2`, released 20 October:
+
+   ```sh
+   curl -s -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+     -H "x-goog-user-project: catch-dating-app-64e51" \
+     "https://firebasehosting.googleapis.com/v1beta1/sites/catch-dating-app-64e51/channels/live/releases?pageSize=100" |
+     jq -r '[.releases[] | select(.version.status == "FINALIZED" and all(.version.config.rewrites[]?; .run.serviceId != "catch-website-next"))][0] | "\(.version.name | split("/") | last) \(.releaseTime)"'
+   ```
+
+   That version carries its own build-time organiser and event snapshot. A
+   listing withdrawn after its release date reappears on the static pages, so
+   check withdrawals since then before choosing it.
+2. Clone it to live:
+   `firebase hosting:clone catch-dating-app-64e51@<version> catch-dating-app-64e51:live --project catch-dating-app-64e51`.
+3. Verify: `curl -sI https://catchdates.com/` has no `x-catch-release` header,
+   the page source has no `/_next/static/`, and a manual run of `Website
+   Production Observability` passes.
+4. Hold the train. Reject `Website Release` approvals while rolled back,
+   because an approved promotion moves live back to Next.
+5. Refresh the static build. The `Marketing Website` promoter only skips
+   while Next owns live, so the next website-relevant merge deploys a current
+   Vite build. It needs a green package build; check the latest run first.
+6. Stop paying for the idle warm instance:
+   `gcloud run services update catch-website-next --project catch-dating-app-64e51 --region asia-south1 --min default`.
+   The next promotion sets it back to one.
+
+To return to Next, approve the next `Website Release` train once the fix is on
+main. To roll back to the previous Next release instead, clone the version in
+that promotion run's `rollback.json` artifact the same way (step 2). The warm
+instance stays with the newest Cloud Run revision, not the older pinned one.
 
 ## Exact-Artifact Promotion And Resume
 
