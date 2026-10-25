@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 109,
+  "version": 110,
   "updated": "2026-10-25",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -3670,6 +3670,178 @@
         ]
       },
       "notes": "Website T4 under D18 (CAT-248). Pinned media beside chapters: the chapter crossing the viewport's middle becomes active, arrows step through chapters with a polite position announcement, inactive chapters recede to the ground's secondary ink (AA), and below 840px the media and controls pin to the top of the band. Search aliases: ScrollytellingSection, StickyStory, PinnedMedia, Walkthrough, StepThrough, FeatureTour, Chapters."
+    },
+    {
+      "id": "shared_date_tile",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchDateTile.tsx",
+      "exportName": "CatchDateTile",
+      "css": [
+        "packages/web-ui/src/components/CatchDateTile.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchDateTile.stories.tsx",
+        "exportName": "Grounds",
+        "states": [
+          "grounds",
+          "phone-size",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon."
+    },
+    {
+      "id": "shared_link_tile",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchLinkTile.tsx",
+      "exportName": "CatchLinkTile",
+      "css": [
+        "packages/web-ui/src/components/CatchLinkTile.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchLinkTile.stories.tsx",
+        "exportName": "Guest",
+        "states": [
+          "pinned",
+          "plain",
+          "new-tab",
+          "subtitle",
+          "owner-stats",
+          "pinned-stats",
+          "accents",
+          "title-only",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249). One link in an organiser's link-in-bio list: icon tile, title, subtitle, an optional owner stats line and an outward arrow; a pinned link takes an accent ground. A new-tab link carries rel noopener and a screen-reader note. Search aliases: LinkButton, LinkCard, LinkRow, BioLink, LinkInBio, LinkItem, LinktreeLink."
+    },
+    {
+      "id": "shared_rating_summary",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchRatingSummary.tsx",
+      "exportName": "CatchRatingSummary",
+      "css": [
+        "packages/web-ui/src/components/CatchRatingSummary.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchRatingSummary.stories.tsx",
+        "exportName": "Distributions",
+        "states": [
+          "many-reviews",
+          "few-reviews",
+          "empty-rows",
+          "without-note",
+          "on-paper",
+          "on-ink",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249). An average rating in the displayXxl step over its star distribution: one coral bar per star count, scaled to the largest row and read by the caller's row label, with an optional policy note. Search aliases: RatingBreakdown, RatingHistogram, ReviewSummary, ScoreSummary, StarDistribution, RatingBars."
+    },
+    {
+      "id": "shared_review_item",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchReviewItem.tsx",
+      "exportName": "CatchReviewItem",
+      "css": [
+        "packages/web-ui/src/components/CatchReviewItem.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchReviewItem.stories.tsx",
+        "exportName": "Rows",
+        "states": [
+          "row",
+          "verified",
+          "unverified",
+          "owner-reply",
+          "reply-action",
+          "unclaimed-note",
+          "card",
+          "card-verified",
+          "card-unverified",
+          "board-reference-rows",
+          "board-reference-cards"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249). One review as an article named by the reviewer: stars, a verification badge slot (Booked on Catch or Unverified), the text, the organiser's reply and a footer slot for Reply. The row recipe is the organiser page's hairline list; the card recipe is the event page's paper card. Search aliases: Review, ReviewCard, ReviewRow, Testimonial, CustomerReview, Comment."
+    },
+    {
+      "id": "shared_star_input",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchStarInput.tsx",
+      "exportName": "CatchStarInput",
+      "css": [
+        "packages/web-ui/src/components/CatchStarInput.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchStarInput.stories.tsx",
+        "exportName": "States",
+        "states": [
+          "unrated",
+          "rated",
+          "disabled",
+          "on-paper",
+          "keyboard",
+          "pointer"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249). Five native radios drawn as stars in 44px targets, so arrow keys choose; stars fill to the hovered or chosen value. Named by visible text or a label. Search aliases: RatingInput, StarPicker, RatingPicker, StarSelector, RateControl."
+    },
+    {
+      "id": "shared_star_rating",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchStarRating.tsx",
+      "exportName": "CatchStarRating",
+      "css": [
+        "packages/web-ui/src/components/CatchStarRating.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchStarRating.stories.tsx",
+        "exportName": "Ratings",
+        "states": [
+          "zero-to-five",
+          "small",
+          "medium",
+          "on-paper",
+          "on-ink",
+          "rounding",
+          "clamped"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249). A read-only rating out of five in coral deep, read as one image with the caller's label; values round to whole stars. Search aliases: Stars, StarDisplay, RatingStars, StarScore, Rating."
     }
   ]
 }

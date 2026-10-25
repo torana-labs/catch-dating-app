@@ -1,0 +1,98 @@
+/*
+ * Website v2 link tile (CAT-249): a 68px row on paper, or on an accent ground
+ * when pinned. Stats take the coral deep shade, AA on paper; on an accent they
+ * take the ground's secondary ink.
+ */
+.tile {
+  composes: ground from "./grounds.module.css";
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--catch-interaction-ios-minimum-extent) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--catch-space-s3);
+  box-sizing: border-box;
+  min-height: 68px;
+  padding: var(--catch-space-micro10) var(--catch-space-micro14) var(--catch-space-micro10) var(--catch-space-micro10);
+  overflow: hidden;
+  border-radius: var(--catch-radius-lg);
+  text-decoration: none;
+  transition: background-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.tile::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+  transition: opacity var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.tile:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+
+.tile:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-palette-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--catch-interaction-ios-minimum-extent);
+  height: var(--catch-interaction-ios-minimum-extent);
+  border-radius: var(--catch-radius-interactive-tile);
+  background: var(--catch-palette-white);
+  color: var(--catch-palette-ink);
+}
+
+.icon > svg {
+  width: 22px;
+  height: 22px;
+}
+
+.tile[data-pinned] .icon { background: color-mix(in srgb, var(--catch-palette-white) 45%, transparent); }
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+  min-width: 0;
+}
+
+.stats {
+  color: var(--catch-palette-coral-deep);
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+  font-size: var(--catch-typography-web-context-size);
+  font-weight: 700;
+  line-height: var(--catch-typography-web-context-line-height);
+}
+
+.tile[data-pinned] .stats { color: var(--catch-theme-ink2); }
+
+.arrow {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile,
+  .tile::after { transition: none; }
+}
