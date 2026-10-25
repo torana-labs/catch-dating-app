@@ -67,10 +67,10 @@ function OrganizerWorkflowReadinessView({
         <StateRow label="Policy" value={String(readiness.summary.policyNeeded)} />
       </AdminIntakeStateGrid>
       <AdminTagList>
-        <CatchBadge tone={readiness.summary.localPromotionPipelineReady ? "neutral" : "neutral"} label={`local pipeline ${readiness.summary.localPromotionPipelineReady ? "ready" : "blocked"}`} />
-        <CatchBadge tone={readiness.summary.publicProjectionReady ? "neutral" : "neutral"} label={`public projection ${readiness.summary.publicProjectionReady ? "ready" : "waiting"}`} />
-        <CatchBadge tone={readiness.summary.claimSyncReady ? "neutral" : "neutral"} label={`claim sync ${readiness.summary.claimSyncReady ? "ready" : "waiting"}`} />
-        <CatchBadge tone={readiness.summary.recurringCrawlEnabled ? "neutral" : "neutral"} label={`crawl ${readiness.summary.recurringCrawlEnabled ? "enabled" : "disabled"}`} />
+        <CatchBadge label={`local pipeline ${readiness.summary.localPromotionPipelineReady ? "ready" : "blocked"}`} />
+        <CatchBadge label={`public projection ${readiness.summary.publicProjectionReady ? "ready" : "waiting"}`} />
+        <CatchBadge label={`claim sync ${readiness.summary.claimSyncReady ? "ready" : "waiting"}`} />
+        <CatchBadge label={`crawl ${readiness.summary.recurringCrawlEnabled ? "enabled" : "disabled"}`} />
       </AdminTagList>
       <AdminIntakeGateList>
         {readiness.gates.map((gate) => (

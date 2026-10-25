@@ -1,4 +1,3 @@
-import {CatchBadge} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   BadgeRow,
@@ -78,44 +77,6 @@ export const RouteLoadingStateStory: Story = {
     },
   },
   render: () => <RouteLoadingState label="Loading organizer route" />,
-};
-
-export const StatusBadgeStory: Story = {
-  name: "Status badges",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "shared_status_badge",
-      routeIds: ["claim", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["verified", "claimed", "unclaimed"],
-    },
-  },
-  render: () => (
-    <BadgeRow>
-      <CatchBadge recipe="solidStatus" label="Verified on Catch" />
-      <CatchBadge recipe="functional" label="Claimed" />
-      <CatchBadge recipe="functional" label="Claimable" />
-    </BadgeRow>
-  ),
-};
-
-export const ReviewSignalBadgeStory: Story = {
-  name: "Review signal badges",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "shared_review_signal_badge",
-      routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["verified", "unverified", "neutral"],
-    },
-  },
-  render: () => (
-    <BadgeRow>
-      <CatchBadge recipe="status" tone="success" label="Verified attendee" />
-      <CatchBadge recipe="status" tone="warning" label="Public source" />
-      <CatchBadge recipe="status" label="Host response" />
-    </BadgeRow>
-  ),
 };
 
 export const BadgeRowStory: Story = {

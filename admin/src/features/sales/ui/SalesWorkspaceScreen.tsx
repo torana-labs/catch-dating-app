@@ -3,20 +3,9 @@ import {renderSalesPartnerOffer} from "./salesPartnerOffer";
 import {useEffect, useMemo, useState} from "react";
 import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
 import {
-  AdminButton,
-  AdminDetailScreenStack,
-  AdminDirectoryScreenStack,
-  AdminForm,
-  AdminTableRow,
-  AdminToolbar,
-  DataTable,
-  EmptyState,
-  PageHeader,
-  Panel,
-  SearchField,
-  SegmentedControl,
-  selectOptions,
-  StateRow,
+  AdminButton, AdminDetailScreenStack, AdminDirectoryScreenStack,
+  AdminForm, AdminTableRow, AdminToolbar, DataTable, EmptyState,
+  PageHeader, Panel, SearchField, SegmentedControl, selectOptions, StateRow,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
 import {useAdminOperationPending} from "../../../shared/pendingOperation";
@@ -24,9 +13,7 @@ import {renderSalesPrivacyWorkspace} from "./SalesPrivacyWorkspace";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {dataMode} from "../../../shared/api/dataMode";
 import {
-  accountFormValues,
-  researchStatusOptions,
-  toLocalDateTimeInput,
+  accountFormValues, researchStatusOptions, toLocalDateTimeInput,
   type SalesWorkspaceController,
   useSalesWorkspaceController,
 } from "../controllers/useSalesWorkspaceController";

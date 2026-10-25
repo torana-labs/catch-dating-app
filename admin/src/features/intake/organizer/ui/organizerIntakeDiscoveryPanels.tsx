@@ -398,7 +398,7 @@ function OrganizerDiscoverySearchPlanView({
       </AdminIntakeStateGrid>
       <AdminTagList>
         {plan.launchCities.map((city) => (
-          <CatchBadge key={city.citySlug} tone={city.missingCategoryIds.length > 0 ? "neutral" : "neutral"} label={`${city.city}: ${city.categoryIds.length} categories`} />
+          <CatchBadge key={city.citySlug} label={`${city.city}: ${city.categoryIds.length} categories`} />
         ))}
       </AdminTagList>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>

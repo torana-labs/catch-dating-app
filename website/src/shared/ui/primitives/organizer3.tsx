@@ -306,7 +306,7 @@ export function ReviewSignalLane({
   );
 }
 
-export function ReviewSignalCard({review}: {review: PublicReviewCardModel}) {
+function ReviewSignalCard({review}: {review: PublicReviewCardModel}) {
   return (
     <article className="review-signal-card">
       <div className="review-signal-card__header">

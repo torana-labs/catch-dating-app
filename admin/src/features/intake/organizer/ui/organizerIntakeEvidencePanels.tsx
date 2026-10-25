@@ -85,7 +85,7 @@ function OrganizerPromotionExecutionView({
         <CatchBadge label={`admin pending x${packet.summary.pendingAdminDecisions}`} />
         <CatchBadge label={`policy pending x${packet.summary.pendingPolicyDecisions}`} />
         <CatchBadge label={`answer slots x${packet.summary.pendingAnswerSlots}`} />
-        <CatchBadge tone={packet.summary.reviewedAnswerPacketsReady > 0 ? "neutral" : "neutral"} label={`ready packets x${packet.summary.reviewedAnswerPacketsReady}`} />
+        <CatchBadge label={`ready packets x${packet.summary.reviewedAnswerPacketsReady}`} />
         <CatchBadge label={`reviewed packets x${packet.summary.reviewedAnswerPackets}`} />
         {packet.summary.reviewedAnswerPacketsStale > 0 ? (
           <CatchBadge label={`stale packets x${packet.summary.reviewedAnswerPacketsStale}`} />
@@ -652,7 +652,7 @@ function OrganizerPublicationReviewPacketsView({
                     </span>
                     <code>{publicationEvidenceReviewLine(record)}</code>
                     <AdminTagList>
-                      <CatchBadge tone={record.reviewerUse.artifactAvailable ? "neutral" : "neutral"} label={record.reviewerUse.artifactAvailable ? "artifact" : "no artifact"} />
+                      <CatchBadge label={record.reviewerUse.artifactAvailable ? "artifact" : "no artifact"} />
                       <CatchBadge label={record.surface.status.replaceAll("_", " ")} />
                       {record.riskFlags.slice(0, 4).map((flag) => (
                         <CatchBadge key={flag} label={flag.replaceAll("_", " ")} />

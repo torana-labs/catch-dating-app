@@ -71,16 +71,6 @@
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },
     {
-      "file": "website/src/stories/FeedbackPrimitives.stories.tsx",
-      "export": "StatusBadgeStory",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
-      "file": "website/src/stories/FeedbackPrimitives.stories.tsx",
-      "export": "ReviewSignalBadgeStory",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
       "file": "website/src/stories/OrganizerSearchSections.stories.tsx",
       "export": "OrganizerResults",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."

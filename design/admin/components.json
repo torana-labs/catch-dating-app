@@ -1814,7 +1814,11 @@
           "organizers"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.badge"
+      ],
+      "comparisonReason": "Publication boundary panel that composes CatchBadge status labels with its own copy and actions; the badge contract owns the labels, not the panel."
     },
     {
       "id": "shared_admin_intake_review_workbench",

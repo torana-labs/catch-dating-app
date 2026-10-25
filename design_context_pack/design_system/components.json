@@ -345,19 +345,29 @@
         ]
       },
       "react": {
-        "symbol": "BadgeControl",
-        "file": "packages/web-ui/src/primitives.tsx",
-        "api": "headless-control",
+        "symbol": "CatchBadge",
+        "file": "packages/web-ui/src/components/CatchBadge.tsx",
+        "api": "styled",
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/primitives.stories.tsx",
-          "exportName": "Feedback",
+          "story": "packages/web-ui/src/components/CatchBadge.stories.tsx",
+          "exportName": "Contract",
           "states": [
-            "inline",
-            "surface-tone-adapter"
+            "metadata",
+            "functional",
+            "semantic-tones",
+            "status",
+            "solid",
+            "live",
+            "on-dark",
+            "privacy",
+            "ticket-status",
+            "optional-field",
+            "icon",
+            "dark"
           ]
         },
-        "notes": "Shared non-interactive inline badge root for status-oriented surface adapters; structural eyebrow labels use catch.typography instead."
+        "notes": "React implements every CatchBadge named constructor as recipe (standard is the default constructor). Flutter's colour overrides (accentColor, backgroundColor, foregroundColor, borderColor) have no React prop: the library takes no styling escape hatches. Functional recipes uppercase the copy with CSS, so the DOM keeps the authored text."
       },
       "design": {
         "figma": {
@@ -494,6 +504,23 @@
               "strong"
             ],
             "notes": "Ticket-status constructor only; preserves its soft pigment and strong dark recipes."
+          },
+          {
+            "name": "color",
+            "type": "color",
+            "required": false,
+            "dartType": "Color",
+            "tsType": "string",
+            "notes": "Ticket-status recipe only: the caller's pigment, a CSS colour on the web."
+          },
+          {
+            "name": "hasError",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "tsType": "boolean",
+            "notes": "Optional recipe only: shows the field's validation feedback."
           }
         ],
         "states": [

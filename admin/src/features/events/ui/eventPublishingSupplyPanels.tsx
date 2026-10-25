@@ -202,8 +202,8 @@ function ExternalEventSupplyTable({
             </td>
             <td>
               <AdminTagRow>
-                <CatchBadge tone={row.importPolicyAcknowledged ? "neutral" : "neutral"} label={`policy ${row.importPolicyAcknowledged ? "ok" : "open"}`} />
-                <CatchBadge tone={row.ownerSafeCopyReviewed ? "neutral" : "neutral"} label={`copy ${row.ownerSafeCopyReviewed ? "ok" : "open"}`} />
+                <CatchBadge label={`policy ${row.importPolicyAcknowledged ? "ok" : "open"}`} />
+                <CatchBadge label={`copy ${row.ownerSafeCopyReviewed ? "ok" : "open"}`} />
                 {row.duplicateCandidateCount > 0 ? (
                   <CatchBadge label={`${row.duplicateCandidateCount} duplicate`} />
                 ) : null}
@@ -278,9 +278,9 @@ function ExternalEventSupplyDetail({
         <StateRow label="Publication" value={event.publicationStatus} />
       </QualityList>
       <AdminTagRow>
-        <CatchBadge tone={event.importPolicyAcknowledged ? "neutral" : "neutral"} label={`import policy ${event.importPolicyAcknowledged ? "ok" : "open"}`} />
-        <CatchBadge tone={event.ownerSafeCopyReviewed ? "neutral" : "neutral"} label={`owner-safe copy ${event.ownerSafeCopyReviewed ? "ok" : "open"}`} />
-        <CatchBadge tone={event.duplicateCandidateCount > 0 ? "neutral" : "neutral"} label={`${event.duplicateCandidateCount} duplicate candidates`} />
+        <CatchBadge label={`import policy ${event.importPolicyAcknowledged ? "ok" : "open"}`} />
+        <CatchBadge label={`owner-safe copy ${event.ownerSafeCopyReviewed ? "ok" : "open"}`} />
+        <CatchBadge label={`${event.duplicateCandidateCount} duplicate candidates`} />
         <CatchBadge label={event.availability} />
       </AdminTagRow>
       <AdminIntakeSourceList>
