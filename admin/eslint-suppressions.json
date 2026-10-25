@@ -1,0 +1,349 @@
+{
+  "src/app/App.tsx": {
+    "react/forbid-elements": {
+      "count": 3
+    }
+  },
+  "src/app/PartnerRouteApp.tsx": {
+    "react/forbid-elements": {
+      "count": 1
+    }
+  },
+  "src/features/access/ui/AccessReviewScreen.tsx": {
+    "react/forbid-elements": {
+      "count": 6
+    }
+  },
+  "src/features/admin-roles/ui/AdminRoleManagementScreen.tsx": {
+    "react/forbid-elements": {
+      "count": 5
+    }
+  },
+  "src/features/data-quality/ui/DataQualityScreen.tsx": {
+    "react/forbid-elements": {
+      "count": 4
+    }
+  },
+  "src/features/events/ui/eventPublishingEditorPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 5
+    }
+  },
+  "src/features/events/ui/eventPublishingReadinessPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 19
+    }
+  },
+  "src/features/events/ui/eventPublishingSupplyPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 17
+    }
+  },
+  "src/features/finance/ui/FinanceOpsScreen.tsx": {
+    "react/forbid-elements": {
+      "count": 3
+    }
+  },
+  "src/features/finance/ui/organizerEntitlementPanel.tsx": {
+    "react/forbid-elements": {
+      "count": 2
+    }
+  },
+  "src/features/growth/ui/GrowthKpiScreen.tsx": {
+    "react/forbid-elements": {
+      "count": 4
+    }
+  },
+  "src/features/intake/events/ui/eventIntakeWorkbench.tsx": {
+    "react/forbid-elements": {
+      "count": 10
+    }
+  },
+  "src/features/intake/operations/ui/IntakeOperationsWorkspace.tsx": {
+    "react/forbid-elements": {
+      "count": 1
+    }
+  },
+  "src/features/intake/organizer/ui/organizerIntakeDiagnostics.tsx": {
+    "react/forbid-elements": {
+      "count": 2
+    }
+  },
+  "src/features/intake/organizer/ui/organizerIntakeDiscoveryPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 33
+    }
+  },
+  "src/features/intake/organizer/ui/organizerIntakeEventPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 45
+    }
+  },
+  "src/features/intake/organizer/ui/organizerIntakeEvidencePanels.tsx": {
+    "react/forbid-elements": {
+      "count": 42
+    }
+  },
+  "src/features/intake/organizer/ui/organizerIntakeReadinessPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 42
+    }
+  },
+  "src/features/intake/organizer/ui/organizerIntakeWorkbench.tsx": {
+    "react/forbid-elements": {
+      "count": 2
+    }
+  },
+  "src/features/marketing/ui/marketingComposerPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 8
+    }
+  },
+  "src/features/marketing/ui/marketingLibraryPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 21
+    }
+  },
+  "src/features/marketing/ui/marketingPreviewPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 5
+    }
+  },
+  "src/features/marketing/ui/marketingWorkflowPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 19
+    }
+  },
+  "src/features/operations/ui/AdminActionExecutionsScreen.tsx": {
+    "react/forbid-elements": {
+      "count": 9
+    }
+  },
+  "src/features/organizers/ui/organizerDetailPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 15
+    }
+  },
+  "src/features/organizers/ui/organizerDirectoryPanels.tsx": {
+    "react/forbid-elements": {
+      "count": 3
+    }
+  },
+  "src/features/overview/ui/OverviewScreen.tsx": {
+    "react/forbid-elements": {
+      "count": 2
+    }
+  },
+  "src/features/partners/ui/PartnerDemoReviewWorkspace.tsx": {
+    "react/forbid-elements": {
+      "count": 2
+    }
+  },
+  "src/features/partners/ui/PartnerOutreachWorkspace.tsx": {
+    "react/forbid-elements": {
+      "count": 2
+    }
+  },
+  "src/features/safety/ui/SafetyTriageScreen.tsx": {
+    "react/forbid-elements": {
+      "count": 5
+    }
+  },
+  "src/features/sales/ui/SalesDemoPanel.tsx": {
+    "react/forbid-elements": {
+      "count": 3
+    }
+  },
+  "src/features/sales/ui/SalesFitQueueWorkspace.tsx": {
+    "react/forbid-elements": {
+      "count": 3
+    }
+  },
+  "src/features/sales/ui/SalesImportedHistoryPanel.tsx": {
+    "react/forbid-elements": {
+      "count": 4
+    }
+  },
+  "src/features/sales/ui/SalesPrivacyWorkspace.tsx": {
+    "react/forbid-elements": {
+      "count": 4
+    }
+  },
+  "src/features/sales/ui/SalesWorkspaceScreen.tsx": {
+    "react/forbid-elements": {
+      "count": 2
+    }
+  },
+  "src/features/users/ui/UserAnalyticsScreen.tsx": {
+    "react/forbid-elements": {
+      "count": 2
+    }
+  },
+  "src/shared/ui/AdminPrimitives/actions.tsx": {
+    "react/forbid-component-props": {
+      "count": 2
+    },
+    "react/forbid-dom-props": {
+      "count": 10
+    },
+    "react/forbid-elements": {
+      "count": 13
+    }
+  },
+  "src/shared/ui/AdminPrimitives/cards.tsx": {
+    "react/forbid-component-props": {
+      "count": 1
+    },
+    "react/forbid-dom-props": {
+      "count": 15
+    },
+    "react/forbid-elements": {
+      "count": 18
+    }
+  },
+  "src/shared/ui/AdminPrimitives/data.tsx": {
+    "react/forbid-component-props": {
+      "count": 2
+    },
+    "react/forbid-dom-props": {
+      "count": 13
+    },
+    "react/forbid-elements": {
+      "count": 20
+    }
+  },
+  "src/shared/ui/AdminPrimitives/forms.tsx": {
+    "react/forbid-component-props": {
+      "count": 2
+    },
+    "react/forbid-dom-props": {
+      "count": 2
+    },
+    "react/forbid-elements": {
+      "count": 8
+    }
+  },
+  "src/shared/ui/AdminPrimitives/intake.tsx": {
+    "react/forbid-component-props": {
+      "count": 3
+    },
+    "react/forbid-dom-props": {
+      "count": 29
+    },
+    "react/forbid-elements": {
+      "count": 34
+    }
+  },
+  "src/shared/ui/AdminPrimitives/intakeWorkbench.tsx": {
+    "react/forbid-component-props": {
+      "count": 2
+    },
+    "react/forbid-dom-props": {
+      "count": 52
+    },
+    "react/forbid-elements": {
+      "count": 115
+    }
+  },
+  "src/shared/ui/AdminPrimitives/marketing-composer.tsx": {
+    "react/forbid-component-props": {
+      "count": 2
+    },
+    "react/forbid-dom-props": {
+      "count": 11
+    },
+    "react/forbid-elements": {
+      "count": 19
+    }
+  },
+  "src/shared/ui/AdminPrimitives/marketing-editor.tsx": {
+    "react/forbid-dom-props": {
+      "count": 24
+    },
+    "react/forbid-elements": {
+      "count": 24
+    }
+  },
+  "src/shared/ui/AdminPrimitives/marketing-library.tsx": {
+    "react/forbid-component-props": {
+      "count": 4
+    },
+    "react/forbid-dom-props": {
+      "count": 13
+    },
+    "react/forbid-elements": {
+      "count": 25
+    }
+  },
+  "src/shared/ui/AdminPrimitives/marketing-shell.tsx": {
+    "react/forbid-component-props": {
+      "count": 4
+    },
+    "react/forbid-dom-props": {
+      "count": 11
+    },
+    "react/forbid-elements": {
+      "count": 18
+    }
+  },
+  "src/shared/ui/AdminPrimitives/media.tsx": {
+    "react/forbid-component-props": {
+      "count": 1
+    },
+    "react/forbid-dom-props": {
+      "count": 12
+    },
+    "react/forbid-elements": {
+      "count": 12
+    }
+  },
+  "src/shared/ui/AdminPrimitives/metrics.tsx": {
+    "react/forbid-dom-props": {
+      "count": 14
+    },
+    "react/forbid-elements": {
+      "count": 16
+    }
+  },
+  "src/shared/ui/AdminPrimitives/overview.tsx": {
+    "react/forbid-component-props": {
+      "count": 3
+    },
+    "react/forbid-dom-props": {
+      "count": 5
+    },
+    "react/forbid-elements": {
+      "count": 5
+    }
+  },
+  "src/shared/ui/AdminPrimitives/shell.tsx": {
+    "react/forbid-component-props": {
+      "count": 4
+    },
+    "react/forbid-dom-props": {
+      "count": 29
+    },
+    "react/forbid-elements": {
+      "count": 30
+    }
+  },
+  "src/shared/ui/AdminPrimitives/trends.tsx": {
+    "react/forbid-dom-props": {
+      "count": 1
+    },
+    "react/forbid-elements": {
+      "count": 2
+    }
+  },
+  "src/shared/ui/AdminPrimitives/workbench.tsx": {
+    "react/forbid-component-props": {
+      "count": 5
+    },
+    "react/forbid-dom-props": {
+      "count": 14
+    },
+    "react/forbid-elements": {
+      "count": 18
+    }
+  }
+}

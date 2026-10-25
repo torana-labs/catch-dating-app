@@ -27,7 +27,7 @@ Loop:
 6. Run the shared React architecture-boundary gate before handoff:
    `node tool/run.mjs check web:react-architecture-boundaries`.
 7. Run the shared React primitive gate before handoff:
-   `node tool/run.mjs check web:react-ui-primitives`.
+   `node tool/run.mjs check web:react-ui-lint`.
 8. Run the shared React component-family gate before handoff:
    `node tool/run.mjs check web:react-component-governance`.
 9. Run the marketing typecheck/build loop for behavior changes:
@@ -53,11 +53,11 @@ not small reusable component atoms. Generated organizer listing coverage starts
 with the route family and major sections; add smaller atoms only after the route
 and section states have checked coverage.
 
-Current React primitive contract: interactive controls must be routed through
-shared website primitives under `website/src/shared/ui/**` or neutral site
-primitives under `website/src/shared/site/**`. Feature, app, and Storybook code
-must not render raw native action/form controls unless a temporary
-`react-ui-primitive-allow: <debt-id>` override is present and tracked.
+Current React primitive contract: production drawing belongs in `@catch/web-ui`.
+The shared ESLint UI preset ratchets existing raw markup and JSX drawing props
+with exact app suppressions that may only shrink. Table/image families wait
+for styled components under D17. Story/test controls retain their shared-owner
+boundary. Inline allow markers do not bypass the preset.
 
 Current React component-family contract: governed component shells must be
 routed through shared website primitives. The first enforced families are the
