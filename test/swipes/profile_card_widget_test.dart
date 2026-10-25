@@ -343,11 +343,7 @@ void main() {
 
       expect(find.text('WHY YOU MIGHT CLICK'), findsOneWidget);
       expect(find.text('You met at Thursday Morning Event'), findsOneWidget);
-      await tester.drag(
-        find.byKey(ProfileBody.scrollViewKey),
-        const Offset(0, -360),
-      );
-      await tester.pump();
+      await _scrollToProfileSection(tester, 'RUNNING RHYTHM');
       expect(find.text('Social miles'), findsOneWidget);
       expect(find.text('5K regular'), findsOneWidget);
       expect(_chip('Social miles'), findsOneWidget);

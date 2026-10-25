@@ -101,7 +101,7 @@ class CatchChoiceButton<T> extends StatelessWidget {
         context,
         color: foreground,
       ),
-      CatchChoiceInputVariant.operational => CatchTextStyles.labelL(
+      CatchChoiceInputVariant.operational => CatchTextStyles.titleS(
         context,
         color: foreground,
       ),

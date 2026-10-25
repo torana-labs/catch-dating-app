@@ -258,9 +258,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                   children: [
                     CatchFieldRow.standard(
                       leading: Icon(CatchIcons.autoAwesomeOutlined),
-                      body: Text(
+                      body: CatchText(
                         context.l10n.programsWorkCommsMomentsRow,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        variant: CatchTextVariant.sectionTitle,
                       ),
                       trailing: Icon(CatchIcons.chevronRightRounded),
                       onTap: () => context.pushNamed(
@@ -272,9 +272,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                     if (access.isManager)
                       CatchFieldRow.standard(
                         leading: Icon(CatchIcons.forumOutlined),
-                        body: Text(
+                        body: CatchText(
                           context.l10n.programsWorkCommsInboxRow,
-                          style: Theme.of(context).textTheme.titleMedium,
+                          variant: CatchTextVariant.sectionTitle,
                         ),
                         trailing: Icon(CatchIcons.chevronRightRounded),
                         onTap: () => context.pushNamed(
@@ -299,9 +299,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                     for (final station in arrivalsStations)
                       CatchFieldRow.standard(
                         leading: Icon(CatchIcons.flightLanding),
-                        body: Text(
+                        body: CatchText(
                           station.label,
-                          style: Theme.of(context).textTheme.titleMedium,
+                          variant: CatchTextVariant.sectionTitle,
                         ),
                         trailing: Icon(CatchIcons.chevronRightRounded),
                         onTap: () => context.pushNamed(
@@ -327,9 +327,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                     for (final station in dispatchStations)
                       CatchFieldRow.standard(
                         leading: Icon(CatchIcons.taxi),
-                        body: Text(
+                        body: CatchText(
                           station.label,
-                          style: Theme.of(context).textTheme.titleMedium,
+                          variant: CatchTextVariant.sectionTitle,
                         ),
                         trailing: Icon(CatchIcons.chevronRightRounded),
                         onTap: () => context.pushNamed(
@@ -355,9 +355,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                     for (final hotel in hotels)
                       CatchFieldRow.standard(
                         leading: Icon(CatchIcons.hotel),
-                        body: Text(
+                        body: CatchText(
                           hotel.name,
-                          style: Theme.of(context).textTheme.titleMedium,
+                          variant: CatchTextVariant.sectionTitle,
                         ),
                         trailing: Icon(CatchIcons.chevronRightRounded),
                         onTap: () => context.pushNamed(
@@ -382,9 +382,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                     for (final fn in functions)
                       CatchFieldRow.standard(
                         leading: Icon(CatchIcons.howToRegOutlined),
-                        body: Text(
+                        body: CatchText(
                           fn.name,
-                          style: Theme.of(context).textTheme.titleMedium,
+                          variant: CatchTextVariant.sectionTitle,
                         ),
                         trailing: Icon(CatchIcons.chevronRightRounded),
                         onTap: () => context.pushNamed(
@@ -409,9 +409,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                   children: [
                     CatchFieldRow.standard(
                       leading: Icon(CatchIcons.groupsOutlined),
-                      body: Text(
+                      body: CatchText(
                         context.l10n.programsGuestsTitle,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        variant: CatchTextVariant.sectionTitle,
                       ),
                       trailing: Icon(CatchIcons.chevronRightRounded),
                       onTap: () => context.pushNamed(
@@ -421,9 +421,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                     ),
                     CatchFieldRow.standard(
                       leading: Icon(CatchIcons.cloudUploadOutlined),
-                      body: Text(
+                      body: CatchText(
                         context.l10n.programsImportTitle,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        variant: CatchTextVariant.sectionTitle,
                       ),
                       trailing: Icon(CatchIcons.chevronRightRounded),
                       onTap: () => context.pushNamed(
@@ -444,9 +444,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                   children: [
                     CatchFieldRow.standard(
                       leading: Icon(CatchIcons.playCircleOutlineRounded),
-                      body: Text(
+                      body: CatchText(
                         context.l10n.programsWorkLeadNowNextRow,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        variant: CatchTextVariant.sectionTitle,
                       ),
                       trailing: Icon(CatchIcons.chevronRightRounded),
                       onTap: () => context.pushNamed(
@@ -456,9 +456,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                     ),
                     CatchFieldRow.standard(
                       leading: Icon(CatchIcons.notificationsOutlined),
-                      body: Text(
+                      body: CatchText(
                         context.l10n.programsWorkLeadAttentionRow,
-                        style: Theme.of(context).textTheme.titleMedium,
+                        variant: CatchTextVariant.sectionTitle,
                       ),
                       trailing: Icon(CatchIcons.chevronRightRounded),
                       onTap: () => context.pushNamed(
@@ -477,9 +477,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                 subtitle: context.l10n.programsWorkLedgerSubtitle,
                 child: CatchFieldRow.standard(
                   leading: Icon(CatchIcons.receiptLongOutlined),
-                  body: Text(
+                  body: CatchText(
                     context.l10n.programsWorkLedgerOpen,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    variant: CatchTextVariant.sectionTitle,
                   ),
                   trailing: Icon(CatchIcons.chevronRightRounded),
                   onTap: () => context.pushNamed(
@@ -496,9 +496,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                 subtitle: context.l10n.programsWorkCountsSubtitle,
                 child: CatchFieldRow.standard(
                   leading: Icon(CatchIcons.factCheckOutlined),
-                  body: Text(
+                  body: CatchText(
                     context.l10n.programsWorkCountsOpen,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    variant: CatchTextVariant.sectionTitle,
                   ),
                   trailing: Icon(CatchIcons.chevronRightRounded),
                   onTap: () => context.pushNamed(
@@ -515,9 +515,9 @@ class ProgramWorkPageBody extends StatelessWidget {
                 subtitle: context.l10n.programsWorkAttendanceSubtitle,
                 child: CatchFieldRow.standard(
                   leading: Icon(CatchIcons.factCheckOutlined),
-                  body: Text(
+                  body: CatchText(
                     context.l10n.programsWorkAttendanceOpen,
-                    style: Theme.of(context).textTheme.titleMedium,
+                    variant: CatchTextVariant.sectionTitle,
                   ),
                   trailing: Icon(CatchIcons.chevronRightRounded),
                   onTap: () => context.pushNamed(

@@ -14,7 +14,7 @@ const script = block.split("        run: |\n")[1].split("\n")
 const condition = block.match(/if: \$\{\{ (.*) \}\}/u)[1];
 const sha = "a".repeat(40);
 
-function fixture(t, {mutate = () => {}, scriptOverride = script, tamper = false} = {}) {
+function fixture(t, {mutate = () => {}, scriptOverride = script, tamper = false, extraCapture = false} = {}) {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "capture-package-step-")));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
   const write = (file, bytes) => {
@@ -27,6 +27,13 @@ function fixture(t, {mutate = () => {}, scriptOverride = script, tamper = false}
     "firebase.json", ".firebaserc",
   ]) write(file, fs.readFileSync(path.join(repoRoot, file)));
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "tool/marketing/capture_manifest.json")));
+  if (extraCapture) {
+    const id = "additional-web-capture";
+    manifest.captures.push({...manifest.captures[0], id, fixtureKey: id,
+      sourcePath: `artifacts/marketing/app-screenshots/${id}.png`,
+      websitePath: `website/public/assets/app-screenshots/${id}.png`});
+    write("tool/marketing/capture_manifest.json", JSON.stringify(manifest));
+  }
   const capturePaths = ["website/public/assets/app-screenshots/manifest.json", ...manifest.captures.map(c => c.websitePath)];
   capturePaths.forEach((file, index) => write(file.replace("website/public/", "website/dist/"),
     Buffer.from(`already-verified-built-bytes-${index}\n`)));
@@ -79,19 +86,19 @@ test("actual package step allows only the intended manual marketing build", () =
   ]) assert.equal(run(inputs, github), false);
 });
 
-test("actual shell packages all 13 capture files with real adapter and provenance verification", t => {
-  const {root, result, capturePaths} = fixture(t);
+for (const extraCapture of [false, true]) test(`actual shell packages the complete capture inventory (extra capture: ${extraCapture})`, t => {
+  const {root, result, capturePaths} = fixture(t, {extraCapture});
   assert.equal(result.status, 0, result.stdout + result.stderr);
   const directory = path.join(root, "build/ci/marketing-hosting-validation");
   const proof = JSON.parse(fs.readFileSync(path.join(directory, "upload/capture-package-proof.json")));
-  assert.equal(proof.files.length, 13);
+  assert.deepEqual(proof.files.map(file => file.path), capturePaths);
   assert.equal(proof.validationOnly, true);
   for (const file of capturePaths) {
     assert.deepEqual(fs.readFileSync(path.join(root, file.replace("website/public/", "website/dist/"))),
       fs.readFileSync(path.join(directory, "package/site", file.replace("website/public/", ""))));
   }
   const inventory = JSON.parse(fs.readFileSync(path.join(directory, "package/web-delivery-inventory.json")));
-  assert.equal(inventory.entries.filter(entry => entry.path.startsWith("site/assets/app-screenshots/")).length, 13);
+  assert.equal(inventory.entries.filter(entry => entry.path.startsWith("site/assets/app-screenshots/")).length, capturePaths.length);
   assert.equal(fs.readFileSync(path.join(root, "gh.trace"), "utf8").trim(),
     "api repos/owner/repo/actions/runs/101/attempts/2");
 });

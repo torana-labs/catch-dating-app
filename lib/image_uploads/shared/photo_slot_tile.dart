@@ -67,8 +67,10 @@ class PhotoSlotTile extends StatelessWidget {
           url!,
           width: double.infinity,
           height: double.infinity,
-          errorBuilder: (context, error, stackTrace) => ColoredBox(
-            color: t.raised,
+          errorBuilder: (context, error, stackTrace) => CatchSurface(
+            duration: Duration.zero,
+            radius: CatchRadius.none,
+            backgroundColor: t.raised,
             child: Center(
               child: Icon(
                 CatchIcons.brokenImageOutlined,
@@ -119,8 +121,10 @@ class PhotoSlotTile extends StatelessWidget {
             children: [
               content,
               if (isLoading)
-                ColoredBox(
-                  color: CatchTokens.editorialBlack.withValues(
+                CatchSurface(
+                  duration: Duration.zero,
+                  radius: CatchRadius.none,
+                  backgroundColor: CatchTokens.editorialBlack.withValues(
                     alpha: CatchOpacity.photoUploadLoadingScrim,
                   ),
                   child: const Center(
@@ -182,14 +186,14 @@ class PhotoSlotTile extends StatelessWidget {
                     ),
                   ),
                 ),
-              Material(
-                type: MaterialType.transparency,
+              CatchSurface(
+                tone: CatchSurfaceTone.transparent,
+                radius: CatchRadius.none,
                 borderRadius: borderRadius,
                 clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: isActive && !isLoading ? onTap : null,
-                  borderRadius: borderRadius,
-                ),
+                onTap: isActive && !isLoading ? onTap : null,
+                duration: Duration.zero,
+                child: const SizedBox.expand(),
               ),
               if (!isLoading && onDelete != null)
                 Positioned(
@@ -200,24 +204,18 @@ class PhotoSlotTile extends StatelessWidget {
                         .imageUploadsPhotoSlotMessageDeletePhotoValue1(
                           value1: index + 1,
                         ),
-                    child: Material(
-                      color: t.surface.withValues(
+                    child: CatchIconAction(
+                      key: PhotoGridKeys.delete(index),
+                      variant: CatchIconActionVariant.plain,
+                      size: CatchLayout.photoSlotDeleteExtent,
+                      backgroundColor: t.surface.withValues(
                         alpha: CatchOpacity.photoSlotDeleteChrome,
                       ),
-                      shape: const CircleBorder(),
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
-                        key: PhotoGridKeys.delete(index),
-                        customBorder: const CircleBorder(),
-                        onTap: onDelete,
-                        child: SizedBox.square(
-                          dimension: CatchLayout.photoSlotDeleteExtent,
-                          child: Icon(
-                            CatchIcons.closeRounded,
-                            size: CatchIcon.sm,
-                            color: t.ink,
-                          ),
-                        ),
+                      onPressed: onDelete,
+                      child: Icon(
+                        CatchIcons.closeRounded,
+                        size: CatchIcon.sm,
+                        color: t.ink,
                       ),
                     ),
                   ),

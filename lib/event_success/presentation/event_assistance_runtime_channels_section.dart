@@ -98,9 +98,9 @@ class EventAssistanceRuntimeChannelsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           l.eventAssistanceRuntimeChannels,
-          style: Theme.of(context).textTheme.titleMedium,
+          variant: CatchTextVariant.sectionTitle,
         ),
         gapH8,
         CatchText(

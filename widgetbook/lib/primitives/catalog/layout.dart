@@ -205,7 +205,11 @@ Widget catchScrollTerminalGapCatalogStates(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(label, style: CatchTextStyles.fieldRowTitle(context)),
+        CatchText(
+          label,
+          variant: CatchTextVariant.bodyLead,
+          color: CatchTokens.of(context).ink,
+        ),
         gapH4,
         Text(description, style: CatchTextStyles.supporting(context)),
         gapH8,

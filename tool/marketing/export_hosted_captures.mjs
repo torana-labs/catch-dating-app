@@ -94,15 +94,17 @@ export function canonicalInventory(manifest) {
   const ids = new Set();
   const fixtures = new Set();
   for (const capture of manifest.captures) {
+    // An app capture renders a catalog fixture; a web capture renders a story.
+    const web = capture.kind === "web-capture";
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(capture.id) || ids.has(capture.id) ||
-        fixtures.has(capture.fixtureKey) || capture.status !== "active" ||
+        (web ? typeof capture.story?.id !== "string" : fixtures.has(capture.fixtureKey)) || capture.status !== "active" ||
         capture.device !== "iphone-17-pro" ||
         capture.sourcePath !== `artifacts/marketing/app-screenshots/${capture.id}.png` ||
         capture.websitePath !== `website/public/assets/app-screenshots/${capture.id}.png`) {
       throw new Error("Invalid, duplicate or unsafe canonical capture inventory.");
     }
     ids.add(capture.id);
-    fixtures.add(capture.fixtureKey);
+    if (!web) fixtures.add(capture.fixtureKey);
   }
   return manifest.captures;
 }
@@ -144,7 +146,8 @@ export function readProvenance(bytes) {
  */
 export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowSha,
   repository, runId, runAttempt, request, platform = process.platform,
-  sfFont = "/System/Library/Fonts/SFNS.ttf", mode = "render", seeds = new Map()}) {
+  sfFont = "/System/Library/Fonts/SFNS.ttf", mode = "render", seeds = new Map(),
+  storybookDir = null, playwrightDir = null}) {
   if (mode !== "render" && mode !== "reuse") throw new Error("Capture export mode must be render or reuse.");
   for (const sha of [sourceSha, workflowSha]) {
     if (!/^[a-f0-9]{40}$/u.test(sha ?? "")) throw new Error("Full immutable source/workflow SHA required.");
@@ -215,6 +218,16 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
   if (!rendering && renderIds.size) {
     throw new Error(`Captures need rendering, which reuse cannot do: ${[...renderIds].join(", ")}`);
   }
+  // Web captures render from a website Storybook built on Linux, with the
+  // pinned Playwright installed for this job alone.
+  const webRenders = captures.filter(c => renderIds.has(c.id) && c.kind === "web-capture");
+  if (webRenders.length && (!storybookDir || !playwrightDir)) {
+    throw new Error(`Web captures need a built Storybook and Playwright: ${webRenders.map(c => c.id).join(", ")}`);
+  }
+  const playwright = webRenders.length ? JSON.parse(fs.readFileSync(path.join(playwrightDir, "node_modules",
+    "playwright", "package.json"), "utf8")).version : null;
+  // Which Storybook build the web captures were rendered from.
+  const storybookIndexSha256 = webRenders.length ? sha256(fs.readFileSync(path.join(storybookDir, "index.json"))) : null;
   const reusedBytes = new Map(captures.filter(c => !renderIds.has(c.id)).map(c =>
     [c.id, fs.readFileSync(regularFile(root, c.sourcePath))]));
   for (const capture of captures) {
@@ -231,7 +244,8 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
   for (const file of [designPath, websiteManifestPath]) fs.unlinkSync(path.join(root, file));
   const commands = [
     ...(renderIds.size ? [["tool/marketing/export_app_screenshots.mjs", "--update",
-      "--ids", [...renderIds].join(","), "--sf-font", sfFont]] : []),
+      "--ids", [...renderIds].join(","), "--sf-font", sfFont,
+      ...(webRenders.length ? ["--storybook", storybookDir, "--playwright-dir", playwrightDir] : [])]] : []),
     ["tool/marketing/export_app_screenshots.mjs", "--update-design-json"],
     ["tool/marketing/sync_website_media.mjs", "--update"],
     ["tool/marketing/export_app_screenshots.mjs", "--check"],
@@ -276,7 +290,7 @@ export function exportHostedCaptures({sourceDir, sourceSha, outputDir, workflowS
     ...(request ? {workflowDefinitionSha: request.workflowDefinitionSha, request} : {}),
     runUrl: `https://github.com/${repository}/actions/runs/${runId}/attempts/${runAttempt}`,
     exporterSha256: sha256(fs.readFileSync(fileURLToPath(import.meta.url))),
-    toolchain: {node: process.version, flutter, os: rendering ? execute("sw_vers", [], true) : execute("uname", ["-sr"], true),
+    toolchain: {node: process.version, flutter, playwright, storybookIndexSha256, os: rendering ? execute("sw_vers", [], true) : execute("uname", ["-sr"], true),
       architecture: process.arch, runnerImage: process.env.ImageVersion ?? null},
     commands, captures: records, files};
   fs.mkdirSync(outputDir, {recursive: true});
@@ -324,7 +338,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
         workflowSha: request.workflowSha, repository: process.env.GITHUB_REPOSITORY,
         runId: process.env.GITHUB_RUN_ID, runAttempt: process.env.GITHUB_RUN_ATTEMPT, request,
         mode: process.argv.includes("--reuse") ? "reuse" : "render",
-        seeds: seedsFrom(process.env.CAPTURE_SEED_DIR, process.env.CAPTURE_SOURCE_DIR)});
+        seeds: seedsFrom(process.env.CAPTURE_SEED_DIR, process.env.CAPTURE_SOURCE_DIR),
+        storybookDir: process.env.CAPTURE_STORYBOOK_DIR || null,
+        playwrightDir: process.env.CAPTURE_PLAYWRIGHT_DIR || null});
       const reused = receipt.captures.filter(capture => capture.disposition === "reused").length;
       console.log(`Validated ${receipt.captures.length} captures from ${receipt.sourceSha} (${reused} reused).`);
     }

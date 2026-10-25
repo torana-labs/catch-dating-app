@@ -179,9 +179,10 @@ class _OtpStepState extends ConsumerState<OtpStep> {
             width: CatchSpacing.s6,
           ),
           gapW8,
-          Text(
+          CatchText(
             data.countryCode,
-            style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
+            variant: CatchTextVariant.bodyLead,
+            color: t.ink,
           ),
           gapW8,
           SizedBox(
@@ -194,13 +195,13 @@ class _OtpStepState extends ConsumerState<OtpStep> {
           ),
           gapW8,
           Expanded(
-            child: Text(
+            child: CatchText(
               viewState.maskedNationalPhoneNumber.isEmpty
                   ? l10n.authYourNumber
                   : viewState.maskedNationalPhoneNumber,
+              variant: CatchTextVariant.bodyLead,
+              color: t.ink,
               maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
             ),
           ),
         ],

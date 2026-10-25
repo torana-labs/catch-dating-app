@@ -122,11 +122,11 @@ class _InheritedOrganizerLogo extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              CatchText(
                 organizerName,
-                style: CatchTextStyles.labelL(context, color: t.ink),
+                variant: CatchTextVariant.titleS,
+                color: t.ink,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
               gapH2,
               CatchText(

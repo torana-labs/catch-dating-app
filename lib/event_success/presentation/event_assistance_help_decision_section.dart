@@ -112,9 +112,9 @@ class _EventAssistanceHelpDecisionSectionState
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
+        CatchText(
           row.displayName ?? l10n.eventAssistanceHelpUnknownGuest,
-          style: Theme.of(context).textTheme.titleLarge,
+          variant: CatchTextVariant.titleL,
         ),
         gapH8,
         CatchText(

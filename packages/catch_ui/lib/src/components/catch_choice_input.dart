@@ -393,8 +393,9 @@ class _CatchChoiceInputState<T> extends State<CatchChoiceInput<T>> {
               CatchChoiceInputVariant.mono => CatchTextStyles.monoLabel(
                 context,
               ),
-              CatchChoiceInputVariant.operational => CatchTextStyles.labelL(
+              CatchChoiceInputVariant.operational => CatchTextStyles.titleS(
                 context,
+                color: CatchTokens.of(context).ink,
               ),
               _ => CatchTextStyles.tabLabel(context, selected: true),
             };
