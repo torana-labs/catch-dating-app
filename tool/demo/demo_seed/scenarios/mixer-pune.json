@@ -1,0 +1,186 @@
+{
+  "schemaVersion": 2,
+  "id": "mixer-pune",
+  "label": "Pune Games Night Mixer",
+  "description": "Fictional Baner games-night mixer where teams rotate between game tables each round, with one mission and a recap. Draft capture input, never a seed world or an availability claim.",
+  "uses": [
+    "marketing-capture"
+  ],
+  "locale": "en-IN",
+  "timeZone": "Asia/Kolkata",
+  "currency": "INR",
+  "moments": {
+    "planning": "2026-10-20T11:00:00",
+    "today": "2026-10-23T16:00:00",
+    "live": "2026-10-23T20:40:00",
+    "followUp": "2026-10-24T10:00:00"
+  },
+  "host": {
+    "uid": "demo-host-mixer-pune",
+    "personaId": "in_saurabh_kelkar_048",
+    "displayName": "Saurabh Kelkar",
+    "firstName": "Saurabh",
+    "phoneNumber": "+919000000401",
+    "email": "host@example.test"
+  },
+  "organizer": {
+    "id": "club-mixer-pune",
+    "name": "Third Turn Games Club",
+    "description": "Fictional Baner board-games café club that runs a weekly games night for people new to the city.",
+    "city": "pune",
+    "area": "Baner",
+    "tags": [
+      "games-night",
+      "board-games",
+      "mixer"
+    ],
+    "memberCount": 0,
+    "rating": 0,
+    "reviewCount": 0
+  },
+  "venues": [
+    {
+      "id": "third-turn-cafe",
+      "name": "Third Turn Café",
+      "area": "Baner",
+      "lat": 18.5612,
+      "lng": 73.7838,
+      "directions": "First floor, above the bakery. The host is at the games shelf by the window."
+    }
+  ],
+  "people": [
+    {
+      "id": "p01",
+      "personaId": "in_sayali_gokhale_045"
+    },
+    {
+      "id": "p02",
+      "personaId": "in_chinmay_paranjape_052"
+    },
+    {
+      "id": "p03",
+      "personaId": "in_gauri_deshpande_022"
+    },
+    {
+      "id": "p04",
+      "personaId": "in_omkar_jadhav_023"
+    },
+    {
+      "id": "p05",
+      "personaId": "in_rutuja_bapat_047"
+    },
+    {
+      "id": "p06",
+      "personaId": "in_yash_thakur_025"
+    },
+    {
+      "id": "p07",
+      "personaId": "in_shruti_kale_024"
+    },
+    {
+      "id": "p08",
+      "personaId": "in_aniket_pawar_046"
+    },
+    {
+      "id": "p09",
+      "personaId": "in_mrunal_joshi_049"
+    },
+    {
+      "id": "p10",
+      "personaId": "in_harsh_agarwal_050"
+    },
+    {
+      "id": "p11",
+      "personaId": "in_nikita_pereira_051"
+    }
+  ],
+  "events": [
+    {
+      "id": "event-mixer-pune-games-night",
+      "name": "Friday Games Night Mixer",
+      "description": "A fictional games night with three tables and three games. Teams of three move to a new table and new teammates each round, then everyone gets one mission before the last round.",
+      "venueId": "third-turn-cafe",
+      "civilDate": "2026-10-23",
+      "startTime": "19:30",
+      "endTime": "22:00",
+      "activityKind": "openActivity",
+      "customActivityLabel": "Games night",
+      "format": {
+        "interactionModel": "teamRotations",
+        "admissionPreset": "openCapacity",
+        "playbookId": "pub_quiz_team_mixer",
+        "selectedModuleIds": [
+          "qr_check_in",
+          "host_script",
+          "social_missions",
+          "decomposed_feedback",
+          "host_analytics",
+          "safety_controls"
+        ],
+        "hostGoal": "Reshuffle teams every round so each guest plays with most of the room, and give everyone one mission before the last game."
+      },
+      "capacity": 12,
+      "priceInPaise": 0,
+      "guestPerspective": {
+        "viewer": "p01",
+        "wingmanTarget": "p02"
+      },
+      "attendance": [
+        {
+          "personId": "p01",
+          "bookedAt": "2026-10-20T12:20:00",
+          "checkedInAt": "2026-10-23T19:06:00"
+        },
+        {
+          "personId": "p02",
+          "bookedAt": "2026-10-20T13:05:00",
+          "checkedInAt": "2026-10-23T19:12:00"
+        },
+        {
+          "personId": "p03",
+          "bookedAt": "2026-10-20T18:40:00",
+          "checkedInAt": "2026-10-23T19:09:00"
+        },
+        {
+          "personId": "p04",
+          "bookedAt": "2026-10-20T21:15:00",
+          "checkedInAt": "2026-10-23T19:18:00"
+        },
+        {
+          "personId": "p05",
+          "bookedAt": "2026-10-21T09:30:00",
+          "checkedInAt": "2026-10-23T19:15:00"
+        },
+        {
+          "personId": "p06",
+          "bookedAt": "2026-10-21T13:10:00",
+          "checkedInAt": "2026-10-23T19:24:00"
+        },
+        {
+          "personId": "p07",
+          "bookedAt": "2026-10-21T19:45:00",
+          "checkedInAt": "2026-10-23T19:21:00"
+        },
+        {
+          "personId": "p08",
+          "bookedAt": "2026-10-22T08:50:00",
+          "checkedInAt": "2026-10-23T19:28:00"
+        },
+        {
+          "personId": "p09",
+          "bookedAt": "2026-10-22T12:35:00",
+          "checkedInAt": "2026-10-23T19:33:00"
+        },
+        {
+          "personId": "p10",
+          "bookedAt": "2026-10-22T20:05:00"
+        },
+        {
+          "personId": "p11",
+          "bookedAt": "2026-10-22T22:30:00",
+          "cancelledAt": "2026-10-23T13:40:00"
+        }
+      ]
+    }
+  ]
+}

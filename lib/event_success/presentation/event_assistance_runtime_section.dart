@@ -125,13 +125,13 @@ class _EventAssistanceRuntimeSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
+        CatchText(
           widget.phase == EventAssistanceRuntimePhase.retryRequired
               ? l.eventAssistanceRuntimePending
               : busy
               ? l.eventAssistanceRuntimeSaving
               : runtimeStatusLabel(l, widget.view.status),
-          style: Theme.of(context).textTheme.titleLarge,
+          variant: CatchTextVariant.titleL,
         ),
         gapH12,
         CatchText(
@@ -160,13 +160,13 @@ class _EventAssistanceRuntimeSectionState
           ),
         if (!_editable)
           for (final entry in value.routes.indexed) ...[
-            Text(
+            CatchText(
               [
                 l.eventAssistanceRuntimeFirst,
                 l.eventAssistanceRuntimeSecond,
                 l.eventAssistanceRuntimeThird,
               ][entry.$1],
-              style: Theme.of(context).textTheme.titleMedium,
+              variant: CatchTextVariant.sectionTitle,
             ),
             CatchText(
               _senderSummary(entry.$2),

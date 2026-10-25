@@ -184,10 +184,7 @@ class ProgramUnplacedGuestRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            guest.displayName,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          CatchText(guest.displayName, variant: CatchTextVariant.sectionTitle),
           CatchMetaRow(
             icon: CatchIcons.keyOutlined,
             label: suggested != null
@@ -238,9 +235,9 @@ class ProgramStayRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             stay.guestDisplayName,
-            style: Theme.of(context).textTheme.titleMedium,
+            variant: CatchTextVariant.sectionTitle,
           ),
           CatchMetaRow(
             icon: CatchIcons.keyOutlined,
@@ -300,11 +297,11 @@ class ProgramRoomBlockRow extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             block.roomType != null
                 ? '${block.label} · ${block.roomType}'
                 : block.label,
-            style: Theme.of(context).textTheme.titleMedium,
+            variant: CatchTextVariant.sectionTitle,
           ),
           CatchMetaRow(
             icon: CatchIcons.keyOutlined,
@@ -475,9 +472,9 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          CatchText(
             context.l10n.programsRoomsBlockLabel,
-            style: Theme.of(context).textTheme.labelMedium,
+            variant: CatchTextVariant.statusLabel,
           ),
           gapH8,
           for (final option in <(String?, String)>[
@@ -493,9 +490,9 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
                     ? CatchIcons.radioButtonCheckedRounded
                     : CatchIcons.radioButtonUncheckedRounded,
               ),
-              body: Text(
+              body: CatchText(
                 option.$2,
-                style: Theme.of(context).textTheme.titleMedium,
+                variant: CatchTextVariant.sectionTitle,
               ),
               onTap: _placementLocked || _busy
                   ? null
@@ -517,9 +514,9 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
             ],
           ),
           gapH12,
-          Text(
+          CatchText(
             context.l10n.programsRoomsStatusLabel,
-            style: Theme.of(context).textTheme.labelMedium,
+            variant: CatchTextVariant.statusLabel,
           ),
           gapH8,
           Wrap(

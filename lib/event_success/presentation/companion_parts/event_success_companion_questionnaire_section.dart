@@ -271,8 +271,11 @@ class QuestionProgressRail extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(CatchRadius.pill),
+          child: CatchSurface(
+            duration: Duration.zero,
+            tone: CatchSurfaceTone.transparent,
+            radius: CatchRadius.pill,
+            clipBehavior: Clip.antiAlias,
             child: LinearProgressIndicator(
               minHeight: CatchSpacing.s2,
               value: questionCount == 0 ? 0 : answeredCount / questionCount,

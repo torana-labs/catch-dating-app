@@ -203,9 +203,10 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
                   },
                 ),
                 gapH12,
-                Text(
+                CatchText(
                   context.l10n.hostSendsDeliveryTime,
-                  style: CatchTextStyles.fieldRowTitle(context),
+                  variant: CatchTextVariant.bodyLead,
+                  color: CatchTokens.of(context).ink,
                 ),
                 gapH8,
                 CatchText(
@@ -251,9 +252,10 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
                   ),
                 ],
                 gapH12,
-                Text(
+                CatchText(
                   context.l10n.hostsHostAudienceRecipients,
-                  style: CatchTextStyles.fieldRowTitle(context),
+                  variant: CatchTextVariant.bodyLead,
+                  color: CatchTokens.of(context).ink,
                 ),
                 gapH8,
                 CatchField<HostSavedAudience>.select(

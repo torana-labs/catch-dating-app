@@ -540,7 +540,11 @@ class EventDockStatusText extends StatelessWidget {
       children: [
         Icon(icon, color: t.primary, size: CatchIcon.md),
         gapW6,
-        Text(label, style: CatchTextStyles.labelL(context)),
+        CatchText(
+          label,
+          variant: CatchTextVariant.titleS,
+          color: CatchTokens.of(context).ink,
+        ),
       ],
     );
   }

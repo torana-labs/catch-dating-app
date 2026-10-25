@@ -73,11 +73,9 @@ class ClubShareCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    context.l10n.clubsClubShareCardTextClubOnCatch,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.kicker(context, color: t.primary),
+                  CatchKickerText(
+                    label: context.l10n.clubsClubShareCardTextClubOnCatch,
+                    color: t.primary,
                   ),
                   gapH6,
                   Text(

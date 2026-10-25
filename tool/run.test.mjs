@@ -383,7 +383,7 @@ test("same-run React sharing preserves standalone checks and exact command bound
   fs.writeFileSync(path.join(fixture, "tool/build_contract.mjs"),
     'import fs from "node:fs"; fs.appendFileSync("browser-runs.txt", `contract ${process.argv[2]}\\n`); if (process.env.FAIL_BUILD_CONTRACT) process.exit(23);\n');
   const a11y = "npm --workspace catch-marketing run test:storybook:a11y";
-  const visuals = "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check";
+  const visuals = "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report";
   const siteBuild = "npm --prefix website run build";
   const storybookBuild = "npm --workspace catch-marketing run build:storybook";
   mutateFixtureManifest(fixture, (manifest) => {
@@ -408,7 +408,7 @@ test("same-run React sharing preserves standalone checks and exact command bound
     "--workspace catch-marketing run test:storybook:a11y",
     "visual --self-test",
     "--workspace catch-marketing run build:storybook",
-    "visual --surface website --check",
+    "visual --surface website --report",
     "contract postbuild",
     "--prefix website run build",
     "contract storybook-config",
@@ -806,7 +806,7 @@ test("capture preflight follows executable media checks and exact React delegati
     ["marketing:website-storybook", "npm --workspace catch-marketing run build:storybook", true, false],
     ["marketing:website-storybook-a11y", "npm --workspace catch-marketing run test:storybook:a11y", false, true],
     ["web:storybook-visuals", "node tool/web/check_storybook_visuals.mjs --self-test", false, false],
-    ["web:storybook-visuals", "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check", false, true],
+    ["web:storybook-visuals", "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report", false, true],
   ];
   for (const [id, command, shared, expected] of cases) {
     for (const full of [false, true]) {

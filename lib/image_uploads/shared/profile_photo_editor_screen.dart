@@ -408,8 +408,10 @@ class ProfilePhotoEditorPreview extends StatelessWidget {
 
     if (loading) {
       return CatchSkeleton.custom(
-        child: const ColoredBox(
-          color: CatchTokens.editorialWhite,
+        child: const CatchSurface(
+          duration: Duration.zero,
+          radius: CatchRadius.none,
+          backgroundColor: CatchTokens.editorialWhite,
           child: SizedBox.expand(),
         ),
       );
@@ -434,8 +436,10 @@ class ProfilePhotoEditorPreview extends StatelessWidget {
     if (existingUrl != null) {
       return CatchNetworkImage(existingUrl);
     }
-    return ColoredBox(
-      color: t.primarySoft,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: t.primarySoft,
       child: Center(
         child: Icon(CatchIcons.addPhotoAlternateOutlined, color: t.primary),
       ),

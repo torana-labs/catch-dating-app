@@ -33,8 +33,11 @@ change and publishes an LCOV plus feature-level Markdown coverage artifact.
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
 checked 0.30% macOS raster tolerance, deterministic headless app-shell wrappers,
 and a bounded native macOS app-shell smoke sequentially for relevant changes,
-on weekdays, and on manual dispatch; failed golden images are retained as CI
-artifacts. The macOS runner lives in `apps/consumer`, so run native passes
+on weekdays, and on manual dispatch. CI sets `CATCH_GOLDEN_REPORT`, so golden
+pixel changes and missing baselines are listed in the job summary with their
+images retained as CI artifacts instead of failing; render errors and
+non-golden expectations still fail. Local `flutter test test/goldens` without
+that variable stays strict. The macOS runner lives in `apps/consumer`, so run native passes
 from there with a device id and scope—for example,
 `(cd apps/consumer && bash ../../tool/test_app_shell_integration.sh macos smoke)`
 or `... macos all`. Each native suite has a thin entrypoint in
