@@ -14,6 +14,11 @@
       "reason": "Public Google Ads conversion destination in default-disabled transport configuration, not visible marketing copy or a credential."
     },
     {
+      "file": "website/src/app/next/publicPageCache.ts",
+      "text": "public, s-maxage=${PUBLIC_PAGE_CACHE_SECONDS}",
+      "reason": "HTTP Cache-Control header value for the CDN window of public catalog pages, not visible marketing copy."
+    },
+    {
       "file": "website/src/shared/site/SiteFooter.tsx",
       "text": "Catch home",
       "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."

@@ -9,6 +9,8 @@ import {initializeApp} from "firebase-admin/app";
 import {getFirestore} from "firebase-admin/firestore";
 import {chromium} from "playwright";
 import {organizerFixture} from "./organizerFixture.mjs";
+import {sharedCachePage} from "./deployedSmoke.mjs";
+import {PUBLIC_PAGE_CACHE_CONTROL} from "../../src/app/next/publicPageCache.ts";
 import {prepareStandalone} from "./prepareStandalone.mjs";
 
 if (process.env.FIRESTORE_EMULATOR_HOST !== "127.0.0.1:8765") throw new Error("Isolated emulator required");
@@ -29,8 +31,13 @@ async function request(origin, route, status, options) {
   const response = await fetch(origin + route, {...options, redirect: "manual"});
   const body = await response.text();
   assert.equal(response.status, status, `${origin}${route} Location=${response.headers.get("location")}`);
-  assert.match(response.headers.get("cache-control"), /no-store/);
+  // Only an authorized catalog page may enter the shared cache; withdrawn,
+  // unavailable, data and private responses stay no-store.
+  if (status === 200 && sharedCachePage(new URL(route, origin).pathname)) {
+    assert.equal(response.headers.get("cache-control"), PUBLIC_PAGE_CACHE_CONTROL, route);
+  } else assert.match(response.headers.get("cache-control"), /no-store/, route);
   assert(!body.includes(secret), `Private data leaked in ${route}`);
+  assert.equal(response.headers.get("x-catch-public-page"), null, `${route} leaked the cache mark`);
   checks++;
   return {response, body};
 }
