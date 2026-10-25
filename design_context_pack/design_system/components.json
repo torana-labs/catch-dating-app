@@ -531,8 +531,8 @@
           "CatchTextStyles.titleS",
           "CatchTextStyles.kicker",
           "CatchTextStyles.buttonSm",
-          "CatchIcon.badge",
-          "CatchIcon.sm",
+          "CatchIconSize.badge",
+          "CatchIconSize.sm",
           "CatchLayout.badgeActionHeight",
           "CatchCountBadge",
           "CatchStatusIndicator",
@@ -1086,7 +1086,7 @@
           "CatchMotion.fast",
           "CatchOpacity.controlOverlayPressed",
           "CatchOpacity.controlOverlayHover",
-          "CatchIcon.md",
+          "CatchIconSize.md",
           "CatchTextStyles.buttonSm",
           "CatchTextStyles.buttonMd",
           "CatchTextStyles.buttonLg",
@@ -1484,7 +1484,7 @@
           "CatchBorderRole.focus",
           "CatchTextStyles.titleS",
           "CatchTextStyles.bodyLead",
-          "CatchIcon.sm",
+          "CatchIconSize.sm",
           "CatchLayout.activityChipIconSize",
           "ActivityPalette.resolve",
           "CatchElevation.segmentedSelected",
@@ -8414,7 +8414,7 @@
           "theme.light.color.primarySoft"
         ],
         "dartRoles": [
-          "CatchIcon.md",
+          "CatchIconSize.md",
           "CatchRadius.sm",
           "CatchRadius.md",
           "CatchIconTileVariant"
@@ -9364,7 +9364,7 @@
           "CatchInsets.tileContentCompact",
           "CatchTextStyles.titleS",
           "CatchTextStyles.supporting",
-          "CatchIcon.lg"
+          "CatchIconSize.lg"
         ],
         "goldens": [],
         "accessibility": {
@@ -12032,7 +12032,7 @@
           "CatchTextStyles.monoLabel",
           "CatchTextStyles.name",
           "CatchTextStyles.bodyS",
-          "CatchIcon.md"
+          "CatchIconSize.md"
         ],
         "goldens": [],
         "accessibility": {
@@ -12197,7 +12197,7 @@
           "Image.asset",
           "ImageCache",
           "CatchIcons.imageOutlined",
-          "CatchIcon.md"
+          "CatchIconSize.md"
         ],
         "goldens": [],
         "members": [
@@ -17256,7 +17256,7 @@
             "dartType": "double",
             "tsType": "number",
             "required": false,
-            "default": "CatchIcon.sm",
+            "default": "CatchIconSize.sm",
             "notes": "Compact entry, flow and group icon extent."
           },
           {
