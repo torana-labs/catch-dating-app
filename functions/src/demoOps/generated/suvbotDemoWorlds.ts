@@ -717,6 +717,229 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
     },
     {
       "schemaVersion": 2,
+      "id": "run-club-bandra",
+      "label": "Bandra Run Club",
+      "description": "Fictional Bandra West run club's Sunday 5K: pace preference at booking, pace pods on the morning and the invite to the next run. Draft capture input, never a seed world or an availability claim.",
+      "uses": [
+        "marketing-capture"
+      ],
+      "locale": "en-IN",
+      "timeZone": "Asia/Kolkata",
+      "currency": "INR",
+      "moments": {
+        "planning": "2026-11-06T19:00:00",
+        "today": "2026-11-08T05:30:00",
+        "live": "2026-11-08T06:55:00",
+        "followUp": "2026-11-08T11:00:00"
+      },
+      "host": {
+        "uid": "run-club-bandra-host",
+        "personaId": "in_pooja_iyer_016",
+        "displayName": "Pooja Iyer",
+        "firstName": "Pooja",
+        "phoneNumber": "+919000000201",
+        "email": "host@example.test"
+      },
+      "organizer": {
+        "id": "club-run-club-bandra",
+        "name": "Salt Air Run Club",
+        "description": "Fictional Bandra West run club: an easy Sunday 5K along the sea in pace pods, then breakfast together.",
+        "city": "mumbai",
+        "area": "Bandra West",
+        "tags": [
+          "running",
+          "social-run",
+          "pace-pods"
+        ],
+        "memberCount": 0,
+        "rating": 0,
+        "reviewCount": 0
+      },
+      "venues": [
+        {
+          "id": "seaface-steps",
+          "name": "Seaface Steps",
+          "area": "Bandra West",
+          "lat": 19.0668,
+          "lng": 72.8231,
+          "directions": "Meet by the orange club flag at the north end of the sea-facing promenade. Bag drop is with the host."
+        }
+      ],
+      "people": [
+        {
+          "id": "p01",
+          "personaId": "in_ananya_kulkarni_002"
+        },
+        {
+          "id": "p02",
+          "personaId": "in_nikhil_joshi_007"
+        },
+        {
+          "id": "p03",
+          "personaId": "in_tanvi_shetty_004"
+        },
+        {
+          "id": "p04",
+          "personaId": "in_rahil_contractor_021"
+        },
+        {
+          "id": "p05",
+          "personaId": "in_sana_qureshi_012"
+        },
+        {
+          "id": "p06",
+          "personaId": "in_siddharth_menon_009"
+        },
+        {
+          "id": "p07",
+          "personaId": "in_leela_dsouza_020"
+        },
+        {
+          "id": "p08",
+          "personaId": "in_karan_mehra_017"
+        },
+        {
+          "id": "p09",
+          "personaId": "in_ishita_rao_008"
+        },
+        {
+          "id": "p10",
+          "personaId": "in_vikram_nair_013"
+        },
+        {
+          "id": "p11",
+          "personaId": "in_riya_fernandes_010"
+        },
+        {
+          "id": "p12",
+          "personaId": "in_dev_sharma_019"
+        }
+      ],
+      "events": [
+        {
+          "id": "event-run-club-bandra-sunday-5k",
+          "name": "Sunday Seaface 5K",
+          "description": "A fictional easy 5K along the Bandra West seafront, run in pace pods, with a cooldown prompt and breakfast after.",
+          "venueId": "seaface-steps",
+          "civilDate": "2026-11-08",
+          "startTime": "06:30",
+          "endTime": "07:45",
+          "activityKind": "socialRun",
+          "format": {
+            "interactionModel": "pacePods",
+            "admissionPreset": "openCapacity",
+            "playbookId": "social_run_light",
+            "selectedModuleIds": [
+              "host_script",
+              "micro_pods",
+              "social_missions"
+            ],
+            "hostGoal": "Put every runner in a pace pod so nobody runs alone, and have each of them talking to two new people by breakfast."
+          },
+          "capacity": 20,
+          "priceInPaise": 0,
+          "attendance": [
+            {
+              "personId": "p01",
+              "bookedAt": "2026-11-06T19:12:00",
+              "checkedInAt": "2026-11-08T06:04:00"
+            },
+            {
+              "personId": "p02",
+              "bookedAt": "2026-11-06T19:26:00",
+              "checkedInAt": "2026-11-08T06:06:00"
+            },
+            {
+              "personId": "p03",
+              "bookedAt": "2026-11-06T20:05:00",
+              "checkedInAt": "2026-11-08T06:09:00"
+            },
+            {
+              "personId": "p04",
+              "bookedAt": "2026-11-06T20:48:00",
+              "checkedInAt": "2026-11-08T06:11:00"
+            },
+            {
+              "personId": "p05",
+              "bookedAt": "2026-11-06T21:30:00",
+              "cancelledAt": "2026-11-07T21:15:00"
+            },
+            {
+              "personId": "p06",
+              "bookedAt": "2026-11-06T22:10:00",
+              "checkedInAt": "2026-11-08T06:14:00"
+            },
+            {
+              "personId": "p07",
+              "bookedAt": "2026-11-07T07:40:00",
+              "checkedInAt": "2026-11-08T06:17:00"
+            },
+            {
+              "personId": "p08",
+              "bookedAt": "2026-11-07T09:05:00",
+              "checkedInAt": "2026-11-08T06:19:00"
+            },
+            {
+              "personId": "p09",
+              "bookedAt": "2026-11-07T11:20:00",
+              "checkedInAt": "2026-11-08T06:22:00"
+            },
+            {
+              "personId": "p10",
+              "bookedAt": "2026-11-07T14:45:00",
+              "checkedInAt": "2026-11-08T06:26:00"
+            },
+            {
+              "personId": "p11",
+              "bookedAt": "2026-11-07T18:30:00"
+            },
+            {
+              "personId": "p12",
+              "bookedAt": "2026-11-07T22:10:00"
+            }
+          ]
+        },
+        {
+          "id": "event-run-club-bandra-next-5k",
+          "name": "Sunday Seaface 5K",
+          "description": "Next week's fictional easy 5K from the same spot; the run Sunday's runners are invited to.",
+          "venueId": "seaface-steps",
+          "civilDate": "2026-11-15",
+          "startTime": "06:30",
+          "endTime": "07:45",
+          "activityKind": "socialRun",
+          "format": {
+            "interactionModel": "pacePods",
+            "admissionPreset": "openCapacity",
+            "playbookId": "social_run_light",
+            "selectedModuleIds": [
+              "host_script",
+              "micro_pods",
+              "social_missions"
+            ],
+            "hostGoal": "Put every runner in a pace pod so nobody runs alone, and have each of them talking to two new people by breakfast."
+          },
+          "capacity": 20,
+          "priceInPaise": 0,
+          "attendance": [
+            {
+              "personId": "p02",
+              "bookedAt": "2026-11-08T08:20:00"
+            },
+            {
+              "personId": "p03",
+              "bookedAt": "2026-11-08T09:05:00"
+            },
+            {
+              "personId": "p08",
+              "bookedAt": "2026-11-08T10:15:00"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 2,
       "id": "us-nyc-host-demo",
       "label": "New York Host Demo",
       "description": "Fictional Sunday Table Club in New York, the host sales demo. Host app captures, the website's demo organiser listing and seeded demo environments read it. Never an availability claim.",
