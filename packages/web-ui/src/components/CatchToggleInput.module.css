@@ -3,7 +3,7 @@
   --catch-toggle-width: 46px;
   --catch-toggle-height: 28px;
   --catch-toggle-knob: 22px;
-  --catch-toggle-inset: 3px;
+  --catch-toggle-inset: var(--catch-space-micro3);
   --catch-toggle-duration: var(--catch-motion-fast);
   --catch-toggle-curve: var(--catch-motion-standard-curve);
   --catch-toggle-disabled-opacity: 0.40;

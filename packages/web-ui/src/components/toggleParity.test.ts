@@ -26,7 +26,8 @@ describe("CatchToggleInput native recipe parity", () => {
       const value = field.match(new RegExp(`static const double ${native} = ([\\d.]+);`))?.[1];
       expect(css).toContain(`--catch-toggle-${web}: ${Number(value)}px;`);
     }
-    expect(css).toContain("--catch-toggle-inset: 3px;");
+    expect(tokens.space.micro3.$value.value).toBe(3);
+    expect(css).toContain("--catch-toggle-inset: var(--catch-space-micro3);");
     expect(css).toContain("var(--catch-interaction-ios-minimum-extent)");
   });
   it("uses native colors, disabled opacities, timing and reduced-motion behavior", () => {
