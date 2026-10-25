@@ -193,7 +193,6 @@ class _PhoneStepState extends ConsumerState<PhoneStep> {
                   label: l10n.authSendCodeAction,
                   onPressed: canSubmit ? _submit : null,
                   fullWidth: true,
-                  size: CatchButtonSize.lg,
                   mode: CatchButtonMode.rounded,
                 ),
             ],
@@ -214,7 +213,6 @@ class _PhoneStepState extends ConsumerState<PhoneStep> {
               ? CatchButtonStatus.loading
               : CatchButtonStatus.idle,
           fullWidth: true,
-          size: CatchButtonSize.lg,
         ),
         children: [
           CatchStepHeader(

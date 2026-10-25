@@ -63,12 +63,12 @@ Widget buttonGeometryMatrix(BuildContext context) {
           children: [
             CatchButton(
               label: 'Small',
-              size: CatchButtonSize.sm,
+              size: CatchButtonSize.md,
               onPressed: widgetbookNoop,
             ),
             CatchButton(
               label: 'Medium',
-              size: CatchButtonSize.md,
+              size: CatchButtonSize.lg,
               onPressed: widgetbookNoop,
             ),
             CatchButton(

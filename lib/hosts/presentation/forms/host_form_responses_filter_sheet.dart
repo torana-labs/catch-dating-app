@@ -46,7 +46,7 @@ extension _HostFormResponsesFilters on _HostFormResponsesSectionState {
               trailing: CatchButton(
                 label: context.l10n.hostFiltersResetAll,
                 variant: CatchButtonVariant.ghost,
-                size: CatchButtonSize.sm,
+                size: CatchButtonSize.md,
                 onPressed:
                     _answerFilters.isEmpty &&
                         !hasVersionOverride &&

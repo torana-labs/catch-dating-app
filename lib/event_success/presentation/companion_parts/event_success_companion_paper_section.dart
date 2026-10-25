@@ -563,7 +563,6 @@ class CompanionSelfCheckInSection extends StatelessWidget {
           ? null
           : () => unawaited(_scanAndCheckIn(context)),
       fullWidth: true,
-      size: CatchButtonSize.lg,
     );
   }
 

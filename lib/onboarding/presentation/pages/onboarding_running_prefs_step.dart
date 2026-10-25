@@ -183,7 +183,6 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
             : CatchButtonStatus.idle,
         leading: Icon(CatchIcons.checkRounded),
         fullWidth: true,
-        size: CatchButtonSize.lg,
       ),
       children: [
         CatchSectionList(

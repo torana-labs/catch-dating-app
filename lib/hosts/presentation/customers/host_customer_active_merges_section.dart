@@ -30,7 +30,7 @@ class HostCustomerActiveMergesSection extends StatelessWidget {
           CatchButton(
             label: context.l10n.hostCustomersUndoMerge,
             variant: CatchButtonVariant.secondary,
-            size: CatchButtonSize.sm,
+            size: CatchButtonSize.md,
             onPressed: () => onUndo(merge),
           ),
           if (index < merges.length - 1) gapH16,

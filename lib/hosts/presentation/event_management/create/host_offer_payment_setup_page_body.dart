@@ -383,7 +383,7 @@ class _HostOfferPaymentSetupPageBodyState
                                     CatchButton(
                                       label: l10n.hostsEventPreferenceRetry,
                                       variant: CatchButtonVariant.secondary,
-                                      size: CatchButtonSize.sm,
+                                      size: CatchButtonSize.md,
                                       onPressed: snapshot.saving
                                           ? null
                                           : () => unawaited(

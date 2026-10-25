@@ -115,7 +115,7 @@ class HostCustomerFilterSummarySection extends StatelessWidget {
                     CatchButton(
                       label: context.l10n.hostCustomersClearFilter,
                       variant: CatchButtonVariant.ghost,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       onPressed: clear,
                     ),
                   ?trailing,
@@ -147,7 +147,7 @@ class HostCustomerFilterSummarySection extends StatelessWidget {
                       : context.l10n.hostCustomersMessageTheseAtLeast(
                           count: count,
                         ),
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   onPressed: message,
                 )
               else if (onReviewSenderSetup case final review?)
@@ -155,7 +155,7 @@ class HostCustomerFilterSummarySection extends StatelessWidget {
                   key: const ValueKey('host-customers-sender-setup-action'),
                   label: context.l10n.hostCustomersSetUpWhatsappBusiness,
                   variant: CatchButtonVariant.secondary,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   onPressed: review,
                 ),
             ],
@@ -210,7 +210,7 @@ class HostCustomersList extends StatelessWidget {
                       key: const ValueKey('host-customers-refresh-coverage'),
                       label: context.l10n.hostCustomersCoverageRefresh,
                       variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       onPressed: onRefreshCoverage,
                     ),
                   ),
@@ -260,7 +260,7 @@ class HostCustomersList extends StatelessWidget {
                     CatchButton(
                       label: context.l10n.hostCustomersLoadMore,
                       variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       status: state.loadingMore
                           ? CatchButtonStatus.loading
                           : CatchButtonStatus.idle,

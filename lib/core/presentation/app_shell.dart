@@ -174,7 +174,6 @@ class GuestAuthCtaBar extends StatelessWidget {
         label: context.l10n.consumerAuthContinueWithPhone,
         onPressed: () => context.go(_authLocation(context)),
         fullWidth: true,
-        size: CatchButtonSize.lg,
       ),
     );
   }

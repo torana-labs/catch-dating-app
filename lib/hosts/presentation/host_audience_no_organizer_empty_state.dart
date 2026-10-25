@@ -43,7 +43,7 @@ class HostAudienceNoOrganizerEmptyState extends StatelessWidget {
               label: forms
                   ? context.l10n.hostFormsCreateOrganizer
                   : context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-              size: forms ? CatchButtonSize.sm : CatchButtonSize.md,
+              size: forms ? CatchButtonSize.md : CatchButtonSize.lg,
               onPressed: () =>
                   context.pushNamed(Routes.hostCreateClubScreen.name),
             ),

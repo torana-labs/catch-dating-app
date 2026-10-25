@@ -81,7 +81,6 @@ class HostAuthProgressButton extends StatelessWidget {
           variant: variant,
           isInteractive: false,
           fullWidth: true,
-          size: CatchButtonSize.lg,
           mode: CatchButtonMode.rounded,
         ),
       ),

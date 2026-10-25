@@ -670,7 +670,7 @@ class _RehearsalCoachDock extends StatelessWidget {
       );
       final showCoach = CatchButton(
         label: context.l10n.hostEventRehearsalCoachShow,
-        size: CatchButtonSize.sm,
+        size: CatchButtonSize.md,
         variant: CatchButtonVariant.secondary,
         fullWidth: largeText,
         onPressed: onToggle,
@@ -741,13 +741,13 @@ class _RehearsalCoachDock extends StatelessWidget {
       children: [
         CatchButton(
           label: context.l10n.hostEventRehearsalCoachWhy,
-          size: CatchButtonSize.sm,
+          size: CatchButtonSize.md,
           variant: CatchButtonVariant.secondary,
           onPressed: onWhy,
         ),
         CatchButton(
           label: context.l10n.hostEventRehearsalCoachGotIt,
-          size: CatchButtonSize.sm,
+          size: CatchButtonSize.md,
           onPressed: onToggle,
         ),
       ],

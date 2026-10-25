@@ -148,7 +148,7 @@ class HostWaitlistBulkOfferNotice extends StatelessWidget {
       label: context.l10n.hostsHostEventAttendancePanelLabelOfferNextCount(
         count: count,
       ),
-      size: CatchButtonSize.sm,
+      size: CatchButtonSize.md,
       variant: CatchButtonVariant.secondary,
       leading: Icon(CatchIcons.sendRounded),
       status: (isPending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,

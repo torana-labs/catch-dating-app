@@ -199,7 +199,7 @@ class CrossPathsEventContextCard extends StatelessWidget {
           CatchButton(
             label: context.l10n.crossPathsExploreCardActionSeeEvent,
             leading: Icon(CatchIcons.forwardArrow, size: CatchIcon.sm),
-            size: CatchButtonSize.sm,
+            size: CatchButtonSize.md,
             variant: CatchButtonVariant.secondary,
             fullWidth: true,
             onPressed: onEventSelected,

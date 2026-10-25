@@ -50,7 +50,7 @@ class EventSuccessRotationOverrideRoundSection extends StatelessWidget {
                     .l10n
                     .eventSuccessEventSuccessHostOverridesLabelAddPair,
                 leading: Icon(CatchIcons.addRounded),
-                size: CatchButtonSize.sm,
+                size: CatchButtonSize.md,
                 variant: CatchButtonVariant.secondary,
                 onPressed: onAddPair,
               ),

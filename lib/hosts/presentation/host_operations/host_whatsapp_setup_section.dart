@@ -95,7 +95,7 @@ class _HostWhatsappSetupSectionState
                       CatchButton(
                         label: context.l10n.hostsHostAudienceSyncTemplates,
                         variant: CatchButtonVariant.secondary,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         onPressed: _busy
                             ? null
                             : () => _syncTemplates(connection.connectionId),
@@ -106,7 +106,7 @@ class _HostWhatsappSetupSectionState
                       CatchButton(
                         label: context.l10n.hostsHostAudienceDisconnect,
                         variant: CatchButtonVariant.ghost,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         onPressed: _busy
                             ? null
                             : () =>

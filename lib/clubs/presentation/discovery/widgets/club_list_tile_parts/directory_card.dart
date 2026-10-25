@@ -203,7 +203,7 @@ class ClubJoinButton extends StatelessWidget {
       label: context.l10n.clubsDirectoryCardLabelJoin,
       leading: Icon(CatchIcons.groupAddOutlined),
       onPressed: isPending ? null : onJoinPressed,
-      size: CatchButtonSize.sm,
+      size: CatchButtonSize.md,
       backgroundColor: t.ink,
       foregroundColor: t.primaryInk,
     );

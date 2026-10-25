@@ -718,7 +718,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                     ?unfiltered
                         ? CatchButton(
                             label: context.l10n.hostFormsCreate,
-                            size: CatchButtonSize.sm,
+                            size: CatchButtonSize.md,
                             onPressed: onCreate,
                           )
                         : null,

@@ -135,7 +135,7 @@ class ExploreExternalEventRow extends StatelessWidget {
                 CatchButton(
                   label: state.actionLabel,
                   leading: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.secondary,
                   onPressed: !state.hasExternalLink
                       ? null
