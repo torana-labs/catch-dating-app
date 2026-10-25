@@ -17,7 +17,6 @@ export function ConsumerButton(props: ComponentProps<typeof PlainButton>) { retu
 export function ConsumerEventGrid({showAll, ...props}: ComponentProps<"div"> & {showAll?: boolean}) { return <div {...props} className={`consumer-event-grid${showAll ? " consumer-event-grid--all" : ""}`} />; }
 export function ConsumerEventLink(props: ComponentProps<typeof PlainLink>) { return <PlainLink {...props} className="consumer-event" />; }
 export function ConsumerEventMedia(props: ComponentProps<"div">) { return <div {...props} className="consumer-event__media" />; }
-export function ConsumerPhotoNote(props: ComponentProps<"span">) { return <span {...props} className="consumer-photo-note" />; }
 export function ConsumerCategory({category, ...props}: ComponentProps<"span"> & {category: string}) { return <span {...props} className={`consumer-category consumer-category--${category}`} />; }
 export function ConsumerEventArrow(props: ComponentProps<typeof ArrowRight>) { return <ArrowRight {...props} className="consumer-event__arrow" />; }
 export function ConsumerAvailability(props: ComponentProps<"span">) { return <span {...props} className="consumer-availability" />; }
