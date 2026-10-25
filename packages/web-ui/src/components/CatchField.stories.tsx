@@ -50,6 +50,9 @@ function Fields() {
         itemLabelBuilder={(item) => item} value="Delhi" />
       <CatchField recipe="input" title="Search" labelMode="hidden" inputHint="Search hosts"
         value="" />
+      <CatchField recipe="input" title="Your mobile number" prefixText="+91" keyboardType="phone"
+        autoComplete="tel-national" inputHint="98765 43210" helperText="Your pass and updates come by text." />
+      <CatchField recipe="input" title="Longest run" suffixText="km" keyboardType="decimal" value="21.1" />
     </CatchGap>
   );
 }
