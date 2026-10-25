@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-10-08",
+  "updated": "2026-10-25",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -1959,51 +1959,46 @@
       "role": "finder"
     },
     {
-      "id": "web:react-ui-primitives",
+      "id": "web:react-ui-lint",
       "category": "lint",
-      "path": "tool/web/check_react_ui_primitives.mjs",
-      "command": "node tool/web/check_react_ui_primitives.mjs",
-      "safety": "local",
+      "path": "tool/web/check_react_ui.mjs",
+      "command": "node tool/web/check_react_ui.mjs --check",
+      "safety": "local-readonly",
       "status": "active",
-      "description": "Checks React website/admin feature code does not hand-roll native interactive controls outside shared UI primitive owners.",
+      "description": "Enforces the shared ESLint UI preset and exact shrink-only app suppressions; replaces the raw-control and class-name scanners.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       },
-      "checks": [
-        "node --check tool/web/check_react_ui_primitives.mjs",
-        "node tool/web/check_react_ui_primitives.mjs --check"
+      "impactPaths": [
+        "packages/web-config/lint/**",
+        "website/eslint.config.mjs",
+        "website/eslint-suppressions.json",
+        "admin/eslint.config.mjs",
+        "admin/eslint-suppressions.json",
+        "website/src/**",
+        "admin/src/**"
       ],
-      "role": "finder"
-    },
-    {
-      "id": "web:react-classname-boundaries",
-      "category": "lint",
-      "path": "tool/web/check_react_classname_boundaries.mjs",
-      "command": "node tool/web/check_react_classname_boundaries.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Checks React website/admin app, feature, and story code does not pass className directly outside shared primitive owner files.",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
       "checks": [
-        "node --check tool/web/check_react_classname_boundaries.mjs",
-        "node tool/web/check_react_classname_boundaries.mjs --self-test",
-        "node tool/web/check_react_classname_boundaries.mjs --check"
+        "node --check tool/web/check_react_ui.mjs",
+        "node --test packages/web-config/lint/eslint.test.mjs",
+        "node tool/web/check_react_ui.mjs --check"
       ],
       "role": "gate",
       "rules": [
+        "WEB-UI-PRIMITIVE-001",
         "WEB-UI-COMPONENT-001"
       ],
       "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_react_classname_boundaries.mjs --self-test"
+        "type": "test",
+        "path": "packages/web-config/lint/eslint.test.mjs",
+        "contains": [
+          "production JSX and createElement controls fail, library composition passes",
+          "actual lint results reject new debt, resolved stale counts and committed growth"
+        ]
       }
     },
     {
