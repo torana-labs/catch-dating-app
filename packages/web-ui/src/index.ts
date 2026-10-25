@@ -1,5 +1,7 @@
 export {CatchAppCaptureImage} from "./components/CatchAppCaptureImage";
 export type {CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
+export {CatchCheckboxInput} from "./components/CatchCheckboxInput";
+export type {CatchCheckboxInputProps} from "./components/CatchCheckboxInput";
 export {CatchField} from "./components/CatchField";
 export type {
   CatchFieldInputProps,

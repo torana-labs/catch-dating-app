@@ -13507,8 +13507,10 @@
             "unchecked",
             "checked",
             "disabled",
+            "disabled-checked",
             "description",
             "semantic-labelled",
+            "long-copy",
             "dark"
           ]
         },
