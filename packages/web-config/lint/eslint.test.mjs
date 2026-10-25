@@ -9,7 +9,7 @@ import {ESLint} from "eslint";
 import preset from "./eslint.mjs";
 import {checkSuppressions, compareSuppressions, violationCounts} from "./check-eslint-suppressions.mjs";
 
-const cwd = path.resolve(import.meta.dirname, "../../../..");
+const cwd = path.resolve(import.meta.dirname, "../../..");
 const eslint = new ESLint({cwd, overrideConfigFile: true, overrideConfig: preset});
 const lint = (code, filePath = "src/probe.tsx") => eslint.lintText(code, {filePath});
 const rules = (results) => results.flatMap((r) => r.messages.map((m) => m.ruleId)).sort();
