@@ -915,6 +915,15 @@ Organizer listing generation produces two explicit projections: deployable
 
 ## React Web Architecture Gates
 
+The shared ESLint UI preset replaces the old raw-control and class-name scans.
+Run `node tool/run.mjs check web:react-ui-lint` for both apps. Production
+markup and JSX drawing props have app-local bulk suppressions; the checker
+rejects new debt, stale counts and growth above accepted `origin/main`.
+Table/image families wait for styled library components under D17. Do not add
+inline allow markers. After resolving debt, prune with
+`npm exec --workspace website -- eslint 'src/**/*.{js,jsx,ts,tsx}' --prune-suppressions`
+(or `--workspace admin`). Initial counts are seeded once; they only shrink.
+
 The React website/admin surfaces share scanners for route ownership, UI
 primitive ownership, governed component families, and server-state ownership.
 The query-state scanner is a baseline-backed ratchet: current manual async
@@ -925,7 +934,7 @@ reviewed change with a source-level rationale.
 
 ```sh
 node tool/run.mjs check web:react-architecture-boundaries
-node tool/run.mjs check web:react-ui-primitives
+node tool/run.mjs check web:react-ui-lint
 node tool/run.mjs check web:react-component-governance
 node tool/run.mjs check web:react-query-state
 node tool/run.mjs check web:shared-ui-adoption
