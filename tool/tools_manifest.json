@@ -5380,7 +5380,11 @@
         "tool/marketing/lib/capture_seeds.mjs",
         ".github/workflows/marketing-captures.yml",
         ".github/workflows/ci.yml",
-        "artifacts/marketing/app-screenshots/**"
+        "artifacts/marketing/app-screenshots/**",
+        "tool/marketing/lib/web_capture_inputs.mjs",
+        "tool/marketing/lib/web_capture_render.mjs",
+        "tool/marketing/lib/web_capture_screen.mjs",
+        "tool/marketing/web_captures.test.mjs"
       ],
       "command": "node tool/marketing/export_hosted_captures.mjs",
       "safety": "local-writes-artifacts",
@@ -5412,14 +5416,20 @@
         "dart analyze tool/marketing/frame_device_capture.dart",
         "dart run tool/marketing/frame_device_capture_test.dart",
         "node tool/marketing/export_app_screenshots.mjs --check",
-        "node tool/marketing/export_app_screenshots.mjs --check-design-json"
+        "node tool/marketing/export_app_screenshots.mjs --check-design-json",
+        "node --test tool/marketing/web_captures.test.mjs"
       ],
       "role": "generator",
       "impactPaths": [
         "tool/marketing/capture_pipeline.test.mjs",
         "tool/marketing/frame_device_capture.dart",
         "tool/marketing/frame_device_capture_test.dart",
-        "artifacts/marketing/app-screenshots/**"
+        "artifacts/marketing/app-screenshots/**",
+        "tool/marketing/lib/web_capture_inputs.mjs",
+        "tool/marketing/lib/web_capture_render.mjs",
+        "tool/marketing/lib/web_capture_screen.mjs",
+        "tool/marketing/web_captures.test.mjs",
+        "tool/ui_capture/check_capture_coverage.mjs"
       ]
     },
     {
