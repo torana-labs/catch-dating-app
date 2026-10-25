@@ -19,7 +19,13 @@ Widget catchStepRowListContractStates(BuildContext context) {
   return WidgetbookContractFrame(
     title: 'CatchStepList',
     contractId: 'catch.journey_steps',
-    states: const ['numbered-trace', 'titles-only', 'accented', 'long-copy'],
+    states: const [
+      'numbered-trace',
+      'titles-only',
+      'accented',
+      'long-copy',
+      'timed',
+    ],
     children: [
       const WidgetbookContractStateCard(
         label: 'numbered-trace',
@@ -85,6 +91,26 @@ Widget catchStepRowListContractStates(BuildContext context) {
               ),
             ],
           ),
+        ),
+      ),
+      WidgetbookContractStateCard(
+        label: 'timed, with tags',
+        child: CatchStepList(
+          accent: t.primary,
+          steps: const [
+            CatchStepRowData(
+              marker: '5:45',
+              title: 'Meet at Carter Road jetty',
+              body: 'Bag drop, water and a quick warm-up.',
+              tag: 'Pace groups: 6:00, 6:45 and 7:30 per km',
+            ),
+            CatchStepRowData(
+              marker: '6:00',
+              title: 'Run to Bandstand and back',
+              body: 'Water at 5K and 10K.',
+            ),
+            CatchStepRowData(marker: '8:30', title: 'Breakfast at the jetty'),
+          ],
         ),
       ),
     ],

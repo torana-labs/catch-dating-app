@@ -34,6 +34,8 @@ export {EventBackdropImage} from "./components/EventBackdropImage";
 export type {EventBackdropImageProps} from "./components/EventBackdropImage";
 export {EventThumbnail} from "./components/EventThumbnail";
 export type {EventThumbnailProps} from "./components/EventThumbnail";
+export {MapPreview} from "./components/MapPreview";
+export type {MapPreviewCoordinate, MapPreviewProps} from "./components/MapPreview";
 export {CatchCodeInput} from "./components/CatchCodeInput";
 export type {
   CatchCodeInputProps,
@@ -42,6 +44,8 @@ export type {
 } from "./components/CatchCodeInput";
 export {CatchDateTile} from "./components/CatchDateTile";
 export type {CatchDateTileProps} from "./components/CatchDateTile";
+export {CatchFactTile} from "./components/CatchFactTile";
+export type {CatchFactTileEmphasis, CatchFactTileNoteTone, CatchFactTileProps} from "./components/CatchFactTile";
 export {CatchField} from "./components/CatchField";
 export type {
   CatchFieldInputProps,
@@ -125,6 +129,10 @@ export {CatchStarInput} from "./components/CatchStarInput";
 export type {CatchStarInputProps} from "./components/CatchStarInput";
 export {CatchStarRating} from "./components/CatchStarRating";
 export type {CatchStarRatingProps, CatchStarRatingSize} from "./components/CatchStarRating";
+export {CatchShareBar} from "./components/CatchShareBar";
+export type {CatchShareBarProps, CatchShareBarSegment} from "./components/CatchShareBar";
+export {CatchStepList} from "./components/CatchStepList";
+export type {CatchStepListProps, CatchStepRowData} from "./components/CatchStepList";
 export {CatchStepper} from "./components/CatchStepper";
 export type {CatchStepperProps} from "./components/CatchStepper";
 export {CatchStoreButton} from "./components/CatchStoreButton";

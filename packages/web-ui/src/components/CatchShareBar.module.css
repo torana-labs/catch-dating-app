@@ -1,0 +1,50 @@
+/*
+ * Website v2 share bar (CAT-249): a 14px pill of ground fills sized by share,
+ * then a wrapping legend of 10px swatches 6px from their labels and 14px
+ * apart. Segments keep a hairline of the surface between them.
+ */
+.share {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+  margin: 0;
+}
+
+.bar {
+  display: flex;
+  gap: var(--catch-stroke-hairline);
+  height: var(--catch-space-micro14);
+  overflow: hidden;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-line);
+}
+
+.segment {
+  composes: ground from "./grounds.module.css";
+
+  flex: var(--catch-share) 1 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--catch-space-s2) var(--catch-space-micro14);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--catch-space-micro6);
+}
+
+.swatch {
+  composes: ground from "./grounds.module.css";
+
+  flex: none;
+  width: var(--catch-space-micro10);
+  height: var(--catch-space-micro10);
+  border-radius: var(--catch-space-micro3);
+}

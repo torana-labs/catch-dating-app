@@ -1,0 +1,17 @@
+/*
+ * Website v2 fact tile (CAT-249): a ground tile at radius lg with 14px by 16px
+ * padding. A fact keeps 4px between its lines and a stat 2px.
+ */
+.tile {
+  composes: ground from "./grounds.module.css";
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s1);
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--catch-space-micro14) var(--catch-space-s4);
+  border-radius: var(--catch-radius-lg);
+}
+
+.tile[data-emphasis="stat"] { gap: var(--catch-space-micro2); }

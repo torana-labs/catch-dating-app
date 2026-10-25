@@ -167,6 +167,19 @@ export function StoryCta({label, primary = false}: {label: string; primary?: boo
   );
 }
 
+/**
+ * A drawn street map with a route, standing in for the static map a page's
+ * map provider would return. Its colours are a generic map style, not v2
+ * tokens: the provider owns them.
+ */
+export const storyMapImage = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300">
+<rect width="760" height="300" fill="#F2EFE9"/>
+<path d="M0 0H250C225 60 238 120 205 170C180 210 190 260 170 300H0Z" fill="#AADAFF"/>
+<path d="M330 0V300M470 0V300M250 90H760M232 200H760" stroke="#FFFFFF" stroke-width="14"/>
+<path d="M262 30C246 80 250 120 226 160C206 196 206 236 196 276" stroke="#E8453C" stroke-width="5" fill="none" stroke-linecap="round"/>
+<circle cx="262" cy="30" r="10" fill="#E8453C"/><circle cx="196" cy="276" r="7" fill="#E8453C"/>
+</svg>`)}`;
+
 /** Lucide glyph paths (ISC) for the link and social stand-ins in stories. */
 const glyphs = {
   bag: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0",
