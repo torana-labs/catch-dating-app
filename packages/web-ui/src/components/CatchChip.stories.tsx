@@ -58,3 +58,16 @@ export const Interactive: Story = {
     await expect(control).toHaveAttribute("aria-pressed", "false");
   },
 };
+
+// Every pigment and affected recipe participates in browser contrast enforcement.
+export const AllActivities: Story = {render: () => <>
+  {(["light", "dark"] as const).map((theme) => <div key={theme} data-catch-theme={theme} style={{background: "var(--catch-theme-bg)"}}>
+    <CatchPageBody constrainToContentWidth><CatchGap size="formField">
+      {(["social-run", "running", "walking", "pickleball", "padel", "tennis", "badminton", "cycling", "spin-class", "yoga", "strength-training", "dinner", "pub-quiz", "bar-crawl", "singles-mixer", "open-activity"] as const).map((accent) => <CatchGap key={accent} direction="horizontal" size="inline" wrap>
+        <CatchChip recipe="activity" data={{label: `${accent} soft`, icon: glyph, accent}} />
+        <CatchChip recipe="activity" data={{label: `${accent} solid`, icon: glyph, accent}} emphasis="solid" />
+        <CatchChip recipe="selectable" label={`${accent} selected`} selected accent={accent} onChanged={noop} />
+      </CatchGap>)}
+    </CatchGap></CatchPageBody>
+  </div>)}
+</>};

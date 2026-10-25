@@ -47,20 +47,35 @@ describe("CatchChip Dart parity", () => {
     expect(css).toContain("var(--catch-opacity-control-overlay-hover)");
     expect(css).toMatch(/prefers-reduced-motion: reduce[\s\S]*transition: none/);
   });
-  it("resolves all named activities from the existing generated pigment family", () => {
-    expect(dart).toContain("ThemeData.estimateBrightnessForColor(fill)");
+  it("uses the decided deep-fill policy and retains activity icons in dark soft chips", () => {
+    expect(css).toContain("--catch-chip-fill-accent: var(--catch-chip-activity-deep, var(--catch-theme-primary))");
+    expect(css).not.toContain("--catch-chip-fill-accent: var(--catch-chip-activity-accent");
+    expect(css).toMatch(/dark.*\.chip\[data-recipe="activity"\] \.surface \{[^}]*color: var\(--catch-theme-ink\)/);
+    expect(css).toMatch(/dark.*:not\(\[data-emphasis="solid"\]\) \.icon \{[^}]*color: var\(--catch-chip-activity-accent-dark\)/);
+    expect(ts).toContain('"--catch-chip-activity-ink": "#FFFFFF"');
+    expect(ts).not.toContain("darkInkActivities");
+  });
+  it("requires 4.5:1 label contrast for every activity, recipe and theme", () => {
     const known = [...tokens.matchAll(/--catch-activity-([a-z-]+)-accent: #([A-Fa-f0-9]{6});/g)];
     expect(known).toHaveLength(16);
-    const darkInk: string[] = [];
-    for (const [, name, light] of known) {
+    const token = (name: string) => {
+      const value = tokens.match(new RegExp(`--catch-${name}: #([A-Fa-f0-9]{6});`))?.[1];
+      expect(value, name).toBeDefined(); return value!;
+    };
+    let pairs = 0;
+    for (const [, name] of known) {
       expect(ts).toContain(`"${name}"`);
-      expect((luminance(light) + 0.05) ** 2).toBeLessThanOrEqual(0.15);
-      const dark = tokens.match(new RegExp(`--catch-activity-${name}-accent-dark: #([A-Fa-f0-9]{6});`))?.[1];
-      expect(dark).toBeDefined();
-      if ((luminance(dark!) + 0.05) ** 2 > 0.15) darkInk.push(name);
+      for (const theme of ["light", "dark"]) {
+        for (const recipe of ["solid", "selected", "soft"]) {
+          const deep = token(`activity-${name}-deep`);
+          const background = recipe === "soft" ? token(`activity-${name}-soft${theme === "dark" ? "-dark" : ""}`) : deep;
+          const foreground = recipe === "soft" ? theme === "dark" ? token("color-dark-ink") : deep : "FFFFFF";
+          const a = luminance(foreground), b = luminance(background);
+          const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+          expect(ratio, `${name} ${theme} ${recipe}`).toBeGreaterThanOrEqual(4.5); pairs++;
+        }
+      }
     }
-    const pinned = ts.match(/darkInkActivities = new Set<ActivityAccent>\(\[([^\]]*)\]/)?.[1];
-    const actual = [...(pinned ?? "").matchAll(/"([a-z-]+)"/g)].map((m) => m[1]);
-    expect(actual.sort()).toEqual(darkInk.sort());
+    expect(pairs).toBe(96);
   });
 });

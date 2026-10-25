@@ -25,9 +25,8 @@ export type CatchChipProps =
 
 const check = <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" /></svg>;
 const close = <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="m6 6 12 12m0-12L6 18" /></svg>;
-// Flutter ThemeData.estimateBrightnessForColor applied to the current generated
-// dark activity accents. chipParity.test.ts recomputes this from the token source.
-const darkInkActivities = new Set<ActivityAccent>(["walking", "pickleball", "padel"]);
+// CAT-242 chip-contrast-deep-fill: every current deep pigment passes white
+// label contrast in both themes; chipParity.test.ts enforces all 16 families.
 
 function pigments(accent: ActivityAccent | undefined): CSSProperties | undefined {
   if (accent === undefined) return undefined;
@@ -40,7 +39,6 @@ function pigments(accent: ActivityAccent | undefined): CSSProperties | undefined
     "--catch-chip-activity-soft": `var(${token}-soft)`,
     "--catch-chip-activity-soft-dark": `var(${token}-soft-dark)`,
     "--catch-chip-activity-ink": "#FFFFFF",
-    "--catch-chip-activity-ink-dark": darkInkActivities.has(accent) ? "#000000" : "#FFFFFF",
   } as CSSProperties;
 }
 

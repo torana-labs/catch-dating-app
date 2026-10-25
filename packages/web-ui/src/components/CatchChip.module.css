@@ -4,7 +4,7 @@
   --catch-chip-activity-icon-size: 15px;
   --catch-chip-activity-icon-gap: 7px;
   --catch-chip-check-size: 12px;
-  --catch-chip-fill-accent: var(--catch-chip-activity-accent, var(--catch-theme-primary));
+  --catch-chip-fill-accent: var(--catch-chip-activity-deep, var(--catch-theme-primary));
   --catch-chip-solid-ink: var(--catch-chip-activity-ink, var(--catch-theme-primary-ink));
   --catch-chip-resting-border: color-mix(in srgb, var(--catch-theme-ink3) 90%, var(--catch-theme-ink));
 
@@ -67,12 +67,13 @@
   color: var(--catch-chip-activity-deep);
 }
 :global([data-catch-theme="dark"]) .chip {
-  --catch-chip-fill-accent: var(--catch-chip-activity-accent-dark, var(--catch-theme-primary));
-  --catch-chip-solid-ink: var(--catch-chip-activity-ink-dark, var(--catch-theme-primary-ink));
   --catch-chip-resting-border: var(--catch-theme-ink3);
 }
 :global([data-catch-theme="dark"]) .chip[data-recipe="activity"] .surface {
   background: var(--catch-chip-activity-soft-dark);
+  color: var(--catch-theme-ink);
+}
+:global([data-catch-theme="dark"]) .chip[data-recipe="activity"]:not([data-emphasis="solid"]) .icon {
   color: var(--catch-chip-activity-accent-dark);
 }
 .chip[data-recipe="activity"][data-emphasis="solid"] .surface {
