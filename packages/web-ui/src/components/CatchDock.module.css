@@ -1,0 +1,101 @@
+/*
+ * Flutter CatchDock, anchored chrome. Utility: the surface above a line
+ * hairline with 12px by 16px padding and the safe area below. Primary: the
+ * surface under a divider, the action 12px from the top and 16px from the
+ * sides, its bottom 12px plus the safe area; pageAction uses the page gutter
+ * on the page background; primaryContent draws only the body. A catch line
+ * sits 8px from the top in the mono label role, uppercase, with a 12px glyph;
+ * a footnote sits 8px under the action in monoLabelS, in ink2 because
+ * Flutter's ink3 is under 4.5:1 on the surface. Leading content
+ * keeps 14px from the button.
+ */
+.dock {
+  --catch-dock-bg: var(--catch-theme-surface);
+  --catch-dock-divider: var(--catch-theme-line);
+  --catch-dock-bottom: var(--catch-space-s3);
+  --catch-dock-line-accent: var(--catch-theme-ink2);
+
+  box-sizing: border-box;
+  background: var(--catch-dock-bg);
+  color: var(--catch-theme-ink);
+}
+
+.dock[data-recipe="utility"] {
+  padding: var(--catch-space-s3) var(--catch-space-s4);
+  border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+}
+
+.dock[data-recipe="utility"][data-safe-area] {
+  padding-bottom: calc(var(--catch-space-s3) + env(safe-area-inset-bottom));
+}
+
+.dock[data-recipe="primary"] { border-top: var(--catch-stroke-hairline) solid var(--catch-dock-divider); }
+.dock[data-recipe="pageAction"] { background: var(--catch-theme-bg); }
+.dock[data-recipe="primaryContent"] { background: none; }
+
+.line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--catch-space-micro6);
+  margin: 0;
+  padding: var(--catch-space-s2) var(--catch-space-s4) 0;
+  color: var(--catch-theme-ink2);
+  font-family: var(--catch-font-mono), ui-monospace, monospace;
+  font-size: var(--catch-typography-web-status-size);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.line > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sparkle {
+  display: inline-flex;
+  flex: none;
+  width: 12px;
+  height: 12px;
+  color: var(--catch-dock-line-accent);
+}
+
+.sparkle > svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+.action {
+  padding: var(--catch-space-s3) var(--catch-space-s4) var(--catch-dock-bottom);
+}
+
+.dock[data-recipe="primary"] .action,
+.dock[data-recipe="pageAction"] .action {
+  padding-bottom: calc(var(--catch-space-s3) + env(safe-area-inset-bottom));
+}
+
+.dock[data-recipe="pageAction"] .action { padding-inline: var(--catch-layout-page-gutter); }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-micro14);
+}
+
+.row > :last-child { flex: 1; }
+
+.leading {
+  display: inline-flex;
+  flex: none;
+}
+
+.footnote {
+  margin: var(--catch-space-s2) 0 0;
+  color: var(--catch-theme-ink2);
+  font-family: var(--catch-font-mono), ui-monospace, monospace;
+  font-size: var(--catch-typography-web-status-size);
+  text-align: center;
+}

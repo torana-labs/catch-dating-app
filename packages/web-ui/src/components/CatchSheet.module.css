@@ -1,0 +1,128 @@
+/*
+ * Flutter CatchSheet: a floating surface with a 26px top radius, 10px top,
+ * 22px side and 26px bottom padding (at least 16px above the safe area), a
+ * 40 by 4px line2 grabber 16px above the header, a titleL title with its
+ * bodyM ink2 subtitle 6px under it (bodyS 2px under a branded 44px ink glyph
+ * tile), 12px to the trailing slot, 18px to the body and 16px to a footer.
+ * Bounded recipes stop at 90% of the viewport and scroll inside; a pinned
+ * footer stays below the scroll. The web sheet sits on the viewport's bottom
+ * edge, so its bottom corners are square, and it is at most 600px wide.
+ */
+.sheet {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 600px;
+  max-height: 100dvh;
+  margin: auto auto 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--catch-theme-ink);
+  overflow: visible;
+}
+
+.sheet::backdrop {
+  background: color-mix(in srgb, var(--catch-palette-ink) 40%, transparent);
+}
+
+.surface {
+  display: flex;
+  flex-direction: column;
+  max-height: 100dvh;
+  border-radius: 26px 26px 0 0;
+  background: var(--catch-theme-surface);
+  box-shadow: var(--catch-elevation-overlay);
+}
+
+.sheet[data-bounded] .surface { max-height: 90dvh; }
+
+.scroll {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: var(--catch-space-micro10) 22px max(26px, calc(env(safe-area-inset-bottom) + var(--catch-space-s4)));
+}
+
+.sheet[data-scrollable] .scroll { overflow-y: auto; }
+.sheet[data-pinned] .scroll { padding-bottom: 0; }
+
+.grabber {
+  align-self: center;
+  width: 40px;
+  height: 4px;
+  margin-bottom: var(--catch-space-s4);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-line2);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-s3);
+  margin-bottom: var(--catch-space-micro18);
+}
+
+.header:not(:has(p)),
+.header[data-branded] { align-items: center; }
+
+.heading {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  min-width: 0;
+}
+
+.heading > * { margin: 0; }
+.header[data-branded] .heading { gap: var(--catch-space-micro2); }
+
+.glyph {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--catch-theme-ink);
+  color: var(--catch-theme-primary-ink);
+}
+
+.glyph > svg {
+  width: 22px;
+  height: 22px;
+}
+
+.trailing {
+  display: inline-flex;
+  flex: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--catch-space-s2);
+  border-radius: var(--catch-radius-xs);
+  background: var(--catch-theme-raised);
+  color: var(--catch-theme-ink2);
+  font-family: var(--catch-font-mono), ui-monospace, monospace;
+  font-size: var(--catch-typography-web-status-size);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge[data-tone="brand"] { color: var(--catch-theme-primary); }
+.badge[data-tone="success"] { color: var(--catch-theme-positive-text); }
+.badge[data-tone="warning"],
+.badge[data-tone="gold"] { color: var(--catch-theme-attention-text); }
+.badge[data-tone="danger"] { color: var(--catch-theme-danger); }
+
+.body { min-width: 0; }
+
+.footer { margin-top: var(--catch-space-s4); }
+
+.pinnedFooter {
+  padding: var(--catch-space-s4) 22px max(26px, calc(env(safe-area-inset-bottom) + var(--catch-space-s4)));
+}
