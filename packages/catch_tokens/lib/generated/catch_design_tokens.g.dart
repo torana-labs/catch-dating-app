@@ -128,6 +128,87 @@ abstract final class GeneratedCatchActivityPigmentTokens {
   static const Color openActivity = Color(0xFF7A7166);
 }
 
+abstract final class GeneratedCatchPaletteTokens {
+  static const Color ink = Color(0xFF141114);
+  static const Color inkSecondary = Color(0xFF5A5450);
+  static const Color paper = Color(0xFFF6F0E8);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color nightSurface = Color(0xFF231E23);
+  static const Color nightInk = Color(0xFFF6EFE6);
+  static const Color nightSecondary = Color(0xFFBDB3A7);
+  static const Color coral = Color(0xFFF07A55);
+  static const Color coralDeep = Color(0xFFB5451F);
+  static const Color coralInk = Color(0xFF3B1F14);
+  static const Color pink = Color(0xFFF08AA0);
+  static const Color pinkDeep = Color(0xFFB23A5A);
+  static const Color pinkInk = Color(0xFF4A2330);
+  static const Color yellow = Color(0xFFF5C451);
+  static const Color yellowDeep = Color(0xFF8A6410);
+  static const Color yellowInk = Color(0xFF4A3608);
+  static const Color mint = Color(0xFF5CCB9F);
+  static const Color mintDeep = Color(0xFF1F7A57);
+  static const Color mintInk = Color(0xFF123D2C);
+  static const Color indigo = Color(0xFF8C9BF2);
+  static const Color indigoDeep = Color(0xFF4C5BC4);
+  static const Color indigoInk = Color(0xFF1E2550);
+  static const Color magenta = Color(0xFFE58AC8);
+  static const Color magentaDeep = Color(0xFFA3307F);
+  static const Color magentaInk = Color(0xFF46163A);
+}
+
+abstract final class GeneratedCatchGroundTokens {
+  static const Color whiteFill = Color(0xFFFFFFFF);
+  static const Color whiteInk = Color(0xFF141114);
+  static const Color whiteInkSecondary = Color(0xFF5A5450);
+  static const Color paperFill = Color(0xFFF6F0E8);
+  static const Color paperInk = Color(0xFF141114);
+  static const Color paperInkSecondary = Color(0xFF5A5450);
+  static const Color inkFill = Color(0xFF141114);
+  static const Color inkInk = Color(0xFFF6EFE6);
+  static const Color inkInkSecondary = Color(0xFFBDB3A7);
+  static const Color coralFill = Color(0xFFF07A55);
+  static const Color coralInk = Color(0xFF141114);
+  static const Color coralInkSecondary = Color(0xFF3B1F14);
+  static const Color pinkFill = Color(0xFFF08AA0);
+  static const Color pinkInk = Color(0xFF141114);
+  static const Color pinkInkSecondary = Color(0xFF4A2330);
+  static const Color yellowFill = Color(0xFFF5C451);
+  static const Color yellowInk = Color(0xFF141114);
+  static const Color yellowInkSecondary = Color(0xFF4A3608);
+  static const Color mintFill = Color(0xFF5CCB9F);
+  static const Color mintInk = Color(0xFF141114);
+  static const Color mintInkSecondary = Color(0xFF123D2C);
+  static const Color indigoFill = Color(0xFF8C9BF2);
+  static const Color indigoInk = Color(0xFF141114);
+  static const Color indigoInkSecondary = Color(0xFF1E2550);
+  static const Color magentaFill = Color(0xFFE58AC8);
+  static const Color magentaInk = Color(0xFF141114);
+  static const Color magentaInkSecondary = Color(0xFF46163A);
+}
+
+abstract final class GeneratedCatchFormatTokens {
+  static const Color runAccent = Color(0xFFF07A55);
+  static const Color runDeep = Color(0xFFB5451F);
+  static const Color runInk = Color(0xFF141114);
+  static const Color runInkSecondary = Color(0xFF3B1F14);
+  static const Color dinnerAccent = Color(0xFFF08AA0);
+  static const Color dinnerDeep = Color(0xFFB23A5A);
+  static const Color dinnerInk = Color(0xFF141114);
+  static const Color dinnerInkSecondary = Color(0xFF4A2330);
+  static const Color gamesAccent = Color(0xFFF5C451);
+  static const Color gamesDeep = Color(0xFF8A6410);
+  static const Color gamesInk = Color(0xFF141114);
+  static const Color gamesInkSecondary = Color(0xFF4A3608);
+  static const Color courtsAccent = Color(0xFF5CCB9F);
+  static const Color courtsDeep = Color(0xFF1F7A57);
+  static const Color courtsInk = Color(0xFF141114);
+  static const Color courtsInkSecondary = Color(0xFF123D2C);
+  static const Color nightsOutAccent = Color(0xFFE58AC8);
+  static const Color nightsOutDeep = Color(0xFFA3307F);
+  static const Color nightsOutInk = Color(0xFF141114);
+  static const Color nightsOutInkSecondary = Color(0xFF46163A);
+}
+
 abstract final class GeneratedCatchWebsiteTokens {
   static const double contentMax = 1180.0;
   static const double headerHeight = 76.0;
