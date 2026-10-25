@@ -14,7 +14,7 @@ const tokensRoot = "../../../catch_tokens/lib";
 const generatedDart = read(`${tokensRoot}/generated/catch_design_tokens.g.dart`);
 const opacityDart = read(`${tokensRoot}/src/semantic/catch_opacity.dart`);
 const layoutDart = read(`${tokensRoot}/src/semantic/catch_layout.dart`);
-const iconDart = read(`${tokensRoot}/src/primitives/catch_icon.dart`);
+const iconDart = read(`${tokensRoot}/src/primitives/catch_icon_size.dart`);
 const tokensDart = read(`${tokensRoot}/src/semantic/catch_tokens.dart`);
 const badgeDart = read("../../../catch_ui/lib/src/components/catch_badge.dart");
 const badgeCss = read("./CatchBadge.module.css");
@@ -68,7 +68,7 @@ describe("CatchBadge parity", () => {
     expect(expand(cssValue("--catch-badge-editorial-black"))).toBe(hex("editorialBlack"));
   });
 
-  it("sizes the action badge and its icons as CatchLayout and CatchIcon", () => {
+  it("sizes the action badge and its icons as CatchLayout and CatchIconSize", () => {
     expect(cssValue("--catch-badge-action-height")).toBe(`${dartNumber(layoutDart, "badgeActionHeight")}px`);
     expect(cssValue("--catch-badge-action-icon-size"))
       .toBe(`${dartNumber(layoutDart, "badgeActionIconSize")}px`);
