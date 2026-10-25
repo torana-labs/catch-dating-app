@@ -99,7 +99,7 @@ class CatchAvatar extends StatelessWidget {
         color: colors!.soft,
         child: Center(
           child: Icon(
-            CatchIcons.personOutlined,
+            CatchIcons.person,
             size: innerSize * CatchLayout.avatarVeilGlyphScale,
             color: colors!.deep.withValues(
               alpha: CatchOpacity.avatarFallbackGlyph,

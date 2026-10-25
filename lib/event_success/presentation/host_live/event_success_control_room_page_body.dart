@@ -91,14 +91,14 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
         children: [
           CatchField.nav(
             copy: catchFieldCopy(context.l10n),
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             title: context.l10n.eventSuccessControlRoomGuests,
             body: guestSummary,
             onTap: onOpenGuests,
           ),
           CatchField.nav(
             copy: catchFieldCopy(context.l10n),
-            icon: CatchIcons.helpOutlineRounded,
+            icon: CatchIcons.help,
             title: context.l10n.eventSuccessControlRoomHelpFallback,
             body: context.l10n.eventSuccessControlRoomHelpFallbackSubtitle,
             onTap: () => unawaited(_showControlRoomFallback(context)),
@@ -178,7 +178,7 @@ class EventSuccessControlRoomPageBody extends StatelessWidget {
             .l10n
             .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton,
       ),
-      icon: CatchIcons.arrowBackRounded,
+      icon: CatchIcons.back,
       onPressed: onPrevious,
       tooltip: context.l10n.eventSuccessEventSuccessHostLiveLabelPrevious,
     );
@@ -333,7 +333,7 @@ Future<void> _showControlRoomFallback(BuildContext context) {
     builder: (sheetContext) => CatchSheet.standard(
       title: context.l10n.eventSuccessControlRoomFallbackTitle,
       subtitle: context.l10n.eventSuccessControlRoomFallbackSubtitle,
-      glyph: CatchIcons.helpOutlineRounded,
+      glyph: CatchIcons.help,
       footer: CatchButton.sheet(
         role: CatchButtonEmphasis.dismiss,
         label: context.l10n.eventSuccessControlRoomFallbackDone,
@@ -346,19 +346,19 @@ Future<void> _showControlRoomFallback(BuildContext context) {
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventSuccessControlRoomFallbackStayTitle,
             body: context.l10n.eventSuccessControlRoomFallbackStayBody,
-            icon: CatchIcons.checklistRounded,
+            icon: CatchIcons.checklist,
           ),
           CatchField.content(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventSuccessControlRoomFallbackGuestsTitle,
             body: context.l10n.eventSuccessControlRoomFallbackGuestsBody,
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
           ),
           CatchField.content(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.eventSuccessControlRoomFallbackContinueTitle,
             body: context.l10n.eventSuccessControlRoomFallbackContinueBody,
-            icon: CatchIcons.arrowForwardRounded,
+            icon: CatchIcons.forward,
           ),
         ],
       ),

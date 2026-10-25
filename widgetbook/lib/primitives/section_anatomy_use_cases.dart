@@ -67,7 +67,7 @@ Widget sectionRowListStates(BuildContext context) => WidgetbookCatalogFrame(
             copy: catchFieldCopy(context.l10n),
             title: 'Location',
             body: 'City centre',
-            icon: CatchIcons.locationOnOutlined,
+            icon: CatchIcons.location,
           ),
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
@@ -131,11 +131,9 @@ Widget fieldDividerGeometryStates(BuildContext context) =>
                   copy: catchFieldCopy(context.l10n),
                   title: 'Detail',
                   body: 'Leading text lane',
-                  icon: geometry == 'Icon'
-                      ? CatchIcons.locationOnOutlined
-                      : null,
+                  icon: geometry == 'Icon' ? CatchIcons.location : null,
                   leading: geometry == 'Custom leading'
-                      ? Icon(CatchIcons.checkRounded)
+                      ? Icon(CatchIcons.check)
                       : null,
                   leadingExtent: geometry == 'Custom leading'
                       ? CatchSpacing.s8

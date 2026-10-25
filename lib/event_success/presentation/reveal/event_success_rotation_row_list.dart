@@ -26,7 +26,7 @@ class EventSuccessRotationRowList extends StatelessWidget {
         label: context
             .l10n
             .eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPartners,
-        icon: CatchIcons.hourglassEmptyRounded,
+        icon: CatchIcons.pending,
       );
     }
     return EventSuccessAssignmentSurface(

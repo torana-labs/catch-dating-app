@@ -230,10 +230,10 @@ class CatchBanner extends StatelessWidget {
     final glyph =
         icon ??
         switch (tone) {
-          CatchBannerTone.danger => CatchIcons.errorOutlineRounded,
-          CatchBannerTone.warning => CatchIcons.warningAmberRounded,
-          CatchBannerTone.success => CatchIcons.checkCircle,
-          _ => CatchIcons.infoOutlineRounded,
+          CatchBannerTone.danger => CatchIcons.error,
+          CatchBannerTone.warning => CatchIcons.warning,
+          CatchBannerTone.success => CatchIcons.success,
+          _ => CatchIcons.info,
         };
     final feedbackActions = <Widget>[
       ...actions,

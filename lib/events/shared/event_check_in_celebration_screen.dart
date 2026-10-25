@@ -26,20 +26,20 @@ class EventCheckInCelebrationScreen extends StatelessWidget {
       title: context.l10n.eventsEventCheckInCelebrationScreenTitleCheckedIn,
       message:
           context.l10n.eventsEventCheckInCelebrationScreenMessageYouReOnThe,
-      icon: CatchIcons.locationOnRounded,
+      icon: CatchIcons.location,
       details: [
         CelebrationDetail(
-          icon: CatchIcons.directionsRunRounded,
+          icon: CatchIcons.activity,
           label: context.l10n.eventsEventCheckInCelebrationScreenLabelEvent,
           value: event.title,
         ),
         CelebrationDetail(
-          icon: CatchIcons.scheduleRounded,
+          icon: CatchIcons.time,
           label: context.l10n.eventsEventCheckInCelebrationScreenLabelStarts,
           value: event.timeRangeLabel,
         ),
         CelebrationDetail(
-          icon: CatchIcons.locationOnOutlined,
+          icon: CatchIcons.location,
           label: context.l10n.eventsEventCheckInCelebrationScreenLabelMeetPoint,
           value: event.locationName,
         ),
@@ -47,7 +47,7 @@ class EventCheckInCelebrationScreen extends StatelessWidget {
       primaryAction: CelebrationAction(
         label: context.l10n.eventsEventCheckInCelebrationScreenLabelViewEvent,
         onPressed: onViewEvent,
-        icon: Icon(CatchIcons.directionsRunRounded),
+        icon: Icon(CatchIcons.activity),
       ),
       secondaryAction: CelebrationAction(
         label: context.l10n.eventsEventCheckInCelebrationScreenLabelBackToHome,

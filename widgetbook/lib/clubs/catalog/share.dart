@@ -68,15 +68,12 @@ Widget clubShareMetaRowStates(BuildContext context) {
     children: [
       WidgetbookPageStateCard(
         label: 'location',
-        child: CatchMetaRow(
-          icon: CatchIcons.locationOnOutlined,
-          label: 'Bandra, Mumbai',
-        ),
+        child: CatchMetaRow(icon: CatchIcons.location, label: 'Bandra, Mumbai'),
       ),
       WidgetbookPageStateCard(
         label: 'member count',
         child: CatchMetaRow(
-          icon: CatchIcons.group,
+          icon: CatchIcons.people,
           label: clubMemberCountLabel(widgetbookClubClub),
         ),
       ),

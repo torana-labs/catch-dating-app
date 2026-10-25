@@ -200,7 +200,7 @@ class FeaturedEventTopBar extends StatelessWidget {
                     ),
                     const SizedBox(width: CatchSpacing.micro6),
                     Icon(
-                      CatchIcons.expandMoreRounded,
+                      CatchIcons.expand,
                       size: CatchIconSize.xs,
                       color: paper.withValues(
                         alpha: CatchOpacity.coverStoryLocation,
@@ -246,7 +246,7 @@ class FeaturedEventTopBar extends StatelessWidget {
               ),
               tooltip: context.l10n.exploreCatchCoverStoryTooltipSearch,
               child: Icon(
-                CatchIcons.searchRounded,
+                CatchIcons.search,
                 size: CatchIconSize.control,
                 color: paper,
               ),

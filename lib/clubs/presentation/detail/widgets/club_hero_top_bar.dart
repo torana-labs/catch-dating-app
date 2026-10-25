@@ -125,10 +125,7 @@ class ClubHeroTopBar extends StatelessWidget {
               tooltip: context.l10n.clubsClubHeroAppBarTooltipBack,
               variant: CatchIconActionVariant.float,
               onPressed: () => Navigator.of(context).pop(),
-              child: Icon(
-                CatchIcons.arrowBackIosNewRounded,
-                size: CatchIconSize.md,
-              ),
+              child: Icon(CatchIcons.back, size: CatchIconSize.md),
             ),
           ),
           actions: [
@@ -366,7 +363,7 @@ class ClubHeroHeader extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  CatchIcons.locationOnOutlined,
+                  CatchIcons.location,
                   size: CatchIconSize.md,
                   color: t.ink2,
                 ),
@@ -467,7 +464,7 @@ class ClubHeroHeader extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    CatchIcons.locationOnOutlined,
+                    CatchIcons.location,
                     size: CatchIconSize.md,
                     color: t.ink2,
                   ),

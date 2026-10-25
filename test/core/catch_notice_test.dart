@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('existing const callers keep the default icon and semantic tone', () {
     const data = CatchNoticeData(id: 'ordinary', title: 'Existing notice');
-    expect(data.icon, CatchIcons.infoOutlineRounded);
+    expect(data.icon, CatchIcons.info);
     expect(data.tone, CatchNoticeTone.status);
     expect(data.person, isNull);
     expect(data.accentColor, isNull);
@@ -22,7 +22,7 @@ void main() {
           tester.view.devicePixelRatio = 1;
           addTearDown(tester.view.resetPhysicalSize);
           addTearDown(tester.view.resetDevicePixelRatio);
-          final icon = CatchIcons.chatCircle;
+          final icon = CatchIcons.chat;
           final theme = dark ? AppTheme.dark : AppTheme.light;
           late Color accent;
           await tester.pumpWidget(
@@ -56,7 +56,7 @@ void main() {
           expect(find.text('A caller-provided message.'), findsOneWidget);
           expect(find.byIcon(icon), findsOneWidget);
           expect(tester.widget<Icon>(find.byIcon(icon)).color, accent);
-          expect(find.byIcon(CatchIcons.infoOutlineRounded), findsNothing);
+          expect(find.byIcon(CatchIcons.info), findsNothing);
           expect(tester.takeException(), isNull);
         },
       );
@@ -89,7 +89,7 @@ void main() {
       expect(avatar.variant, CatchAvatarVariant.circle);
       expect(avatar.size, CatchLayout.noticeIconExtent);
       expect(find.text('AR'), findsOneWidget);
-      expect(find.byIcon(CatchIcons.infoOutlineRounded), findsNothing);
+      expect(find.byIcon(CatchIcons.info), findsNothing);
       expect(find.byType(CatchSurface), findsOneWidget);
     },
   );

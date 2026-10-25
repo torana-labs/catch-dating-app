@@ -80,7 +80,7 @@ class SavedEventsScreen extends ConsumerWidget {
                 builder: (context, events) {
                   if (events.isEmpty) {
                     return CatchSliverEmptyState(
-                      icon: CatchIcons.bookmarkBorderRounded,
+                      icon: CatchIcons.bookmark,
                       title: context
                           .l10n
                           .eventsSavedEventsScreenTitleNoSavedEventsYet,

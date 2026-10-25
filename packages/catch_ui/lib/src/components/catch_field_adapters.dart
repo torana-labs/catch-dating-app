@@ -236,7 +236,7 @@ CatchField<T> _catchFieldStepper<T>({
                 key: const ValueKey('catch-field-stepper-clear'),
                 tooltip: copy.clearTooltip(title),
                 constraints: CatchFieldTrailingRow.clearTargetConstraints,
-                icon: Icon(CatchIcons.closeRounded, size: CatchIconSize.xs),
+                icon: Icon(CatchIcons.close, size: CatchIconSize.xs),
                 onPressed: status == CatchFieldStatus.saving ? null : onClear,
               ),
             ],

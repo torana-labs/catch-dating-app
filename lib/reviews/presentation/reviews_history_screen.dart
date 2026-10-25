@@ -108,7 +108,7 @@ class ReviewsHistoryBody extends StatelessWidget {
       ReviewsHistoryLoading() => const ReviewsHistorySkeleton(),
       ReviewsHistoryEmpty(:final title, :final message) => Center(
         child: CatchEmptyState(
-          icon: CatchIcons.rateReviewOutlined,
+          icon: CatchIcons.feedback,
           title: title,
           message: message,
         ),

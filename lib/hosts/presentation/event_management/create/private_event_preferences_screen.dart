@@ -237,15 +237,15 @@ class PrivateEventPreferencesScreen extends ConsumerWidget {
                                   ? l10n.hostsEventPreferencePrivateHint
                                   : l10n.hostsEventPreferencePublishedHint,
                               icon: state.isPrivateEvent
-                                  ? CatchIcons.lockOutline
-                                  : CatchIcons.infoOutlineRounded,
+                                  ? CatchIcons.locked
+                                  : CatchIcons.info,
                             ),
                             if (state.hasPending) ...[
                               CatchField.read(
                                 copy: copy,
                                 title: l10n.hostsEventPreferencePending,
                                 body: l10n.hostsEventPreferencePendingBody,
-                                icon: CatchIcons.scheduleOutlined,
+                                icon: CatchIcons.time,
                               ),
                               CatchField.action(
                                 copy: copy,
@@ -265,7 +265,7 @@ class PrivateEventPreferencesScreen extends ConsumerWidget {
                                   l10n: l10n,
                                   context: AppErrorContext.event,
                                 ),
-                                icon: CatchIcons.errorOutlineRounded,
+                                icon: CatchIcons.error,
                               ),
                             if (!state.hasPending && state.error != null)
                               CatchField.action(
@@ -368,7 +368,7 @@ class PrivateEventPreferencesScreen extends ConsumerWidget {
                                   : l10n.hostsEventDefaultsChooseEachEvent,
                               helperText: l10n
                                   .hostsEventDefaultsCollectionSuggestionHint,
-                              icon: CatchIcons.paymentsOutlined,
+                              icon: CatchIcons.payment,
                               child: CatchChoiceInput<EventCollectionPreference>(
                                 values: EventCollectionPreference.values,
                                 itemLabelBuilder: collectionLabel,

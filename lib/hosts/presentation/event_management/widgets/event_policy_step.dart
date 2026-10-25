@@ -167,7 +167,7 @@ class EventPolicyStep extends StatelessWidget {
                   controller: capacityController,
                   onChanged: onCapacityChanged,
                   inputHint: '20',
-                  icon: CatchIcons.peopleOutline,
+                  icon: CatchIcons.people,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -209,7 +209,7 @@ class EventPolicyStep extends StatelessWidget {
                         .createEventCallablePayloadPriceInPaise,
                     controller: priceController,
                     inputHint: '0',
-                    icon: CatchIcons.paymentsOutlined,
+                    icon: CatchIcons.payment,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                     ),
@@ -259,7 +259,7 @@ class EventPolicyStep extends StatelessWidget {
                           preset.description(context.l10n),
                       selected: admissionPreset,
                       onChanged: onAdmissionPresetChanged,
-                      icon: CatchIcons.howToRegOutlined,
+                      icon: CatchIcons.checkIn,
                     ),
                     children: [
                       if (dependencies.isApplicable(_PolicyField.inviteCode))
@@ -278,7 +278,7 @@ class EventPolicyStep extends StatelessWidget {
                           helperText: context
                               .l10n
                               .hostsEventPolicyStepTextTheCodeIsStored,
-                          icon: CatchIcons.lockOutlineRounded,
+                          icon: CatchIcons.locked,
                           textInputAction: TextInputAction.next,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
@@ -331,7 +331,7 @@ class EventPolicyStep extends StatelessWidget {
                             inputHint: context
                                 .l10n
                                 .hostsEventPolicyStepPlaceholderMaxMen,
-                            icon: CatchIcons.maleOutlined,
+                            icon: CatchIcons.male,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -358,7 +358,7 @@ class EventPolicyStep extends StatelessWidget {
                             inputHint: context
                                 .l10n
                                 .hostsEventPolicyStepPlaceholderMaxWomen,
-                            icon: CatchIcons.femaleOutlined,
+                            icon: CatchIcons.female,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -383,7 +383,7 @@ class EventPolicyStep extends StatelessWidget {
                               .l10n
                               .hostsEventPolicyStepTextRequestsAppearInHost,
                           bodyMaxLines: 8,
-                          icon: CatchIcons.howToRegOutlined,
+                          icon: CatchIcons.checkIn,
                         ),
                       if (dependencies.isApplicable(
                         _PolicyField.demandPricing,
@@ -420,7 +420,7 @@ class EventPolicyStep extends StatelessWidget {
                                 .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise,
                             controller: dynamicPricingStepController,
                             inputHint: '250',
-                            icon: CatchIcons.trendingUpRounded,
+                            icon: CatchIcons.trend,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -445,7 +445,7 @@ class EventPolicyStep extends StatelessWidget {
                                 .createEventCallablePayloadEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise,
                             controller: dynamicPricingMaxController,
                             inputHint: '1500',
-                            icon: CatchIcons.priceChangeOutlined,
+                            icon: CatchIcons.pricing,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
@@ -494,7 +494,7 @@ class EventPolicyStep extends StatelessWidget {
                               .createEventCallablePayloadEventPolicyAdmissionCrossPathsPairInventoryReservedPairCapacity,
                           controller: crossPathsPairCapacityController,
                           inputHint: '2',
-                          icon: CatchIcons.peopleOutline,
+                          icon: CatchIcons.people,
                           keyboardType: TextInputType.number,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
@@ -562,7 +562,7 @@ class EventPolicyStep extends StatelessWidget {
                             ? cancellationPolicyId
                             : EventCancellationPolicyId.standard,
                         onChanged: onCancellationPolicyChanged,
-                        icon: CatchIcons.ruleOutlined,
+                        icon: CatchIcons.rules,
                       ),
                     );
                   },

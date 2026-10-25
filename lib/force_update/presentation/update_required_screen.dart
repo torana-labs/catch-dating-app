@@ -69,7 +69,7 @@ class UpdateRequiredBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Icon(
-              CatchIcons.systemUpdateOutlined,
+              CatchIcons.appUpdate,
               size: CatchIconSize.forceUpdate,
               color: t.primary,
             ),
@@ -92,7 +92,7 @@ class UpdateRequiredBody extends StatelessWidget {
               key: UpdateRequiredKeys.updateNowButton,
               label: context.l10n.forceUpdateUpdateRequiredScreenLabelUpdateNow,
               onPressed: onUpdateNow,
-              leading: Icon(CatchIcons.openInNew),
+              leading: Icon(CatchIcons.openExternal),
               fullWidth: true,
             ),
           ],

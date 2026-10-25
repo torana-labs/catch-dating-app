@@ -24,19 +24,19 @@ Widget eventActionCardState(BuildContext context) {
       EventActionCardBadge(
         label: 'Booked',
         tone: CatchBadgeTone.success,
-        icon: CatchIcons.checkCircleRounded,
+        icon: CatchIcons.success,
       ),
     ],
     metaRows: [
       [
-        CatchMetaEntry(icon: CatchIcons.scheduleRounded, label: '6:30 AM'),
-        CatchMetaEntry(icon: CatchIcons.locationOnOutlined, label: 'Bandra'),
+        CatchMetaEntry(icon: CatchIcons.time, label: '6:30 AM'),
+        CatchMetaEntry(icon: CatchIcons.location, label: 'Bandra'),
       ],
     ],
     actions: [
       EventActionCardAction(
         label: 'Open event',
-        icon: CatchIcons.calendarMonthOutlined,
+        icon: CatchIcons.date,
         onPressed: widgetbookNoop,
         variant: CatchButtonVariant.primary,
       ),
@@ -58,7 +58,7 @@ Widget eventActionCardHeaderState(BuildContext context) {
         EventActionCardBadge(
           label: 'Booked',
           tone: CatchBadgeTone.success,
-          icon: CatchIcons.checkCircleRounded,
+          icon: CatchIcons.success,
         ),
         EventActionCardBadge(label: 'Host pick', tone: CatchBadgeTone.brand),
       ],
@@ -78,13 +78,13 @@ Widget eventActionCardActionsState(BuildContext context) {
       actions: [
         EventActionCardAction(
           label: 'Open event',
-          icon: CatchIcons.calendarMonthOutlined,
+          icon: CatchIcons.date,
           onPressed: widgetbookNoop,
           variant: CatchButtonVariant.primary,
         ),
         EventActionCardAction(
           label: 'Add to calendar',
-          icon: CatchIcons.eventAvailableOutlined,
+          icon: CatchIcons.eventConfirmed,
           onPressed: widgetbookNoop,
         ),
       ],

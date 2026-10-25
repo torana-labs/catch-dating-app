@@ -204,19 +204,19 @@ class EventShareCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CatchMetaRow(
-                        icon: CatchIcons.calendarTodayOutlined,
+                        icon: CatchIcons.date,
                         label: event.longDateLabel,
                         color: visual.accent,
                       ),
                       gapH10,
                       CatchMetaRow(
-                        icon: CatchIcons.clock,
+                        icon: CatchIcons.time,
                         label: event.timeRangeLabel,
                         color: visual.accent,
                       ),
                       gapH10,
                       CatchMetaRow(
-                        icon: CatchIcons.locationOnOutlined,
+                        icon: CatchIcons.location,
                         label: event.locationName,
                         color: visual.accent,
                       ),

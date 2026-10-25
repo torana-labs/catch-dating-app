@@ -154,7 +154,7 @@ class PublicProfileScreen extends ConsumerWidget {
                       .publicProfilePublicProfileScreenVisiblecopyReport,
                   label:
                       context.l10n.publicProfilePublicProfileScreenLabelReport,
-                  icon: CatchIcons.flagOutlined,
+                  icon: CatchIcons.flag,
                 ),
                 CatchActionMenuItem(
                   value: context
@@ -162,7 +162,7 @@ class PublicProfileScreen extends ConsumerWidget {
                       .publicProfilePublicProfileScreenVisiblecopyBlock,
                   label:
                       context.l10n.publicProfilePublicProfileScreenLabelBlock,
-                  icon: CatchIcons.blockRounded,
+                  icon: CatchIcons.block,
                   isDestructive: true,
                 ),
               ],
@@ -203,7 +203,7 @@ class PublicProfileScreenBody extends StatelessWidget {
       case PublicProfileRouteStatus.unavailable:
         return Center(
           child: CatchEmptyState(
-            icon: CatchIcons.personOffOutlined,
+            icon: CatchIcons.personRemoved,
             title: context
                 .l10n
                 .publicProfilePublicProfileScreenTitleProfileUnavailable,
@@ -347,7 +347,7 @@ class PublicProfileReportReasonTile extends StatelessWidget {
       child: CatchField.nav(
         copy: catchFieldCopy(context.l10n),
         title: label,
-        icon: CatchIcons.flagOutlined,
+        icon: CatchIcons.flag,
         onTap: () => onSelected(value),
       ),
     );

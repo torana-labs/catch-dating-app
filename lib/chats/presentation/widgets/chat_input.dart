@@ -144,7 +144,7 @@ class _ChatInputBarState extends State<ChatInput> {
                                     child: CatchLoadingIndicator(color: t.ink2),
                                   )
                                 : Icon(
-                                    CatchIcons.imageOutlined,
+                                    CatchIcons.photo,
                                     size: CatchIconSize.md,
                                     color: t.ink2,
                                   ),
@@ -208,7 +208,7 @@ class _ChatInputBarState extends State<ChatInput> {
                                   ),
                                 )
                               : Icon(
-                                  CatchIcons.sendRounded,
+                                  CatchIcons.send,
                                   size: CatchIconSize.md,
                                   color: t.primaryInk,
                                 ),

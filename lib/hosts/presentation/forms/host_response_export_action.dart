@@ -114,7 +114,7 @@ class _HostResponseExportActionState
                       : format == HostFormExportFormat.csv
                       ? context.l10n.hostFormExportCsv
                       : context.l10n.hostFormExportXlsx,
-                  leading: Icon(CatchIcons.downloadRounded),
+                  leading: Icon(CatchIcons.download),
                   onPressed:
                       !enabled ||
                           busy ||

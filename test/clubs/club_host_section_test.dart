@@ -51,7 +51,7 @@ void main() {
         context,
         ActivityKind.dinner,
       ).accent;
-      final seal = tester.widget<Icon>(find.byIcon(CatchIcons.sealCheck));
+      final seal = tester.widget<Icon>(find.byIcon(CatchIcons.verified));
       expect(seal.color, expectedSealColor);
     });
   });

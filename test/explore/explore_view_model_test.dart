@@ -198,14 +198,14 @@ void main() {
       expect(idle.tooltipLabel, 'Choose city: Mumbai');
       expect(idle.semanticLabel, 'Choose city: Mumbai');
       expect(idle.scopeLabel, 'EXPLORE · MUMBAI');
-      expect(idle.icon, CatchIcons.locationOnOutlined);
+      expect(idle.icon, CatchIcons.location);
 
       final focused = ExploreCityButtonState.from(
         city: _city('mumbai'),
         focused: true,
         l10n: _l10n,
       );
-      expect(focused.icon, CatchIcons.locationOnRounded);
+      expect(focused.icon, CatchIcons.location);
     });
 
     test(

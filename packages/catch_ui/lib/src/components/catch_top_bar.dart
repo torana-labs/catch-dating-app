@@ -375,7 +375,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
           tooltip: isClose
               ? localizations.closeButtonTooltip
               : localizations.backButtonTooltip,
-          icon: isClose ? CatchIcons.close : CatchIcons.arrowBackIosNewRounded,
+          icon: isClose ? CatchIcons.close : CatchIcons.back,
           onPressed:
               widget.navigation.onPressed ??
               CatchWorkspaceBackScope.maybeOf(context) ??

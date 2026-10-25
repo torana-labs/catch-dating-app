@@ -32,7 +32,7 @@ void main() {
   });
 
   test('icon raster glyph preserves icon-font metadata and art effects', () {
-    final icon = CatchIcons.running;
+    final icon = CatchIcons.activityRunning;
     const shadow = Shadow(
       color: Colors.black38,
       blurRadius: 4,

@@ -602,7 +602,7 @@ class _HostClubEditBodyState extends ConsumerState<HostClubEditBody> {
               key: const ValueKey('host-club-settings-event-defaults'),
               title: context.l10n.hostsHostClubEditTabLabelEventDefaults,
               valueText: club.hostDefaults.primaryActivityKind.label,
-              icon: CatchIcons.eventOutlined,
+              icon: CatchIcons.event,
               onTap: () => _openSpoke(Routes.hostClubEventDefaultsScreen),
             ),
             CatchField.nav(
@@ -612,7 +612,7 @@ class _HostClubEditBodyState extends ConsumerState<HostClubEditBody> {
               valueText: eventSuccess.enabled
                   ? context.l10n.hostsHostClubEditTabValueOn
                   : context.l10n.hostsHostClubEditTabValueOff,
-              icon: CatchIcons.autoAwesomeOutlined,
+              icon: CatchIcons.magic,
               onTap: () => _openSpoke(Routes.hostClubLiveGuideScreen),
             ),
             if (widget.isOwner)
@@ -620,7 +620,7 @@ class _HostClubEditBodyState extends ConsumerState<HostClubEditBody> {
                 copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-club-settings-payments'),
                 title: context.l10n.hostsHostClubEditTabLabelPayments,
-                icon: CatchIcons.paymentsOutlined,
+                icon: CatchIcons.payment,
                 onTap: () => _openSpoke(Routes.hostClubPaymentsScreen),
               ),
             CatchField.nav(
@@ -630,7 +630,7 @@ class _HostClubEditBodyState extends ConsumerState<HostClubEditBody> {
               valueText: context.l10n.hostsHostClubEditTabValueHostCount(
                 count: hostCount,
               ),
-              icon: CatchIcons.groupAddOutlined,
+              icon: CatchIcons.addPerson,
               onTap: () => _openSpoke(Routes.hostClubTeamScreen),
             ),
           ],

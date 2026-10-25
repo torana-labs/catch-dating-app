@@ -146,7 +146,7 @@ class HostWorkPageBody extends StatelessWidget {
           if (assignments.isEmpty)
             CatchSectionListItem(
               child: CatchEmptyState(
-                icon: CatchIcons.lockOutline,
+                icon: CatchIcons.locked,
                 title: context.l10n.hostWorkShellEmptyTitle,
                 message: context.l10n.hostWorkShellEmptyMessage,
               ),
@@ -161,8 +161,8 @@ class HostWorkPageBody extends StatelessWidget {
                       CatchFieldRow.standard(
                         leading: Icon(
                           assignment.isProgram
-                              ? CatchIcons.groupsOutlined
-                              : CatchIcons.tabEvents,
+                              ? CatchIcons.people
+                              : CatchIcons.ticket,
                         ),
                         body: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,7 +193,7 @@ class HostWorkPageBody extends StatelessWidget {
                                       duty.duty != HostWorkDuty.programAdmin,
                                 )
                             ? CatchIconAction.icon(
-                                icon: CatchIcons.peopleOutline,
+                                icon: CatchIcons.people,
                                 tooltip: context.l10n.programsTeamTitle,
                                 onPressed: () => context.pushNamed(
                                   Routes.hostProgramTeamScreen.name,
@@ -202,7 +202,7 @@ class HostWorkPageBody extends StatelessWidget {
                                   },
                                 ),
                               )
-                            : Icon(CatchIcons.chevronRightRounded),
+                            : Icon(CatchIcons.disclosure),
                         onTap: () => _openAssignment(context, assignment),
                       ),
                   ],

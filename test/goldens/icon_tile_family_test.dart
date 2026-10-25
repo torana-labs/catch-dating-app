@@ -25,7 +25,7 @@ void main() {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   CatchIconTile(
-                    icon: CatchIcons.eventOutlined,
+                    icon: CatchIcons.event,
                     iconColor: CatchTokens.of(context).primary,
                   ),
                   CatchIconTile.empty(icon: CatchIcons.search),

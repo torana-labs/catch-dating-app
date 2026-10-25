@@ -154,7 +154,7 @@ Widget catchEmptyStateContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'stacked',
         child: CatchEmptyState(
-          icon: CatchIcons.eventOutlined,
+          icon: CatchIcons.event,
           title: 'No events yet',
           message: 'Follow a host to see upcoming plans.',
         ),
@@ -171,7 +171,7 @@ Widget catchEmptyStateContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'surface',
         child: CatchEmptyState(
-          icon: CatchIcons.group,
+          icon: CatchIcons.people,
           title: 'Private roster',
           message: 'Attendees appear after you join.',
           surface: true,
@@ -180,7 +180,7 @@ Widget catchEmptyStateContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'bubble-icon',
         child: CatchEmptyState(
-          icon: CatchIcons.group,
+          icon: CatchIcons.people,
           title: 'Private roster',
           iconVariant: CatchIconTileVariant.bubble,
         ),
@@ -188,7 +188,7 @@ Widget catchEmptyStateContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'with-action',
         child: CatchEmptyState(
-          icon: CatchIcons.eventOutlined,
+          icon: CatchIcons.event,
           title: 'No events yet',
           message: 'Follow a host to see upcoming plans.',
           actions: [
@@ -433,14 +433,14 @@ Widget catchBannerStatusContractStates(BuildContext context) {
     id: 'offline',
     label: context.l10n.sharedOfflineTitle,
     message: context.l10n.sharedOfflineBody,
-    icon: CatchIcons.cloudOffRounded,
+    icon: CatchIcons.offline,
     color: t.warning,
   );
   final rehearsal = CatchBannerStatus(
     id: 'rehearsal',
     label: context.l10n.hostEventRehearsalBadge,
     message: context.l10n.hostEventRehearsalSyntheticGuests,
-    icon: CatchIcons.groupsOutlined,
+    icon: CatchIcons.people,
     color: t.danger,
     actions: [
       CatchBannerAction(

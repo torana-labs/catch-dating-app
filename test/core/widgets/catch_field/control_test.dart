@@ -277,7 +277,7 @@ void main() {
     );
     expect(increase.properties.enabled, isFalse);
     expect(
-      tester.widget<Icon>(find.byIcon(CatchIcons.addRounded)).size,
+      tester.widget<Icon>(find.byIcon(CatchIcons.add)).size,
       CatchFieldTokens.stepperGlyphExtent,
     );
   });

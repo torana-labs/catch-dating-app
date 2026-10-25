@@ -91,14 +91,14 @@ class EventSuccessHostPodSection extends StatelessWidget {
                         .eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut(
                           optedOutCount: optedOutCount,
                         ),
-                    icon: CatchIcons.visibilityOffOutlined,
+                    icon: CatchIcons.hide,
                   ),
                 if (hostEdited)
                   CatchBadge(
                     label: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesLabelHostEdited,
-                    icon: CatchIcons.editOutlined,
+                    icon: CatchIcons.edit,
                   ),
               ],
             ),
@@ -126,7 +126,7 @@ class EventSuccessHostPodSection extends StatelessWidget {
               label: context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods,
-              leading: Icon(CatchIcons.autoAwesomeOutlined),
+              leading: Icon(CatchIcons.magic),
               status: (actionState.isGenerating)
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
@@ -148,7 +148,7 @@ class EventSuccessHostPodSection extends StatelessWidget {
                     label: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesLabelRegenerate,
-                    leading: Icon(CatchIcons.autoAwesomeOutlined),
+                    leading: Icon(CatchIcons.magic),
                     variant: CatchButtonVariant.secondary,
                     status: (actionState.isGenerating)
                         ? CatchButtonStatus.loading
@@ -165,7 +165,7 @@ class EventSuccessHostPodSection extends StatelessWidget {
                     label: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesLabelEditGroups,
-                    leading: Icon(CatchIcons.editOutlined),
+                    leading: Icon(CatchIcons.edit),
                     onPressed: () => _showGroupOverrideSheet(
                       context: context,
                       event: event,

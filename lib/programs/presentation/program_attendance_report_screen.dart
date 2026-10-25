@@ -130,7 +130,7 @@ class _ProgramAttendanceReportScreenState
                     label: _exporting
                         ? context.l10n.programsAttendanceExporting
                         : context.l10n.programsAttendanceExport,
-                    leading: Icon(CatchIcons.downloadRounded),
+                    leading: Icon(CatchIcons.download),
                     onPressed: _exporting
                         ? null
                         : () => _export(report, access),
@@ -182,7 +182,7 @@ class _ProgramAttendanceReportScreenState
                 subtitle: context.l10n.programsAttendanceFunctionsSubtitle,
                 child: report.functions.isEmpty
                     ? CatchEmptyState(
-                        icon: CatchIcons.factCheckOutlined,
+                        icon: CatchIcons.review,
                         message: context.l10n.programsAttendanceEmpty,
                         variant: CatchEmptyStateVariant.inline,
                       )
@@ -221,7 +221,7 @@ class ProgramFunctionAttendanceRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final attendance = this.attendance;
     return CatchFieldRow.standard(
-      leading: Icon(CatchIcons.factCheckOutlined),
+      leading: Icon(CatchIcons.review),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -230,7 +230,7 @@ class ProgramFunctionAttendanceRow extends StatelessWidget {
             variant: CatchTextVariant.sectionTitle,
           ),
           CatchMetaRow(
-            icon: CatchIcons.group,
+            icon: CatchIcons.people,
             label: context.l10n.programsAttendanceRowCounts(
               invited: attendance.invitedGuests,
               attending: attendance.attendingGuests,
@@ -239,7 +239,7 @@ class ProgramFunctionAttendanceRow extends StatelessWidget {
           ),
           if (attendance.walkInGuests > 0)
             CatchMetaRow(
-              icon: CatchIcons.personOutlined,
+              icon: CatchIcons.person,
               label: context.l10n.programsAttendanceWalkIns(
                 count: attendance.walkInGuests,
               ),

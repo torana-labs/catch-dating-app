@@ -489,7 +489,7 @@ class HostCustomerDetailsSection extends StatelessWidget {
               key: const ValueKey('host-customer-call'),
               title: context.l10n.hostCustomersPhone,
               body: phone,
-              icon: CatchIcons.phoneOutlined,
+              icon: CatchIcons.phone,
               onTap: onCall,
             ),
           if (customer.email case final email?)
@@ -499,7 +499,7 @@ class HostCustomerDetailsSection extends StatelessWidget {
               title: context.l10n.hostCustomersEmail,
               body: email,
               bodyMaxLines: 4,
-              icon: CatchIcons.emailOutlined,
+              icon: CatchIcons.email,
               onTap: onEmail,
             ),
           CatchField.read(
@@ -565,7 +565,7 @@ class HostCustomerRecentEventsList extends StatelessWidget {
                   status: event.checkedIn ? 'checkedIn' : event.status,
                 ),
               ].join(' · '),
-              icon: CatchIcons.tabEvents,
+              icon: CatchIcons.ticket,
             ),
           ),
       ],

@@ -10,7 +10,7 @@ const _gridPreviewWidth = CatchLayout.confirmDialogMaxWidth;
 final _readyAnalyticsMetric = CatchMetricData(
   partialBadgeLabel: 'Partial',
   missingBadgeLabel: 'Missing',
-  icon: CatchIcons.visibilityOutlined,
+  icon: CatchIcons.show,
   value: '12.4K',
   label: 'Profile views',
   caption: 'Last 30 days',
@@ -19,7 +19,7 @@ final _readyAnalyticsMetric = CatchMetricData(
 final _partialAnalyticsMetric = CatchMetricData(
   partialBadgeLabel: 'Partial',
   missingBadgeLabel: 'Missing',
-  icon: CatchIcons.confirmationNumberOutlined,
+  icon: CatchIcons.ticket,
   value: '126',
   label: 'Bookings',
   caption: 'Confirmed seats',
@@ -29,7 +29,7 @@ final _partialAnalyticsMetric = CatchMetricData(
 final _missingAnalyticsMetric = CatchMetricData(
   partialBadgeLabel: 'Partial',
   missingBadgeLabel: 'Missing',
-  icon: CatchIcons.accountBalanceWalletOutlined,
+  icon: CatchIcons.wallet,
   value: '--',
   label: 'Revenue',
   caption: 'Connect payments to report revenue.',
@@ -108,17 +108,17 @@ Widget catchBannerSourceReadinessStates(BuildContext context) =>
       children: [
         CatchBanner(
           tone: CatchBannerTone.success,
-          icon: CatchIcons.checkCircleOutlineRounded,
+          icon: CatchIcons.success,
           message: 'Attendance data is ready.',
         ),
         CatchBanner(
           tone: CatchBannerTone.warning,
-          icon: CatchIcons.warningAmberRounded,
+          icon: CatchIcons.warning,
           message: 'Recent bookings are still being counted.',
         ),
         CatchBanner(
           tone: CatchBannerTone.warning,
-          icon: CatchIcons.errorOutlineRounded,
+          icon: CatchIcons.error,
           message:
               'Revenue is unavailable until a payment account is connected.',
         ),

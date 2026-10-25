@@ -57,7 +57,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
         leading: CatchIconAction.toolbar(
-          icon: CatchIcons.closeRounded,
+          icon: CatchIcons.close,
           tooltip: context.l10n.swipesEventRecapScreenTooltipCloseRecap,
           onPressed: () => context.pop(),
         ),
@@ -172,7 +172,7 @@ class EventRecapReadyBody extends StatelessWidget {
               gapH14,
               if (!state.hasAttendees)
                 CatchEmptyState(
-                  icon: CatchIcons.groupOffRounded,
+                  icon: CatchIcons.personRemoved,
                   title:
                       context.l10n.swipesEventRecapScreenTitleNoAttendeesToTag,
                   message: context
@@ -573,7 +573,7 @@ class VibeTile extends StatelessWidget {
                     radius: CatchLayout.selectionBadgeRadius,
                     backgroundColor: t.primary,
                     child: Icon(
-                      CatchIcons.checkRounded,
+                      CatchIcons.check,
                       size: CatchIconSize.xs,
                       color: t.primaryInk,
                     ),
@@ -605,10 +605,7 @@ class RecapProfilePhoto extends StatelessWidget {
         radius: CatchRadius.none,
         duration: Duration.zero,
         child: Align(
-          child: Icon(
-            CatchIcons.personRounded,
-            size: CatchIconSize.fallbackAvatar,
-          ),
+          child: Icon(CatchIcons.person, size: CatchIconSize.fallbackAvatar),
         ),
       );
     }

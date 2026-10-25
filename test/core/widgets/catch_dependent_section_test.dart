@@ -64,7 +64,7 @@ void main() {
                   content: CatchRecordLayout(
                     title:
                         'Maximum places reserved for people booking together',
-                    icon: CatchIcons.peopleOutline,
+                    icon: CatchIcons.people,
                     facts: const ['Four places out of twenty'],
                   ),
                   onActivate: () => activated++,

@@ -47,7 +47,7 @@ void main() {
     expect(find.text('Hold'), findsOneWidget);
     expect(find.text('Watch'), findsOneWidget);
     expect(find.text('Move'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.checkCircleRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.success), findsOneWidget);
     expect(find.byIcon(Icons.pan_tool_alt_outlined), findsNothing);
 
     final icons = tester.widgetList<Icon>(find.byType(Icon)).toList();

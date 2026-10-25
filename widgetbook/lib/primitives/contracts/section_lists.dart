@@ -27,7 +27,7 @@ Widget catchRecordRowContractStates(
         onActivate: widgetbookNoop,
         content: CatchRecordLayout(
           title: 'Friday Evening Trivia Night at The Daily Bar',
-          icon: CatchIcons.eventAvailable,
+          icon: CatchIcons.eventConfirmed,
           facts: const ['8:00 PM · The Daily Bar', '24 of 30 registered'],
         ),
       ),
@@ -38,7 +38,7 @@ Widget catchRecordRowContractStates(
         content: CatchRecordLayout(
           title: 'WhatsApp permission',
           description: 'No participant permission is recorded.',
-          icon: CatchIcons.verifiedUserOutlined,
+          icon: CatchIcons.verified,
         ),
       ),
     ),
@@ -49,7 +49,7 @@ Widget catchRecordRowContractStates(
         content: CatchRecordLayout(
           title: 'Sunday Run sign-up',
           metadata: 'Form response · 20 May 2026',
-          icon: CatchIcons.descriptionOutlined,
+          icon: CatchIcons.document,
         ),
       ),
     ),
@@ -61,7 +61,7 @@ Widget catchRecordRowContractStates(
           metadata: 'Catch · 18 June 2026',
           description:
               'I’ll bring two friends next week. We would prefer the smaller weekend event, if there is space.',
-          icon: CatchIcons.tabChats,
+          icon: CatchIcons.chat,
         ),
       ),
     ),

@@ -119,11 +119,7 @@ class HostWaitlistBulkOfferNotice extends StatelessWidget {
               );
     final summary = Row(
       children: [
-        Icon(
-          CatchIcons.groupAddOutlined,
-          color: t.warning,
-          size: CatchIconSize.md,
-        ),
+        Icon(CatchIcons.addPerson, color: t.warning, size: CatchIconSize.md),
         gapW10,
         Expanded(
           child: Column(
@@ -154,7 +150,7 @@ class HostWaitlistBulkOfferNotice extends StatelessWidget {
       ),
       size: CatchButtonSize.md,
       variant: CatchButtonVariant.secondary,
-      leading: Icon(CatchIcons.sendRounded),
+      leading: Icon(CatchIcons.send),
       status: (isPending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       onPressed: isPending ? null : onOffer,
     );

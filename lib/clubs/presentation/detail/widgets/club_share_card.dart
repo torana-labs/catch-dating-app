@@ -86,7 +86,7 @@ class ClubShareCard extends StatelessWidget {
                   ),
                   gapH8,
                   CatchMetaRow(
-                    icon: CatchIcons.locationOnOutlined,
+                    icon: CatchIcons.location,
                     label: context.l10n.clubsClubShareCardLabelAreaCitylabel(
                       area: club.area,
                       cityLabel: cityLabel(club.location),
@@ -94,7 +94,7 @@ class ClubShareCard extends StatelessWidget {
                   ),
                   gapH8,
                   CatchMetaRow(
-                    icon: CatchIcons.group,
+                    icon: CatchIcons.people,
                     label: clubMemberCountLabel(club),
                   ),
                   if (tags.isNotEmpty) ...[gapH10, ClubTagList(tags: tags)],

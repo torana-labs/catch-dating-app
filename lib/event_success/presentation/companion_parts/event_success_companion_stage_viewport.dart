@@ -235,7 +235,7 @@ class CompanionStageNavigationRow extends StatelessWidget {
             ),
             onPressed: canPop ? () => _popCompanion(context) : null,
             child: Icon(
-              CatchIcons.arrowBackRounded,
+              CatchIcons.back,
               size: CatchIconSize.md,
               color: canPop
                   ? foreground
@@ -263,7 +263,7 @@ class CompanionStageNavigationRow extends StatelessWidget {
           width: CatchLayout.eventSuccessStageNavExtent,
           height: CatchLayout.eventSuccessStageNavExtent,
           child: Icon(
-            CatchIcons.radioButtonCheckedRounded,
+            CatchIcons.selected,
             color: foreground.withValues(alpha: CatchOpacity.eventSuccessMuted),
           ),
         ),
@@ -308,9 +308,7 @@ class CompanionHeroSection extends StatelessWidget {
                 eventEnded: eventEnded,
               ),
               tone: attended ? CatchBadgeTone.success : CatchBadgeTone.brand,
-              icon: attended
-                  ? CatchIcons.checkRounded
-                  : CatchIcons.qrCode2Rounded,
+              icon: attended ? CatchIcons.check : CatchIcons.qrCode,
               backgroundColor: fg.withValues(alpha: CatchOpacity.subtleFill),
               foregroundColor: fg,
               borderColor: fg.withValues(
@@ -385,7 +383,7 @@ class CompanionPrivacyText extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
-            CatchIcons.lockOutlineRounded,
+            CatchIcons.locked,
             size: CatchIconSize.md,
             color: stageTheme.foreground.withValues(
               alpha: CatchOpacity.eventSuccessProminent,

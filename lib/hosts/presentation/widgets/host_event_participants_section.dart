@@ -105,7 +105,7 @@ class _HostEventParticipantsSectionState
           return Padding(
             padding: CatchInsets.contentVerticalRelaxed,
             child: CatchEmptyState(
-              icon: CatchIcons.eventBusyOutlined,
+              icon: CatchIcons.eventUnavailable,
               title:
                   context.l10n.hostsHostEventAttendancePanelTitleEventNotFound,
               message: context

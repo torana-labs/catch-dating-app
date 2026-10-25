@@ -49,7 +49,7 @@ class CatchImageFallbackSurface extends StatelessWidget {
       color: backgroundColor ?? t.surface,
       child: Center(
         child: Icon(
-          icon ?? CatchIcons.imageOutlined,
+          icon ?? CatchIcons.photo,
           color: iconColor ?? t.ink3,
           size: iconSize,
         ),

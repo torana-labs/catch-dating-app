@@ -81,7 +81,7 @@ void main() {
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('5:20 /km'), findsOneWidget);
     expect(find.text('Sundowner 5K'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
+    expect(find.byIcon(CatchIcons.disclosure), findsNothing);
     expect(
       find.byWidgetPredicate(
         (w) => w is Semantics && w.properties.button == true,

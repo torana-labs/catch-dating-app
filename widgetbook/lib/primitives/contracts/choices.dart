@@ -118,7 +118,7 @@ Widget catchChipContractStates(BuildContext context) {
             CatchChip.selectable(
               label: 'With icon',
               selected: false,
-              leading: Icon(CatchIcons.favoriteOutlineRounded),
+              leading: Icon(CatchIcons.like),
               onChanged: _ignoreBool,
             ),
           ],
@@ -141,7 +141,7 @@ Widget catchChipContractStates(BuildContext context) {
           children: [
             CatchChip.removable(
               label: 'Rooftop',
-              leading: Icon(CatchIcons.pinOutlined),
+              leading: Icon(CatchIcons.location),
               onRemove: widgetbookNoop,
             ),
             CatchChip.removable(
@@ -388,21 +388,13 @@ Widget catchChoiceInputContractStates(BuildContext context) {
         child: WidgetbookContractFieldWidth(
           child: CatchChoiceInput<String>.segmented(
             options: [
-              CatchOption(
-                value: 'now',
-                label: 'Now',
-                icon: CatchIcons.scheduleRounded,
-              ),
+              CatchOption(value: 'now', label: 'Now', icon: CatchIcons.time),
               CatchOption(
                 value: 'guests',
                 label: 'Guests',
-                icon: CatchIcons.groupsOutlined,
+                icon: CatchIcons.people,
               ),
-              CatchOption(
-                value: 'room',
-                label: 'Room',
-                icon: CatchIcons.gridViewRounded,
-              ),
+              CatchOption(value: 'room', label: 'Room', icon: CatchIcons.grid),
             ],
             selected: 'room',
             variant: CatchChoiceInputVariant.operational,

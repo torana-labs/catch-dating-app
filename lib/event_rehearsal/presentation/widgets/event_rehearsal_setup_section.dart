@@ -181,7 +181,7 @@ class _EventRehearsalSetupSectionState
               positionCount: movement.livePositions.length,
             ),
             valueText: movement.lateArrivalGuidance,
-            icon: CatchIcons.routeOutlined,
+            icon: CatchIcons.route,
           ),
       ],
     );

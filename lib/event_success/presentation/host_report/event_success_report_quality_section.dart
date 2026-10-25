@@ -23,7 +23,7 @@ class EventSuccessReportQualitySection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.rateReviewOutlined,
+            icon: CatchIcons.feedback,
             value: eventSuccessReportPercent(scorecard.feedbackResponseRate),
             label: context.l10n.eventSuccessEventSuccessHostReportLabelFeedback,
             caption: context.l10n
@@ -35,7 +35,7 @@ class EventSuccessReportQualitySection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.groups2Outlined,
+            icon: CatchIcons.people,
             value: '${scorecard.conversationExcludedAttendeeCount}',
             label: context
                 .l10n
@@ -50,7 +50,7 @@ class EventSuccessReportQualitySection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.favoriteOutlineRounded,
+            icon: CatchIcons.like,
             value: eventSuccessReportPercent(scorecard.caughtSomeoneRate),
             label: context
                 .l10n
@@ -64,7 +64,7 @@ class EventSuccessReportQualitySection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.favoriteRounded,
+            icon: CatchIcons.like,
             value: '${scorecard.catchSentCount}',
             label:
                 context.l10n.eventSuccessEventSuccessHostReportLabelCatchesSent,
@@ -72,7 +72,7 @@ class EventSuccessReportQualitySection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.groups2Outlined,
+            icon: CatchIcons.people,
             value: eventSuccessReportPercent(scorecard.assignmentCoverageRate),
             label: context
                 .l10n
@@ -86,7 +86,7 @@ class EventSuccessReportQualitySection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.visibilityOffOutlined,
+            icon: CatchIcons.hide,
             value: eventSuccessReportPercent(scorecard.assignmentOptOutRate),
             label: context.l10n.eventSuccessEventSuccessHostReportLabelOptedOut,
             caption: context.l10n
@@ -97,7 +97,7 @@ class EventSuccessReportQualitySection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.volunteerActivismOutlined,
+            icon: CatchIcons.support,
             value: eventSuccessReportPercent(scorecard.wingmanRequestRate),
             label:
                 context.l10n.eventSuccessEventSuccessHostReportLabelWingmanHelp,

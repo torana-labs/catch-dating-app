@@ -42,7 +42,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
               child: CatchErrorState(
                 title: context.l10n.hostsEventOperatorCancelledTitle,
                 message: context.l10n.hostsEventOperatorCancelledMessage,
-                icon: CatchIcons.eventBusyOutlined,
+                icon: CatchIcons.eventUnavailable,
                 actions: const [CatchErrorBackButton()],
               ),
             ),
@@ -68,7 +68,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
                       ),
                       CatchBadge(
                         label: AppTimeFormatters.dateTime(access.startAt),
-                        icon: CatchIcons.scheduleOutlined,
+                        icon: CatchIcons.time,
                       ),
                       if (access.grantExpiresAt case final expiresAt?)
                         CatchBadge(

@@ -29,7 +29,7 @@ void main() {
     () {
       final row = CatchFormTextRow<String>(
         id: 'name',
-        icon: CatchIcons.personOutlined,
+        icon: CatchIcons.person,
         label: 'Name',
         currentValue: '',
         validationCopy: _copy('Custom'),
@@ -63,7 +63,7 @@ void main() {
               rows: [
                 CatchFormTextRow<String>(
                   id: 'name',
-                  icon: CatchIcons.personOutlined,
+                  icon: CatchIcons.person,
                   label: 'Name',
                   currentValue: 'Before',
                   validationCopy: _copy(prefix),
@@ -118,7 +118,7 @@ void main() {
             rows: [
               CatchFormSingleChoiceRow<Object?, int>(
                 id: 'single',
-                icon: CatchIcons.personOutlined,
+                icon: CatchIcons.person,
                 label: 'Single',
                 values: const [1, 2],
                 value: 1,
@@ -127,7 +127,7 @@ void main() {
               ),
               CatchFormMultiChoiceRow<Object?, int>(
                 id: 'multiple',
-                icon: CatchIcons.groupsOutlined,
+                icon: CatchIcons.people,
                 label: 'Multiple',
                 values: const [3, 4],
                 selected: const [3],

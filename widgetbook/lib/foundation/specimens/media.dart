@@ -116,7 +116,7 @@ class _IconSizeGrid extends StatelessWidget {
             width: WidgetbookPreviewLayout.foundationIconCellWidth,
             child: Column(
               children: [
-                Icon(CatchIcons.sparkle, size: row.value),
+                Icon(CatchIcons.spark, size: row.value),
                 gapH8,
                 Text(row.name, style: CatchTextStyles.statusLabel(context)),
                 Text(

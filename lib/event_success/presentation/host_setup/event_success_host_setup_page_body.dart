@@ -155,7 +155,7 @@ class _EventSuccessHostSetupPageBodyState
       children: [
         if (unsavedFrozen) ...[
           CatchBanner(
-            icon: CatchIcons.lockClockRounded,
+            icon: CatchIcons.lockedUntil,
             title: eventHasStarted
                 ? context
                       .l10n
@@ -174,7 +174,7 @@ class _EventSuccessHostSetupPageBodyState
           gapH16,
         ] else if (!widget.planIsPersisted) ...[
           CatchBanner(
-            icon: CatchIcons.cloudUploadOutlined,
+            icon: CatchIcons.upload,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet,
@@ -186,7 +186,7 @@ class _EventSuccessHostSetupPageBodyState
         ],
         if (setupFrozen && widget.planIsPersisted) ...[
           CatchBanner(
-            icon: CatchIcons.lockClockRounded,
+            icon: CatchIcons.lockedUntil,
             tone: CatchBannerTone.warning,
             title: context
                 .l10n
@@ -216,7 +216,7 @@ class _EventSuccessHostSetupPageBodyState
             message: context
                 .l10n
                 .eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs,
-            icon: CatchIcons.errorOutlineRounded,
+            icon: CatchIcons.error,
             tone: CatchBannerTone.warning,
           ),
           gapH16,

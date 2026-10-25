@@ -23,7 +23,7 @@ Widget profileInlineHeightEditorStates(BuildContext context) {
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: ProfileInlineHeightEditor(
-            icon: CatchIcons.heightOutlined,
+            icon: CatchIcons.height,
             label: 'Height',
             value: '172 cm',
             currentValue: 172,

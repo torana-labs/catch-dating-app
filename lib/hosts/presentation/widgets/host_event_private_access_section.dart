@@ -171,7 +171,7 @@ class HostPrivateAccessSection extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(CatchIcons.keyOutlined, color: t.primary),
+              Icon(CatchIcons.key, color: t.primary),
               gapW10,
               Expanded(
                 child: Column(
@@ -199,13 +199,13 @@ class HostPrivateAccessSection extends StatelessWidget {
           if (privateAccessState.hasInviteCode) ...[
             gapH14,
             HostEventSummaryRow(
-              icon: CatchIcons.passwordRounded,
+              icon: CatchIcons.password,
               label: context.l10n.hostsHostEventManageScreenLabelCode,
               value: linkAction.inviteCode!,
             ),
             if (linkAction.inviteLink != null)
               HostEventSummaryRow(
-                icon: CatchIcons.linkRounded,
+                icon: CatchIcons.link,
                 label: context.l10n.hostsHostEventManageScreenLabelLink,
                 value: linkAction.inviteLink!,
                 showDivider: false,
@@ -278,7 +278,7 @@ class HostInviteLinksSection extends StatelessWidget {
           ? null
           : () => unawaited(_createNamedLink(context)),
       variant: CatchButtonVariant.secondary,
-      leading: Icon(CatchIcons.addRounded),
+      leading: Icon(CatchIcons.add),
       status: (state.createPending)
           ? CatchButtonStatus.loading
           : CatchButtonStatus.idle,
@@ -452,7 +452,7 @@ class HostInviteLinkRow extends StatelessWidget {
             status: (rowState.actionsDisabled)
                 ? CatchIconActionStatus.disabled
                 : CatchIconActionStatus.enabled,
-            child: Icon(CatchIcons.contentCopyRounded, size: CatchIconSize.sm),
+            child: Icon(CatchIcons.copy, size: CatchIconSize.sm),
           ),
         ),
         if (rowState.showDisableAction) ...[
@@ -466,10 +466,7 @@ class HostInviteLinkRow extends StatelessWidget {
               status: (rowState.actionsDisabled)
                   ? CatchIconActionStatus.disabled
                   : CatchIconActionStatus.enabled,
-              child: Icon(
-                CatchIcons.hourglassDisabledRounded,
-                size: CatchIconSize.sm,
-              ),
+              child: Icon(CatchIcons.expired, size: CatchIconSize.sm),
             ),
           ),
         ],

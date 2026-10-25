@@ -250,7 +250,7 @@ void main() {
           CatchTopBarPrimaryButton(
             key: const ValueKey('add-customer'),
             label: 'Add customer',
-            icon: CatchIcons.personAddAlt1Rounded,
+            icon: CatchIcons.addPerson,
             onPressed: () {},
           ),
         ],
@@ -337,7 +337,7 @@ void main() {
 
           actions: [
             CatchIconAction.toolbar(
-              icon: CatchIcons.settingsOutlined,
+              icon: CatchIcons.settings,
               tooltip: 'Settings',
               onPressed: () => actionTaps++,
             ),
@@ -348,11 +348,11 @@ void main() {
 
     expect(find.byType(CatchIconAction), findsNWidgets(2));
 
-    await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
+    await tester.tap(find.byIcon(CatchIcons.back));
     await tester.pump();
     expect(backTaps, 1);
 
-    await tester.tap(find.byIcon(CatchIcons.settingsOutlined));
+    await tester.tap(find.byIcon(CatchIcons.settings));
     await tester.pump();
     expect(actionTaps, 1);
   });
@@ -381,7 +381,7 @@ void main() {
             ),
             CatchIconAction.toolbar(
               key: const ValueKey('top-action-save'),
-              icon: CatchIcons.savedOutlined,
+              icon: CatchIcons.bookmark,
               tooltip: 'Save',
               onPressed: () {},
             ),
@@ -444,7 +444,7 @@ void main() {
         home: Scaffold(
           body: Center(
             child: CatchIconAction.toolbar(
-              icon: CatchIcons.settingsOutlined,
+              icon: CatchIcons.settings,
               tooltip: 'Settings',
               onPressed: () {},
             ),
@@ -458,7 +458,7 @@ void main() {
       Size.square(CatchIconAction.targetExtentFor(CatchIconAction.navSize)),
     );
     expect(
-      tester.widget<Icon>(find.byIcon(CatchIcons.settingsOutlined)).size,
+      tester.widget<Icon>(find.byIcon(CatchIcons.settings)).size,
       CatchIconSize.md,
     );
     expect(find.bySemanticsLabel('Settings'), findsOneWidget);
@@ -480,7 +480,7 @@ void main() {
             body: Center(
               child: CatchTopBarPrimaryButton(
                 label: 'Create event',
-                icon: CatchIcons.addRounded,
+                icon: CatchIcons.add,
                 onPressed: () => taps += 1,
               ),
             ),
@@ -516,7 +516,7 @@ void main() {
           body: Center(
             child: CatchTopBarPrimaryButton(
               label: 'Create event',
-              icon: CatchIcons.addRounded,
+              icon: CatchIcons.add,
             ),
           ),
         ),
@@ -738,9 +738,9 @@ void main() {
       findsOneWidget,
     );
     await tester.pump(CatchMotion.base);
-    expect(find.byIcon(CatchIcons.clearCircle), findsOneWidget);
+    expect(find.byIcon(CatchIcons.clear), findsOneWidget);
 
-    await tester.tap(find.byIcon(CatchIcons.clearCircle));
+    await tester.tap(find.byIcon(CatchIcons.clear));
     await tester.pump();
     expect(query, isEmpty);
     expect(find.byIcon(CatchIcons.close), findsOneWidget);
@@ -764,7 +764,7 @@ void main() {
       ),
     );
 
-    expect(find.byIcon(CatchIcons.arrowBackIosNewRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.back), findsOneWidget);
     expect(find.byType(CatchIconAction), findsOneWidget);
     expect(
       tester.widget<CatchIconAction>(find.byType(CatchIconAction)).variant,
@@ -823,7 +823,7 @@ void main() {
     expect(find.text('Profile'), findsNWidgets(2));
     expect(find.text('Preview'), findsOneWidget);
 
-    await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+    await tester.tap(find.byIcon(CatchIcons.more));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Edit profile'));
     await pumpFeatureUi(tester);

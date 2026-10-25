@@ -134,7 +134,7 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
                   CatchField.read(
                     key: ValueKey('delivery.attempt.$i'),
                     content: CatchRecordLayout(
-                      icon: CatchIcons.chatCircle,
+                      icon: CatchIcons.chat,
                       title: switch (item.attempts[i].channel) {
                         AssistanceDeliveryChannel.sms =>
                           l10n.eventAssistanceRuntimeSms,

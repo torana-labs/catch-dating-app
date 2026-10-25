@@ -157,7 +157,7 @@ class HostInboxPersonPageBody extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CatchEmptyState(
-                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  icon: CatchIcons.chat,
                   title: context.l10n.hostInboxSelectionUnavailable,
                 ),
                 CatchButton(
@@ -178,7 +178,7 @@ class HostInboxPersonPageBody extends ConsumerWidget {
               ],
             )
           : CatchEmptyState(
-              icon: CatchIcons.chatBubbleOutlineRounded,
+              icon: CatchIcons.chat,
               title: context.l10n.hostInboxSelectionUnavailable,
               message:
                   scope.isProgram &&

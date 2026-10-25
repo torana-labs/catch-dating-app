@@ -30,10 +30,7 @@ class MapOverlayTopBar extends StatelessWidget {
                     alpha: CatchOpacity.mapOverlayChromeFill,
                   ),
                   onPressed: onBack ?? () => Navigator.of(context).maybePop(),
-                  child: Icon(
-                    CatchIcons.arrowBackIosNewRounded,
-                    size: CatchIconSize.md,
-                  ),
+                  child: Icon(CatchIcons.back, size: CatchIconSize.md),
                 ),
                 const Spacer(),
                 ?trailing,

@@ -27,13 +27,13 @@ void main() {
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'First',
                   valueText: 'A',
-                  icon: CatchIcons.helpOutline,
+                  icon: CatchIcons.help,
                 ),
                 CatchField.read(
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Second',
                   valueText: 'B',
-                  icon: CatchIcons.schedule,
+                  icon: CatchIcons.time,
                 ),
               ],
             ),
@@ -42,7 +42,7 @@ void main() {
       );
 
       final sectionRect = tester.getRect(find.byType(CatchSection));
-      final firstIconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+      final firstIconRect = tester.getRect(find.byIcon(CatchIcons.help));
       expect(firstIconRect.left, sectionRect.left);
 
       final dividerFinder = find.byWidgetPredicate(
@@ -327,7 +327,7 @@ void main() {
             children: [
               CatchField.nav(
                 copy: catchFieldCopy(AppLocalizationsEn()),
-                icon: CatchIcons.personOutlineRounded,
+                icon: CatchIcons.person,
                 title: 'Aanya',
                 body: 'Name',
                 onTap: () {},
@@ -344,7 +344,7 @@ void main() {
               ),
               CatchField.read(
                 copy: catchFieldCopy(AppLocalizationsEn()),
-                icon: CatchIcons.deleteOutline,
+                icon: CatchIcons.delete,
                 title: 'Delete account',
                 tone: CatchFieldTone.danger,
               ),
@@ -1142,7 +1142,7 @@ void main() {
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Notifications',
                 valueText: 'On',
-                icon: CatchIcons.helpOutline,
+                icon: CatchIcons.help,
               ),
             ),
           ),
@@ -1150,7 +1150,7 @@ void main() {
       );
 
       final surfaceRect = tester.getRect(find.byType(CatchSurface));
-      final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+      final iconRect = tester.getRect(find.byIcon(CatchIcons.help));
       final labelLeft = tester.getTopLeft(find.text('Notifications')).dx;
       final valueRight = tester.getTopRight(find.text('On')).dx;
 

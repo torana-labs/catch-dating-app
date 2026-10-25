@@ -125,7 +125,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         actions: [
           if (view == HostFormWorkspaceView.questions && compact)
             CatchIconAction.toolbar(
-              icon: CatchIcons.visibilityOutlined,
+              icon: CatchIcons.show,
               tooltip: context.l10n.hostFormPreview,
               onPressed: editorValue == null ? null : _openPreview,
             ),
@@ -140,7 +140,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       HostFormLifecycleStatus.published
                   ? context.l10n.hostFormReviewPublishChanges
                   : context.l10n.hostFormReviewPublish,
-              icon: CatchIcons.checkCircleOutlineRounded,
+              icon: CatchIcons.success,
               onPressed: editorValue.operationInProgress
                   ? null
                   : () => _reviewAndPublish(notifier, editorValue),
@@ -208,14 +208,14 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                           onPressed: value.canUndo && !value.operationInProgress
                               ? notifier.undo
                               : null,
-                          child: Icon(CatchIcons.undoRounded),
+                          child: Icon(CatchIcons.undo),
                         ),
                         CatchIconAction(
                           tooltip: context.l10n.hostFormRedo,
                           onPressed: value.canRedo && !value.operationInProgress
                               ? notifier.redo
                               : null,
-                          child: Icon(CatchIcons.redoRounded),
+                          child: Icon(CatchIcons.redo),
                         ),
                       ],
                     ),
@@ -374,13 +374,13 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
       CatchActionMenuItem(
         value: _BuilderAction.settings,
         label: context.l10n.hostFormSettings,
-        icon: CatchIcons.settingsOutlined,
+        icon: CatchIcons.settings,
       ),
       if (includePreview)
         CatchActionMenuItem(
           value: _BuilderAction.preview,
           label: context.l10n.hostFormPreview,
-          icon: CatchIcons.visibilityOutlined,
+          icon: CatchIcons.show,
         ),
       if (state.editor.form.activeVersionId != null)
         CatchActionMenuItem(
@@ -392,19 +392,19 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         CatchActionMenuItem(
           value: _BuilderAction.pause,
           label: context.l10n.hostFormsPause,
-          icon: CatchIcons.pauseCircleOutlineRounded,
+          icon: CatchIcons.pause,
         ),
       if (status == HostFormLifecycleStatus.paused)
         CatchActionMenuItem(
           value: _BuilderAction.resume,
           label: context.l10n.hostFormsResume,
-          icon: CatchIcons.playCircleOutlineRounded,
+          icon: CatchIcons.play,
         ),
       if (status != HostFormLifecycleStatus.archived)
         CatchActionMenuItem(
           value: _BuilderAction.archive,
           label: context.l10n.hostFormsArchive,
-          icon: CatchIcons.archiveOutlined,
+          icon: CatchIcons.archive,
           isDestructive: true,
         ),
     ];

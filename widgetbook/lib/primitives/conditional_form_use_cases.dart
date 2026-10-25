@@ -78,7 +78,7 @@ class _DependentConfigurationState extends State<_DependentConfiguration> {
               leading: CatchField.read(
                 content: CatchRecordLayout(
                   title: 'Require an invitation',
-                  icon: CatchIcons.lockOutlineRounded,
+                  icon: CatchIcons.locked,
                   facts: const ['Only guests with the code can apply.'],
                 ),
               ),

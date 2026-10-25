@@ -138,7 +138,7 @@ class _CreateEventSuccessScreenState
         : l10n.hostsEventPhotoRecoveryFailed;
 
     return PaperCelebrationScaffold(
-      icon: CatchIcons.celebration,
+      icon: CatchIcons.celebrate,
       eyebrow: context.l10n.hostsCreateEventSuccessScreenEyebrowEventCreated,
       title: event.status == EventLifecycleStatus.active
           ? context.l10n.hostsCreateEventSuccessScreenTitleYourEventIsLive
@@ -146,22 +146,22 @@ class _CreateEventSuccessScreenState
       message: message,
       details: [
         CelebrationDetail(
-          icon: CatchIcons.calendarMonthOutlined,
+          icon: CatchIcons.date,
           label: context.l10n.hostsCreateEventSuccessScreenLabelWhen,
           value: _eventCreatedWhenLabel(event),
         ),
         CelebrationDetail(
-          icon: CatchIcons.locationOnOutlined,
+          icon: CatchIcons.location,
           label: context.l10n.hostsCreateEventSuccessScreenLabelWhere,
           value: event.locationName,
         ),
         CelebrationDetail(
-          icon: CatchIcons.directionsRunRounded,
+          icon: CatchIcons.activity,
           label: context.l10n.hostsCreateEventSuccessScreenLabelEvent,
           value: _eventCreatedActivityLabel(event),
         ),
         CelebrationDetail(
-          icon: CatchIcons.groupOutlined,
+          icon: CatchIcons.people,
           label: context.l10n.hostsCreateEventSuccessScreenLabelCapacity,
           value: context.l10n
               .hostsCreateEventSuccessScreenVisiblecopyCapacitylimitAttendees(
@@ -170,19 +170,19 @@ class _CreateEventSuccessScreenState
         ),
         if (normalizedInviteCode != null && normalizedInviteCode.isNotEmpty)
           CelebrationDetail(
-            icon: CatchIcons.keyOutlined,
+            icon: CatchIcons.key,
             label: context.l10n.hostsCreateEventSuccessScreenLabelInviteCode,
             value: normalizedInviteCode,
           ),
         if (inviteLink != null)
           CelebrationDetail(
-            icon: CatchIcons.linkOutlined,
+            icon: CatchIcons.link,
             label: context.l10n.hostsCreateEventSuccessScreenLabelPrivateLink,
             value: inviteLink,
           ),
         if (rosterImportResult case final result?)
           CelebrationDetail(
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             label: context.l10n.hostsCreateEventRosterDetailLabel,
             value: context.l10n.hostsCreateEventRosterImportSuccess(
               created: result.createdCount,

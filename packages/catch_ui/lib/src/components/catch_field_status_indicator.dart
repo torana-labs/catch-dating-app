@@ -102,7 +102,7 @@ class _CatchFieldStatusIndicatorState extends State<CatchFieldStatusIndicator> {
               curve: CatchMotion.easeOutBackCurve,
               scale: _appeared ? 1 : 0.85,
               child: Icon(
-                CatchIcons.checkCircleFilled,
+                CatchIcons.success,
                 key: const ValueKey('catch-field-saved'),
                 size: CatchFieldTokens.disclosureGlyphExtent,
                 color: t.success,

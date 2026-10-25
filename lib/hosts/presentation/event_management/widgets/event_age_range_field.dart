@@ -166,7 +166,7 @@ class _EventAgeRangeFieldState extends State<EventAgeRangeField> {
             ? CatchFieldMode.localExpanded
             : CatchFieldMode.localCollapsed,
         states: <WidgetState>{if (!widget.enabled) WidgetState.disabled},
-        icon: CatchIcons.cakeOutlined,
+        icon: CatchIcons.birthday,
         child: CatchRangeInput(
           key: const ValueKey('event-age-range-slider'),
           minimumContract: widget.minimumContract,

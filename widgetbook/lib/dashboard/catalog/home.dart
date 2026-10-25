@@ -76,7 +76,7 @@ Widget dashboardFullReview(BuildContext context) {
               ),
               actions: [
                 CatchIconAction.counted(
-                  icon: CatchIcons.notificationsRounded,
+                  icon: CatchIcons.notifications,
                   count: widgetbookDashboardNotifications
                       .where((notification) => notification.isUnread)
                       .length,

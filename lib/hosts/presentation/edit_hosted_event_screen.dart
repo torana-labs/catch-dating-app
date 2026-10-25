@@ -355,7 +355,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             helperText: context
                                 .l10n
                                 .hostsEditHostedEventScreenHelpertextThisIsWhatAttendees,
-                            icon: CatchIcons.locationOnOutlined,
+                            icon: CatchIcons.location,
                             textCapitalization: TextCapitalization.words,
                             textInputAction: TextInputAction.next,
                             onChanged: (value) => _handleIntent(
@@ -381,8 +381,8 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                       : locationState.selectedLabel)
                                 : context.l10n.eventsMapPinTileTitleChooseOnMap,
                             icon: locationState.hasStartingPoint
-                                ? CatchIcons.editLocationAltOutlined
-                                : CatchIcons.mapOutlined,
+                                ? CatchIcons.editLocation
+                                : CatchIcons.map,
                             onTap: locationState.canPick
                                 ? () => _handleIntent(
                                     const HostEventEditPickLocationIntent(),
@@ -405,7 +405,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             inputHint: context
                                 .l10n
                                 .hostsEditHostedEventScreenPlaceholderEGMeetOutside,
-                            icon: CatchIcons.infoOutline,
+                            icon: CatchIcons.info,
                             maxLines: 3,
                             textCapitalization: TextCapitalization.sentences,
                             textInputAction: TextInputAction.next,
@@ -466,7 +466,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             inputHint: context
                                 .l10n
                                 .hostsEventDetailsStepPlaceholderEventName,
-                            icon: CatchIcons.editNoteOutlined,
+                            icon: CatchIcons.note,
                             textCapitalization: TextCapitalization.words,
                             textInputAction: TextInputAction.next,
                             onValidate: (value) =>
@@ -490,7 +490,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 if (!screenState.canEdit) WidgetState.disabled,
                               },
                               inputHint: '10',
-                              icon: CatchIcons.straightenOutlined,
+                              icon: CatchIcons.measure,
                               keyboardType:
                                   const TextInputType.numberWithOptions(
                                     decimal: true,
@@ -551,7 +551,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                               states: <WidgetState>{
                                 if (!screenState.canEdit) WidgetState.disabled,
                               },
-                              icon: CatchIcons.speedOutlined,
+                              icon: CatchIcons.pace,
                             ),
                           ],
                           CatchField.input(
@@ -570,7 +570,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             inputHint: context
                                 .l10n
                                 .hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect,
-                            icon: CatchIcons.editNoteOutlined,
+                            icon: CatchIcons.note,
                             maxLines: 4,
                             textCapitalization: TextCapitalization.sentences,
                             textInputAction: TextInputAction.newline,
@@ -633,7 +633,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                 ? CatchButtonStatus.loading
                 : CatchButtonStatus.idle,
             fullWidth: true,
-            leading: Icon(CatchIcons.saveOutlined),
+            leading: Icon(CatchIcons.saveChanges),
           ),
         ),
       ),

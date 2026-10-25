@@ -97,7 +97,7 @@ class _EventSuccessExclusionAlertBannerState
           ),
           child: CatchBanner(
             key: const ValueKey('event_success.exclusion_alert'),
-            icon: CatchIcons.personSearchOutlined,
+            icon: CatchIcons.findPerson,
             tone: CatchBannerTone.warning,
             title: context.l10n.eventSuccessControlRoomExclusionAlertTitle,
             message: context.l10n.eventSuccessControlRoomExclusionAlertBody(

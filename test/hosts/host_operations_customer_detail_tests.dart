@@ -412,7 +412,7 @@ void _registerHostOperationsCustomerDetailTests() {
         find.descendant(of: search, matching: find.byIcon(icon));
 
     expect(trailingIcon(CatchIcons.close), findsNothing);
-    expect(trailingIcon(CatchIcons.clearCircle), findsNothing);
+    expect(trailingIcon(CatchIcons.clear), findsNothing);
 
     await tester.tap(search);
     await pumpFeatureUi(tester);
@@ -422,11 +422,11 @@ void _registerHostOperationsCustomerDetailTests() {
     );
     await tester.pump();
 
-    expect(trailingIcon(CatchIcons.clearCircle), findsOneWidget);
-    await tester.tap(trailingIcon(CatchIcons.clearCircle));
+    expect(trailingIcon(CatchIcons.clear), findsOneWidget);
+    await tester.tap(trailingIcon(CatchIcons.clear));
     await tester.pump();
 
-    expect(trailingIcon(CatchIcons.clearCircle), findsNothing);
+    expect(trailingIcon(CatchIcons.clear), findsNothing);
     expect(
       tester
           .widget<TextField>(
@@ -519,7 +519,7 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(
       find.descendant(
         of: find.byType(HostCustomerTimelineSection),
-        matching: find.byIcon(CatchIcons.chevronRightRounded),
+        matching: find.byIcon(CatchIcons.disclosure),
       ),
       findsNWidgets(3),
     );

@@ -27,7 +27,7 @@ void main() {
                   children: [
                     Text('Catch', style: CatchTextStyles.titleL(context)),
                     Text('12:30', style: CatchTextStyles.mono(context)),
-                    Icon(CatchIcons.running),
+                    Icon(CatchIcons.activityRunning),
                   ],
                 ),
               );

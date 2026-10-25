@@ -39,7 +39,7 @@ class EventSuccessRevealActionRow extends StatelessWidget {
         label: context
             .l10n
             .eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst,
-        leading: Icon(CatchIcons.autoAwesomeOutlined),
+        leading: Icon(CatchIcons.magic),
         onPressed: null,
         fullWidth: true,
       );
@@ -52,7 +52,7 @@ class EventSuccessRevealActionRow extends StatelessWidget {
               label: context
                   .l10n
                   .eventSuccessEventSuccessLiveRevealActionsLabelRevealNow,
-              leading: Icon(CatchIcons.visibilityOutlined),
+              leading: Icon(CatchIcons.show),
               status: (isLoading)
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
@@ -68,7 +68,7 @@ class EventSuccessRevealActionRow extends StatelessWidget {
           Expanded(
             child: CatchButton(
               label: context.l10n.eventSuccessLiveControlCancelCountdownLabel,
-              leading: Icon(CatchIcons.restartAltRounded),
+              leading: Icon(CatchIcons.restart),
               variant: CatchButtonVariant.secondary,
               status: (isLoading)
                   ? CatchButtonStatus.loading
@@ -102,7 +102,7 @@ class EventSuccessRevealActionRow extends StatelessWidget {
                       .eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown(
                         countdownSeconds: countdownSeconds,
                       ),
-            leading: Icon(CatchIcons.timerOutlined),
+            leading: Icon(CatchIcons.timer),
             status: (isLoading)
                 ? CatchButtonStatus.loading
                 : CatchButtonStatus.idle,
@@ -133,7 +133,7 @@ class EventSuccessRevealActionRow extends StatelessWidget {
             label: context
                 .l10n
                 .eventSuccessEventSuccessLiveRevealActionsLabelRevealNow,
-            leading: Icon(CatchIcons.visibilityOutlined),
+            leading: Icon(CatchIcons.show),
             variant: CatchButtonVariant.secondary,
             status: (isLoading)
                 ? CatchButtonStatus.loading

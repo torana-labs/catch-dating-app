@@ -393,7 +393,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                     ),
               emptyTitle: context.l10n.programsGuestsEmptyTitle,
               emptyMessage: context.l10n.programsGuestsEmptyMessage,
-              emptyIcon: CatchIcons.groupsOutlined,
+              emptyIcon: CatchIcons.people,
               actionLabel: widget.canManageGuests
                   ? context.l10n.programsGuestsAddGuest
                   : null,
@@ -416,7 +416,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                             ),
                             if (widget.canShareRsvpLinks)
                               CatchIconAction.icon(
-                                icon: CatchIcons.linkRounded,
+                                icon: CatchIcons.link,
                                 tooltip:
                                     context.l10n.programsGuestsShareRsvpLink,
                                 status: _pendingRsvpLinkHouseholdId != null
@@ -472,7 +472,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                   : context.l10n.programsGuestsGroupsSubtitle,
               emptyTitle: context.l10n.programsGuestsGroupsEmpty,
               emptyMessage: context.l10n.programsGuestsGroupsSubtitle,
-              emptyIcon: CatchIcons.groupsOutlined,
+              emptyIcon: CatchIcons.people,
               actionLabel: widget.canManageGuests
                   ? context.l10n.programsGuestsGroupNew
                   : null,
@@ -482,7 +482,7 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
               children: [
                 for (final group in page.groups)
                   CatchFieldRow.standard(
-                    leading: Icon(CatchIcons.group),
+                    leading: Icon(CatchIcons.people),
                     body: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -518,13 +518,13 @@ class _ProgramGuestsPageBodyState extends ConsumerState<ProgramGuestsPageBody> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               CatchIconAction.icon(
-                                icon: CatchIcons.editOutlined,
+                                icon: CatchIcons.edit,
                                 variant: CatchIconActionVariant.plain,
                                 tooltip: context.l10n.programsGuestsGroupEdit,
                                 onPressed: () => _editGroup(context, group),
                               ),
                               CatchIconAction.icon(
-                                icon: CatchIcons.deleteOutline,
+                                icon: CatchIcons.delete,
                                 variant: CatchIconActionVariant.plain,
                                 accent: CatchTokens.of(context).danger,
                                 tooltip: context.l10n.programsGuestsGroupDelete,
@@ -659,7 +659,7 @@ class ProgramGuestsFunctionRow extends StatelessWidget {
         ? null
         : joinIndex['${guest.guestId}:${selected.functionId}'];
     return CatchFieldRow.standard(
-      leading: Icon(CatchIcons.personOutlineRounded),
+      leading: Icon(CatchIcons.person),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

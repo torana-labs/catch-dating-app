@@ -29,9 +29,7 @@ class HostAudienceNoOrganizerEmptyState extends StatelessWidget {
       onChanged: onChanged,
       slivers: [
         CatchSliverEmptyState(
-          icon: forms
-              ? CatchIcons.descriptionOutlined
-              : CatchIcons.groupsOutlined,
+          icon: forms ? CatchIcons.document : CatchIcons.people,
           title: forms
               ? context.l10n.hostFormsNoOrganizerTitle
               : context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,

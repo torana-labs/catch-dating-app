@@ -22,7 +22,7 @@ class HostCustomerSubmissionsSection extends ConsumerWidget {
         title: context.l10n.hostCustomersSubmittedInformation,
         layouts: [
           CatchRecordLayout.placeholder(
-            icon: CatchIcons.tabForms,
+            icon: CatchIcons.forms,
             hasMetadata: true,
           ),
         ],
@@ -71,7 +71,7 @@ class HostCustomerSubmissionsSection extends ConsumerWidget {
                 key: ValueKey('host-customer-submission-${entry.responseId}'),
                 onActivate: () => onOpen(entry.responseId),
                 content: CatchRecordLayout(
-                  icon: CatchIcons.tabForms,
+                  icon: CatchIcons.forms,
                   title:
                       entry.formTitle ??
                       context.l10n.hostCustomersTimelineFormFallback,

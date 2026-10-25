@@ -173,7 +173,7 @@ class ProgramCreateScreen extends ConsumerWidget {
                   ),
                   Expanded(
                     child: CatchEmptyState(
-                      icon: CatchIcons.calendarMonthOutlined,
+                      icon: CatchIcons.date,
                       title: context.l10n.programsCreateActorChangedTitle,
                       message: context.l10n.programsCreateActorChangedBody,
                     ),
@@ -497,7 +497,7 @@ class _ProgramCreatePageBodyState extends State<ProgramCreatePageBody> {
                                       : MaterialLocalizations.of(
                                           context,
                                         ).formatMediumDate(values.startsAt!),
-                                  icon: CatchIcons.calendarTodayOutlined,
+                                  icon: CatchIcons.date,
                                   onTap: () => _pickDate(start: true),
                                   error: _fieldError(
                                     context,
@@ -513,7 +513,7 @@ class _ProgramCreatePageBodyState extends State<ProgramCreatePageBody> {
                                       : MaterialLocalizations.of(
                                           context,
                                         ).formatMediumDate(values.endsAt!),
-                                  icon: CatchIcons.calendarMonthOutlined,
+                                  icon: CatchIcons.date,
                                   onTap: () => _pickDate(start: false),
                                   error: _fieldError(
                                     context,

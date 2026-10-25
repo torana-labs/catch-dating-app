@@ -80,7 +80,7 @@ Widget reactionControlButtonStates(BuildContext context) {
           child: Center(
             child: ProfileReactionButton(
               tooltip: 'Like prompt',
-              icon: CatchIcons.favoriteBorderRounded,
+              icon: CatchIcons.like,
               onPressed: widgetbookNoop,
               style: ProfileReactionActionVariant.surface,
             ),
@@ -97,14 +97,14 @@ Widget reactionControlButtonStates(BuildContext context) {
               children: [
                 ProfileReactionButton(
                   tooltip: 'Comment on photo',
-                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  icon: CatchIcons.chat,
                   onPressed: widgetbookNoop,
                   style: ProfileReactionActionVariant.overlay,
                   isPending: true,
                 ),
                 ProfileReactionButton(
                   tooltip: 'Like section unavailable',
-                  icon: CatchIcons.favoriteBorderRounded,
+                  icon: CatchIcons.like,
                   onPressed: null,
                   style: ProfileReactionActionVariant.surface,
                 ),

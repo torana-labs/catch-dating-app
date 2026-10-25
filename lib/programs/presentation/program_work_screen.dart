@@ -203,7 +203,7 @@ class ProgramWorkPageBody extends StatelessWidget {
                 message: context.l10n.programsSnapshotBanner(
                   time: AppTimeFormatters.time(snapshotAt!),
                 ),
-                icon: CatchIcons.wifiOffRounded,
+                icon: CatchIcons.offline,
                 tone: CatchBannerTone.warning,
               ),
             ),
@@ -257,12 +257,12 @@ class ProgramWorkPageBody extends StatelessWidget {
                 child: Column(
                   children: [
                     CatchFieldRow.standard(
-                      leading: Icon(CatchIcons.autoAwesomeOutlined),
+                      leading: Icon(CatchIcons.magic),
                       body: CatchText(
                         context.l10n.programsWorkCommsMomentsRow,
                         variant: CatchTextVariant.sectionTitle,
                       ),
-                      trailing: Icon(CatchIcons.chevronRightRounded),
+                      trailing: Icon(CatchIcons.disclosure),
                       onTap: () => context.pushNamed(
                         Routes.hostProgramMomentsScreen.name,
                         pathParameters: {'programId': access.programId},
@@ -271,12 +271,12 @@ class ProgramWorkPageBody extends StatelessWidget {
                     ),
                     if (access.isManager)
                       CatchFieldRow.standard(
-                        leading: Icon(CatchIcons.forumOutlined),
+                        leading: Icon(CatchIcons.conversations),
                         body: CatchText(
                           context.l10n.programsWorkCommsInboxRow,
                           variant: CatchTextVariant.sectionTitle,
                         ),
-                        trailing: Icon(CatchIcons.chevronRightRounded),
+                        trailing: Icon(CatchIcons.disclosure),
                         onTap: () => context.pushNamed(
                           Routes.hostInboxScreen.name,
                           queryParameters: {
@@ -298,12 +298,12 @@ class ProgramWorkPageBody extends StatelessWidget {
                   children: [
                     for (final station in arrivalsStations)
                       CatchFieldRow.standard(
-                        leading: Icon(CatchIcons.flightLanding),
+                        leading: Icon(CatchIcons.arrivals),
                         body: CatchText(
                           station.label,
                           variant: CatchTextVariant.sectionTitle,
                         ),
-                        trailing: Icon(CatchIcons.chevronRightRounded),
+                        trailing: Icon(CatchIcons.disclosure),
                         onTap: () => context.pushNamed(
                           Routes.hostWorkArrivalsScreen.name,
                           pathParameters: {
@@ -331,7 +331,7 @@ class ProgramWorkPageBody extends StatelessWidget {
                           station.label,
                           variant: CatchTextVariant.sectionTitle,
                         ),
-                        trailing: Icon(CatchIcons.chevronRightRounded),
+                        trailing: Icon(CatchIcons.disclosure),
                         onTap: () => context.pushNamed(
                           Routes.hostWorkDispatchScreen.name,
                           pathParameters: {
@@ -359,7 +359,7 @@ class ProgramWorkPageBody extends StatelessWidget {
                           hotel.name,
                           variant: CatchTextVariant.sectionTitle,
                         ),
-                        trailing: Icon(CatchIcons.chevronRightRounded),
+                        trailing: Icon(CatchIcons.disclosure),
                         onTap: () => context.pushNamed(
                           Routes.hostWorkHotelScreen.name,
                           pathParameters: {
@@ -381,12 +381,12 @@ class ProgramWorkPageBody extends StatelessWidget {
                   children: [
                     for (final fn in functions)
                       CatchFieldRow.standard(
-                        leading: Icon(CatchIcons.howToRegOutlined),
+                        leading: Icon(CatchIcons.checkIn),
                         body: CatchText(
                           fn.name,
                           variant: CatchTextVariant.sectionTitle,
                         ),
-                        trailing: Icon(CatchIcons.chevronRightRounded),
+                        trailing: Icon(CatchIcons.disclosure),
                         onTap: () => context.pushNamed(
                           Routes.hostWorkDoorScreen.name,
                           pathParameters: {
@@ -408,24 +408,24 @@ class ProgramWorkPageBody extends StatelessWidget {
                 child: Column(
                   children: [
                     CatchFieldRow.standard(
-                      leading: Icon(CatchIcons.groupsOutlined),
+                      leading: Icon(CatchIcons.people),
                       body: CatchText(
                         context.l10n.programsGuestsTitle,
                         variant: CatchTextVariant.sectionTitle,
                       ),
-                      trailing: Icon(CatchIcons.chevronRightRounded),
+                      trailing: Icon(CatchIcons.disclosure),
                       onTap: () => context.pushNamed(
                         Routes.hostWorkGuestsScreen.name,
                         pathParameters: {'programId': access.programId},
                       ),
                     ),
                     CatchFieldRow.standard(
-                      leading: Icon(CatchIcons.cloudUploadOutlined),
+                      leading: Icon(CatchIcons.upload),
                       body: CatchText(
                         context.l10n.programsImportTitle,
                         variant: CatchTextVariant.sectionTitle,
                       ),
-                      trailing: Icon(CatchIcons.chevronRightRounded),
+                      trailing: Icon(CatchIcons.disclosure),
                       onTap: () => context.pushNamed(
                         Routes.hostWorkImportScreen.name,
                         pathParameters: {'programId': access.programId},
@@ -443,24 +443,24 @@ class ProgramWorkPageBody extends StatelessWidget {
                 child: Column(
                   children: [
                     CatchFieldRow.standard(
-                      leading: Icon(CatchIcons.playCircleOutlineRounded),
+                      leading: Icon(CatchIcons.play),
                       body: CatchText(
                         context.l10n.programsWorkLeadNowNextRow,
                         variant: CatchTextVariant.sectionTitle,
                       ),
-                      trailing: Icon(CatchIcons.chevronRightRounded),
+                      trailing: Icon(CatchIcons.disclosure),
                       onTap: () => context.pushNamed(
                         Routes.hostWorkNowScreen.name,
                         pathParameters: {'programId': access.programId},
                       ),
                     ),
                     CatchFieldRow.standard(
-                      leading: Icon(CatchIcons.notificationsOutlined),
+                      leading: Icon(CatchIcons.notifications),
                       body: CatchText(
                         context.l10n.programsWorkLeadAttentionRow,
                         variant: CatchTextVariant.sectionTitle,
                       ),
-                      trailing: Icon(CatchIcons.chevronRightRounded),
+                      trailing: Icon(CatchIcons.disclosure),
                       onTap: () => context.pushNamed(
                         Routes.hostWorkAttentionScreen.name,
                         pathParameters: {'programId': access.programId},
@@ -476,12 +476,12 @@ class ProgramWorkPageBody extends StatelessWidget {
                 title: context.l10n.programsWorkLedgerTitle,
                 subtitle: context.l10n.programsWorkLedgerSubtitle,
                 child: CatchFieldRow.standard(
-                  leading: Icon(CatchIcons.receiptLongOutlined),
+                  leading: Icon(CatchIcons.receipt),
                   body: CatchText(
                     context.l10n.programsWorkLedgerOpen,
                     variant: CatchTextVariant.sectionTitle,
                   ),
-                  trailing: Icon(CatchIcons.chevronRightRounded),
+                  trailing: Icon(CatchIcons.disclosure),
                   onTap: () => context.pushNamed(
                     Routes.hostWorkTripsScreen.name,
                     pathParameters: {'programId': access.programId},
@@ -495,12 +495,12 @@ class ProgramWorkPageBody extends StatelessWidget {
                 title: context.l10n.programsWorkCountsTitle,
                 subtitle: context.l10n.programsWorkCountsSubtitle,
                 child: CatchFieldRow.standard(
-                  leading: Icon(CatchIcons.factCheckOutlined),
+                  leading: Icon(CatchIcons.review),
                   body: CatchText(
                     context.l10n.programsWorkCountsOpen,
                     variant: CatchTextVariant.sectionTitle,
                   ),
-                  trailing: Icon(CatchIcons.chevronRightRounded),
+                  trailing: Icon(CatchIcons.disclosure),
                   onTap: () => context.pushNamed(
                     Routes.hostWorkCountsScreen.name,
                     pathParameters: {'programId': access.programId},
@@ -514,12 +514,12 @@ class ProgramWorkPageBody extends StatelessWidget {
                 title: context.l10n.programsWorkAttendanceTitle,
                 subtitle: context.l10n.programsWorkAttendanceSubtitle,
                 child: CatchFieldRow.standard(
-                  leading: Icon(CatchIcons.factCheckOutlined),
+                  leading: Icon(CatchIcons.review),
                   body: CatchText(
                     context.l10n.programsWorkAttendanceOpen,
                     variant: CatchTextVariant.sectionTitle,
                   ),
-                  trailing: Icon(CatchIcons.chevronRightRounded),
+                  trailing: Icon(CatchIcons.disclosure),
                   onTap: () => context.pushNamed(
                     Routes.hostWorkAttendanceReportScreen.name,
                     pathParameters: {'programId': access.programId},
@@ -539,7 +539,7 @@ class ProgramWorkPageBody extends StatelessWidget {
               !access.hasDuty(ProgramStaffDuty.guestRelations, now: now))
             CatchSectionListItem(
               child: CatchEmptyState(
-                icon: CatchIcons.lockOutline,
+                icon: CatchIcons.locked,
                 title: context.l10n.programsWorkShellEmptyTitle,
                 message: context.l10n.programsWorkShellEmptyMessage,
               ),

@@ -141,7 +141,7 @@ class _FormRowScopeFieldsState extends State<_FormRowScopeFields> {
     rows: [
       CatchFormTextRow<(String, String)>(
         id: 'name',
-        icon: CatchIcons.personOutlined,
+        icon: CatchIcons.person,
         label: 'Name',
         currentValue: _name,
         validationCopy: catchFormValidationCopy(context.l10n),
@@ -149,7 +149,7 @@ class _FormRowScopeFieldsState extends State<_FormRowScopeFields> {
       ),
       CatchFormTextRow<(String, String)>(
         id: 'city',
-        icon: CatchIcons.locationOnOutlined,
+        icon: CatchIcons.location,
         label: 'City',
         currentValue: _city,
         validationCopy: catchFormValidationCopy(context.l10n),

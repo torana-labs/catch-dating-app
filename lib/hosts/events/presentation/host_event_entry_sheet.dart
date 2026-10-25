@@ -225,10 +225,10 @@ class _HostEventEntryRow extends StatelessWidget {
   };
 
   IconData get _icon => switch (intent) {
-    HostEventEntryIntent.resumeDraft => CatchIcons.editNoteRounded,
+    HostEventEntryIntent.resumeDraft => CatchIcons.note,
     HostEventEntryIntent.repeatLastEvent => CatchIcons.refresh,
-    HostEventEntryIntent.createEvent => CatchIcons.eventAvailableOutlined,
-    HostEventEntryIntent.resumePrivateEvent => CatchIcons.editNoteRounded,
-    HostEventEntryIntent.createProgram => CatchIcons.calendarMonthOutlined,
+    HostEventEntryIntent.createEvent => CatchIcons.eventConfirmed,
+    HostEventEntryIntent.resumePrivateEvent => CatchIcons.note,
+    HostEventEntryIntent.createProgram => CatchIcons.date,
   };
 }

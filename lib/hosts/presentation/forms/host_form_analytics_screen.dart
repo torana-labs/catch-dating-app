@@ -240,7 +240,7 @@ class _HostFormAnalyticsScreenState
                   gapH24,
                   CatchButton.command(
                     label: context.l10n.hostAudienceViewAllResponses,
-                    leading: Icon(CatchIcons.forwardArrow),
+                    leading: Icon(CatchIcons.forward),
                     onPressed: () => context.pushNamed(
                       Routes.hostFormBuilderScreen.name,
                       pathParameters: {'formId': widget.formId},
@@ -264,7 +264,7 @@ class _HostFormAnalyticsScreenState
                           CatchField.read(
                             content: CatchRecordLayout(
                               title: source.label,
-                              icon: CatchIcons.linkOutlined,
+                              icon: CatchIcons.link,
                               facts: [
                                 context.l10n.hostFormAnalyticsSourceSummary(
                                   opens: source.opens,
@@ -297,7 +297,7 @@ class _HostFormAnalyticsScreenState
                               : format == HostFormExportFormat.csv
                               ? context.l10n.hostFormExportCsv
                               : context.l10n.hostFormExportXlsx,
-                          leading: Icon(CatchIcons.downloadRounded),
+                          leading: Icon(CatchIcons.download),
                           onPressed: _exporting == null
                               ? () => _export(format, value.versionId)
                               : null,

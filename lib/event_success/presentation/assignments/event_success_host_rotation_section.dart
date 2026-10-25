@@ -94,14 +94,14 @@ class EventSuccessHostRotationSection extends StatelessWidget {
                         .eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut(
                           optedOutCount: optedOutCount,
                         ),
-                    icon: CatchIcons.visibilityOffOutlined,
+                    icon: CatchIcons.hide,
                   ),
                 if (hostEdited)
                   CatchBadge(
                     label: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesLabelHostEdited,
-                    icon: CatchIcons.editOutlined,
+                    icon: CatchIcons.edit,
                   ),
               ],
             ),
@@ -116,7 +116,7 @@ class EventSuccessHostRotationSection extends StatelessWidget {
                       .eventSuccessEventSuccessHostOverridesLabelLengthAssigned(
                         length: activeAssignments.length,
                       ),
-                  icon: CatchIcons.peopleOutlineRounded,
+                  icon: CatchIcons.people,
                 ),
                 CatchBadge(
                   label: context.l10n
@@ -126,7 +126,7 @@ class EventSuccessHostRotationSection extends StatelessWidget {
                           rotationIntervalMinutes,
                         ),
                       ),
-                  icon: CatchIcons.scheduleRounded,
+                  icon: CatchIcons.time,
                 ),
                 if (fairness.sitOutRoundCount > 0)
                   CatchBadge(
@@ -134,7 +134,7 @@ class EventSuccessHostRotationSection extends StatelessWidget {
                         .eventSuccessEventSuccessHostOverridesLabelSitoutroundcountPlannedBreaks(
                           sitOutRoundCount: fairness.sitOutRoundCount,
                         ),
-                    icon: CatchIcons.eventRepeatOutlined,
+                    icon: CatchIcons.recurring,
                   ),
                 if (fairness.repeatPeerCount > 0)
                   CatchBadge(
@@ -143,7 +143,7 @@ class EventSuccessHostRotationSection extends StatelessWidget {
                           repeatPeerCount: fairness.repeatPeerCount,
                         ),
                     tone: CatchBadgeTone.warning,
-                    icon: CatchIcons.infoOutlineRounded,
+                    icon: CatchIcons.info,
                   ),
               ],
             ),
@@ -168,7 +168,7 @@ class EventSuccessHostRotationSection extends StatelessWidget {
               label: context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesLabelGenerateRotations,
-              leading: Icon(CatchIcons.autoAwesomeOutlined),
+              leading: Icon(CatchIcons.magic),
               status: (actionState.isGenerating)
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
@@ -190,7 +190,7 @@ class EventSuccessHostRotationSection extends StatelessWidget {
                     label: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesLabelRegenerate,
-                    leading: Icon(CatchIcons.autoAwesomeOutlined),
+                    leading: Icon(CatchIcons.magic),
                     variant: CatchButtonVariant.secondary,
                     status: (actionState.isGenerating)
                         ? CatchButtonStatus.loading
@@ -207,7 +207,7 @@ class EventSuccessHostRotationSection extends StatelessWidget {
                     label: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesLabelEditRotations,
-                    leading: Icon(CatchIcons.editOutlined),
+                    leading: Icon(CatchIcons.edit),
                     onPressed: () => _showRotationOverrideSheet(
                       context: context,
                       event: event,
@@ -227,7 +227,7 @@ class EventSuccessHostRotationSection extends StatelessWidget {
                   .eventSuccessLiveControlPublishRotationRoundLabel(
                     roundNumber: nextRoundIndex + 1,
                   ),
-              leading: Icon(CatchIcons.sendRounded),
+              leading: Icon(CatchIcons.send),
               status: (actionState.isGenerating)
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,

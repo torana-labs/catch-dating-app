@@ -85,7 +85,7 @@ class EventDetailHeroTopBar extends StatelessWidget {
               backgroundColor: overlayScrim,
               onPressed: onBack,
               child: Icon(
-                CatchIcons.backArrow,
+                CatchIcons.back,
                 color: d.ink,
                 size: CatchIconSize.md,
               ),
@@ -122,7 +122,7 @@ class EventDetailHeroTopBar extends StatelessWidget {
                         backgroundColor: overlayScrim,
                         onPressed: () => onAddToCalendar(buttonContext),
                         child: Icon(
-                          CatchIcons.calendarAdd,
+                          CatchIcons.addToCalendar,
                           color: d.ink,
                           size: CatchIconSize.md,
                         ),
@@ -139,7 +139,7 @@ class EventDetailHeroTopBar extends StatelessWidget {
                     backgroundColor: overlayScrim,
                     onPressed: savePending ? null : onToggleSaved,
                     child: Icon(
-                      isSaved ? CatchIcons.saved : CatchIcons.savedOutlined,
+                      isSaved ? CatchIcons.bookmark : CatchIcons.bookmark,
                       color: d.ink,
                       size: CatchIconSize.md,
                     ),

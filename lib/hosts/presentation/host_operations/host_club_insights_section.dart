@@ -480,7 +480,7 @@ class HostAnalyticsEventList extends StatelessWidget {
         CatchField.read(
           content: CatchRecordLayout(
             title: context.l10n.hostsHostAnalyticsTextNoEventsInThis,
-            icon: CatchIcons.eventOutlined,
+            icon: CatchIcons.event,
           ),
         ),
       for (final event in events.take(5))
@@ -492,7 +492,7 @@ class HostAnalyticsEventList extends StatelessWidget {
       CatchField.navigate(
         content: CatchRecordLayout(
           title: context.l10n.hostsHostAnalyticsLabelAllEvents,
-          icon: CatchIcons.calendarMonthOutlined,
+          icon: CatchIcons.date,
         ),
         onActivate: onOpenAllEvents,
       ),
@@ -505,7 +505,7 @@ CatchRecordLayout hostAnalyticsEventLayout(
   HostAnalyticsEventRow event,
 ) => CatchRecordLayout(
   title: event.title,
-  icon: CatchIcons.eventOutlined,
+  icon: CatchIcons.event,
   metadata: context.l10n.hostsHostAnalyticsTextEventDateStatus(
     date: EventFormatters.shortDate(event.startTime),
     status: _analyticsEventStatusLabel(context, event.status),
@@ -666,20 +666,19 @@ IconData _metricIcon(String metricId) {
   return switch (metricId) {
     HostAnalyticsMetricIds.listingViews ||
     HostAnalyticsMetricIds.eventViews ||
-    HostAnalyticsMetricIds.combinedViews => CatchIcons.visibilityOutlined,
-    HostAnalyticsMetricIds.bookings => CatchIcons.confirmationNumberOutlined,
-    HostAnalyticsMetricIds.rosterGuests => CatchIcons.groupsOutlined,
-    HostAnalyticsMetricIds.attendanceRate => CatchIcons.factCheckOutlined,
-    HostAnalyticsMetricIds.rosterAttendanceRate => CatchIcons.factCheckOutlined,
-    HostAnalyticsMetricIds.revenue => CatchIcons.accountBalanceWalletOutlined,
+    HostAnalyticsMetricIds.combinedViews => CatchIcons.show,
+    HostAnalyticsMetricIds.bookings => CatchIcons.ticket,
+    HostAnalyticsMetricIds.rosterGuests => CatchIcons.people,
+    HostAnalyticsMetricIds.attendanceRate => CatchIcons.review,
+    HostAnalyticsMetricIds.rosterAttendanceRate => CatchIcons.review,
+    HostAnalyticsMetricIds.revenue => CatchIcons.wallet,
     HostAnalyticsMetricIds.checkoutDropoff ||
-    HostAnalyticsMetricIds.checkoutConversionRate =>
-      CatchIcons.paymentsOutlined,
-    HostAnalyticsMetricIds.newReviews => CatchIcons.rateReviewOutlined,
-    HostAnalyticsMetricIds.connections => CatchIcons.favoriteOutlineRounded,
-    HostAnalyticsMetricIds.chats => CatchIcons.chatBubbleOutlineRounded,
-    HostAnalyticsMetricIds.eventSaves => CatchIcons.bookmarkBorderRounded,
-    _ => CatchIcons.insightsOutlined,
+    HostAnalyticsMetricIds.checkoutConversionRate => CatchIcons.payment,
+    HostAnalyticsMetricIds.newReviews => CatchIcons.feedback,
+    HostAnalyticsMetricIds.connections => CatchIcons.like,
+    HostAnalyticsMetricIds.chats => CatchIcons.chat,
+    HostAnalyticsMetricIds.eventSaves => CatchIcons.bookmark,
+    _ => CatchIcons.insights,
   };
 }
 

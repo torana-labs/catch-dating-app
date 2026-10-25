@@ -55,7 +55,7 @@ Widget catchBannerErrorRecipes(BuildContext context) {
         child: Builder(
           builder: (context) => CatchButton(
             label: 'Show action error',
-            leading: Icon(CatchIcons.errorOutlineRounded),
+            leading: Icon(CatchIcons.error),
             onPressed: () => showCatchNoticeError(
               context,
               Exception('Share sheet is unavailable right now.'),
@@ -125,7 +125,7 @@ Widget catchLocalizedErrorBannerMutationStates(BuildContext context) {
               children: [
                 CatchButton(
                   label: 'Simulate failed save',
-                  leading: Icon(CatchIcons.errorOutlineRounded),
+                  leading: Icon(CatchIcons.error),
                   onPressed: () => unawaited(
                     mutation
                         .run(ref, (_) async => throw StateError('Save failed'))
@@ -163,7 +163,7 @@ Widget catchBannerCatalogStates(BuildContext context) {
             CatchBanner(
               title: 'Booking pending',
               message: 'We will confirm your spot after payment settles.',
-              icon: CatchIcons.infoOutlineRounded,
+              icon: CatchIcons.info,
               actions: [
                 CatchButton.text(label: 'View', onPressed: widgetbookNoop),
               ],
@@ -171,7 +171,7 @@ Widget catchBannerCatalogStates(BuildContext context) {
             gapH12,
             CatchBanner(
               message: 'Host approval is required for this event.',
-              icon: CatchIcons.lockOutlineRounded,
+              icon: CatchIcons.locked,
               tone: CatchBannerTone.neutral,
             ),
           ],
@@ -419,7 +419,7 @@ Widget catchStatusStripScopeCatalogStates(BuildContext context) {
               id: 'offline',
               label: context.l10n.sharedOfflineTitle,
               message: context.l10n.sharedOfflineBody,
-              icon: CatchIcons.cloudOffRounded,
+              icon: CatchIcons.offline,
               color: CatchTokens.of(context).warning,
             ),
           ],

@@ -267,7 +267,7 @@ class EventDetailMapCard extends StatelessWidget {
                     if (canOpen) ...[
                       gapW4,
                       Icon(
-                        CatchIcons.chevronRightRounded,
+                        CatchIcons.disclosure,
                         color: t.ink2,
                         size: CatchIconSize.xs,
                       ),
@@ -461,18 +461,18 @@ IconData _eventDetailFactIcon(
   required IconData activityIcon,
 }) {
   return switch (icon) {
-    EventDetailFactIcon.openSignup => CatchIcons.personAddAlt1Outlined,
-    EventDetailFactIcon.inviteOnly => CatchIcons.keyOutlined,
-    EventDetailFactIcon.hostApproval => CatchIcons.personSearchOutlined,
-    EventDetailFactIcon.cohortCaps => CatchIcons.groupsOutlined,
-    EventDetailFactIcon.balancedBooking => CatchIcons.balanceOutlined,
-    EventDetailFactIcon.membersOnly => CatchIcons.cardMembershipOutlined,
-    EventDetailFactIcon.waitlist => CatchIcons.hourglassEmptyRounded,
-    EventDetailFactIcon.pricing => CatchIcons.priceChangeOutlined,
-    EventDetailFactIcon.requirements => CatchIcons.ruleOutlined,
+    EventDetailFactIcon.openSignup => CatchIcons.addPerson,
+    EventDetailFactIcon.inviteOnly => CatchIcons.key,
+    EventDetailFactIcon.hostApproval => CatchIcons.findPerson,
+    EventDetailFactIcon.cohortCaps => CatchIcons.people,
+    EventDetailFactIcon.balancedBooking => CatchIcons.balance,
+    EventDetailFactIcon.membersOnly => CatchIcons.membership,
+    EventDetailFactIcon.waitlist => CatchIcons.pending,
+    EventDetailFactIcon.pricing => CatchIcons.pricing,
+    EventDetailFactIcon.requirements => CatchIcons.rules,
     EventDetailFactIcon.activity => activityIcon,
-    EventDetailFactIcon.attendance => CatchIcons.qrCode2Outlined,
-    EventDetailFactIcon.cancellation => CatchIcons.refreshRounded,
+    EventDetailFactIcon.attendance => CatchIcons.qrCode,
+    EventDetailFactIcon.cancellation => CatchIcons.refresh,
   };
 }
 

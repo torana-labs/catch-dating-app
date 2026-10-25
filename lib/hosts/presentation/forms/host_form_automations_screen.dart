@@ -117,7 +117,7 @@ class _HostFormAutomationsScreenState
                 layouts: List.generate(
                   7,
                   (_) => CatchRecordLayout.placeholder(
-                    icon: CatchIcons.autoAwesomeOutlined,
+                    icon: CatchIcons.magic,
                     hasMetadata: true,
                     hasDescription: true,
                   ),
@@ -153,7 +153,7 @@ class _HostFormAutomationsScreenState
               gapH24,
               if (state.rules.isEmpty)
                 CatchEmptyState(
-                  icon: CatchIcons.autoAwesomeOutlined,
+                  icon: CatchIcons.magic,
                   title: context.l10n.hostFormAutomationsEmptyTitle,
                   message: context.l10n.hostFormAutomationsEmptyBody,
                 )
@@ -170,7 +170,7 @@ class _HostFormAutomationsScreenState
                         }),
                         content: CatchRecordLayout(
                           title: rule.name,
-                          icon: CatchIcons.autoAwesomeOutlined,
+                          icon: CatchIcons.magic,
                           metadata: [
                             rule.enabled
                                 ? context.l10n.hostAudienceAutomationActive
@@ -205,7 +205,7 @@ class _HostFormAutomationsScreenState
                       children: [
                         CatchButton.command(
                           label: context.l10n.hostFormAutomationNotifyPreset,
-                          leading: Icon(CatchIcons.notificationsNoneRounded),
+                          leading: Icon(CatchIcons.notifications),
                           onPressed: state.mutatingRuleIds.contains('new')
                               ? null
                               : () => _createPreset(
@@ -220,7 +220,7 @@ class _HostFormAutomationsScreenState
                         ),
                         CatchButton.command(
                           label: context.l10n.hostFormAutomationCrmPreset,
-                          leading: Icon(CatchIcons.peopleOutlineRounded),
+                          leading: Icon(CatchIcons.people),
                           onPressed: state.mutatingRuleIds.contains('new')
                               ? null
                               : () => _createPreset(

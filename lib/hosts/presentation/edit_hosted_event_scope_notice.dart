@@ -38,9 +38,7 @@ class EditHostedEventScopeNotice extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
-            isCancelled
-                ? CatchIcons.blockRounded
-                : CatchIcons.infoOutlineRounded,
+            isCancelled ? CatchIcons.block : CatchIcons.info,
             color: isCancelled ? t.danger : t.primary,
           ),
           gapW12,

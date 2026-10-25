@@ -34,19 +34,19 @@ Widget catchCelebrationScreenCatalogStates(BuildContext context) {
               CelebrationDetail(
                 label: 'When',
                 value: 'Tonight at 7:30 PM',
-                icon: CatchIcons.calendarAdd,
+                icon: CatchIcons.addToCalendar,
               ),
               CelebrationDetail(
                 label: 'Where',
                 value: 'Carter Road promenade',
-                icon: CatchIcons.pinOutlined,
+                icon: CatchIcons.location,
               ),
             ],
             note: 'Matching opens after check-in.',
             primaryAction: CelebrationAction(
               label: 'View event',
               onPressed: widgetbookNoop,
-              icon: Icon(CatchIcons.eventOutlined),
+              icon: Icon(CatchIcons.event),
             ),
             secondaryAction: CelebrationAction(
               label: 'Invite a friend',
@@ -63,7 +63,7 @@ Widget catchCelebrationScreenCatalogStates(BuildContext context) {
           height: WidgetbookPreviewLayout.paperCelebrationViewportHeight,
           child: PaperCelebrationScaffold(
             showCloseButton: false,
-            icon: CatchIcons.verifiedRounded,
+            icon: CatchIcons.verified,
             eyebrow: 'Event created',
             title: 'Your event is live.',
             message:
@@ -72,22 +72,22 @@ Widget catchCelebrationScreenCatalogStates(BuildContext context) {
               CelebrationDetail(
                 label: 'When',
                 value: 'Sun, 22 Jun · 6:30 – 8:00 AM',
-                icon: CatchIcons.calendarMonthOutlined,
+                icon: CatchIcons.date,
               ),
               CelebrationDetail(
                 label: 'Where',
                 value: 'Carter Road jetty, Bandra West',
-                icon: CatchIcons.locationOnOutlined,
+                icon: CatchIcons.location,
               ),
               CelebrationDetail(
                 label: 'Event',
                 value: '5 km easy social run',
-                icon: CatchIcons.directionsRunRounded,
+                icon: CatchIcons.activity,
               ),
               CelebrationDetail(
                 label: 'Capacity',
                 value: '10 attendees',
-                icon: CatchIcons.groupOutlined,
+                icon: CatchIcons.people,
               ),
             ],
             note:
@@ -123,7 +123,7 @@ Widget paperCelebrationScaffoldCatalogStates(BuildContext context) {
           height: WidgetbookPreviewLayout.paperScaffoldViewportHeight,
           child: PaperCelebrationScaffold(
             showCloseButton: false,
-            icon: CatchIcons.verifiedRounded,
+            icon: CatchIcons.verified,
             eyebrow: 'Event created',
             title: 'Your event is live.',
             message:
@@ -158,9 +158,7 @@ Widget paperCelebrationIconCatalogStates(BuildContext context) {
     children: [
       WidgetbookCatalogStateCard(
         label: 'paper mark',
-        child: Center(
-          child: PaperCelebrationIcon(icon: CatchIcons.verifiedRounded),
-        ),
+        child: Center(child: PaperCelebrationIcon(icon: CatchIcons.verified)),
       ),
     ],
   );
@@ -219,7 +217,7 @@ Widget celebrationIconCatalogStates(BuildContext context) {
       WidgetbookCatalogStateCard(
         label: 'immersive mark',
         child: _ImmersiveCelebrationFrame(
-          child: CelebrationIcon(icon: CatchIcons.checkRounded),
+          child: CelebrationIcon(icon: CatchIcons.check),
         ),
       ),
     ],
@@ -313,7 +311,7 @@ class _ImmersiveCelebrationFrame extends StatelessWidget {
 final _whenCelebrationDetail = CelebrationDetail(
   label: 'When',
   value: 'Sun, 22 Jun - 6:30 AM',
-  icon: CatchIcons.calendarMonthOutlined,
+  icon: CatchIcons.date,
 );
 
 const _hostCelebrationDetail = CelebrationDetail(
@@ -326,7 +324,7 @@ final _celebrationDetails = [
   CelebrationDetail(
     label: 'Where',
     value: 'Carter Road jetty',
-    icon: CatchIcons.locationOnOutlined,
+    icon: CatchIcons.location,
   ),
   _hostCelebrationDetail,
 ];

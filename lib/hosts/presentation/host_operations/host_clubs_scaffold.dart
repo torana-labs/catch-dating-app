@@ -160,7 +160,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
     final signOutAction = CatchIconAction.toolbar(
       key: const ValueKey<String>('host-organizer-sign-out'),
       tooltip: context.l10n.hostsHostClubTeamScreenTitleSignOut,
-      icon: CatchIcons.logoutRounded,
+      icon: CatchIcons.signOut,
       onPressed: accountOperationPending ? null : () => unawaited(_signOut()),
     );
     final privacyPolicyUrl = AppConfig.privacyPolicyUrl;
@@ -175,24 +175,24 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
           CatchActionMenuItem(
             value: _privacyPolicyAction,
             label: context.l10n.safetySettingsScreenTitlePrivacyPolicy,
-            icon: CatchIcons.lockOutline,
+            icon: CatchIcons.locked,
           ),
         if (termsUrl != null)
           CatchActionMenuItem(
             value: _termsAction,
             label: context.l10n.safetySettingsScreenTitleTerms,
-            icon: CatchIcons.descriptionOutlined,
+            icon: CatchIcons.document,
           ),
         if (helpUrl != null)
           CatchActionMenuItem(
             value: _helpAction,
             label: context.l10n.safetySettingsScreenTitleHelpSupport,
-            icon: CatchIcons.helpOutline,
+            icon: CatchIcons.help,
           ),
         CatchActionMenuItem(
           value: _deleteAction,
           label: context.l10n.safetySettingsScreenTitleDeleteAccount658588,
-          icon: CatchIcons.deleteOutline,
+          icon: CatchIcons.delete,
           isDestructive: true,
         ),
       ],
@@ -230,13 +230,13 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         actions: [accountMenu, signOutAction],
         slivers: [
           CatchSliverEmptyState(
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             title: context.l10n.hostsHostClubsScaffoldTitleNoHostClubsYet,
             message: context.l10n.hostsHostClubsScaffoldBodyCreateAClubOr,
             actions: [
               CatchButton(
                 label: context.l10n.hostsHostClubsScaffoldLabelCreateClub,
-                leading: Icon(CatchIcons.addRounded, size: CatchIconSize.md),
+                leading: Icon(CatchIcons.add, size: CatchIconSize.md),
                 size: CatchButtonSize.md,
                 onPressed: () =>
                     context.pushNamed(Routes.hostCreateClubScreen.name),

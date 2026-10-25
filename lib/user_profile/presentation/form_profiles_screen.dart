@@ -79,7 +79,7 @@ class FormProfilesSectionList extends StatelessWidget {
         gapH24,
         if (state.page.items.isEmpty && state.page.nextCursor == null)
           CatchEmptyState(
-            icon: CatchIcons.personOutlineRounded,
+            icon: CatchIcons.person,
             title: l10n.formProfilesEmptyTitle,
             message: l10n.formProfilesEmptyBody,
           ),

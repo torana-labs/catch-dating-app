@@ -76,7 +76,7 @@ class ProgramGuestDeskScreen extends ConsumerWidget {
             ),
             body: CatchRouteBody.standardViewport(
               child: CatchEmptyState(
-                icon: CatchIcons.lockOutline,
+                icon: CatchIcons.locked,
                 title: context.l10n.programsGuestDeskAccessTitle,
                 message: context.l10n.programsGuestDeskAccessMessage,
               ),

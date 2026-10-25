@@ -33,14 +33,14 @@ class ProfileCardContent {
     final attributes = <ProfileCardFact>[
       if (profile.height != null)
         (
-          icon: CatchIcons.straightenRounded,
+          icon: CatchIcons.measure,
           text: l10n.swipesProfileCardContentTextHeightCm(
             height: profile.height!,
           ),
         ),
       if (occupation != null)
         (
-          icon: CatchIcons.workOutlineRounded,
+          icon: CatchIcons.work,
           text: company != null
               ? l10n.swipesProfileCardContentTextOccupationAtCompany(
                   occupation: occupation,
@@ -49,27 +49,27 @@ class ProfileCardContent {
               : occupation,
         ),
       if (profile.education != null)
-        (icon: CatchIcons.schoolOutlined, text: profile.education!.label),
+        (icon: CatchIcons.education, text: profile.education!.label),
       if (profile.religion != null)
-        (icon: CatchIcons.brightness3Outlined, text: profile.religion!.label),
+        (icon: CatchIcons.night, text: profile.religion!.label),
       if (profile.languages.isNotEmpty)
         (
-          icon: CatchIcons.translateRounded,
+          icon: CatchIcons.language,
           text: profile.languages.map((language) => language.label).join(', '),
         ),
     ];
 
     final lifestyle = <ProfileCardFact>[
       if (profile.drinking != null)
-        (icon: CatchIcons.localBarOutlined, text: profile.drinking!.label),
+        (icon: CatchIcons.drinks, text: profile.drinking!.label),
       if (profile.smoking != null)
-        (icon: CatchIcons.smokeFreeRounded, text: profile.smoking!.label),
+        (icon: CatchIcons.smokeFree, text: profile.smoking!.label),
       if (profile.workout != null)
-        (icon: CatchIcons.fitnessCenterRounded, text: profile.workout!.label),
+        (icon: CatchIcons.fitness, text: profile.workout!.label),
       if (profile.diet != null)
-        (icon: CatchIcons.ecoOutlined, text: profile.diet!.label),
+        (icon: CatchIcons.sustainability, text: profile.diet!.label),
       if (profile.children != null)
-        (icon: CatchIcons.childFriendlyOutlined, text: profile.children!.label),
+        (icon: CatchIcons.kids, text: profile.children!.label),
     ];
 
     final additionalPhotos = photos.indexed

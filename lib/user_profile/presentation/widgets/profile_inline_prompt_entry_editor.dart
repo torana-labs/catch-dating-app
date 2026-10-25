@@ -339,7 +339,7 @@ class _ProfileInlinePromptEntryEditorState
         child: CatchField.add(
           copy: catchFieldCopy(context.l10n),
           key: ValueKey('profile-prompt-add-${widget.promptIndex}'),
-          icon: CatchIcons.addCircleOutlineRounded,
+          icon: CatchIcons.create,
           title:
               context.l10n.userProfileInlineEditorPromptLabelAddAnotherPrompt,
           onTap: () {

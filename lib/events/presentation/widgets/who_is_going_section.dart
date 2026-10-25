@@ -155,19 +155,19 @@ class WhoIsGoingBody extends StatelessWidget {
             gapH12,
             if (isUpcoming)
               SwipeWindowBanner(
-                icon: CatchIcons.lockOutlineRounded,
+                icon: CatchIcons.locked,
                 message: context.l10n.eventsWhoIsGoingMessageCatchesUnlockFor24,
                 surfaceStyle: surfaceStyle,
               )
             else if (hasActiveSwipeWindow)
               SwipeWindowBanner(
-                icon: CatchIcons.favoriteRounded,
+                icon: CatchIcons.like,
                 message: context.l10n.eventsWhoIsGoingMessageTheCatchWindowIs,
                 surfaceStyle: surfaceStyle,
               )
             else
               SwipeWindowBanner(
-                icon: CatchIcons.scheduleRounded,
+                icon: CatchIcons.time,
                 message: context.l10n.eventsWhoIsGoingMessageTheCatchWindowFor,
                 surfaceStyle: surfaceStyle,
               ),
@@ -206,7 +206,7 @@ class WhoIsGoingEmptyState extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            CatchIcons.groups2Outlined,
+            CatchIcons.people,
             size: CatchIconSize.control,
             color: surfaceStyle?.mutedColor ?? t.ink3,
           ),

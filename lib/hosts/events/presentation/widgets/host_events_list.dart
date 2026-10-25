@@ -293,7 +293,7 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
           CatchTopBarPrimaryButton(
             key: const ValueKey<String>('host-events-create-event'),
             label: context.l10n.hostsHostEventsListLabelNewEvent,
-            icon: CatchIcons.addRounded,
+            icon: CatchIcons.add,
             onPressed: _showEventEntrySheet,
           ),
         ],
@@ -436,7 +436,7 @@ class HostEventsTimelineBody extends StatelessWidget
           CatchSection.sliverLoadingRows(
             itemCount: 1,
             layoutBuilder: (_, _) => CatchRecordLayout.placeholder(
-              icon: CatchIcons.calendarMonthOutlined,
+              icon: CatchIcons.date,
               factCount: 2,
               hasMetadata: true,
             ),
@@ -496,7 +496,7 @@ class HostEventsTimelineBody extends StatelessWidget
           CatchSection.sliverLoadingRows(
             itemCount: 4,
             layoutBuilder: (_, _) => CatchRecordLayout.placeholder(
-              icon: CatchIcons.eventOutlined,
+              icon: CatchIcons.event,
               factCount: 2,
             ),
           )
@@ -518,7 +518,7 @@ class HostEventsTimelineBody extends StatelessWidget
             !hasMorePrograms &&
             programs.isSettledData)
           CatchSliverEmptyState(
-            icon: CatchIcons.eventBusy,
+            icon: CatchIcons.eventUnavailable,
             title: upcoming
                 ? state.emptyTitle(context.l10n)
                 : context.l10n.hostEventsPastEmptyTitle,
@@ -606,7 +606,7 @@ CatchRecordLayout hostEventRecordLayout(
   if (unpublished != null) {
     return CatchRecordLayout(
       title: data.title,
-      icon: CatchIcons.editNoteRounded,
+      icon: CatchIcons.note,
       facts: data.facts(context.l10n, time: unpublished.localStartTime),
     );
   }

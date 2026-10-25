@@ -86,27 +86,27 @@ Widget bottomNavigationGeometryMatrix(BuildContext context) {
 final _navigationItems = <CatchTabBarItem<String>>[
   CatchTabBarItem(
     id: 'home',
-    icon: CatchIcons.homeOutlined,
-    activeIcon: CatchIcons.homeRounded,
+    icon: CatchIcons.home,
+    activeIcon: CatchIcons.home,
     label: 'Home',
   ),
   CatchTabBarItem(
     id: 'explore',
-    icon: CatchIcons.groupsOutlined,
-    activeIcon: CatchIcons.groupsRounded,
+    icon: CatchIcons.people,
+    activeIcon: CatchIcons.people,
     label: 'Explore',
   ),
   CatchTabBarItem(
     id: 'chats',
-    icon: CatchIcons.chatBubbleOutlineRounded,
-    activeIcon: CatchIcons.chatBubbleRounded,
+    icon: CatchIcons.chat,
+    activeIcon: CatchIcons.chat,
     label: 'Chats',
     badgeCount: 3,
   ),
   CatchTabBarItem(
     id: 'you',
-    icon: CatchIcons.personOutlined,
-    activeIcon: CatchIcons.personRounded,
+    icon: CatchIcons.person,
+    activeIcon: CatchIcons.person,
     label: 'You',
   ),
 ];

@@ -316,7 +316,7 @@ void main() {
     final semantics = _chipSemantics(tester, chip);
 
     expect(
-      find.descendant(of: chip, matching: find.byIcon(CatchIcons.closeRounded)),
+      find.descendant(of: chip, matching: find.byIcon(CatchIcons.close)),
       findsOneWidget,
     );
     expect(

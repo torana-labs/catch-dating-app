@@ -48,7 +48,7 @@ class _UserAnalyticsSectionState extends ConsumerState<UserAnalyticsSection> {
             value: _rangePreset,
             itemLabelBuilder: (preset) =>
                 UserAnalyticsCopy.rangeLabel(context.l10n, preset),
-            leading: Icon(CatchIcons.calendarMonthOutlined),
+            leading: Icon(CatchIcons.date),
             onChanged: (preset) {
               if (preset == null) return;
               setState(() => _rangePreset = preset);
@@ -121,7 +121,7 @@ class UserAnalyticsEmptyState extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(CatchIcons.autoGraphRounded, color: t.ink2),
+          Icon(CatchIcons.trend, color: t.ink2),
           const SizedBox(width: CatchSpacing.s3),
           Expanded(
             child: Column(
@@ -401,7 +401,7 @@ class UserAnalyticsTipRow extends StatelessWidget {
     final copy = UserAnalyticsCopy.tip(context.l10n, tip.copyKey);
     return CatchField.content(
       copy: catchFieldCopy(context.l10n),
-      icon: CatchIcons.sparkle,
+      icon: CatchIcons.spark,
       iconColor: CatchTokens.of(context).ink2,
       title: copy.title,
       body: copy.body,
@@ -424,12 +424,9 @@ class UserAnalyticsDataCoverageSection extends StatelessWidget {
           CatchField.content(
             copy: catchFieldCopy(context.l10n),
             icon: switch (row.state) {
-              UserAnalyticsDataQualityState.ok =>
-                CatchIcons.checkCircleOutlineRounded,
-              UserAnalyticsDataQualityState.partial =>
-                CatchIcons.warningAmberRounded,
-              UserAnalyticsDataQualityState.missing =>
-                CatchIcons.errorOutlineRounded,
+              UserAnalyticsDataQualityState.ok => CatchIcons.success,
+              UserAnalyticsDataQualityState.partial => CatchIcons.warning,
+              UserAnalyticsDataQualityState.missing => CatchIcons.error,
             },
             iconColor: switch (row.state) {
               UserAnalyticsDataQualityState.ok => t.success,
@@ -449,13 +446,13 @@ class UserAnalyticsDataCoverageSection extends StatelessWidget {
 }
 
 IconData _metricIcon(String id) => switch (id) {
-  'profileViews' => CatchIcons.eye,
-  'caughtYou' => CatchIcons.favoriteOutline,
-  'mutualCatches' => CatchIcons.sparkle,
-  'chatsStarted' => CatchIcons.chatCircle,
-  'eventsAttended' => CatchIcons.eventAvailableOutlined,
-  'followThroughRate' => CatchIcons.autoGraphRounded,
-  _ => CatchIcons.autoGraphRounded,
+  'profileViews' => CatchIcons.show,
+  'caughtYou' => CatchIcons.like,
+  'mutualCatches' => CatchIcons.spark,
+  'chatsStarted' => CatchIcons.chat,
+  'eventsAttended' => CatchIcons.eventConfirmed,
+  'followThroughRate' => CatchIcons.trend,
+  _ => CatchIcons.trend,
 };
 
 CatchMetricData _userMetricCardData(

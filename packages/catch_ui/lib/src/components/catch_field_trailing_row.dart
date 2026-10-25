@@ -79,7 +79,7 @@ class CatchFieldTrailingRow extends StatelessWidget {
           if (value.text.isEmpty) return fallback ?? const SizedBox.shrink();
           return IconButton(
             tooltip: clearTooltip,
-            icon: Icon(CatchIcons.closeRounded, size: CatchIconSize.xs),
+            icon: Icon(CatchIcons.close, size: CatchIconSize.xs),
             onPressed: () {
               controller.clear();
               onChanged?.call('');
@@ -129,7 +129,7 @@ class CatchFieldTrailingRow extends StatelessWidget {
     key: key,
     topPadding: topPadding,
     builder: (context) => Icon(
-      CatchIcons.chevronRightRounded,
+      CatchIcons.disclosure,
       size: CatchFieldTokens.disclosureGlyphExtent,
       color: color ?? CatchTokens.of(context).ink3,
     ),
@@ -148,7 +148,7 @@ class CatchFieldTrailingRow extends StatelessWidget {
       duration: catchFieldMotionDuration(context, CatchMotion.base),
       curve: CatchMotion.standardCurve,
       child: Icon(
-        CatchIcons.expandMoreRounded,
+        CatchIcons.expand,
         size: CatchFieldTokens.disclosureGlyphExtent,
         color: color ?? CatchTokens.of(context).ink3,
       ),
@@ -221,7 +221,7 @@ class CatchFieldTrailingRow extends StatelessWidget {
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       icon: Icon(
-        CatchIcons.clearCircle,
+        CatchIcons.clear,
         size: CatchFieldTokens.largeGlyphExtent,
         color: CatchTokens.of(context).ink3,
       ),
@@ -236,7 +236,7 @@ class CatchFieldTrailingRow extends StatelessWidget {
     key: key,
     topPadding: topPadding,
     builder: (context) => Icon(
-      CatchIcons.checkCircle,
+      CatchIcons.success,
       size: CatchIconSize.md,
       color: CatchTokens.of(context).success,
     ),

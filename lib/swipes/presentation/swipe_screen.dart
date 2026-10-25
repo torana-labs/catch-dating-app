@@ -387,10 +387,7 @@ class CatchesTopOverlay extends StatelessWidget {
                 backgroundColor: t.surface.withValues(
                   alpha: CatchOpacity.floatingControlFill,
                 ),
-                child: Icon(
-                  CatchIcons.arrowBackIosNewRounded,
-                  size: CatchIconSize.md,
-                ),
+                child: Icon(CatchIcons.back, size: CatchIconSize.md),
               ),
               gapW10,
               Expanded(
@@ -429,7 +426,7 @@ class CatchesTopOverlay extends StatelessWidget {
                 backgroundColor: t.surface.withValues(
                   alpha: CatchOpacity.floatingControlFill,
                 ),
-                child: Icon(CatchIcons.tuneRounded, size: CatchIconSize.md),
+                child: Icon(CatchIcons.filters, size: CatchIconSize.md),
               ),
             ],
           ),

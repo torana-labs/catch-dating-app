@@ -42,7 +42,7 @@ class ClubDetailsStep extends StatelessWidget {
                   contract: CatchContractConstraints
                       .createClubCallablePayloadDescription,
                   controller: descriptionController,
-                  icon: CatchIcons.editNoteOutlined,
+                  icon: CatchIcons.note,
                   maxLines: 4,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.newline,
