@@ -1,0 +1,73 @@
+/*
+ * Flutter CatchSkeleton and catchSkeletonEffect: shapes in the raised colour
+ * with a surface shimmer every 1200ms, solid under reduced motion. A card is
+ * full width, 120px tall at radius md; a box takes radius xs; a text line is
+ * 14px tall; a text block puts 8px between lines and ends at 60% width; a
+ * circle is 48px. Content keeps the real layout and paints its text and media
+ * as shapes; custom paints its children's boxes.
+ */
+.shade,
+.custom > *,
+.content :where(h1, h2, h3, h4, h5, h6, p, span, a, li, dt, dd, label, small, strong, em, time, button, img, svg, video) {
+  background: linear-gradient(90deg, var(--catch-theme-raised) 30%, var(--catch-theme-surface) 50%, var(--catch-theme-raised) 70%) 100% 0 / 300% 100%;
+  animation: catch-skeleton-shimmer 1200ms linear infinite;
+}
+
+.shade {
+  display: block;
+  width: 100%;
+  height: 14px;
+  border-radius: var(--catch-radius-xs);
+}
+
+.shade[data-shape="card"] {
+  height: 120px;
+  border-radius: var(--catch-radius-md);
+}
+
+.shade[data-shape="circle"] {
+  width: var(--catch-space-s12);
+  height: var(--catch-space-s12);
+  border-radius: var(--catch-radius-pill);
+}
+
+.shade[data-shape="box"] { width: auto; }
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+}
+
+.block > :last-child { width: 60%; }
+
+.custom { display: contents; }
+
+.custom > *,
+.content :where(*) {
+  border-color: transparent;
+  box-shadow: none;
+  color: transparent;
+}
+
+.content :where(h1, h2, h3, h4, h5, h6, p, span, a, li, dt, dd, label, small, strong, em, time, button, img, svg, video) {
+  border-radius: var(--catch-radius-xs);
+  box-decoration-break: clone;
+}
+
+/* Media keep their box and lose their pixels, so the shade fills it. */
+.content :where(img, video) { object-position: -100vw 0; }
+.content :where(svg) * { visibility: hidden; }
+
+@keyframes catch-skeleton-shimmer {
+  to { background-position: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shade,
+  .custom > *,
+  .content :where(h1, h2, h3, h4, h5, h6, p, span, a, li, dt, dd, label, small, strong, em, time, button, img, svg, video) {
+    animation: none;
+    background: var(--catch-theme-raised);
+  }
+}

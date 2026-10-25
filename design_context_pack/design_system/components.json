@@ -1575,7 +1575,7 @@
             "surface-content-adapter"
           ]
         },
-        "notes": "Shared empty-state root owns opt-in status announcements and content wrapping while surface adapters own anatomy styling and variants."
+        "notes": "Shared empty-state root owns opt-in status announcements and content wrapping while surface adapters own anatomy styling and variants. CatchEmptyState (packages/web-ui/src/components/CatchEmptyState.tsx) is the prepared styled twin with every contract state; this record moves to it when the Admin and website EmptyStateControl adapters migrate."
       },
       "design": {
         "figma": {
@@ -5829,6 +5829,27 @@
           "CatchSkeleton.content"
         ]
       },
+      "react": {
+        "symbol": "CatchSkeleton",
+        "file": "packages/web-ui/src/components/CatchSkeleton.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchSkeleton.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "card",
+            "box",
+            "text",
+            "text-block",
+            "circle",
+            "custom",
+            "derived-content",
+            "dark"
+          ]
+        },
+        "notes": "Each named constructor is shape=\"...\" on the one component, and CatchSkeleton.content is shape=\"content\". Skeletonizer's derived paint is approximated in CSS: inside content, text and media keep their boxes and take the shimmer while the subtree is inert and hidden from assistive technology."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5986,6 +6007,27 @@
           "CatchLoadingIndicator.dots",
           "CatchLoadingIndicator.inline"
         ]
+      },
+      "react": {
+        "symbol": "CatchLoadingIndicator",
+        "file": "packages/web-ui/src/components/CatchLoadingIndicator.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchLoadingIndicator.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "small",
+            "tinted",
+            "dots-primary",
+            "dots-light",
+            "inline-status",
+            "inline-commit",
+            "dark"
+          ]
+        },
+        "notes": "CatchLoadingIndicator.dots and .inline are recipe=\"dots\" | \"inline\" on the one component; color is a CSS colour. label is web-only: with one the indicator is a named progressbar, without one it is decorative beside the caller's own loading copy. Reduced motion holds the circular and inline recipes still."
       },
       "design": {
         "figma": {
