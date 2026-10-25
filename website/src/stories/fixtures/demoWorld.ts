@@ -37,6 +37,7 @@ interface DemoWorldEvent {
   priceInPaise: number;
   guestPerspective?: {viewer: string};
   attendance: {personId: string; bookedAt: string; checkedInAt?: string; cancelledAt?: string}[];
+  waitlist?: {personId: string; joinedAt: string}[];
 }
 interface DemoPersona {
   id: string;
@@ -73,6 +74,7 @@ export function eventStateAt(eventId: string, moment: DemoMoment) {
   return {
     booked: active.length,
     checkedIn: active.filter((record) => record.checkedInAt && record.checkedInAt <= at).length,
+    waitlisted: (event.waitlist ?? []).filter((record) => record.joinedAt <= at).length,
     capacity: event.capacity,
     phase: at < start ? "upcoming" : at < end ? "live" : "ended",
   };

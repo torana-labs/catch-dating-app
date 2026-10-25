@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:timezone/data/latest.dart' as timezone_data;
+import 'package:timezone/timezone.dart' as timezone;
+
 /// Reader for demo world scenarios (schemaVersion 2). A world stores guest
 /// records with timestamps; per-moment counts are derived here with the same
 /// rules as tool/demo/lib/demo_world.mjs, which validates every world in CI.
@@ -64,12 +67,44 @@ class DemoWorld {
   DateTime civil(String date, String time) =>
       DateTime.parse('${date}T$time:00');
 
-  /// Guests booked and checked in at a named moment.
-  ({int booked, int checkedIn}) stateAt(String eventId, String moment) {
+  /// The UTC instant of a civil date and time in the world's time zone.
+  DateTime instant(String date, String time) {
+    if (!_timeZonesLoaded) {
+      timezone_data.initializeTimeZones();
+      _timeZonesLoaded = true;
+    }
+    final local = civil(date, time);
+    final zoned = timezone.TZDateTime(
+      timezone.getLocation(timeZone),
+      local.year,
+      local.month,
+      local.day,
+      local.hour,
+      local.minute,
+    );
+    return DateTime.fromMillisecondsSinceEpoch(
+      zoned.millisecondsSinceEpoch,
+      isUtc: true,
+    );
+  }
+
+  static var _timeZonesLoaded = false;
+
+  /// Guests booked, checked in and waitlisted at a named moment.
+  ({int booked, int checkedIn, int waitlisted}) stateAt(
+    String eventId,
+    String moment,
+  ) {
     final guests = guestsAt(eventId, moment);
+    final at = moments[moment]!;
     return (
       booked: guests.length,
       checkedIn: guests.where((guest) => guest.checkedInAt != null).length,
+      waitlisted: _list(event(eventId)['waitlist'])
+          .where(
+            (item) => (_map(item)['joinedAt']! as String).compareTo(at) <= 0,
+          )
+          .length,
     );
   }
 
