@@ -68,7 +68,8 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
     "admin/src/shared/query/queryClient.test.tsx", "admin/src/shared/query/queryClient.tsx",
     "admin/src/shared/query/queryKeys.ts",
   ];
-  const expectedIds = [...productionManifest.ciImpact.mandatoryCheckIds, scanner.id, "design:icon-family-usage"].sort();
+  const expectedIds = [...productionManifest.ciImpact.mandatoryCheckIds, scanner.id,
+    "design:icon-family-usage", "web:react-ui-lint"].sort();
   const cases = [...inputs.map((file) => [file]), cat50Paths,
     [...cat50Paths, "tool/docs/check_doc_metadata.mjs"]];
   for (const changedPaths of cases) {
@@ -88,10 +89,12 @@ test("Admin pending inputs select the registered scanner without a full Tools fa
 
 test("removing all Admin source readers fails closed and unrelated Admin changes stay narrow", () => {
   const broken = structuredClone(productionManifest);
-  // Both the pending-operation and icon-family scanners now read Admin source.
-  for (const id of ["web:admin-pending-operations", "design:icon-family-usage"]) {
-    delete broken.tools.find((entry) => entry.id === id).impactPaths;
-  }
+  // Remove every declared reader, including the shared ESLint preset. This
+  // keeps the vacuity probe complete when another app-wide check is added.
+  const readers = broken.tools.filter((entry) => entry.impactPaths?.some((pattern) =>
+    matchesGlobPath("admin/src/app/App.tsx", pattern)));
+  assert.ok(readers.some((entry) => entry.id === "web:react-ui-lint"));
+  for (const reader of readers) delete reader.impactPaths;
   const result = planAffectedToolChecks({changedPaths: ["admin/src/app/App.tsx"],
     manifest: broken, componentGraph: productionGraph});
   assert.equal(result.mode, "full");
