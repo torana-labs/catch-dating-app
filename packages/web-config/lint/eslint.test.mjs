@@ -60,13 +60,17 @@ test("parse errors cannot disappear into a suppression baseline", async () => {
   assert.throws(() => violationCounts(results, cwd), /Parsing error/);
 });
 
-test("both app typecheck pipelines run the replacement gate once", () => {
+test("both app typecheck pipelines run the replacement gate once", async () => {
   for (const surface of ["website", "admin"]) {
     const {scripts} = JSON.parse(fs.readFileSync(path.join(cwd, surface, "package.json"), "utf8"));
     assert.equal(scripts["check:ui"], `node ../tool/web/check_react_ui.mjs --surface ${surface}`);
     const pipeline = [scripts.pretypecheck, scripts.typecheck].join(" && ").split(" && ");
     assert.equal(pipeline.filter((command) => command === "npm run check:ui").length, 1);
     assert.ok(!Object.values(scripts).some((command) => /check:ui-primitives|check:class-names/.test(command)));
+    const actual = new ESLint({cwd: path.join(cwd, surface)});
+    const probe = await actual.lintText("export const Probe = () => <div className='x' style={{padding: 8}} />;",
+      {filePath: "src/ratchet-configuration-probe.tsx"});
+    assert.deepEqual(rules(probe), ["react/forbid-dom-props", "react/forbid-dom-props", "react/forbid-elements"]);
   }
 });
 

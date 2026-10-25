@@ -70,7 +70,7 @@
       "linear": [
         "CAT-215"
       ],
-      "enforcement": "None yet: no check requires a T1 contract to have a styled React implementation."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. Existing missing styled T1 contracts are allowed by identity; new missing contracts fail and resolved identities must be removed."
     },
     {
       "id": "library.priority_t2_web",
@@ -86,7 +86,7 @@
       "linear": [
         "CAT-215"
       ],
-      "enforcement": "None yet."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. The approved priority T2 contract set is measured from the canonical registry; new missing styled contracts fail and resolved identities must be removed."
     },
     {
       "id": "library.headless_controls",
@@ -102,7 +102,7 @@
       "linear": [
         "CAT-215"
       ],
-      "enforcement": "None yet."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. New headless-control identities fail; contracts that gain styled implementations must leave the baseline."
     },
     {
       "id": "library.cross_framework_parity",
@@ -118,7 +118,7 @@
       "linear": [
         "CAT-216"
       ],
-      "enforcement": "None yet. This is the state-coverage half of Phase 7f: a contract counts once it has a styled @catch/web-ui component whose ready Storybook story, keyed through its registry record, declares every state of its Widgetbook contract preview. Screenshot baselines for both frameworks join the rule when 7f lands them."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. This is catalog state coverage: ready styled Storybook states must cover the canonical Widgetbook states. Missing identities are ratcheted; screenshot parity remains a separate check."
     },
     {
       "id": "screens.web_adapters",
@@ -134,7 +134,7 @@
       "linear": [
         "CAT-215"
       ],
-      "enforcement": "web:shared-ui-adoption classifies every export but does not ratchet the count."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. Every remaining adapter is tracked by source path and symbol; same-count identity replacement cannot add new debt."
     },
     {
       "id": "screens.web_dead_exports",
@@ -169,7 +169,7 @@
         "CAT-218",
         "CAT-219"
       ],
-      "enforcement": "None yet, and the measure is provisional. The React inventory counts any shared export with one owner as t4-move, @catch/web-ui included, and the registry rejects a React record on T3/T4 entries, so a component registered under D18 would still be counted. The D18 prerequisite (Linear CAT-225, PR #796) lets a T4 entry carry its one framework record and owning surface, with the component in packages/web-ui/src/components/, and maps those rows to concept; only then does this gate fall for the right reason. Until then, new React one-offs stay in their app shared/ui."
+      "enforcement": "web:shared-ui-adoption enforces tool/web/react_consolidation_baseline.json with exact-source freshness and Git-backed shrink-only identity checks. The canonical inventory tracks remaining t4-move identities by path and symbol. Registered library T4 components use their registry mapping; new move candidates fail and resolved candidates must leave the baseline."
     },
     {
       "id": "screens.web_bare_markup",
@@ -202,7 +202,7 @@
         "CAT-218",
         "CAT-219"
       ],
-      "enforcement": "None: suppressions cover raw values inside these stylesheets, not their size."
+      "enforcement": "web:shared-ui-adoption enforces per-file CSS line budgets in tool/web/react_consolidation_baseline.json. New or larger files fail, resolved allowances must shrink, and moving debt between files cannot spend another allowance. The scope matches the scorecard and excludes only base.css and catch-language.css."
     },
     {
       "id": "screens.flutter_inline_text_styles",
