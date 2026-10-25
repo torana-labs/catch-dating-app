@@ -39,6 +39,8 @@ export const SUVBOT_DISPLAY_NAME = "Suvbot";
 export const SUVBOT_REQUEST_COLLECTION = "demoOpsRequests";
 const SUVBOT_CONFIRMATION_COLLECTION = "demoOpsConfirmations";
 const CONFIRMATION_WINDOW_MS = 2 * 60 * 1000;
+/** Text limit in contracts/firestore/chat_messages.schema.json. */
+const CHAT_MESSAGE_TEXT_LIMIT = 2000;
 
 export type SuvbotAction =
   | "listActions"
@@ -699,7 +701,9 @@ async function resetScopedDemoState({
 }
 
 /**
- * Writes one Suvbot thread message and the matching thread preview.
+ * Writes a Suvbot thread message and the matching thread preview. Text over
+ * the chat message limit (help grows with every bundled world) becomes
+ * consecutive messages split between lines, one millisecond apart.
  * @param {object} params Message parameters.
  */
 async function writeConversationMessage({
@@ -717,13 +721,21 @@ async function writeConversationMessage({
 }): Promise<void> {
   const matchRef = db.collection("matches").doc(suvbotMatchId(uid));
   const current = (await matchRef.get()).data();
-  const sentAt = deps.timestampFromDate(deps.now());
+  const now = deps.now();
+  const parts = chatMessageParts(text);
+  const sentAt = deps.timestampFromDate(
+    new Date(now.getTime() + parts.length - 1));
   const createdAt = current?.createdAt as FirebaseFirestore.Timestamp |
     undefined;
-  const message: DemoDocWrite = {
+  const messages: DemoDocWrite[] = parts.map((part, index) => ({
     path: matchRef.collection("messages").doc().path,
-    data: {senderId, text, imageUrl: null, sentAt},
-  };
+    data: {
+      senderId,
+      text: part,
+      imageUrl: null,
+      sentAt: deps.timestampFromDate(new Date(now.getTime() + index)),
+    },
+  }));
   const thread: DemoDocWrite = {
     path: matchRef.path,
     data: suvbotThreadDoc({
@@ -732,12 +744,41 @@ async function writeConversationMessage({
         createdAt :
         sentAt,
       lastMessageAt: sentAt,
-      lastMessagePreview: previewText(text),
+      lastMessagePreview: previewText(parts[parts.length - 1]),
       lastMessageSenderId: senderId,
       unreadForUser: senderId === SUVBOT_UID ? 1 : 0,
     }),
   };
-  await applyWritePlan(db, [message, thread]);
+  await applyWritePlan(db, [...messages, thread]);
+}
+
+/**
+ * Splits text into chat messages within the text limit, breaking between
+ * lines and cutting only a single line that is longer than the limit.
+ * @param {string} text Message text.
+ * @param {number} limit Maximum characters per message.
+ * @return {string[]} One or more message texts.
+ */
+export function chatMessageParts(
+  text: string,
+  limit = CHAT_MESSAGE_TEXT_LIMIT
+): string[] {
+  const parts: string[] = [];
+  let current: string | null = null;
+  for (const line of text.split("\n")) {
+    for (let start = 0; start < Math.max(line.length, 1); start += limit) {
+      const piece = line.slice(start, start + limit);
+      const joined: string = current === null ? piece : `${current}\n${piece}`;
+      if (joined.length <= limit) {
+        current = joined;
+      } else {
+        parts.push(current as string);
+        current = piece;
+      }
+    }
+  }
+  parts.push(current ?? "");
+  return parts;
 }
 
 /**

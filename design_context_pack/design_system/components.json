@@ -13482,6 +13482,173 @@
       }
     },
     {
+      "id": "catch.checkbox",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "The Widgetbook contract and the React Contract story cover checked, unchecked, disabled checked/unchecked, description, semantic label and long copy; focused tests in both twins exercise label activation, Space, caller updates and disabled values."
+      },
+      "name": "CatchCheckboxInput",
+      "status": "active",
+      "kind": "primitive",
+      "tier": "T1",
+      "aliases": [
+        "Checkbox",
+        "CheckboxField",
+        "ConsentCheckbox"
+      ],
+      "summary": "One acknowledgement or checklist value with checked semantics: a leading checkbox, a body label and an optional supporting description; the caller owns the value and a null callback disables it.",
+      "dart": {
+        "symbol": "CatchCheckboxInput",
+        "file": "packages/catch_ui/lib/src/components/catch_checkbox_input.dart",
+        "constructors": [
+          "CatchCheckboxInput"
+        ]
+      },
+      "react": {
+        "symbol": "CatchCheckboxInput",
+        "file": "packages/web-ui/src/components/CatchCheckboxInput.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchCheckboxInput.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "unchecked",
+            "checked",
+            "disabled",
+            "disabled-checked",
+            "description",
+            "semantic-labelled",
+            "long-copy",
+            "dark"
+          ]
+        },
+        "notes": "Renders a native checkbox inside its label, links the optional description with aria-describedby and takes semanticLabel as the accessible-name override."
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Checkbox",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Checkbox",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "value",
+            "type": "bool",
+            "required": true,
+            "dartType": "bool",
+            "tsType": "boolean"
+          },
+          {
+            "name": "onChanged",
+            "type": "callback",
+            "required": true,
+            "dartType": "ValueChanged<bool>?",
+            "tsType": "((value: boolean) => void) | null",
+            "notes": "Null disables the control without losing its checked state."
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "required": true,
+            "dartType": "String",
+            "tsType": "string"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Replaces the visible label as the accessible name; the description is kept."
+          }
+        ],
+        "states": [
+          "unchecked",
+          "checked",
+          "disabled",
+          "disabled-checked",
+          "description",
+          "semantic-labelled",
+          "long-copy"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s1",
+          "space.s3",
+          "theme.light.color.primary",
+          "theme.light.color.primaryInk"
+        ],
+        "dartRoles": [
+          "CatchOpacity.disabledControl",
+          "CatchTextVariant"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Use for a single acknowledgement or checklist item with checked semantics. Settings use catch.toggle (CatchToggleInput) and multi-select groups use catch.chip.field (CatchChoiceInput); consent never becomes a switch.",
+          "Existing checkbox and consent adapters migrate after acceptance, classified by their meaning (CAT-244)."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.checkbox",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.checkbox",
+        "decisionRef": "CAT-244:checkbox-input-material"
+      },
+      "level": "L3",
+      "roleNoun": "Input",
+      "naming": {
+        "useCase": "Checkbox",
+        "comparedWith": [
+          "catch.toggle",
+          "catch.chip.field"
+        ],
+        "reason": "A single acknowledgement with checked semantics, not a setting or a group."
+      }
+    },
+    {
       "id": "catch.step_header",
       "verification": {
         "vehicle": "widgetbook-contract",

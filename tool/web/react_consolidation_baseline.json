@@ -487,7 +487,7 @@
       "website/src/shared/ui/primitives/publicForms.tsx::PublicFormVerification"
     ],
     "screens.web_page_css_lines": {
-      "admin/src/styles.css": 4401,
+      "admin/src/styles.css": 4390,
       "website/src/styles.css": 22,
       "website/src/styles/consumer-event.css": 77,
       "website/src/styles/consumer-home.css": 141,
@@ -498,7 +498,7 @@
       "website/src/styles/home.css": 516,
       "website/src/styles/host-foundation.css": 42,
       "website/src/styles/host-landing.css": 222,
-      "website/src/styles/host.css": 256,
+      "website/src/styles/host.css": 180,
       "website/src/styles/legal.css": 96,
       "website/src/styles/organiser-directory.css": 58,
       "website/src/styles/organiser-profile.css": 73,

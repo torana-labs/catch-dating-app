@@ -415,6 +415,8 @@ import 'package:widgetbook_workspace/primitives/contracts/avatars.dart'
     as _widgetbook_workspace_primitives_contracts_avatars;
 import 'package:widgetbook_workspace/primitives/contracts/buttons.dart'
     as _widgetbook_workspace_primitives_contracts_buttons;
+import 'package:widgetbook_workspace/primitives/contracts/checkbox.dart'
+    as _widgetbook_workspace_primitives_contracts_checkbox;
 import 'package:widgetbook_workspace/primitives/contracts/choices.dart'
     as _widgetbook_workspace_primitives_contracts_choices;
 import 'package:widgetbook_workspace/primitives/contracts/chrome.dart'
@@ -3061,6 +3063,16 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Inputs',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchCheckboxInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_checkbox
+                    .catchCheckboxInputContractStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'CatchChoiceInput',
             useCases: [
