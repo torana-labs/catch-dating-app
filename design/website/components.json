@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 110,
+  "version": 111,
   "updated": "2026-10-25",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -3842,6 +3842,67 @@
         ]
       },
       "notes": "Website T4 under D18 (CAT-249). A read-only rating out of five in coral deep, read as one image with the caller's label; values round to whole stars. Search aliases: Stars, StarDisplay, RatingStars, StarScore, Rating."
+    },
+    {
+      "id": "shared_qr_code",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "organizer_listing_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchQrCode.tsx",
+      "exportName": "CatchQrCode",
+      "css": [
+        "packages/web-ui/src/components/CatchQrCode.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchQrCode.stories.tsx",
+        "exportName": "Sizes",
+        "states": [
+          "small",
+          "medium",
+          "large",
+          "long-value",
+          "utf-8",
+          "on-ink",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249). A scannable QR code drawn as one SVG path, ink on white in every theme, with a two-module quiet zone; it encodes the value's UTF-8 bytes with qrcode-generator (MIT) and never draws a module under 3px, growing past its size for long links. Search aliases: QRCode, QR, Barcode, ScanCode, ShareCode."
+    },
+    {
+      "id": "shared_store_button",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "organizer_listing_canonical",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchStoreButton.tsx",
+      "exportName": "CatchStoreButton",
+      "css": [
+        "packages/web-ui/src/components/CatchStoreButton.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchStoreButton.stories.tsx",
+        "exportName": "Stores",
+        "states": [
+          "app-store",
+          "google-play",
+          "large",
+          "medium",
+          "with-kicker",
+          "label-only",
+          "on-ink",
+          "on-accent",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249). A link to the Catch app in the App Store or Google Play, drawn as a D20 primary action (theme primary fill, 4px corners, overlay and press feedback) with a plain store mark and an optional kicker line. Search aliases: AppStoreBadge, AppStoreButton, GooglePlayBadge, DownloadButton, StoreBadge, GetTheApp."
     }
   ]
 }
