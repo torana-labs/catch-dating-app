@@ -4,25 +4,28 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Package-internal welcome paint; use CatchWelcomeText from the public API.
+/// The welcome reel is set in the M display step.
 @internal
-TextStyle catchWelcomeTextStyle(Color color) => CatchFonts.voice(
-  fontSize: 36,
-  fontWeight: FontWeight.w600,
-  height: 1.02,
-  letterSpacing: -0.5,
-  color: color,
-);
+TextStyle catchWelcomeTextStyle(Color color) =>
+    CatchTextStyles._display(_CatchDisplayStep.m, color: color);
 
-/// Display-size axis owned by the editorial recipes in [CatchTextStyles].
-enum CatchTextStylesSize {
-  s(22),
-  m(27),
-  l(32),
-  xl(38);
+/// The display scale (blueprint D19): six Archivo steps on a 1.25 ratio.
+///
+/// Every step is set at weight 760 in the single Archivo width. Line height
+/// and tracking tighten as the size grows; tracking is in em.
+enum _CatchDisplayStep {
+  xs(24, 1.10, -0.020),
+  s(30, 1.05, -0.025),
+  m(38, 1.05, -0.030),
+  l(48, 1.00, -0.035),
+  xl(60, 1.00, -0.040),
+  xxl(72, 1.00, -0.040);
 
-  const CatchTextStylesSize(this.size);
+  const _CatchDisplayStep(this.size, this.height, this.trackingEm);
 
   final double size;
+  final double height;
+  final double trackingEm;
 }
 
 /// Catch's typographic scale — one principled hierarchy across three roles:
@@ -34,13 +37,13 @@ enum CatchTextStylesSize {
 /// context pack):
 /// - Archivo is the roman-only display voice. It is not used for long-form or
 ///   user-authored reading text.
-/// - Display/body tracking is zero by default. Uppercase mono roles own their
-///   explicit tracking here, and the welcome reel owns one named `-0.5` parity
-///   exception.
+/// - Function and body tracking is zero. The display steps own their negative
+///   tracking, and uppercase mono roles own their explicit tracking here.
 /// - Body/prose roles use the platform system font with generous leading.
 ///
-/// **Scale discipline:** dramatic jumps in the display tier (no near-duplicate
-/// mid-sizes); fine steps only where function needs them (labels/body).
+/// **Scale discipline:** the display tier is exactly six steps, `displayXs`
+/// to `displayXxl` (no near-duplicate mid-sizes or per-call height and weight
+/// overrides); fine steps only where function needs them (labels/body).
 ///
 /// Prefer the named styles over ad hoc [TextStyle]; use `copyWith` only for local
 /// state (unread/disabled).
@@ -96,71 +99,37 @@ abstract final class CatchTextStyles {
   static const double _badgeCapsTracking = 0.72; // 0.08em at 9px.
 
   // ===========================================================================
-  // VOICE — Archivo (brand display and deliberate poster moments)
+  // DISPLAY — Archivo (brand display and deliberate poster moments)
   // ===========================================================================
 
-  /// Biggest brand moment — onboarding/celebration impact, live countdowns.
-  static TextStyle display(BuildContext context, {Color? color}) => _voice(
-    context,
-    size: 44,
-    weight: FontWeight.w600,
-    height: 0.98,
-    color: color,
-  );
+  /// 24px display: compact brand headings, card and room titles.
+  static TextStyle displayXs(BuildContext context, {Color? color}) =>
+      _display(_CatchDisplayStep.xs, color: color ?? _ink(context));
+
+  /// 30px display: event and club titles in lists and hero bars.
+  static TextStyle displayS(BuildContext context, {Color? color}) =>
+      _display(_CatchDisplayStep.s, color: color ?? _ink(context));
+
+  /// 38px display: page heroes and the welcome reel.
+  static TextStyle displayM(BuildContext context, {Color? color}) =>
+      _display(_CatchDisplayStep.m, color: color ?? _ink(context));
+
+  /// 48px display: celebration and live-countdown moments.
+  static TextStyle displayL(BuildContext context, {Color? color}) =>
+      _display(_CatchDisplayStep.l, color: color ?? _ink(context));
+
+  /// 60px display: poster-scale moments.
+  static TextStyle displayXl(BuildContext context, {Color? color}) =>
+      _display(_CatchDisplayStep.xl, color: color ?? _ink(context));
+
+  /// 72px display: the largest poster moment.
+  static TextStyle displayXxl(BuildContext context, {Color? color}) =>
+      _display(_CatchDisplayStep.xxl, color: color ?? _ink(context));
 
   /// System title scale for functional root-screen headings.
   static TextStyle headline(BuildContext context, {Color? color}) =>
       _functionProfile(
         CatchPlatformTokens.typography.headline,
-        color: color ?? CatchTokens.of(context).ink,
-      );
-
-  /// Smaller brand headline — a step under [headline].
-  static TextStyle headlineS(BuildContext context, {Color? color}) => _voice(
-    context,
-    size: 26,
-    weight: FontWeight.w600,
-    height: 1.10,
-    color: color,
-  );
-
-  /// Editorial club identity treatment on the named display-step scale.
-  static TextStyle clubDisplay(
-    BuildContext context, {
-    required CatchTextStylesSize step,
-    double height = 1.0,
-    Color? color,
-    FontWeight weight = FontWeight.w600,
-  }) {
-    return CatchFonts.voice(
-      fontSize: step.size,
-      fontWeight: weight,
-      height: height,
-      color: color ?? CatchTokens.of(context).ink,
-    );
-  }
-
-  /// Ticket/event identity treatment on the named display-step scale.
-  static TextStyle eventDisplay(
-    BuildContext context, {
-    required CatchTextStylesSize step,
-    double height = 1.0,
-    Color? color,
-    FontWeight weight = FontWeight.w600,
-  }) {
-    return CatchFonts.voice(
-      fontSize: step.size,
-      fontWeight: weight,
-      height: height,
-      color: color ?? CatchTokens.of(context).ink,
-    );
-  }
-
-  /// Condensed poster title (`.t-event-title`).
-  static TextStyle eventTitle(BuildContext context, {Color? color}) =>
-      CatchFonts.head(
-        fontSize: 36,
-        height: 1,
         color: color ?? CatchTokens.of(context).ink,
       );
 
@@ -536,20 +505,18 @@ abstract final class CatchTextStyles {
   static TextStyle _tabular(TextStyle style) =>
       style.copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
 
-  static TextStyle _voice(
-    BuildContext context, {
-    required double size,
-    required FontWeight weight,
-    required double height,
-    double letterSpacing = 0,
-    Color? color,
-  }) => CatchFonts.voice(
-    fontSize: size,
-    fontWeight: weight,
-    height: height,
-    letterSpacing: letterSpacing,
-    color: color ?? CatchTokens.of(context).ink,
-  );
+  static const FontWeight _displayWeight = FontWeight(760);
+
+  static Color _ink(BuildContext context) => CatchTokens.of(context).ink;
+
+  static TextStyle _display(_CatchDisplayStep step, {required Color color}) =>
+      CatchFonts.voice(
+        fontSize: step.size,
+        fontWeight: _displayWeight,
+        height: step.height,
+        letterSpacing: step.size * step.trackingEm,
+        color: color,
+      );
 
   static TextStyle _mono(
     BuildContext context, {

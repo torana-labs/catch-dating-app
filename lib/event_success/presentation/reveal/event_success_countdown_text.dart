@@ -36,10 +36,11 @@ class EventSuccessCountdownText extends StatelessWidget {
                 scale: Tween<double>(begin: 0.88, end: 1).animate(animation),
                 child: FadeTransition(opacity: animation, child: child),
               ),
-              child: Text(
+              child: CatchText(
                 value,
                 key: ValueKey(value),
-                style: CatchTextStyles.display(context, color: t.surface),
+                variant: CatchTextVariant.displayL,
+                color: t.surface,
               ),
             ),
             gapH4,

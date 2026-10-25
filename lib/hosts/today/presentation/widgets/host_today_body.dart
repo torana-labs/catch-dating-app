@@ -119,9 +119,10 @@ class HostTodayEmptyState extends StatelessWidget {
             size: CatchSpacing.s12,
           ),
           gapH20,
-          Text(
+          CatchText(
             context.l10n.hostTodayEmptyTitle,
-            style: CatchTextStyles.headlineS(context, color: t.ink),
+            variant: CatchTextVariant.displayXs,
+            color: t.ink,
           ),
           gapH8,
           CatchText(

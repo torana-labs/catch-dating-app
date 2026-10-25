@@ -6,20 +6,11 @@
     "lib/auth/presentation/otp_step.dart": {
       "monoLabel": 1
     },
-    "lib/chats/presentation/event_chat_screen.dart": {
-      "headlineS": 2
-    },
     "lib/chats/presentation/widgets/chat_message_list.dart": {
       "badge": 1
     },
-    "lib/chats/presentation/widgets/event_profile_identity_section.dart": {
-      "headlineS": 1
-    },
     "lib/clubs/presentation/detail/widgets/club_photo_rail.dart": {
       "monoLabelS": 2
-    },
-    "lib/core/celebration/celebration_screen.dart": {
-      "display": 2
     },
     "lib/core/widgets/ordered_photo_picker.dart": {
       "monoLabel": 1
@@ -32,9 +23,6 @@
     },
     "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart": {
       "monoLabel": 2
-    },
-    "lib/event_success/presentation/reveal/event_success_countdown_text.dart": {
-      "display": 1
     },
     "lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart": {
       "monoLabel": 2
@@ -50,9 +38,6 @@
     "lib/events/presentation/widgets/event_detail_hero_top_bar.dart": {
       "monoLabel": 2
     },
-    "lib/events/shared/event_tiles/event_action_card.dart": {
-      "headlineS": 1
-    },
     "lib/events/shared/event_tiles/event_date_rail_card.dart": {
       "monoCapsLabel": 1,
       "monoLabelS": 2
@@ -64,14 +49,10 @@
       "mono": 1
     },
     "lib/explore/presentation/widgets/featured_event_poster.dart": {
-      "eventTitle": 1,
       "monoLabel": 1
     },
     "lib/hosts/presentation/host_operations/host_club_media_rail.dart": {
       "monoLabel": 1
-    },
-    "lib/hosts/presentation/host_operations/host_club_team_screen.dart": {
-      "headlineS": 1
     },
     "lib/hosts/presentation/widgets/host_event_manage_section.dart": {
       "badge": 1,
@@ -80,17 +61,8 @@
     "lib/hosts/presentation/widgets/host_operational_roster_section.dart": {
       "meta": 2
     },
-    "lib/hosts/today/presentation/widgets/host_today_body.dart": {
-      "headlineS": 1
-    },
-    "lib/hosts/today/presentation/widgets/host_today_event_section.dart": {
-      "eventTitle": 1
-    },
     "lib/image_uploads/shared/photo_slot_tile.dart": {
       "monoLabelS": 1
-    },
-    "lib/launch_access/presentation/launch_access_application_screen.dart": {
-      "headlineS": 1
     },
     "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart": {
       "monoLabel": 1
@@ -99,9 +71,6 @@
       "badge": 2,
       "mono": 1,
       "statDisplay": 2
-    },
-    "lib/payments/presentation/payment_confirmation_screen.dart": {
-      "headlineS": 1
     },
     "lib/payments/presentation/payment_history_screen.dart": {
       "statCompact": 1

@@ -156,12 +156,10 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
                         ),
                         gapH8,
                       ],
-                      Text(
+                      CatchText(
                         widget.title,
-                        style: CatchTextStyles.display(
-                          context,
-                          color: _celebrationCream,
-                        ),
+                        variant: CatchTextVariant.displayL,
+                        color: _celebrationCream,
                       ),
                       gapH14,
                       CatchText(
@@ -312,10 +310,11 @@ class PaperCelebrationScaffold extends StatelessWidget {
                     ),
                   ],
                   gapH8,
-                  Text(
+                  CatchText(
                     title,
+                    variant: CatchTextVariant.displayL,
+                    color: t.ink,
                     textAlign: TextAlign.center,
-                    style: CatchTextStyles.display(context, color: t.ink),
                   ),
                   gapH10,
                   Align(

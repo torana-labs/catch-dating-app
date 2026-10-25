@@ -102,6 +102,7 @@ void _registerCatchPrimitivesControlsTests() {
     tester,
   ) async {
     late final List<TextStyle> styles;
+    late final List<TextStyle> displays;
     late final TextStyle kicker;
     late final TextStyle kickerLarge;
     late final TextStyle monoCapsLabel;
@@ -113,12 +114,16 @@ void _registerCatchPrimitivesControlsTests() {
           style: const TextStyle(decoration: TextDecoration.underline),
           child: Builder(
             builder: (context) {
+              displays = [
+                CatchTextStyles.displayXs(context),
+                CatchTextStyles.displayS(context),
+                CatchTextStyles.displayM(context),
+                CatchTextStyles.displayL(context),
+                CatchTextStyles.displayXl(context),
+                CatchTextStyles.displayXxl(context),
+              ];
               styles = [
-                CatchTextStyles.display(context),
                 CatchTextStyles.headline(context),
-                CatchTextStyles.headlineS(context),
-                CatchTextStyles.titleL(context),
-                CatchTextStyles.eventTitle(context),
                 CatchTextStyles.titleL(context),
                 CatchTextStyles.sectionTitle(context),
                 CatchTextStyles.bodyL(context),
@@ -143,10 +148,27 @@ void _registerCatchPrimitivesControlsTests() {
       ),
     );
 
-    expect(styles.map((style) => style.decoration).toSet(), {
+    expect([...styles, ...displays].map((style) => style.decoration).toSet(), {
       TextDecoration.none,
     });
     expect(styles.map((style) => style.letterSpacing).toSet(), {0});
+    // Blueprint D19: six steps on a 1.25 ratio at weight 760, with line
+    // height and em tracking tightening as the size grows.
+    const d19 = [
+      (24.0, 1.10, -0.020),
+      (30.0, 1.05, -0.025),
+      (38.0, 1.05, -0.030),
+      (48.0, 1.00, -0.035),
+      (60.0, 1.00, -0.040),
+      (72.0, 1.00, -0.040),
+    ];
+    for (final (index, (size, height, trackingEm)) in d19.indexed) {
+      final style = displays[index];
+      expect(style.fontSize, size);
+      expect(style.height, height);
+      expect(style.fontWeight, const FontWeight(760));
+      expect(style.letterSpacing, closeTo(size * trackingEm, 1e-9));
+    }
     expect(kicker.letterSpacing, 1.76);
     expect(kickerLarge.letterSpacing, 2.16);
     expect(monoCapsLabel.letterSpacing, 1.43);

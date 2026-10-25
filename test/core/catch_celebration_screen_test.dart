@@ -83,8 +83,12 @@ void main() {
       Colors.white,
     );
 
+    // The screen scrolls; the D19 display title can push actions below the
+    // 600px test window.
+    await tester.ensureVisible(find.text('View event'));
     await tester.tap(find.text('View event'));
     await tester.pump();
+    await tester.ensureVisible(find.text('Back to home'));
     await tester.tap(find.text('Back to home'));
     await tester.pump();
 

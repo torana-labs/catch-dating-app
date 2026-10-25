@@ -109,10 +109,9 @@ abstract final class CatchLayout {
   static const double clubDetailHeroTitleTopPadding = CatchSpacing.s3;
   static const double clubDetailHeroTitleBottomPadding = CatchSpacing.s3;
   static const double clubDetailHeroTitleLocationGap = CatchSpacing.s2;
-  static const double clubDetailHeroExpandedTitleSize = 34.0;
-  static const double clubDetailHeroExpandedTitleLineHeight = 0.96;
-  static const double clubDetailHeroCollapsedTitleSize = 28.0;
-  static const double clubDetailHeroCollapsedTitleLineHeight = 0.96;
+  // The expanded club title is set in the S display step (D19): 30px at 1.05.
+  static const double clubDetailHeroExpandedTitleSize = 30.0;
+  static const double clubDetailHeroExpandedTitleLineHeight = 1.05;
   static const double clubDetailHeroLocationLineExtent = 24.0;
   static const double clubDetailHeroCaptionSlack = CatchSpacing.s1;
   static const double clubDetailHeroCaptionExtent =
@@ -148,7 +147,6 @@ abstract final class CatchLayout {
   static const double ticketHeroVisualMaxHeight = 290.0;
   static const double eventDetailTicketTitleCompactSize = 30.0;
   static const double eventDetailTicketTitleExpandedSize = 42.0;
-  static const double eventDetailTicketTitleLineHeight = 0.92;
   // Standard (photo) hero title — condensed poster cut, design-system EventHero.
   static const double eventDetailHeroStandardTitleSize = 32.0;
 

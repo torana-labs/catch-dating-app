@@ -111,7 +111,7 @@ class _CatchWordmark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final style = CatchTextStyles.display(context, color: t.ink);
+    final style = CatchTextStyles.displayL(context, color: t.ink);
     if (!showDot) return Text('Catch', style: style);
     return RichText(
       text: TextSpan(

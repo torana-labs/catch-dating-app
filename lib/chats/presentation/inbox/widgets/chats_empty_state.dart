@@ -48,7 +48,7 @@ class ChatsEmptyState extends StatelessWidget {
       title: resolvedTitle,
       message: resolvedMessage,
       padding: CatchInsets.contentRelaxed,
-      titleStyle: CatchTextStyles.headlineS(context),
+      titleStyle: CatchTextStyles.displayXs(context),
     );
   }
 }

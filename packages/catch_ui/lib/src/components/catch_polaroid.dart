@@ -85,7 +85,7 @@ class CatchPolaroid extends StatelessWidget {
                   name,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.headlineS(context, color: t.ink),
+                  style: CatchTextStyles.displayXs(context, color: t.ink),
                 ),
               ),
               if (showArrow) ...[

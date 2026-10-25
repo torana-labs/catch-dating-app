@@ -42,9 +42,10 @@ class HostTodayEventSection extends StatelessWidget {
           borderColor: Colors.transparent,
         ),
         gapH16,
-        Text(
+        CatchText(
           event.title,
-          style: CatchTextStyles.eventTitle(context, color: t.ink),
+          variant: CatchTextVariant.displayM,
+          color: t.ink,
         ),
         gapH14,
         HostTodayEventMetadataRow(event: event, now: now),

@@ -72,10 +72,8 @@ class EventDetailHeroTopBar extends StatelessWidget {
                   .l10n
                   .eventsEventDetailHeroAppBarTitleEventDetailCollapsedTitle,
             ),
-            style: CatchTextStyles.eventDisplay(
+            style: CatchTextStyles.displayXs(
               context,
-              step: CatchTextStylesSize.m,
-              height: 0.95,
               color: collapsedForeground,
             ),
           ),
@@ -214,17 +212,11 @@ class EventPhotoHeroSurface extends StatelessWidget {
                 child: HeroActivityBadge(visual: visual),
               ),
               const SizedBox(height: CatchSpacing.s3),
-              Text(
+              CatchText(
                 event.title,
+                variant: CatchTextVariant.displayS,
+                color: d.ink,
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.eventDisplay(
-                  context,
-                  step: CatchTextStylesSize.l,
-                  height: CatchLayout.eventDetailTicketTitleLineHeight,
-                  weight: FontWeight.w700,
-                  color: d.ink,
-                ),
               ),
             ],
           ),
@@ -344,17 +336,11 @@ class EventDetailTicketSurface extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            CatchText(
               event.title,
+              variant: CatchTextVariant.displayS,
+              color: titleColor,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.eventDisplay(
-                context,
-                step: CatchTextStylesSize.l,
-                height: CatchLayout.eventDetailTicketTitleLineHeight,
-                weight: FontWeight.w700,
-                color: titleColor,
-              ),
             ),
             if (!compact) ...[
               const SizedBox(height: CatchLayout.detailScreenInlineRowGap),

@@ -6299,9 +6299,12 @@
           "CatchTextStyles.kickerLg",
           "CatchTextStyles.fieldSectionKicker",
           "CatchTextStyles.monoLabel",
-          "CatchTextStyles.clubDisplay",
-          "CatchTextStyles.eventDisplay",
-          "CatchTextStylesSize",
+          "CatchTextStyles.displayXs",
+          "CatchTextStyles.displayS",
+          "CatchTextStyles.displayM",
+          "CatchTextStyles.displayL",
+          "CatchTextStyles.displayXl",
+          "CatchTextStyles.displayXxl",
           "CatchMetadataText"
         ],
         "goldens": [
@@ -6393,7 +6396,7 @@
       "kind": "primitive",
       "tier": "T1",
       "aliases": ["Typography", "Paragraph", "BodyText", "HeadingText", "TextBlock"],
-      "summary": "Text in one function-family CatchTextStyles role: headings, body copy, supporting copy, labels and metrics.",
+      "summary": "Text in one CatchTextStyles role: the six Archivo display steps, headings, body copy, supporting copy, labels and metrics.",
       "dart": {
         "symbol": "CatchText",
         "file": "packages/catch_ui/lib/src/primitives/catch_text.dart",
@@ -6453,6 +6456,12 @@
             "dartType": "CatchTextVariant",
             "tsType": "CatchTextVariant",
             "values": [
+              "displayXs",
+              "displayS",
+              "displayM",
+              "displayL",
+              "displayXl",
+              "displayXxl",
               "headline",
               "titleL",
               "sectionTitle",
@@ -14365,7 +14374,7 @@
         ],
         "dartRoles": [
           "ActivityPalette.resolve",
-          "CatchTextStyles.eventTitle",
+          "CatchTextStyles.displayM",
           "CatchTextStyles.kickerLg",
           "CatchLayout.coverStoryGhostGlyphSize"
         ],

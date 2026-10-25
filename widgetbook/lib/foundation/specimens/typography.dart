@@ -37,46 +37,34 @@ class FoundationTypographyTokens extends StatelessWidget {
           child: _TypeStack(
             rows: [
               _TypeSpec(
-                'display',
-                'Host the room, not the chaos',
-                CatchTextStyles.display(context),
+                'displayXxl · 72',
+                'Host it',
+                CatchTextStyles.displayXxl(context),
               ),
               _TypeSpec(
-                'headline',
-                'Tonight around Bandra',
-                CatchTextStyles.headline(context),
+                'displayXl · 60',
+                'Tonight',
+                CatchTextStyles.displayXl(context),
               ),
               _TypeSpec(
-                'headlineS',
-                'Build a better guest list',
-                CatchTextStyles.headlineS(context),
+                'displayL · 48',
+                'Host the room',
+                CatchTextStyles.displayL(context),
               ),
               _TypeSpec(
-                'titleL (app bars)',
-                'Dress rehearsal',
-                CatchTextStyles.titleL(context),
-              ),
-
-              _TypeSpec(
-                'clubDisplay(s)',
-                'Fort Greene Run Club',
-                CatchTextStyles.clubDisplay(
-                  context,
-                  step: CatchTextStylesSize.s,
-                ),
-              ),
-              _TypeSpec(
-                'eventDisplay(s)',
-                'Thursday Social Run',
-                CatchTextStyles.eventDisplay(
-                  context,
-                  step: CatchTextStylesSize.s,
-                ),
-              ),
-              _TypeSpec(
-                'eventTitle',
+                'displayM · 38',
                 'Sundowner 5K',
-                CatchTextStyles.eventTitle(context),
+                CatchTextStyles.displayM(context),
+              ),
+              _TypeSpec(
+                'displayS · 30',
+                'Fort Greene Run Club',
+                CatchTextStyles.displayS(context),
+              ),
+              _TypeSpec(
+                'displayXs · 24',
+                'Build a better guest list',
+                CatchTextStyles.displayXs(context),
               ),
             ],
           ),
@@ -85,6 +73,11 @@ class FoundationTypographyTokens extends StatelessWidget {
           title: 'Platform app/body',
           child: _TypeStack(
             rows: [
+              _TypeSpec(
+                'headline',
+                'Tonight around Bandra',
+                CatchTextStyles.headline(context),
+              ),
               _TypeSpec(
                 'titleL',
                 'Professional profile',

@@ -13,6 +13,7 @@ const generatedTokensDart = read("../../../catch_tokens/lib/generated/catch_desi
 const generatedTokensCss = read("../../../web-config/generated/catch-tokens.css");
 const insetsDart = read("../../../catch_tokens/lib/src/semantic/catch_insets.dart");
 const textStylesDart = read("../../../catch_ui/lib/src/foundations/catch_text_styles.dart");
+const fontsDart = read("../../../catch_ui/lib/src/foundations/catch_fonts.dart");
 const textVariantDart = read("../../../catch_ui/lib/src/primitives/catch_text_variant.dart");
 const textVariantTs = read("./CatchText.tsx");
 const textStoriesTs = read("./foundations.stories.tsx");
@@ -179,6 +180,30 @@ describe("CatchTextStyles parity", () => {
     return {profile: base.profile, color: color ?? base.color, weight: weight ?? base.weight};
   }
 
+  // The six display steps (D19) set Archivo from one step table rather than a
+  // platform profile; the web pins each interim literal to that table.
+  const displaySteps: Record<string, {size: number; height: number; tracking: number}> =
+    Object.fromEntries(
+      [...textStylesDart.matchAll(/^  (x*[sml])\(([\d.]+), ([\d.]+), (-?[\d.]+)\)[,;]$/gm)]
+        .map((match) => [match[1], {
+          size: Number(match[2]),
+          height: Number(match[3]),
+          tracking: Number(match[4]),
+        }]),
+    );
+  const displayWeight = textStylesDart.match(/_displayWeight = FontWeight\((\d+)\);/)?.[1];
+
+  it("sets the display steps in Archivo at the Flutter width and weight", () => {
+    expect(Object.keys(displaySteps).sort()).toEqual(["l", "m", "s", "xl", "xs", "xxl"]);
+    expect(displayWeight).toBe("760");
+    const rule = cssRule(textCss, '.text[data-variant^="display"]');
+    const width = fontsDart.match(/static const double archivoWidth = (\d+);/)?.[1];
+    expect(width).toBeDefined();
+    expect(declaration(rule, "font-family")).toBe("var(--catch-font-voice), sans-serif");
+    expect(declaration(rule, "font-stretch")).toBe(`${width}%`);
+    expect(declaration(rule, "font-variation-settings")).toBe(`"wdth" ${width}`);
+  });
+
   it("offers exactly the Flutter CatchTextVariant values", () => {
     expect(values.length).toBeGreaterThan(0);
     expect(selectorValues(textCss, "variant").sort()).toEqual([...values].sort());
@@ -207,8 +232,19 @@ describe("CatchTextStyles parity", () => {
     const variants = selectorValues(textCss, "variant");
     expect(variants.length).toBeGreaterThan(0);
     for (const variant of variants) {
-      const flutter = flutterRole(variant);
       const rule = cssRule(textCss, `.text[data-variant="${variant}"]`);
+      if (variant.startsWith("display")) {
+        const step = displaySteps[variant.slice("display".length).toLowerCase()];
+        expect(step, `missing Flutter display step for ${variant}`).toBeDefined();
+        expect(declaration(rule, "--catch-text-size"), variant).toBe(`${step.size}px`);
+        expect(Number(declaration(rule, "--catch-text-line-height")), variant).toBe(step.height);
+        expect(declaration(rule, "--catch-text-tracking"), variant).toBe(`${step.tracking}em`);
+        expect(declaration(rule, "--catch-text-weight"), variant).toBe(displayWeight);
+        expect(declaration(rule, "--catch-text-role-color"), variant)
+          .toBe("var(--catch-theme-ink)");
+        continue;
+      }
+      const flutter = flutterRole(variant);
       const profile = `--catch-typography-web-${kebab(flutter.profile)}`;
       expect(declaration(rule, "--catch-text-size"), variant).toBe(`var(${profile}-size)`);
       expect(declaration(rule, "--catch-text-line-height"), variant)

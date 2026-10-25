@@ -107,7 +107,7 @@ class CompanionArrivalSection extends StatelessWidget {
                         .eventSuccessEventSuccessCompanionSharedTextCheckedincount(
                           checkedInCount: checkedInCount,
                         ),
-                    style: CatchTextStyles.headlineS(context, color: fg)
+                    style: CatchTextStyles.displayXs(context, color: fg)
                         .copyWith(
                           height: 1.0,
                           fontFeatures: const [FontFeature.tabularFigures()],

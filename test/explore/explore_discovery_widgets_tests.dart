@@ -13,7 +13,11 @@ void _registerExploreDiscoveryWidgetsTests() {
     );
 
     final title = tester.widget<Text>(find.text('Neighbourhood Club'));
-    expect(title.style?.fontSize, CatchTextStylesSize.m.size);
+    final titleContext = tester.element(find.text('Neighbourhood Club'));
+    expect(
+      title.style?.fontSize,
+      CatchTextStyles.displayXs(titleContext).fontSize,
+    );
     expect(title.style?.fontStyle, isNot(FontStyle.italic));
     expect(find.byIcon(CatchIcons.forwardArrow), findsOneWidget);
 

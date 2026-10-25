@@ -101,15 +101,10 @@ class ExploreExternalEventRow extends StatelessWidget {
               ],
             ),
             gapH8,
-            Text(
+            CatchText(
               event.title,
+              variant: CatchTextVariant.displayXs,
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.eventDisplay(
-                context,
-                step: CatchTextStylesSize.m,
-                height: 1.02,
-              ),
             ),
             gapH4,
             CatchText(
@@ -184,11 +179,7 @@ class ThisWeekRecommendationsSection extends StatelessWidget {
         CatchSectionHeader(
           title: context.l10n.exploreExploreEventRowsTitleThisWeek,
           padding: EdgeInsets.zero,
-          titleStyle: CatchTextStyles.clubDisplay(
-            context,
-            step: CatchTextStylesSize.xl,
-            height: 0.92,
-          ),
+          titleStyle: CatchTextStyles.displayM(context),
         ),
         gapH12,
         for (var index = 0; index < items.length; index += 1) ...[

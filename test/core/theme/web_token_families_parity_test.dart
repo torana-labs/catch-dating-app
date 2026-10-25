@@ -155,8 +155,10 @@ void main() {
         builder: (context) {
           const color = Color(0xFF000000);
           roles = {
-            'display': CatchTextStyles.display(context, color: color),
-            'headlineS': CatchTextStyles.headlineS(context, color: color),
+            // D19 retired the Flutter `display` and `headlineS` roles. Their
+            // web tokens leave catch.tokens.json in the token promotion, when
+            // the display steps move there; until then the web display steps
+            // are pinned by packages/web-ui foundationParity.test.ts.
             'kicker': CatchTextStyles.kicker(context, color: color),
             'kickerLg': CatchTextStyles.kickerLg(context, color: color),
             'fieldSectionKicker': CatchTextStyles.fieldSectionKicker(

@@ -77,8 +77,8 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
                 maxLines: textScale >= 1.4 ? null : 2,
                 overflow: textScale >= 1.4 ? null : TextOverflow.ellipsis,
                 style: textScale >= 1.4
-                    ? CatchTextStyles.headlineS(context, color: dark.ink)
-                    : CatchTextStyles.display(context, color: dark.ink),
+                    ? CatchTextStyles.displayXs(context, color: dark.ink)
+                    : CatchTextStyles.displayL(context, color: dark.ink),
               ),
               gapH14,
               CatchText(

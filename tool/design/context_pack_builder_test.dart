@@ -609,7 +609,7 @@ body {
 }
 main { max-width: 1120px; margin: 0 auto; padding: 56px 28px 72px; }
 .kicker { ${sampleStyle('kicker')} color: var(--ink2); text-transform: uppercase; }
-h1 { ${sampleStyle('display')} max-width: 760px; margin: 14px 0 18px; }
+h1 { ${sampleStyle('displayL')} max-width: 760px; margin: 14px 0 18px; }
 .lead { ${sampleStyle('bodyL')} max-width: 680px; color: var(--ink2); }
 .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 34px; }
 .panel {
@@ -885,42 +885,15 @@ final _styleRegistry = <_StyleEntry>[
     'function',
     CatchTextStyles.navigationLabel,
   ),
-  _StyleEntry.single('display', 'voice', CatchTextStyles.display),
+  _StyleEntry.single('displayXs', 'voice', CatchTextStyles.displayXs),
+  _StyleEntry.single('displayS', 'voice', CatchTextStyles.displayS),
+  _StyleEntry.single('displayM', 'voice', CatchTextStyles.displayM),
+  _StyleEntry.single('displayL', 'voice', CatchTextStyles.displayL),
+  _StyleEntry.single('displayXl', 'voice', CatchTextStyles.displayXl),
+  _StyleEntry.single('displayXxl', 'voice', CatchTextStyles.displayXxl),
   _StyleEntry.single('headline', 'function', CatchTextStyles.headline),
-  _StyleEntry.single('headlineS', 'voice', CatchTextStyles.headlineS),
 
   _StyleEntry.single('titleL', 'function', CatchTextStyles.titleL),
-  _StyleEntry(
-    name: 'clubDisplay',
-    role: 'voice',
-    parametric: true,
-    samples: {
-      's': (context) =>
-          CatchTextStyles.clubDisplay(context, step: CatchTextStylesSize.s),
-      'm': (context) =>
-          CatchTextStyles.clubDisplay(context, step: CatchTextStylesSize.m),
-      'l': (context) =>
-          CatchTextStyles.clubDisplay(context, step: CatchTextStylesSize.l),
-      'xl': (context) =>
-          CatchTextStyles.clubDisplay(context, step: CatchTextStylesSize.xl),
-    },
-  ),
-  _StyleEntry(
-    name: 'eventDisplay',
-    role: 'voice',
-    parametric: true,
-    samples: {
-      's': (context) =>
-          CatchTextStyles.eventDisplay(context, step: CatchTextStylesSize.s),
-      'm': (context) =>
-          CatchTextStyles.eventDisplay(context, step: CatchTextStylesSize.m),
-      'l': (context) =>
-          CatchTextStyles.eventDisplay(context, step: CatchTextStylesSize.l),
-      'xl': (context) =>
-          CatchTextStyles.eventDisplay(context, step: CatchTextStylesSize.xl),
-    },
-  ),
-  _StyleEntry.single('eventTitle', 'voice', CatchTextStyles.eventTitle),
 
   _StyleEntry.single('sectionTitle', 'function', CatchTextStyles.sectionTitle),
   _StyleEntry.single('sectionCount', 'data', CatchTextStyles.sectionCount),
