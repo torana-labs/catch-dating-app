@@ -38,7 +38,7 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
     },
     "request": {
       "title": "SupplyIntakeRequest",
-      "description": "One request to build an organizer listing and collect that organizer's events. Every front door (a sales associate or partner nomination, an organizer's own submission, or an Admin-started discovery run) creates one; Supply Intake gathers, reviews and stages the result for staff.",
+      "description": "One request to build an organizer listing and collect that organizer's events. Every front door (a sales associate or partner nomination, an organizer's own submission, an Admin-started discovery run, or staff reading new events for an organizer Catch already lists) creates one; Supply Intake gathers, reviews and stages the result for staff.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -65,8 +65,23 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
           "enum": [
             "nomination",
             "self_submission",
-            "discovery"
+            "discovery",
+            "event_refresh"
           ]
+        },
+        "target": {
+          "description": "The organizer Catch already lists that an event_refresh reads new events for. Only event_refresh requests carry it.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+            }
+          }
         },
         "market": {
           "type": "string",
@@ -178,7 +193,7 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
           "format": "date-time"
         },
         "origin": {
-          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.",
+          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
           "anyOf": [
             {
               "type": "null"
@@ -196,7 +211,8 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
                   "enum": [
                     "admin_nomination",
                     "sales_inbound_intent",
-                    "discovery_run"
+                    "discovery_run",
+                    "admin_event_refresh"
                   ]
                 },
                 "id": {
@@ -246,6 +262,39 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
                   }
                 }
               }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "event_refresh"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target"
+            ],
+            "properties": {
+              "submittedBy": {
+                "properties": {
+                  "role": {
+                    "enum": [
+                      "associate",
+                      "system"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "not": {
+              "required": [
+                "target"
+              ]
             }
           }
         },
@@ -623,7 +672,7 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
       ]
     },
     "approval": {
-      "description": "Set once, when staff approve the listing this request built: the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays.",
+      "description": "Set once: when staff approve the listing this request built (the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays), or at creation for an event_refresh, naming the listed organizer it reads events for and the staff member who asked.",
       "anyOf": [
         {
           "type": "null"

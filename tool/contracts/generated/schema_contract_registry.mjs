@@ -30810,7 +30810,7 @@ export const supplyIntakeRequestSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/operations/supply_intake_request.schema.json",
   "title": "SupplyIntakeRequest",
-  "description": "One request to build an organizer listing and collect that organizer's events. Every front door (a sales associate or partner nomination, an organizer's own submission, or an Admin-started discovery run) creates one; Supply Intake gathers, reviews and stages the result for staff.",
+  "description": "One request to build an organizer listing and collect that organizer's events. Every front door (a sales associate or partner nomination, an organizer's own submission, an Admin-started discovery run, or staff reading new events for an organizer Catch already lists) creates one; Supply Intake gathers, reviews and stages the result for staff.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -30837,8 +30837,23 @@ export const supplyIntakeRequestSchema = {
       "enum": [
         "nomination",
         "self_submission",
-        "discovery"
+        "discovery",
+        "event_refresh"
       ]
+    },
+    "target": {
+      "description": "The organizer Catch already lists that an event_refresh reads new events for. Only event_refresh requests carry it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+        }
+      }
     },
     "market": {
       "type": "string",
@@ -30950,7 +30965,7 @@ export const supplyIntakeRequestSchema = {
       "format": "date-time"
     },
     "origin": {
-      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.",
+      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
       "anyOf": [
         {
           "type": "null"
@@ -30968,7 +30983,8 @@ export const supplyIntakeRequestSchema = {
               "enum": [
                 "admin_nomination",
                 "sales_inbound_intent",
-                "discovery_run"
+                "discovery_run",
+                "admin_event_refresh"
               ]
             },
             "id": {
@@ -31018,6 +31034,39 @@ export const supplyIntakeRequestSchema = {
               }
             }
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "event_refresh"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "target"
+        ],
+        "properties": {
+          "submittedBy": {
+            "properties": {
+              "role": {
+                "enum": [
+                  "associate",
+                  "system"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "target"
+          ]
         }
       }
     },
@@ -31121,7 +31170,7 @@ export const supplyIntakeRequestsDocumentSchema = {
     },
     "request": {
       "title": "SupplyIntakeRequest",
-      "description": "One request to build an organizer listing and collect that organizer's events. Every front door (a sales associate or partner nomination, an organizer's own submission, or an Admin-started discovery run) creates one; Supply Intake gathers, reviews and stages the result for staff.",
+      "description": "One request to build an organizer listing and collect that organizer's events. Every front door (a sales associate or partner nomination, an organizer's own submission, an Admin-started discovery run, or staff reading new events for an organizer Catch already lists) creates one; Supply Intake gathers, reviews and stages the result for staff.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -31148,8 +31197,23 @@ export const supplyIntakeRequestsDocumentSchema = {
           "enum": [
             "nomination",
             "self_submission",
-            "discovery"
+            "discovery",
+            "event_refresh"
           ]
+        },
+        "target": {
+          "description": "The organizer Catch already lists that an event_refresh reads new events for. Only event_refresh requests carry it.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+            }
+          }
         },
         "market": {
           "type": "string",
@@ -31261,7 +31325,7 @@ export const supplyIntakeRequestsDocumentSchema = {
           "format": "date-time"
         },
         "origin": {
-          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.",
+          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
           "anyOf": [
             {
               "type": "null"
@@ -31279,7 +31343,8 @@ export const supplyIntakeRequestsDocumentSchema = {
                   "enum": [
                     "admin_nomination",
                     "sales_inbound_intent",
-                    "discovery_run"
+                    "discovery_run",
+                    "admin_event_refresh"
                   ]
                 },
                 "id": {
@@ -31329,6 +31394,39 @@ export const supplyIntakeRequestsDocumentSchema = {
                   }
                 }
               }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "event_refresh"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target"
+            ],
+            "properties": {
+              "submittedBy": {
+                "properties": {
+                  "role": {
+                    "enum": [
+                      "associate",
+                      "system"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "not": {
+              "required": [
+                "target"
+              ]
             }
           }
         },
@@ -31706,7 +31804,7 @@ export const supplyIntakeRequestsDocumentSchema = {
       ]
     },
     "approval": {
-      "description": "Set once, when staff approve the listing this request built: the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays.",
+      "description": "Set once: when staff approve the listing this request built (the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays), or at creation for an event_refresh, naming the listed organizer it reads events for and the staff member who asked.",
       "anyOf": [
         {
           "type": "null"
@@ -139649,7 +139747,8 @@ export const operationWorkItemSchema = {
                         "enum": [
                           "nomination",
                           "self_submission",
-                          "discovery"
+                          "discovery",
+                          "event_refresh"
                         ]
                       },
                       "submittedBy": {
@@ -144964,7 +145063,8 @@ export const operationWorkItemSchema = {
               "enum": [
                 "nomination",
                 "self_submission",
-                "discovery"
+                "discovery",
+                "event_refresh"
               ]
             },
             "submittedBy": {
@@ -249679,6 +249779,808 @@ export const adminApproveOrganizerListingCallableResponseSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 128
+    }
+  }
+};
+
+export const adminListListingEventImportsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_listing_event_imports_payload.schema.json",
+  "title": "AdminListListingEventImportsCallablePayload",
+  "description": "One page of approved Supply Intake listings, most recently approved first, each with the events it imported and where each stands: published (by the publication policy or staff), withdrawn, ready for staff, needing a resolution, or blocked.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "limit",
+    "cursor"
+  ],
+  "properties": {
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 400,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "x-callable-aliases": [
+    "adminListListingEventImports"
+  ]
+};
+
+export const adminListListingEventImportsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_listing_event_imports_response.schema.json",
+  "title": "AdminListListingEventImportsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policy",
+    "rows",
+    "nextCursor",
+    "unavailableCount"
+  ],
+  "properties": {
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "policyVersion"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "staff_review",
+            "auto_publish_approved_organizers"
+          ]
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "intakeRequestId",
+          "listingId",
+          "approvedAt",
+          "organizer",
+          "events"
+        ],
+        "properties": {
+          "intakeRequestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "listingId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "approvedAt": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 40
+          },
+          "organizer": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "name",
+              "canonicalPath",
+              "appVisibility",
+              "pagePublished"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "canonicalPath": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "appVisibility": {
+                "enum": [
+                  "hidden",
+                  "discoverable"
+                ]
+              },
+              "pagePublished": {
+                "type": "boolean"
+              }
+            }
+          },
+          "events": {
+            "type": "array",
+            "maxItems": 60,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "eventWorkItemId",
+                "eventId",
+                "title",
+                "startAt",
+                "endAt",
+                "venue",
+                "address",
+                "platform",
+                "sourceUrl",
+                "priceLabel",
+                "state",
+                "publishedBy",
+                "blockers",
+                "resolvableBlockers",
+                "automatedFindings"
+              ],
+              "properties": {
+                "eventWorkItemId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "eventId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 180
+                },
+                "title": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "startAt": {
+                  "type": "string",
+                  "minLength": 10,
+                  "maxLength": 40
+                },
+                "endAt": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 40
+                },
+                "venue": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "address": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "platform": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "sourceUrl": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "priceLabel": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 120
+                },
+                "state": {
+                  "enum": [
+                    "published",
+                    "withdrawn",
+                    "ready",
+                    "needs_resolution",
+                    "blocked"
+                  ],
+                  "description": "published: live on the website. withdrawn: staff took it down. ready: a staff member can publish it with the checklist. needs_resolution: a staff member must resolve or waive resolvableBlockers first. blocked: it cannot publish (ended, cancelled, platform not supported, organizer page unpublished)."
+                },
+                "publishedBy": {
+                  "enum": [
+                    "policy",
+                    "staff",
+                    null
+                  ]
+                },
+                "blockers": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  }
+                },
+                "resolvableBlockers": {
+                  "type": "array",
+                  "maxItems": 6,
+                  "items": {
+                    "enum": [
+                      "missing_exact_coordinates",
+                      "missing_end_time",
+                      "missing_location_detail",
+                      "requires_event_defaults_policy",
+                      "requires_owner_safe_copy_review",
+                      "duplicate_normalized_event_key"
+                    ]
+                  }
+                },
+                "automatedFindings": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "description": "Why the publication policy left this event for staff, if it did.",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "check",
+                      "field",
+                      "match"
+                    ],
+                    "properties": {
+                      "check": {
+                        "enum": [
+                          "dating_framing",
+                          "organizer_attribution",
+                          "price_missing"
+                        ]
+                      },
+                      "field": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "match": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 500
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 400
+    },
+    "unavailableCount": {
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+};
+
+export const adminPublishListingEventsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_publish_listing_events_payload.schema.json",
+  "title": "AdminPublishListingEventsCallablePayload",
+  "description": "A staff member publishes, or dry-runs, some or all of the events Supply Intake imported for one approved organizer listing as read-only, outbound-only externalEvents. Each event is planned and checked on its own; blocked events are reported, not written. Their resolutions or cited policy waivers clear governed blockers per event.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "intakeRequestId",
+    "eventWorkItemIds",
+    "executionMode",
+    "idempotencyKey",
+    "reviewNote",
+    "checklist",
+    "blockerResolutions"
+  ],
+  "properties": {
+    "intakeRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "eventWorkItemIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 60,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180,
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+      }
+    },
+    "executionMode": {
+      "type": "string",
+      "enum": [
+        "dry_run",
+        "apply"
+      ]
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120,
+      "pattern": "^[A-Za-z0-9:_-]+$",
+      "description": "The reviewer's key; each event's receipt is keyed on it, so a retry replays."
+    },
+    "reviewNote": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "checklist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "outboundLinksReviewed",
+        "noCatchBookingPaymentsWaitlist",
+        "ownerSafeCopyReviewed"
+      ],
+      "properties": {
+        "outboundLinksReviewed": {
+          "type": "boolean"
+        },
+        "noCatchBookingPaymentsWaitlist": {
+          "type": "boolean"
+        },
+        "ownerSafeCopyReviewed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "blockerResolutions": {
+      "type": "array",
+      "maxItems": 120,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventWorkItemId",
+          "blockerCode",
+          "outcome",
+          "policyGapDecisionId",
+          "note"
+        ],
+        "properties": {
+          "eventWorkItemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "blockerCode": {
+            "type": "string",
+            "enum": [
+              "missing_exact_coordinates",
+              "missing_end_time",
+              "missing_location_detail",
+              "requires_event_defaults_policy",
+              "requires_owner_safe_copy_review",
+              "duplicate_normalized_event_key"
+            ]
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "resolved",
+              "waived"
+            ]
+          },
+          "policyGapDecisionId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminPublishListingEvents"
+  ]
+};
+
+export const adminListSupplyIntakePoliciesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_supply_intake_policies_payload.schema.json",
+  "title": "AdminListSupplyIntakePoliciesCallablePayload",
+  "description": "Lists the Supply Intake capabilities that stay off until the owner records a decision (fetching the pages a nomination names, scheduled event refresh, agent research, model extraction), each with its decision and whether its policy file switches it on.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "x-callable-aliases": [
+    "adminListSupplyIntakePolicies"
+  ]
+};
+
+export const adminListSupplyIntakePoliciesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_supply_intake_policies_response.schema.json",
+  "title": "AdminListSupplyIntakePoliciesCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policies"
+  ],
+  "properties": {
+    "policies": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "gapId",
+          "label",
+          "enables",
+          "configPath",
+          "decisionId",
+          "decision",
+          "enabled",
+          "configCitesDecision",
+          "limits"
+        ],
+        "properties": {
+          "gapId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "enables": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "configPath": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "decisionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 160
+          },
+          "decision": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "decision",
+                  "decisionStatus",
+                  "note",
+                  "reviewedAt"
+                ],
+                "properties": {
+                  "decision": {
+                    "enum": [
+                      "accept",
+                      "hold",
+                      "reject"
+                    ]
+                  },
+                  "decisionStatus": {
+                    "enum": [
+                      "accepted",
+                      "held",
+                      "rejected"
+                    ]
+                  },
+                  "note": {
+                    "type": "string",
+                    "maxLength": 1000
+                  },
+                  "reviewedAt": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 40
+                  }
+                }
+              }
+            ]
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "Whether the policy file switches the capability on."
+          },
+          "configCitesDecision": {
+            "type": "boolean",
+            "description": "Whether the policy file cites this decision, as switching it on requires."
+          },
+          "limits": {
+            "type": "array",
+            "maxItems": 6,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "label",
+                "value"
+              ],
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                },
+                "value": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+export const adminRefreshOrganizerEventsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_refresh_organizer_events_payload.schema.json",
+  "title": "AdminRefreshOrganizerEventsCallablePayload",
+  "description": "Staff read new events for an unclaimed organizer Catch already lists: Supply Intake reads the given links, or the event-calendar links on the organizer's page, and its events go through the event publication policy like an approved listing's.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "urls"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
+      "description": "The caller's idempotency key; a retry with the same content finds its own request."
+    },
+    "organizerId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+    },
+    "urls": {
+      "type": "array",
+      "maxItems": 10,
+      "uniqueItems": true,
+      "description": "Pages to read. Empty reads the event-calendar links on the organizer's page.",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000,
+        "pattern": "^https?://"
+      }
+    }
+  },
+  "x-callable-aliases": [
+    "adminRefreshOrganizerEvents"
+  ]
+};
+
+export const adminRefreshOrganizerEventsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_refresh_organizer_events_response.schema.json",
+  "title": "AdminRefreshOrganizerEventsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "created",
+    "status",
+    "urls"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "created": {
+      "type": "boolean",
+      "description": "False when a retry found the request it made before."
+    },
+    "status": {
+      "const": "queued"
+    },
+    "urls": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000
+      }
+    }
+  }
+};
+
+export const adminPublishListingEventsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_publish_listing_events_response.schema.json",
+  "title": "AdminPublishListingEventsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "intakeRequestId",
+    "organizerId",
+    "executionMode",
+    "results",
+    "counts"
+  ],
+  "properties": {
+    "intakeRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "executionMode": {
+      "enum": [
+        "dry_run",
+        "apply"
+      ]
+    },
+    "results": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventWorkItemId",
+          "eventId",
+          "outcome",
+          "blockers",
+          "receiptPath",
+          "idempotent"
+        ],
+        "properties": {
+          "eventWorkItemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "eventId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "outcome": {
+            "enum": [
+              "published",
+              "would_publish",
+              "already_published",
+              "withdrawn",
+              "blocked",
+              "awaiting_staff"
+            ]
+          },
+          "blockers": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          "receiptPath": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "idempotent": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "published",
+        "wouldPublish",
+        "alreadyPublished",
+        "withdrawn",
+        "blocked"
+      ],
+      "properties": {
+        "published": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "wouldPublish": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "alreadyPublished": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "withdrawn": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blocked": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
     }
   }
 };

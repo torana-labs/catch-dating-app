@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "1.7.0",
-  "updated": "2026-10-16",
+  "catalogVersion": "1.8.0",
+  "updated": "2026-10-25",
   "owner": "operations_platform",
   "program": "catch-admin",
   "actions": [
@@ -513,6 +513,104 @@
         "runLimit": 10,
         "workItemLimit": 50
       }
+    },
+    {
+      "actionId": "organizer-intake.list-listing-event-imports",
+      "callable": "adminListListingEventImports",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_listing_event_imports_payload.schema.json",
+      "summary": "List one page of approved Supply Intake listings with the events each imported and where each stands: published, withdrawn, ready, needing a check, or blocked.",
+      "example": {
+        "limit": 5,
+        "cursor": null
+      }
+    },
+    {
+      "actionId": "organizer-intake.publish-listing-events",
+      "callable": "adminPublishListingEvents",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "intakeRequestId",
+      "requestSchema": "contracts/callables/admin_publish_listing_events_payload.schema.json",
+      "summary": "Dry-run or publish chosen imported events of one approved listing as read-only, outbound-only external events, with a receipt per event.",
+      "example": {
+        "intakeRequestId": "example-intake-request",
+        "eventWorkItemIds": [
+          "example-event-work-item"
+        ],
+        "executionMode": "dry_run",
+        "idempotencyKey": "example-listing:dry-run",
+        "reviewNote": "Fixture publication; do not apply.",
+        "checklist": {
+          "outboundLinksReviewed": true,
+          "noCatchBookingPaymentsWaitlist": true,
+          "ownerSafeCopyReviewed": true
+        },
+        "blockerResolutions": []
+      }
+    },
+    {
+      "actionId": "organizer-intake.refresh-organizer-events",
+      "callable": "adminRefreshOrganizerEvents",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_refresh_organizer_events_payload.schema.json",
+      "summary": "Read new events for an unclaimed organizer Catch already lists, from given links or its page's event-calendar links; they go through the event publication policy.",
+      "example": {
+        "requestId": "example-refresh-001",
+        "organizerId": "example-organizer",
+        "urls": []
+      }
+    },
+    {
+      "actionId": "organizer-intake.list-supply-intake-policies",
+      "callable": "adminListSupplyIntakePolicies",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "requestSchema": "contracts/callables/admin_list_supply_intake_policies_payload.schema.json",
+      "summary": "List the Supply Intake capabilities that stay off until the owner decides, each with its decision and whether its policy file switches it on.",
+      "example": {}
     },
     {
       "actionId": "organizer-intake.list-listing-reviews",
@@ -3317,6 +3415,10 @@
       "actions": [
         "organizer-intake.list-listing-reviews",
         "organizer-intake.approve-listing",
+        "organizer-intake.list-listing-event-imports",
+        "organizer-intake.publish-listing-events",
+        "organizer-intake.list-supply-intake-policies",
+        "organizer-intake.refresh-organizer-events",
         "organizer-intake.create-organizer-draft",
         "organizer-intake.record-curation",
         "organizer-intake.resolve-location",

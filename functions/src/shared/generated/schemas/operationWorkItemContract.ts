@@ -86,7 +86,8 @@ export const operationWorkItemSchema: Record<string, unknown> = {
                         "enum": [
                           "nomination",
                           "self_submission",
-                          "discovery"
+                          "discovery",
+                          "event_refresh"
                         ]
                       },
                       "submittedBy": {
@@ -5401,7 +5402,8 @@ export const operationWorkItemSchema: Record<string, unknown> = {
               "enum": [
                 "nomination",
                 "self_submission",
-                "discovery"
+                "discovery",
+                "event_refresh"
               ]
             },
             "submittedBy": {

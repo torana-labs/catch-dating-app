@@ -8049,6 +8049,261 @@ abstract final class CatchContractConstraints {
     maximum: 200,
   );
 
+  static const adminListListingEventImportsCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallablePayload.cursor',
+    maxLength: 400,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]+\$',
+  );
+
+  static const adminListListingEventImportsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10,
+  );
+
+  static const adminListListingEventImportsCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.nextCursor',
+    maxLength: 400,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponsePolicyMode = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.policy.mode',
+    required: true,
+    enumValues: <String>['staff_review', 'auto_publish_approved_organizers'],
+  );
+
+  static const adminListListingEventImportsCallableResponsePolicyPolicyVersion = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.policy.policyVersion',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRows = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsApprovedAt = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.approvedAt',
+    maxLength: 40,
+    minLength: 10,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEvents = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 60,
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsAddress = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsAutomatedFindings = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.automatedFindings',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsAutomatedFindingsItemsCheck = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.automatedFindings.items.check',
+    required: true,
+    enumValues: <String>['dating_framing', 'organizer_attribution', 'price_missing'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsAutomatedFindingsItemsField = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.automatedFindings.items.field',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsAutomatedFindingsItemsMatch = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.automatedFindings.items.match',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsBlockers = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.blockers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsBlockersItems = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.blockers.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsEndAt = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.endAt',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsEventId = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.eventId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsEventWorkItemId = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.eventWorkItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsPlatform = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.platform',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsPriceLabel = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.priceLabel',
+    maxLength: 120,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsPublishedBy = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.publishedBy',
+    required: true,
+    enumValues: <String>['policy', 'staff'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsResolvableBlockers = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.resolvableBlockers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemEnumValues: <String>['missing_exact_coordinates', 'missing_end_time', 'missing_location_detail', 'requires_event_defaults_policy', 'requires_owner_safe_copy_review', 'duplicate_normalized_event_key'],
+    maxItems: 6,
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsResolvableBlockersItems = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.resolvableBlockers.items',
+    required: true,
+    enumValues: <String>['missing_exact_coordinates', 'missing_end_time', 'missing_location_detail', 'requires_event_defaults_policy', 'requires_owner_safe_copy_review', 'duplicate_normalized_event_key'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsSourceUrl = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.sourceUrl',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsStartAt = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.startAt',
+    maxLength: 40,
+    minLength: 10,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsState = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.state',
+    required: true,
+    enumValues: <String>['published', 'withdrawn', 'ready', 'needs_resolution', 'blocked'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsTitle = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.title',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsVenue = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.venue',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsIntakeRequestId = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.intakeRequestId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsListingId = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.listingId',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsOrganizerAppVisibility = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.organizer.appVisibility',
+    required: true,
+    enumValues: <String>['hidden', 'discoverable'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsOrganizerCanonicalPath = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.organizer.canonicalPath',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsOrganizerName = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.organizer.name',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsOrganizerOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.organizer.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListListingEventImportsCallableResponseRowsItemsOrganizerPagePublished = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.rows.items.organizer.pagePublished',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListListingEventImportsCallableResponseUnavailableCount = CatchContractFieldConstraints(
+    path: 'adminListListingEventImportsCallableResponse.unavailableCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const adminListOrganizerDetailsCallablePayloadAppVisibility = CatchContractFieldConstraints(
     path: 'adminListOrganizerDetailsCallablePayload.appVisibility',
     valueTypes: <String>['string'],
@@ -9268,6 +9523,112 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['open', 'completed', 'cancelled'],
   );
 
+  static const adminListSupplyIntakePoliciesCallableResponsePolicies = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsConfigCitesDecision = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.configCitesDecision',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsConfigPath = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.configPath',
+    maxLength: 240,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsDecisionDecision = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.decision.decision',
+    required: true,
+    enumValues: <String>['accept', 'hold', 'reject'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsDecisionDecisionStatus = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.decision.decisionStatus',
+    required: true,
+    enumValues: <String>['accepted', 'held', 'rejected'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsDecisionNote = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.decision.note',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsDecisionReviewedAt = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.decision.reviewedAt',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsDecisionId = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.decisionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsEnabled = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.enabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsEnables = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.enables',
+    maxLength: 1000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsGapId = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.gapId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLabel = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.label',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLimits = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.limits',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 6,
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLimitsItemsLabel = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.limits.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLimitsItemsValue = CatchContractFieldConstraints(
+    path: 'adminListSupplyIntakePoliciesCallableResponse.policies.items.limits.items.value',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const adminNominateOrganizerCallablePayloadCategories = CatchContractFieldConstraints(
     path: 'adminNominateOrganizerCallablePayload.categories',
     required: true,
@@ -9900,6 +10261,233 @@ abstract final class CatchContractConstraints {
     pattern: '^externalEvents/[A-Za-z0-9_-]{1,180}\$',
   );
 
+  static const adminPublishListingEventsCallablePayloadBlockerResolutions = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.blockerResolutions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 120,
+  );
+
+  static const adminPublishListingEventsCallablePayloadBlockerResolutionsItemsBlockerCode = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.blockerResolutions.items.blockerCode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['missing_exact_coordinates', 'missing_end_time', 'missing_location_detail', 'requires_event_defaults_policy', 'requires_owner_safe_copy_review', 'duplicate_normalized_event_key'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadBlockerResolutionsItemsEventWorkItemId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.blockerResolutions.items.eventWorkItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPublishListingEventsCallablePayloadBlockerResolutionsItemsNote = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.blockerResolutions.items.note',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadBlockerResolutionsItemsOutcome = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.blockerResolutions.items.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['resolved', 'waived'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadBlockerResolutionsItemsPolicyGapDecisionId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.blockerResolutions.items.policyGapDecisionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadChecklistNoCatchBookingPaymentsWaitlist = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.checklist.noCatchBookingPaymentsWaitlist',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadChecklistOutboundLinksReviewed = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.checklist.outboundLinksReviewed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadChecklistOwnerSafeCopyReviewed = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.checklist.ownerSafeCopyReviewed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventWorkItemIds = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventWorkItemIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 60,
+    uniqueItems: true,
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventWorkItemIdsItems = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventWorkItemIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPublishListingEventsCallablePayloadExecutionMode = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.executionMode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['dry_run', 'apply'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadIdempotencyKey = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.idempotencyKey',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9:_-]+\$',
+  );
+
+  static const adminPublishListingEventsCallablePayloadIntakeRequestId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.intakeRequestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPublishListingEventsCallablePayloadReviewNote = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.reviewNote',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallableResponseCountsAlreadyPublished = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.counts.alreadyPublished',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminPublishListingEventsCallableResponseCountsBlocked = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.counts.blocked',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminPublishListingEventsCallableResponseCountsPublished = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.counts.published',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminPublishListingEventsCallableResponseCountsWithdrawn = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.counts.withdrawn',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminPublishListingEventsCallableResponseCountsWouldPublish = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.counts.wouldPublish',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminPublishListingEventsCallableResponseExecutionMode = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.executionMode',
+    required: true,
+    enumValues: <String>['dry_run', 'apply'],
+  );
+
+  static const adminPublishListingEventsCallableResponseIntakeRequestId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.intakeRequestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.organizerId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallableResponseResults = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.results',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 60,
+  );
+
+  static const adminPublishListingEventsCallableResponseResultsItemsBlockers = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.results.items.blockers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 30,
+  );
+
+  static const adminPublishListingEventsCallableResponseResultsItemsBlockersItems = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.results.items.blockers.items',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallableResponseResultsItemsEventId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.results.items.eventId',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallableResponseResultsItemsEventWorkItemId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.results.items.eventWorkItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallableResponseResultsItemsIdempotent = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.results.items.idempotent',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminPublishListingEventsCallableResponseResultsItemsOutcome = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.results.items.outcome',
+    required: true,
+    enumValues: <String>['published', 'would_publish', 'already_published', 'withdrawn', 'blocked', 'awaiting_staff'],
+  );
+
+  static const adminPublishListingEventsCallableResponseResultsItemsReceiptPath = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallableResponse.results.items.receiptPath',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
   static const adminRecordActionExecutionCallablePayloadActionId = CatchContractFieldConstraints(
     path: 'adminRecordActionExecutionCallablePayload.actionId',
     maxLength: 120,
@@ -10414,6 +11002,73 @@ abstract final class CatchContractConstraints {
     path: 'adminRecordSalesActivityCallablePayload.type',
     required: true,
     enumValues: <String>['note', 'reply', 'call', 'demo', 'pilot', 'correction', 'outreach_sent_manual'],
+  );
+
+  static const adminRefreshOrganizerEventsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminRefreshOrganizerEventsCallablePayload.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const adminRefreshOrganizerEventsCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminRefreshOrganizerEventsCallablePayload.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}\$',
+  );
+
+  static const adminRefreshOrganizerEventsCallablePayloadUrls = CatchContractFieldConstraints(
+    path: 'adminRefreshOrganizerEventsCallablePayload.urls',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const adminRefreshOrganizerEventsCallablePayloadUrlsItems = CatchContractFieldConstraints(
+    path: 'adminRefreshOrganizerEventsCallablePayload.urls.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^https?://',
+  );
+
+  static const adminRefreshOrganizerEventsCallableResponseCreated = CatchContractFieldConstraints(
+    path: 'adminRefreshOrganizerEventsCallableResponse.created',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminRefreshOrganizerEventsCallableResponseRequestId = CatchContractFieldConstraints(
+    path: 'adminRefreshOrganizerEventsCallableResponse.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminRefreshOrganizerEventsCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'adminRefreshOrganizerEventsCallableResponse.status',
+    required: true,
+  );
+
+  static const adminRefreshOrganizerEventsCallableResponseUrls = CatchContractFieldConstraints(
+    path: 'adminRefreshOrganizerEventsCallableResponse.urls',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 10,
+  );
+
+  static const adminRefreshOrganizerEventsCallableResponseUrlsItems = CatchContractFieldConstraints(
+    path: 'adminRefreshOrganizerEventsCallableResponse.urls.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const adminRefreshSalesFitQueueBatchPayloadCursor = CatchContractFieldConstraints(
@@ -157908,7 +158563,7 @@ abstract final class CatchContractConstraints {
     path: 'supplyIntakeRequest.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['nomination', 'self_submission', 'discovery'],
+    enumValues: <String>['nomination', 'self_submission', 'discovery', 'event_refresh'],
   );
 
   static const supplyIntakeRequestMarket = CatchContractFieldConstraints(
@@ -157929,7 +158584,7 @@ abstract final class CatchContractConstraints {
     path: 'supplyIntakeRequest.origin.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run'],
+    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run', 'admin_event_refresh'],
   );
 
   static const supplyIntakeRequestRequestId = CatchContractFieldConstraints(
@@ -158018,6 +158673,13 @@ abstract final class CatchContractConstraints {
     maxLength: 128,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestTargetOrganizerId = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequest.target.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
   );
 
   static const supplyIntakeRequestsDocumentApprovalApprovalId = CatchContractFieldConstraints(
@@ -158124,7 +158786,7 @@ abstract final class CatchContractConstraints {
     path: 'supplyIntakeRequestsDocument.request.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['nomination', 'self_submission', 'discovery'],
+    enumValues: <String>['nomination', 'self_submission', 'discovery', 'event_refresh'],
   );
 
   static const supplyIntakeRequestsDocumentRequestMarket = CatchContractFieldConstraints(
@@ -158145,7 +158807,7 @@ abstract final class CatchContractConstraints {
     path: 'supplyIntakeRequestsDocument.request.origin.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run'],
+    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run', 'admin_event_refresh'],
   );
 
   static const supplyIntakeRequestsDocumentRequestRequestId = CatchContractFieldConstraints(
@@ -158234,6 +158896,13 @@ abstract final class CatchContractConstraints {
     maxLength: 128,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentRequestTargetOrganizerId = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.request.target.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
   );
 
   static const supplyIntakeRequestsDocumentRequestId = CatchContractFieldConstraints(
@@ -172537,6 +173206,42 @@ abstract final class CatchContractConstraints {
     'adminListIntakeOperationsCallablePayload.workflowId': adminListIntakeOperationsCallablePayloadWorkflowId,
     'adminListIntakeOperationsCallablePayload.workItemCursor': adminListIntakeOperationsCallablePayloadWorkItemCursor,
     'adminListIntakeOperationsCallablePayload.workItemLimit': adminListIntakeOperationsCallablePayloadWorkItemLimit,
+    'adminListListingEventImportsCallablePayload.cursor': adminListListingEventImportsCallablePayloadCursor,
+    'adminListListingEventImportsCallablePayload.limit': adminListListingEventImportsCallablePayloadLimit,
+    'adminListListingEventImportsCallableResponse.nextCursor': adminListListingEventImportsCallableResponseNextCursor,
+    'adminListListingEventImportsCallableResponse.policy.mode': adminListListingEventImportsCallableResponsePolicyMode,
+    'adminListListingEventImportsCallableResponse.policy.policyVersion': adminListListingEventImportsCallableResponsePolicyPolicyVersion,
+    'adminListListingEventImportsCallableResponse.rows': adminListListingEventImportsCallableResponseRows,
+    'adminListListingEventImportsCallableResponse.rows.items.approvedAt': adminListListingEventImportsCallableResponseRowsItemsApprovedAt,
+    'adminListListingEventImportsCallableResponse.rows.items.events': adminListListingEventImportsCallableResponseRowsItemsEvents,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.address': adminListListingEventImportsCallableResponseRowsItemsEventsItemsAddress,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.automatedFindings': adminListListingEventImportsCallableResponseRowsItemsEventsItemsAutomatedFindings,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.automatedFindings.items.check': adminListListingEventImportsCallableResponseRowsItemsEventsItemsAutomatedFindingsItemsCheck,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.automatedFindings.items.field': adminListListingEventImportsCallableResponseRowsItemsEventsItemsAutomatedFindingsItemsField,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.automatedFindings.items.match': adminListListingEventImportsCallableResponseRowsItemsEventsItemsAutomatedFindingsItemsMatch,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.blockers': adminListListingEventImportsCallableResponseRowsItemsEventsItemsBlockers,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.blockers.items': adminListListingEventImportsCallableResponseRowsItemsEventsItemsBlockersItems,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.endAt': adminListListingEventImportsCallableResponseRowsItemsEventsItemsEndAt,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.eventId': adminListListingEventImportsCallableResponseRowsItemsEventsItemsEventId,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.eventWorkItemId': adminListListingEventImportsCallableResponseRowsItemsEventsItemsEventWorkItemId,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.platform': adminListListingEventImportsCallableResponseRowsItemsEventsItemsPlatform,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.priceLabel': adminListListingEventImportsCallableResponseRowsItemsEventsItemsPriceLabel,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.publishedBy': adminListListingEventImportsCallableResponseRowsItemsEventsItemsPublishedBy,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.resolvableBlockers': adminListListingEventImportsCallableResponseRowsItemsEventsItemsResolvableBlockers,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.resolvableBlockers.items': adminListListingEventImportsCallableResponseRowsItemsEventsItemsResolvableBlockersItems,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.sourceUrl': adminListListingEventImportsCallableResponseRowsItemsEventsItemsSourceUrl,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.startAt': adminListListingEventImportsCallableResponseRowsItemsEventsItemsStartAt,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.state': adminListListingEventImportsCallableResponseRowsItemsEventsItemsState,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.title': adminListListingEventImportsCallableResponseRowsItemsEventsItemsTitle,
+    'adminListListingEventImportsCallableResponse.rows.items.events.items.venue': adminListListingEventImportsCallableResponseRowsItemsEventsItemsVenue,
+    'adminListListingEventImportsCallableResponse.rows.items.intakeRequestId': adminListListingEventImportsCallableResponseRowsItemsIntakeRequestId,
+    'adminListListingEventImportsCallableResponse.rows.items.listingId': adminListListingEventImportsCallableResponseRowsItemsListingId,
+    'adminListListingEventImportsCallableResponse.rows.items.organizer.appVisibility': adminListListingEventImportsCallableResponseRowsItemsOrganizerAppVisibility,
+    'adminListListingEventImportsCallableResponse.rows.items.organizer.canonicalPath': adminListListingEventImportsCallableResponseRowsItemsOrganizerCanonicalPath,
+    'adminListListingEventImportsCallableResponse.rows.items.organizer.name': adminListListingEventImportsCallableResponseRowsItemsOrganizerName,
+    'adminListListingEventImportsCallableResponse.rows.items.organizer.organizerId': adminListListingEventImportsCallableResponseRowsItemsOrganizerOrganizerId,
+    'adminListListingEventImportsCallableResponse.rows.items.organizer.pagePublished': adminListListingEventImportsCallableResponseRowsItemsOrganizerPagePublished,
+    'adminListListingEventImportsCallableResponse.unavailableCount': adminListListingEventImportsCallableResponseUnavailableCount,
     'adminListOrganizerDetailsCallablePayload.appVisibility': adminListOrganizerDetailsCallablePayloadAppVisibility,
     'adminListOrganizerDetailsCallablePayload.citySlug': adminListOrganizerDetailsCallablePayloadCitySlug,
     'adminListOrganizerDetailsCallablePayload.citySlugs': adminListOrganizerDetailsCallablePayloadCitySlugs,
@@ -172706,6 +173411,21 @@ abstract final class CatchContractConstraints {
     'adminListSalesTasksCallablePayload.limit': adminListSalesTasksCallablePayloadLimit,
     'adminListSalesTasksCallablePayload.ownerUid': adminListSalesTasksCallablePayloadOwnerUid,
     'adminListSalesTasksCallablePayload.status': adminListSalesTasksCallablePayloadStatus,
+    'adminListSupplyIntakePoliciesCallableResponse.policies': adminListSupplyIntakePoliciesCallableResponsePolicies,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.configCitesDecision': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsConfigCitesDecision,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.configPath': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsConfigPath,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.decision.decision': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsDecisionDecision,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.decision.decisionStatus': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsDecisionDecisionStatus,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.decision.note': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsDecisionNote,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.decision.reviewedAt': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsDecisionReviewedAt,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.decisionId': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsDecisionId,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.enabled': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsEnabled,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.enables': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsEnables,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.gapId': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsGapId,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.label': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLabel,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.limits': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLimits,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.limits.items.label': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLimitsItemsLabel,
+    'adminListSupplyIntakePoliciesCallableResponse.policies.items.limits.items.value': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLimitsItemsValue,
     'adminNominateOrganizerCallablePayload.categories': adminNominateOrganizerCallablePayloadCategories,
     'adminNominateOrganizerCallablePayload.categories.items': adminNominateOrganizerCallablePayloadCategoriesItems,
     'adminNominateOrganizerCallablePayload.market': adminNominateOrganizerCallablePayloadMarket,
@@ -172790,6 +173510,37 @@ abstract final class CatchContractConstraints {
     'adminPublishExternalEventCallablePayload.reviewNote': adminPublishExternalEventCallablePayloadReviewNote,
     'adminPublishExternalEventCallablePayload.sourceActionId': adminPublishExternalEventCallablePayloadSourceActionId,
     'adminPublishExternalEventCallablePayload.targetPath': adminPublishExternalEventCallablePayloadTargetPath,
+    'adminPublishListingEventsCallablePayload.blockerResolutions': adminPublishListingEventsCallablePayloadBlockerResolutions,
+    'adminPublishListingEventsCallablePayload.blockerResolutions.items.blockerCode': adminPublishListingEventsCallablePayloadBlockerResolutionsItemsBlockerCode,
+    'adminPublishListingEventsCallablePayload.blockerResolutions.items.eventWorkItemId': adminPublishListingEventsCallablePayloadBlockerResolutionsItemsEventWorkItemId,
+    'adminPublishListingEventsCallablePayload.blockerResolutions.items.note': adminPublishListingEventsCallablePayloadBlockerResolutionsItemsNote,
+    'adminPublishListingEventsCallablePayload.blockerResolutions.items.outcome': adminPublishListingEventsCallablePayloadBlockerResolutionsItemsOutcome,
+    'adminPublishListingEventsCallablePayload.blockerResolutions.items.policyGapDecisionId': adminPublishListingEventsCallablePayloadBlockerResolutionsItemsPolicyGapDecisionId,
+    'adminPublishListingEventsCallablePayload.checklist.noCatchBookingPaymentsWaitlist': adminPublishListingEventsCallablePayloadChecklistNoCatchBookingPaymentsWaitlist,
+    'adminPublishListingEventsCallablePayload.checklist.outboundLinksReviewed': adminPublishListingEventsCallablePayloadChecklistOutboundLinksReviewed,
+    'adminPublishListingEventsCallablePayload.checklist.ownerSafeCopyReviewed': adminPublishListingEventsCallablePayloadChecklistOwnerSafeCopyReviewed,
+    'adminPublishListingEventsCallablePayload.eventWorkItemIds': adminPublishListingEventsCallablePayloadEventWorkItemIds,
+    'adminPublishListingEventsCallablePayload.eventWorkItemIds.items': adminPublishListingEventsCallablePayloadEventWorkItemIdsItems,
+    'adminPublishListingEventsCallablePayload.executionMode': adminPublishListingEventsCallablePayloadExecutionMode,
+    'adminPublishListingEventsCallablePayload.idempotencyKey': adminPublishListingEventsCallablePayloadIdempotencyKey,
+    'adminPublishListingEventsCallablePayload.intakeRequestId': adminPublishListingEventsCallablePayloadIntakeRequestId,
+    'adminPublishListingEventsCallablePayload.reviewNote': adminPublishListingEventsCallablePayloadReviewNote,
+    'adminPublishListingEventsCallableResponse.counts.alreadyPublished': adminPublishListingEventsCallableResponseCountsAlreadyPublished,
+    'adminPublishListingEventsCallableResponse.counts.blocked': adminPublishListingEventsCallableResponseCountsBlocked,
+    'adminPublishListingEventsCallableResponse.counts.published': adminPublishListingEventsCallableResponseCountsPublished,
+    'adminPublishListingEventsCallableResponse.counts.withdrawn': adminPublishListingEventsCallableResponseCountsWithdrawn,
+    'adminPublishListingEventsCallableResponse.counts.wouldPublish': adminPublishListingEventsCallableResponseCountsWouldPublish,
+    'adminPublishListingEventsCallableResponse.executionMode': adminPublishListingEventsCallableResponseExecutionMode,
+    'adminPublishListingEventsCallableResponse.intakeRequestId': adminPublishListingEventsCallableResponseIntakeRequestId,
+    'adminPublishListingEventsCallableResponse.organizerId': adminPublishListingEventsCallableResponseOrganizerId,
+    'adminPublishListingEventsCallableResponse.results': adminPublishListingEventsCallableResponseResults,
+    'adminPublishListingEventsCallableResponse.results.items.blockers': adminPublishListingEventsCallableResponseResultsItemsBlockers,
+    'adminPublishListingEventsCallableResponse.results.items.blockers.items': adminPublishListingEventsCallableResponseResultsItemsBlockersItems,
+    'adminPublishListingEventsCallableResponse.results.items.eventId': adminPublishListingEventsCallableResponseResultsItemsEventId,
+    'adminPublishListingEventsCallableResponse.results.items.eventWorkItemId': adminPublishListingEventsCallableResponseResultsItemsEventWorkItemId,
+    'adminPublishListingEventsCallableResponse.results.items.idempotent': adminPublishListingEventsCallableResponseResultsItemsIdempotent,
+    'adminPublishListingEventsCallableResponse.results.items.outcome': adminPublishListingEventsCallableResponseResultsItemsOutcome,
+    'adminPublishListingEventsCallableResponse.results.items.receiptPath': adminPublishListingEventsCallableResponseResultsItemsReceiptPath,
     'adminRecordActionExecutionCallablePayload.actionId': adminRecordActionExecutionCallablePayloadActionId,
     'adminRecordActionExecutionCallablePayload.callable': adminRecordActionExecutionCallablePayloadCallable,
     'adminRecordActionExecutionCallablePayload.cliVersion': adminRecordActionExecutionCallablePayloadCliVersion,
@@ -172865,6 +173616,15 @@ abstract final class CatchContractConstraints {
     'adminRecordSalesActivityCallablePayload.organizerId': adminRecordSalesActivityCallablePayloadOrganizerId,
     'adminRecordSalesActivityCallablePayload.requestId': adminRecordSalesActivityCallablePayloadRequestId,
     'adminRecordSalesActivityCallablePayload.type': adminRecordSalesActivityCallablePayloadType,
+    'adminRefreshOrganizerEventsCallablePayload.organizerId': adminRefreshOrganizerEventsCallablePayloadOrganizerId,
+    'adminRefreshOrganizerEventsCallablePayload.requestId': adminRefreshOrganizerEventsCallablePayloadRequestId,
+    'adminRefreshOrganizerEventsCallablePayload.urls': adminRefreshOrganizerEventsCallablePayloadUrls,
+    'adminRefreshOrganizerEventsCallablePayload.urls.items': adminRefreshOrganizerEventsCallablePayloadUrlsItems,
+    'adminRefreshOrganizerEventsCallableResponse.created': adminRefreshOrganizerEventsCallableResponseCreated,
+    'adminRefreshOrganizerEventsCallableResponse.requestId': adminRefreshOrganizerEventsCallableResponseRequestId,
+    'adminRefreshOrganizerEventsCallableResponse.status': adminRefreshOrganizerEventsCallableResponseStatus,
+    'adminRefreshOrganizerEventsCallableResponse.urls': adminRefreshOrganizerEventsCallableResponseUrls,
+    'adminRefreshOrganizerEventsCallableResponse.urls.items': adminRefreshOrganizerEventsCallableResponseUrlsItems,
     'adminRefreshSalesFitQueueBatchPayload.cursor': adminRefreshSalesFitQueueBatchPayloadCursor,
     'adminRefreshSalesFitQueueBatchPayload.limit': adminRefreshSalesFitQueueBatchPayloadLimit,
     'adminRefreshSalesFitQueueBatchPayload.requestId': adminRefreshSalesFitQueueBatchPayloadRequestId,
@@ -192962,6 +193722,7 @@ abstract final class CatchContractConstraints {
     'supplyIntakeRequest.submittedBy.partnerId': supplyIntakeRequestSubmittedByPartnerId,
     'supplyIntakeRequest.submittedBy.role': supplyIntakeRequestSubmittedByRole,
     'supplyIntakeRequest.submittedBy.uid': supplyIntakeRequestSubmittedByUid,
+    'supplyIntakeRequest.target.organizerId': supplyIntakeRequestTargetOrganizerId,
     'supplyIntakeRequestsDocument.approval.approvalId': supplyIntakeRequestsDocumentApprovalApprovalId,
     'supplyIntakeRequestsDocument.approval.approvedAt': supplyIntakeRequestsDocumentApprovalApprovedAt,
     'supplyIntakeRequestsDocument.approval.approvedByUid': supplyIntakeRequestsDocumentApprovalApprovedByUid,
@@ -192991,6 +193752,7 @@ abstract final class CatchContractConstraints {
     'supplyIntakeRequestsDocument.request.submittedBy.partnerId': supplyIntakeRequestsDocumentRequestSubmittedByPartnerId,
     'supplyIntakeRequestsDocument.request.submittedBy.role': supplyIntakeRequestsDocumentRequestSubmittedByRole,
     'supplyIntakeRequestsDocument.request.submittedBy.uid': supplyIntakeRequestsDocumentRequestSubmittedByUid,
+    'supplyIntakeRequestsDocument.request.target.organizerId': supplyIntakeRequestsDocumentRequestTargetOrganizerId,
     'supplyIntakeRequestsDocument.requestId': supplyIntakeRequestsDocumentRequestId,
     'supplyIntakeRequestsDocument.result.artifactHash': supplyIntakeRequestsDocumentResultArtifactHash,
     'supplyIntakeRequestsDocument.result.captureReceipts': supplyIntakeRequestsDocumentResultCaptureReceipts,

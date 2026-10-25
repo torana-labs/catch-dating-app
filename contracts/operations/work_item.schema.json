@@ -680,7 +680,8 @@
               "enum": [
                 "nomination",
                 "self_submission",
-                "discovery"
+                "discovery",
+                "event_refresh"
               ]
             },
             "submittedBy": {

@@ -8,7 +8,7 @@ const schemaSupplyIntakeRequestSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/operations/supply_intake_request.schema.json',
   'title': 'SupplyIntakeRequest',
-  'description': 'One request to build an organizer listing and collect that organizer\'s events. Every front door (a sales associate or partner nomination, an organizer\'s own submission, or an Admin-started discovery run) creates one; Supply Intake gathers, reviews and stages the result for staff.',
+  'description': 'One request to build an organizer listing and collect that organizer\'s events. Every front door (a sales associate or partner nomination, an organizer\'s own submission, an Admin-started discovery run, or staff reading new events for an organizer Catch already lists) creates one; Supply Intake gathers, reviews and stages the result for staff.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -36,7 +36,22 @@ const schemaSupplyIntakeRequestSchema = <String, Object?>{
         'nomination',
         'self_submission',
         'discovery',
+        'event_refresh',
       ],
+    },
+    'target': <String, Object?>{
+      'description': 'The organizer Catch already lists that an event_refresh reads new events for. Only event_refresh requests carry it.',
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'organizerId',
+      ],
+      'properties': <String, Object?>{
+        'organizerId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+        },
+      },
     },
     'market': <String, Object?>{
       'type': 'string',
@@ -148,7 +163,7 @@ const schemaSupplyIntakeRequestSchema = <String, Object?>{
       'format': 'date-time',
     },
     'origin': <String, Object?>{
-      'description': 'What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), or a discovery run. Null for requests made by hand.',
+      'description': 'What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer\'s events. Null for requests made by hand.',
       'anyOf': <Object?>[
         <String, Object?>{
           'type': 'null',
@@ -167,6 +182,7 @@ const schemaSupplyIntakeRequestSchema = <String, Object?>{
                 'admin_nomination',
                 'sales_inbound_intent',
                 'discovery_run',
+                'admin_event_refresh',
               ],
             },
             'id': <String, Object?>{
@@ -216,6 +232,39 @@ const schemaSupplyIntakeRequestSchema = <String, Object?>{
               },
             },
           },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'kind': <String, Object?>{
+            'const': 'event_refresh',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'target',
+        ],
+        'properties': <String, Object?>{
+          'submittedBy': <String, Object?>{
+            'properties': <String, Object?>{
+              'role': <String, Object?>{
+                'enum': <Object?>[
+                  'associate',
+                  'system',
+                ],
+              },
+            },
+          },
+        },
+      },
+      'else': <String, Object?>{
+        'not': <String, Object?>{
+          'required': <Object?>[
+            'target',
+          ],
         },
       },
     },

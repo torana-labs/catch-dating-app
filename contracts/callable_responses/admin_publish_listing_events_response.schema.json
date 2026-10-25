@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_publish_listing_events_response.schema.json",
+  "title": "AdminPublishListingEventsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["intakeRequestId", "organizerId", "executionMode", "results", "counts"],
+  "properties": {
+    "intakeRequestId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "organizerId": {"type": ["string", "null"], "maxLength": 180},
+    "executionMode": {"enum": ["dry_run", "apply"]},
+    "results": {
+      "type": "array",
+      "maxItems": 60,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["eventWorkItemId", "eventId", "outcome", "blockers", "receiptPath", "idempotent"],
+        "properties": {
+          "eventWorkItemId": {"type": "string", "minLength": 1, "maxLength": 180},
+          "eventId": {"type": ["string", "null"], "maxLength": 180},
+          "outcome": {"enum": ["published", "would_publish", "already_published", "withdrawn", "blocked",
+            "awaiting_staff"]},
+          "blockers": {"type": "array", "maxItems": 30, "items": {"type": "string", "minLength": 1, "maxLength": 120}},
+          "receiptPath": {"type": ["string", "null"], "maxLength": 240},
+          "idempotent": {"type": "boolean"}
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["published", "wouldPublish", "alreadyPublished", "withdrawn", "blocked"],
+      "properties": {
+        "published": {"type": "integer", "minimum": 0},
+        "wouldPublish": {"type": "integer", "minimum": 0},
+        "alreadyPublished": {"type": "integer", "minimum": 0},
+        "withdrawn": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

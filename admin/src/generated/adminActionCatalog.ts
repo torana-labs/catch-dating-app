@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.7.0",
+  "catalogVersion": "1.8.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -366,6 +366,75 @@ export const adminActionCatalog = {
         "support"
       ],
       "summary": "List the persisted Supply Intake runs and one bounded item page.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "organizer-intake.list-listing-event-imports",
+      "callable": "adminListListingEventImports",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "summary": "List one page of approved Supply Intake listings with the events each imported and where each stands: published, withdrawn, ready, needing a check, or blocked.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "organizer-intake.publish-listing-events",
+      "callable": "adminPublishListingEvents",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "summary": "Dry-run or publish chosen imported events of one approved listing as read-only, outbound-only external events, with a receipt per event.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "organizer-intake.refresh-organizer-events",
+      "callable": "adminRefreshOrganizerEvents",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "mutation",
+      "risk": "medium",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support",
+        "salesStaff"
+      ],
+      "summary": "Read new events for an unclaimed organizer Catch already lists, from given links or its page's event-calendar links; they go through the event publication policy.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "organizer-intake.list-supply-intake-policies",
+      "callable": "adminListSupplyIntakePolicies",
+      "workflowIds": [
+        "organizer-intake"
+      ],
+      "guiPath": "/intake/organizers",
+      "kind": "read",
+      "risk": "read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "support"
+      ],
+      "summary": "List the Supply Intake capabilities that stay off until the owner decides, each with its decision and whether its policy file switches it on.",
       "controlPlane": false
     },
     {
@@ -2148,6 +2217,10 @@ export const adminActionCatalog = {
       "actions": [
         "organizer-intake.list-listing-reviews",
         "organizer-intake.approve-listing",
+        "organizer-intake.list-listing-event-imports",
+        "organizer-intake.publish-listing-events",
+        "organizer-intake.list-supply-intake-policies",
+        "organizer-intake.refresh-organizer-events",
         "organizer-intake.create-organizer-draft",
         "organizer-intake.record-curation",
         "organizer-intake.resolve-location",
