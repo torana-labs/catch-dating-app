@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
@@ -19,6 +20,8 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   await loadCatchTestFonts();
   goldenFileComparator = CatchGoldenFileComparator(
     Uri.parse('test/goldens/flutter_test_config.dart'),
+    reportPath: Platform
+        .environment[CatchGoldenFileComparator.reportPathEnvironmentKey],
   );
   await testMain();
 }
