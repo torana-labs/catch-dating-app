@@ -488,7 +488,7 @@ test("flags a custom root-screen header that does not delegate to the canonical 
     contract: screenContract(),
     rootSource: `
       class RootHeader {
-        Widget build() => Text('Today', style: CatchTextStyles.headlineS(context));
+        Widget build() => Text('Today', style: CatchTextStyles.headline(context));
       }
     `,
   });

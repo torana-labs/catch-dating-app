@@ -84,7 +84,7 @@ class WidgetbookContractFrame extends StatelessWidget {
               children: [
                 CatchBadge.functional(label: contractId),
                 const SizedBox(height: CatchSpacing.s3),
-                Text(title, style: CatchTextStyles.headlineS(context)),
+                Text(title, style: CatchTextStyles.displayXs(context)),
                 const SizedBox(height: CatchSpacing.s3),
                 WidgetbookContractWrap(
                   crossAxisAlignment: _stateAlignment,

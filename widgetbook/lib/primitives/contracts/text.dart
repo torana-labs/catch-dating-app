@@ -16,6 +16,12 @@ Widget catchTextContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   const variants = [
+    CatchTextVariant.displayXs,
+    CatchTextVariant.displayS,
+    CatchTextVariant.displayM,
+    CatchTextVariant.displayL,
+    CatchTextVariant.displayXl,
+    CatchTextVariant.displayXxl,
     CatchTextVariant.headline,
     CatchTextVariant.titleL,
     CatchTextVariant.sectionTitle,

@@ -3,9 +3,16 @@ import styles from "./CatchText.module.css";
 
 /**
  * Text roles, named after the matching `CatchTextStyles` roles in Flutter.
- * Each role binds the platform typography profile the Flutter role reads.
+ * The six display steps set Archivo (blueprint D19); every other role binds
+ * the platform typography profile the Flutter role reads.
  */
 export type CatchTextVariant =
+  | "displayXs"
+  | "displayS"
+  | "displayM"
+  | "displayL"
+  | "displayXl"
+  | "displayXxl"
   | "headline"
   | "titleL"
   | "sectionTitle"

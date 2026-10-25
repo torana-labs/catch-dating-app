@@ -70,19 +70,10 @@ Widget _sheet(BuildContext context) {
         _section(context, 'TYPE'),
         const SizedBox(height: CatchSpacing.s3),
         Text('Tonight in Bandra.', style: CatchTextStyles.headline(context)),
-        Text(
-          'Sundowner Run Club',
-          style: CatchTextStyles.clubDisplay(
-            context,
-            step: CatchTextStylesSize.m,
-          ),
-        ),
+        Text('Sundowner Run Club', style: CatchTextStyles.displayS(context)),
         Text(
           'Long table, short questions',
-          style: CatchTextStyles.eventDisplay(
-            context,
-            step: CatchTextStylesSize.s,
-          ),
+          style: CatchTextStyles.displayXs(context),
         ),
         const SizedBox(height: CatchSpacing.s2),
         Text('Section title', style: CatchTextStyles.titleL(context)),

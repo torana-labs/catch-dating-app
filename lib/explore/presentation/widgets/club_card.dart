@@ -131,10 +131,7 @@ class ExploreFeedClubRow extends StatelessWidget {
                   state.title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.clubDisplay(
-                    context,
-                    step: CatchTextStylesSize.m,
-                  ),
+                  style: CatchTextStyles.displayXs(context),
                 ),
                 gapH4,
                 OrganizerAuthorityBadge(

@@ -75,7 +75,7 @@ class _EventProfileIdentitySectionState
             Expanded(
               child: Text(
                 profile.displayName,
-                style: CatchTextStyles.headlineS(context),
+                style: CatchTextStyles.displayXs(context),
               ),
             ),
           ],

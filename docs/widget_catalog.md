@@ -341,14 +341,14 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ClubDetailDock</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:24</code> | <code>Dock</code> | — | Design-system `ClubDock` (`components/clubs/ClubDock`): the persistent bottom bar of a club detail screen, stateful over membership role — BookingDock's club sibling. `visitor` shows the member count + an **activity-pigmented** Join CTA (the one sanctioned use of the club pigment on an action); `member` shows the count + a notifications bell + a quiet "Joined" control; `owner` shows Manage + a New-event pair; `guest` shows an ink "Sign in to join". The mono [footnote] carries the state's quiet facts. Also called: <code>ClubActionBar</code>, <code>ClubBottomBar</code>, <code>MembershipBar</code>. |
 | <code>ClubMemberCountText</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:213</code> | — | — | No class documentation or registry summary. |
 | <code>ClubMembershipDock</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:303</code> | — | — | Provider-backed [ClubDetailDock] for the consumer club-detail screen. Computes the membership state and wires Join / Leave / notification mutations and the guest sign-in route. (Owner state is host-app territory and not rendered here.) |
-| <code>ClubHeroHeader</code> | <code>lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart:272</code> | — | — | No class documentation or registry summary. |
+| <code>ClubHeroHeader</code> | <code>lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart:262</code> | — | — | No class documentation or registry summary. |
 | <code>ClubHeroTopBar</code> | <code>lib/clubs/presentation/detail/widgets/club_hero_top_bar.dart:47</code> | — | — | No class documentation or registry summary. |
 | <code>ClubHostRow</code> | <code>lib/clubs/presentation/detail/widgets/club_host_section.dart:82</code> | — | — | No class documentation or registry summary. |
 | <code>ClubHostSection</code> | <code>lib/clubs/presentation/detail/widgets/club_host_section.dart:15</code> | — | — | No class documentation or registry summary. |
 | <code>ClubPhotoRail</code> | <code>lib/clubs/presentation/detail/widgets/club_photo_rail.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>ClubScheduleSection</code> | <code>lib/clubs/presentation/detail/widgets/club_schedule_section.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>ClubShareCard</code> | <code>lib/clubs/presentation/detail/widgets/club_share_card.dart:41</code> | — | — | No class documentation or registry summary. |
-| <code>ClubShareCover</code> | <code>lib/clubs/presentation/detail/widgets/club_share_card.dart:123</code> | — | — | No class documentation or registry summary. |
+| <code>ClubShareCover</code> | <code>lib/clubs/presentation/detail/widgets/club_share_card.dart:118</code> | — | — | No class documentation or registry summary. |
 | <code>ClubAvatarRail</code> | <code>lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart:9</code> | — | — | No class documentation or registry summary. |
 | <code>AvatarChip</code> | <code>lib/clubs/presentation/discovery/widgets/club_list_tile_parts/avatar_chip.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>ClubImage</code> | <code>lib/clubs/presentation/discovery/widgets/club_list_tile_parts/club_image.dart:3</code> | — | — | No class documentation or registry summary. |
@@ -677,11 +677,11 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HairlineList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:666</code> | — | — | No class documentation or registry summary. |
 | <code>TicketStubTile</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:593</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHeroTopBar</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:12</code> | — | — | Event detail hero section with standard, ticket, and spotlight-dark media treatments plus route-owned top actions. |
-| <code>EventDetailTicketHeroSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:237</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailTicketSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:261</code> | — | — | No class documentation or registry summary. |
-| <code>EventPhotoHeroSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:191</code> | — | — | No class documentation or registry summary. |
-| <code>HeroActivityBadge</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:375</code> | — | — | No class documentation or registry summary. |
-| <code>HeroTimeChip</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:413</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailTicketHeroSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:229</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailTicketSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:253</code> | — | — | No class documentation or registry summary. |
+| <code>EventPhotoHeroSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:189</code> | — | — | No class documentation or registry summary. |
+| <code>HeroActivityBadge</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:361</code> | — | — | No class documentation or registry summary. |
+| <code>HeroTimeChip</code> | <code>lib/events/presentation/widgets/event_detail_hero_top_bar.dart:399</code> | — | — | No class documentation or registry summary. |
 | <code>ItineraryRow</code> | <code>lib/events/presentation/widgets/event_detail_itinerary_row.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailCompanionSkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:367</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHeroSkeleton</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:52</code> | — | — | No class documentation or registry summary. |
@@ -715,20 +715,20 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventAgendaTileSkeleton</code> | <code>lib/events/shared/event_agenda_list.dart:159</code> | — | — | No class documentation or registry summary. |
 | <code>EventCheckInQrScanner</code> | <code>lib/events/shared/event_check_in_qr_scanner.dart:54</code> | — | — | No class documentation or registry summary. |
 | <code>EventShareCard</code> | <code>lib/events/shared/event_share_card.dart:90</code> | — | — | No class documentation or registry summary. |
-| <code>EventShareChip</code> | <code>lib/events/shared/event_share_card.dart:257</code> | — | — | No class documentation or registry summary. |
+| <code>EventShareChip</code> | <code>lib/events/shared/event_share_card.dart:255</code> | — | — | No class documentation or registry summary. |
 | <code>EventActionCard</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>EventActionCardHeader</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:177</code> | — | — | No class documentation or registry summary. |
 | <code>EventActionList</code> | <code>lib/events/shared/event_tiles/event_action_card.dart:216</code> | — | — | No class documentation or registry summary. |
 | <code>EventAgendaTile</code> | <code>lib/events/shared/event_tiles/event_agenda_tile.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>DateRail</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:523</code> | — | — | No class documentation or registry summary. |
+| <code>DateRail</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:519</code> | — | — | No class documentation or registry summary. |
 | <code>EventDateRailCard</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:31</code> | — | <code>catch.event_card</code> | Compact list and map DateTicket with an activity rail, organizer and event identity hierarchy, one optional context block, and a trailing price decision row. |
-| <code>EventTicketStubRow</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:239</code> | — | <code>catch.event_card</code> | Canonical decision row used by date-rail and agenda ticket compositions. |
-| <code>PerforationDivider</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:482</code> | — | — | No class documentation or registry summary. |
+| <code>EventTicketStubRow</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:235</code> | — | <code>catch.event_card</code> | Canonical decision row used by date-rail and agenda ticket compositions. |
+| <code>PerforationDivider</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:478</code> | — | — | No class documentation or registry summary. |
 | <code>EventDateTile</code> | <code>lib/events/shared/event_tiles/event_date_tile.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>MonthDayTile</code> | <code>lib/events/shared/event_tiles/event_date_tile.dart:120</code> | — | — | No class documentation or registry summary. |
 | <code>WeekDayTile</code> | <code>lib/events/shared/event_tiles/event_date_tile.dart:55</code> | — | — | No class documentation or registry summary. |
 | <code>ClubCard</code> | <code>lib/explore/presentation/widgets/club_card.dart:13</code> | <code>Card</code> | <code>catch.organizer_poster</code> | Explore spotlight adopter that composes organizer authority, rating, host identity, and tags into the canonical poster. |
-| <code>ExploreClubTagList</code> | <code>lib/explore/presentation/widgets/club_card.dart:171</code> | — | — | No class documentation or registry summary. |
+| <code>ExploreClubTagList</code> | <code>lib/explore/presentation/widgets/club_card.dart:168</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreFeedClubRow</code> | <code>lib/explore/presentation/widgets/club_card.dart:86</code> | — | — | No class documentation or registry summary. |
 | <code>CityOptionTile</code> | <code>lib/explore/presentation/widgets/explore_city_picker.dart:181</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreCityButton</code> | <code>lib/explore/presentation/widgets/explore_city_picker.dart:87</code> | — | — | No class documentation or registry summary. |
@@ -737,7 +737,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ExploreClearButton</code> | <code>lib/explore/presentation/widgets/explore_clear_button.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreExternalEventRow</code> | <code>lib/explore/presentation/widgets/explore_event_row.dart:58</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreFeedEventRow</code> | <code>lib/explore/presentation/widgets/explore_event_row.dart:14</code> | — | — | No class documentation or registry summary. |
-| <code>ThisWeekRecommendationsSection</code> | <code>lib/explore/presentation/widgets/explore_event_row.dart:161</code> | — | — | No class documentation or registry summary. |
+| <code>ThisWeekRecommendationsSection</code> | <code>lib/explore/presentation/widgets/explore_event_row.dart:157</code> | — | — | No class documentation or registry summary. |
 | <code>ActivitySlotRow</code> | <code>lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:165</code> | — | — | No class documentation or registry summary. |
 | <code>ActivityTypeList</code> | <code>lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:99</code> | — | — | No class documentation or registry summary. |
 | <code>ActivityTypeRow</code> | <code>lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:196</code> | — | — | No class documentation or registry summary. |

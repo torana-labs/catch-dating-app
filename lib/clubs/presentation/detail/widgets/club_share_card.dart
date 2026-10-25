@@ -82,12 +82,7 @@ class ClubShareCard extends StatelessWidget {
                     club.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.clubDisplay(
-                      context,
-                      step: CatchTextStylesSize.l,
-                      height: 0.96,
-                      color: t.ink,
-                    ),
+                    style: CatchTextStyles.displayS(context, color: t.ink),
                   ),
                   gapH8,
                   CatchMetaRow(

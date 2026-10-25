@@ -250,14 +250,7 @@ class CatchPosterHeader extends StatelessWidget {
                   title,
                   maxLines: titleMaxLines,
                   overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.clubDisplay(
-                    context,
-                    step: compact
-                        ? CatchTextStylesSize.s
-                        : CatchTextStylesSize.m,
-                    height: 0.94,
-                    color: colors.ink,
-                  ),
+                  style: CatchTextStyles.displayXs(context, color: colors.ink),
                 ),
               ),
               if (showArrow) ...[

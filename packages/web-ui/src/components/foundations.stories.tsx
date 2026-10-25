@@ -18,6 +18,12 @@ export default meta;
 type Story = StoryObj<FoundationStoryArgs>;
 
 const textVariants: readonly CatchTextVariant[] = [
+  "displayXs",
+  "displayS",
+  "displayM",
+  "displayL",
+  "displayXl",
+  "displayXxl",
   "headline",
   "titleL",
   "sectionTitle",

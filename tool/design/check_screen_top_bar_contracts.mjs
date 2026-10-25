@@ -87,7 +87,6 @@ const manualHeaderRoleOwners = new Map([
     new Set([
       "CatchTextStyles.titleL",
       "CatchTextStyles.headline",
-      "CatchTextStyles.headlineS",
     ]),
   ],
 ]);

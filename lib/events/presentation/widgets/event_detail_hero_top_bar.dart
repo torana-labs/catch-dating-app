@@ -72,10 +72,8 @@ class EventDetailHeroTopBar extends StatelessWidget {
                   .l10n
                   .eventsEventDetailHeroAppBarTitleEventDetailCollapsedTitle,
             ),
-            style: CatchTextStyles.eventDisplay(
+            style: CatchTextStyles.displayXs(
               context,
-              step: CatchTextStylesSize.m,
-              height: 0.95,
               color: collapsedForeground,
             ),
           ),
@@ -218,13 +216,7 @@ class EventPhotoHeroSurface extends StatelessWidget {
                 event.title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.eventDisplay(
-                  context,
-                  step: CatchTextStylesSize.l,
-                  height: CatchLayout.eventDetailTicketTitleLineHeight,
-                  weight: FontWeight.w700,
-                  color: d.ink,
-                ),
+                style: CatchTextStyles.displayS(context, color: d.ink),
               ),
             ],
           ),
@@ -348,13 +340,7 @@ class EventDetailTicketSurface extends StatelessWidget {
               event.title,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.eventDisplay(
-                context,
-                step: CatchTextStylesSize.l,
-                height: CatchLayout.eventDetailTicketTitleLineHeight,
-                weight: FontWeight.w700,
-                color: titleColor,
-              ),
+              style: CatchTextStyles.displayS(context, color: titleColor),
             ),
             if (!compact) ...[
               const SizedBox(height: CatchLayout.detailScreenInlineRowGap),

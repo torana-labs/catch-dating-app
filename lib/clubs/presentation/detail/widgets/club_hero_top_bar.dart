@@ -117,12 +117,7 @@ class ClubHeroTopBar extends StatelessWidget {
             textKey: ValueKey(
               context.l10n.clubsClubHeroAppBarTitleClubDetailCollapsedTitle,
             ),
-            style: CatchTextStyles.clubDisplay(
-              context,
-              step: CatchTextStylesSize.m,
-              height: CatchLayout.clubDetailHeroCollapsedTitleLineHeight,
-              color: t.ink,
-            ),
+            style: CatchTextStyles.displayXs(context, color: t.ink),
           ),
           leading: Padding(
             padding: _clubHeroLeadingPadding,
@@ -233,12 +228,7 @@ double _heroCaptionExtentFor(
   final titlePainter = TextPainter(
     text: TextSpan(
       text: title,
-      style: CatchTextStyles.clubDisplay(
-        context,
-        step: CatchTextStylesSize.l,
-        height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
-        color: t.ink,
-      ),
+      style: CatchTextStyles.displayS(context, color: t.ink),
     ),
     maxLines: 2,
     ellipsis: '...',
@@ -370,12 +360,7 @@ class ClubHeroHeader extends StatelessWidget {
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.clubDisplay(
-                context,
-                step: CatchTextStylesSize.l,
-                height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
-                color: t.ink,
-              ),
+              style: CatchTextStyles.displayS(context, color: t.ink),
             ),
             const SizedBox(height: CatchLayout.clubDetailHeroTitleLocationGap),
             Row(
@@ -474,12 +459,7 @@ class ClubHeroHeader extends StatelessWidget {
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.clubDisplay(
-                  context,
-                  step: CatchTextStylesSize.l,
-                  height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
-                  color: t.ink,
-                ),
+                style: CatchTextStyles.displayS(context, color: t.ink),
               ),
               const SizedBox(
                 height: CatchLayout.clubDetailHeroTitleLocationGap,

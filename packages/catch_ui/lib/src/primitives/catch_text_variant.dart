@@ -1,11 +1,18 @@
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/widgets.dart';
 
-/// Function-family text roles shared with the web `CatchText`.
+/// Text roles shared with the web `CatchText`: the six display steps and the
+/// function family.
 ///
 /// Each value names the [CatchTextStyles] role it renders, so Flutter and
 /// React offer the same role vocabulary.
 enum CatchTextVariant {
+  displayXs,
+  displayS,
+  displayM,
+  displayL,
+  displayXl,
+  displayXxl,
   headline,
   titleL,
   sectionTitle,
@@ -22,6 +29,30 @@ enum CatchTextVariant {
 
   /// The [CatchTextStyles] role for this variant, optionally recolored.
   TextStyle style(BuildContext context, {Color? color}) => switch (this) {
+    CatchTextVariant.displayXs => CatchTextStyles.displayXs(
+      context,
+      color: color,
+    ),
+    CatchTextVariant.displayS => CatchTextStyles.displayS(
+      context,
+      color: color,
+    ),
+    CatchTextVariant.displayM => CatchTextStyles.displayM(
+      context,
+      color: color,
+    ),
+    CatchTextVariant.displayL => CatchTextStyles.displayL(
+      context,
+      color: color,
+    ),
+    CatchTextVariant.displayXl => CatchTextStyles.displayXl(
+      context,
+      color: color,
+    ),
+    CatchTextVariant.displayXxl => CatchTextStyles.displayXxl(
+      context,
+      color: color,
+    ),
     CatchTextVariant.headline => CatchTextStyles.headline(
       context,
       color: color,

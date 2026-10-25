@@ -70,7 +70,7 @@ class CatchFrameworkErrorState extends StatelessWidget {
                       gapH18,
                       Text(
                         copy.title,
-                        style: CatchTextStyles.headlineS(context),
+                        style: CatchTextStyles.displayXs(context),
                         textAlign: TextAlign.center,
                       ),
                       gapH8,

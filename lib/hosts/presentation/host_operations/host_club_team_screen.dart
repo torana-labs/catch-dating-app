@@ -405,7 +405,7 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
               Text(
                 profile.displayName,
                 textAlign: TextAlign.center,
-                style: CatchTextStyles.headlineS(context),
+                style: CatchTextStyles.displayXs(context),
               ),
               if (roleTitle?.isNotEmpty == true) ...[
                 gapH8,

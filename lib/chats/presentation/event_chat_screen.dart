@@ -554,7 +554,7 @@ class EventChatPageBody extends StatelessWidget {
                   : !access.isRoomOpen
                   ? l.eventChatNotOpen
                   : l.eventChatJoinTitle,
-              style: CatchTextStyles.headlineS(context),
+              style: CatchTextStyles.displayXs(context),
             ),
             gapH16,
             CatchText(
@@ -629,7 +629,7 @@ class EventChatPageBody extends StatelessWidget {
                       children: [
                         Text(
                           l.eventChatEmptyTitle,
-                          style: CatchTextStyles.headlineS(context),
+                          style: CatchTextStyles.displayXs(context),
                         ),
                         gapH12,
                         CatchText(

@@ -39,7 +39,7 @@ class EventSuccessCountdownText extends StatelessWidget {
               child: Text(
                 value,
                 key: ValueKey(value),
-                style: CatchTextStyles.display(context, color: t.surface),
+                style: CatchTextStyles.displayL(context, color: t.surface),
               ),
             ),
             gapH4,

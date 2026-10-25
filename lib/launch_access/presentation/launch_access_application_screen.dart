@@ -253,7 +253,7 @@ class _LaunchAccessApplicationFormState
               context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTextJoinTheNextCity,
-              style: CatchTextStyles.headlineS(context, color: t.ink),
+              style: CatchTextStyles.displayXs(context, color: t.ink),
             ),
             gapH8,
             CatchText(

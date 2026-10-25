@@ -132,11 +132,7 @@ class EventDateRailCard extends StatelessWidget {
                       effectiveTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.eventDisplay(
-                        context,
-                        step: CatchTextStylesSize.s,
-                        height: 1.06,
-                      ),
+                      style: CatchTextStyles.displayXs(context),
                     ),
                     if (effectiveSupporting != null &&
                         effectiveSupporting.isNotEmpty) ...[
@@ -581,12 +577,7 @@ class DateRail extends StatelessWidget {
                   context.l10n.eventsEventDateRailCardTextDay(
                     day: startTime.day,
                   ),
-                  style: CatchTextStyles.eventDisplay(
-                    context,
-                    step: CatchTextStylesSize.l,
-                    height: 0.9,
-                    color: onColor,
-                  ),
+                  style: CatchTextStyles.displayS(context, color: onColor),
                 ),
                 gapH3,
                 Text(
