@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit --pretty false"
@@ -21,7 +24,8 @@
     "react": "^19.0.0"
   },
   "dependencies": {
-    "lottie-web": "5.13.0"
+    "lottie-web": "5.13.0",
+    "qrcode-generator": "2.0.4"
   },
   "devDependencies": {
     "@storybook/react-vite": "^10.6.1",

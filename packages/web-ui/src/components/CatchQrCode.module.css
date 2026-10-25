@@ -1,0 +1,20 @@
+/*
+ * Website v2 QR code (CAT-249): ink modules on white in every theme, so a
+ * camera always reads dark on light. Modules never draw smaller than 3px,
+ * below which a long link failed to scan from a 1x screen.
+ */
+.code {
+  --catch-qr-size: 112px;
+  --catch-qr-extent: max(var(--catch-qr-size), calc(var(--catch-qr-modules) * 3px));
+  display: block;
+  flex: none;
+  width: var(--catch-qr-extent);
+  height: var(--catch-qr-extent);
+  border-radius: var(--catch-radius-sm);
+}
+
+.code[data-size="s"] { --catch-qr-size: 96px; }
+.code[data-size="l"] { --catch-qr-size: 160px; }
+
+.background { fill: var(--catch-palette-white); }
+.modules { fill: var(--catch-palette-ink); }

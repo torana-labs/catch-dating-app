@@ -59,6 +59,8 @@ export type {
   CatchPageBodyProps,
   CatchSpacingStep,
 } from "./components/CatchPageBody";
+export {CatchQrCode} from "./components/CatchQrCode";
+export type {CatchQrCodeErrorCorrection, CatchQrCodeProps, CatchQrCodeSize} from "./components/CatchQrCode";
 export {CatchRatingSummary} from "./components/CatchRatingSummary";
 export type {CatchRatingSummaryProps, CatchRatingSummaryRow} from "./components/CatchRatingSummary";
 export {CatchReviewItem} from "./components/CatchReviewItem";
@@ -94,6 +96,8 @@ export {CatchStarInput} from "./components/CatchStarInput";
 export type {CatchStarInputProps} from "./components/CatchStarInput";
 export {CatchStarRating} from "./components/CatchStarRating";
 export type {CatchStarRatingProps, CatchStarRatingSize} from "./components/CatchStarRating";
+export {CatchStoreButton} from "./components/CatchStoreButton";
+export type {CatchStoreButtonProps, CatchStoreButtonSize, CatchStoreButtonStore} from "./components/CatchStoreButton";
 export {CatchText} from "./components/CatchText";
 export type {
   CatchTextAlign,

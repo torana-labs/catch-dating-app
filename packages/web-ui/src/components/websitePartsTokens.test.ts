@@ -9,7 +9,10 @@ import {grounds} from "./palette";
 const read = (relative: string) => fs.readFileSync(fileURLToPath(new URL(relative, import.meta.url)), "utf8");
 const strip = (css: string) => css.replace(/\/\*[\s\S]*?\*\//g, "");
 const tokens = read("../../../web-config/generated/catch-tokens.css");
-const parts = ["CatchDateTile", "CatchLinkTile", "CatchRatingSummary", "CatchReviewItem", "CatchStarInput", "CatchStarRating"];
+const parts = [
+  "CatchDateTile", "CatchLinkTile", "CatchQrCode", "CatchRatingSummary", "CatchReviewItem", "CatchStarInput",
+  "CatchStarRating", "CatchStoreButton",
+];
 const sheets: Record<string, string> = Object.fromEntries([
   ...parts.map((name) => [name, strip(read(`./${name}.module.css`))]),
   ["grounds", strip(read("./grounds.module.css"))],
@@ -18,8 +21,9 @@ const declared = (css: string) => new Set([...css.matchAll(/(--catch-[\w-]+)\s*:
 const known = new Set([
   ...declared(tokens),
   ...Object.values(sheets).flatMap((css) => [...declared(css)]),
-  // Set inline by CatchRatingSummary for each bar.
+  // Set inline: CatchRatingSummary for each bar, CatchQrCode for its module count.
   "--catch-rating-share",
+  "--catch-qr-modules",
 ]);
 
 describe("Website v2 part tokens", () => {

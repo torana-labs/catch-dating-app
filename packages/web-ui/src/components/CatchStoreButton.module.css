@@ -1,0 +1,83 @@
+/*
+ * Website v2 app store button (CAT-249), drawn to D20: theme primary fill and
+ * label, 4px corners, a label-colour overlay on hover and press, a 2px ring
+ * outside the button on keyboard focus, and the 0.97 press scale.
+ */
+.button {
+  --catch-store-height: var(--catch-space-s12);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--catch-space-micro10);
+  box-sizing: border-box;
+  min-height: var(--catch-store-height);
+  padding: var(--catch-space-micro6) var(--catch-space-s5) var(--catch-space-micro6) var(--catch-space-micro14);
+  border-radius: var(--catch-radius-xs);
+  background: var(--catch-theme-primary);
+  color: var(--catch-theme-primary-ink);
+  text-decoration: none;
+  transition: transform var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.button[data-size="m"] {
+  --catch-store-height: var(--catch-space-s10);
+  padding-inline: var(--catch-space-s3) var(--catch-space-s4);
+}
+
+.button::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.button:hover::after { opacity: 0.08; }
+.button:active::after { opacity: 0.14; }
+.button:active { transform: scale(0.97); }
+
+.button:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.mark {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  fill: currentColor;
+}
+
+.mark[data-outline] {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+}
+
+.kicker {
+  font-size: var(--catch-typography-web-status-size);
+  font-weight: 500;
+  line-height: var(--catch-typography-web-status-line-height);
+}
+
+.label {
+  font-size: var(--catch-typography-web-control-size);
+  font-weight: 600;
+  line-height: var(--catch-typography-web-control-line-height);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button { transition: none; }
+  .button:active { transform: none; }
+}
