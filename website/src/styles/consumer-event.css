@@ -6,8 +6,9 @@
 .consumer-event-page .event-detail-media { border-radius: 5px; aspect-ratio: 1; background: var(--catch-color-light-primary-soft); }
 .consumer-event-page .event-detail-ticket__body { padding: var(--catch-space-s1) 0 0; }
 .consumer-event-page .event-detail-ticket__body > .ui-label { display: block; margin-bottom: var(--catch-space-s3); color: var(--website-text-muted); }
-.consumer-event-page .event-detail-ticket__body > a:has(.explore-badge) { display: inline-block; min-height: 32px; }
-.consumer-event-page .event-detail-ticket__body > a:has(.explore-badge):hover { text-decoration: underline; text-underline-offset: 3px; }
+/* The hero's badge link sits right after the eyebrow. */
+.consumer-event-page .event-detail-ticket__body > .ui-label + a { display: inline-block; min-height: 32px; }
+.consumer-event-page .event-detail-ticket__body > .ui-label + a:hover { text-decoration: underline; text-underline-offset: 3px; }
 .consumer-event-page .event-detail-ticket__body h1 { font-family: var(--catch-font-voice),sans-serif; font-size: clamp(44px,4.8vw,72px); font-stretch: 78%; line-height: 1; letter-spacing: -.04em; margin: var(--catch-space-s3) 0 var(--catch-space-s6); text-wrap: pretty; }
 .consumer-event-page .event-detail-host-byline { padding-bottom: var(--catch-space-s6); border-bottom: 1px solid var(--website-line-strong); }
 .consumer-event-page .event-detail-host-byline .activity-mark { border-radius: var(--catch-radius-xs); }
