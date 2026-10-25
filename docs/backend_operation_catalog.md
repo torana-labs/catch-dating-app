@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.104.0
-updated: 2026-10-23
+version: 1.105.0
+updated: 2026-10-25
 owner: recursive_audit_loop
 status: active
 ---
@@ -247,6 +247,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `adminApplyEventMessagingBudget` | Admin callable | React Finance workspace and guarded Admin CLI | Both exact channel budget documents, immutable `eventMessagingBudgetApplicationReceipts/{receiptId}`, `adminAuditLogs/{id}`; transactionally rereads the approved decision, runtime, sender and budgets | Restricted to Admin Owner or Finance. Consumes one exact current approved revision, rejects changed setup or charges, preserves conservative charges, advances both budget revisions, and binds the current RCS agent privately. Both ceilings remain paused, so no spending, provider call, outbox, dispatch, runtime configuration or worker activation occurs. |
 | `adminPublishExternalEvent` | Callable | React Events external-supply workspace | `externalEvents/{eventId}`, `externalEventPublicationReceipts/{receiptId}` | Dry-run/apply authority for one reviewed outbound-only event. Enforces market identity, organizer capability/visibility ceiling, exact blocker decisions, immutable idempotency, and never writes canonical `events`. |
 | `adminTakedownExternalEvent` | Callable | React Events external-supply workspace | `externalEvents/{eventId}`, `externalEventPublicationReceipts/{receiptId}` | Dry-run/apply takedown; preserves the record and attribution, records takedown metadata, and is idempotent. |
+| `syncExternalEventVisibility` | Firestore trigger on `organizers/{organizerId}` writes | Backend | `externalEvents/{eventId}.discovery.appVisibility` | Keeps every external event's app visibility equal to its organizer's, in both directions; a deleted organizer hides its events. Reads nothing when the organizer's app visibility is unchanged and writes only rows that differ. |
 | `createClub`, `updateClub`, `archiveClub`, `deleteClub`, `joinClub`, `leaveClub`, `createClubPost`, `requestClubClaim`, `adminDecideClubClaim` | Callable compatibility wrappers | Released clients only | legacy club projection and/or canonical organizer adapter | No new client may adopt these names. Remove only after released-client and remote-parity evidence. |
 | `setReviewResponse` | Callable | Claimed organizer review UI | `reviews/{reviewId}.ownerResponse` | Server-owned owner response on public review documents. Only managers for the owning organizer can write responses; app and website render the canonical review snapshot. |
 | `startOrganizerConversation` | Callable | `ClubHostContactController.startConversation` compatibility controller from organizer or event detail | `matches/{opaqueScopedId}` | Validates `organizerId` and optional `eventId`, prefers canonical organizer-manager authority with a legacy-club fallback during backfill, and checks the block/deleted-user boundary. New documents carry both `organizerId` and the compatibility `clubId`; legacy pair-id `clubHostInquiry` threads remain reusable. `startClubHostConversation` is a released-client wrapper only. |

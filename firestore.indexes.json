@@ -4055,6 +4055,32 @@
       ]
     },
     {
+      "collectionGroup": "externalEvents",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discovery.citySlug",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "discovery.appVisibility",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "publicationStatus",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "startTime",
+          "mode": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "eventParticipations",
       "queryScope": "COLLECTION",
       "fields": [

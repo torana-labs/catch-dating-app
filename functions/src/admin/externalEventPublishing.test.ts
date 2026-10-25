@@ -248,6 +248,7 @@ function externalEventDocument(overrides: FakeData = {}) {
       countryCode: "IN",
       availability: "read_only_external",
       manualApprovalRequired: true,
+      appVisibility: "discoverable",
     },
     dedupe: {
       normalizedEventKey: "afterfly|takeoff-run|2099-01-01",
