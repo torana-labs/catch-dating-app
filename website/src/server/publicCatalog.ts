@@ -27,6 +27,12 @@ import {
   type PublicExternalEventRow,
 } from "./repositories/externalEventRepository";
 import {withPublicReviews} from "./repositories/reviewRepository";
+import {
+  eventPageListing,
+  findEventPage,
+  findOrganizerPage,
+  organizerPageListings,
+} from "./repositories/publicPageRepository";
 import {organizerPath, publicDocumentId} from "./publicReadPolicy";
 
 const markets = new Set(activeEventLiveCities.map(city => city.slug));
@@ -69,11 +75,42 @@ export interface PublicOrganizerDetail {
 }
 
 /**
- * One organizer page: its listing with events and reviews, then the verified
- * organizers its recommendation rail can show. Reads scale with that
- * organizer, not with the catalog.
+ * One organizer page from its read model: one document holds the listing,
+ * its events and reviews, and the recommendation rail. Until every
+ * environment is backfilled (functions/scripts/backfill-public-pages.cjs
+ * --check), a page without a read model is assembled from its sources under
+ * the same publication rules, so a withdrawn page stays withdrawn either way.
  */
 export async function assembleOrganizerDetailCatalog(
+  db: PublicReader, pathname: string, readAt: number
+): Promise<PublicOrganizerDetail | null> {
+  return withinReadDeadline((async () => {
+    const read = await findOrganizerPage(db, pathname);
+    if (read) {
+      const listings = organizerPageListings(read.page, readAt);
+      return {catalog: {listings, readAt}, route: {listing: listings[0], isLegacyPath: read.isLegacyPath}};
+    }
+    return assembleOrganizerDetailFromSources(db, pathname, readAt);
+  })());
+}
+
+/** One event page from its read model, or from its sources until backfilled. */
+export async function assembleEventDetailCatalog(
+  db: PublicReader, eventId: string, readAt: number
+): Promise<PublicCatalog | null> {
+  return withinReadDeadline((async () => {
+    const page = await findEventPage(db, eventId);
+    if (page) return {listings: [eventPageListing(page, readAt)], readAt};
+    return assembleEventDetailFromSources(db, eventId, readAt);
+  })());
+}
+
+/**
+ * One organizer page from its sources: its listing with events and reviews,
+ * then the verified organizers its recommendation rail can show. Reads scale
+ * with that organizer, not with the catalog.
+ */
+export async function assembleOrganizerDetailFromSources(
   db: PublicReader, pathname: string, readAt: number
 ): Promise<PublicOrganizerDetail | null> {
   return withinReadDeadline((async () => {
@@ -89,8 +126,8 @@ export async function assembleOrganizerDetailCatalog(
   })());
 }
 
-/** One event page: the event attached to its organizer listing, with reviews for both. */
-export async function assembleEventDetailCatalog(
+/** One event page from its sources: the event on its organizer listing, with reviews for both. */
+export async function assembleEventDetailFromSources(
   db: PublicReader, eventId: string, readAt: number
 ): Promise<PublicCatalog | null> {
   return withinReadDeadline((async () => {

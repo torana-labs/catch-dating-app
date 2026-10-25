@@ -81,7 +81,8 @@ test("runtime validator adapter agrees with repository generated validators", ()
 });
 test("webpack's runtime validator replacement retains external-event validation", () => {
   assert.deepEqual(Object.keys(narrow).sort(), [
-    "validateExternalEventDocument", "validateOrganizerDocument", "validateWebsiteHostListingProjection",
+    "validateEventPublicPageDocument", "validateExternalEventDocument", "validateOrganizerDocument",
+    "validateOrganizerPublicPageDocument", "validateWebsiteHostListingProjection",
   ]);
   const valid = JSON.parse(readFileSync(new URL("../../../contracts/fixtures/valid/external_event_doc.json", import.meta.url), "utf8"));
   for (const value of [valid, {...valid, eventId: 17}, {...valid, booking: {}}, null]) {
@@ -89,4 +90,17 @@ test("webpack's runtime validator replacement retains external-event validation"
   }
   assert.equal(narrow.validateExternalEventDocument(valid), true);
   assert.equal(narrow.validateExternalEventDocument({...valid, booking: {}}), false);
+});
+test("webpack's runtime validator replacement validates the public page read models", () => {
+  const fixture = (name) => JSON.parse(readFileSync(new URL(`../../../contracts/fixtures/${name}`, import.meta.url), "utf8"));
+  for (const [name, key] of [["organizer_public_page_doc", "validateOrganizerPublicPageDocument"],
+    ["event_public_page_doc", "validateEventPublicPageDocument"]]) {
+    const valid = fixture(`valid/${name}.json`);
+    assert.equal(narrow[key](valid), true);
+    for (const value of [valid, {...valid, schemaVersion: 2}, {...valid, privateToken: "no"}, null]) {
+      assert.equal(narrow[key](value), repository[key](value));
+    }
+  }
+  assert.equal(narrow.validateEventPublicPageDocument(fixture("invalid/event_public_page_doc_balanced_label.json")), false);
+  assert.equal(narrow.validateOrganizerPublicPageDocument(fixture("invalid/organizer_public_page_doc_contact_field.json")), false);
 });

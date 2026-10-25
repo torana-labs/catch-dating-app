@@ -139,9 +139,14 @@ function allowedExternalImport(sourceRelativePath, targetAbsolutePath) {
     "website/scripts/next/externalEventProjection.mjs",
     "tool/contracts/generated/schema_contract_validators.mjs",
   ].some(target => targetAbsolutePath === path.join(repoRoot, target))) return true;
+  // The public page read models are Functions documents; their reader
+  // validates them with the generated validators and types.
+  if (sourceRelativePath === "server/repositories/publicPageRepository.ts" &&
+    targetAbsolutePath === path.join(repoRoot, "tool/contracts/generated/schema_contract_validators.mjs")) return true;
   return (
     sourceRelativePath === "features/organizers/types.ts" ||
-    sourceRelativePath === "firebase.ts"
+    sourceRelativePath === "firebase.ts" ||
+    sourceRelativePath === "server/repositories/publicPageRepository.ts"
   ) && isInside(functionsGeneratedRoot, targetAbsolutePath);
 }
 
@@ -432,6 +437,12 @@ function runSelfTest() {
     path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), true);
   assert.equal(allowedExternalImport("app/leak.ts",
     path.join(repoRoot, "website/scripts/next/organizerProjection.mjs")), false);
+  assert.equal(allowedExternalImport("server/repositories/publicPageRepository.ts",
+    path.join(repoRoot, "functions/src/shared/generated/organizerPublicPageDocument.ts")), true);
+  assert.equal(allowedExternalImport("server/repositories/publicPageRepository.ts",
+    path.join(repoRoot, "functions/src/publicPages/pageModel.ts")), false);
+  assert.equal(allowedExternalImport("server/repositories/organizerRepository.ts",
+    path.join(repoRoot, "functions/src/shared/generated/organizerPublicPageDocument.ts")), false);
   assert.equal(allowedExternalImport("stories/fixtures/demoWorld.ts",
     path.join(repoRoot, "tool/demo/demo_seed/scenarios/host-marketing-india.json")), true);
   assert.equal(allowedExternalImport("stories/EventOffer.stories.tsx",

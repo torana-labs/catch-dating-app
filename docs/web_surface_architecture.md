@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.39.0
+version: 0.40.0
 updated: 2026-10-25
 owner: web_platform
 status: active
@@ -466,8 +466,31 @@ The public website reads Firestore only on the server, through these layers:
 | Route | Assembler | Reads |
 |---|---|---|
 | `/`, `/explore/`, `/organizers/`, `/claim/`, sitemap | `assemblePublicCatalog` | Published organizers, Catch events and external events, at most 400 each |
-| `/organizers/<slug>/` and legacy aliases | `assembleOrganizerDetailCatalog` | One to three path reads, that organizer's events (at most 200 per kind, Catch events also by legacy `clubId`), three trust reads for recommendations, bounded reviews |
-| `/events/<id>/` | `assembleEventDetailCatalog` | Two document gets, the organizer plus a path-uniqueness read, bounded reviews |
+| `/organizers/<slug>/` and legacy aliases | `assembleOrganizerDetailCatalog` | One `organizerPublicPage` read by `path` (a second by `legacyPaths` for an alias) |
+| `/events/<id>/` | `assembleEventDetailCatalog` | One `eventPublicPage` document get |
+
+Organizer and event pages read Functions-maintained read models
+(`functions/src/publicPages`, CAT-250). Each document holds exactly what one
+page shows, built with a port of this reader's projectors (`publicReadPolicy`,
+`projectPublicOrganizer`, `projectLivePublicCatchEvent`, `publicExternalEvent`,
+`projectPublicReview`). The shared inputs and expected output in
+`contracts/fixtures/public_pages` hold the two to the same result:
+`website/src/server/publicPageParity.test.ts` writes the expected file and
+`functions/src/publicPages/parity.test.ts` must reproduce it. The read models
+also drop dating framing (the `balanced` label, the `rotations` experience and
+the `singlesMixer` activity, CAT-247). Readers treat an event that ended after
+its page was built as past.
+
+Until every environment is backfilled, a page without a valid read model is
+assembled from its sources (`assembleOrganizerDetailFromSources`,
+`assembleEventDetailFromSources`) under the same publication rules, so a
+withdrawn page stays withdrawn either way. Those source reads are one to three
+path reads, that organizer's events (at most 200 per kind, Catch events also
+by legacy `clubId`), three trust reads for recommendations and bounded reviews
+for an organizer page, and two document gets, the organizer plus a
+path-uniqueness read and bounded reviews for an event page.
+`node functions/scripts/backfill-public-pages.cjs --project <id> --check`
+reports whether an environment still has pages without read models.
 
 `assembleRouteCatalog` chooses the assembler from the path, and
 `resolvePublicRoute` is its only caller, so the proxy's status and redirect
@@ -484,8 +507,11 @@ collections, a crossed catalog bound returns 503 only on `/`, `/explore/`,
 serving. `website/scripts/next/lifecycleAcceptance.mjs` and
 `failureAcceptance.mjs` exercise both behaviors against the isolated emulator.
 
-Freshness is unchanged by this layer: there is no cross-request or process
-cache. Unpublishing takes effect on the next server request, and open tabs
+There is no cross-request or process cache. Unpublishing takes effect on the
+next server request for discovery routes, and as soon as the read-model
+trigger has rebuilt the organizer's pages (seconds) for organizer and event
+routes. A rebuild that read older sources than the last committed one is
+discarded, so it cannot revive a withdrawn page. Open tabs
 refresh `/api/public-catalog` every 25 seconds and withhold content once a
 read is 30 seconds old (`website/scripts/next/lifecycleAcceptance.mjs`).
 Caching is a separate decision with two forms: accept a bounded staleness

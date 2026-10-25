@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_public_pages.schema.json",
+  "title": "OrganizerPublicPageDocument",
+  "description": "Read model holding exactly what one public organizer page shows, stored at organizerPublicPage/{organizerId}. Functions rebuild it whenever the organizer, its events, its imported events or its reviews change, using the website publication and suppression rules. A page that fails those rules has no document. It never holds contact details, owner identities, rosters or dating fields. Only the Admin SDK reads it.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerPublicPage",
+  "x-firestore-path": "organizerPublicPage/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-catch-ownership": "trigger-owned",
+  "x-owner": "functions/src/publicPages: organizer, event, external event, review and follower triggers, the scheduled reconcile and the backfill script. No client reads or writes.",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "path",
+    "legacyPaths",
+    "builtAt",
+    "contentHash",
+    "identity",
+    "links",
+    "upcomingEvents",
+    "pastMoments",
+    "reviewSummary",
+    "latestReviews",
+    "followerCount",
+    "claim",
+    "capabilities",
+    "recommendable",
+    "recommendedOrganizers",
+    "listing"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "organizerId": {
+      "$ref": "../shared/public_page_common.schema.json#/definitions/publicDocumentId"
+    },
+    "path": {
+      "$ref": "../shared/public_page_common.schema.json#/definitions/organizerPath"
+    },
+    "legacyPaths": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/public_page_common.schema.json#/definitions/organizerPath"
+      }
+    },
+    "builtAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "contentHash": {
+      "type": "string",
+      "description": "SHA-256 of the page content without builtAt, so unchanged rebuilds skip the write.",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "headline", "description", "category", "city", "citySlug", "region", "country", "logo", "formats", "verified", "indexing"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "headline": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "city": {
+          "type": "string",
+          "minLength": 1
+        },
+        "citySlug": {
+          "type": "string",
+          "minLength": 1
+        },
+        "region": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "logo": {
+          "$ref": "../public/website_host_listing_projection.schema.json#/definitions/logo"
+        },
+        "formats": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "verified": {
+          "type": "boolean"
+        },
+        "indexing": {
+          "type": "string",
+          "enum": ["index, follow", "noindex, follow"]
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "description": "Owner links in display order. Empty until owner link editing ships (CAT-254).",
+      "maxItems": 20,
+      "items": {
+        "$ref": "../shared/public_page_common.schema.json#/definitions/ownerLink"
+      }
+    },
+    "upcomingEvents": {
+      "type": "array",
+      "description": "Events from every source that had not ended when the page was built, soonest first. Readers move events that have since ended into past moments.",
+      "maxItems": 50,
+      "items": {
+        "$ref": "../shared/public_page_common.schema.json#/definitions/pageEvent"
+      }
+    },
+    "pastMoments": {
+      "type": "array",
+      "description": "Ended events from every source, most recent first.",
+      "maxItems": 24,
+      "items": {
+        "$ref": "../shared/public_page_common.schema.json#/definitions/pageEvent"
+      }
+    },
+    "reviewSummary": {
+      "$ref": "../shared/public_page_common.schema.json#/definitions/reviewSummary"
+    },
+    "latestReviews": {
+      "type": "array",
+      "description": "Published reviews, newest first, each marked verified or unverified. Empty when public reviews are not readable.",
+      "maxItems": 50,
+      "items": {
+        "$ref": "../shared/public_page_common.schema.json#/definitions/publicReview"
+      }
+    },
+    "followerCount": {
+      "type": "integer",
+      "description": "Refreshed in batches, not on every follow.",
+      "minimum": 0
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "claimable", "href", "label"],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["unclaimed", "claimPending", "claimed", "verified"]
+        },
+        "claimable": {
+          "type": "boolean"
+        },
+        "href": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "capabilities": {
+      "$ref": "../public/website_host_listing_projection.schema.json#/definitions/capabilities"
+    },
+    "recommendable": {
+      "type": "boolean",
+      "description": "Whether this organizer is verified and publicly readable, so other pages may recommend it."
+    },
+    "recommendedOrganizers": {
+      "type": "array",
+      "description": "Today's recommendation rail: up to three other recommendable organizers in id order. Retires with the v2 organizer page (CAT-251).",
+      "maxItems": 3,
+      "items": {
+        "$ref": "../shared/public_page_common.schema.json#/definitions/listing"
+      }
+    },
+    "listing": {
+      "$ref": "../shared/public_page_common.schema.json#/definitions/listing"
+    }
+  }
+}

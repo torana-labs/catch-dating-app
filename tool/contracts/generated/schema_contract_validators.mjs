@@ -636,6 +636,9 @@ import {
   eventDocumentSchema,
   eventPlanChangeDocumentSchema,
   externalEventDocumentSchema,
+  organizerPublicPageDocumentSchema,
+  eventPublicPageDocumentSchema,
+  publicPageBuildDocumentSchema,
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
   eventInviteLinkSecretDocumentSchema,
@@ -1923,6 +1926,9 @@ export const validateClubClaimRequestDocument = ajv.compile(clubClaimRequestDocu
 export const validateEventDocument = ajv.compile(eventDocumentSchema);
 export const validateEventPlanChangeDocument = ajv.compile(eventPlanChangeDocumentSchema);
 export const validateExternalEventDocument = ajv.compile(externalEventDocumentSchema);
+export const validateOrganizerPublicPageDocument = ajv.compile(organizerPublicPageDocumentSchema);
+export const validateEventPublicPageDocument = ajv.compile(eventPublicPageDocumentSchema);
+export const validatePublicPageBuildDocument = ajv.compile(publicPageBuildDocumentSchema);
 export const validateEventPrivateAccessDocument = ajv.compile(eventPrivateAccessDocumentSchema);
 export const validateEventInviteLinkDocument = ajv.compile(eventInviteLinkDocumentSchema);
 export const validateEventInviteLinkSecretDocument = ajv.compile(eventInviteLinkSecretDocumentSchema);

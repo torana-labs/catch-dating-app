@@ -2163,6 +2163,22 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/externalEventDocument.ts",
   },
   {
+    name: "OrganizerPublicPageDocument",
+    source: "firestore/organizer_public_pages.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerPublicPageDocument.ts",
+  },
+  {
+    name: "EventPublicPageDocument",
+    source: "firestore/event_public_pages.schema.json",
+    typeOutput: "functions/src/shared/generated/eventPublicPageDocument.ts",
+  },
+  {
+    name: "PublicPageBuildDocument",
+    source: "firestore/public_page_builds.schema.json",
+    typeOutput: "functions/src/shared/generated/publicPageBuildDocument.ts",
+  },
+  {
     name: "EventPrivateAccessDocument",
     source: "firestore/event_private_access.schema.json",
     typeOutput:
@@ -6864,15 +6880,27 @@ async function main() {
   );
   const eventDisplayProperties = bundledSchemas.get("WebsiteHostListingProjection")
     .definitions.catchEvent.properties;
+  const publicEventDisplaySchemas = JSON.stringify({
+    photoUrl: eventDisplayProperties.photoUrl,
+    meetingLocation: eventDisplayProperties.meetingLocation,
+    itinerary: eventDisplayProperties.itinerary,
+  }, null, 2);
   addTextOutput(
     "website/src/shared/contracts/generated/publicEventDisplaySchemas.ts",
     "// GENERATED CODE - DO NOT MODIFY BY HAND.\n" +
     "// Regenerate with: node tool/contracts/generate_schema_contracts.mjs\n" +
-    "export const publicEventDisplaySchemas = " + JSON.stringify({
-      photoUrl: eventDisplayProperties.photoUrl,
-      meetingLocation: eventDisplayProperties.meetingLocation,
-      itinerary: eventDisplayProperties.itinerary,
-    }, null, 2) + " as const;\n"
+    "export const publicEventDisplaySchemas = " +
+    publicEventDisplaySchemas + " as const;\n"
+  );
+  // The public page read models check optional event fields against the
+  // same bundled schemas as the website reader.
+  addTextOutput(
+    "functions/src/shared/generated/publicEventDisplaySchemas.ts",
+    "/* eslint-disable */\n" +
+    "// GENERATED CODE - DO NOT MODIFY BY HAND.\n" +
+    "// Regenerate with: node tool/contracts/generate_schema_contracts.mjs\n" +
+    "export const publicEventDisplaySchemas = " +
+    publicEventDisplaySchemas + " as const;\n"
   );
   addTextOutput(
     "website/src/shared/contracts/generated/joinWaitlistSchemas.ts",
@@ -8228,7 +8256,13 @@ ${sectionSource}\n`;
 
 async function compileFirestoreAdminType(schema, name, allAdminTypeNames) {
   let types = await compileTs(schema, name);
-  types = normalizeTypeReferences(name, types, allAdminTypeNames);
+  // A document may embed another contract twice, such as the public listing
+  // projection; both references name the imported contract type.
+  types = normalizeTypeReferences(name, types, [
+    ...allAdminTypeNames,
+    ...schemaSpecs.map((spec) => spec.name)
+      .filter((specName) => !allAdminTypeNames.includes(specName)),
+  ]);
   return types.trim();
 }
 

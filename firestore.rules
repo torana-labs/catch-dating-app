@@ -2151,6 +2151,21 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Public page read models. Functions rebuild them from published sources
+    // and the website server reads them with the Admin SDK. Clients never
+    // read or write them, whatever their publication state.
+    match /organizerPublicPage/{organizerId} {
+      allow read, write: if false;
+    }
+
+    match /eventPublicPage/{eventId} {
+      allow read, write: if false;
+    }
+
+    match /publicPageBuilds/{organizerId} {
+      allow read, write: if false;
+    }
+
     match /eventPrivateAccess/{eventId} {
       allow read: if isAuthed()
         && resource.data.eventId == eventId

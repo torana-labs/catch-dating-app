@@ -1,0 +1,541 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/public_page_common.schema.json",
+  "title": "Public page read model common definitions",
+  "description": "Shared parts of the organizer and event public page read models. Every value here is already public: the read-model builder projects it through the website publication rules and never copies contact details, owner identities, rosters or dating fields.",
+  "definitions": {
+    "routePath": {
+      "$ref": "../public/website_host_listing_projection.schema.json#/definitions/routePath"
+    },
+    "organizerPath": {
+      "type": "string",
+      "maxLength": 240,
+      "pattern": "^/organizers/(?:[a-z0-9-]+/){1,2}$"
+    },
+    "eventPath": {
+      "type": "string",
+      "maxLength": 200,
+      "pattern": "^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/$"
+    },
+    "publicDocumentId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+    },
+    "httpsUrl": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 4096,
+      "pattern": "^https://"
+    },
+    "publicCatchEvent": {
+      "description": "The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.",
+      "allOf": [
+        {
+          "$ref": "../public/website_host_listing_projection.schema.json#/definitions/catchEvent"
+        }
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "properties": {
+              "activityKind": {
+                "const": "singlesMixer"
+              }
+            },
+            "required": [
+              "activityKind"
+            ]
+          },
+          {
+            "properties": {
+              "admissionLabels": {
+                "contains": {
+                  "const": "balanced"
+                }
+              }
+            },
+            "required": [
+              "admissionLabels"
+            ]
+          },
+          {
+            "properties": {
+              "catchExperienceActivities": {
+                "contains": {
+                  "const": "rotations"
+                }
+              }
+            },
+            "required": [
+              "catchExperienceActivities"
+            ]
+          },
+          {
+            "required": [
+              "scorecard"
+            ]
+          }
+        ]
+      }
+    },
+    "publicExternalEvent": {
+      "description": "The public imported event projection. Booking stays on the source platform.",
+      "allOf": [
+        {
+          "$ref": "../public/website_host_listing_projection.schema.json#/definitions/externalEvent"
+        }
+      ],
+      "not": {
+        "properties": {
+          "activityKind": {
+            "const": "singlesMixer"
+          }
+        },
+        "required": [
+          "activityKind"
+        ]
+      }
+    },
+    "catchBooking": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A Catch-native event books on its Catch event page. Live terms are rechecked by the booking callables, never trusted from this snapshot.",
+      "required": [
+        "kind",
+        "path",
+        "registrationAccess",
+        "spotsLeft"
+      ],
+      "properties": {
+        "kind": {
+          "const": "catch"
+        },
+        "path": {
+          "$ref": "#/definitions/eventPath"
+        },
+        "registrationAccess": {
+          "type": "string",
+          "enum": [
+            "open",
+            "app",
+            "restricted"
+          ]
+        },
+        "spotsLeft": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "externalBooking": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An imported event books on its source platform.",
+      "required": [
+        "kind",
+        "url",
+        "label"
+      ],
+      "properties": {
+        "kind": {
+          "const": "external"
+        },
+        "url": {
+          "$ref": "#/definitions/httpsUrl"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      }
+    },
+    "pageEvent": {
+      "description": "One event on an organizer page, from either source, with where a guest books it.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "eventId",
+            "path",
+            "event",
+            "booking"
+          ],
+          "properties": {
+            "source": {
+              "const": "catch"
+            },
+            "eventId": {
+              "$ref": "#/definitions/publicDocumentId"
+            },
+            "path": {
+              "$ref": "#/definitions/eventPath"
+            },
+            "event": {
+              "$ref": "#/definitions/publicCatchEvent"
+            },
+            "booking": {
+              "$ref": "#/definitions/catchBooking"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "eventId",
+            "path",
+            "event",
+            "booking"
+          ],
+          "properties": {
+            "source": {
+              "const": "external"
+            },
+            "eventId": {
+              "$ref": "#/definitions/publicDocumentId"
+            },
+            "path": {
+              "$ref": "#/definitions/eventPath"
+            },
+            "event": {
+              "$ref": "#/definitions/publicExternalEvent"
+            },
+            "booking": {
+              "$ref": "#/definitions/externalBooking"
+            }
+          }
+        }
+      ]
+    },
+    "eventCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A compact event card without live counts, so a booking on one event never rewrites its siblings' pages.",
+      "required": [
+        "source",
+        "eventId",
+        "path",
+        "title",
+        "activityKind",
+        "startTime",
+        "endTime",
+        "date",
+        "location",
+        "priceLabel",
+        "photoUrl",
+        "booking"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "catch",
+            "external"
+          ]
+        },
+        "eventId": {
+          "$ref": "#/definitions/publicDocumentId"
+        },
+        "path": {
+          "$ref": "#/definitions/eventPath"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "activityKind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priceLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "photoUrl": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/httpsUrl"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "booking": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "path"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "catch"
+                },
+                "path": {
+                  "$ref": "#/definitions/eventPath"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/externalBooking"
+            }
+          ]
+        }
+      },
+      "not": {
+        "properties": {
+          "activityKind": {
+            "const": "singlesMixer"
+          }
+        },
+        "required": [
+          "activityKind"
+        ]
+      }
+    },
+    "reviewSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Published reviews for the organizer. The rating averages verified reviews only, as the organizer rating does; the count and distribution cover every published review, verified or not. Absent values mean public reviews are not readable for this page.",
+      "required": [
+        "readState",
+        "rating",
+        "count",
+        "verifiedCount",
+        "distribution"
+      ],
+      "properties": {
+        "readState": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "disabled"
+          ]
+        },
+        "rating": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 5
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verifiedCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "distribution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+          ],
+          "properties": {
+            "1": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "2": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "3": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "4": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "5": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "publicReview": {
+      "$ref": "../public/website_host_listing_projection.schema.json#/definitions/publicReview"
+    },
+    "ownerLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One owner-managed link on the organizer page. Pinned links lead; a link with showUntil disappears after that time.",
+      "required": [
+        "id",
+        "label",
+        "url",
+        "pinned",
+        "showUntil"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/publicDocumentId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "url": {
+          "$ref": "#/definitions/httpsUrl"
+        },
+        "pinned": {
+          "type": "boolean"
+        },
+        "showUntil": {
+          "$ref": "event_common.schema.json#/definitions/nullableTimestamp"
+        }
+      }
+    },
+    "listing": {
+      "description": "Today's organizer listing projection without its events, so the current pages render from the read model unchanged. Events live in the page sections and are attached at read time.",
+      "allOf": [
+        {
+          "$ref": "../public/website_host_listing_projection.schema.json"
+        }
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "eventSuccessSummary"
+            ]
+          },
+          {
+            "properties": {
+              "catchEvents": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "catchEvents"
+            ]
+          },
+          {
+            "properties": {
+              "externalEvents": {
+                "minItems": 1
+              }
+            },
+            "required": [
+              "externalEvents"
+            ]
+          }
+        ]
+      }
+    },
+    "organizerCard": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The organizer as an event page shows it.",
+      "required": [
+        "organizerId",
+        "name",
+        "path",
+        "category",
+        "city",
+        "logo",
+        "verified",
+        "followerCount",
+        "rating",
+        "reviewCount",
+        "verifiedReviewCount",
+        "upcomingEventCount"
+      ],
+      "properties": {
+        "organizerId": {
+          "$ref": "#/definitions/publicDocumentId"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "$ref": "#/definitions/organizerPath"
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "city": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logo": {
+          "$ref": "../public/website_host_listing_projection.schema.json#/definitions/logo"
+        },
+        "verified": {
+          "type": "boolean"
+        },
+        "followerCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rating": {
+          "anyOf": [
+            {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 5
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verifiedReviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "upcomingEventCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

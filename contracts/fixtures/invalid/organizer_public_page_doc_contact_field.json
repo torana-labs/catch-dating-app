@@ -1,0 +1,486 @@
+{
+  "schemaVersion": 1,
+  "organizerId": "next-proof",
+  "path": "/organizers/next-proof/",
+  "legacyPaths": [],
+  "identity": {
+    "name": "Next proof organizer",
+    "headline": "Next proof organizer in Indore",
+    "description": "Next proof organizer is an event producer in Indore. This profile is built from public sources and hasn’t been confirmed by the organiser yet.",
+    "category": "Event producer",
+    "city": "Indore",
+    "citySlug": "indore",
+    "region": "Madhya Pradesh",
+    "country": "India",
+    "logo": {
+      "mode": "monogram",
+      "text": "NP",
+      "status": "not_verified"
+    },
+    "formats": [
+      "social",
+      "beginner-friendly",
+      "indore"
+    ],
+    "verified": false,
+    "indexing": "noindex, follow",
+    "email": "race.course@example.test"
+  },
+  "links": [],
+  "upcomingEvents": [
+    {
+      "source": "catch",
+      "eventId": "legacy-club-only",
+      "path": "/events/legacy-club-only/",
+      "event": {
+        "id": "legacy-club-only",
+        "role": "Hosted event",
+        "title": "Legacy club event",
+        "activityKind": "socialRun",
+        "timeline": "upcoming",
+        "startTime": "2026-05-16T00:00:00.000Z",
+        "endTime": "2026-05-16T01:10:00.000Z",
+        "timezone": "Asia/Kolkata",
+        "date": "16 May 2026, 5:30 – 6:40 am",
+        "location": "Race Course Road gate",
+        "locationDetails": "Meet near the main gate.",
+        "summary": "Easy social 5K with coffee after.",
+        "capacityLimit": 12,
+        "photoUrl": null,
+        "meetingLocation": {
+          "name": "Race Course Road gate",
+          "address": "Race Course Road, Indore",
+          "placeId": "race-course-road-gate",
+          "latitude": 22.7196,
+          "longitude": 75.8577,
+          "notes": "Meet near the main gate."
+        },
+        "itinerary": [
+          {
+            "id": "gather",
+            "kind": "gather",
+            "offsetMinutes": 0,
+            "durationMinutes": 15,
+            "title": "Gather at the main gate"
+          },
+          {
+            "id": "run",
+            "kind": "activity",
+            "offsetMinutes": 15,
+            "title": "Social 5K"
+          }
+        ],
+        "registrationAccess": "app",
+        "bookedCount": 4,
+        "checkedInCount": 0,
+        "waitlistedCount": 0,
+        "publicRegistrationEnabled": false,
+        "registrationMode": "closed",
+        "amountPaise": 0,
+        "currency": "INR",
+        "priceLabel": "Free"
+      },
+      "booking": {
+        "kind": "catch",
+        "path": "/events/legacy-club-only/",
+        "registrationAccess": "app",
+        "spotsLeft": 8
+      }
+    },
+    {
+      "source": "catch",
+      "eventId": "open-upcoming",
+      "path": "/events/open-upcoming/",
+      "event": {
+        "id": "open-upcoming",
+        "role": "Hosted event",
+        "title": "Sunrise Social 5K",
+        "activityKind": "socialRun",
+        "timeline": "upcoming",
+        "startTime": "2026-05-16T00:00:00.000Z",
+        "endTime": "2026-05-16T01:10:00.000Z",
+        "timezone": "Asia/Kolkata",
+        "date": "16 May 2026, 5:30 – 6:40 am",
+        "location": "Race Course Road gate",
+        "locationDetails": "Meet near the main gate.",
+        "summary": "Easy social 5K with coffee after.",
+        "capacityLimit": 12,
+        "photoUrl": "https://cdn.example.com/approved.jpg",
+        "meetingLocation": {
+          "name": "Race Course Road gate",
+          "address": "Race Course Road, Indore",
+          "placeId": "race-course-road-gate",
+          "latitude": 22.7196,
+          "longitude": 75.8577,
+          "notes": "Meet near the main gate."
+        },
+        "itinerary": [
+          {
+            "id": "gather",
+            "kind": "gather",
+            "offsetMinutes": 0,
+            "durationMinutes": 15,
+            "title": "Gather at the main gate"
+          },
+          {
+            "id": "run",
+            "kind": "activity",
+            "offsetMinutes": 15,
+            "title": "Social 5K"
+          }
+        ],
+        "requirements": "Ages 21–45. Bring water.",
+        "accessibility": "Flat route.",
+        "included": "Coffee after the run.",
+        "waitlistAvailable": true,
+        "cancellationPolicy": "flexible",
+        "registrationAccess": "open",
+        "bookedCount": 4,
+        "checkedInCount": 0,
+        "waitlistedCount": 0,
+        "publicRegistrationEnabled": true,
+        "registrationMode": "free",
+        "amountPaise": 0,
+        "currency": "INR",
+        "priceLabel": "Free",
+        "catchExperienceActivities": [
+          "introductions"
+        ]
+      },
+      "booking": {
+        "kind": "catch",
+        "path": "/events/open-upcoming/",
+        "registrationAccess": "open",
+        "spotsLeft": 8
+      }
+    },
+    {
+      "source": "catch",
+      "eventId": "mixer-restricted",
+      "path": "/events/mixer-restricted/",
+      "event": {
+        "id": "mixer-restricted",
+        "role": "Hosted event",
+        "title": "Hosted event",
+        "activityKind": "openActivity",
+        "timeline": "upcoming",
+        "startTime": "2026-05-20T13:30:00.000Z",
+        "endTime": "2026-05-20T16:30:00.000Z",
+        "timezone": "Asia/Kolkata",
+        "date": "20 May 2026, 7:00 – 10:00 pm",
+        "location": "Race Course Road gate",
+        "locationDetails": "Meet near the main gate.",
+        "summary": "Easy social 5K with coffee after.",
+        "capacityLimit": 12,
+        "photoUrl": null,
+        "meetingLocation": {
+          "name": "Race Course Road gate",
+          "address": "Race Course Road, Indore",
+          "placeId": "race-course-road-gate",
+          "latitude": 22.7196,
+          "longitude": 75.8577,
+          "notes": "Meet near the main gate."
+        },
+        "itinerary": [
+          {
+            "id": "gather",
+            "kind": "gather",
+            "offsetMinutes": 0,
+            "durationMinutes": 15,
+            "title": "Gather at the main gate"
+          },
+          {
+            "id": "run",
+            "kind": "activity",
+            "offsetMinutes": 15,
+            "title": "Social 5K"
+          }
+        ],
+        "requirements": "Ages 25–40.",
+        "registrationAccess": "restricted",
+        "bookedCount": 4,
+        "checkedInCount": 0,
+        "waitlistedCount": 0,
+        "publicRegistrationEnabled": false,
+        "registrationMode": "closed",
+        "amountPaise": 0,
+        "currency": "INR",
+        "priceLabel": "Free"
+      },
+      "booking": {
+        "kind": "catch",
+        "path": "/events/mixer-restricted/",
+        "registrationAccess": "restricted",
+        "spotsLeft": 8
+      }
+    }
+  ],
+  "pastMoments": [
+    {
+      "source": "catch",
+      "eventId": "paid-past",
+      "path": "/events/paid-past/",
+      "event": {
+        "id": "paid-past",
+        "role": "Hosted event",
+        "title": "Evening tempo run",
+        "activityKind": "socialRun",
+        "timeline": "past",
+        "startTime": "2026-05-01T12:30:00.000Z",
+        "endTime": "2026-05-01T14:00:00.000Z",
+        "timezone": "Asia/Kolkata",
+        "date": "1 May 2026, 6:00 – 7:30 pm",
+        "location": "Race Course Road gate",
+        "locationDetails": "Meet near the main gate.",
+        "summary": "Easy social 5K with coffee after.",
+        "capacityLimit": 12,
+        "photoUrl": "https://cdn.example.com/cover.jpg",
+        "meetingLocation": {
+          "name": "Race Course Road gate",
+          "address": "Race Course Road, Indore",
+          "placeId": "race-course-road-gate",
+          "latitude": 22.7196,
+          "longitude": 75.8577,
+          "notes": "Meet near the main gate."
+        },
+        "itinerary": [
+          {
+            "id": "gather",
+            "kind": "gather",
+            "offsetMinutes": 0,
+            "durationMinutes": 15,
+            "title": "Gather at the main gate"
+          },
+          {
+            "id": "run",
+            "kind": "activity",
+            "offsetMinutes": 15,
+            "title": "Social 5K"
+          }
+        ],
+        "waitlistAvailable": true,
+        "cancellationPolicy": "flexible",
+        "registrationAccess": "open",
+        "bookedCount": 4,
+        "checkedInCount": 9,
+        "waitlistedCount": 2,
+        "publicRegistrationEnabled": true,
+        "registrationMode": "paid",
+        "amountPaise": 49900,
+        "currency": "INR",
+        "priceLabel": "₹499"
+      },
+      "booking": {
+        "kind": "catch",
+        "path": "/events/paid-past/",
+        "registrationAccess": "open",
+        "spotsLeft": 8
+      }
+    },
+    {
+      "source": "external",
+      "eventId": "ext-public",
+      "path": "/events/ext-public/",
+      "event": {
+        "id": "ext-public",
+        "title": "Takeoff: Run + Rave",
+        "activityKind": "socialRun",
+        "availability": "read_only_external",
+        "startTime": "2025-03-15T12:30:00.000Z",
+        "endTime": "2025-03-15T15:30:00.000Z",
+        "timezone": "Asia/Kolkata",
+        "date": "Mar 15, 2025, 6:00 PM-9:00 PM",
+        "location": "Nehru Stadium",
+        "locationDetails": "Nehru Stadium, Indore, Madhya Pradesh",
+        "summary": "Reviewed external event listing.",
+        "priceLabel": "0 INR",
+        "sourceLabel": "Luma",
+        "sourceHref": "https://luma.com/pxgmph3b",
+        "externalLinkCount": 2,
+        "dedupeKey": "afterfly:2025-03-15T18:00:00+05:30:takeoff-run-rave"
+      },
+      "booking": {
+        "kind": "external",
+        "url": "https://luma.com/pxgmph3b",
+        "label": "Luma"
+      }
+    }
+  ],
+  "reviewSummary": {
+    "readState": "enabled",
+    "rating": 4.5,
+    "count": 4,
+    "verifiedCount": 2,
+    "distribution": {
+      "1": 0,
+      "2": 0,
+      "3": 1,
+      "4": 1,
+      "5": 2
+    }
+  },
+  "latestReviews": [
+    {
+      "id": "review-verified",
+      "eventId": "open-upcoming",
+      "reviewerName": "Runner One",
+      "rating": 5,
+      "comment": "Well organized event with clear pacing.",
+      "createdAt": "2026-05-12T08:00:00.000Z",
+      "verificationStatus": "verified",
+      "source": "catchEvent",
+      "isAnonymous": false,
+      "ownerResponse": null
+    },
+    {
+      "id": "review-public",
+      "eventId": null,
+      "reviewerName": "Walk-in guest",
+      "rating": 4,
+      "comment": "Well organized event with clear pacing.",
+      "createdAt": "2026-05-11T08:00:00.000Z",
+      "verificationStatus": "unverified",
+      "source": "publicListing",
+      "isAnonymous": false,
+      "ownerResponse": null
+    },
+    {
+      "id": "review-anonymous",
+      "eventId": "paid-past",
+      "reviewerName": "Anonymous guest",
+      "rating": 3,
+      "comment": "Well organized event with clear pacing.",
+      "createdAt": "2026-05-02T08:00:00.000Z",
+      "verificationStatus": "verified",
+      "source": "catchEvent",
+      "isAnonymous": true,
+      "ownerResponse": {
+        "hostName": "Next proof",
+        "message": "Thanks for coming.",
+        "updatedAt": "2026-05-03T08:00:00.000Z",
+        "hostAvatarUrl": "https://cdn.example.com/host.jpg"
+      }
+    }
+  ],
+  "followerCount": 7,
+  "claim": {
+    "state": "unclaimed",
+    "claimable": true,
+    "href": "/organizers/next-proof/#claim",
+    "label": "Claim this listing"
+  },
+  "capabilities": {
+    "claimRequest": {
+      "state": "enabled",
+      "reason": "The canonical organizer target was verified in this Firestore snapshot."
+    },
+    "publicReviews": {
+      "targetState": "enabled",
+      "readState": "enabled",
+      "writeState": "disabled",
+      "reason": "Public reviews can be read here; unclaimed organizer reviews require a finished event."
+    },
+    "supply": {
+      "mode": "unclaimed_read_only",
+      "bookable": false,
+      "paymentsEnabled": false,
+      "waitlistEnabled": false,
+      "hostContactEnabled": false,
+      "claimable": true,
+      "reviewPolicy": "after_event_end"
+    }
+  },
+  "recommendable": false,
+  "recommendedOrganizers": [],
+  "listing": {
+    "id": "next-proof",
+    "listingVariant": "unclaimedScraped",
+    "dataOrigin": "organizerIntake",
+    "name": "Next proof organizer",
+    "slug": "next-proof",
+    "city": "Indore",
+    "citySlug": "indore",
+    "region": "Madhya Pradesh",
+    "country": "India",
+    "path": "/organizers/next-proof/",
+    "legacyPaths": [],
+    "category": "Event producer",
+    "status": "unclaimed",
+    "indexing": "noindex, follow",
+    "sourceConfidence": "low",
+    "headline": "Next proof organizer in Indore",
+    "description": "Next proof organizer is an event producer in Indore. This profile is built from public sources and hasn’t been confirmed by the organiser yet.",
+    "sourceSummary": "Next proof organizer is an event producer in Indore. This profile is built from public sources and hasn’t been confirmed by the organiser yet.",
+    "logo": {
+      "mode": "monogram",
+      "text": "NP",
+      "status": "not_verified"
+    },
+    "formats": [
+      "social",
+      "beginner-friendly",
+      "indore"
+    ],
+    "facts": [],
+    "eventEvidence": [],
+    "reviews": [],
+    "fitNotes": [],
+    "missingEvidence": [],
+    "sources": [],
+    "claim": {
+      "href": "/organizers/next-proof/#claim",
+      "label": "Claim this listing"
+    },
+    "publicApi": {
+      "state": "enabled",
+      "reason": "The canonical organizer target was verified in this Firestore snapshot.",
+      "claimTargetSyncStatus": "in_sync"
+    },
+    "authority": {
+      "ownershipState": "programmatic",
+      "claimState": "unclaimed",
+      "provenanceOrigin": "import",
+      "sourceConfidence": "seedOnly",
+      "verificationStatus": "unverified",
+      "appVisibility": "hidden",
+      "publishStatus": "published",
+      "indexStatus": "indexReady"
+    },
+    "capabilities": {
+      "claimRequest": {
+        "state": "enabled",
+        "reason": "The canonical organizer target was verified in this Firestore snapshot."
+      },
+      "publicReviews": {
+        "targetState": "enabled",
+        "readState": "enabled",
+        "writeState": "disabled",
+        "reason": "Public reviews can be read here; unclaimed organizer reviews require a finished event."
+      },
+      "supply": {
+        "mode": "unclaimed_read_only",
+        "bookable": false,
+        "paymentsEnabled": false,
+        "waitlistEnabled": false,
+        "hostContactEnabled": false,
+        "claimable": true,
+        "reviewPolicy": "after_event_end"
+      }
+    },
+    "lastVerifiedAt": "Unverified",
+    "searchText": "next proof organizer indore race course road eventproducer racecourseevents social beginner-friendly indore",
+    "metrics": {
+      "followerCount": 7,
+      "reviewCount": 4,
+      "verifiedReviewCount": 2,
+      "rating": 4.5
+    },
+    "catchEvents": [],
+    "reviewReadState": "ready"
+  },
+  "builtAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "contentHash": "0209b64f15598033d93b75e5daa7ebacb3d87493d8e56a924c0f6e62239a06c7"
+}
