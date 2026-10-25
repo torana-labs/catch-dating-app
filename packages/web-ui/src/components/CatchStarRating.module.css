@@ -1,0 +1,27 @@
+/*
+ * Website v2 star rating (CAT-249). Stars take the coral deep shade, a 4.8:1
+ * graphic on white and paper; empty stars keep its outline.
+ */
+.rating {
+  --catch-star-size: 16px;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--catch-space-micro2);
+  color: var(--catch-palette-coral-deep);
+}
+
+.rating[data-size="m"] { --catch-star-size: 20px; }
+
+.star {
+  width: var(--catch-star-size);
+  height: var(--catch-star-size);
+  fill: none;
+  stroke: currentColor;
+  stroke-linejoin: round;
+  stroke-width: 1.75;
+}
+
+.star[data-filled] { fill: currentColor; }
+
+[data-catch-theme="dark"] .rating { color: var(--catch-palette-coral); }
