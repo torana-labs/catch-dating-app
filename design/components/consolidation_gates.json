@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-10-23",
+  "updated": "2026-10-25",
   "description": "Done-gates for UI consolidation: every value comes from generated tokens, every shared responsibility is one registry component on every surface, and every screen is a composition of those components. Consolidation is done, and the redesign starts, when every gate is at target. Measured by node tool/design/consolidation_gates.mjs. 'enforcement' names what blocks regressions today.",
   "priorityT2": [
     "catch.event_card",
@@ -185,7 +185,7 @@
       "linear": [
         "CAT-217"
       ],
-      "enforcement": "None yet: the 7g ESLint preset adds react/forbid-elements with bulk suppressions in website/ and admin/eslint-suppressions.json. Once a surface has that file, this gate counts the rule's suppressions instead of the source scan."
+      "enforcement": "web:react-ui-lint runs the shared ESLint preset, app-local bulk suppressions and exact-source freshness. Production raw-element and drawing-prop counts cannot grow above accepted origin/main. This measure counts react/forbid-elements suppressions; table/image families remain deferred under D17 until their styled components exist."
     },
     {
       "id": "screens.web_page_css_lines",
