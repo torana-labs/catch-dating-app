@@ -11,7 +11,7 @@ export interface CatchSearchFieldCopy {
   clearTooltip: (placeholder: string) => string;
   closeSearchLabel: string;
 }
-export interface CatchSearchFieldProps {
+export interface CatchSearchFieldCommonProps {
   copy: CatchSearchFieldCopy;
   value?: string;
   placeholder?: string;
@@ -22,7 +22,8 @@ export interface CatchSearchFieldProps {
   onFocusChanged?: (focused: boolean) => void;
   semanticLabel?: string;
 }
-export interface CatchSearchFieldExpandingProps extends CatchSearchFieldProps {
+export interface CatchSearchFieldExpandingProps extends CatchSearchFieldCommonProps {
+  recipe: "expanding";
   status?: CatchSearchFieldStatus;
   onOpenSearch?: () => void;
   onCloseSearch?: () => void;
@@ -30,7 +31,9 @@ export interface CatchSearchFieldExpandingProps extends CatchSearchFieldProps {
   collapsedExtent?: CatchSearchFieldExtent;
 }
 
-type Mode = "field" | "expanded" | "expanding";
+export type CatchSearchFieldProps =
+  | (CatchSearchFieldCommonProps & {recipe?: "field" | "expanded"})
+  | CatchSearchFieldExpandingProps;
 const searchGlyph = <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24">
   <circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4.5 4.5" />
 </svg>;
@@ -41,12 +44,19 @@ const closeGlyph = <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24"
   <path d="m6 6 12 12m0-12L6 18" />
 </svg>;
 
-function SearchField({
-  copy, value = "", placeholder = copy.searchLabel, onChanged, autofocus = false,
-  enabled = true, onSubmitted, onFocusChanged, semanticLabel,
-  status = "expanded", onOpenSearch, onCloseSearch, tooltip = copy.searchLabel,
-  collapsedExtent = "nav", mode,
-}: CatchSearchFieldExpandingProps & {mode: Mode}) {
+/** Flutter named constructors map to React's typed recipe prop (D9). */
+export function CatchSearchField(props: CatchSearchFieldProps) {
+  const {
+    copy, value = "", placeholder = copy.searchLabel, onChanged, autofocus = false,
+    enabled = true, onSubmitted, onFocusChanged, semanticLabel,
+  } = props;
+  const transient = props.recipe === "expanding" ? props : undefined;
+  const mode = props.recipe ?? "field";
+  const status = transient?.status ?? "expanded";
+  const onOpenSearch = transient?.onOpenSearch;
+  const onCloseSearch = transient?.onCloseSearch;
+  const tooltip = transient?.tooltip ?? copy.searchLabel;
+  const collapsedExtent = transient?.collapsedExtent ?? "nav";
   const [query, setQuery] = useState(value);
   const input = useRef<HTMLInputElement>(null);
   const collapsed = mode === "expanding" && status === "collapsed";
@@ -101,18 +111,3 @@ function SearchField({
     </span>
   );
 }
-
-/** Same three entry points as Flutter: fixed field, fixed browse, transient search. */
-export const CatchSearchField = Object.assign(
-  function CatchSearchField(props: CatchSearchFieldProps) {
-    return <SearchField {...props} mode="field" />;
-  },
-  {
-    expanded: function ExpandedSearchField(props: CatchSearchFieldProps) {
-      return <SearchField {...props} mode="expanded" />;
-    },
-    expanding: function ExpandingSearchField(props: CatchSearchFieldExpandingProps) {
-      return <SearchField {...props} mode="expanding" />;
-    },
-  },
-);

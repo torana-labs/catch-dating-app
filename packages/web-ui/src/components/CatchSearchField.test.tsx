@@ -21,7 +21,7 @@ describe("CatchSearchField query ownership", () => {
   });
   it("clears using the resolved override, retains focus, and never closes fixed fields", () => {
     const changed = vi.fn();
-    render(<CatchSearchField.expanded copy={copy} value="Delhi" placeholder="Hosts" onChanged={changed} />);
+    render(<CatchSearchField recipe="expanded" copy={copy} value="Delhi" placeholder="Hosts" onChanged={changed} />);
     fireEvent.click(screen.getByRole("button", {name: "Clear Hosts"}));
     const input = screen.getByRole("searchbox") as HTMLInputElement;
     expect(input.value).toBe("");
@@ -63,14 +63,14 @@ describe("CatchSearchField query ownership", () => {
 describe("CatchSearchField transient recipes", () => {
   it("exposes only the named opening trigger when collapsed", () => {
     const open = vi.fn();
-    render(<CatchSearchField.expanding copy={copy} status="collapsed" onOpenSearch={open} semanticLabel="Find a host" />);
+    render(<CatchSearchField recipe="expanding" copy={copy} status="collapsed" onOpenSearch={open} semanticLabel="Find a host" />);
     expect(screen.queryByRole("searchbox")).toBeNull();
     fireEvent.click(screen.getByRole("button", {name: "Find a host"}));
     expect(open).toHaveBeenCalledOnce();
   });
   it("disables the collapsed opening action", () => {
     const open = vi.fn();
-    render(<CatchSearchField.expanding copy={copy} status="collapsed" enabled={false} onOpenSearch={open} />);
+    render(<CatchSearchField recipe="expanding" copy={copy} status="collapsed" enabled={false} onOpenSearch={open} />);
     const button = screen.getByRole("button") as HTMLButtonElement;
     expect(button.disabled).toBe(true);
     fireEvent.click(button);
@@ -78,7 +78,7 @@ describe("CatchSearchField transient recipes", () => {
   });
   it("clears before offering close and leaves closing to the caller", () => {
     const close = vi.fn(); const changed = vi.fn();
-    render(<CatchSearchField.expanding copy={copy} value="Delhi" onCloseSearch={close} onChanged={changed} />);
+    render(<CatchSearchField recipe="expanding" copy={copy} value="Delhi" onCloseSearch={close} onChanged={changed} />);
     fireEvent.click(screen.getByRole("button", {name: "Clear Search organizers"}));
     expect(changed).toHaveBeenCalledWith("");
     expect(close).not.toHaveBeenCalled();
@@ -87,8 +87,8 @@ describe("CatchSearchField transient recipes", () => {
     expect(screen.getByRole("searchbox")).toBeDefined();
   });
   it("omits an unavailable empty close action and focuses when opened", () => {
-    const {rerender} = render(<CatchSearchField.expanding copy={copy} status="collapsed" autofocus />);
-    rerender(<CatchSearchField.expanding copy={copy} status="expanded" autofocus />);
+    const {rerender} = render(<CatchSearchField recipe="expanding" copy={copy} status="collapsed" autofocus />);
+    rerender(<CatchSearchField recipe="expanding" copy={copy} status="expanded" autofocus />);
     expect(document.activeElement).toBe(screen.getByRole("searchbox"));
     expect(screen.queryByRole("button")).toBeNull();
   });

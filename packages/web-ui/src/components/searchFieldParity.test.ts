@@ -53,8 +53,8 @@ describe("SearchField Dart-owned interim geometry", () => {
     expect(styles).toMatch(/prefers-reduced-motion: reduce[\s\S]*transition: none/);
   });
   it("keeps fixed and transient entry points, without accepting raw geometry or colour props", () => {
-    expect(source).toContain("expanded: function");
-    expect(source).toContain("expanding: function");
+    expect(source).toContain('recipe?: "field" | "expanded"');
+    expect(source).toContain('recipe: "expanding"');
     expect(source).toContain('CatchSearchFieldExtent = "nav"');
     for (const name of ["backgroundColor", "foregroundColor", "borderColor", "maxWidth", "borderRadius"]) {
       expect(source).not.toMatch(new RegExp(`${name}\\??:`));
