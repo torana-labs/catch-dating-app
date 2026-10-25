@@ -145,6 +145,7 @@ export {CatchStoreButton} from "./components/CatchStoreButton";
 export type {CatchStoreButtonProps, CatchStoreButtonSize, CatchStoreButtonStore} from "./components/CatchStoreButton";
 export {CatchText} from "./components/CatchText";
 export type {
+  CatchTextAccent,
   CatchTextAlign,
   CatchTextColor,
   CatchTextElement,

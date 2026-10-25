@@ -193,6 +193,28 @@
 .text[data-color="attentionText"] { --catch-text-color: var(--catch-theme-attention-text); }
 .text[data-color="inherit"] { color: inherit; }
 
+/* Palette accents for coloured labels: the deep shade on light, the accent on dark. */
+.text[data-color="coral"] { --catch-text-color: var(--catch-palette-coral-deep); }
+.text[data-color="pink"] { --catch-text-color: var(--catch-palette-pink-deep); }
+.text[data-color="yellow"] { --catch-text-color: var(--catch-palette-yellow-deep); }
+.text[data-color="mint"] { --catch-text-color: var(--catch-palette-mint-deep); }
+.text[data-color="indigo"] { --catch-text-color: var(--catch-palette-indigo-deep); }
+.text[data-color="magenta"] { --catch-text-color: var(--catch-palette-magenta-deep); }
+
+:where([data-catch-theme="dark"]) .text[data-color="coral"] { --catch-text-color: var(--catch-palette-coral); }
+:where([data-catch-theme="dark"]) .text[data-color="pink"] { --catch-text-color: var(--catch-palette-pink); }
+:where([data-catch-theme="dark"]) .text[data-color="yellow"] { --catch-text-color: var(--catch-palette-yellow); }
+:where([data-catch-theme="dark"]) .text[data-color="mint"] { --catch-text-color: var(--catch-palette-mint); }
+:where([data-catch-theme="dark"]) .text[data-color="indigo"] { --catch-text-color: var(--catch-palette-indigo); }
+:where([data-catch-theme="dark"]) .text[data-color="magenta"] { --catch-text-color: var(--catch-palette-magenta); }
+
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="coral"] { --catch-text-color: var(--catch-palette-coral-deep); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="pink"] { --catch-text-color: var(--catch-palette-pink-deep); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="yellow"] { --catch-text-color: var(--catch-palette-yellow-deep); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="mint"] { --catch-text-color: var(--catch-palette-mint-deep); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="indigo"] { --catch-text-color: var(--catch-palette-indigo-deep); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="magenta"] { --catch-text-color: var(--catch-palette-magenta-deep); }
+
 .text[data-align="start"] { text-align: start; }
 .text[data-align="center"] { text-align: center; }
 .text[data-align="end"] { text-align: end; }

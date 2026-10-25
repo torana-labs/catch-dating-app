@@ -6695,10 +6695,11 @@
             "recolored",
             "clamped",
             "aligned",
-            "heading-element"
+            "heading-element",
+            "accent-labels"
           ]
         },
-        "notes": "React takes the text as children so inline links and emphasis stay inside the role, an as prop for the semantic element, and color as a theme role name."
+        "notes": "React takes the text as children so inline links and emphasis stay inside the role, an as prop for the semantic element, and color as a theme role name or a palette accent. An accent (CatchTextAccent) is the deep shade under a light theme and the accent under a dark one; with supportingStrong it is the Website v2 coloured sentence-case label, which Flutter draws by passing the palette colour."
       },
       "design": {
         "figma": {
@@ -6760,7 +6761,7 @@
             "required": false,
             "dartType": "Color?",
             "tsType": "CatchTextColor",
-            "notes": "Overrides the role's default color; React names the theme role (ink2, danger)."
+            "notes": "Overrides the role's default color; React names the theme role (ink2, danger) or a palette accent (coral, mint). An accent draws its deep shade on light and the accent itself on dark, which is the coloured sentence-case label recipe with supportingStrong."
           },
           {
             "name": "maxLines",
