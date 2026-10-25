@@ -1,0 +1,73 @@
+/*
+ * Website v2 scroller (CAT-248). A page-edge rail pads to the content edge of
+ * a CatchBand: the band gutter, or half the space beside the content width,
+ * whichever is larger. Item widths follow the boards' tiles; phone widths
+ * apply below the expanded window size (840px; see CatchBand.module.css).
+ */
+.scroller {
+  --catch-scroller-edge: 0px;
+  --catch-scroller-item: 280px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-behavior: smooth;
+  scroll-padding-inline: var(--catch-scroller-edge);
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.scroller::-webkit-scrollbar { display: none; }
+
+.scroller:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: calc(-1 * var(--catch-stroke-focus-ring));
+}
+
+.scroller[data-edge="page"] {
+  --catch-scroller-edge: max(
+    var(--catch-band-gutter, var(--catch-layout-page-gutter)),
+    calc((100% - var(--catch-website-content-max)) / 2)
+  );
+}
+
+.track {
+  display: flex;
+  box-sizing: border-box;
+  width: max-content;
+  min-width: 100%;
+  margin: 0;
+  padding: 0 var(--catch-scroller-edge) var(--catch-space-s2);
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  flex: 0 0 var(--catch-scroller-item);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.scroller[data-grow] .item { flex-grow: 1; }
+
+.scroller[data-item-width="s"] { --catch-scroller-item: 200px; }
+.scroller[data-item-width="m"] { --catch-scroller-item: 280px; }
+.scroller[data-item-width="l"] { --catch-scroller-item: 360px; }
+
+.scroller[data-gap="headerTitleToSubtitle"] .track { gap: var(--catch-gap-header-title-to-subtitle); }
+.scroller[data-gap="inline"] .track { gap: var(--catch-gap-inline); }
+.scroller[data-gap="related"] .track { gap: var(--catch-gap-related); }
+.scroller[data-gap="formField"] .track { gap: var(--catch-gap-form-field); }
+.scroller[data-gap="section"] .track { gap: var(--catch-gap-section); }
+.scroller[data-gap="majorSection"] .track { gap: var(--catch-gap-major-section); }
+
+@container catch-page (width < 840px) {
+  .scroller[data-item-width="s"] { --catch-scroller-item: 180px; }
+  .scroller[data-item-width="m"] { --catch-scroller-item: 248px; }
+  .scroller[data-item-width="l"] { --catch-scroller-item: 296px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroller { scroll-behavior: auto; }
+}

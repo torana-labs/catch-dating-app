@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {expectedRelease, verifyDeployedWebsite} from "./deployedSmoke.mjs";
+import {expectedRelease, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
 import {consumerHomeCopy} from "../../src/content/consumerHome.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
 import {exploreCopy} from "../../src/content/explore.ts";
@@ -29,6 +29,18 @@ test("deployed acceptance covers public, dynamic, private, missing and native-li
       assert.ok(result.checks.some(check => check.path === path));
     }
   }
+});
+test("deployed acceptance accepts the one-minute catalog cache on either release and nothing broader", async () => {
+  const cached = (path, result) => {if (result.status === 200 && sharedCachePage(path)) result.headers["cache-control"] = "public, s-maxage=60";};
+  await verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, cached)});
+  for (const change of [
+    (path, result) => {if (path === "/host/") result.headers["cache-control"] = "public, s-maxage=60";},
+    (path, result) => {if (path.startsWith("/f/")) result.headers["cache-control"] = "public, s-maxage=60";},
+    (path, result) => {if (path === "/events/not-a-real-next-release-event/") result.headers["cache-control"] = "public, s-maxage=60";},
+    (path, result) => {if (path === "/organizers/") result.headers["cache-control"] = "public, s-maxage=3600";},
+  ]) await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, (path, result) => {cached(path, result); change(path, result);})}));
+  assert.deepEqual(["/", "/explore/", "/organizers/", "/organizers/indore/club/", "/events/e/"].map(sharedCachePage), [true, true, true, true, true]);
+  assert.deepEqual(["/host/", "/claim/", "/privacy/", "/f/x/", "/booking/x/", "/api/public-catalog", "/eventsx/"].map(sharedCachePage), [false, false, false, false, false, false, false]);
 });
 test("deployed acceptance rejects stale builds, bad status, indexing leaks and bearer echoes", async () => {
   for (const change of [

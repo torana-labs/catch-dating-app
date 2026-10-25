@@ -14,6 +14,18 @@ export function privateShellFamily(pathname: string): keyof typeof families | nu
   return first as keyof typeof families;
 }
 
+/**
+ * The family of the shell request. A rewrite that Next proxies back to itself
+ * arrives as `/private-shell?surface=<family>`. An internal rewrite, which is
+ * what Cloud Run gets, keeps the visitor's original URL in the handler and drops
+ * the rewrite's query, so the family comes from that original path instead.
+ */
+export function privateShellSurface(url: URL): keyof typeof families | null {
+  const surface = url.searchParams.get("surface");
+  if (surface !== null) return Object.hasOwn(families, surface) ? surface as keyof typeof families : null;
+  return privateShellFamily(url.pathname);
+}
+
 /** The shell is the terminal rewrite target and holds no credential. */
 export function isPrivateShellPath(pathname: string): boolean {
   return pathname.replace(/\/+$/, "") === "/private-shell";

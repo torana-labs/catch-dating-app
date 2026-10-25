@@ -4,8 +4,8 @@ status: active
 
 # Catch Marketing Website
 
-React marketing surface for `catchdates.com`, with a Next.js migration candidate
-and the existing Vite/Firebase Hosting production artifact.
+React marketing surface for `catchdates.com`. Production serves the Next.js
+render on Cloud Run; the Vite/Firebase Hosting artifact remains the rollback build.
 
 ## Next.js candidate
 
@@ -19,7 +19,8 @@ Production eligibility is compiled from the existing marketing environment gate
 (Firebase project/config, App Check and explicit store-link state). A runtime
 stage change cannot promote an unconfigured preview; it returns uncached 503.
 Runtime credentials are ADC with read-only Firestore authority; they are never
-browser variables. The current deploy workflow still publishes Vite `dist`. Generated private-shell
+browser variables. Public organiser, event and discovery pages are CDN-cached for
+60 seconds; see `docs/marketing_website_architecture.md`. Generated private-shell
 assets never enter the checked-in public source directory or the Vite artifact.
 Packaging replaces old runtime chunks rather than accumulating earlier builds.
 
@@ -59,7 +60,7 @@ requires a controlled configured preview; these local fixtures do not prove it.
 Build the container from repository root with
 `docker build -f website/Dockerfile .`, supplying the public `VITE_*` build args.
 The adjacent `Dockerfile.dockerignore` excludes unrelated source and local state.
-`website/next-hosting.preview.json` is the separate, undeployed preview proposal
+`website/next-hosting.preview.json` is the preview Hosting configuration
 for `catch-website-next-preview` in `asia-south1`; do not pass it to a production
 deploy. Container execution, cloud IAM, original-host forwarding, preview traffic and
 live provider acceptance remain explicit release gates in

@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.16.1
+version: 0.17.0
 updated: 2026-10-25
 owner: marketing_website
 status: active
@@ -22,8 +22,10 @@ state, pending-action protection and per-provider TanStack Query client. Reuse
 existing content, primitives and layouts; do not introduce a second design
 system. Authored Host/legal pages render without catalog access. Discovery,
 organizer, claim and event pages receive current server-authorized DTOs.
-The current Firebase Hosting deployment still serves the Vite `dist` output;
-Next.js is a separately packaged migration candidate until cutover approval.
+Production has served this Next render on Cloud Run since 20 October 2026,
+released through the `Website Release` train. The Vite `dist` build is still
+produced and is the rollback target
+([release operations](release_operations.md#website-rollback-to-the-static-vite-build)).
 
 `src/server/publicCatalog.ts` reads only the published organizer, Catch-event
 and external-event collections, bounded to 400 rows each with an eight-second
@@ -36,8 +38,25 @@ this boundary. External events retain outbound-only booking capabilities.
 The Next validator adapter compiles the same generated schemas as repository
 checks, with parity tests, without the CLI dependency-discovery loader.
 
-Public responses are uncached. React cache only deduplicates a render's reads;
-there is no cross-request snapshot or ISR fallback. The request gate checks
+Firebase Hosting's CDN caches public organiser, event and city-aware discovery
+pages (`/`, `/explore/`, `/organizers/…` and `/events/…`) for up to a minute:
+they send `Cache-Control: public, s-maxage=60`. The organiser page is meant to
+replace the link in organisers' Instagram bios, so repeat and shared visits
+should not wait for a server render and two catalog reads. Hosting cannot purge
+one page on demand, so the short window bounds how long an edit takes to reach
+the cached HTML. Browsers do not keep these pages, because there is no
+`max-age`. Hosting keys its cache on host, path and the full query string, so a
+link with a unique tracking parameter, such as Instagram's `fbclid`, misses the
+cache. The one warm production Cloud Run instance keeps those first visits from
+waiting for start-up.
+The proxy marks a page only after the publication preflight authorizes it.
+`instrumentation.ts` turns the mark into the header only when the final status is
+200, so a 404, 503 or post-preflight 500 stays `no-store`, and a missing hook
+leaves pages uncached rather than caching an error. Claim, booking, follow,
+signed-in, Host, legal, `/api/public-catalog` and private-shell responses stay
+`no-store`. Signed-in and follow state load in the browser. React cache only
+deduplicates a render's reads; there is no server-side cross-request snapshot or
+ISR fallback. The request gate checks
 availability, organizer aliases and missing live-route statuses before streaming
 (including RSC, where a late `notFound()` otherwise retains HTTP 200); the render independently
 reauthorizes its data. This currently costs two bounded reads for those pages.
@@ -46,10 +65,16 @@ as Next's uncached 500. The read-only gRPC fault acceptance test permits the
 three preflight queries, then rejects render queries and verifies that exact
 500/no-store response without stale content. Neither error authorizes stale
 content or a false 404.
-The browser refreshes at 25 seconds/focus and withholds its snapshot at 30
-seconds or on transport failure. Refresh requests time out after eight seconds
-so a later focus can recover without reloading. Live withdrawals remove page content and
-structured data. Booking price/capacity authority stays in existing Functions.
+As soon as a page loads, the browser checks live status through the uncached
+`/api/public-catalog`. That check removes withdrawn content and structured data
+at once, even when the HTML came from the CDN. Only the cached HTML, which
+crawlers and readers without JavaScript see, can lag by up to 60 seconds. The
+browser then refreshes every 25 seconds and on focus. A confirmed snapshot is
+withheld 30 seconds after its server read, or on transport failure. The
+snapshot inside cached HTML may be up to the CDN window older before the load
+check answers. Refresh requests time out after eight seconds so a later focus
+can recover without reloading. Booking price/capacity authority stays in
+existing Functions.
 The standalone lifecycle suite also verifies HTML/RSC/data/sitemap withdrawal
 across two instances copied outside the checkout, query-bound refusal and
 unavailable readers.

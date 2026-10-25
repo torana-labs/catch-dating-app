@@ -27,8 +27,9 @@ export default mergeConfig(
         },
         {
           extends: true,
+          // Pre-bundled so Vite never re-optimises mid-run and reloads a test page.
           optimizeDeps: {
-            include: ["react-router"],
+            include: ["firebase/auth", "react-router"],
           },
           plugins: [
             storybookTest({configDir: path.join(dirname, ".storybook")}),

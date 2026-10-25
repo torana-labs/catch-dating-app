@@ -1,0 +1,25 @@
+/*
+ * Website v2 date tile (CAT-249): 72 × 78px on the organiser page's event
+ * rows, 56 × 66px below 840px. The day is the displayS step; weekday and month
+ * use the status role.
+ */
+.tile {
+  composes: ground from "./grounds.module.css";
+  display: inline-flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 72px;
+  height: 78px;
+  border-radius: var(--catch-radius-md);
+  text-align: center;
+}
+
+@container catch-page (width < 840px) {
+  .tile {
+    width: 56px;
+    height: 66px;
+  }
+}
