@@ -14,6 +14,7 @@ import {
 } from "./demoWorld";
 import {
   SuvbotDeps,
+  chatMessageParts,
   ensureSuvbotThread,
   isSuvbotAction,
   runSuvbotDemoOperationForUser,
@@ -539,6 +540,36 @@ test("warm presets and resets keep every write on contract", async () => {
     assertStoreMatchesContracts(store);
   }
   assert.deepEqual(pathsWithSeedPrefix(store, suvbotSeedPrefix(uid)), []);
+});
+
+test("long replies split between lines into chat-sized messages", () => {
+  assert.deepEqual(chatMessageParts("one\ntwo", 20), ["one\ntwo"]);
+  assert.deepEqual(chatMessageParts("", 20), [""]);
+  assert.deepEqual(chatMessageParts("aaaa\nbbbb\ncccc", 9),
+    ["aaaa\nbbbb", "cccc"]);
+  // Only a line longer than the limit is cut.
+  assert.deepEqual(chatMessageParts("x\n" + "y".repeat(12), 5),
+    ["x", "yyyyy", "yyyyy", "yy"]);
+  const help = Array.from({length: 400}, (_, i) => `- line ${i}`).join("\n");
+  const parts = chatMessageParts(help);
+  assert.ok(parts.length > 1);
+  assert.ok(parts.every((part) => part.length <= 2000));
+  assert.equal(parts.join("\n"), help);
+});
+
+test("help stays within the chat message contract", async () => {
+  const uid = "tester_help";
+  const store = storeWithTester(uid, "in-mh-mumbai");
+  const reply = await run(store, uid, "help");
+  const texts = [...store.docs]
+    .filter(([docPath]) =>
+      docPath.startsWith(`matches/${suvbotMatchId(uid)}/messages/`))
+    .map(([, data]) => data.text as string);
+  for (const world of suvbotWorldBundle.worlds) {
+    assert.ok(texts.join("\n").includes(world.id), world.id);
+  }
+  assert.ok(reply.includes("Worlds:"));
+  assertStoreMatchesContracts(store);
 });
 
 test("resetBookings repairs the world event's counts", async () => {

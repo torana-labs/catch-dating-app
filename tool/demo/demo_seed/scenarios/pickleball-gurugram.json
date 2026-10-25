@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 2,
+  "id": "pickleball-gurugram",
+  "label": "Gurugram Pickleball Social",
+  "description": "Fictional Gurugram after-work pickleball social with rotating doubles partners, used by the launch-format captures. Draft capture input, never a seed world or an availability claim.",
+  "uses": [
+    "marketing-capture"
+  ],
+  "locale": "en-IN",
+  "timeZone": "Asia/Kolkata",
+  "currency": "INR",
+  "moments": {
+    "planning": "2026-10-27T11:00:00",
+    "today": "2026-10-29T15:00:00",
+    "live": "2026-10-29T19:40:00",
+    "followUp": "2026-10-30T10:00:00"
+  },
+  "host": {
+    "uid": "pickleball-gurugram-host",
+    "personaId": "in_aryan_mathur_056",
+    "displayName": "Aryan Mathur",
+    "firstName": "Aryan",
+    "phoneNumber": "+919000000501",
+    "email": "host@example.test"
+  },
+  "organizer": {
+    "id": "club-kitchen-line-social",
+    "name": "Kitchen Line Social",
+    "description": "Fictional Gurugram pickleball club that runs a weekly after-work social doubles session off Golf Course Road.",
+    "city": "delhi",
+    "area": "Golf Course Road, Gurugram",
+    "tags": [
+      "pickleball",
+      "social-doubles",
+      "beginner-friendly"
+    ],
+    "memberCount": 0,
+    "rating": 0,
+    "reviewCount": 0
+  },
+  "venues": [
+    {
+      "id": "kikar-courts",
+      "name": "Kikar Courts",
+      "area": "Sector 54, Gurugram",
+      "lat": 28.4383,
+      "lng": 77.1032,
+      "directions": "Enter from the Sector 54 service lane; the courts are behind the clubhouse. Check in at the paddle rack."
+    }
+  ],
+  "people": [
+    {
+      "id": "p01",
+      "personaId": "in_kunal_arora_054"
+    },
+    {
+      "id": "p02",
+      "personaId": "in_ishani_kapoor_053"
+    },
+    {
+      "id": "p03",
+      "personaId": "in_arnav_bose_033"
+    },
+    {
+      "id": "p04",
+      "personaId": "in_raghav_tandon_060"
+    },
+    {
+      "id": "p05",
+      "personaId": "in_gurleen_sandhu_059"
+    },
+    {
+      "id": "p06",
+      "personaId": "in_siddhant_bhalla_058"
+    },
+    {
+      "id": "p07",
+      "personaId": "in_kritika_bansal_057"
+    },
+    {
+      "id": "p08",
+      "personaId": "in_aditi_chawla_032"
+    },
+    {
+      "id": "p09",
+      "personaId": "in_varun_khanna_031"
+    },
+    {
+      "id": "p10",
+      "personaId": "in_simran_kaur_030"
+    },
+    {
+      "id": "p11",
+      "personaId": "in_noor_rizvi_055"
+    }
+  ],
+  "events": [
+    {
+      "id": "event-pickleball-doubles-2026-10-29",
+      "name": "Thursday Social Doubles",
+      "description": "A fictional after-work pickleball social. Guests share their playing level when they book, then play timed doubles rounds with a new partner each round. Paddles and balls are at the courts.",
+      "venueId": "kikar-courts",
+      "civilDate": "2026-10-29",
+      "startTime": "19:00",
+      "endTime": "21:00",
+      "activityKind": "pickleball",
+      "format": {
+        "interactionModel": "pairedRotations",
+        "admissionPreset": "openCapacity",
+        "playbookId": "pickleball_rotations",
+        "selectedModuleIds": [
+          "host_script",
+          "guided_rotations",
+          "live_reveal",
+          "safety_controls"
+        ],
+        "hostGoal": "Rotate doubles partners every round so everyone plays with someone new at a similar level."
+      },
+      "capacity": 12,
+      "priceInPaise": 49900,
+      "guestPerspective": {
+        "viewer": "p07",
+        "wingmanTarget": "p01"
+      },
+      "attendance": [
+        {
+          "personId": "p01",
+          "bookedAt": "2026-10-22T21:14:00",
+          "checkedInAt": "2026-10-29T18:34:00"
+        },
+        {
+          "personId": "p02",
+          "bookedAt": "2026-10-22T21:36:00",
+          "checkedInAt": "2026-10-29T18:37:00"
+        },
+        {
+          "personId": "p03",
+          "bookedAt": "2026-10-23T13:20:00",
+          "checkedInAt": "2026-10-29T18:44:00"
+        },
+        {
+          "personId": "p04",
+          "bookedAt": "2026-10-24T18:05:00",
+          "checkedInAt": "2026-10-29T18:58:00"
+        },
+        {
+          "personId": "p05",
+          "bookedAt": "2026-10-25T10:40:00",
+          "cancelledAt": "2026-10-29T09:10:00"
+        },
+        {
+          "personId": "p06",
+          "bookedAt": "2026-10-26T20:15:00",
+          "checkedInAt": "2026-10-29T18:52:00"
+        },
+        {
+          "personId": "p07",
+          "bookedAt": "2026-10-27T12:40:00",
+          "checkedInAt": "2026-10-29T18:41:00"
+        },
+        {
+          "personId": "p08",
+          "bookedAt": "2026-10-28T09:30:00",
+          "checkedInAt": "2026-10-29T18:50:00"
+        },
+        {
+          "personId": "p09",
+          "bookedAt": "2026-10-28T12:50:00",
+          "checkedInAt": "2026-10-29T18:47:00"
+        },
+        {
+          "personId": "p10",
+          "bookedAt": "2026-10-28T19:25:00",
+          "checkedInAt": "2026-10-29T18:55:00"
+        },
+        {
+          "personId": "p11",
+          "bookedAt": "2026-10-29T08:05:00",
+          "checkedInAt": "2026-10-29T19:03:00"
+        }
+      ]
+    },
+    {
+      "id": "event-pickleball-doubles-2026-11-05",
+      "name": "Thursday Social Doubles",
+      "description": "The following week's session of the same fictional after-work doubles social, which the follow-up invites guests to book.",
+      "venueId": "kikar-courts",
+      "civilDate": "2026-11-05",
+      "startTime": "19:00",
+      "endTime": "21:00",
+      "activityKind": "pickleball",
+      "format": {
+        "interactionModel": "pairedRotations",
+        "admissionPreset": "openCapacity",
+        "playbookId": "pickleball_rotations",
+        "selectedModuleIds": [
+          "host_script",
+          "guided_rotations",
+          "live_reveal",
+          "safety_controls"
+        ],
+        "hostGoal": "Rotate doubles partners every round so everyone plays with someone new at a similar level."
+      },
+      "capacity": 12,
+      "priceInPaise": 49900,
+      "attendance": [
+        {
+          "personId": "p01",
+          "bookedAt": "2026-10-29T21:18:00"
+        },
+        {
+          "personId": "p07",
+          "bookedAt": "2026-10-29T21:42:00"
+        },
+        {
+          "personId": "p02",
+          "bookedAt": "2026-10-30T07:55:00"
+        },
+        {
+          "personId": "p05",
+          "bookedAt": "2026-10-30T08:20:00"
+        },
+        {
+          "personId": "p03",
+          "bookedAt": "2026-10-30T09:05:00"
+        }
+      ]
+    }
+  ]
+}
