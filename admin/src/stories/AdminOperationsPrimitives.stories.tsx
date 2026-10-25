@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   Activity,
@@ -60,7 +60,6 @@ import {
   AdminRoadmapListItem,
   AdminStateRow,
   AdminSurfacePreview,
-  AdminTag,
   AdminTagList,
   AdminWorkspace,
   AlertRow,
@@ -71,7 +70,6 @@ import {
   QualityList,
   QualityRow,
   StateRow,
-  StatusChip,
 } from "../shared/ui/AdminPrimitives";
 
 const imageData =
@@ -241,7 +239,7 @@ export const AdminPublishingLoadbarStory: Story = {
     <AdminWorkspace>
       <AdminPublishingLoadbar>
         <span>Publication packet loaded</span>
-        <StatusChip tone="success">Synced</StatusChip>
+        <CatchBadge tone="success" label="Synced" />
       </AdminPublishingLoadbar>
     </AdminWorkspace>
   ),
@@ -259,8 +257,8 @@ export const AdminSurfacePreviewStory: Story = {
     <AdminWorkspace>
       <AdminSurfacePreview>
         <AdminTagList>
-          <AdminTag>public listing</AdminTag>
-          <AdminTag tone="ready">claim CTA</AdminTag>
+          <CatchBadge label="public listing" />
+          <CatchBadge tone="success" label="claim CTA" />
         </AdminTagList>
         <QualityRow icon={<Eye size={16} />} tone="success">
           Preview copy matches the generated route payload.
@@ -300,7 +298,7 @@ export const AdminEventSupplyReviewGridStory: Story = {
           <tbody>
             <tr>
               <td>Venue import</td>
-              <td><StatusChip tone="warning">Review</StatusChip></td>
+              <td><CatchBadge tone="warning" label="Review" /></td>
             </tr>
           </tbody>
         </DataTable>
@@ -635,8 +633,8 @@ export const AdminFeatureDropFeatureListStory: Story = {
         <AdminFeatureDropFeatureEditor>
           <strong>Organizer profiles</strong>
           <AdminTagList>
-            <AdminTag tone="ready">ready</AdminTag>
-            <AdminTag>public route</AdminTag>
+            <CatchBadge tone="success" label="ready" />
+            <CatchBadge label="public route" />
           </AdminTagList>
         </AdminFeatureDropFeatureEditor>
       </AdminFeatureDropFeatureList>

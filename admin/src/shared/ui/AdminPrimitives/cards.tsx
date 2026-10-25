@@ -10,22 +10,18 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import {CatchBadge, type CatchBadgeTone} from "@catch/web-ui";
 import {CheckCircle2, FileWarning, Lock, RefreshCw} from "lucide-react";
 
 import {
   classNames,
   layoutSpanClass,
   type SelectOption,
-  type ChipTone,
   type AlertTone,
-  type TagTone,
   type MetricTone,
   type MetricVariant,
   type QualityRowTone,
   type AdminOverviewQueueIntent,
   type AdminOverviewSignalTone,
-  type RiskTone,
   type DataTableVariant,
   type AdminFormVariant,
   type AdminEditorGridElement,
@@ -159,41 +155,6 @@ export function CardHeader({
       {action}
     </header>
   );
-}
-
-/** Admin's legacy tone words on CatchBadge's tones. */
-function badgeTone(tone: ChipTone | TagTone | undefined): CatchBadgeTone {
-  if (tone === "success" || tone === "ready") return "success";
-  if (tone === "warning") return "warning";
-  if (tone === "danger" || tone === "blocked") return "danger";
-  return "neutral";
-}
-
-function badgeLabel(children: ReactNode): string {
-  if (children === null || children === undefined || typeof children === "boolean") return "";
-  if (typeof children === "string" || typeof children === "number") return String(children);
-  if (Array.isArray(children)) return children.map(badgeLabel).join("");
-  throw new Error("Badge children must be text.");
-}
-
-/**
- * Interim: the last callers sit in files other tasks hold. Each moves to
- * CatchBadge and StatusChip and AdminTag go.
- */
-export function StatusChip({children, tone}: {children: ReactNode; tone?: ChipTone}) {
-  return <CatchBadge tone={badgeTone(tone)} label={badgeLabel(children)} />;
-}
-
-/** Interim, as StatusChip; only a story still links a tag. */
-export function AdminTag({children, href, rel, target, tone}: {
-  children: ReactNode;
-  href?: string;
-  rel?: string;
-  target?: string;
-  tone?: TagTone;
-}) {
-  const badge = <CatchBadge tone={badgeTone(tone)} label={badgeLabel(children)} />;
-  return href ? <a href={href} rel={rel} target={target}>{badge}</a> : badge;
 }
 
 export function AdminTagList({

@@ -1,15 +1,23 @@
-import {EventThumbnail, activityKindFromValue} from "@catch/web-ui";
+import {CatchBadge, EventThumbnail, activityKindFromValue} from "@catch/web-ui";
 import {consumerEventCopy} from "../../../content/consumerEvent";
 import {EventExperiencePanel} from "../../../shared/ui/primitives/consumerEvent";
 import {exploreCopy} from "../../../content/explore";
 import {publicExperienceActivities} from "../../organizers/publicExperience";
-import {ExploreBadge} from "../../../shared/ui/primitives/explore";
+
 import type {ReactNode} from "react";
 import {trackOrganizerProviderOutboundClick} from "../../organizers/observeOrganizerProviders";
 import {trackOrganizerAnalytics} from "../../organizers/analytics";
-import {ButtonLink, EventDetailFactGrid, EventDetailHeroLayout, EventDetailMedia,
-  EventDetailOrganizerPanel, EventDetailReviewPreview, EventDetailSection, EventDetailSourceLink,
-  ReviewSignalLane} from "../../../shared/ui/primitives";
+import {
+  ButtonLink,
+  EventDetailFactGrid,
+  EventDetailHeroLayout,
+  EventDetailMedia,
+  EventDetailOrganizerPanel,
+  EventDetailReviewPreview,
+  EventDetailSection,
+  EventDetailSourceLink,
+  ReviewSignalLane,
+} from "../../../shared/ui/primitives";
 import {EventDetailBodyLayout, EventDetailItinerary} from "../../../shared/ui/primitives/eventDetail";
 import {eventDetailCopy as copy} from "../../../content/events";
 import {interpolateContent} from "../../../content/interpolate";
@@ -28,7 +36,7 @@ export function EventDetailHeroSection({event, guestEntry}: {
   return <EventDetailHeroLayout activityToken={activity.token} eyebrow={activity.label}
     title={event.title}
     badge={publicExperienceActivities(event.catchExperienceActivities).length ?
-      <EventDetailSourceLink href="#catch-experience"><ExploreBadge>{exploreCopy.experienceLabel}</ExploreBadge></EventDetailSourceLink> : undefined}
+      <EventDetailSourceLink href="#catch-experience"><CatchBadge tone="brand" label={exploreCopy.experienceLabel} /></EventDetailSourceLink> : undefined}
     media={<EventDetailMedia><EventThumbnail photoUrl={event.photoUrl} activityKind={activityKindFromValue(event.activityKind)}
       semanticLabel={interpolateContent(copy.invitation.coverAlt, {title: event.title})} fit="contain" loading="eager" /></EventDetailMedia>}
     host={<><ActivityMark listing={event.listing} size="sm" /><div><span>{copy.hero.hostedByLabel}</span>
@@ -80,7 +88,7 @@ export function EventDetailFactsSection({event}: {event: EventDetailRecord}) {
       primaryAction={<ButtonLink href={event.listing.path} variant="ghost">{copy.nav.organizerAction}</ButtonLink>} />}>
       {event.summary.trim() ? <><h2>{copy.invitation.about}</h2><p>{event.summary}</p></> : null}
       {experience.length ? <EventExperiencePanel id="catch-experience" aria-labelledby="event-experience-title">
-        <ExploreBadge>{exploreCopy.experienceLabel}</ExploreBadge>
+        <CatchBadge tone="brand" label={exploreCopy.experienceLabel} />
         <h2 id="event-experience-title">{consumerEventCopy.experienceIntro}</h2>
         <p>{consumerEventCopy.experienceBody}</p>
         <ul>{experience.map(item => <li key={item}><h3>{exploreCopy.activities[item]}</h3><p>{consumerEventCopy.activities[item]}</p></li>)}</ul>

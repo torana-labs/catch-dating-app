@@ -5,7 +5,7 @@ import type {
   HTMLAttributes,
   ReactNode,
 } from "react";
-import {CatchText, DataTableControl} from "@catch/web-ui";
+import {CatchBadge, CatchText, DataTableControl} from "@catch/web-ui";
 import {Lock} from "lucide-react";
 
 import {
@@ -13,13 +13,12 @@ import {
   layoutSpanClass,
   type AlertTone,
   type QualityRowTone,
-  type RiskTone,
   type DataTableVariant,
   type AdminFormVariant,
   type PanelProps,
 } from "./shared";
 
-import {AdminTag, AdminTagList} from "./cards";
+import {AdminTagList} from "./cards";
 
 export function AlertRow({
   children,
@@ -196,16 +195,6 @@ export function TableActionButton({
   );
 }
 
-export function RiskBadge({
-  children,
-  tone,
-}: {
-  children: ReactNode;
-  tone: RiskTone;
-}) {
-  return <span className={`risk ${tone}`}>{children}</span>;
-}
-
 export function AdminPanel({
   action,
   children,
@@ -305,7 +294,7 @@ export function AdminIntakePublicationBoundaryPanel({
           "publication packet",
           "claim handoff",
         ]).map((label) => (
-          <AdminTag key={label}>{label}</AdminTag>
+          <CatchBadge key={label} label={label} />
         ))}
       </AdminTagList>
     </Panel>

@@ -1,4 +1,4 @@
-import {CatchField, CatchText} from "@catch/web-ui";
+import {CatchBadge, type CatchBadgeTone, CatchField, CatchText} from "@catch/web-ui";
 import {useState} from "react";
 import {
   AdminButton,
@@ -9,7 +9,6 @@ import {
   AdminToolbar,
   Panel,
   StateRow,
-  StatusChip,
 } from "../../../../shared/ui/AdminPrimitives";
 import type {ImportedEvent, ListingEventImport} from "../api/listingEventImportRepository";
 import type {
@@ -25,10 +24,10 @@ const checklistItems: Array<[keyof Checklist, string]> = [
   ["ownerSafeCopyReviewed", "The title and description are fit to show on Catch, with no dating framing"],
 ];
 
-const stateLabels: Record<ImportedEvent["state"], [string, string]> = {
+const stateLabels: Record<ImportedEvent["state"], [string, CatchBadgeTone]> = {
   published: ["Published", "success"],
-  withdrawn: ["Withdrawn", "muted"],
-  ready: ["Ready", "ready"],
+  withdrawn: ["Withdrawn", "neutral"],
+  ready: ["Ready", "success"],
   needs_resolution: ["Needs a check", "warning"],
   blocked: ["Blocked", "danger"],
 };
@@ -162,8 +161,8 @@ function ListingEvents({row, controller, onClose}: {
       const reasons = event.blockers.map((code) => blockerLabels[code] ?? code);
       return <AdminIntakeSection key={event.eventWorkItemId}>
         <StateRow label={event.title ?? "Untitled event"} value={<>
-          <StatusChip tone={tone}>{label}{event.publishedBy === "policy" ? " by policy" :
-            event.publishedBy === "staff" && event.state === "published" ? " by staff" : ""}</StatusChip>{" "}
+          <CatchBadge tone={tone} label={`${label}${event.publishedBy === "policy" ? " by policy" :
+            event.publishedBy === "staff" && event.state === "published" ? " by staff" : ""}`} />{" "}
           {when(event.startAt)}{event.venue ? ` · ${event.venue}` : ""}{event.priceLabel ? ` · ${event.priceLabel}` : ""}{" "}
           <AdminLinkButton href={event.sourceUrl} rel="noreferrer" target="_blank">{event.platform}</AdminLinkButton>
         </>} />

@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -22,7 +22,6 @@ import {
   AdminSectionCaption,
   AdminStatusGrid,
   AdminTableRow,
-  AdminTag,
   AdminToolbar,
   AdminWorkbenchStack,
   AdminWorkbenchNote,
@@ -30,7 +29,6 @@ import {
   EmptyState,
   Panel,
   QualityList,
-  RiskBadge,
   SearchField,
   SegmentedControl,
   StateRow,
@@ -113,9 +111,7 @@ export function SafetyTriageWorkspace({
             All safety cases
           </AdminButton>
           {controller.selected ? (
-            <AdminTag tone="muted">
-              {controller.selected.queueLabel}
-            </AdminTag>
+            <CatchBadge label={controller.selected.queueLabel} />
           ) : null}
         </AdminToolbar>
         {controller.selected ? (
@@ -480,9 +476,7 @@ function PriorHistoryList({detail}: {detail: AdminSafetyTriageDetails}) {
   return (
     <AdminTagRow as="span">
       {detail.priorHistory.map((signal) => (
-        <AdminTag key={signal.id} tone="muted">
-          {signal.label}: {signal.count}
-        </AdminTag>
+        <CatchBadge key={signal.id} label={`${signal.label}: ${signal.count}`} />
       ))}
     </AdminTagRow>
   );
