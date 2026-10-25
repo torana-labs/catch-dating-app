@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Event page v2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;display=swap">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#141114}a:hover{color:#5A5450}
+.v2{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#141114}
+.dsp{font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:760;margin:0}
+.btn{font:inherit;font-weight:600;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;height:48px;padding:0 18px;font-size:15px;border:0}
+.wrap{max-width:1160px;margin:0 auto;padding:0 40px;box-sizing:border-box}
+.proto{display:flex;flex-direction:column;gap:10px;margin:16px auto 0;padding:10px 12px;border:1.5px dashed rgba(20,17,20,0.3);border-radius:14px;background:#F3F3F1;font-size:13px}
+.seg{display:flex;gap:4px;background:#FFFFFF;border-radius:999px;padding:3px;flex-wrap:wrap}
+.seg button{height:34px;padding:0 14px;border-radius:999px;border:0;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.fchip{height:30px;padding:0 10px;border-radius:999px;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:48px;align-items:start;padding-top:20px;padding-bottom:96px}
+.main{display:flex;flex-direction:column;gap:48px;min-width:0}
+.book{position:sticky;top:20px;display:flex;flex-direction:column;gap:14px}
+.media{border-radius:28px;overflow:hidden;aspect-ratio:16 / 10;position:relative}
+.media img{width:100%;height:100%;object-fit:cover;display:block}
+.h2{font-size:36px;line-height:1;letter-spacing:-0.03em}
+.card{border-radius:22px;padding:20px;box-sizing:border-box}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.fact{background:#F6F0E8;border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.step{display:grid;grid-template-columns:64px 20px minmax(0,1fr);gap:12px}
+.know{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:40px;height:40px;border-radius:999px;border:1.5px solid rgba(20,17,20,0.25);background:#FFFFFF;font:inherit;font-size:20px;cursor:pointer;color:#141114}
+.finput{height:48px;border-radius:12px;border:1.5px solid rgba(20,17,20,0.25);padding:0 14px;font:inherit;font-size:16px;color:#141114;background:#FFFFFF;box-sizing:border-box;width:100%}
+.ferr{font-size:13px;font-weight:600;color:#B3261A}
+.more{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mcard{border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:#141114;min-height:150px;box-sizing:border-box}
+.badge{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600}
+.mbar{display:none}
+.show-sm{display:none !important}
+@media (max-width: 900px){
+  .wrap{padding:0 16px}
+  .grid{grid-template-columns:minmax(0,1fr);gap:28px;padding-top:12px;padding-bottom:120px}
+  .book{position:static}
+  .main{gap:40px}
+  .facts{grid-template-columns:minmax(0,1fr)}
+  .know{grid-template-columns:minmax(0,1fr)}
+  .more{grid-template-columns:minmax(0,1fr)}
+  .h2{font-size:30px}
+  .media{aspect-ratio:4 / 3;border-radius:22px}
+  .title{font-size:44px !important}
+  .book{display:none}
+  .book.sheet-open{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:30;max-height:88vh;overflow:auto;background:#FFFFFF;border-radius:24px 24px 0 0;padding:16px 16px 24px;box-shadow:0 -20px 60px rgba(20,17,20,0.3);box-sizing:border-box}
+  .show-sm{display:inline-flex !important}
+  .orgcard{grid-template-columns:56px minmax(0,1fr) !important}
+  .orgcard .btn{grid-column:1 / -1}
+  .mcard{min-height:0;gap:10px}
+  .mbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:15;background:#FFFFFF;box-shadow:0 -1px 0 rgba(20,17,20,0.1),0 -10px 30px rgba(20,17,20,0.08);padding:12px 16px;justify-content:space-between;align-items:center;gap:12px}
+}
+</style>
+</helmet>
+<div class="v2" style="width: 100%; background: #FFFFFF">
+
+  <div class="wrap">
+    <div class="proto" role="region" aria-label="Prototype controls">
+      <span style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap">
+        <span style="display: flex; flex-direction: column; gap: 2px"><b>Prototype view</b><span style="color: #5A5450">{{protoNote}}</span></span>
+        <span class="seg" role="group" aria-label="Which event"><sc-for list="{{variants}}" as="va" hint-placeholder-count="2"><button type="button" onClick="{{va.pick}}" aria-pressed="{{va.on}}" style="{{va.style}}">{{va.label}}</button></sc-for></span>
+      </span>
+      <sc-if value="{{isCatch}}" hint-placeholder-val="{{true}}">
+        <span style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center" role="group" aria-label="Optional fields"><span style="font-weight: 600; margin-right: 4px">Optional fields:</span>
+          <sc-for list="{{fieldChips}}" as="fc" hint-placeholder-count="10"><button type="button" class="fchip" onClick="{{fc.toggle}}" aria-pressed="{{fc.on}}" style="{{fc.style}}">{{fc.mark}} {{fc.label}}</button></sc-for>
+        </span>
+      </sc-if>
+    </div>
+  </div>
+
+  <header class="wrap" style="display: flex; justify-content: space-between; align-items: center; height: 64px; gap: 12px">
+    <a href="#" style="display: inline-flex; align-items: center; gap: 10px; text-decoration: none"><span aria-hidden="true" style="font-size: 18px">←</span><span aria-hidden="true" style="width: 34px; height: 34px; border-radius: 999px; background: #F07A55; display: inline-flex; align-items: center; justify-content: center; font-family: 'Archivo', sans-serif; font-stretch: 78%; font-weight: 760; font-size: 15px">CR</span><span style="font-size: 15px; font-weight: 700">Carter Road Runners</span></a>
+    <button type="button" class="btn" onClick="{{share}}" style="height: 40px; font-size: 14px; background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v6h14v-6"></path></svg>Share</button>
+  </header>
+
+  <div class="wrap grid">
+    <div class="main">
+      <section aria-labelledby="ev-title" style="display: flex; flex-direction: column; gap: 22px">
+        <div class="media" style="background: {{ev.tone}}">
+          <sc-if value="{{showPhoto}}" hint-placeholder-val="{{true}}"><img src="/_blob/b766451d5b4e5bf9ae506afe33116fa6" alt="Runners on the Carter Road promenade at sunrise"></sc-if>
+          <sc-if value="{{showPoster}}" hint-placeholder-val="{{false}}">
+            <div aria-hidden="true" style="position: absolute; inset: 0; padding: 28px; display: flex; flex-direction: column; justify-content: space-between; color: {{ev.ink}}">
+              <span style="display: flex; justify-content: space-between; font-size: 15px; font-weight: 700"><span>{{ev.posterTop}}</span><span>{{ev.posterDate}}</span></span>
+              <span class="dsp" style="font-size: 92px; line-height: 0.86; letter-spacing: -0.05em">{{ev.posterTitle}}</span>
+              <span style="font-size: 15px; font-weight: 700">{{ev.place}}</span>
+            </div>
+          </sc-if>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px">
+          <span style="font-size: 15px; font-weight: 600; color: {{ev.kindInk}}">{{ev.kind}}</span>
+          <h1 id="ev-title" class="dsp title" style="font-size: 64px; line-height: 0.95; letter-spacing: -0.04em">{{ev.title}}</h1>
+          <span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 15px">Hosted by <b>Carter Road Runners</b><span role="img" aria-label="Claimed by the organiser" style="display: inline-flex; color: #B5451F"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 2.1 3.2-.3.7 3.1 2.8 1.6-1.3 2.9 1.3 2.9-2.8 1.6-.7 3.1-3.2-.3L12 22l-2.4-2.1-3.2.3-.7-3.1-2.8-1.6 1.3-2.9-1.3-2.9 2.8-1.6.7-3.1 3.2.3z"></path></svg></span><span style="color: #5A5450">· 4.8 ★ from 186 reviews</span></span>
+        </div>
+        <div class="facts">
+          <span class="fact"><span style="font-size: 13px; color: #5A5450">When</span><span style="font-size: 16px; font-weight: 700">{{ev.date}}</span><span style="font-size: 14px">{{ev.time}}</span></span>
+          <span class="fact"><span style="font-size: 13px; color: #5A5450">Where</span><span style="font-size: 16px; font-weight: 700">{{ev.placeShort}}</span><span style="font-size: 14px">{{ev.area}}</span></span>
+          <span class="fact"><span style="font-size: 13px; color: #5A5450">Price</span><span style="font-size: 16px; font-weight: 700">{{ev.priceLabel}}</span><span style="font-size: 14px">{{ev.priceNote}}</span></span>
+        </div>
+        <p style="margin: 0; font-size: 18px; line-height: 28px; max-width: 680px">{{ev.summary}}</p>
+      </section>
+
+      <sc-if value="{{showMoments}}" hint-placeholder-val="{{true}}">
+        <section aria-labelledby="mo-title" class="card" style="background: #141114; color: #F6EFE6; padding: 28px; display: flex; flex-direction: column; gap: 18px">
+          <span style="font-size: 14px; font-weight: 600; color: #F07A55">Coming on your own?</span>
+          <h2 id="mo-title" class="dsp h2" style="color: #F6EFE6">You won’t be standing around.</h2>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px">
+            <span style="background: #231E23; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 16px; font-weight: 700">A pace group that’s yours</span><span style="font-size: 14px; line-height: 21px; color: #BDB3A7">Pick 6:00, 6:45 or 7:30 per km when you book. Nobody gets dropped.</span></span>
+            <span style="background: #231E23; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 16px; font-weight: 700">A first hello</span><span style="font-size: 14px; line-height: 21px; color: #BDB3A7">Your pace leader does names at the start, and the app gives you one easy question for the person next to you.</span></span>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{showItinerary}}" hint-placeholder-val="{{true}}">
+        <section aria-labelledby="it-title" style="display: flex; flex-direction: column; gap: 16px">
+          <h2 id="it-title" class="dsp h2">The plan for the morning</h2>
+          <ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column">
+            <sc-for list="{{itinerary}}" as="st" hint-placeholder-count="4">
+              <li class="step">
+                <span style="font-size: 15px; font-weight: 700; padding-top: 1px">{{st.time}}</span>
+                <span aria-hidden="true" style="display: flex; flex-direction: column; align-items: center"><span style="width: 14px; height: 14px; border-radius: 999px; background: {{st.dot}}; margin-top: 3px; flex: 0 0 auto"></span><span style="width: 2px; flex: 1 1 auto; background: {{st.line}}; min-height: 30px"></span></span>
+                <span style="display: flex; flex-direction: column; gap: 4px; padding-bottom: 22px"><span style="font-size: 17px; font-weight: 700">{{st.title}}</span><span style="font-size: 15px; line-height: 22px; color: #5A5450">{{st.body}}</span><sc-if value="{{st.hasMeta}}" hint-placeholder-val="{{false}}"><span class="badge" style="background: #FDE7DF; color: #8A2F12; align-self: flex-start">{{st.meta}}</span></sc-if></span>
+              </li>
+            </sc-for>
+          </ol>
+        </section>
+      </sc-if>
+
+      <section aria-labelledby="wh-title" style="display: flex; flex-direction: column; gap: 16px">
+        <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap"><h2 id="wh-title" class="dsp h2">Where</h2><a href="#" onClick="{{openMaps}}" style="font-size: 15px; font-weight: 600">Open in Google Maps ↗</a></span>
+        <sc-if value="{{showMap}}" hint-placeholder-val="{{true}}">
+          <div class="card" style="padding: 0; overflow: hidden; background: #F6F0E8">
+            <svg role="img" aria-label="Map of the route from Carter Road jetty to Bandstand and back" viewBox="0 0 760 300" width="100%" style="display: block">
+              <rect width="760" height="300" fill="#F6F0E8"></rect>
+              <path d="M0 0H250C225 60 238 120 205 170C180 210 190 260 170 300H0Z" fill="#DCE3FB"></path>
+              <path d="M330 0V300M470 0V300M250 90H760M232 200H760" stroke="#FFFFFF" stroke-width="14"></path>
+              <path d="M262 30C246 80 250 120 226 160C206 196 206 236 196 276" stroke="#F07A55" stroke-width="5" fill="none" stroke-dasharray="2 10" stroke-linecap="round"></path>
+              <circle cx="262" cy="30" r="11" fill="#141114"></circle><circle cx="262" cy="30" r="4" fill="#F07A55"></circle>
+              <circle cx="196" cy="276" r="8" fill="#F07A55"></circle>
+              <circle cx="226" cy="160" r="7" fill="#FFFFFF" stroke="#141114" stroke-width="2"></circle>
+              <text x="284" y="36" font-family="-apple-system, sans-serif" font-size="15" font-weight="700" fill="#141114">Carter Road jetty · start and breakfast</text>
+              <text x="246" y="166" font-family="-apple-system, sans-serif" font-size="14" font-weight="600" fill="#5A5450">Water at 5K and 10K</text>
+              <text x="216" y="282" font-family="-apple-system, sans-serif" font-size="14" font-weight="600" fill="#5A5450">Bandstand · turn</text>
+              <text x="40" y="150" font-family="-apple-system, sans-serif" font-size="14" font-weight="600" fill="#6C78C9">Arabian Sea</text>
+            </svg>
+          </div>
+        </sc-if>
+        <span style="display: flex; flex-direction: column; gap: 4px; font-size: 15px; line-height: 22px"><b>{{ev.place}}</b><span style="color: #5A5450">{{ev.placeNote}}</span></span>
+      </section>
+
+      <sc-if value="{{hasKnow}}" hint-placeholder-val="{{true}}">
+        <section aria-labelledby="kn-title" style="display: flex; flex-direction: column; gap: 16px">
+          <h2 id="kn-title" class="dsp h2">Good to know</h2>
+          <div class="know">
+            <sc-for list="{{know}}" as="k" hint-placeholder-count="4"><span class="card" style="background: {{k.bg}}; display: flex; flex-direction: column; gap: 6px"><span style="font-size: 14px; font-weight: 700; color: {{k.ink}}">{{k.label}}</span><span style="font-size: 15px; line-height: 22px">{{k.body}}</span></span></sc-for>
+          </div>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{showCapacity}}" hint-placeholder-val="{{true}}">
+        <section aria-labelledby="go-title" style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; background: #F6F0E8; border-radius: 22px; padding: 18px 20px">
+          <span aria-hidden="true" style="display: flex; padding-left: 10px"><span style="width: 40px; height: 40px; border-radius: 999px; background: #F08AA0; border: 3px solid #F6F0E8; margin-left: -10px"></span><span style="width: 40px; height: 40px; border-radius: 999px; background: #8C9BF2; border: 3px solid #F6F0E8; margin-left: -10px"></span><span style="width: 40px; height: 40px; border-radius: 999px; background: #5CCB9F; border: 3px solid #F6F0E8; margin-left: -10px"></span><span style="width: 40px; height: 40px; border-radius: 999px; background: #F5C451; border: 3px solid #F6F0E8; margin-left: -10px"></span></span>
+          <span style="display: flex; flex-direction: column; gap: 2px"><h2 id="go-title" style="margin: 0; font-size: 17px">{{goingLine}}</h2><span style="font-size: 14px; color: #5A5450">About a third come on their own. Names stay private until you’re booked.</span></span>
+        </section>
+      </sc-if>
+
+      <section aria-labelledby="org-title" class="card orgcard" style="border: 1.5px solid rgba(20,17,20,0.12); display: grid; grid-template-columns: 64px minmax(0,1fr) auto; gap: 16px; align-items: center">
+        <span aria-hidden="true" style="width: 64px; height: 64px; border-radius: 999px; background: #F07A55; display: inline-flex; align-items: center; justify-content: center; font-family: 'Archivo', sans-serif; font-stretch: 78%; font-weight: 760; font-size: 26px">CR</span>
+        <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><h2 id="org-title" style="margin: 0; font-size: 18px">Carter Road Runners</h2><span style="font-size: 14px; color: #5A5450">Social runs in Bandra since 2024 · 2,140 followers · 64 runs hosted</span></span>
+        <a class="btn" href="#" style="height: 42px; font-size: 14px; background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)">See their page</a>
+      </section>
+
+      <sc-if value="{{showReviews}}" hint-placeholder-val="{{true}}">
+        <section aria-labelledby="rv-title" style="display: flex; flex-direction: column; gap: 14px">
+          <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap"><h2 id="rv-title" class="dsp h2">What people say</h2><span style="font-size: 14px; color: #5A5450">{{reviewsNote}}</span></span>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px">
+            <sc-for list="{{reviews}}" as="r" hint-placeholder-count="2"><article class="card" style="background: #F6F0E8; display: flex; flex-direction: column; gap: 8px"><span style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="font-size: 15px; font-weight: 700">{{r.name}}</span><span class="badge" style="{{r.badgeStyle}}">{{r.badge}}</span></span><span aria-label="{{r.stars}} out of 5" style="color: #B5451F; letter-spacing: 1px">{{r.starText}}</span><p style="margin: 0; font-size: 15px; line-height: 23px">{{r.text}}</p><span style="font-size: 13px; color: #5A5450">{{r.event}}</span></article></sc-for>
+          </div>
+        </section>
+      </sc-if>
+
+      <section aria-labelledby="mr-title" style="display: flex; flex-direction: column; gap: 14px">
+        <h2 id="mr-title" class="dsp h2">More from Carter Road Runners</h2>
+        <div class="more">
+          <sc-for list="{{more}}" as="m" hint-placeholder-count="3"><a class="mcard" href="#" style="background: {{m.tone}}; color: {{m.ink}}"><span style="font-size: 13px; font-weight: 600">{{m.when}}</span><span class="dsp" style="font-size: 26px; line-height: 1; letter-spacing: -0.02em">{{m.title}}</span><span style="margin-top: auto; font-size: 14px; font-weight: 600">{{m.price}} · {{m.src}}</span></a></sc-for>
+        </div>
+      </section>
+    </div>
+
+    <aside class="book {{sheetClass}}" aria-label="Booking">
+      <button type="button" class="btn show-sm" onClick="{{closeSheet}}" style="height: 36px; padding: 0 12px; font-size: 14px; background: #F3F3F1; color: #141114; align-self: flex-end">Close</button>
+      <div class="card" style="border: 1.5px solid rgba(20,17,20,0.12); display: flex; flex-direction: column; gap: 14px; padding: 22px; background: #FFFFFF">
+        <span style="display: flex; align-items: baseline; gap: 8px"><span class="dsp" style="font-size: 44px; letter-spacing: -0.03em">{{ev.priceLabel}}</span><span style="font-size: 14px; color: #5A5450">{{ev.priceUnit}}</span></span>
+        <span style="font-size: 15px; font-weight: 600">{{ev.date}} · {{ev.time}}</span>
+        <sc-if value="{{showCapacity}}" hint-placeholder-val="{{true}}">
+          <span style="display: flex; flex-direction: column; gap: 6px"><span style="height: 8px; border-radius: 999px; background: #EFEAE3; overflow: hidden"><span style="display: block; height: 100%; width: {{bookedPct}}%; background: #F07A55"></span></span><span style="font-size: 13px; color: #5A5450">{{spotsLine}}</span></span>
+        </sc-if>
+
+        <sc-if value="{{isCatch}}" hint-placeholder-val="{{true}}">
+          <sc-if value="{{atIdle}}" hint-placeholder-val="{{true}}">
+            <span style="display: flex; justify-content: space-between; align-items: center; gap: 12px"><span id="qty-label" style="font-size: 15px; font-weight: 600">Places</span><span class="qty" role="group" aria-labelledby="qty-label"><button type="button" onClick="{{qtyDown}}" aria-label="One fewer place">−</button><span aria-live="polite" style="min-width: 28px; text-align: center; font-size: 18px; font-weight: 700">{{qty}}</span><button type="button" onClick="{{qtyUp}}" aria-label="One more place">+</button></span></span>
+            <button type="button" class="btn" onClick="{{startBook}}" style="height: 54px; background: #141114; color: #FFFFFF; font-size: 16px">{{bookLabel}}</button>
+            <span style="font-size: 13px; line-height: 19px; color: #5A5450">{{bookNote}}</span>
+          </sc-if>
+          <sc-if value="{{atPhone}}" hint-placeholder-val="{{false}}">
+            <label for="bk-phone" style="font-size: 16px; font-weight: 700">Your mobile number</label>
+            <span style="font-size: 14px; color: #5A5450">Your pass and updates come by text. No account needed.</span>
+            <span style="display: flex; gap: 8px"><span style="height: 48px; padding: 0 12px; border-radius: 12px; background: #F3F3F1; display: inline-flex; align-items: center; font-weight: 600">+91</span><input id="bk-phone" class="finput" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="98765 43210" value="{{phone}}" onInput="{{setPhone}}" aria-invalid="{{hasErr}}" aria-describedby="bk-err" style="flex: 1 1 auto"></span>
+            <span id="bk-err" class="ferr" aria-live="polite">{{err}}</span>
+            <button type="button" class="btn" onClick="{{sendCode}}" style="height: 52px; background: #141114; color: #FFFFFF">Continue</button>
+          </sc-if>
+          <sc-if value="{{atCode}}" hint-placeholder-val="{{false}}">
+            <label for="bk-code" style="font-size: 16px; font-weight: 700">Enter the 6-digit code</label>
+            <span style="font-size: 14px; color: #5A5450">Sent to {{phoneShown}}. In this prototype any 6 digits work.</span>
+            <input id="bk-code" class="finput" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" value="{{code}}" onInput="{{setCode}}" aria-invalid="{{hasErr}}" aria-describedby="bk-cerr">
+            <span id="bk-cerr" class="ferr" aria-live="polite">{{err}}</span>
+            <button type="button" class="btn" onClick="{{verify}}" style="height: 52px; background: #141114; color: #FFFFFF">Verify</button>
+          </sc-if>
+          <sc-if value="{{atPay}}" hint-placeholder-val="{{false}}">
+            <span style="display: flex; justify-content: space-between; font-size: 15px"><span>{{qtyText}} × ₹299</span><b>{{totalText}}</b></span>
+            <button type="button" class="btn" onClick="{{pay}}" style="height: 54px; background: #141114; color: #FFFFFF; font-size: 16px">Pay {{totalText}} by UPI or card</button>
+            <span style="font-size: 13px; color: #5A5450">Secure payment by Razorpay.</span>
+          </sc-if>
+          <sc-if value="{{atDone}}" hint-placeholder-val="{{false}}">
+            <div role="status" style="background: #E6F5EE; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 6px">
+              <span class="dsp" style="font-size: 30px; letter-spacing: -0.02em">You’re booked.</span>
+              <span style="font-size: 15px; font-weight: 600">{{qtyText}} · {{ev.date}} · 5:45 AM, Carter Road jetty</span>
+              <span style="font-size: 14px; line-height: 20px; color: #123D2C">Your pass is in your texts. The Catch app keeps it with your pace group’s chat.</span>
+            </div>
+            <a class="btn" href="#" style="height: 48px; background: #141114; color: #FFFFFF">Get the app</a>
+          </sc-if>
+        </sc-if>
+
+        <sc-if value="{{isLuma}}" hint-placeholder-val="{{false}}">
+          <span style="font-size: 14px; line-height: 20px; color: #5A5450">Tickets for this event are sold on Luma. You’ll finish booking there.</span>
+          <a class="btn" href="#" onClick="{{lumaClick}}" style="height: 54px; background: #141114; color: #FFFFFF; font-size: 16px">Get tickets on Luma ↗</a>
+          <sc-if value="{{atIdle}}" hint-placeholder-val="{{true}}"><button type="button" class="btn" onClick="{{startRemind}}" style="background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)">Remind me the day before</button></sc-if>
+          <sc-if value="{{atRemind}}" hint-placeholder-val="{{false}}">
+            <label for="rm-phone" style="font-size: 15px; font-weight: 700">Your mobile number</label>
+            <span style="display: flex; gap: 8px"><span style="height: 48px; padding: 0 12px; border-radius: 12px; background: #F3F3F1; display: inline-flex; align-items: center; font-weight: 600">+91</span><input id="rm-phone" class="finput" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="98765 43210" value="{{phone}}" onInput="{{setPhone}}" aria-invalid="{{hasErr}}" aria-describedby="rm-err" style="flex: 1 1 auto"></span>
+            <span id="rm-err" class="ferr" aria-live="polite">{{err}}</span>
+            <button type="button" class="btn" onClick="{{saveRemind}}" style="background: #141114; color: #FFFFFF">Text me on Fri 14 Nov</button>
+          </sc-if>
+          <sc-if value="{{atRemindDone}}" hint-placeholder-val="{{false}}"><span role="status" style="background: #E6F5EE; border-radius: 14px; padding: 12px 14px; font-size: 14px; line-height: 20px; color: #123D2C">Done. We’ll text {{phoneShown}} on Fri 14 Nov with the Luma link.</span></sc-if>
+        </sc-if>
+      </div>
+      <span style="display: flex; gap: 8px"><button type="button" class="btn" onClick="{{addCal}}" style="flex: 1 1 0; height: 42px; font-size: 14px; background: #F3F3F1; color: #141114">Add to calendar</button><button type="button" class="btn" onClick="{{share}}" style="flex: 1 1 0; height: 42px; font-size: 14px; background: #F3F3F1; color: #141114">Share</button></span>
+    </aside>
+  </div>
+  <div class="mbar" aria-label="Book this event">
+    <span style="display: flex; flex-direction: column"><span style="font-size: 18px; font-weight: 700">{{ev.priceLabel}}</span><span style="font-size: 13px; color: #5A5450">{{mbarNote}}</span></span>
+    <button type="button" class="btn" onClick="{{mbarClick}}" style="height: 48px; background: #141114; color: #FFFFFF">{{mbarLabel}}</button>
+  </div>
+  <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}"><div role="status" style="position: fixed; left: 50%; bottom: 88px; transform: translateX(-50%); z-index: 40; background: #141114; color: #F6EFE6; border-radius: 14px; padding: 12px 16px; font-size: 14px; box-shadow: 0 14px 40px rgba(20,17,20,0.35); max-width: calc(100vw - 32px); box-sizing: border-box">{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":3400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { variant: "catch", fields: this.allFields(true), step: "idle", qty: 1, phone: "", code: "", err: "", sheetOpen: false, toast: "" };
+  }
+  componentWillUnmount() {
+    clearTimeout(this.toastTimer);
+  }
+  allFields(on) {
+    return { photo: on, moments: on, itinerary: on, map: on, included: on, bring: on, access: on, cancel: on, capacity: on, reviews: on };
+  }
+  fieldLabels() {
+    return [["photo", "Photo"], ["moments", "Hosted moments"], ["itinerary", "Plan for the day"], ["map", "Map"], ["included", "What’s included"],
+      ["bring", "What to bring"], ["access", "Accessibility"], ["cancel", "Cancellation"], ["capacity", "Spots left"], ["reviews", "Reviews"]];
+  }
+  showToast(text) {
+    clearTimeout(this.toastTimer);
+    this.setState({ toast: text });
+    this.toastTimer = setTimeout(() => this.setState({ toast: "" }), 2600);
+  }
+  stop(ev) {
+    if (ev && ev.preventDefault) ev.preventDefault();
+  }
+  pickVariant(variant) {
+    this.setState({ variant, fields: variant === "catch" ? this.allFields(true) : { ...this.allFields(false), reviews: true },
+      step: "idle", qty: 1, phone: "", code: "", err: "", sheetOpen: false, toast: "" });
+  }
+  eventData(isCatch) {
+    if (isCatch) return {
+      kind: "Run club · Training run", kindInk: "#B5451F", title: "Half-marathon training: 15K", date: "Sun 23 Nov", time: "5:45 to 8:30 AM",
+      place: "Carter Road jetty, Bandra West", placeShort: "Carter Road jetty", area: "Bandra West, Mumbai", priceLabel: "₹299", priceUnit: "per person",
+      priceNote: "Water, gels and breakfast", tone: "#F07A55", ink: "#3B1F14", posterTop: "Carter Road Runners", posterDate: "Sun 23 Nov", posterTitle: "15K training run",
+      summary: "A long, steady Sunday for anyone training for the Mumbai half marathon. Three pace groups, water every 5K, and breakfast at the jetty after.",
+      placeNote: "Meet by the jetty steps and look for the orange flags. Bag drop opens at 5:45.", path: "carterroadrunners.club/e/15k-training"
+    };
+    return {
+      kind: "Run & Rave · imported from Luma", kindInk: "#3A3F9E", title: "Run & Rave: Sunset Edition", date: "Sat 15 Nov", time: "5:30 PM",
+      place: "Worli Sea Face, Mumbai", placeShort: "Worli Sea Face", area: "Mumbai", priceLabel: "₹799", priceUnit: "on Luma",
+      priceNote: "Sold on Luma", tone: "#8C9BF2", ink: "#141114", posterTop: "Carter Road Runners", posterDate: "Sat 15 Nov", posterTitle: "Run & Rave",
+      summary: "A 5K social run along Worli Sea Face at sunset, then music at a rooftop nearby. Walkers welcome.",
+      placeNote: "The exact meeting point is on the Luma page.", path: "carterroadrunners.club/e/run-and-rave"
+    };
+  }
+  validPhone(raw) {
+    const digits = raw.replace(/\D/g, "");
+    const local = digits.length === 12 && digits.startsWith("91") ? digits.slice(2) : digits;
+    return /^[6-9]\d{9}$/.test(local) ? local : "";
+  }
+  renderVals() {
+    const s = this.state;
+    const isCatch = s.variant === "catch";
+    const f = s.fields;
+    const ev = this.eventData(isCatch);
+    const capacity = 40, booked = 27, remaining = capacity - booked;
+    const maxQty = Math.min(4, remaining);
+    const variants = [["catch", "Catch event, all fields"], ["luma", "Imported from Luma"]].map(([key, label]) => ({ key, label, on: s.variant === key,
+      style: s.variant === key ? "background: #141114; color: #FFFFFF" : "background: transparent; color: #141114",
+      pick: () => this.pickVariant(key) }));
+    const fieldChips = this.fieldLabels().map(([key, label]) => ({ key, label, on: !!f[key], mark: f[key] ? "✓" : "○",
+      style: f[key] ? "background: #141114; color: #FFFFFF; border: 1.5px solid #141114" : "background: #FFFFFF; color: #5A5450; border: 1.5px dashed rgba(20,17,20,0.35)",
+      toggle: () => this.setState({ fields: { ...f, [key]: !f[key] } }) }));
+    const on = (key) => isCatch && !!f[key];
+    const itin = [
+      { time: "5:45", title: "Meet at the jetty", body: "Bag drop opens. Find your pace group’s flag." },
+      { time: "6:00", title: "Warm-up", body: "Ten minutes, led by Kabir." },
+      { time: "6:10", title: "15K in three pace groups", body: "6:00, 6:45 and 7:30 per km, out to Bandstand and back twice.", meta: "15 km · flat" },
+      { time: "7:50", title: "Stretch and breakfast", body: "Poha and coffee at the jetty, included." }
+    ].map((st, i, all) => ({ ...st, hasMeta: !!st.meta, dot: i === all.length - 1 ? "#141114" : "#F07A55", line: i === all.length - 1 ? "transparent" : "rgba(20,17,20,0.15)" }));
+    const knowAll = [
+      ["included", "What’s included", "Pace leaders, water and gels at 5K and 10K, bag drop, and breakfast after.", "#FDE7DF", "#8A2F12"],
+      ["bring", "What to bring", "Running shoes, and a bottle if you like your own water. You should already be comfortable running 10K.", "#F6F0E8", "#141114"],
+      ["access", "Accessibility", "Flat promenade the whole way. Two road crossings, both with marshals. Toilets at Bandstand.", "#E6F5EE", "#123D2C"],
+      ["cancel", "Cancellation", "Free cancellation up to 24 hours before. After that you can pass your place to a friend.", "#ECEBFD", "#3A3F9E"]
+    ].filter((k) => on(k[0])).map(([key, label, body, bg, ink]) => ({ key, label, body, bg, ink }));
+    const reviews = (isCatch ? [
+      { name: "Riya S.", stars: 5, verified: true, event: "Sunday Social Run · 2 weeks ago", text: "Came on my own, left with a pace group and a coffee plan. Kabir does a round of names before the start, which made it easy." },
+      { name: "Neha K.", stars: 4, verified: true, event: "Sunday Social Run · 1 month ago", text: "Lovely crowd. The 6:00 per km group was a bit fast for a first-timer, but the leader waited for me at the turn." }
+    ] : [
+      { name: "Arjun M.", stars: 5, verified: false, event: "Run & Rave · 1 month ago", text: "Best organised run-and-party I’ve been to. Bag drop, water at the halfway point, and the playlist kept everyone going." },
+      { name: "Ishaan V.", stars: 5, verified: false, event: "Run & Rave · 2 months ago", text: "The sunset stretch along the sea face is worth it on its own. Easy pace, very friendly." }
+    ]).map((r) => ({ ...r, starText: "★★★★★".slice(0, r.stars) + "☆☆☆☆☆".slice(0, 5 - r.stars),
+      badge: r.verified ? "Booked on Catch" : "Unverified", badgeStyle: r.verified ? "background: #E6F5EE; color: #123D2C" : "background: #FFFFFF; color: #5A5450" }));
+    const more = (isCatch ? [
+      { when: "Sun 2 Nov · 6:30 AM", title: "Sunday Social Run", price: "Free", src: "On Catch", tone: "#F6F0E8", ink: "#141114" },
+      { when: "Sat 15 Nov · 5:30 PM", title: "Run & Rave: Sunset Edition", price: "₹799", src: "Luma", tone: "#8C9BF2", ink: "#141114" },
+      { when: "Wed 5 Nov · 7:00 PM", title: "Wednesday Tempo 6K", price: "Free", src: "On Catch", tone: "#5CCB9F", ink: "#123D2C" }
+    ] : [
+      { when: "Sun 2 Nov · 6:30 AM", title: "Sunday Social Run", price: "Free", src: "On Catch", tone: "#F6F0E8", ink: "#141114" },
+      { when: "Sun 23 Nov · 5:45 AM", title: "Half-marathon training: 15K", price: "₹299", src: "On Catch", tone: "#F07A55", ink: "#3B1F14" },
+      { when: "Wed 5 Nov · 7:00 PM", title: "Wednesday Tempo 6K", price: "Free", src: "On Catch", tone: "#5CCB9F", ink: "#123D2C" }
+    ]);
+    const digits = this.validPhone(s.phone);
+    const qtyText = s.qty + (s.qty === 1 ? " place" : " places");
+    const totalText = "₹" + (299 * s.qty).toLocaleString("en-IN");
+    const present = isCatch ? this.fieldLabels().filter(([k]) => f[k]).length : 0;
+    const lumaToast = () => this.showToast("Opens luma.com · counted as a booking click for Carter Road Runners");
+    return {
+      variants, fieldChips, isCatch, isLuma: !isCatch, ev,
+      protoNote: isCatch ? present + " of 10 optional fields filled. Switch them on and off to see the page adapt." : "A Luma import brings only the title, time, place, price and description.",
+      showPhoto: on("photo"), showPoster: !on("photo"), showMoments: on("moments"), showItinerary: on("itinerary"), showMap: on("map"),
+      hasKnow: knowAll.length > 0, know: knowAll, showCapacity: on("capacity"), showReviews: !!f.reviews, itinerary: itin, reviews, more,
+      reviewsNote: isCatch ? "From people who ran with Carter Road Runners" : "About Carter Road Runners, from their page",
+      goingLine: booked + " going · " + remaining + " spots left", bookedPct: Math.round((booked / capacity) * 100), spotsLine: remaining + " of " + capacity + " spots left",
+      atIdle: s.step === "idle", atPhone: s.step === "phone", atCode: s.step === "code", atPay: s.step === "pay", atDone: s.step === "done",
+      atRemind: s.step === "remind", atRemindDone: s.step === "remindDone",
+      qty: s.qty, qtyText, totalText, bookLabel: "Book " + qtyText + " · " + totalText,
+      bookNote: on("cancel") ? "Free cancellation up to 24 hours before. Book for up to 4 people." : "Book for up to 4 people.",
+      qtyDown: () => this.setState({ qty: Math.max(1, s.qty - 1) }), qtyUp: () => this.setState({ qty: Math.min(maxQty, s.qty + 1) }),
+      startBook: () => this.setState({ step: "phone", err: "" }),
+      phone: s.phone, code: s.code, err: s.err, hasErr: !!s.err, phoneShown: digits ? "+91 " + digits.slice(0, 5) + " " + digits.slice(5) : "",
+      setPhone: (e) => this.setState({ phone: e.target.value, err: "" }), setCode: (e) => this.setState({ code: e.target.value, err: "" }),
+      sendCode: () => { if (!this.validPhone(s.phone)) { this.setState({ err: "Enter a 10-digit mobile number" }); return; } this.setState({ step: "code", code: "", err: "" }); },
+      verify: () => { if (!/^\d{6}$/.test(s.code.trim())) { this.setState({ err: "Enter the 6-digit code" }); return; } this.setState({ step: "pay", err: "" }); },
+      pay: () => this.setState({ step: "done" }),
+      startRemind: () => this.setState({ step: "remind", err: "" }),
+      saveRemind: () => { if (!this.validPhone(s.phone)) { this.setState({ err: "Enter a 10-digit mobile number" }); return; } this.setState({ step: "remindDone", err: "" }); },
+      lumaClick: (e) => { this.stop(e); lumaToast(); },
+      openMaps: (e) => { this.stop(e); this.showToast("Opens Google Maps at " + ev.placeShort); },
+      share: () => this.showToast("Link copied: " + ev.path),
+      addCal: () => this.showToast("Adds " + ev.date + ", " + ev.time + " to your calendar"),
+      sheetClass: s.sheetOpen ? "sheet-open" : "", closeSheet: () => this.setState({ sheetOpen: false }),
+      mbarNote: isCatch ? (on("capacity") ? remaining + " spots left" : ev.date) : "Tickets on Luma", mbarLabel: isCatch ? "Book" : "Get tickets ↗",
+      mbarClick: () => { if (isCatch) this.setState({ sheetOpen: true }); else lumaToast(); },
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>

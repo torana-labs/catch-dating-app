@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-08-12",
+  "updated": "2026-10-25",
   "references": [
     {
       "id": "screen.dashboard.home.full_dashboard",
@@ -1837,6 +1837,582 @@
         "maxMeanDelta": 18
       },
       "notes": "Canonical Host Club Detail owner/public-view Claude template reference for advisory comparison against host_club_detail_public light captures rendered on the design-phone device. 2026-06-25 host reference batch: above advisory threshold; mismatch 28.94%, meanDelta 44.44, maxDelta 240, masked 173260. 2026-06-25 Host Club Detail public-view pass: photo fixture, title scale, next-run banner, 4-up stats, section order, activity chips, next-event address, capture font loading, and asset prewarm improved the advisory compare to mismatch 19.56%, meanDelta 20.67, maxDelta 240, masked 173260. 2026-06-25 follow-up: floating hero chrome, stat value fit, regular-weight About copy, and split generic tag wraps moved the comparison to mismatch 17.87%, meanDelta 19.52, maxDelta 240, masked 173260. 2026-06-25 hero-edge mask calibration now compares within threshold at mismatch 15.82%, meanDelta 15.22, maxDelta 240, masked 180280."
+    },
+    {
+      "id": "screen.website.home.mumbai_live.w390",
+      "screenId": "screen.website.home",
+      "stateId": "mumbai_live",
+      "captureId": "website_home_mumbai_live_390",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-390",
+        "width": 390,
+        "height": 9045,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.home/mumbai_live_390.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebHomeV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Homepage with Mumbai live: hero, format tiles, this week's plans, how a night works, organisers, host band, app band, FAQ. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.home.mumbai_live.w1280",
+      "screenId": "screen.website.home",
+      "stateId": "mumbai_live",
+      "captureId": "website_home_mumbai_live_1280",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-1280",
+        "width": 1280,
+        "height": 6933,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.home/mumbai_live_1280.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebHomeV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 1280,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Homepage with Mumbai live: hero, format tiles, this week's plans, how a night works, organisers, host band, app band, FAQ. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.home.launching_soon.w390",
+      "screenId": "screen.website.home",
+      "stateId": "launching_soon",
+      "captureId": "website_home_launching_soon_390",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-390",
+        "width": 390,
+        "height": 8599,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.home/launching_soon_390.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebHomeV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Homepage with Pune chosen: the launching-soon block (formats coming, organisers joining, phone signup, host link, app buttons) replaces the plans grid. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.home.launching_soon.w1280",
+      "screenId": "screen.website.home",
+      "stateId": "launching_soon",
+      "captureId": "website_home_launching_soon_1280",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-1280",
+        "width": 1280,
+        "height": 6627,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.home/launching_soon_1280.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebHomeV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 1280,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Homepage with Pune chosen: the launching-soon block (formats coming, organisers joining, phone signup, host link, app buttons) replaces the plans grid. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.host_landing.default.w390",
+      "screenId": "screen.website.host_landing",
+      "stateId": "default",
+      "captureId": "website_host_landing_default_390",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-390",
+        "width": 390,
+        "height": 14958,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.host_landing/default_390.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebHostV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Host landing default state. The games journey wording (Saturday Singles Mixer) is not a copy target; see the source pack README. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.host_landing.default.w1280",
+      "screenId": "screen.website.host_landing",
+      "stateId": "default",
+      "captureId": "website_host_landing_default_1280",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-1280",
+        "width": 1280,
+        "height": 11261,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.host_landing/default_1280.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebHostV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 1280,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Host landing default state. The games journey wording (Saturday Singles Mixer) is not a copy target; see the source pack README. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.organizer.guest.w390",
+      "screenId": "screen.website.organizer",
+      "stateId": "guest",
+      "captureId": "website_organizer_guest_390",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-390",
+        "width": 390,
+        "height": 4384,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.organizer/guest_390.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebOrgV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Claimed organiser page as an Instagram visitor sees it on the club's own domain: identity, follow, next up, pinned and owner links, coming up, past moments, reviews, about. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.organizer.guest.w1280",
+      "screenId": "screen.website.organizer",
+      "stateId": "guest",
+      "captureId": "website_organizer_guest_1280",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-1280",
+        "width": 1280,
+        "height": 2607,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.organizer/guest_1280.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebOrgV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 1280,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Claimed organiser page as an Instagram visitor sees it on the club's own domain: identity, follow, next up, pinned and owner links, coming up, past moments, reviews, about. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.organizer.generated.w390",
+      "screenId": "screen.website.organizer",
+      "stateId": "generated",
+      "captureId": "website_organizer_generated_390",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-390",
+        "width": 390,
+        "height": 4145,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.organizer/generated_390.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebOrgV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Organiser page generated from public Luma and Instagram pages before claim: imported events, unverified reviews, claim band. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.organizer.generated.w1280",
+      "screenId": "screen.website.organizer",
+      "stateId": "generated",
+      "captureId": "website_organizer_generated_1280",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-1280",
+        "width": 1280,
+        "height": 2503,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.organizer/generated_1280.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebOrgV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 1280,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Organiser page generated from public Luma and Instagram pages before claim: imported events, unverified reviews, claim band. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.organizer.owner.w390",
+      "screenId": "screen.website.organizer",
+      "stateId": "owner",
+      "captureId": "website_organizer_owner_390",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-390",
+        "width": 390,
+        "height": 5559,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.organizer/owner_390.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebOrgV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Organiser viewing their own claimed page: owner bar, 30-day insights, link click counts, add a link, domain and tracking settings. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.organizer.owner.w1280",
+      "screenId": "screen.website.organizer",
+      "stateId": "owner",
+      "captureId": "website_organizer_owner_1280",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-1280",
+        "width": 1280,
+        "height": 3128,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.organizer/owner_1280.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebOrgV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 1280,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Organiser viewing their own claimed page: owner bar, 30-day insights, link click counts, add a link, domain and tracking settings. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.event.catch_full.w390",
+      "screenId": "screen.website.event",
+      "stateId": "catch_full",
+      "captureId": "website_event_catch_full_390",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-390",
+        "width": 390,
+        "height": 4560,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.event/catch_full_390.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebEventV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Catch event with all ten optional fields: photo, hosted moments, plan for the day, map, good to know, spots left, reviews; booking card (desktop) or booking bar (phone). Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.event.catch_full.w1280",
+      "screenId": "screen.website.event",
+      "stateId": "catch_full",
+      "captureId": "website_event_catch_full_1280",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-1280",
+        "width": 1280,
+        "height": 3474,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.event/catch_full_1280.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebEventV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 1280,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Catch event with all ten optional fields: photo, hosted moments, plan for the day, map, good to know, spots left, reviews; booking card (desktop) or booking bar (phone). Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.event.catch_bare.w390",
+      "screenId": "screen.website.event",
+      "stateId": "catch_bare",
+      "captureId": "website_event_catch_bare_390",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-390",
+        "width": 390,
+        "height": 2218,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.event/catch_bare_390.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebEventV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). The same Catch event with every optional field off: colour poster, facts, description, where, organiser card, more events. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.event.catch_bare.w1280",
+      "screenId": "screen.website.event",
+      "stateId": "catch_bare",
+      "captureId": "website_event_catch_bare_1280",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-1280",
+        "width": 1280,
+        "height": 1621,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.event/catch_bare_1280.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebEventV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 1280,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). The same Catch event with every optional field off: colour poster, facts, description, where, organiser card, more events. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.event.luma_import.w390",
+      "screenId": "screen.website.event",
+      "stateId": "luma_import",
+      "captureId": "website_event_luma_import_390",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-390",
+        "width": 390,
+        "height": 2468,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.event/luma_import_390.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebEventV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Event imported from Luma: poster, facts, description, where, organiser card, reviews, Get tickets on Luma. Advisory: snap to D19 and D20 when building."
+    },
+    {
+      "id": "screen.website.event.luma_import.w1280",
+      "screenId": "screen.website.event",
+      "stateId": "luma_import",
+      "captureId": "website_event_luma_import_1280",
+      "theme": "light",
+      "textScale": 1,
+      "device": {
+        "id": "web-1280",
+        "width": 1280,
+        "height": 1834,
+        "pixelRatio": 1
+      },
+      "referencePath": "design/reference_screens/screen.website.event/luma_import_1280.png",
+      "source": {
+        "kind": "claude",
+        "id": "claude.website-v2-canvas",
+        "path": "design/source_packs/website-v2/boards/WebEventV2.dc.html",
+        "exportedAt": "2026-10-25",
+        "exportTool": "Headless Chromium full-page capture at 1x of the board rendered with its own component logic, re-encoded as RGB PNG",
+        "viewport": {
+          "width": 1280,
+          "height": 844
+        }
+      },
+      "thresholds": {
+        "perChannelDelta": 16,
+        "maxMismatchRatio": 0.18,
+        "maxMeanDelta": 18
+      },
+      "notes": "Owner-approved Website v2 reference (2026-10-25). Event imported from Luma: poster, facts, description, where, organiser card, reviews, Get tickets on Luma. Advisory: snap to D19 and D20 when building."
     }
   ]
 }

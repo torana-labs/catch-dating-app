@@ -1,0 +1,102 @@
+{
+  "$schema": "catch.design-source-pack/v1",
+  "id": "website-v2",
+  "importedAt": "2026-10-25",
+  "upstream": {
+    "label": "Catch directions design canvas, Website v2 page",
+    "kind": "design-canvas",
+    "url": "https://claude.ai/artifact/S6RC4qZwMpNhyUrtxQ2xKf"
+  },
+  "scope": {
+    "product": "website",
+    "description": "Owner-approved Website v2 boards for the homepage, host landing, organiser page and event page, plus the guest screens and app renders they embed."
+  },
+  "entrypoints": [
+    "boards/WebHomeV2.dc.html",
+    "boards/WebHostV2.dc.html",
+    "boards/WebOrgV2.dc.html",
+    "boards/WebEventV2.dc.html"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "81e4cd7bc69207ff9bf3034f3f1c7dfcfd3130148438fcdda13098c5b6d48371"
+    },
+    {
+      "path": "assets/photos/catch-hero-event-1280.jpg",
+      "sha256": "d56f077e43f4eb7dd9edbe1d60f3861329236e810997caa057cc6853da30c938"
+    },
+    {
+      "path": "assets/photos/home-pickleball.jpg",
+      "sha256": "321fb3f2d2629956e7e8d888702bbaf6c77d04770e37fc3ef4a37e28ca4fcbbb"
+    },
+    {
+      "path": "assets/screens/GuestAfter.png",
+      "sha256": "3a77e6c6fb9ea6a398eb382f5440a390a736ebe3638f8c0d10a6fe1be96906bc"
+    },
+    {
+      "path": "assets/screens/GuestLive.png",
+      "sha256": "571df4b215c63592dfa01a5119c6d14537d6d89af7eb3908368b9ed29e3963b2"
+    },
+    {
+      "path": "assets/screens/LightsAppExplore.png",
+      "sha256": "9e5e933af429669dae636948609cdd4738638cf3abee937d3acbe4473c5c6fb4"
+    },
+    {
+      "path": "assets/screens/LightsHostAfter.png",
+      "sha256": "8746a361d6712011c27ab44118c489d2995d800c52a60e6b0f61b9eee2d320b7"
+    },
+    {
+      "path": "assets/screens/LightsHostDoor.png",
+      "sha256": "415630da7989da547e630ec6515d7f8a316aead7cce59c199fca837cd637d527"
+    },
+    {
+      "path": "assets/screens/LightsHostToday.png",
+      "sha256": "a0492772f353d65379e18511142bc2e2504fed739716adceb51923eb8ff092ef"
+    },
+    {
+      "path": "assets/screens/LightsLiveCrawl.png",
+      "sha256": "92d7831b585bb7e8e945dfa5ae2ee8e0567b70ad056547e7891776b4415ca47a"
+    },
+    {
+      "path": "assets/screens/LightsLiveNow.png",
+      "sha256": "90020838dc8ff956f5e3dd9dd9eed4fb82929742bebd4d44f23beddf7e81dbf1"
+    },
+    {
+      "path": "assets/screens/LightsLiveReveal.png",
+      "sha256": "e7a970e42bca3b86abc60f5c5583470a41e72a5c1480aaadfac151c4dcc9cd6d"
+    },
+    {
+      "path": "assets/screens/LightsLiveRoom.png",
+      "sha256": "994c1da756c3969fc853a9fd1542c6e0fdc028d2ae06b806f123ea7781e89d97"
+    },
+    {
+      "path": "blob-map.json",
+      "sha256": "47eb78a299d154c504d27a4995d453b673bb5563045b4da62ca649efb7808f73"
+    },
+    {
+      "path": "boards/GuestAfter.dc.html",
+      "sha256": "1f406ecd908992162e9df4ed058f3bd2dd110370c12e51bb277b545485566e5d"
+    },
+    {
+      "path": "boards/GuestLive.dc.html",
+      "sha256": "82e2137be8dc531aa310f25ae4bcb5b4fe36de4c3a33bd79e668832ade74caac"
+    },
+    {
+      "path": "boards/WebEventV2.dc.html",
+      "sha256": "addc0d3a0a7e0e7511eb38ac3df48dd1cfd1a053972b03dcb4a4023d515db17e"
+    },
+    {
+      "path": "boards/WebHomeV2.dc.html",
+      "sha256": "47c5e950062dc693ca54969a522235ae1be09b6add13c7e302d5ceaf3059fb6b"
+    },
+    {
+      "path": "boards/WebHostV2.dc.html",
+      "sha256": "ed43ddf82a505d5e2cfd33ea585430cfa1725eb23c9079c1976b964c398b9f04"
+    },
+    {
+      "path": "boards/WebOrgV2.dc.html",
+      "sha256": "83df17b0efd3eecb6cad3e5a8307edf2eb3cf32940cb781c336c44025f5f6786"
+    }
+  ]
+}

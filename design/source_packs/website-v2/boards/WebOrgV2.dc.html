@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Organiser page v2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;display=swap">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#141114}a:hover{color:#5A5450}
+.v2{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#141114}
+.dsp{font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:760;margin:0}
+.btn{font:inherit;font-weight:600;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;height:48px;padding:0 18px;font-size:15px;border:0}
+.wrap{max-width:1160px;margin:0 auto;padding:0 40px;box-sizing:border-box}
+.proto{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:16px auto 0;padding:10px 12px;border:1.5px dashed rgba(20,17,20,0.3);border-radius:14px;background:#F3F3F1;font-size:13px}
+.seg{display:flex;gap:4px;background:#FFFFFF;border-radius:999px;padding:3px;flex-wrap:wrap}
+.seg button{height:34px;padding:0 14px;border-radius:999px;border:0;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.grid{display:grid;grid-template-columns:420px minmax(0,1fr);gap:48px;align-items:start;padding-top:28px;padding-bottom:80px}
+.rail{display:flex;flex-direction:column;gap:14px}
+.main{display:flex;flex-direction:column;gap:56px}
+.cover{position:relative;height:170px;border-radius:24px;overflow:hidden;background:#F07A55}
+.cover img{width:100%;height:100%;object-fit:cover;display:block}
+.logo{width:88px;height:88px;border-radius:999px;border:4px solid #FFFFFF;display:flex;align-items:center;justify-content:center;font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:760;font-size:34px;margin:-50px 0 0 20px;position:relative;box-sizing:border-box}
+.lnk{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;min-height:68px;padding:10px 14px 10px 10px;border-radius:18px;text-decoration:none;color:#141114;box-sizing:border-box;transition:transform .15s ease}
+.lnk:hover{transform:translateY(-1px);color:#141114}
+.lnk-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.soc{width:44px;height:44px;border-radius:999px;border:1.5px solid rgba(20,17,20,0.18);display:inline-flex;align-items:center;justify-content:center;color:#141114}
+.card{border-radius:22px;padding:20px;box-sizing:border-box}
+.erow{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 0;border-top:1px solid rgba(20,17,20,0.1);text-decoration:none;color:#141114}
+.edate{width:72px;height:78px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:600;line-height:1.1}
+.src{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600}
+.past{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ptile{height:220px;border-radius:20px;overflow:hidden;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;box-sizing:border-box}
+.revgrid{display:grid;grid-template-columns:240px minmax(0,1fr);gap:32px;align-items:start}
+.rev{padding:18px 0;border-top:1px solid rgba(20,17,20,0.1);display:flex;flex-direction:column;gap:8px}
+.badge{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 9px;border-radius:999px;font-size:12px;font-weight:600}
+.finput{height:48px;border-radius:12px;border:1.5px solid rgba(20,17,20,0.25);padding:0 14px;font:inherit;font-size:16px;color:#141114;background:#FFFFFF;box-sizing:border-box;width:100%}
+.ferr{font-size:13px;font-weight:600;color:#B3261A}
+.star-btn{width:40px;height:40px;border-radius:999px;border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.stat{background:#FFFFFF;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:2px}
+.h2{font-size:44px;line-height:1;letter-spacing:-0.035em}
+@media (max-width: 900px){
+  .wrap{padding:0 16px}
+  .grid{grid-template-columns:minmax(0,1fr);gap:40px;padding-top:16px}
+  .main{gap:44px}
+  .past{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ptile{height:170px}
+  .revgrid{grid-template-columns:minmax(0,1fr);gap:16px}
+  .h2{font-size:34px}
+  .erow{grid-template-columns:56px minmax(0,1fr) auto;gap:12px}
+  .edate{width:56px;height:66px}
+  .ecta{height:36px !important;padding:0 12px !important;font-size:13px !important}
+  .hide-sm{display:none !important}
+  .cover{height:140px}
+  .ins-stats{grid-template-columns:repeat(2,minmax(0,1fr)) !important}
+  .claim-list{grid-template-columns:minmax(0,1fr) !important}
+}
+</style>
+</helmet>
+<div class="v2" style="width: 100%; background: #FFFFFF">
+
+  <div class="wrap">
+    <div class="proto" role="region" aria-label="Prototype controls">
+      <span style="display: flex; flex-direction: column; gap: 2px"><b>Prototype view</b><span style="color: #5A5450">Address: {{address}}</span></span>
+      <div class="seg" role="group" aria-label="Who is looking">
+        <sc-for list="{{views}}" as="vw" hint-placeholder-count="3"><button type="button" onClick="{{vw.pick}}" aria-pressed="{{vw.on}}" style="{{vw.style}}">{{vw.label}}</button></sc-for>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{isGenerated}}" hint-placeholder-val="{{false}}">
+    <header class="wrap" style="display: flex; justify-content: space-between; align-items: center; height: 64px">
+      <a href="#" class="dsp" style="font-size: 28px; letter-spacing: -0.03em; text-decoration: none">Catch</a>
+      <nav aria-label="Catch" style="display: flex; gap: 20px; font-size: 15px; font-weight: 600"><a href="#" style="text-decoration: none">Explore Mumbai</a><a class="hide-sm" href="#" style="text-decoration: none">For hosts</a></nav>
+    </header>
+  </sc-if>
+
+  <sc-if value="{{isOwner}}" hint-placeholder-val="{{false}}">
+    <div class="wrap" style="margin-top: 12px">
+      <div style="background: #141114; color: #F6EFE6; border-radius: 16px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+        <span style="display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 700">This is your page</span><span style="font-size: 13px; color: #BDB3A7">Live at carterroadrunners.club · only you see this bar</span></span>
+        <span style="display: flex; gap: 8px"><a class="btn" href="#insights" style="height: 40px; font-size: 14px; background: transparent; color: #F6EFE6; border: 1.5px solid rgba(246,239,230,0.35)">Insights</a><button type="button" class="btn" style="height: 40px; font-size: 14px; background: #F6EFE6; color: #141114">Edit page</button></span>
+      </div>
+    </div>
+  </sc-if>
+
+  <div class="wrap grid">
+    <aside class="rail" aria-label="{{org.name}}">
+      <div>
+        <div class="cover"><sc-if value="{{org.hasCover}}" hint-placeholder-val="{{true}}"><img src="/_blob/b766451d5b4e5bf9ae506afe33116fa6" alt="Runners on the promenade at sunset"></sc-if></div>
+        <div class="logo" aria-hidden="true" style="background: {{org.logoBg}}; color: #141114">CR</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 0 4px">
+        <span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+          <h1 class="dsp" style="font-size: 40px; line-height: 0.98; letter-spacing: -0.03em">{{org.name}}</h1>
+          <sc-if value="{{org.verified}}" hint-placeholder-val="{{true}}"><span role="img" aria-label="Claimed by the organiser" title="Claimed by the organiser" style="display: inline-flex; color: #B5451F"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 2.1 3.2-.3.7 3.1 2.8 1.6-1.3 2.9 1.3 2.9-2.8 1.6-.7 3.1-3.2-.3L12 22l-2.4-2.1-3.2.3-.7-3.1-2.8-1.6 1.3-2.9-1.3-2.9 2.8-1.6.7-3.1 3.2.3z"></path><path d="M8.5 12l2.5 2.5 4.5-5" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></sc-if>
+        </span>
+        <sc-if value="{{isGenerated}}" hint-placeholder-val="{{false}}"><span class="badge" style="background: #F3F3F1; color: #5A5450; align-self: flex-start">Built from public pages · not claimed yet</span></sc-if>
+        <p style="margin: 0; font-size: 16px; line-height: 24px">{{org.line}}</p>
+        <span style="font-size: 14px; color: #5A5450">{{org.area}}</span>
+        <span style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 14px; padding-top: 2px">
+          <span><b>{{followersText}}</b>{{followersLabel}}</span>
+          <span><b>{{org.rating}}</b> ★ · {{org.reviewCount}} reviews</span>
+          <sc-if value="{{org.hasHosted}}" hint-placeholder-val="{{true}}"><span><b>{{org.hosted}}</b> runs hosted</span></sc-if>
+        </span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px">
+        <button type="button" class="btn" onClick="{{followClick}}" aria-pressed="{{following}}" style="{{followStyle}}">{{followLabel}}</button>
+        <button type="button" class="btn" onClick="{{toggleShare}}" aria-expanded="{{shareOpen}}" style="background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 8l5-5 5 5M5 14v6h14v-6"></path></svg>Share</button>
+      </div>
+
+      <sc-if value="{{followPanel}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="background: #F6F0E8; display: flex; flex-direction: column; gap: 10px">
+          <sc-if value="{{followAtPhone}}" hint-placeholder-val="{{true}}">
+            <label for="follow-phone" style="font-size: 16px; font-weight: 700">Hear about the next run first</label>
+            <span style="font-size: 14px; line-height: 20px; color: #5A5450">A text when {{org.name}} opens a new plan. No app or account needed.</span>
+            <span style="display: flex; gap: 8px"><span style="height: 48px; padding: 0 12px; border-radius: 12px; background: #FFFFFF; display: inline-flex; align-items: center; font-weight: 600">+91</span><input id="follow-phone" class="finput" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="98765 43210" value="{{phone}}" onInput="{{setPhone}}" aria-invalid="{{hasFollowErr}}" aria-describedby="follow-err" style="flex: 1 1 auto"></span>
+            <span id="follow-err" class="ferr" aria-live="polite">{{followErr}}</span>
+            <button type="button" class="btn" onClick="{{sendCode}}" style="background: #141114; color: #FFFFFF">Send code</button>
+          </sc-if>
+          <sc-if value="{{followAtCode}}" hint-placeholder-val="{{false}}">
+            <label for="follow-code" style="font-size: 16px; font-weight: 700">Enter the 6-digit code</label>
+            <span style="font-size: 14px; color: #5A5450">Sent to {{phoneShown}}. In this prototype any 6 digits work.</span>
+            <input id="follow-code" class="finput" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" value="{{code}}" onInput="{{setCode}}" aria-invalid="{{hasFollowErr}}" aria-describedby="code-err">
+            <span id="code-err" class="ferr" aria-live="polite">{{followErr}}</span>
+            <button type="button" class="btn" onClick="{{confirmCode}}" style="background: #141114; color: #FFFFFF">Follow</button>
+          </sc-if>
+          <sc-if value="{{followAtDone}}" hint-placeholder-val="{{false}}">
+            <span role="status" style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 16px; font-weight: 700">You’re following {{org.name}}.</span><span style="font-size: 14px; line-height: 20px; color: #5A5450">We’ll text you when a new plan opens, at most twice a month. Get the Catch app to keep your plans and group chats together.</span></span>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{shareOpen}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="background: #F6F0E8; display: grid; grid-template-columns: 112px minmax(0,1fr); gap: 16px; align-items: center">
+          <svg role="img" aria-label="QR code for {{shareUrl}}" width="112" height="112" viewBox="0 0 21 21" shape-rendering="crispEdges" style="background: #FFFFFF; border-radius: 10px; padding: 6px; box-sizing: border-box"><path fill="#141114" d="M0 0h7v7H0zM1 1v5h5V1zM2 2h3v3H2zM14 0h7v7h-7zM15 1v5h5V1zM16 2h3v3h-3zM0 14h7v7H0zM1 15v5h5v-5zM2 16h3v3H2zM8 0h1v1H8zM10 0h2v1h-2zM9 1h2v2H9zM8 3h1v2H8zM11 3h2v1h-2zM10 5h3v1h-3zM8 6h1v1H8zM12 6h1v2h-1zM0 8h2v1H0zM3 8h3v1H3zM7 8h3v1H7zM11 8h1v1h-1zM14 8h2v1h-2zM18 8h3v1h-3zM1 9h1v2H1zM5 9h2v1H5zM9 9h2v2H9zM13 9h2v1h-2zM16 9h1v3h-1zM19 9h1v1h-1zM0 11h1v1H0zM3 10h2v2H3zM6 11h2v1H6zM12 11h3v1h-3zM18 11h3v1h-3zM2 12h2v1H2zM8 12h3v1H8zM14 12h1v2h-1zM17 13h2v1h-2zM8 14h1v2H8zM10 14h3v1h-3zM16 14h1v1h-1zM19 14h2v2h-2zM9 16h2v1H9zM12 15h2v2h-2zM15 16h3v1h-3zM8 18h2v1H8zM11 18h1v3h-1zM13 18h3v1h-3zM17 18h1v2h-1zM19 17h1v1h-1zM8 20h2v1H8zM13 20h2v1h-2zM15 19h1v1h-1zM19 19h2v2h-2z"></path></svg>
+          <span style="display: flex; flex-direction: column; gap: 8px; min-width: 0"><span style="font-size: 14px; color: #5A5450">Print it on a poster or show it at the start line.</span><span style="font-size: 16px; font-weight: 700; overflow-wrap: anywhere">{{shareUrl}}</span><button type="button" class="btn" onClick="{{copyLink}}" style="height: 40px; font-size: 14px; background: #141114; color: #FFFFFF; align-self: flex-start">{{copyLabel}}</button></span>
+        </div>
+      </sc-if>
+
+      <a href="#" class="card" onClick="{{nextClick}}" style="background: #141114; color: #F6EFE6; text-decoration: none; display: flex; flex-direction: column; gap: 10px; padding: 22px">
+        <span style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="font-size: 13px; font-weight: 600; color: #F07A55">Next up · {{next.countdown}}</span><span class="src" style="{{next.srcStyle}}">{{next.srcLabel}}</span></span>
+        <span class="dsp" style="font-size: 36px; line-height: 0.98; letter-spacing: -0.03em; color: #F6EFE6">{{next.title}}</span>
+        <span style="font-size: 15px; line-height: 22px; color: #BDB3A7">{{next.when}} · {{next.where}}</span>
+        <span style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-top: 6px"><span style="font-size: 15px; font-weight: 600">{{next.price}} · {{next.left}}</span><span class="btn" style="height: 44px; background: #F07A55; color: #141114">{{next.cta}}</span></span>
+      </a>
+
+      <nav aria-label="Links" style="display: flex; flex-direction: column; gap: 8px">
+        <sc-for list="{{links}}" as="l" hint-placeholder-count="5">
+          <a class="lnk" href="#" onClick="{{l.click}}" style="background: {{l.bg}}">
+            <span class="lnk-ic" aria-hidden="true" style="background: {{l.icBg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{l.icon}}"></path></svg></span>
+            <span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 16px; font-weight: 700">{{l.title}}</span><span style="font-size: 13px; color: {{l.subInk}}">{{l.sub}}</span><sc-if value="{{l.showStats}}" hint-placeholder-val="{{false}}"><span style="font-size: 13px; font-weight: 700; color: {{l.statInk}}">{{l.stats}}</span></sc-if></span>
+            <span style="display: flex; align-items: center; gap: 8px">
+              <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M9 7h8v8"></path></svg>
+            </span>
+          </a>
+        </sc-for>
+        <sc-if value="{{isOwner}}" hint-placeholder-val="{{false}}"><button type="button" class="btn" style="height: 56px; border-radius: 18px; background: transparent; color: #141114; border: 1.5px dashed rgba(20,17,20,0.35)">+ Add a link</button></sc-if>
+      </nav>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; padding: 4px 0" aria-label="Social profiles">
+        <sc-for list="{{socials}}" as="so" hint-placeholder-count="4"><a class="soc" href="#" aria-label="{{so.label}}"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="{{so.icon}}"></path></svg></a></sc-for>
+      </div>
+
+      <sc-if value="{{isOwner}}" hint-placeholder-val="{{false}}">
+        <div class="card" style="background: #F3F3F1; display: flex; flex-direction: column; gap: 12px">
+          <span style="font-size: 16px; font-weight: 700">Your domain</span>
+          <span style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="font-size: 15px; font-weight: 600">carterroadrunners.club</span><span class="badge" style="background: #E6F5EE; color: #123D2C">Connected</span></span>
+          <span style="font-size: 13px; line-height: 19px; color: #5A5450">Fallback link: catchdates.com/carter-road-runners. Both open this page.</span>
+          <span style="border-top: 1px solid rgba(20,17,20,0.12); padding-top: 12px; font-size: 16px; font-weight: 700">Tracking</span>
+          <span style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">Meta Pixel</span><span style="font-size: 13px; color: #5A5450">ID 4402913377</span></span><span class="badge" style="background: #E6F5EE; color: #123D2C">Connected</span></span>
+          <span style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 600">Google Analytics</span><span style="font-size: 13px; color: #5A5450">G-7QX2LM14</span></span><span class="badge" style="background: #E6F5EE; color: #123D2C">Connected</span></span>
+          <span style="font-size: 13px; line-height: 19px; color: #5A5450">Sends page views and booking clicks, only from visitors who accept marketing cookies.</span>
+        </div>
+      </sc-if>
+    </aside>
+
+    <div class="main">
+      <sc-if value="{{isOwner}}" hint-placeholder-val="{{false}}">
+        <section id="insights" aria-labelledby="ins-title" class="card" style="background: #F6F0E8; padding: 24px; display: flex; flex-direction: column; gap: 18px">
+          <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap"><h2 id="ins-title" class="dsp" style="font-size: 30px; letter-spacing: -0.02em">Last 30 days</h2><span style="font-size: 13px; color: #5A5450">Only you and your team see this</span></span>
+          <div style="display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px" class="ins-stats">
+            <sc-for list="{{insights}}" as="st" hint-placeholder-count="4"><span class="stat"><span style="font-size: 13px; color: #5A5450">{{st.label}}</span><span class="dsp" style="font-size: 32px; letter-spacing: -0.02em">{{st.value}}</span><span style="font-size: 12px; font-weight: 600; color: #1F7A57">{{st.delta}}</span></span></sc-for>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 14px; font-weight: 700">Where visitors came from</span>
+            <span style="display: flex; height: 14px; border-radius: 999px; overflow: hidden">
+              <sc-for list="{{sources}}" as="sr" hint-placeholder-count="4"><span style="width: {{sr.pct}}%; background: {{sr.tone}}"></span></sc-for>
+            </span>
+            <span style="display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px">
+              <sc-for list="{{sources}}" as="sr" hint-placeholder-count="4"><span style="display: inline-flex; align-items: center; gap: 6px"><span aria-hidden="true" style="width: 10px; height: 10px; border-radius: 3px; background: {{sr.tone}}"></span>{{sr.label}} · {{sr.pct}}%</span></sc-for>
+            </span>
+          </div>
+          <span style="font-size: 14px; line-height: 21px">Your Instagram bio sends most visitors. The Run &amp; Rave link is your most clicked, and 1 in 4 people who tap it buy a ticket on Luma.</span>
+        </section>
+      </sc-if>
+
+      <sc-if value="{{isGenerated}}" hint-placeholder-val="{{false}}">
+        <section id="claim" aria-labelledby="claim-title" class="card" style="background: #8C9BF2; color: #141114; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+          <span style="font-size: 14px; font-weight: 600">Is this your club?</span>
+          <h2 id="claim-title" class="dsp h2">This page is already working for you.</h2>
+          <p style="margin: 0; font-size: 17px; line-height: 26px"><b>38 people</b> asked to hear about your next run, and <b>2 people</b> left reviews. We built this page from your public Luma and Instagram pages. Claim it free and make it yours.</p>
+          <ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px" class="claim-list">
+            <li style="background: rgba(255,255,255,0.55); border-radius: 14px; padding: 12px 14px; font-size: 15px; line-height: 21px"><b>Your Instagram link.</b> Put it on your own domain, so it stays yours.</li>
+            <li style="background: rgba(255,255,255,0.55); border-radius: 14px; padding: 12px 14px; font-size: 15px; line-height: 21px"><b>Every event in one place.</b> Luma, Catch or anywhere else, updated for you.</li>
+            <li style="background: rgba(255,255,255,0.55); border-radius: 14px; padding: 12px 14px; font-size: 15px; line-height: 21px"><b>Your links.</b> WhatsApp group, shop, partners, pinned or timed.</li>
+            <li style="background: rgba(255,255,255,0.55); border-radius: 14px; padding: 12px 14px; font-size: 15px; line-height: 21px"><b>Who clicks.</b> Visits, link clicks and bookings, with Meta Pixel and Google Analytics.</li>
+          </ul>
+          <sc-if value="{{claimAtStart}}" hint-placeholder-val="{{true}}"><button type="button" class="btn" onClick="{{claimStart}}" style="background: #141114; color: #FFFFFF; align-self: flex-start; height: 52px; padding: 0 24px">Claim this page</button></sc-if>
+          <sc-if value="{{claimAtMethod}}" hint-placeholder-val="{{false}}">
+            <div style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+              <span style="font-size: 16px; font-weight: 700">How should we check it’s you?</span>
+              <div role="radiogroup" aria-label="Verification method" style="display: flex; flex-direction: column; gap: 8px">
+                <sc-for list="{{claimMethods}}" as="cm" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{cm.on}}" onClick="{{cm.pick}}" style="{{cm.style}}"><span style="font-size: 15px; font-weight: 700">{{cm.title}}</span><span style="font-size: 13px; color: #5A5450">{{cm.sub}}</span></button></sc-for>
+              </div>
+              <button type="button" class="btn" onClick="{{claimSend}}" style="background: #141114; color: #FFFFFF; align-self: flex-start">Send my code</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{claimAtCode}}" hint-placeholder-val="{{false}}">
+            <div style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+              <label for="claim-code" style="font-size: 16px; font-weight: 700">{{claimSentTo}}</label>
+              <input id="claim-code" class="finput" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit code" value="{{claimCode}}" onInput="{{setClaimCode}}" aria-describedby="claim-err">
+              <span id="claim-err" class="ferr" aria-live="polite">{{claimErr}}</span>
+              <button type="button" class="btn" onClick="{{claimConfirm}}" style="background: #141114; color: #FFFFFF; align-self: flex-start">Claim the page</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{claimAtDone}}" hint-placeholder-val="{{false}}">
+            <div role="status" style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+              <span class="dsp" style="font-size: 28px; letter-spacing: -0.02em">It’s yours.</span>
+              <span style="font-size: 15px; line-height: 22px; color: #5A5450">Add your links, connect your domain and reply to your reviews. Your 38 followers stay with you.</span>
+              <button type="button" class="btn" onClick="{{goOwner}}" style="background: #141114; color: #FFFFFF; align-self: flex-start">Open the owner view</button>
+            </div>
+          </sc-if>
+        </section>
+      </sc-if>
+
+      <section id="events" aria-labelledby="ev-title" style="display: flex; flex-direction: column; gap: 6px">
+        <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-bottom: 8px">
+          <h2 id="ev-title" class="dsp h2">Coming up</h2>
+          <span style="font-size: 14px; color: #5A5450">{{eventsNote}}</span>
+        </span>
+        <sc-for list="{{events}}" as="e" hint-placeholder-count="5">
+          <a class="erow" href="#" onClick="{{e.click}}">
+            <span class="edate" style="background: {{e.tone}}; color: {{e.ink}}"><span>{{e.dow}}</span><span class="dsp" style="font-size: 30px; line-height: 1">{{e.day}}</span><span>{{e.mon}}</span></span>
+            <span style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
+              <span style="font-size: 17px; font-weight: 700; line-height: 22px">{{e.title}}</span>
+              <span style="font-size: 14px; color: #5A5450">{{e.time}} · {{e.where}}</span>
+              <span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding-top: 2px"><span class="src" style="{{e.srcStyle}}">{{e.srcLabel}}</span><span style="font-size: 14px; font-weight: 600">{{e.price}}</span><span style="font-size: 13px; color: #5A5450">{{e.left}}</span></span>
+            </span>
+            <span class="btn ecta" style="height: 40px; font-size: 14px; {{e.ctaStyle}}">{{e.cta}}</span>
+          </a>
+        </sc-for>
+      </section>
+
+      <section aria-labelledby="past-title" style="display: flex; flex-direction: column; gap: 16px">
+        <h2 id="past-title" class="dsp h2">{{pastTitle}}</h2>
+        <div class="past">
+          <sc-for list="{{past}}" as="p" hint-placeholder-count="4">
+            <div class="ptile" style="background: {{p.tone}}; color: {{p.ink}}; {{p.extra}}">
+              <sc-if value="{{p.hasPhoto}}" hint-placeholder-val="{{true}}"><img src="{{p.photo}}" alt="{{p.alt}}" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover"><span aria-hidden="true" style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,17,20,0) 45%, rgba(20,17,20,0.75))"></span></sc-if>
+              <span style="position: relative; display: flex; flex-direction: column; gap: 2px">
+                <sc-if value="{{p.big}}" hint-placeholder-val="{{false}}"><span class="dsp" style="font-size: 56px; line-height: 0.9; letter-spacing: -0.04em">{{p.big}}</span></sc-if>
+                <span style="font-size: 15px; font-weight: 700">{{p.title}}</span><span style="font-size: 13px; opacity: 0.85">{{p.sub}}</span>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+
+      <section id="reviews" aria-labelledby="rev-title" style="display: flex; flex-direction: column; gap: 16px">
+        <span style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+          <h2 id="rev-title" class="dsp h2">Reviews</h2>
+          <sc-if value="{{notOwner}}" hint-placeholder-val="{{true}}"><button type="button" class="btn" onClick="{{openReview}}" aria-expanded="{{reviewOpen}}" style="height: 42px; font-size: 14px; background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)">Write a review</button></sc-if>
+        </span>
+        <div class="revgrid">
+          <div style="display: flex; flex-direction: column; gap: 10px">
+            <span style="display: flex; align-items: baseline; gap: 10px"><span class="dsp" style="font-size: 72px; line-height: 0.9; letter-spacing: -0.04em">{{org.rating}}</span><span style="font-size: 14px; color: #5A5450">{{org.reviewCount}} reviews</span></span>
+            <sc-for list="{{dist}}" as="d" hint-placeholder-count="5"><span style="display: grid; grid-template-columns: 22px minmax(0,1fr) 32px; gap: 8px; align-items: center; font-size: 13px"><span>{{d.n}}★</span><span style="height: 8px; border-radius: 999px; background: #EFEAE3; overflow: hidden"><span style="display: block; height: 100%; width: {{d.pct}}%; background: #F07A55"></span></span><span style="color: #5A5450; text-align: right">{{d.count}}</span></span></sc-for>
+            <span style="font-size: 13px; line-height: 19px; color: #5A5450">{{reviewPolicy}}</span>
+          </div>
+          <div>
+            <sc-if value="{{reviewOpen}}" hint-placeholder-val="{{false}}">
+              <div class="card" style="background: #F6F0E8; display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px">
+                <sc-if value="{{reviewNotDone}}" hint-placeholder-val="{{true}}">
+                  <span id="stars-label" style="font-size: 16px; font-weight: 700">How was it?</span>
+                  <span role="radiogroup" aria-labelledby="stars-label" style="display: flex; gap: 6px">
+                    <sc-for list="{{starBtns}}" as="sb" hint-placeholder-count="5"><button type="button" class="star-btn" role="radio" aria-checked="{{sb.on}}" aria-label="{{sb.label}}" onClick="{{sb.pick}}" style="background: {{sb.bg}}"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="{{sb.fill}}"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"></path></svg></button></sc-for>
+                  </span>
+                  <label for="rev-text" style="font-size: 14px; font-weight: 600">What should people know?</label>
+                  <textarea id="rev-text" class="finput" onInput="{{setRevText}}" placeholder="What it was like, who it suits, anything to know before going" style="height: 96px; padding: 12px 14px; resize: vertical" aria-describedby="rev-err">{{revText}}</textarea>
+                  <label for="rev-name" style="font-size: 14px; font-weight: 600">Your first name</label>
+                  <input id="rev-name" class="finput" type="text" autocomplete="given-name" value="{{revName}}" onInput="{{setRevName}}" aria-describedby="rev-err">
+                  <span id="rev-err" class="ferr" aria-live="polite">{{revErr}}</span>
+                  <button type="button" class="btn" onClick="{{submitReview}}" style="background: #141114; color: #FFFFFF; align-self: flex-start">Post review</button>
+                </sc-if>
+                <sc-if value="{{reviewDone}}" hint-placeholder-val="{{false}}"><span role="status" style="font-size: 15px; line-height: 22px">Thanks, {{revName}}. Your review is up, marked <b>unverified</b> because you didn’t book this run on Catch.</span></sc-if>
+              </div>
+            </sc-if>
+            <sc-for list="{{reviews}}" as="r" hint-placeholder-count="3">
+              <article class="rev" aria-label="Review by {{r.name}}">
+                <span style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items: center">
+                  <span style="display: flex; align-items: center; gap: 10px"><span aria-hidden="true" style="width: 36px; height: 36px; border-radius: 999px; background: {{r.tone}}; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700">{{r.i}}</span><span style="display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 700">{{r.name}}</span><span style="font-size: 13px; color: #5A5450">{{r.event}} · {{r.when}}</span></span></span>
+                  <span style="display: flex; gap: 8px; align-items: center"><span aria-label="{{r.stars}} out of 5" style="color: #B5451F; font-size: 15px; letter-spacing: 1px">{{r.starText}}</span><span class="badge" style="{{r.badgeStyle}}">{{r.badge}}</span></span>
+                </span>
+                <p style="margin: 0; font-size: 15px; line-height: 23px">{{r.text}}</p>
+                <sc-if value="{{r.hasReply}}" hint-placeholder-val="{{true}}"><span style="background: #F6F0E8; border-radius: 14px; padding: 12px 14px; font-size: 14px; line-height: 21px"><b>{{r.replyBy}}</b> replied: {{r.reply}}</span></sc-if>
+                <sc-if value="{{r.editing}}" hint-placeholder-val="{{false}}"><span style="display: flex; flex-direction: column; gap: 8px"><label for="reply-{{r.id}}" style="font-size: 14px; font-weight: 600">Your reply, shown under the review</label><textarea id="reply-{{r.id}}" class="finput" onInput="{{setReplyText}}" style="height: 76px; padding: 10px 12px; resize: vertical">{{replyText}}</textarea><button type="button" class="btn" onClick="{{r.post}}" style="height: 38px; font-size: 13px; background: #141114; color: #FFFFFF; align-self: flex-start">Post reply</button></span></sc-if>
+                <sc-if value="{{r.canReply}}" hint-placeholder-val="{{false}}"><button type="button" class="btn" onClick="{{r.reply1}}" style="height: 36px; font-size: 13px; padding: 0 12px; background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25); align-self: flex-start">Reply</button></sc-if>
+                <sc-if value="{{r.noReplyNote}}" hint-placeholder-val="{{false}}"><span style="font-size: 13px; color: #5A5450">{{org.name}} hasn’t claimed this page, so they can’t reply yet.</span></sc-if>
+              </article>
+            </sc-for>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" aria-labelledby="about-title" style="display: flex; flex-direction: column; gap: 16px">
+        <h2 id="about-title" class="dsp h2">About</h2>
+        <p style="margin: 0; font-size: 17px; line-height: 27px; max-width: 640px">{{org.about}}</p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap"><sc-for list="{{org.formats}}" as="fm" hint-placeholder-count="4"><span class="src" style="height: 32px; padding: 0 12px; font-size: 14px; background: #F3F3F1; color: #141114">{{fm}}</span></sc-for></div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px">
+          <sc-for list="{{org.facts}}" as="fa" hint-placeholder-count="3"><span class="card" style="background: #F6F0E8; padding: 16px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; color: #5A5450">{{fa.label}}</span><span style="font-size: 15px; font-weight: 600; line-height: 21px">{{fa.value}}</span></span></sc-for>
+        </div>
+        <sc-if value="{{org.hasHosts}}" hint-placeholder-val="{{true}}">
+          <div style="display: flex; gap: 12px; flex-wrap: wrap">
+            <sc-for list="{{org.hosts}}" as="h" hint-placeholder-count="2"><span style="display: flex; align-items: center; gap: 10px; padding: 10px 14px 10px 10px; border-radius: 999px; border: 1.5px solid rgba(20,17,20,0.12)"><span aria-hidden="true" style="width: 40px; height: 40px; border-radius: 999px; background: {{h.tone}}; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700">{{h.i}}</span><span style="display: flex; flex-direction: column"><span style="font-size: 15px; font-weight: 700">{{h.name}}</span><span style="font-size: 13px; color: #5A5450">{{h.role}}</span></span></span></sc-for>
+          </div>
+        </sc-if>
+      </section>
+
+      <footer style="border-top: 1px solid rgba(20,17,20,0.12); padding-top: 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 14px; color: #5A5450">
+        <span>{{footerLine}}</span>
+        <a href="#" style="font-weight: 600">{{footerLink}}</a>
+      </footer>
+    </div>
+  </div>
+  <sc-if value="{{hasToast}}" hint-placeholder-val="{{false}}"><div role="status" style="position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 20; background: #141114; color: #F6EFE6; border-radius: 14px; padding: 12px 16px; font-size: 14px; box-shadow: 0 14px 40px rgba(20,17,20,0.35); max-width: calc(100vw - 32px); box-sizing: border-box">{{toast}}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":3600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { view: "guest", followStep: "idle", following: false, phone: "", code: "", followErr: "",
+      shareOpen: false, copied: false, reviewOpen: false, rStars: 0, revText: "", revName: "", revErr: "", reviewDone: false, myReview: null,
+      claimStep: 0, claimMethod: "ig", claimCode: "", claimErr: "", replyOpen: "", replyText: "", replies: {}, toast: "" };
+  }
+  componentWillUnmount() {
+    clearTimeout(this.toastTimer);
+  }
+  showToast(text) {
+    clearTimeout(this.toastTimer);
+    this.setState({ toast: text });
+    this.toastTimer = setTimeout(() => this.setState({ toast: "" }), 2600);
+  }
+  stop(ev) {
+    if (ev && ev.preventDefault) ev.preventDefault();
+  }
+  pickView(view) {
+    this.setState({ view, followStep: "idle", following: false, phone: "", code: "", followErr: "", shareOpen: false, copied: false,
+      reviewOpen: false, rStars: 0, revText: "", revName: "", revErr: "", reviewDone: false, myReview: null,
+      claimStep: 0, claimCode: "", claimErr: "", replyOpen: "", replyText: "", toast: "" });
+  }
+  orgData(generated) {
+    if (generated) return {
+      name: "Carter Road Runners", verified: false, hasCover: false, logoBg: "#FFFFFF",
+      line: "Run club in Bandra hosting weekly social runs and monthly Run & Rave nights.",
+      area: "Bandra West, Mumbai · summarised from Luma and Instagram",
+      followers: 38, rating: "4.5", reviewCount: 2, hosted: 0, hasHosted: false,
+      about: "Carter Road Runners lists social runs on Carter Road and Run & Rave nights on its public Luma calendar. This summary comes from those pages. The club hasn’t checked it yet.",
+      formats: ["Social runs", "Run & Rave"],
+      facts: [{ label: "Seen on Luma", value: "6 events since March 2025" }, { label: "Usual meeting point", value: "Carter Road, Bandra West" }, { label: "Instagram", value: "@carterroadrunners" }],
+      hosts: [], hasHosts: false
+    };
+    return {
+      name: "Carter Road Runners", verified: true, hasCover: true, logoBg: "#F07A55",
+      line: "Social runs on Carter Road, Sundays at 6:30 and Wednesdays at 7. Coffee after, always.",
+      area: "Bandra West, Mumbai · @carterroadrunners",
+      followers: 2140, rating: "4.8", reviewCount: 186, hosted: 64, hasHosted: true,
+      about: "We started in 2024 with eleven people and a speaker. Now it’s around fifty runners most Sundays, in pace groups from 5:30 to 7:30 per km, and walkers are welcome on the 3K loop. Every run ends with coffee at the jetty. Once a month we run into the evening for Run & Rave.",
+      formats: ["Social runs", "Tempo runs", "Run & Rave", "Half-marathon training"],
+      facts: [{ label: "When", value: "Sundays 6:30 AM, Wednesdays 7:00 PM" }, { label: "Where we meet", value: "Carter Road jetty, Bandra West" }, { label: "Who it suits", value: "First-timers to sub-25 5K runners. Come on your own, most people do." }],
+      hosts: [{ i: "KR", name: "Kabir Rao", role: "Founder · pace lead", tone: "#F07A55" }, { i: "MS", name: "Meera Shah", role: "Community and partners", tone: "#F5C451" }], hasHosts: true
+    };
+  }
+  icons() {
+    return {
+      ticket: "M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4zM14 7v10",
+      chat: "M4 20l1.3-3.9A8 8 0 1 1 8 19.1z",
+      route: "M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 17h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7",
+      bag: "M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2",
+      cup: "M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 11h1.5a2.5 2.5 0 0 1 0 5H17M8 3v3M12 3v3",
+      calendar: "M4 6h16v14H4zM4 10h16M9 3v4M15 3v4",
+      instagram: "M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM17.5 6.5h.01",
+      youtube: "M3 8a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM10 9l5 3-5 3z",
+      mail: "M3 6h18v12H3zM3 7l9 6 9-6"
+    };
+  }
+  linkData(generated) {
+    if (generated) return [
+      { id: "luma", title: "Luma calendar", sub: "luma.com/carterroad · 2 coming up", icon: "calendar", dest: "luma.com/carterroad" },
+      { id: "ig", title: "Instagram", sub: "@carterroadrunners", icon: "instagram", dest: "instagram.com/carterroadrunners" }
+    ];
+    return [
+      { id: "rave", title: "Run & Rave · Sat 15 Nov", sub: "Tickets on Luma · pinned until 15 Nov", icon: "ticket", pinned: true, dest: "luma.com", stats: "412 clicks · 12% of visits" },
+      { id: "wa", title: "Join the WhatsApp community", sub: "1,300 members · route updates and rain calls", icon: "chat", dest: "chat.whatsapp.com", stats: "268 · 8%" },
+      { id: "strava", title: "Strava club", sub: "Log your Sunday 5K", icon: "route", dest: "strava.com", stats: "96 · 3%" },
+      { id: "shop", title: "Club tees and caps", sub: "Ships across India", icon: "bag", dest: "the club shop", stats: "74 · 2%" },
+      { id: "partner", title: "15% off at Jetty Coffee", sub: "Show your booking at the counter", icon: "cup", dest: "Jetty Coffee’s offer page", stats: "51 · 1.5%" }
+    ];
+  }
+  eventData(generated) {
+    if (generated) return [
+      { dow: "Sun", day: "2", mon: "Nov", title: "Sunday Social Run", time: "6:30 AM", where: "Carter Road, Bandra West", src: "luma", price: "Free", left: "Register on Luma", tone: "#F3F3F1", ink: "#141114" },
+      { dow: "Sat", day: "15", mon: "Nov", title: "Run & Rave: Sunset Edition", time: "5:30 PM", where: "Worli Sea Face", src: "luma", price: "₹799", left: "Tickets on Luma", tone: "#F3F3F1", ink: "#141114" }
+    ];
+    return [
+      { dow: "Sun", day: "2", mon: "Nov", title: "Sunday Social Run", time: "6:30 AM", where: "Carter Road jetty", src: "catch", price: "Free", left: "31 spots left", tone: "#F07A55", ink: "#3B1F14" },
+      { dow: "Wed", day: "5", mon: "Nov", title: "Wednesday Tempo 6K", time: "7:00 PM", where: "Carter Road", src: "catch", price: "Free", left: "18 spots left", tone: "#F6F0E8", ink: "#141114" },
+      { dow: "Sat", day: "15", mon: "Nov", title: "Run & Rave: Sunset Edition", time: "5:30 PM", where: "Worli Sea Face, then Bayview rooftop", src: "luma", price: "₹799", left: "Selling fast", tone: "#8C9BF2", ink: "#141114" },
+      { dow: "Sun", day: "23", mon: "Nov", title: "Half-marathon training: 15K", time: "6:00 AM", where: "Bandstand to Worli and back", src: "catch", price: "₹299", left: "Water and gels included", tone: "#5CCB9F", ink: "#123D2C" },
+      { dow: "Sun", day: "30", mon: "Nov", title: "Sunday Social Run", time: "6:30 AM", where: "Carter Road jetty", src: "catch", price: "Free", left: "Booking opens 23 Nov", tone: "#F6F0E8", ink: "#141114", later: true }
+    ];
+  }
+  pastData(generated) {
+    if (generated) return [
+      { big: "6", title: "events on Luma", sub: "since March 2025", tone: "#F3F3F1", ink: "#141114" },
+      { big: "Sun", title: "their usual day", sub: "6:30 AM starts", tone: "#F6F0E8", ink: "#141114" },
+      { big: "₹0–799", title: "usual price", sub: "most runs are free", tone: "#F3F3F1", ink: "#141114" },
+      { big: "", title: "Photos go here", sub: "once the club claims the page", tone: "#FFFFFF", ink: "#5A5450", extra: "border: 1.5px dashed rgba(20,17,20,0.25)" }
+    ];
+    return [
+      { photo: "/_blob/b766451d5b4e5bf9ae506afe33116fa6", alt: "Runners at the October Run & Rave", title: "Run & Rave, October", sub: "212 runners", tone: "#141114", ink: "#FFFFFF" },
+      { big: "64", title: "runs since 2024", sub: "rain or shine", tone: "#F5C451", ink: "#4A3608" },
+      { photo: "/_blob/8294b5d46800331739b8ee58199a7d53", alt: "Night 5K finishers at Worli Sea Face", title: "Night 5K, September", sub: "Worli Sea Face", tone: "#141114", ink: "#FFFFFF" },
+      { big: "48", title: "runners on an average Sunday", sub: "about a third come alone", tone: "#5CCB9F", ink: "#123D2C" }
+    ];
+  }
+  reviewData(generated) {
+    if (generated) return [
+      { id: "g1", name: "Sana P.", i: "SP", tone: "#F08AA0", event: "Run & Rave", when: "3 weeks ago", stars: 5, verified: false, text: "Great energy and a really mixed crowd. The run part is short, so anyone can do it." },
+      { id: "g2", name: "Dev T.", i: "DT", tone: "#5CCB9F", event: "Sunday Social Run", when: "2 months ago", stars: 4, verified: false, text: "Friendly and well paced. I’d love a clearer start time on Instagram." }
+    ];
+    return [
+      { id: "r1", name: "Riya S.", i: "RS", tone: "#F08AA0", event: "Sunday Social Run", when: "2 weeks ago", stars: 5, verified: true, text: "Came on my own, left with a pace group and a coffee plan. Kabir does a round of names before the start, which made it easy.", replyBy: "Kabir", reply: "See you Sunday, Riya!" },
+      { id: "r2", name: "Arjun M.", i: "AM", tone: "#8C9BF2", event: "Run & Rave", when: "1 month ago", stars: 5, verified: false, text: "Best organised run-and-party I’ve been to. Bag drop, water at the halfway point, and the playlist kept everyone going." },
+      { id: "r3", name: "Neha K.", i: "NK", tone: "#5CCB9F", event: "Sunday Social Run", when: "1 month ago", stars: 4, verified: true, text: "Lovely crowd. The 6:00 per km group was a bit fast for a first-timer, but the leader waited for me at the turn.", replyBy: "Meera", reply: "Thanks Neha. From this Sunday there’s a 7:30 per km group too." }
+    ];
+  }
+  validPhone(raw) {
+    const digits = raw.replace(/\D/g, "");
+    const local = digits.length === 12 && digits.startsWith("91") ? digits.slice(2) : digits;
+    return /^[6-9]\d{9}$/.test(local) ? local : "";
+  }
+  followClick() {
+    const s = this.state;
+    if (s.view === "owner") { this.showToast("Text your 2,140 followers about a new plan, at most twice a month"); return; }
+    if (s.following) { this.setState({ following: false, followStep: "idle" }); return; }
+    this.setState({ followStep: s.followStep === "idle" ? "phone" : "idle", followErr: "" });
+  }
+  sendCode() {
+    if (!this.validPhone(this.state.phone)) { this.setState({ followErr: "Enter a 10-digit mobile number" }); return; }
+    this.setState({ followStep: "code", followErr: "", code: "" });
+  }
+  confirmCode() {
+    if (!/^\d{6}$/.test(this.state.code.trim())) { this.setState({ followErr: "Enter the 6-digit code" }); return; }
+    this.setState({ followStep: "done", following: true, followErr: "" });
+  }
+  submitReview() {
+    const s = this.state;
+    if (!s.rStars) { this.setState({ revErr: "Choose a star rating" }); return; }
+    if (s.revText.trim().length < 20) { this.setState({ revErr: "Write at least 20 characters" }); return; }
+    if (!s.revName.trim()) { this.setState({ revErr: "Add your first name" }); return; }
+    const name = s.revName.trim();
+    this.setState({ revErr: "", reviewDone: true, myReview: { id: "mine", name, i: name.slice(0, 2).toUpperCase(), tone: "#F3F3F1",
+      event: "Sunday Social Run", when: "Just now", stars: s.rStars, verified: false, text: s.revText.trim() } });
+  }
+  renderVals() {
+    const s = this.state;
+    const generated = s.view === "generated";
+    const owner = s.view === "owner";
+    const ic = this.icons();
+    const org = this.orgData(generated);
+    const viewList = [["guest", "Guest"], ["generated", "Generated, before claim"], ["owner", "Owner"]].map(([key, label]) => ({ key, label, on: s.view === key,
+      style: s.view === key ? "background: #141114; color: #FFFFFF" : "background: transparent; color: #141114",
+      pick: () => this.pickView(key) }));
+    const srcRow = { catch: "background: #FDE7DF; color: #8A2F12", luma: "background: #ECEBFD; color: #3A3F9E" };
+    const srcLabel = { catch: "On Catch", luma: "Luma" };
+    const linkToast = (l) => generated ? "Opens " + l.dest : "Opens " + l.dest + " · counted as a link click";
+    const links = this.linkData(generated).map((l) => ({ ...l, icon: ic[l.icon],
+      bg: l.pinned ? "#F07A55" : "#F6F0E8", icBg: l.pinned ? "rgba(255,255,255,0.5)" : "#FFFFFF", subInk: l.pinned ? "#3B1F14" : "#5A5450",
+      showStats: owner && !!l.stats, statInk: l.pinned ? "#141114" : "#B5451F", click: (ev) => { this.stop(ev); this.showToast(linkToast(l)); } }));
+    const socials = (generated ? [["instagram", "Instagram"]] : [["instagram", "Instagram"], ["chat", "WhatsApp community"], ["route", "Strava club"], ["youtube", "YouTube"], ["mail", "Email the club"]])
+      .map(([k, label]) => ({ icon: ic[k], label }));
+    const evToast = (e) => e.src === "luma" ? (generated ? "Opens the event on luma.com" : "Opens luma.com · counted as a booking click") : (e.later ? "We’ll text you when booking opens" : "Opens the event page on Catch");
+    const events = this.eventData(generated).map((e) => ({ ...e, srcStyle: srcRow[e.src], srcLabel: srcLabel[e.src],
+      cta: e.src === "luma" ? "Tickets ↗" : (e.later ? "Remind me" : "Book"),
+      ctaStyle: e.src === "catch" && !e.later ? "background: #141114; color: #FFFFFF" : "background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)",
+      click: (ev) => { this.stop(ev); this.showToast(evToast(e)); } }));
+    const n0 = this.eventData(generated)[generated ? 1 : 0];
+    const next = { title: n0.title, when: n0.dow + " " + n0.day + " " + n0.mon + ", " + n0.time, where: n0.where.split(",")[0], price: n0.price,
+      left: n0.src === "luma" ? "Tickets on Luma" : n0.left, countdown: generated ? "in 3 weeks" : "in 2 days",
+      srcLabel: srcLabel[n0.src], srcStyle: "background: #2E272E; color: #F6EFE6", cta: n0.src === "luma" ? "Get tickets ↗" : "Book" };
+    const past = this.pastData(generated).map((p) => ({ ...p, hasPhoto: !!p.photo, extra: p.extra || "" }));
+    const replies = s.replies;
+    const baseReviews = this.reviewData(generated);
+    const reviews = (s.myReview ? [s.myReview] : []).concat(baseReviews).map((r) => {
+      const reply = replies[r.id] || r.reply;
+      const editing = owner && s.replyOpen === r.id;
+      return { ...r, starText: "★★★★★".slice(0, r.stars) + "☆☆☆☆☆".slice(0, 5 - r.stars),
+        badge: r.verified ? "Booked on Catch" : "Unverified",
+        badgeStyle: r.verified ? "background: #E6F5EE; color: #123D2C" : "background: #F3F3F1; color: #5A5450",
+        reply, replyBy: replies[r.id] ? "Kabir" : r.replyBy, hasReply: !!reply, editing,
+        canReply: owner && !reply && !editing, noReplyNote: generated && !reply,
+        reply1: () => this.setState({ replyOpen: r.id, replyText: "Thanks " + r.name.split(" ")[0] + "! Glad the bag drop helped. Next one’s on 15 Nov." }),
+        post: () => { if (!s.replyText.trim()) return; this.setState({ replies: { ...replies, [r.id]: s.replyText.trim() }, replyOpen: "", replyText: "" }); this.showToast("Reply posted under " + r.name + "’s review"); } };
+    });
+    const distRaw = generated ? [[5, 1], [4, 1], [3, 0], [2, 0], [1, 0]] : [[5, 142], [4, 32], [3, 8], [2, 3], [1, 1]];
+    const maxD = Math.max.apply(null, distRaw.map((d) => d[1]));
+    const dist = distRaw.map(([n, count]) => ({ n, count, pct: maxD ? Math.round((count / maxD) * 100) : 0 }));
+    const starBtns = [1, 2, 3, 4, 5].map((n) => ({ n, on: n <= s.rStars, label: n + (n === 1 ? " star" : " stars"),
+      bg: n <= s.rStars ? "#F07A55" : "#FFFFFF", fill: n <= s.rStars ? "#141114" : "#BDB3A7", pick: () => this.setState({ rStars: n, revErr: "" }) }));
+    const claimMethods = [["ig", "A code by Instagram DM", "Sent to @carterroadrunners from @catch"], ["luma", "A code by email", "Sent to the address on your Luma calendar"]]
+      .map(([key, title, sub]) => ({ key, title, sub, on: s.claimMethod === key,
+        style: "display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 14px; border-radius: 14px; cursor: pointer; font: inherit; text-align: left; color: #141114; " +
+          (s.claimMethod === key ? "border: 2px solid #141114; background: #F6F0E8" : "border: 1.5px solid rgba(20,17,20,0.2); background: #FFFFFF"),
+        pick: () => this.setState({ claimMethod: key }) }));
+    const followers = org.followers + (s.following ? 1 : 0);
+    const digits = this.validPhone(s.phone);
+    const shareUrl = generated ? "catchdates.com/carter-road-runners" : "carterroadrunners.club";
+    return {
+      views: viewList, isGenerated: generated, isOwner: owner, notOwner: !owner,
+      address: generated ? "catchdates.com/organizers/carter-road-runners" : "carterroadrunners.club (the club’s own domain)",
+      org, links, socials, events, next, past, reviews, dist, starBtns, claimMethods,
+      eventsNote: generated ? "Found on their public Luma calendar" : "From Catch and Luma, in one list",
+      pastTitle: generated ? "What we found" : "What it’s like",
+      reviewPolicy: generated ? "Anyone can review this page. Reviews stay unverified until guests book through Catch." : "Reviews from people who booked on Catch are marked verified. Anyone can review; the rest are labelled unverified.",
+      followersText: followers.toLocaleString("en-IN"), followersLabel: generated ? " waiting for the next run" : " followers",
+      following: s.following, followLabel: owner ? "Message followers" : (s.following ? "Following ✓" : "Follow"),
+      followStyle: s.following ? "background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)" : "background: #141114; color: #FFFFFF",
+      followClick: () => this.followClick(), followPanel: s.followStep !== "idle",
+      followAtPhone: s.followStep === "phone", followAtCode: s.followStep === "code", followAtDone: s.followStep === "done",
+      phone: s.phone, code: s.code, followErr: s.followErr, hasFollowErr: !!s.followErr,
+      phoneShown: digits ? "+91 " + digits.slice(0, 5) + " " + digits.slice(5) : "",
+      setPhone: (e) => this.setState({ phone: e.target.value, followErr: "" }), setCode: (e) => this.setState({ code: e.target.value, followErr: "" }),
+      sendCode: () => this.sendCode(), confirmCode: () => this.confirmCode(),
+      shareOpen: s.shareOpen, shareUrl, copyLabel: s.copied ? "Copied" : "Copy link",
+      toggleShare: () => this.setState({ shareOpen: !s.shareOpen, copied: false }),
+      copyLink: () => { try { if (navigator.clipboard) navigator.clipboard.writeText("https://" + shareUrl).catch(() => undefined); } catch (err) { /* Copy is best effort. */ } this.setState({ copied: true }); },
+      nextClick: (ev) => { this.stop(ev); this.showToast(n0.src === "luma" ? (generated ? "Opens the event on luma.com" : "Opens luma.com · counted as a booking click") : "Opens the event page on Catch"); },
+      insights: [{ label: "Visits", value: "3,412", delta: "+18% on September" }, { label: "Link clicks", value: "1,086", delta: "32% of visits" },
+        { label: "Booking clicks", value: "318", delta: "+24% on September" }, { label: "New followers", value: "148", delta: "+9% on September" }],
+      sources: [{ label: "Instagram bio", pct: 71, tone: "#F08AA0" }, { label: "WhatsApp", pct: 14, tone: "#5CCB9F" }, { label: "Direct", pct: 9, tone: "#8C9BF2" }, { label: "Other", pct: 6, tone: "#F5C451" }],
+      claimAtStart: s.claimStep === 0, claimAtMethod: s.claimStep === 1, claimAtCode: s.claimStep === 2, claimAtDone: s.claimStep === 3,
+      claimStart: () => this.setState({ claimStep: 1 }), claimSend: () => this.setState({ claimStep: 2, claimCode: "", claimErr: "" }),
+      claimSentTo: s.claimMethod === "ig" ? "Enter the code we sent to @carterroadrunners on Instagram" : "Enter the code we emailed to your Luma address",
+      claimCode: s.claimCode, claimErr: s.claimErr, setClaimCode: (e) => this.setState({ claimCode: e.target.value, claimErr: "" }),
+      claimConfirm: () => { if (!/^\d{6}$/.test(s.claimCode.trim())) { this.setState({ claimErr: "Enter the 6-digit code" }); return; } this.setState({ claimStep: 3, claimErr: "" }); },
+      goOwner: () => this.pickView("owner"),
+      reviewOpen: s.reviewOpen, openReview: () => this.setState({ reviewOpen: !s.reviewOpen }),
+      reviewDone: s.reviewDone, reviewNotDone: !s.reviewDone, revText: s.revText, revName: s.revName, revErr: s.revErr,
+      setRevText: (e) => this.setState({ revText: e.target.value, revErr: "" }), setRevName: (e) => this.setState({ revName: e.target.value, revErr: "" }),
+      submitReview: () => this.submitReview(),
+      replyText: s.replyText, setReplyText: (e) => this.setState({ replyText: e.target.value }),
+      footerLine: generated ? "Built by Catch from public Luma and Instagram pages." : "Made with Catch",
+      footerLink: generated ? "Something wrong? Tell us" : (owner ? "Page settings" : "Make a page like this"),
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
