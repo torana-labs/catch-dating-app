@@ -22,23 +22,18 @@ const owner = "app_architecture";
 const targetPhase = "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-5--budgets-splits-and-estate-shrink";
 const sourceRoots = /^(?:lib\/|packages\/|widgetbook\/lib\/)/u;
 
-export function isHandwrittenSource(file, source) {
+export function isHandwrittenSource(file) {
   if (!sourceRoots.test(file) || !file.endsWith(".dart")) return false;
   if (/\.(?:g|freezed|mocks|gr)\.dart$/u.test(file)) return false;
   // gen_l10n emits no generated-file header. This is its configured output home.
   if (/^lib\/l10n\/generated\/app_localizations(?:_[a-zA-Z_]+)?\.dart$/u.test(file)) return false;
-  // The vendored icon generator uses this exact header instead of a suffix.
-  const phosphorOutput = /^packages\/phosphor_flutter\/lib\/src\/phosphor_icons(?:_(?:base|bold|duotone|fill|light|regular|thin))?\.dart$/u.test(file) ||
-    file === "packages/phosphor_flutter/example/lib/constants/all_icons.dart";
-  if (phosphorOutput &&
-      source.startsWith("// Auto generated File\n// DON'T EDIT BY HAND\n")) return false;
   return true;
 }
 
 export function discoverFlutterSources({root = fromRepo(), snapshot = createRepositorySnapshot({root})} = {}) {
   const files = snapshot.listFiles().filter(file => sourceRoots.test(file) && file.endsWith(".dart"));
   const sources = snapshot.readTexts(files, {required: true});
-  return files.filter(file => isHandwrittenSource(file, sources.get(file)))
+  return files.filter(file => isHandwrittenSource(file))
     .map(file => ({path: file, lines: lineCount(sources.get(file))}))
     .sort((a, b) => a.path.localeCompare(b.path));
 }
@@ -145,7 +140,7 @@ function readHistory(root, base, candidate) {
   if (previousBaseline == null) {
     for (const row of candidate.allowedFindings) {
       const source = paths.has(row.path) ? git(root, ["show", `${mergeBase}:${row.path}`]) : null;
-      if (source != null && isHandwrittenSource(row.path, source)) {
+      if (source != null && isHandwrittenSource(row.path)) {
         baseRows.push({path: row.path, lines: lineCount(source)});
       }
     }

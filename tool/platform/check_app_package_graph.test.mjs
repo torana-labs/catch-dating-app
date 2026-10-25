@@ -70,7 +70,7 @@ test("fresh checkouts validate package boundaries without generated Flutter meta
     const uiRoot = path.join(root, "packages/catch_ui");
     fs.mkdirSync(uiRoot, {recursive: true});
     fs.writeFileSync(path.join(uiRoot, "pubspec.yaml"),
-      "name: catch_ui\nresolution: workspace\ndependencies:\n  flutter:\n    sdk: flutter\n  catch_tokens: any\n  phosphor_flutter: any\n  skeletonizer: 2.1.3\n");
+      "name: catch_ui\nresolution: workspace\ndependencies:\n  flutter:\n    sdk: flutter\n  catch_tokens: any\n  skeletonizer: 2.1.3\n");
     const result = scanAppPackageGraphs({root});
     assert.deepEqual(result.findings, []);
     assert.equal(
@@ -104,10 +104,12 @@ test("token package rejects every dependency outside Flutter", () => {
 });
 
 test("UI package rejects app, state, backend and unrelated dependencies", () => {
-  const allowed = ["flutter", "catch_tokens", "phosphor_flutter", "skeletonizer"];
+  const allowed = ["flutter", "catch_tokens", "skeletonizer"];
   const declaredVersions = new Map([["skeletonizer", "2.1.3"]]);
   assert.deepEqual(validateRoleGraph({role: "catch_ui", declaredPackages: new Set(allowed), declaredVersions, pluginPackages: new Set()}), []);
-  for (const dependency of ["catch_dating_app", "riverpod", "flutter_riverpod", "firebase_core", "collection", "shimmer"]) {
+  // Icon families are vendored as a font beside the role catalog, never a package.
+  for (const dependency of ["catch_dating_app", "riverpod", "flutter_riverpod", "firebase_core", "collection", "shimmer",
+    "phosphor_flutter", "lucide_icons_flutter"]) {
     assert.deepEqual(validateRoleGraph({role: "catch_ui", declaredPackages: new Set([...allowed, dependency]), declaredVersions, pluginPackages: new Set()}),
       [`catch_ui: dependency '${dependency}' is outside the presentation-only UI boundary.`]);
   }
@@ -115,7 +117,7 @@ test("UI package rejects app, state, backend and unrelated dependencies", () => 
 
 test("UI loading requires the exact ratified Skeletonizer version", () => {
   for (const version of ["2.1.3", "'2.1.3'", '"2.1.3" # loading engine', "^2.1.3", "2.1.4", "any", ""]) {
-    const source = `dependencies:\n  flutter:\n    sdk: flutter\n  catch_tokens: any\n  phosphor_flutter: any\n  skeletonizer: ${version}\n`;
+    const source = `dependencies:\n  flutter:\n    sdk: flutter\n  catch_tokens: any\n  skeletonizer: ${version}\n`;
     const findings = validateRoleGraph({
       role: "catch_ui",
       declaredPackages: declaredPackageNamesFromPubspec(source),
