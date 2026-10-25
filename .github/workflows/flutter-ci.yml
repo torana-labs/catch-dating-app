@@ -210,6 +210,13 @@ jobs:
       - name: Check cross-stack component lexicon
         run: node tool/design/check_component_lexicon.mjs
 
+      # Every Flutter change runs both: CatchIcons must match the role catalog,
+      # and icon-family references outside the icon layer may only fall.
+      - name: Icon roles and icon-family references
+        run: |
+          node tool/design/generate_icon_catalog.mjs --check
+          node tool/design/check_icon_family_usage.mjs --check
+
       - name: Design token drift check
         run: dart run tool/design_tokens.dart --check
 

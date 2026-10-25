@@ -521,10 +521,7 @@ class _SurfaceSpec extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            label,
-            style: CatchTextStyles.fieldRowTitle(context, color: color),
-          ),
+          CatchText(label, variant: CatchTextVariant.bodyLead, color: color),
           const SizedBox(height: CatchSpacing.s2),
           Text(
             onTap == null ? 'Static panel' : 'Tap target',

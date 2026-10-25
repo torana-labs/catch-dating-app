@@ -283,9 +283,10 @@ class HostInviteLinksSection extends StatelessWidget {
           ? CatchButtonStatus.loading
           : CatchButtonStatus.idle,
     );
-    final heading = Text(
+    final heading = CatchText(
       context.l10n.hostsHostEventManageScreenTextNamedInviteLinks,
-      style: CatchTextStyles.labelL(context),
+      variant: CatchTextVariant.titleS,
+      color: CatchTokens.of(context).ink,
     );
 
     return Column(
@@ -408,7 +409,11 @@ class HostInviteLinkRow extends StatelessWidget {
           runSpacing: CatchSpacing.s1,
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Text(rowState.label, style: CatchTextStyles.labelL(context)),
+            CatchText(
+              rowState.label,
+              variant: CatchTextVariant.titleS,
+              color: CatchTokens.of(context).ink,
+            ),
             if (rowState.showDisabledBadge)
               CatchBadge(
                 label: context.l10n.hostsHostEventManageScreenLabelDisabled,

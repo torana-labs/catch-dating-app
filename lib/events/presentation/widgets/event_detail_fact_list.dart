@@ -32,8 +32,10 @@ class EventDetailTicketStubRow extends StatelessWidget {
     final t = CatchTokens.of(context);
     final cells = _ticketStubCells(event, context.l10n);
 
-    return ColoredBox(
-      color: t.surface,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: t.surface,
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           minHeight: CatchLayout.eventDetailTicketStubBandHeight,
@@ -114,9 +116,10 @@ class EventDetailHintList extends StatelessWidget {
           ),
           gapW12,
           Expanded(
-            child: Text(
+            child: CatchText(
               hints[index],
-              style: CatchTextStyles.hint(context, color: textColor ?? t.ink),
+              variant: CatchTextVariant.sectionTitle,
+              color: textColor ?? t.ink,
             ),
           ),
         ],
@@ -212,71 +215,67 @@ class EventDetailMapCard extends StatelessWidget {
     return Semantics(
       button: canOpen,
       label: event.locationName,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          onTap: canOpen ? onTap : null,
-          child: Ink(
-            height: CatchLayout.eventDetailMapCardHeight,
-            decoration: BoxDecoration(
-              color: surfaceColor ?? t.surface,
-              border: Border.all(color: borderColor ?? t.line),
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(CatchRadius.md - 1),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: MapPreview(
-                      coordinate: coordinate,
-                      path: routePath,
-                      markers: itineraryMarkers,
-                      fallbackLabel:
-                          context.l10n.eventsEventPinsMapLabelEventMapPreview,
-                      enableNetworkTiles: enableNetworkTiles,
-                    ),
-                  ),
-                  CatchDivider.fieldRow(indent: 0, color: borderColor),
-                  Padding(
-                    padding: CatchInsets.compactControlContent,
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            event.locationName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: CatchTextStyles.labelL(
-                              context,
-                              color: t.ink,
-                            ),
-                          ),
-                        ),
-                        gapW8,
-                        Text(
-                          trailingLabel.toUpperCase(),
-                          maxLines: 1,
-                          style: CatchTextStyles.monoLabelS(
-                            context,
-                            color: t.ink2,
-                          ),
-                        ),
-                        if (canOpen) ...[
-                          gapW4,
-                          Icon(
-                            CatchIcons.chevronRightRounded,
-                            color: t.ink2,
-                            size: CatchIcon.xs,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
+      child: CatchSurface(
+        height: CatchLayout.eventDetailMapCardHeight,
+        backgroundColor: surfaceColor ?? t.surface,
+        radius: CatchRadius.none,
+        borderRadius: BorderRadius.circular(CatchRadius.md),
+        borderSpec: CatchBorderSpec(
+          role: CatchBorderRole.boundary,
+          color: borderColor ?? t.line,
+          width: CatchStroke.hairline,
+        ),
+        padding: const EdgeInsets.all(CatchStroke.hairline),
+        onTap: canOpen ? onTap : null,
+        duration: Duration.zero,
+        child: CatchSurface(
+          duration: Duration.zero,
+          tone: CatchSurfaceTone.transparent,
+          radius: CatchRadius.md - 1,
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              Expanded(
+                child: MapPreview(
+                  coordinate: coordinate,
+                  path: routePath,
+                  markers: itineraryMarkers,
+                  fallbackLabel:
+                      context.l10n.eventsEventPinsMapLabelEventMapPreview,
+                  enableNetworkTiles: enableNetworkTiles,
+                ),
               ),
-            ),
+              CatchDivider.fieldRow(indent: 0, color: borderColor),
+              Padding(
+                padding: CatchInsets.compactControlContent,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CatchText(
+                        event.locationName,
+                        variant: CatchTextVariant.titleS,
+                        color: t.ink,
+                        maxLines: 1,
+                      ),
+                    ),
+                    gapW8,
+                    Text(
+                      trailingLabel.toUpperCase(),
+                      maxLines: 1,
+                      style: CatchTextStyles.monoLabelS(context, color: t.ink2),
+                    ),
+                    if (canOpen) ...[
+                      gapW4,
+                      Icon(
+                        CatchIcons.chevronRightRounded,
+                        color: t.ink2,
+                        size: CatchIcon.xs,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -416,7 +415,7 @@ class EventDetailFactList extends StatelessWidget {
                           children: [
                             TextSpan(
                               text: _inlineFactLead(row.title),
-                              style: CatchTextStyles.fieldRowTitle(
+                              style: CatchTextStyles.bodyLead(
                                 context,
                                 color: resolvedTitleColor,
                               ),
@@ -428,12 +427,10 @@ class EventDetailFactList extends StatelessWidget {
                     : Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          CatchText(
                             row.title,
-                            style: CatchTextStyles.fieldRowTitle(
-                              context,
-                              color: resolvedTitleColor,
-                            ),
+                            variant: CatchTextVariant.bodyLead,
+                            color: resolvedTitleColor,
                           ),
                           gapH2,
                           CatchText(
@@ -564,16 +561,23 @@ class EventDetailPhotoTile extends StatelessWidget {
     return SizedBox(
       key: ValueKey('event-photo-strip-tile-$index'),
       height: CatchLayout.eventDetailPhotoStripTileHeight,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(CatchRadius.infoTile),
+      child: CatchSurface(
+        duration: Duration.zero,
+        tone: CatchSurfaceTone.transparent,
+        radius: CatchRadius.infoTile,
+        clipBehavior: Clip.antiAlias,
         child: photo == null
-            ? ColoredBox(
+            ? CatchSurface(
                 key: ValueKey('event-photo-strip-placeholder-$index'),
-                color: backgroundColor,
+                duration: Duration.zero,
+                radius: CatchRadius.none,
+                backgroundColor: backgroundColor,
                 child: Icon(icon, color: iconColor, size: CatchIcon.lg),
               )
-            : ColoredBox(
-                color: backgroundColor,
+            : CatchSurface(
+                duration: Duration.zero,
+                radius: CatchRadius.none,
+                backgroundColor: backgroundColor,
                 child: CatchNetworkImage(
                   photo!.thumbnailOrUrl,
                   key: ValueKey('event-photo-strip-image-$index'),

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-10-08",
+  "updated": "2026-10-25",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -1959,51 +1959,46 @@
       "role": "finder"
     },
     {
-      "id": "web:react-ui-primitives",
+      "id": "web:react-ui-lint",
       "category": "lint",
-      "path": "tool/web/check_react_ui_primitives.mjs",
-      "command": "node tool/web/check_react_ui_primitives.mjs",
-      "safety": "local",
+      "path": "tool/web/check_react_ui.mjs",
+      "command": "node tool/web/check_react_ui.mjs --check",
+      "safety": "local-readonly",
       "status": "active",
-      "description": "Checks React website/admin feature code does not hand-roll native interactive controls outside shared UI primitive owners.",
+      "description": "Enforces the shared ESLint UI preset and exact shrink-only app suppressions; replaces the raw-control and class-name scanners.",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
-          "node"
+          "node",
+          "root-npm"
         ]
       },
-      "checks": [
-        "node --check tool/web/check_react_ui_primitives.mjs",
-        "node tool/web/check_react_ui_primitives.mjs --check"
+      "impactPaths": [
+        "packages/web-config/lint/**",
+        "website/eslint.config.mjs",
+        "website/eslint-suppressions.json",
+        "admin/eslint.config.mjs",
+        "admin/eslint-suppressions.json",
+        "website/src/**",
+        "admin/src/**"
       ],
-      "role": "finder"
-    },
-    {
-      "id": "web:react-classname-boundaries",
-      "category": "lint",
-      "path": "tool/web/check_react_classname_boundaries.mjs",
-      "command": "node tool/web/check_react_classname_boundaries.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Checks React website/admin app, feature, and story code does not pass className directly outside shared primitive owner files.",
-      "ciRequirements": {
-        "repositoryView": "full",
-        "setup": [
-          "node"
-        ]
-      },
       "checks": [
-        "node --check tool/web/check_react_classname_boundaries.mjs",
-        "node tool/web/check_react_classname_boundaries.mjs --self-test",
-        "node tool/web/check_react_classname_boundaries.mjs --check"
+        "node --check tool/web/check_react_ui.mjs",
+        "node --test packages/web-config/lint/eslint.test.mjs",
+        "node tool/web/check_react_ui.mjs --check"
       ],
       "role": "gate",
       "rules": [
+        "WEB-UI-PRIMITIVE-001",
         "WEB-UI-COMPONENT-001"
       ],
       "vacuityProof": {
-        "type": "self-test",
-        "command": "node tool/web/check_react_classname_boundaries.mjs --self-test"
+        "type": "test",
+        "path": "packages/web-config/lint/eslint.test.mjs",
+        "contains": [
+          "production JSX and createElement controls fail, library composition passes",
+          "actual lint results reject new debt, resolved stale counts and committed growth"
+        ]
       }
     },
     {
@@ -5380,7 +5375,11 @@
         "tool/marketing/lib/capture_seeds.mjs",
         ".github/workflows/marketing-captures.yml",
         ".github/workflows/ci.yml",
-        "artifacts/marketing/app-screenshots/**"
+        "artifacts/marketing/app-screenshots/**",
+        "tool/marketing/lib/web_capture_inputs.mjs",
+        "tool/marketing/lib/web_capture_render.mjs",
+        "tool/marketing/lib/web_capture_screen.mjs",
+        "tool/marketing/web_captures.test.mjs"
       ],
       "command": "node tool/marketing/export_hosted_captures.mjs",
       "safety": "local-writes-artifacts",
@@ -5412,14 +5411,20 @@
         "dart analyze tool/marketing/frame_device_capture.dart",
         "dart run tool/marketing/frame_device_capture_test.dart",
         "node tool/marketing/export_app_screenshots.mjs --check",
-        "node tool/marketing/export_app_screenshots.mjs --check-design-json"
+        "node tool/marketing/export_app_screenshots.mjs --check-design-json",
+        "node --test tool/marketing/web_captures.test.mjs"
       ],
       "role": "generator",
       "impactPaths": [
         "tool/marketing/capture_pipeline.test.mjs",
         "tool/marketing/frame_device_capture.dart",
         "tool/marketing/frame_device_capture_test.dart",
-        "artifacts/marketing/app-screenshots/**"
+        "artifacts/marketing/app-screenshots/**",
+        "tool/marketing/lib/web_capture_inputs.mjs",
+        "tool/marketing/lib/web_capture_render.mjs",
+        "tool/marketing/lib/web_capture_screen.mjs",
+        "tool/marketing/web_captures.test.mjs",
+        "tool/ui_capture/check_capture_coverage.mjs"
       ]
     },
     {
@@ -8430,6 +8435,103 @@
           "artifact download uses only its exact id and rejects attempt races and digest tampering",
           "ZIP rejects missing, duplicate, extra, traversal, absolute, directory and symlink entries",
           "ZIP validates local names and CRCs and rejects prefixed or truncated archives"
+        ]
+      }
+    },
+    {
+      "id": "design:icon-catalog",
+      "category": "design",
+      "path": "tool/design/generate_icon_catalog.mjs",
+      "command": "node tool/design/generate_icon_catalog.mjs --check",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "description": "Validates the shared icon-role catalog against the vendored Flutter font, locked React family version and activity kinds, and verifies generated CatchIcons.",
+      "checks": [
+        "node --check tool/design/generate_icon_catalog.mjs",
+        "node --test tool/design/generate_icon_catalog.test.mjs",
+        "node tool/design/generate_icon_catalog.mjs --check"
+      ],
+      "impactPaths": [
+        "tool/design/generate_icon_catalog.test.mjs",
+        "design/tokens/catch.icons.json",
+        "design/tokens/catch.icons.schema.json",
+        "design/tokens/catch.icons.legacy_flutter.json",
+        "contracts/shared/event_common.schema.json",
+        "package-lock.json",
+        "website/package.json",
+        "packages/catch_ui/assets/fonts/**",
+        "packages/catch_ui/lib/src/foundations/catch_icons.dart",
+        "packages/catch_ui/lib/src/foundations/catch_icons.g.dart"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
+      "role": "generator",
+      "rules": [
+        "ICON-ROLES-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/generate_icon_catalog.test.mjs",
+        "contains": [
+          "a glyph missing from the vendored font fails",
+          "Flutter and React must draw the same family version",
+          "every activity kind needs exactly one correctly named role"
+        ]
+      }
+    },
+    {
+      "id": "design:icon-family-usage",
+      "category": "design",
+      "path": "tool/design/check_icon_family_usage.mjs",
+      "command": "node tool/design/check_icon_family_usage.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "description": "Ratchets Flutter and React icon-family bypasses and legacy CatchIcons aliases downward; rejects growth and unrecorded reductions.",
+      "checks": [
+        "node --check tool/design/check_icon_family_usage.mjs",
+        "node --test tool/design/check_icon_family_usage.test.mjs",
+        "node tool/design/check_icon_family_usage.mjs --check"
+      ],
+      "impactPaths": [
+        "tool/design/check_icon_family_usage.test.mjs",
+        "tool/design/icon_family_usage_baseline.json",
+        "design/tokens/catch.icons.legacy_flutter.json",
+        "lib/**/*.dart",
+        "apps/**/*.dart",
+        "packages/catch_ui/**/*.dart",
+        "widgetbook/**/*.dart",
+        "test/**/*.dart",
+        "integration_test/**/*.dart",
+        "website/**/*.ts",
+        "website/**/*.tsx",
+        "admin/**/*.ts",
+        "admin/**/*.tsx",
+        "packages/web-ui/**/*.ts",
+        "packages/web-ui/**/*.tsx"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "role": "ratchet",
+      "rules": [
+        "ICON-ROLES-001"
+      ],
+      "baseline": "tool/design/icon_family_usage_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_icon_family_usage.test.mjs",
+        "contains": [
+          "Dart references to Material, Cupertino and Phosphor glyphs are counted",
+          "each glyph imported from an icon-family package is counted in React",
+          "a count may only fall, and a fall must be recorded"
         ]
       }
     }

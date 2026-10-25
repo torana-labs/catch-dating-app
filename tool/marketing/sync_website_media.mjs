@@ -12,7 +12,7 @@ const websitePublicPrefix = "website/public/";
 const websiteScreenshotPrefix = `${websitePublicPrefix}assets/app-screenshots/`;
 const websiteManifestPath = fromRepo(`${websiteScreenshotPrefix}manifest.json`);
 const allowedStatuses = new Set(["active", "pending-fixture", "paused"]);
-const allowedKinds = new Set(["app-capture"]);
+const allowedKinds = new Set(["app-capture", "web-capture"]);
 // Framed PNG size per device, so pages reserve the image's space before it loads.
 const deviceFrameSizes = {"iphone-17-pro": {width: 1020, height: 1964}};
 const scenarioRoot = "tool/demo/demo_seed/scenarios";
@@ -139,11 +139,14 @@ export function validateSourceManifest(manifest) {
     if (ids.has(capture.id)) errors.push(`${label}: duplicate id.`);
     ids.add(capture.id);
 
+    // An app capture renders a catalog fixture; a web capture renders a
+    // website story (export_app_screenshots.mjs checks the story itself).
+    const web = capture.kind === "web-capture";
     for (const key of [
       "audience",
       "surface",
       "device",
-      "fixtureKey",
+      ...(web ? ["address"] : ["fixtureKey"]),
       "sourcePath",
       "websitePath",
       "placeholderPath",
@@ -156,6 +159,9 @@ export function validateSourceManifest(manifest) {
       }
     }
 
+    if (web && (typeof capture.story?.file !== "string" || typeof capture.story?.id !== "string")) {
+      errors.push(`${label}: story needs the stories file and story id it renders.`);
+    }
     if (!allowedStatuses.has(capture.status)) {
       errors.push(
         `${label}: status must be one of ${[...allowedStatuses].join(", ")}.`

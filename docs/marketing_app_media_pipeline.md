@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.11.0
-updated: 2026-10-24
+version: 1.12.0
+updated: 2026-10-25
 owner: marketing_website
 status: active
 ---
@@ -48,10 +48,11 @@ the manifest in the browser. `tool/marketing/sync_website_media.mjs` writes that
 manifest from `capture_manifest.json`, adding each record's framed pixel size
 and the `pages` that show it.
 
-In `capture_manifest.json`, `kind`, `pages` and `scenario` (the demo world,
+In `capture_manifest.json`, `pages` and `scenario` (the demo world,
 event and moment a capture shows, checked against
 `tool/demo/demo_seed/scenarios/`) sit beside the existing presentation fields.
-None of them is a render input.
+Neither is a render input. `kind: web-capture` selects the website renderer
+and is part of that renderer's recipe.
 
 `website/src/app/marketingCaptures.test.tsx` fails when:
 
@@ -69,6 +70,42 @@ Marketing styling imports the shared React web token layer from
 `packages/web-config/styles/catch-web.css`; the generated token CSS itself is
 owned by `dart run tool/design_tokens.dart`.
 
+## Website Safari Captures
+
+A `web-capture` record names `story.file`, `story.id`, the website `routeId`
+and the displayed `address` (`catchdates.com`) instead of an app `fixtureKey`.
+It uses the same manifest slots, framed size, sync and artifact-import protocol.
+The first slot, `guest-join-phone`, shows the synthetic Mumbai event's guest
+check-in story beside the `/host/` FAQ.
+
+`tool/marketing/lib/web_capture_render.mjs` serves a built website Storybook on
+loopback and opens the named story in Playwright WebKit on macOS. It verifies
+that the built story came from the declared file, uses the iPhone 17 Pro
+descriptor with a 402×820 viewport at DPR 3, light mode, reduced motion,
+`Asia/Kolkata` time and `en-IN` locale, and waits for fonts and images. The
+renderer composes Safari status/address bars at 2x and passes the result to
+the existing iPhone frame tool. This is a rendered synthetic story, not proof
+of an authenticated flow or availability on the live website.
+
+`web_capture_inputs.mjs` follows the story and Storybook configuration through
+TypeScript/JavaScript imports, workspace exports, JSON, CSS imports, fonts and
+public assets. It hashes renderer files, resolved imported-package and
+Playwright versions, the Dart framing package and toolchain pins. The web
+recipe fields are `id`, `kind`, `status`, `device`, `story`, `address` and
+`sourcePath`; captions, alt text, destination pages and `routeId` do not
+invalidate a render. Provenance records the story id as `captureId`,
+`kind: web-capture` and `platform: ios-safari`, with the same native-font and
+image/input hashes used for validation.
+
+When any capture needs rendering and the manifest includes a web capture,
+the Linux plan sets `web_render=true`. A separate Linux job builds Storybook;
+the Mac producer downloads it and installs only the source-pinned Playwright
+and WebKit. A native-font change on the Mac can invalidate a web capture that
+looked current to the Linux planner, so tooling is prepared even for an
+initially app-only render plan. Fully reusable bundles need neither Storybook
+nor Playwright. A render receipt records the Playwright version and Storybook
+index hash only when it renders a web capture.
+
 ## CI Behavior
 
 `tool/tools_manifest.json` registers `marketing:app-media-sync`, so
@@ -80,7 +117,8 @@ image bytes or capture inputs, or differs from its website copy. The generated
 website manifest must also be current. Both sync commands run the exporter
 check before copying or accepting any active image.
 
-The exporter embeds one `caPt` ancillary chunk in each framed PNG. It records
+The exporter embeds one `caPt` ancillary chunk in each framed PNG. For app
+captures it records
 the catalog id, fixture key, native iOS recipe/font hash, source revision, PNG
 byte hash, and capture input hash. Inputs include the capture runner/catalog,
 local transitive Dart imports/exports/parts (including production widgets and
@@ -137,7 +175,7 @@ any missing React validation. Production packaging retains its separate
 read-only listing snapshot, environment checks and promotion authority. Recovery
 uses the already-built package and never rerenders. Manual Marketing Website validation also runs the existing Hosting packager on
 its actual built site and retains a separately named validation artifact with
-all 13 capture/manifest byte comparisons. It uses real run identity but has no
+all capture/manifest byte comparisons. It uses real run identity but has no
 production promotion authority and makes no live-listing calls. Manual
 review/export remains available below. Never manually stamp old PNGs.
 

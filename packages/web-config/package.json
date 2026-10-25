@@ -6,12 +6,16 @@
   "exports": {
     "./firebase": "./firebase.ts",
     "./query": "./query.ts",
-    "./stylelint": "./lint/stylelint.mjs"
+    "./stylelint": "./lint/stylelint.mjs",
+    "./eslint": "./lint/eslint.mjs"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.104.1"
   },
   "devDependencies": {
+    "@typescript-eslint/parser": "8.72.0",
+    "eslint": "9.39.5",
+    "eslint-plugin-react": "7.37.5",
     "stylelint": "17.16.0"
   }
 }

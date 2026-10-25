@@ -159,10 +159,7 @@ class _EventAssistanceLateJoinSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          widget.groupLabel,
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
+        CatchText(widget.groupLabel, variant: CatchTextVariant.titleL),
         gapH8,
         CatchText(
           lateJoinStatusLabel(l10n, widget.status),

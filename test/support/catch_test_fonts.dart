@@ -13,6 +13,8 @@ Future<void> loadCatchTestFonts({String? nativeIosFontPath}) async {
   final loaders = <FontLoader>[
     FontLoader('packages/catch_ui/Archivo')
       ..addFont(_bytes('assets/fonts/Archivo-Roman-VF.ttf')),
+    FontLoader('packages/catch_ui/Lucide')
+      ..addFont(_bytes('assets/fonts/lucide/lucide.ttf')),
     FontLoader('packages/catch_ui/IBM Plex Mono')
       ..addFont(_bytes('assets/fonts/IBMPlexMono-Regular.ttf'))
       ..addFont(_bytes('assets/fonts/IBMPlexMono-Medium.ttf'))

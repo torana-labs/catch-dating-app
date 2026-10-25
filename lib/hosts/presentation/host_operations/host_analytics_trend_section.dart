@@ -46,9 +46,10 @@ class _HostAnalyticsTrendSectionState extends State<HostAnalyticsTrendSection> {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Material(
-                      color: entry.$2.$1,
+                    CatchSurface(
+                      backgroundColor: entry.$2.$1,
                       borderRadius: BorderRadius.circular(CatchRadius.xs),
+                      duration: Duration.zero,
                       child: const SizedBox(
                         width: CatchSpacing.s3,
                         height: CatchSpacing.s2,
@@ -159,9 +160,10 @@ class HostAnalyticsBarTile extends StatelessWidget {
         demand: demand.round(),
         bookings: bookings.round(),
       ),
-      child: InkWell(
-        onTap: onTap,
+      child: CatchSurface(
+        tone: CatchSurfaceTone.transparent,
         borderRadius: BorderRadius.circular(CatchRadius.sm),
+        onTap: onTap,
         child: Padding(
           padding: CatchInsets.inlineHorizontalTight,
           child: Column(
@@ -183,9 +185,11 @@ class HostAnalyticsBarTile extends StatelessWidget {
                         height: height,
                         child: child,
                       ),
-                      child: Material(
-                        color: t.primarySoft,
+                      child: CatchSurface(
+                        backgroundColor: t.primarySoft,
                         borderRadius: BorderRadius.circular(CatchRadius.xs),
+                        duration: Duration.zero,
+                        child: const SizedBox.shrink(),
                       ),
                     ),
                     TweenAnimationBuilder<double>(
@@ -199,14 +203,18 @@ class HostAnalyticsBarTile extends StatelessWidget {
                         height: height,
                         child: child,
                       ),
-                      child: Material(
-                        color: t.ink,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(CatchRadius.xs),
-                          side: selected
-                              ? BorderSide(color: t.primary)
-                              : BorderSide.none,
-                        ),
+                      child: CatchSurface(
+                        backgroundColor: t.ink,
+                        borderRadius: BorderRadius.circular(CatchRadius.xs),
+                        borderSpec: selected
+                            ? CatchBorderSpec(
+                                role: CatchBorderRole.selected,
+                                color: t.primary,
+                                width: CatchStroke.hairline,
+                              )
+                            : null,
+                        duration: CatchMotion.standard,
+                        child: const SizedBox.shrink(),
                       ),
                     ),
                   ],

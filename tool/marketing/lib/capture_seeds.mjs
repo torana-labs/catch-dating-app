@@ -51,11 +51,31 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
   };
   assert.equal(git("rev-parse", "HEAD"), sourceSha, "Planner source differs from the requested source.");
   const captures = canonicalInventory(JSON.parse(fs.readFileSync(path.join(root, manifestPath), "utf8")));
+  const ancestors = new Map();
+  const verifiedAncestor = revision => {
+    if (!/^[0-9a-f]{40}$/u.test(revision ?? "")) return false;
+    if (!ancestors.has(revision)) {
+      ancestors.set(revision, run("git", ["merge-base", "--is-ancestor", revision, sourceSha]).status === 0);
+    }
+    return ancestors.get(revision);
+  };
   // The source's own exporter judges every candidate, with the source's hashing.
   const stale = () => {
     const result = run(process.execPath, ["tool/marketing/export_app_screenshots.mjs", "--plan", "--inputs-only"]);
     assert.equal(result.status, 0, result.stderr || "Capture planning failed.");
-    return new Set(JSON.parse(result.stdout).filter(item => item.render).map(item => item.id));
+    const remaining = new Set(JSON.parse(result.stdout).filter(item => item.render).map(item => item.id));
+    // Current input hashes alone do not prove that a committed PNG may be
+    // reused: its original PR render commit can disappear after a squash.
+    // Search trusted ancestor seeds or render afresh, rather than selecting
+    // a reuse job that the unchanged ancestry validator must later reject.
+    for (const capture of captures) {
+      if (remaining.has(capture.id)) continue;
+      try {
+        const provenance = readProvenance(fs.readFileSync(path.join(root, capture.sourcePath)));
+        if (!verifiedAncestor(provenance.sourceRevision)) remaining.add(capture.id);
+      } catch { remaining.add(capture.id); }
+    }
+    return remaining;
   };
   const seeds = new Map();
   const sources = [];
@@ -88,8 +108,7 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
         let provenance;
         try { provenance = readProvenance(png); } catch { continue; }
         if (font && provenance.nativeFontSha256 !== font) continue;
-        if (!/^[0-9a-f]{40}$/u.test(provenance.sourceRevision ?? "") ||
-            run("git", ["merge-base", "--is-ancestor", provenance.sourceRevision, sourceSha]).status !== 0) continue;
+        if (!verifiedAncestor(provenance.sourceRevision)) continue;
         fs.writeFileSync(path.join(root, capture.sourcePath), png);
         tried.push({capture, png, provenance});
       }
@@ -109,7 +128,11 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
     }
   }
   const renderIds = eventName === "schedule" ? captures.map(capture => capture.id) : [...stale()];
-  return {sourceSha, render: renderIds.length > 0, renderIds,
+  // Linux cannot judge the macOS font. Any render job can therefore discover
+  // a stale web capture even when only app inputs changed here. Prepare the
+  // Storybook and WebKit whenever that job may need them; reuse needs neither.
+  const webRender = renderIds.length > 0 && captures.some(capture => capture.kind === "web-capture");
+  return {sourceSha, render: renderIds.length > 0, renderIds, webRender,
     seeds, seedIds: [...seeds.keys()], seedSources: sources};
 }
 
@@ -134,7 +157,7 @@ export async function planHostedCapturesForJob({request, env = process.env}) {
     fs.mkdirSync(path.dirname(destination), {recursive: true});
     fs.writeFileSync(destination, png, {flag: "wx"});
   }
-  fs.appendFileSync(env.GITHUB_OUTPUT, `render=${plan.render}\nseeded=${plan.seedIds.length > 0}\n`);
+  fs.appendFileSync(env.GITHUB_OUTPUT, `render=${plan.render}\nweb_render=${plan.webRender}\nseeded=${plan.seedIds.length > 0}\n`);
   fs.appendFileSync(env.GITHUB_STEP_SUMMARY, `Render: ${plan.renderIds.join(", ") || "none"}\n\n` +
     `Reused from earlier CI bundles: ${plan.seedIds.join(", ") || "none"}\n`);
   const {seeds: _seeds, ...summary} = plan;

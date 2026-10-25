@@ -1,6 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_error_state.dart';
-import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/patterns/catch_scaffold.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +11,7 @@ class CatchErrorScaffold extends StatelessWidget {
     this.onRetry,
     this.retryLabel,
     this.actions = const [],
-    this.icon = CatchIcons.errorOutlineRounded,
+    this.icon,
     this.backgroundColor,
   }) : assert(
          onRetry == null || retryLabel != null,
@@ -26,7 +25,9 @@ class CatchErrorScaffold extends StatelessWidget {
   /// Caller-resolved label, required when [onRetry] is supplied.
   final String? retryLabel;
   final List<Widget> actions;
-  final IconData icon;
+
+  /// Defaults to [CatchErrorState]'s error icon.
+  final IconData? icon;
   final Color? backgroundColor;
 
   @override
