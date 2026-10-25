@@ -31,7 +31,7 @@ function evaluate(expression, options) {
   }, {timeout: 1000});
 }
 
-function fixture(t) {
+function fixture(t, {web = false} = {}) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), "hosted-captures-"));
   t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
   const root = path.join(directory, "source");
@@ -49,12 +49,32 @@ function fixture(t) {
     "tool/design/lib/new_widget_inventory_declarations.mjs", "tool/design/lib/production_widget_roots.mjs",
     "design/components/catch.components.schema.json",
     "tool/marketing/lib/capture_provenance.mjs", "tool/marketing/lib/capture_seeds.mjs",
+    "tool/marketing/lib/web_capture_inputs.mjs", "tool/marketing/lib/web_capture_render.mjs",
+    "tool/marketing/lib/web_capture_screen.mjs",
     "tool/ci/wait_main_marketing_validation.mjs",
     "tool/marketing/sync_website_media.mjs", "tool/ci/toolchain.env"]) {
     write(file, fs.readFileSync(fromRepo(file)));
   }
   const manifest = JSON.parse(fs.readFileSync(fromRepo("tool/marketing/capture_manifest.json"), "utf8"));
+  // The fixture renders app captures through stubs; web captures join only
+  // where a test asks for them, with a small website of their own.
+  manifest.captures = manifest.captures.filter(capture => capture.kind !== "web-capture");
   const png = fs.readFileSync(fromRepo(manifest.captures[0].sourcePath));
+  if (web) {
+    manifest.captures.push({...manifest.captures[0], id: "guest-join-phone", kind: "web-capture", audience: "guest",
+      fixtureKey: undefined, routeId: "event_runtime", address: "catchdates.com",
+      story: {file: "website/src/stories/WebCaptures.stories.tsx", id: "marketing-website-web-captures--join-phone-check-in"},
+      sourcePath: "artifacts/marketing/app-screenshots/guest-join-phone.png",
+      websitePath: "website/public/assets/app-screenshots/guest-join-phone.png"});
+    write("package.json", JSON.stringify({workspaces: ["website"]}));
+    write("package-lock.json", JSON.stringify({packages: {"node_modules/playwright": {version: "1.64.0"},
+      "node_modules/playwright-core": {version: "1.64.0"}}}));
+    write("design/website/routes.json", JSON.stringify({routes: [{id: "event_runtime"}]}));
+    write("website/.storybook/preview.ts", 'import "../src/styles.css";\n');
+    write("website/vite.config.ts", "export default {};\n");
+    write("website/src/styles.css", "h1 { letter-spacing: -.065em; }\n");
+    write("website/src/stories/WebCaptures.stories.tsx", "export const JoinPhoneCheckIn = {};\n");
+  }
   write("tool/marketing/capture_manifest.json", JSON.stringify(manifest));
   write("tool/marketing/app_screenshots_design_context.json", "{}");
   write("website/public/assets/app-screenshots/manifest.json", "{}");
@@ -62,7 +82,7 @@ function fixture(t) {
     write(capture.sourcePath, png);
     write(capture.websitePath, png);
   }
-  write("test/ui_captures/catalog/screen_capture_catalog.dart", manifest.captures.map((c, i) =>
+  write("test/ui_captures/catalog/screen_capture_catalog.dart", manifest.captures.filter(c => c.kind !== "web-capture").map((c, i) =>
     `ScreenCaptureEntry(id: 'screen_${i}', routeIds: const <String>['today'],
       marketingFixtureKeys: const <String>['${c.fixtureKey}'], device: CaptureDevice.iphone17Pro)`).join("\n"));
   write("test/ui_captures/capture_runner_test.dart", "import 'package:catch_dating_app/leaf.dart';\n");
@@ -70,7 +90,7 @@ function fixture(t) {
   write("tool/marketing/frame_device_capture.dart", "");
   write("lib/leaf.dart", "const title = 'Today';\n");
   write("pubspec.yaml", "name: catch_dating_app\n");
-  write("pubspec.lock", "pinned fixture\n");
+  write("pubspec.lock", 'packages:\n  image:\n    version: "4.5.4"\n');
   write("packages/sample/pubspec.yaml", "name: sample\n");
   write("tool/demo/demo_seed/scenarios/sample.json", "{}");
   write("tool/demo/demo_seed/personas/sample.json", "{}");
@@ -247,17 +267,31 @@ test("hosted workflow keeps manual dispatch and limits PR events to explicit cap
   assert.match(source, /runs-on: macos-26\n/u);
   assert.match(source, /timeout-minutes: 45\n/u);
   const steps = extractSteps(source);
-  // Plan, render and reuse each check out the controller and then the source.
-  assert.equal(steps.filter(s => s.uses?.startsWith("actions/checkout@")).length, 6);
-  assert.equal(source.match(/persist-credentials: false/gu)?.length, 6);
+  // Plan, Storybook, render and reuse each check out the controller and then the source.
+  assert.equal(steps.filter(s => s.uses?.startsWith("actions/checkout@")).length, 8);
+  assert.equal(source.match(/persist-credentials: false/gu)?.length, 8);
   // Only the Linux plan reads earlier bundles; it never renders or uploads a bundle.
-  const jobNames = ["plan", "export", "reuse"];
-  const [plan, render, reuse] = jobNames.map((name, index) => source.slice(source.indexOf(`\n  ${name}:\n`),
+  const jobNames = ["plan", "storybook", "export", "reuse"];
+  const [plan, storybook, render, reuse] = jobNames.map((name, index) => source.slice(source.indexOf(`\n  ${name}:\n`),
     index + 1 < jobNames.length ? source.indexOf(`\n  ${jobNames[index + 1]}:\n`) : source.length));
   assert.match(plan, /runs-on: ubuntu-24\.04\n/u);
   assert.match(plan, /permissions:\n      actions: read\n      contents: read\n/u);
-  assert.doesNotMatch(render + reuse, /actions: read/u);
-  assert.match(render, /needs: plan\n    if: \$\{\{ needs\.plan\.outputs\.render == 'true' \}\}\n/u);
+  assert.match(plan, /web_render: \$\{\{ steps\.plan\.outputs\.web_render \}\}\n/u);
+  assert.doesNotMatch(storybook + render + reuse, /actions: read/u);
+  // Web captures: Linux builds the Storybook when rendering may need it; the Mac
+  // installs just the pinned Playwright and WebKit, and reuse installs nothing.
+  assert.match(storybook, /needs: plan\n[^]*?if: \$\{\{ needs\.plan\.outputs\.web_render == 'true' \}\}\n/u);
+  assert.match(storybook, /runs-on: ubuntu-24\.04\n/u);
+  assert.match(storybook, /run: npm ci\n[^]*?run: npm --workspace website run build:storybook\n[^]*?name: capture-storybook-/u);
+  assert.match(storybook, /retention-days: 1\n/u);
+  assert.match(render, /needs: \[plan, storybook\]\n    if: \$\{\{ !cancelled\(\) && needs\.plan\.outputs\.render == 'true' && \(needs\.storybook\.result == 'success' \|\| needs\.storybook\.result == 'skipped'\) \}\}\n/u);
+  assert.doesNotMatch(render + reuse, /npm ci|build:storybook/u);
+  assert.match(render, /npm install --no-save --no-package-lock --ignore-scripts --prefix "\$RUNNER_TEMP\/playwright" "playwright@\$PLAYWRIGHT_VERSION"\n/u);
+  assert.match(render, /playwright" install webkit\n/u);
+  for (const step of ["Receive the website Storybook", "Resolve the source's Playwright pin", "Cache Playwright WebKit", "Install only Playwright and WebKit"]) {
+    assert.equal(steps.find(s => s.name === step)?.if, "${{ needs.plan.outputs.web_render == 'true' }}", step);
+  }
+  assert.doesNotMatch(reuse, /playwright|storybook/iu);
   assert.match(reuse, /needs: plan\n    if: \$\{\{ needs\.plan\.outputs\.render == 'false' \}\}\n/u);
   assert.match(reuse, /runs-on: ubuntu-24\.04\n/u);
   assert.match(reuse, /run: node tool\/marketing\/export_hosted_captures\.mjs --reuse\n/u);
@@ -845,7 +879,90 @@ test("the plan command runs end to end as the workflow calls it", t => {
   });
   assert.equal(result.status, 0, result.stderr);
   // No earlier bundle holds these inputs, so every capture goes to the renderer.
-  assert.equal(fs.readFileSync(outputs, "utf8"), "render=true\nseeded=false\n");
+  assert.equal(fs.readFileSync(outputs, "utf8"), "render=true\nweb_render=false\nseeded=false\n");
   assert.deepEqual(JSON.parse(result.stdout).renderIds.sort(), f.manifest.captures.map(c => c.id).sort());
   assert.match(fs.readFileSync(summary, "utf8"), /Reused from earlier CI bundles: none/);
+});
+
+// A built Storybook index and a Playwright stand-in that records how pages
+// are opened; the fixture's dart stub frames whatever the renderer hands it.
+function webStubs(directory) {
+  const storybookDir = path.join(directory, "storybook");
+  fs.mkdirSync(storybookDir, {recursive: true});
+  fs.writeFileSync(path.join(storybookDir, "iframe.html"), "<!doctype html>");
+  fs.writeFileSync(path.join(storybookDir, "index.json"), JSON.stringify({entries: {
+    "marketing-website-web-captures--join-phone-check-in": {type: "story", importPath: "./src/stories/WebCaptures.stories.tsx"}}}));
+  const playwrightDir = path.join(directory, "playwright");
+  const module = path.join(playwrightDir, "node_modules", "playwright");
+  fs.mkdirSync(module, {recursive: true});
+  fs.writeFileSync(path.join(module, "package.json"), JSON.stringify({name: "playwright", version: "1.64.0"}));
+  const contexts = path.join(directory, "contexts.jsonl");
+  fs.writeFileSync(path.join(module, "index.mjs"), `import fs from "node:fs";
+const page = {goto: async () => {}, waitForSelector: async () => {}, addStyleTag: async () => {}, evaluate: async () => {},
+  waitForTimeout: async () => {}, setContent: async () => {}, screenshot: async () => Buffer.from("png"),
+  locator: () => ({waitFor: async () => {}, isVisible: async () => false, textContent: async () => ""})};
+export const devices = {"iPhone 17 Pro": {viewport: {width: 402, height: 681}, deviceScaleFactor: 3, isMobile: true, hasTouch: true}};
+export const webkit = {launch: async () => ({close: async () => {}, newContext: async options => {
+  fs.appendFileSync(${JSON.stringify(contexts)}, JSON.stringify(options) + "\\n");
+  return {newPage: async () => page, close: async () => {}};
+}})};
+`);
+  return {storybookDir, playwrightDir, contexts};
+}
+
+test("an app-only Linux render plan prepares web tools for a native-font change on macOS", async t => {
+  const f = fixture(t, {web: true});
+  const directory = path.dirname(f.options.outputDir);
+  const webTools = webStubs(directory);
+  exportHostedCaptures({...f.options, ...webTools});
+  f.git("add", ".");
+  f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "preserve rendered captures");
+  const request = async endpoint => endpoint === "repos/owner/repo" ? {id: 1} :
+    endpoint.endsWith("/workflows/ci.yml") ? {id: 7} : {workflow_runs: []};
+  const plan = () => planHostedCaptures({sourceDir: f.root, sourceSha: f.git("rev-parse", "HEAD"),
+    repository: "owner/repo", eventName: "pull_request", request});
+  const fresh = await plan();
+  assert.deepEqual([fresh.render, fresh.webRender], [false, false], "reuse needs no web tooling");
+  f.write("lib/leaf.dart", "const title = 'Updated app';\n");
+  f.git("add", "lib/leaf.dart");
+  f.git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "change only app capture inputs");
+  const appOnly = await plan();
+  assert.ok(appOnly.renderIds.length > 0);
+  assert.ok(!appOnly.renderIds.includes("guest-join-phone"));
+  assert.equal(appOnly.webRender, true, "macOS can invalidate the otherwise-current web capture's font");
+  fs.writeFileSync(f.options.sfFont, "updated macOS native font");
+  const rendered = exportHostedCaptures({...f.options, ...webTools,
+    sourceSha: f.git("rev-parse", "HEAD"), outputDir: path.join(directory, "font-updated")});
+  assert.equal(rendered.captures.find(c => c.id === "guest-join-phone").disposition, "rendered");
+  assert.equal(new Set(rendered.captures.map(c => c.provenance.nativeFontSha256)).size, 1);
+});
+
+test("a web capture renders on macOS from a Linux-built Storybook with WebKit, then reuses on Linux", t => {
+  const f = fixture(t, {web: true});
+  assert.throws(() => exportHostedCaptures(f.options), /need a built Storybook and Playwright: guest-join-phone/);
+  assert.equal(f.git("status", "--porcelain"), "", "a refused render touches nothing");
+  const {storybookDir, playwrightDir, contexts} = webStubs(path.dirname(f.options.outputDir));
+  const rendered = exportHostedCaptures({...f.options, storybookDir, playwrightDir});
+  const web = rendered.captures.find(c => c.id === "guest-join-phone");
+  assert.equal(web.disposition, "rendered");
+  assert.equal(web.provenance.kind, "web-capture");
+  assert.equal(web.provenance.platform, "ios-safari");
+  assert.equal(web.provenance.captureId, "marketing-website-web-captures--join-phone-check-in");
+  assert.equal(rendered.toolchain.playwright, "1.64.0");
+  assert.equal(rendered.toolchain.storybookIndexSha256,
+    crypto.createHash("sha256").update(fs.readFileSync(path.join(storybookDir, "index.json"))).digest("hex"));
+  assert.equal(new Set(rendered.captures.map(c => c.provenance.nativeFontSha256)).size, 1);
+  assert.ok(rendered.commands[0].includes("--storybook") && rendered.commands[0].includes("--playwright-dir"));
+  // The page renders as the iPhone 17 Pro descriptor in India time, then composes at the frame's scale.
+  const [page, screen] = fs.readFileSync(contexts, "utf8").trim().split("\n").map(JSON.parse);
+  assert.deepEqual([page.deviceScaleFactor, page.isMobile, page.timezoneId, page.locale], [3, true, "Asia/Kolkata", "en-IN"]);
+  assert.deepEqual(page.viewport, {width: 402, height: 820});
+  assert.deepEqual([screen.deviceScaleFactor, screen.viewport], [2, {width: 402, height: 874}]);
+  const seeds = new Map(rendered.captures.map(c => [c.id, fs.readFileSync(path.join(f.options.outputDir, c.sourcePath))]));
+  f.git("checkout", "--", ".");
+  const reused = exportHostedCaptures({...f.options, outputDir: path.join(path.dirname(f.options.outputDir), "reused"),
+    platform: "linux", sfFont: "/missing/font.ttf", mode: "reuse", seeds});
+  assert.ok(reused.captures.every(c => c.disposition === "reused"));
+  assert.equal(reused.toolchain.playwright, null);
+  assert.equal(reused.toolchain.storybookIndexSha256, null);
 });

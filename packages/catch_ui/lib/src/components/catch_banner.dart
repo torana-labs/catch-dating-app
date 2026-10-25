@@ -42,7 +42,6 @@ class CatchBanner extends StatelessWidget {
         message: message,
         variant: CatchBannerVariant.error,
         tone: CatchBannerTone.danger,
-        icon: CatchIcons.errorOutlineRounded,
       );
 
   /// The caller-owned retry label stays required while its callback is absent.
@@ -58,7 +57,6 @@ class CatchBanner extends StatelessWidget {
          onRetry: onRetry,
          variant: CatchBannerVariant.error,
          tone: CatchBannerTone.danger,
-         icon: CatchIcons.errorOutlineRounded,
        );
 
   /// Full-width, intrinsically measured bands placed by screen layouts.

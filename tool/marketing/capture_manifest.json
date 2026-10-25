@@ -232,6 +232,34 @@
       "alt": "Catch Host Today showing the fictional Saturday Trivia Social at Harbour Room",
       "caption": "See the next event and its guest count before arrivals begin.",
       "walkthroughStep": "Today"
+    },
+    {
+      "id": "guest-join-phone",
+      "kind": "web-capture",
+      "audience": "guest",
+      "surface": "Guest check-in in the browser",
+      "status": "active",
+      "device": "iphone-17-pro",
+      "routeId": "event_runtime",
+      "story": {
+        "file": "website/src/stories/WebCaptures.stories.tsx",
+        "id": "marketing-website-web-captures--join-phone-check-in"
+      },
+      "address": "catchdates.com",
+      "scenario": {
+        "world": "host-marketing-india",
+        "event": "event-host-trivia-store-demo",
+        "moment": "live"
+      },
+      "sourcePath": "artifacts/marketing/app-screenshots/guest-join-phone.png",
+      "websitePath": "website/public/assets/app-screenshots/guest-join-phone.png",
+      "placeholderPath": "website/public/assets/app-screenshots/placeholders/guest-join-phone.svg",
+      "alt": "Saturday Trivia Social check-in page open in Safari at catchdates.com, asking for the mobile number used for the booking",
+      "caption": "Guests check in from their phone's browser with the number they booked with. Nothing to download.",
+      "walkthroughStep": "Check in",
+      "pages": [
+        "/host/"
+      ]
     }
   ]
 }

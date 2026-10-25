@@ -1124,7 +1124,8 @@ Future<void> _pickTimeInInputMode(
   await tester.ensureVisible(find.byKey(CreateEventFormKeys.timePicker));
   await tester.tap(find.byKey(CreateEventFormKeys.timePicker));
   await _pumpTestAnimation(tester);
-  await tester.tap(find.byIcon(CatchIcons.keyboardOutlined));
+  // Material's time picker owns this toggle and draws its own glyph.
+  await tester.tap(find.byTooltip('Switch to text input mode'));
   await _pumpTestAnimation(tester);
 
   final timeFields = find.descendant(
