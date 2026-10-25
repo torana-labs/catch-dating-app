@@ -1,9 +1,9 @@
 
 .site-footer {
   display: grid;
-  gap: 22px;
-  padding: 34px 0 var(--catch-space-s11);
-  border-top: 1px solid var(--website-line);
+  gap: var(--catch-space-s6);
+  padding: var(--catch-space-s9) 0 var(--catch-space-s11);
+  border-top: var(--catch-stroke-hairline) solid var(--website-line);
   color: var(--website-copy-muted);
 }
 
@@ -33,7 +33,7 @@
   overflow-y: auto;
   gap: var(--catch-space-micro14);
   padding: var(--catch-space-s4);
-  border: 1px solid var(--website-line);
+  border: var(--catch-stroke-hairline) solid var(--website-line);
   border-radius: var(--catch-radius-sm);
   background: var(--website-surface);
   box-shadow: var(--website-shadow-soft);

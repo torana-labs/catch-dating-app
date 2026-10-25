@@ -10,7 +10,7 @@
 
 .legal-document__header {
   padding-bottom: var(--catch-space-s10);
-  border-bottom: 1px solid var(--website-line);
+  border-bottom: var(--catch-stroke-hairline) solid var(--website-line);
 }
 
 .legal-document__eyebrow,
@@ -42,13 +42,13 @@
 }
 
 .legal-document__effective {
-  margin-top: 22px;
+  margin-top: var(--catch-space-s6);
   color: var(--website-text-muted);
 }
 
 .legal-document__sections {
   display: grid;
-  gap: 42px;
+  gap: var(--catch-space-s11);
   padding: var(--catch-space-s12) 0;
 }
 
@@ -77,7 +77,7 @@
 
 .legal-document__contact {
   padding: var(--catch-space-s6);
-  border: 1px solid var(--website-line);
+  border: var(--catch-stroke-hairline) solid var(--website-line);
   border-radius: var(--catch-radius-lg);
   background: var(--website-surface);
 }

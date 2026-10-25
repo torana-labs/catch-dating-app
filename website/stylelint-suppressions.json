@@ -121,7 +121,7 @@
   },
   "src/styles/legal.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 27
+      "count": 23
     },
     "declaration-property-value-allowed-list": {
       "count": 5
@@ -189,7 +189,7 @@
   },
   "src/styles/site-footer.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 9
+      "count": 5
     },
     "declaration-property-value-allowed-list": {
       "count": 2
@@ -197,7 +197,7 @@
   },
   "src/styles/site-shell.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 34
+      "count": 28
     },
     "declaration-property-value-allowed-list": {
       "count": 10
