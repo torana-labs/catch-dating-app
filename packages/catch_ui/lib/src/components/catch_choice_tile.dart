@@ -89,7 +89,13 @@ class _CatchChoiceTileState extends State<CatchChoiceTile> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.title, style: CatchTextStyles.labelL(context)),
+                Text(
+                  widget.title,
+                  style: CatchTextStyles.titleS(
+                    context,
+                    color: CatchTokens.of(context).ink,
+                  ),
+                ),
                 if (widget.subtitle != null && widget.subtitle!.isNotEmpty) ...[
                   const SizedBox(height: CatchSpacing.micro3),
                   Text(

@@ -118,15 +118,13 @@ class WhoIsGoingBody extends StatelessWidget {
                   color: surfaceStyle?.headingColor,
                 ),
               ),
-              Text(
+              CatchText(
                 context.l10n.eventsWhoIsGoingTextTotalCapacitylimit(
                   total: total,
                   capacityLimit: event.capacityLimit,
                 ),
-                style: CatchTextStyles.labelL(
-                  context,
-                  color: surfaceStyle?.bodyColor ?? t.ink2,
-                ),
+                variant: CatchTextVariant.titleS,
+                color: surfaceStyle?.bodyColor ?? t.ink2,
               ),
             ],
           ),

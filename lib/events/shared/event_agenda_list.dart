@@ -170,14 +170,13 @@ class EventAgendaTileSkeleton extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CatchSkeleton.custom(
-              child: Container(
+              child: CatchSurface(
                 width: CatchLayout.eventDateRailWidth,
-                decoration: const BoxDecoration(
-                  color: CatchTokens.editorialWhite,
-                  borderRadius: BorderRadius.horizontal(
-                    left: Radius.circular(CatchRadius.md),
-                  ),
+                backgroundColor: CatchTokens.editorialWhite,
+                borderRadius: const BorderRadius.horizontal(
+                  left: Radius.circular(CatchRadius.md),
                 ),
+                duration: Duration.zero,
                 child: Padding(
                   padding: CatchInsets.contentDense,
                   child: Column(

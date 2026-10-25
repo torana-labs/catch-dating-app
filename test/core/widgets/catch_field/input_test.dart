@@ -200,8 +200,9 @@ void main() {
     );
     expect(
       englishLabel.style?.fontWeight,
-      CatchTextStyles.labelL(
+      CatchTextStyles.titleS(
         tester.element(find.byType(CatchField)),
+        color: CatchTokens.of(tester.element(find.byType(CatchField))).ink,
       ).fontWeight,
     );
     expect(englishLabel.style?.color, CatchTokens.editorialLight.primaryInk);

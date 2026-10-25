@@ -173,9 +173,9 @@ class SuvbotDock extends StatelessWidget {
               ),
               if (warmActions.isNotEmpty) ...[
                 const SizedBox(height: CatchSpacing.s3),
-                Text(
-                  context.l10n.chatsSuvbotActionBarTextCreateATestState,
-                  style: CatchTextStyles.kicker(context),
+                CatchKickerText(
+                  label: context.l10n.chatsSuvbotActionBarTextCreateATestState,
+                  maxLines: null,
                 ),
                 const SizedBox(height: CatchSpacing.s1),
                 Row(
@@ -368,9 +368,10 @@ class SuvbotResetActionRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  CatchText(
                     action.label,
-                    style: CatchTextStyles.fieldRowTitle(context, color: tone),
+                    variant: CatchTextVariant.bodyLead,
+                    color: tone,
                   ),
                   gapH4,
                   CatchText(

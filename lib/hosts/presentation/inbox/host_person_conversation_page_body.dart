@@ -16,6 +16,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversati
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -392,9 +393,10 @@ class _HostPersonConversationPageBodyState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CatchText(
                   context.l10n.hostInboxReplyVia,
-                  style: CatchTextStyles.labelL(context),
+                  variant: CatchTextVariant.titleS,
+                  color: CatchTokens.of(context).ink,
                 ),
                 Wrap(
                   spacing: CatchSpacing.s2,

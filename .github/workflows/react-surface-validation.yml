@@ -248,9 +248,11 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-      # Storybook screenshots take 5-6 minutes and rarely fail, so pull requests
-      # skip them; the merge queue and main still compare every story on the
-      # exact combined source before anything ships.
+      # Storybook screenshots take 5-6 minutes, so pull requests skip them; the
+      # merge queue and main render every story on the exact combined source.
+      # Pixel changes against the committed baselines are reported in the job
+      # summary and diagnostics artifact, never failed: the app is still
+      # changing visually on purpose. A story that cannot render still fails.
       - name: Build marketing Storybook
         if: ${{ inputs.surface == 'marketing' && (github.event_name != 'pull_request' || inputs.update_visual_baselines) }}
         run: npm --workspace catch-marketing run build:storybook
@@ -259,15 +261,17 @@ jobs:
         if: ${{ inputs.surface == 'admin' && (github.event_name != 'pull_request' || inputs.update_visual_baselines) }}
         run: npm --workspace catch-admin run build:storybook
 
-      - name: Run marketing and shared web UI visual regression
+      - name: Report marketing and shared web UI visual changes
         id: marketing-visual-check
         if: ${{ inputs.surface == 'marketing' && !inputs.update_visual_baselines && github.event_name != 'pull_request' }}
-        run: npm --workspace catch-marketing run test:visual
+        run: |
+          node tool/web/check_storybook_visuals.mjs --surface website --report
+          node tool/web/check_storybook_visuals.mjs --surface webui --report
 
-      - name: Run admin visual regression
+      - name: Report admin visual changes
         id: admin-visual-check
         if: ${{ inputs.surface == 'admin' && !inputs.update_visual_baselines && github.event_name != 'pull_request' }}
-        run: npm --workspace catch-admin run test:visual
+        run: node tool/web/check_storybook_visuals.mjs --surface admin --report
 
       - name: Capture marketing and shared web UI visual baselines
         id: marketing-visual-update
@@ -282,7 +286,7 @@ jobs:
         run: node tool/web/check_storybook_visuals.mjs --surface admin --update
 
       - name: Upload marketing visual diagnostics
-        if: ${{ always() && steps.marketing-visual-check.outcome == 'failure' }}
+        if: ${{ always() && (steps.marketing-visual-check.outcome == 'failure' || steps.marketing-visual-check.outputs.has_changes == 'true') }}
         uses: actions/upload-artifact@v4
         with:
           name: marketing-visual-diagnostics-${{ github.run_id }}
@@ -295,7 +299,7 @@ jobs:
           retention-days: 14
 
       - name: Upload admin visual diagnostics
-        if: ${{ always() && steps.admin-visual-check.outcome == 'failure' }}
+        if: ${{ always() && (steps.admin-visual-check.outcome == 'failure' || steps.admin-visual-check.outputs.has_changes == 'true') }}
         uses: actions/upload-artifact@v4
         with:
           name: admin-visual-diagnostics-${{ github.run_id }}

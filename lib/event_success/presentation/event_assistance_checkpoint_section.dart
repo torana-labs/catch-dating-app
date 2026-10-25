@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoin
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_roster_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -159,12 +160,13 @@ class _EventAssistanceCheckpointSectionState
             variant: CatchTextVariant.supporting,
           ),
           gapH12,
-          Text(
+          CatchText(
             l10n.eventAssistanceCheckpointSelected(
               count: selected.length,
               total: roster.members.length,
             ),
-            style: CatchTextStyles.labelL(context),
+            variant: CatchTextVariant.titleS,
+            color: CatchTokens.of(context).ink,
           ),
           if (roster.members.isEmpty) ...[
             gapH8,

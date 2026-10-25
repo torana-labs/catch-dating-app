@@ -217,12 +217,10 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
             child: WelcomeRevealTransition(
               landingValue: 0.62,
               order: 0,
-              child: Text(
+              child: CatchText(
                 'Show up to something you would do anyway.',
-                style: CatchTextStyles.bodyM(
-                  context,
-                  color: CatchTokens.editorialWhite,
-                ),
+                variant: CatchTextVariant.bodyM,
+                color: CatchTokens.editorialWhite,
               ),
             ),
           ),
@@ -237,12 +235,10 @@ Widget welcomeRevealEntranceStates(BuildContext context) {
             child: WelcomeRevealTransition(
               landingValue: 1,
               order: 1,
-              child: Text(
+              child: CatchText(
                 'Continue with phone',
-                style: CatchTextStyles.labelL(
-                  context,
-                  color: CatchTokens.editorialWhite,
-                ),
+                variant: CatchTextVariant.titleS,
+                color: CatchTokens.editorialWhite,
               ),
             ),
           ),

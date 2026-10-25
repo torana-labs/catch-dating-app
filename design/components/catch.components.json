@@ -390,7 +390,7 @@
         ],
         "dartRoles": [
           "CatchTextStyles.badgeCaps",
-          "CatchTextStyles.labelL",
+          "CatchTextStyles.titleS",
           "CatchTextStyles.kicker",
           "CatchTextStyles.buttonSm",
           "CatchIcon.badge",
@@ -1332,8 +1332,8 @@
           "CatchBorder.interactive",
           "CatchBorderRole.selected",
           "CatchBorderRole.focus",
-          "CatchTextStyles.labelL",
-          "CatchTextStyles.fieldRowTitle",
+          "CatchTextStyles.titleS",
+          "CatchTextStyles.bodyLead",
           "CatchIcon.sm",
           "CatchLayout.activityChipIconSize",
           "ActivityPalette.resolve",
@@ -2420,7 +2420,7 @@
           "CatchSurface",
           "CatchButton",
           "CatchIconAction",
-          "CatchTextStyles.labelL",
+          "CatchTextStyles.titleS",
           "CatchTextStyles.supporting"
         ],
         "goldens": [],
@@ -3361,8 +3361,7 @@
           "CatchTextStyles.fieldLabel",
           "CatchTextStyles.titleS",
           "CatchChip.selectable",
-          "CatchTextStyles.labelL",
-          "CatchTextStyles.fieldRowTitle",
+          "CatchTextStyles.bodyLead",
           "CatchTextStyles.control",
           "CatchPlatformTokens.minimumInteractiveExtent",
           "CatchFieldTrailingRow.clearTargetConstraints"
@@ -4427,14 +4426,14 @@
           "Explicit-save compatibility order is editor, supporting metadata, feedback, secondary action, then Cancel and Done. Validation/helper/counter support is a root sibling after disclosure controls and the commit bar, matching the React handoff. Field-caption color is resolved once at the root: actual error uses danger, active focus or open disclosure uses semantic ink, and inactive state uses the configured tone or ink3. Optional suffix copy remains ink3. Focus never changes label size, weight, baseline, or position.",
           "Press feedback begins on header pointer down; disclosure ownership transfers once on pointer up. The full-row disclosure drawer is a sibling below that header, so nested chips, steppers, and commit buttons cannot trigger header press tint and retain complete hit/focus geometry. Coordinated pressed and active layers use one contextual silhouette: standalone and divided fields paint a rounded tint plus outline, while contained rows paint rectangular internal bands beneath one section-owned group clip. CatchFieldGeometryScope separately publishes content-gutter ownership, interaction bleed, and interaction-shape ownership; divided rows retain their tile overlap, while contained edge rows overlap the section's consumed border inset by exactly one hairline so both primitives paint one shared left/right edge. Explicit-save tap-away cancels on pointer up only when movement remains within touch slop, while drag/scroll leaves the field open and loading blocks Cancel or Escape. Ordinary inputs retain Flutter's shared EditableText tap group for affiliated actions and place the native cursor during the first gesture. A closed explicit-save input transfers native focus when its drawer reveal completes so keyboard viewport relayout cannot compete with disclosure motion; an editor built already open focuses immediately, and a direct input tap during reveal may still focus intentionally. Disclosure content stays mounted behind a clipped height-factor plus opacity reveal, uses CatchMotion.base, and becomes instantaneous when reduced motion is enabled.",
           "CatchField.content always owns title/supporting-copy typography. Its default body emphasis preserves the React handoff's top-aligned leading/trailing slots; callers may opt into title emphasis when a combined content block and trailing action should center together.",
-          "Choice chips compose CatchChip.selectable in a full-width wrapping group with an 8 px gap between allocated targets. Labels wrap naturally and compact visuals can sit within larger platform hit boxes. Explicit-save choices preserve staged selection until Done; a single choice without a save bar closes after 180 ms. Steppers center fieldRowTitle values between platform-sized repeat targets while preserving the 16 px visual circle-to-value gap. Toggle tracks remain 44 by 26 px inside platform-sized targets and stay visible but disabled while saving.",
+          "Choice chips compose CatchChip.selectable in a full-width wrapping group with an 8 px gap between allocated targets. Labels wrap naturally and compact visuals can sit within larger platform hit boxes. Explicit-save choices preserve staged selection until Done; a single choice without a save bar closes after 180 ms. Steppers center bodyLead values between platform-sized repeat targets while preserving the 16 px visual circle-to-value gap. Toggle tracks remain 44 by 26 px inside platform-sized targets and stay visible but disabled while saving.",
           "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' · '. An explicit body remains the compatibility override for custom formatting.",
           "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchChoiceTile target. Use chips only when labels are terse and do not need per-option explanation.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Every empty inactive editable row uses one canonical value lane: primary 14/600 'Add {field}' plus an optional inline ink3/500 suffix, with no separate caption. Direct and explicit-save text paths keep the same native editable mounted behind that presentation; focus restores the caption, input-only hint, and input-only units without a second tap or cursor reset. Addable disclosures use the same typography, row height, and icon alignment.",
           "A populated labeled direct input reserves clear-action width from CatchFieldTrailingRow.clearTargetConstraints. Its overlaid target aligns toward the scaled value line and is clamped inside the row, without covering input text or changing an already sufficient collapsed-row height. Label-less compact clear inputs retain native suffix geometry.",
           "Disclosure opening drives the nearest existing vertical scroll owner frame by frame with the same CatchMotion.base duration and curve, revealing the commit bar above CatchFieldVisibilityScope bottom obstruction as new extent becomes available, with a disclosure-bottom fallback when no commit bar exists. Rapid close cancels the drive, direct user scrolling wins, reduced motion jumps immediately, and a zero-duration final correction covers any residual collapsed-extent clamp. CatchField never creates or owns a ScrollController.",
-          "Implemented handoff tranche: title/supporting-copy content rows with 2/3 clamps and a 3 px gap while legacy value rows retain 1/2 clamps; canonical editable-value typography; 16 px caret; labelL choice chips and fieldRowTitle stepper values; control-role commit labels; 15 px stepper glyph; 16/13 px spinners with a 7 px commit gap and 800 ms cadence; filled saved and warning error icons; directional underline sweep; 200 ms control-opacity reveal; animated toggle/Cancel states; post-tick-10 repeat acceleration; hardware-keyboard activation; shared chip focus chrome and transparent-offset stepper/commit rings; and semantic selected/action foregrounds.",
+          "Implemented handoff tranche: title/supporting-copy content rows with 2/3 clamps and a 3 px gap while legacy value rows retain 1/2 clamps; canonical editable-value typography; 16 px caret; titleS choice chips and bodyLead stepper values; control-role commit labels; 15 px stepper glyph; 16/13 px spinners with a 7 px commit gap and 800 ms cadence; filled saved and warning error icons; directional underline sweep; 200 ms control-opacity reveal; animated toggle/Cancel states; post-tick-10 repeat acceleration; hardware-keyboard activation; shared chip focus chrome and transparent-offset stepper/commit rings; and semantic selected/action foregrounds.",
           "Owner-gated behavior remains unchanged for single-choice persistence, clearability, deselection, and save policy. The implemented 180 ms no-save-bar close behavior and standardized empty Add presentation are not authorization to change domain persistence semantics.",
           "CatchField does not own rounded section or input-container chrome; use CatchSection contained focus/error chrome when fields need a grouped rounded surface.",
           "Field labels and support/error text belong to catch.field; shared container chrome belongs to CatchSection."
@@ -8570,7 +8569,7 @@
         ],
         "dartRoles": [
           "CatchStepperRepeatButton",
-          "CatchTextStyles.fieldRowTitle",
+          "CatchTextStyles.bodyLead",
           "CatchIcons.removeRounded",
           "CatchIcons.addRounded"
         ],
@@ -8888,7 +8887,7 @@
           "CatchChoiceTile",
           "CatchFieldLabelText",
           "CatchFieldChoicePickedNotification",
-          "CatchTextStyles.labelL",
+          "CatchTextStyles.titleS",
           "CatchTextStyles.monoLabel",
           "CatchMotion.fast",
           "CatchTextStyles.selectionLabel",
@@ -9084,7 +9083,7 @@
           "CatchBorderRole.selected",
           "CatchBorderRole.focus",
           "CatchInsets.tileContentCompact",
-          "CatchTextStyles.labelL",
+          "CatchTextStyles.titleS",
           "CatchTextStyles.supporting",
           "CatchIcon.lg"
         ],
@@ -9998,7 +9997,7 @@
           "CatchLayout.journeyStepsRailColumnWidth",
           "CatchLayout.journeyStepsNodeExtent",
           "CatchTextStyles.mono",
-          "CatchTextStyles.fieldRowTitle",
+          "CatchTextStyles.bodyLead",
           "CatchTextStyles.supporting"
         ],
         "goldens": [],
@@ -15930,7 +15929,7 @@
         ],
         "dartRoles": [
           "ActivityNotificationType",
-          "CatchTextStyles.fieldRowTitle",
+          "CatchTextStyles.bodyLead",
           "CatchTextStyles.monoLabelS"
         ],
         "goldens": [],
