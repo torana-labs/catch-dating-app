@@ -147,7 +147,7 @@ void main() {
       );
 
       expect(_chipDecoration(tester, softChip).color, softActivity.soft);
-      expect(_chipDecoration(tester, solidChip).color, solidActivity.accent);
+      expect(_chipDecoration(tester, solidChip).color, solidActivity.deep);
       expect(
         find.descendant(
           of: softChip,
@@ -299,7 +299,7 @@ void main() {
     final label = tester.widget<Text>(find.text('Social run'));
 
     expect(_chipDecoration(tester, chip).color, activity.soft);
-    expect(label.style?.color, activity.accent);
+    expect(label.style?.color, CatchTokens.of(tester.element(chip)).ink);
     expect(label.style?.color, isNot(activity.soft));
   });
 
