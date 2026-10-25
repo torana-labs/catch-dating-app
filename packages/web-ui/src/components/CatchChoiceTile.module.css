@@ -1,0 +1,28 @@
+/* Canonical CatchChoiceTile geometry; choiceInputParity.test.ts pins Dart. */
+.tile {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-s3);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--catch-interaction-ios-minimum-extent);
+  padding: var(--catch-space-micro14);
+  border: var(--catch-stroke-hairline) solid var(--catch-theme-line2);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-theme-surface);
+  color: var(--catch-theme-ink);
+  text-align: start;
+  font: inherit;
+  cursor: pointer;
+  transition: background-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+.tile[data-selected] { border-color: var(--catch-theme-ink); background: color-mix(in srgb, var(--catch-theme-ink) 4%, var(--catch-theme-surface)); }
+.tile:enabled:hover { background: color-mix(in srgb, var(--catch-theme-ink) 5%, var(--catch-theme-surface)); }
+.tile:enabled:active { background: color-mix(in srgb, var(--catch-theme-ink) 14%, var(--catch-theme-surface)); }
+.tile:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink); outline-offset: var(--catch-space-micro2); }
+.tile:disabled { cursor: default; }
+.tile .icon { flex: none; width: 24px; height: 24px; margin-top: var(--catch-stroke-hairline); fill: none; stroke: var(--catch-theme-ink3); stroke-width: var(--catch-stroke-emphasis); stroke-linecap: round; stroke-linejoin: round; }
+.tile[data-selected] .icon { stroke: var(--catch-theme-ink); }
+.tile .copy { display: grid; gap: var(--catch-space-micro3); min-width: 0; overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: reduce) { .tile { transition: none; } }
