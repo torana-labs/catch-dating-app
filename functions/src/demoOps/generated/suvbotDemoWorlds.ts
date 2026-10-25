@@ -898,6 +898,196 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
     },
     {
       "schemaVersion": 2,
+      "id": "pub-crawl-hyderabad",
+      "label": "Hyderabad Pub Crawl",
+      "description": "Fictional Friday pub crawl in Hyderabad: small groups walk four stops from Jubilee Hills to Banjara Hills. Draft capture input, never a seed world or an availability claim.",
+      "uses": [
+        "marketing-capture"
+      ],
+      "locale": "en-IN",
+      "timeZone": "Asia/Kolkata",
+      "currency": "INR",
+      "moments": {
+        "planning": "2026-10-20T11:00:00",
+        "today": "2026-10-23T16:00:00",
+        "live": "2026-10-23T21:05:00",
+        "followUp": "2026-10-24T10:30:00"
+      },
+      "host": {
+        "uid": "pub-crawl-hyderabad-host",
+        "personaId": "in_sameer_hussain_062",
+        "displayName": "Sameer Hussain",
+        "firstName": "Sameer",
+        "phoneNumber": "+919000000601",
+        "email": "host@example.test"
+      },
+      "organizer": {
+        "id": "club-pub-crawl-hyderabad",
+        "name": "Deccan Evening Socials",
+        "description": "Fictional Hyderabad organizer that hosts small-group evenings across Jubilee Hills and Banjara Hills.",
+        "city": "hyderabad",
+        "area": "Jubilee Hills",
+        "tags": [
+          "pub-crawl",
+          "hosted",
+          "small-groups"
+        ],
+        "memberCount": 0,
+        "rating": 0,
+        "reviewCount": 0
+      },
+      "venues": [
+        {
+          "id": "kesar-courtyard",
+          "name": "Kesar Courtyard",
+          "area": "Jubilee Hills",
+          "lat": 17.4318,
+          "lng": 78.4074,
+          "directions": "First stop. Come in through the courtyard gate; the host is at the long table with the group list."
+        },
+        {
+          "id": "lantern-terrace",
+          "name": "Lantern Terrace",
+          "area": "Jubilee Hills",
+          "lat": 17.429,
+          "lng": 78.413,
+          "directions": "Second stop, about ten minutes on foot. The terrace is up the stairs on the left."
+        },
+        {
+          "id": "monsoon-room",
+          "name": "Monsoon Room",
+          "area": "Jubilee Hills",
+          "lat": 17.4258,
+          "lng": 78.4192,
+          "directions": "Third stop, about ten minutes on foot. Groups meet again at the front door before going in."
+        },
+        {
+          "id": "banyan-rooftop",
+          "name": "Banyan Rooftop",
+          "area": "Banjara Hills",
+          "lat": 17.4215,
+          "lng": 78.4258,
+          "directions": "Last stop, about twelve minutes on foot. Take the lift to the top floor; cabs home leave from the front gate."
+        }
+      ],
+      "people": [
+        {
+          "id": "p01",
+          "personaId": "in_harini_kondapalli_061"
+        },
+        {
+          "id": "p02",
+          "personaId": "in_vamsi_kodali_064"
+        },
+        {
+          "id": "p03",
+          "personaId": "in_pranavi_gunda_065"
+        },
+        {
+          "id": "p04",
+          "personaId": "in_lakshmi_pothula_067"
+        },
+        {
+          "id": "p05",
+          "personaId": "in_sindhu_chowdary_034"
+        },
+        {
+          "id": "p06",
+          "personaId": "in_abhinav_varma_035"
+        },
+        {
+          "id": "p07",
+          "personaId": "in_ayesha_baig_063"
+        },
+        {
+          "id": "p08",
+          "personaId": "in_tejas_naidu_068"
+        },
+        {
+          "id": "p09",
+          "personaId": "in_rishi_malpani_066"
+        }
+      ],
+      "events": [
+        {
+          "id": "event-friday-pub-crawl-hyderabad",
+          "name": "Friday Pub Crawl",
+          "description": "A fictional hosted pub crawl in small groups of four. Four stops, each a short walk apart: Kesar Courtyard in Jubilee Hills at 19:30 for the welcome and groups, Lantern Terrace at 20:25, Monsoon Room at 21:20, and Banyan Rooftop in Banjara Hills at 22:15 for the recap. Free to join: order what you like at each stop, and every stop has food and a full zero-proof menu. The host books cabs home at the end.",
+          "venueId": "kesar-courtyard",
+          "civilDate": "2026-10-23",
+          "startTime": "19:30",
+          "endTime": "23:00",
+          "activityKind": "barCrawl",
+          "customActivityLabel": "Pub crawl",
+          "format": {
+            "interactionModel": "freeFormMixer",
+            "admissionPreset": "openCapacity",
+            "playbookId": "host_led_social",
+            "selectedModuleIds": [
+              "host_script",
+              "micro_pods",
+              "social_missions"
+            ],
+            "hostGoal": "Keep each group together between stops, so everyone has talked with their whole group before the last stop."
+          },
+          "capacity": 12,
+          "priceInPaise": 0,
+          "guestPerspective": {
+            "viewer": "p03",
+            "wingmanTarget": "p08"
+          },
+          "attendance": [
+            {
+              "personId": "p01",
+              "bookedAt": "2026-10-20T11:40:00",
+              "checkedInAt": "2026-10-23T19:04:00"
+            },
+            {
+              "personId": "p02",
+              "bookedAt": "2026-10-20T13:05:00",
+              "checkedInAt": "2026-10-23T19:09:00"
+            },
+            {
+              "personId": "p03",
+              "bookedAt": "2026-10-20T18:20:00",
+              "checkedInAt": "2026-10-23T19:12:00"
+            },
+            {
+              "personId": "p04",
+              "bookedAt": "2026-10-20T21:45:00",
+              "checkedInAt": "2026-10-23T19:15:00"
+            },
+            {
+              "personId": "p05",
+              "bookedAt": "2026-10-21T08:15:00",
+              "cancelledAt": "2026-10-22T22:10:00"
+            },
+            {
+              "personId": "p06",
+              "bookedAt": "2026-10-21T19:30:00",
+              "checkedInAt": "2026-10-23T19:21:00"
+            },
+            {
+              "personId": "p07",
+              "bookedAt": "2026-10-22T12:50:00",
+              "checkedInAt": "2026-10-23T19:24:00"
+            },
+            {
+              "personId": "p08",
+              "bookedAt": "2026-10-22T20:05:00",
+              "checkedInAt": "2026-10-23T19:28:00"
+            },
+            {
+              "personId": "p09",
+              "bookedAt": "2026-10-23T10:25:00",
+              "checkedInAt": "2026-10-23T19:36:00"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 2,
       "id": "run-club-bandra",
       "label": "Bandra Run Club",
       "description": "Fictional Bandra West run club's Sunday 5K: pace preference at booking, pace pods on the morning and the invite to the next run. Draft capture input, never a seed world or an availability claim.",
@@ -1981,6 +2171,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
       ]
     },
     {
+      "id": "in_abhinav_varma_035",
+      "firstName": "Abhinav",
+      "lastName": "Varma",
+      "displayName": "Abhinav Varma",
+      "gender": "man",
+      "dateOfBirth": "1994-07-07",
+      "heightCm": 179,
+      "occupation": "Game developer",
+      "company": "Games studio",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A game everyone learns in two minutes and argues about for two hours."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Reworking the rules so next time is fairer."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You are a gracious winner and a funny loser."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/abhinav-varma/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/abhinav-varma/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/abhinav-varma/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/abhinav-varma/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "game_jam",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/abhinav-varma/02-game-jam.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/abhinav-varma/thumbs/02-game-jam.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/abhinav-varma/02-game-jam.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/abhinav-varma/thumbs/02-game-jam.jpg"
+        },
+        {
+          "id": "live_music",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/abhinav-varma/03-live-music.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/abhinav-varma/thumbs/03-live-music.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/abhinav-varma/03-live-music.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/abhinav-varma/thumbs/03-live-music.jpg"
+        },
+        {
+          "id": "biryani_cooking",
+          "position": 3,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/abhinav-varma/04-biryani-cooking.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/abhinav-varma/thumbs/04-biryani-cooking.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/abhinav-varma/04-biryani-cooking.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/abhinav-varma/thumbs/04-biryani-cooking.jpg"
+        }
+      ]
+    },
+    {
       "id": "in_aditi_chawla_032",
       "firstName": "Aditi",
       "lastName": "Chawla",
@@ -2485,6 +2738,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
       ]
     },
     {
+      "id": "in_ayesha_baig_063",
+      "firstName": "Ayesha",
+      "lastName": "Baig",
+      "displayName": "Ayesha Baig",
+      "gender": "woman",
+      "dateOfBirth": "1997-01-14",
+      "heightCm": 164,
+      "occupation": "Fashion designer",
+      "company": "Independent label",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A dress code everyone half follows and a night that keeps moving."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Complimenting at least three outfits on the way out."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You wear something because you love it, not because it's safe."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ayesha-baig/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ayesha-baig/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/ayesha-baig/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/ayesha-baig/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "design_studio",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ayesha-baig/02-design-studio.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ayesha-baig/thumbs/02-design-studio.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/ayesha-baig/02-design-studio.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/ayesha-baig/thumbs/02-design-studio.jpg"
+        },
+        {
+          "id": "rooftop_supper",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ayesha-baig/03-rooftop-supper.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ayesha-baig/thumbs/03-rooftop-supper.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/ayesha-baig/03-rooftop-supper.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/ayesha-baig/thumbs/03-rooftop-supper.jpg"
+        },
+        {
+          "id": "friends_brunch",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ayesha-baig/04-friends-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ayesha-baig/thumbs/04-friends-brunch.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/ayesha-baig/04-friends-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/ayesha-baig/thumbs/04-friends-brunch.jpg"
+        }
+      ]
+    },
+    {
       "id": "in_chinmay_paranjape_052",
       "firstName": "Chinmay",
       "lastName": "Paranjape",
@@ -2922,6 +3238,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/gurleen-sandhu/thumbs/04-dilli-haat.jpg",
           "storagePath": "demo/sales-personas/india-core-v1/gurleen-sandhu/04-dilli-haat.jpg",
           "thumbnailStoragePath": "demo/sales-personas/india-core-v1/gurleen-sandhu/thumbs/04-dilli-haat.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_harini_kondapalli_061",
+      "firstName": "Harini",
+      "lastName": "Kondapalli",
+      "displayName": "Harini Kondapalli",
+      "gender": "woman",
+      "dateOfBirth": "1995-03-08",
+      "heightCm": 162,
+      "occupation": "Pharmaceutical researcher",
+      "company": "Pharma company",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A route with a few stops, a friendly group, and a good finish."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Making sure everyone has a ride home."
+        },
+        {
+          "promptId": "favoriteRoute",
+          "answer": "Around the lake before sunrise, finishing with chai."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/harini-kondapalli/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/harini-kondapalli/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/harini-kondapalli/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/harini-kondapalli/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "lake_run",
+          "position": 1,
+          "promptId": "proofIRun",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/harini-kondapalli/02-lake-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/harini-kondapalli/thumbs/02-lake-run.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/harini-kondapalli/02-lake-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/harini-kondapalli/thumbs/02-lake-run.jpg"
+        },
+        {
+          "id": "irani_cafe",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/harini-kondapalli/03-irani-cafe.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/harini-kondapalli/thumbs/03-irani-cafe.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/harini-kondapalli/03-irani-cafe.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/harini-kondapalli/thumbs/03-irani-cafe.jpg"
+        },
+        {
+          "id": "rooftop_evening",
+          "position": 3,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/harini-kondapalli/04-rooftop-evening.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/harini-kondapalli/thumbs/04-rooftop-evening.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/harini-kondapalli/04-rooftop-evening.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/harini-kondapalli/thumbs/04-rooftop-evening.jpg"
         }
       ]
     },
@@ -3426,6 +3805,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kunal-arora/thumbs/04-evening-walk.jpg",
           "storagePath": "demo/sales-personas/india-core-v1/kunal-arora/04-evening-walk.jpg",
           "thumbnailStoragePath": "demo/sales-personas/india-core-v1/kunal-arora/thumbs/04-evening-walk.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_lakshmi_pothula_067",
+      "firstName": "Lakshmi",
+      "lastName": "Pothula",
+      "displayName": "Lakshmi Pothula",
+      "gender": "woman",
+      "dateOfBirth": "1994-04-23",
+      "heightCm": 160,
+      "occupation": "School teacher",
+      "company": "International school",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A quiz with categories for everyone and prizes nobody expects."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Writing down the questions people loved for next time."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You are curious about everything and embarrassed by nothing."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/lakshmi-pothula/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/lakshmi-pothula/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/lakshmi-pothula/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/lakshmi-pothula/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "cafe_catchup",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/lakshmi-pothula/02-cafe-catchup.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/lakshmi-pothula/thumbs/02-cafe-catchup.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/lakshmi-pothula/02-cafe-catchup.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/lakshmi-pothula/thumbs/02-cafe-catchup.jpg"
+        },
+        {
+          "id": "salar_jung",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/lakshmi-pothula/03-salar-jung.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/lakshmi-pothula/thumbs/03-salar-jung.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/lakshmi-pothula/03-salar-jung.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/lakshmi-pothula/thumbs/03-salar-jung.jpg"
+        },
+        {
+          "id": "home_cooking",
+          "position": 3,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/lakshmi-pothula/04-home-cooking.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/lakshmi-pothula/thumbs/04-home-cooking.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/lakshmi-pothula/04-home-cooking.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/lakshmi-pothula/thumbs/04-home-cooking.jpg"
         }
       ]
     },
@@ -4249,6 +4691,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
       ]
     },
     {
+      "id": "in_pranavi_gunda_065",
+      "firstName": "Pranavi",
+      "lastName": "Gunda",
+      "displayName": "Pranavi Gunda",
+      "gender": "woman",
+      "dateOfBirth": "1996-12-02",
+      "heightCm": 165,
+      "occupation": "Marketing lead",
+      "company": "Startup",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Good music, a few stops, and a crowd that dances."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Making a playlist of the night's songs."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You dance badly and happily."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/pranavi-gunda/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/pranavi-gunda/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/pranavi-gunda/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/pranavi-gunda/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "morning_tennis",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/pranavi-gunda/02-morning-tennis.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/pranavi-gunda/thumbs/02-morning-tennis.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/pranavi-gunda/02-morning-tennis.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/pranavi-gunda/thumbs/02-morning-tennis.jpg"
+        },
+        {
+          "id": "dance_night",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/pranavi-gunda/03-dance-night.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/pranavi-gunda/thumbs/03-dance-night.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/pranavi-gunda/03-dance-night.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/pranavi-gunda/thumbs/03-dance-night.jpg"
+        },
+        {
+          "id": "lake_picnic",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/pranavi-gunda/04-lake-picnic.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/pranavi-gunda/thumbs/04-lake-picnic.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/pranavi-gunda/04-lake-picnic.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/pranavi-gunda/thumbs/04-lake-picnic.jpg"
+        }
+      ]
+    },
+    {
       "id": "in_raghav_tandon_060",
       "firstName": "Raghav",
       "lastName": "Tandon",
@@ -4434,6 +4939,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/rahul-krishnan/thumbs/04-friends-breakfast.jpg",
           "storagePath": "demo/sales-personas/india-core-v1/rahul-krishnan/04-friends-breakfast.jpg",
           "thumbnailStoragePath": "demo/sales-personas/india-core-v1/rahul-krishnan/thumbs/04-friends-breakfast.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_rishi_malpani_066",
+      "firstName": "Rishi",
+      "lastName": "Malpani",
+      "displayName": "Rishi Malpani",
+      "gender": "man",
+      "dateOfBirth": "1995-07-18",
+      "heightCm": 175,
+      "occupation": "DJ and music producer",
+      "company": "Freelance",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A room that warms up slowly and a last song nobody wants to end."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Asking people which song made them stay."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You request a song and then actually dance to it."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/rishi-malpani/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/rishi-malpani/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/rishi-malpani/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/rishi-malpani/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "producer_desk",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/rishi-malpani/02-producer-desk.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/rishi-malpani/thumbs/02-producer-desk.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/rishi-malpani/02-producer-desk.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/rishi-malpani/thumbs/02-producer-desk.jpg"
+        },
+        {
+          "id": "dj_set",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/rishi-malpani/03-dj-set.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/rishi-malpani/thumbs/03-dj-set.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/rishi-malpani/03-dj-set.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/rishi-malpani/thumbs/03-dj-set.jpg"
+        },
+        {
+          "id": "late_brunch",
+          "position": 3,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/rishi-malpani/04-late-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/rishi-malpani/thumbs/04-late-brunch.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/rishi-malpani/04-late-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/rishi-malpani/thumbs/04-late-brunch.jpg"
         }
       ]
     },
@@ -4686,6 +5254,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/rutuja-bapat/thumbs/04-koregaon-brunch.jpg",
           "storagePath": "demo/sales-personas/india-core-v1/rutuja-bapat/04-koregaon-brunch.jpg",
           "thumbnailStoragePath": "demo/sales-personas/india-core-v1/rutuja-bapat/thumbs/04-koregaon-brunch.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_sameer_hussain_062",
+      "firstName": "Sameer",
+      "lastName": "Hussain",
+      "displayName": "Sameer Hussain",
+      "gender": "man",
+      "dateOfBirth": "1992-10-19",
+      "heightCm": 178,
+      "occupation": "Restaurateur",
+      "company": "Family restaurant",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A night with a few stops, good food at each, and new friends by the end."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Leading the way to the best late-night haleem."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You try everything once, especially the food."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sameer-hussain/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sameer-hussain/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/sameer-hussain/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/sameer-hussain/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "family_restaurant",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sameer-hussain/02-family-restaurant.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sameer-hussain/thumbs/02-family-restaurant.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/sameer-hussain/02-family-restaurant.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/sameer-hussain/thumbs/02-family-restaurant.jpg"
+        },
+        {
+          "id": "live_band",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sameer-hussain/03-live-band.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sameer-hussain/thumbs/03-live-band.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/sameer-hussain/03-live-band.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/sameer-hussain/thumbs/03-live-band.jpg"
+        },
+        {
+          "id": "old_city_walk",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sameer-hussain/04-old-city-walk.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sameer-hussain/thumbs/04-old-city-walk.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/sameer-hussain/04-old-city-walk.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/sameer-hussain/thumbs/04-old-city-walk.jpg"
         }
       ]
     },
@@ -5131,6 +5762,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
       ]
     },
     {
+      "id": "in_sindhu_chowdary_034",
+      "firstName": "Sindhu",
+      "lastName": "Chowdary",
+      "displayName": "Sindhu Chowdary",
+      "gender": "woman",
+      "dateOfBirth": "1996-03-15",
+      "heightCm": 163,
+      "occupation": "Resident doctor",
+      "company": "Teaching hospital",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Early start, steady pace, and Irani chai at the finish."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Napping, honestly, then texting everyone thank you."
+        },
+        {
+          "promptId": "favoriteRoute",
+          "answer": "Around the lake at dawn, with the city lights still on."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sindhu-chowdary/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sindhu-chowdary/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/sindhu-chowdary/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/sindhu-chowdary/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "lake_dawn_run",
+          "position": 1,
+          "promptId": "proofIRun",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sindhu-chowdary/02-lake-dawn-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sindhu-chowdary/thumbs/02-lake-dawn-run.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/sindhu-chowdary/02-lake-dawn-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/sindhu-chowdary/thumbs/02-lake-dawn-run.jpg"
+        },
+        {
+          "id": "irani_chai",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sindhu-chowdary/03-irani-chai.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sindhu-chowdary/thumbs/03-irani-chai.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/sindhu-chowdary/03-irani-chai.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/sindhu-chowdary/thumbs/03-irani-chai.jpg"
+        },
+        {
+          "id": "park_rest",
+          "position": 3,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sindhu-chowdary/04-park-rest.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/sindhu-chowdary/thumbs/04-park-rest.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/sindhu-chowdary/04-park-rest.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/sindhu-chowdary/thumbs/04-park-rest.jpg"
+        }
+      ]
+    },
+    {
       "id": "in_tanvi_shetty_004",
       "firstName": "Tanvi",
       "lastName": "Shetty",
@@ -5253,6 +5947,132 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/tara-nambiar/thumbs/04-art-museum.jpg",
           "storagePath": "demo/sales-personas/india-core-v1/tara-nambiar/04-art-museum.jpg",
           "thumbnailStoragePath": "demo/sales-personas/india-core-v1/tara-nambiar/thumbs/04-art-museum.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_tejas_naidu_068",
+      "firstName": "Tejas",
+      "lastName": "Naidu",
+      "displayName": "Tejas Naidu",
+      "gender": "man",
+      "dateOfBirth": "1993-02-11",
+      "heightCm": 179,
+      "occupation": "Aerospace engineer",
+      "company": "Aerospace firm",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A friendly group, a few stops, and someone keeping the pace honest."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Lending someone the book we just argued about."
+        },
+        {
+          "promptId": "favoriteRoute",
+          "answer": "Up to the rocks at sunrise and back before the heat."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/tejas-naidu/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/tejas-naidu/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/tejas-naidu/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/tejas-naidu/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "rocks_run",
+          "position": 1,
+          "promptId": "proofIRun",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/tejas-naidu/02-rocks-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/tejas-naidu/thumbs/02-rocks-run.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/tejas-naidu/02-rocks-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/tejas-naidu/thumbs/02-rocks-run.jpg"
+        },
+        {
+          "id": "bookshop_find",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/tejas-naidu/03-bookshop-find.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/tejas-naidu/thumbs/03-bookshop-find.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/tejas-naidu/03-bookshop-find.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/tejas-naidu/thumbs/03-bookshop-find.jpg"
+        },
+        {
+          "id": "fort_day_trip",
+          "position": 3,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/tejas-naidu/04-fort-day-trip.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/tejas-naidu/thumbs/04-fort-day-trip.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/tejas-naidu/04-fort-day-trip.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/tejas-naidu/thumbs/04-fort-day-trip.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_vamsi_kodali_064",
+      "firstName": "Vamsi",
+      "lastName": "Kodali",
+      "displayName": "Vamsi Kodali",
+      "gender": "man",
+      "dateOfBirth": "1994-09-27",
+      "heightCm": 181,
+      "occupation": "Cloud engineer",
+      "company": "Tech company",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A good crowd, a few venues, and a host who keeps the group together."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Suggesting just one more place."
+        },
+        {
+          "promptId": "favoriteRoute",
+          "answer": "Through the tech park at dawn, when the roads are empty."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/vamsi-kodali/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/vamsi-kodali/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/vamsi-kodali/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/vamsi-kodali/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "dawn_run",
+          "position": 1,
+          "promptId": "proofIRun",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/vamsi-kodali/02-dawn-run.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/vamsi-kodali/thumbs/02-dawn-run.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/vamsi-kodali/02-dawn-run.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/vamsi-kodali/thumbs/02-dawn-run.jpg"
+        },
+        {
+          "id": "weekend_brunch",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/vamsi-kodali/03-weekend-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/vamsi-kodali/thumbs/03-weekend-brunch.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/vamsi-kodali/03-weekend-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/vamsi-kodali/thumbs/03-weekend-brunch.jpg"
+        },
+        {
+          "id": "music_bar",
+          "position": 3,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/vamsi-kodali/04-music-bar.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/vamsi-kodali/thumbs/04-music-bar.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/vamsi-kodali/04-music-bar.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/vamsi-kodali/thumbs/04-music-bar.jpg"
         }
       ]
     },
