@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "description": "Maps each /_blob/<id> image reference in boards/*.dc.html to a repo-relative file.",
+  "blobs": {
+    "8294b5d46800331739b8ee58199a7d53": "design/source_packs/website-v2/assets/photos/catch-hero-event-1280.jpg",
+    "409d3ee3e6896b80188944189323718b": "website/public/assets/marketing/home-dinner.jpg",
+    "9cac328026e387b37fc5fab2457553c6": "design/source_packs/website-v2/assets/photos/home-pickleball.jpg",
+    "b766451d5b4e5bf9ae506afe33116fa6": "website/public/assets/events/social-run-music-hero-960.jpg",
+    "d1f6c7bb9c9b9f60ca970341f0144003": "design/source_packs/website-v2/assets/screens/LightsHostToday.png",
+    "e57d9aa2351df38e438b4255ecc98f01": "design/source_packs/website-v2/assets/screens/LightsHostDoor.png",
+    "2f85e67dbf04c73bd2c953476c5b2d0c": "design/source_packs/website-v2/assets/screens/LightsLiveRoom.png",
+    "5ecd2e85ee802241d2de72f6df689beb": "design/source_packs/website-v2/assets/screens/LightsLiveNow.png",
+    "4a20ccdce7849d2fe4cae16fc56a4ff3": "design/source_packs/website-v2/assets/screens/LightsLiveReveal.png",
+    "2621025c8c0fea2863ef69bbfc12ee1c": "design/source_packs/website-v2/assets/screens/LightsLiveCrawl.png",
+    "5a8ae74f064cd2eb4c7ca78f6b106d2b": "design/source_packs/website-v2/assets/screens/LightsAppExplore.png",
+    "fac447e8f00f2f81812fc5a6cd8953e2": "design/source_packs/website-v2/assets/screens/LightsHostAfter.png",
+    "fe445355b69b6cf050ffc398e8868174": "design/source_packs/website-v2/assets/screens/GuestLive.png",
+    "f6baf55223fe42c81bb6a3aab96126f8": "design/source_packs/website-v2/assets/screens/GuestAfter.png"
+  }
+}

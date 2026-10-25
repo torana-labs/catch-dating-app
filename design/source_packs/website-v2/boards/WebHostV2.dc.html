@@ -1,0 +1,848 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Host landing v2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&amp;display=swap">
+<style>
+body{margin:0;background:#FFFFFF}
+a{color:#141114}a:hover{color:#5A5450}
+.v2{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#141114}
+.dsp{font-family:"Archivo",sans-serif;font-stretch:78%;font-weight:760;margin:0}
+.btn{font:inherit;font-weight:600;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;height:54px;padding:0 24px;font-size:16px;border:0}
+.wrap{max-width:1240px;margin:0 auto;padding:0 48px;box-sizing:border-box}
+.mega{font-size:88px;line-height:0.94;letter-spacing:-0.045em}
+.h2{font-size:64px;line-height:0.98;letter-spacing:-0.04em}
+.lead{margin:0;font-size:20px;line-height:30px}
+.eyebrow{font-size:15px;font-weight:600}
+.hero-grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:32px;align-items:start}
+.tiles{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:48px;padding:0 48px 8px;scrollbar-width:none}
+.tile{flex:0 0 280px;height:400px;border-radius:28px;padding:22px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;scroll-snap-align:start;text-decoration:none;color:#141114;overflow:hidden}
+.story{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:start}
+.story .stick{grid-column:2;grid-row:1}
+.story .chap-list{grid-column:1;grid-row:1}
+.chap{min-height:440px;display:flex;flex-direction:column;justify-content:center;gap:16px;transition:opacity .35s ease}
+.stick{position:sticky;top:48px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.iphone{position:relative;border:11px solid #2A252A;border-radius:54px;overflow:hidden;background:#141114;box-shadow:0 30px 80px rgba(0,0,0,0.45)}
+.iphone::after{content:"";position:absolute;top:10px;left:50%;transform:translateX(-50%);width:30%;height:24px;border-radius:999px;background:#000}
+.android{position:relative;border:9px solid #202027;border-radius:34px;overflow:hidden;background:#202027;box-shadow:0 30px 80px rgba(74,35,48,0.35)}
+.android::after{content:"";position:absolute;top:12px;left:50%;transform:translateX(-50%);width:12px;height:12px;border-radius:999px;background:#0B0B0E}
+.ipad{border:18px solid #141114;border-radius:40px;overflow:hidden;background:#141114;box-shadow:0 40px 100px rgba(20,17,20,0.25)}
+.screen{display:block;width:100%}
+.pill{height:38px;padding:0 16px;border-radius:999px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.arrow{width:44px;height:44px;border-radius:999px;border:1.5px solid rgba(246,239,230,0.3);background:transparent;color:#F6EFE6;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto}
+.picker{position:relative;display:inline-block}
+.picker-btn{display:inline-flex;align-items:center;gap:12px;height:60px;padding:0 20px 0 18px;border-radius:16px;border:1.5px solid rgba(246,239,230,0.25);background:#231E23;color:#F6EFE6;cursor:pointer;font:inherit}
+.picker-menu{position:absolute;left:0;top:68px;z-index:5;width:360px;max-width:calc(100vw - 40px);background:#231E23;border:1px solid rgba(246,239,230,0.14);border-radius:18px;padding:8px;box-shadow:0 24px 60px rgba(0,0,0,0.5);display:flex;flex-direction:column;gap:2px}
+.picker-opt{display:grid;grid-template-columns:14px minmax(0,1fr);gap:12px;align-items:center;text-align:left;padding:12px;border-radius:12px;border:0;background:transparent;color:#F6EFE6;font:inherit;cursor:pointer}
+.steps4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.stepbtn{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:16px 18px;border-radius:20px;border:0;font:inherit;text-align:left;cursor:pointer;transition:background .35s ease,color .35s ease}
+.board{position:relative;height:520px;background:#F3F3F1;border-radius:28px;overflow:hidden}
+.lanehead{display:none}
+.gchip{left:var(--l);top:var(--t);position:absolute;height:38px;display:flex;align-items:center;gap:8px;padding:0 10px 0 4px;box-sizing:border-box;border-radius:999px;background:#FFFFFF;box-shadow:0 4px 12px rgba(20,17,20,0.08);font-size:14px;font-weight:600;transition:left .7s cubic-bezier(.2,.8,.2,1),top .7s cubic-bezier(.2,.8,.2,1),background .4s ease}
+.gav{width:30px;height:30px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:0 0 auto}
+.layers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.layerbtn{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:16px 18px;border-radius:18px;border:0;font:inherit;text-align:left;cursor:pointer;transition:background .3s ease,color .3s ease}
+.nodes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.node{min-height:170px;border-radius:20px;padding:16px;box-sizing:border-box;display:flex;flex-direction:column;gap:8px;transition:background .4s ease,color .4s ease,box-shadow .4s ease}
+.track-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:stretch}
+.linkbtn{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:16px 18px;border-radius:18px;border:1.5px solid rgba(20,17,20,0.12);font:inherit;text-align:left;cursor:pointer;transition:background .3s ease,color .3s ease}
+.price-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center}
+.apply-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:start}
+.field{display:flex;flex-direction:column;gap:8px}
+.flabel{font-size:15px;font-weight:600}
+.finput{height:48px;border-radius:12px;border:1.5px solid rgba(20,17,20,0.25);padding:0 14px;font:inherit;font-size:16px;color:#141114;background:#FFFFFF;box-sizing:border-box;width:100%}
+.ferr{font-size:13px;font-weight:600;color:#B3261A}
+.ochip{height:40px;padding:0 14px;border-radius:999px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:center}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.faqq{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 0;background:none;border:0;border-top:1px solid rgba(20,17,20,0.12);font:inherit;font-size:19px;font-weight:600;color:#141114;text-align:left;cursor:pointer}
+@media (max-width: 900px){
+  .wrap{padding:0 20px}
+  .tiles{padding:0 20px 8px;scroll-padding-left:20px}
+  .tile{flex-basis:248px;height:372px}
+  .hero-grid,.split,.three,.price-grid,.apply-grid{grid-template-columns:minmax(0,1fr)}
+  .four{grid-template-columns:minmax(0,1fr)}
+  .mega{font-size:50px}
+  .h2{font-size:40px}
+  .lead{font-size:18px;line-height:27px}
+  .hide-sm{display:none}
+  .hero-phone{width:240px !important;margin-bottom:-150px !important}
+  .story{display:block}
+  .stick{position:sticky;top:0;z-index:3;background:#141114;padding:12px 20px 14px;margin:0 -20px;gap:10px}
+  .colhead{flex-direction:column !important;align-items:flex-start !important;justify-content:flex-start !important;gap:2px;padding:10px 8px 0 !important}
+  .colhead .clabel{font-size:12px !important}
+  .colhead .ccount{font-size:20px !important}
+  .gchip{width:auto !important}
+  .fee-grid{grid-template-columns:minmax(0,1fr) !important}
+  .track-grid{grid-template-columns:minmax(0,1fr)}
+  .pick-tail{display:none}
+  .picker{width:100%}
+  .picker-btn{width:100%}
+  .picker-btn svg{margin-left:auto}
+  .apply-grid{gap:24px}
+  .apply-left{display:contents !important}
+  .apply-card{order:2;padding:22px !important}
+  .apply-steps{order:3}
+  .track-stats .dsp{font-size:26px !important}
+  .funnel-row{grid-template-columns:72px minmax(0,1fr) 44px !important}
+  .story-phone{width:186px !important;border-width:8px !important;border-radius:38px !important}
+  .story-phone::after{height:16px;top:7px}
+  .chap{min-height:64vh;justify-content:flex-start;padding-top:24px}
+  .chap h3{font-size:40px !important}
+  .picker-btn{height:54px}
+  .picker-menu{width:100%}
+  .ipad-wrap{margin-top:20px !important;margin-bottom:-36px !important;border-width:10px !important;border-radius:24px !important}
+  .guest-grid{display:flex !important;flex-direction:column;align-items:stretch !important}
+  .guest-copy{order:1}
+  .guest-phone{order:2}
+  .android-phone{width:240px !important;margin-bottom:-110px !important}
+  .big-num{font-size:68px !important}
+  .bar-row{grid-template-columns:minmax(0,1fr) auto !important;row-gap:8px !important}
+  .bar-row .bar-label{grid-column:1 / -1}
+  .steps4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .board{height:448px}
+  .colhead{display:none !important}
+  .lanehead{display:flex}
+  .gchip{left:var(--ml);top:var(--mt)}
+  .gname{display:none}
+  .gchip{padding:0 4px}
+  .layers{grid-template-columns:minmax(0,1fr)}
+  .nodes{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .node{min-height:120px}
+  .five{font-size:150px !important}
+  .faqq{font-size:17px}
+  .v2 [style*="padding-top: 112px"],.v2 [style*="padding-top: 120px"]{padding-top:64px !important}
+  .v2 [style*="padding-bottom: 112px"],.v2 [style*="padding-bottom: 120px"]{padding-bottom:64px !important}
+  .v2 .hero-copy{padding-bottom:12px !important}
+  .v2 .hero-grid{gap:4px;padding-top:36px !important}
+  .v2 .guest-copy{padding-bottom:28px !important}
+  .v2 .guest-grid{gap:12px !important}
+}
+</style>
+</helmet>
+<div class="v2" style="width: 100%; background: #FFFFFF">
+
+  <section style="background: {{hero}}; overflow: hidden">
+    <div class="wrap" style="display: flex; justify-content: space-between; align-items: center; height: 84px; gap: 16px">
+      <a href="#" style="display: flex; align-items: baseline; gap: 8px; text-decoration: none"><span class="dsp" style="font-size: 34px; letter-spacing: -0.03em">Catch</span><span style="font-size: 15px; font-weight: 600">for hosts</span></a>
+      <nav aria-label="Host" style="display: flex; gap: 28px; align-items: center">
+        <a class="hide-sm" href="#night" style="font-size: 15px; font-weight: 600; text-decoration: none">On the night</a>
+        <a class="hide-sm" href="#ways" style="font-size: 15px; font-weight: 600; text-decoration: none">Ways to use Catch</a>
+        <a class="hide-sm" href="#pricing" style="font-size: 15px; font-weight: 600; text-decoration: none">Pricing</a>
+        <a class="btn" href="#apply" style="height: 44px; padding: 0 18px; font-size: 15px; background: #141114; color: #FFFFFF">Apply for a pilot</a>
+      </nav>
+    </div>
+    <div class="wrap hero-grid" style="padding-top: 64px">
+      <div class="hero-copy" style="display: flex; flex-direction: column; gap: 28px; padding-bottom: 96px">
+        <h1 class="dsp mega">Run great events. Build a business around them.</h1>
+        <p class="lead" style="color: #3B1F14; max-width: 560px">Bookings, payments, check-in and the night itself, in one app. Spend the evening with your guests, not your spreadsheets.</p>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center">
+          <a class="btn" href="#apply" style="background: #141114; color: #FFFFFF">Apply for a pilot</a>
+          <a class="btn" href="#night" style="background: #FFFFFF; color: #141114">See a night on Catch</a>
+        </div>
+        <span style="font-size: 15px; font-weight: 600; color: #3B1F14">5% of ticket sales, never more than ₹10,000 a month · iPhone, Android and iPad</span>
+      </div>
+      <div style="display: flex; justify-content: center; padding-top: 8px">
+        <div class="iphone hero-phone" style="width: 330px; transform: rotate(5deg) translateY(24px); margin-bottom: -140px"><img class="screen" src="/_blob/5ecd2e85ee802241d2de72f6df689beb" alt="Live control room during round two of a singles mixer"></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top: 112px; padding-bottom: 112px; display: flex; flex-direction: column; gap: 40px">
+    <div class="wrap" style="display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap">
+      <h2 class="dsp h2" style="max-width: 620px">Built for every kind of night.</h2>
+      <p class="lead" style="color: #5A5450; max-width: 460px">A pace group, a seating plan and a group walking to the next bar are different jobs. Catch knows which one you’re running.</p>
+    </div>
+    <div class="tiles" aria-label="Event formats">
+      <sc-for list="{{formats}}" as="t" hint-placeholder-count="5">
+        <a class="tile" href="#night" onClick="{{t.choose}}" style="background: {{t.tone}}">
+          <span class="dsp" style="font-size: 38px; line-height: 1">{{t.tile}}</span>
+          <span style="font-size: 16px; line-height: 23px; color: {{t.ink}}">{{t.line}}</span>
+          <sc-if value="{{t.photo}}" hint-placeholder-val="{{true}}"><img src="{{t.photo}}" alt="{{t.photoAlt}}" style="margin-top: auto; width: 100%; height: 188px; object-fit: cover; border-radius: 18px; display: block"></sc-if>
+          <sc-if value="{{t.panel}}" hint-placeholder-val="{{false}}"><span style="margin-top: auto; height: 188px; border-radius: 18px; background: #141114; color: {{t.tone}}; display: flex; flex-direction: column; justify-content: space-between; padding: 18px; box-sizing: border-box"><span style="font-size: 14px; font-weight: 600">Round 2 of 4</span><span class="dsp" style="font-size: 64px; line-height: 0.9">04:12</span></span></sc-if>
+          <span style="font-size: 14px; font-weight: 600">Follow an evening</span>
+        </a>
+      </sc-for>
+    </div>
+  </section>
+
+  <section id="night" style="background: #141114; color: #F6EFE6">
+    <div class="wrap" style="padding-top: 120px; padding-bottom: 120px; display: flex; flex-direction: column; gap: 28px">
+      <div style="display: flex; flex-direction: column; gap: 18px; max-width: 820px">
+        <span class="eyebrow" style="color: {{journey.tone}}">On the night</span>
+        <h2 class="dsp h2" style="color: #F6EFE6">Run the whole night from one screen.</h2>
+        <p class="lead" style="color: #BDB3A7">{{journey.lead}}</p>
+      </div>
+      <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap">
+        <span style="font-size: 17px; font-weight: 600; color: #BDB3A7">Show me a</span>
+        <div class="picker">
+          <button type="button" class="picker-btn" onClick="{{toggleMenu}}" aria-haspopup="listbox" aria-expanded="{{menuOpen}}">
+            <span style="width: 14px; height: 14px; border-radius: 999px; background: {{journey.tone}}"></span>
+            <span class="dsp" style="font-size: 28px; line-height: 1">{{journey.name}}</span>
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+          </button>
+          <sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+            <div class="picker-menu" role="listbox" aria-label="Event type">
+              <sc-for list="{{formats}}" as="t" hint-placeholder-count="5">
+                <button type="button" role="option" aria-selected="{{t.selected}}" class="picker-opt" onClick="{{t.pick}}" style="background: {{t.optBg}}">
+                  <span style="width: 14px; height: 14px; border-radius: 999px; background: {{t.tone}}"></span>
+                  <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 600">{{t.name}}</span><span style="font-size: 13px; color: #BDB3A7">{{t.event}}</span></span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <span class="pick-tail" style="font-size: 17px; font-weight: 600; color: #BDB3A7">evening</span>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; border-top: 1px solid rgba(246,239,230,0.14); padding-top: 18px"><span class="dsp" style="font-size: 30px; color: #F6EFE6">{{journey.event}}</span><span style="font-size: 15px; font-weight: 600; color: #BDB3A7">{{journey.where}}</span></div>
+      <div class="story">
+        <div class="stick">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; max-width: 380px">
+            <button type="button" class="arrow" aria-label="Previous moment" onClick="{{prev}}" style="opacity: {{prevOpacity}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+            <span style="display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0"><span style="font-size: 13px; font-weight: 600; color: {{now.tone}}">{{position}} · {{now.time}}</span><span style="font-size: 16px; font-weight: 600; color: #F6EFE6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 230px">{{now.title}}</span></span>
+            <button type="button" class="arrow" aria-label="Next moment" onClick="{{next}}" style="opacity: {{nextOpacity}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"></path></svg></button>
+          </div>
+          <div style="display: flex; gap: 6px; width: 100%; max-width: 380px">
+            <sc-for list="{{chapters}}" as="c" hint-placeholder-count="5"><span style="flex: 1 1 0; height: 4px; border-radius: 999px; background: {{c.segBg}}; transition: background .35s ease"></span></sc-for>
+          </div>
+          <div class="iphone story-phone" style="width: 320px">
+            <div style="position: relative; aspect-ratio: 390 / 844">
+              <sc-for list="{{chapters}}" as="c" hint-placeholder-count="5">
+                <img src="{{c.screen}}" alt="{{c.alt}}" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; opacity: {{c.imgOpacity}}; transition: opacity .35s ease">
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div class="chap-list" style="display: flex; flex-direction: column">
+          <sc-for list="{{chapters}}" as="c" hint-placeholder-count="5">
+            <article class="chap" data-chapter="{{c.index}}" style="opacity: {{c.opacity}}">
+              <span style="display: flex; gap: 12px; align-items: baseline"><span class="dsp" style="font-size: 24px; color: {{c.tone}}">{{c.num}}</span><span style="font-size: 15px; font-weight: 600; color: #BDB3A7">{{c.time}}</span></span>
+              <h3 class="dsp" style="font-size: 60px; line-height: 1; letter-spacing: -0.04em; color: #F6EFE6">{{c.title}}</h3>
+              <p class="lead" style="color: #BDB3A7; max-width: 460px">{{c.body}}</p>
+            </article>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="background: #F3F3F1; overflow: hidden">
+    <div class="wrap" style="padding-top: 112px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center">
+      <span class="eyebrow" style="color: #3A4BB0">At the host stand</span>
+      <h2 class="dsp h2" style="max-width: 860px">Bigger room? Put it on the iPad.</h2>
+      <p class="lead" style="color: #5A5450; max-width: 620px">The same live controls, with the run of show and the room map side by side for whoever is running the floor.</p>
+      <div class="ipad ipad-wrap" style="width: 100%; max-width: 980px; margin-top: 36px; margin-bottom: -140px">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1px; background: #2E282E; aspect-ratio: 4 / 3; overflow: hidden">
+          <div style="background: #141114; overflow: hidden"><img class="screen" src="/_blob/5ecd2e85ee802241d2de72f6df689beb" alt="iPad left pane: the live control room"></div>
+          <div style="background: #141114; overflow: hidden"><img class="screen" src="/_blob/2f85e67dbf04c73bd2c953476c5b2d0c" alt="iPad right pane: the room map"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-top: 120px; padding-bottom: 112px; display: flex; flex-direction: column; gap: 28px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap">
+      <h2 class="dsp h2" style="max-width: 560px">From interested to expected.</h2>
+      <p class="lead" style="color: #5A5450; max-width: 460px">Watch ten applications become a guest list that’s ready for the night. You make the calls; Catch does the chasing.</p>
+    </div>
+    <div class="steps4" role="tablist" aria-label="Booking steps">
+      <sc-for list="{{bookCols}}" as="b" hint-placeholder-count="4">
+        <button type="button" role="tab" aria-selected="{{b.selected}}" class="stepbtn" onClick="{{b.pick}}" style="background: {{b.btnBg}}; color: {{b.btnInk}}">
+          <span class="dsp" style="font-size: 38px; line-height: 0.9">{{b.num}}</span>
+          <span style="font-size: 17px; font-weight: 700">{{b.title}}</span>
+        </button>
+      </sc-for>
+    </div>
+    <div class="board" aria-label="Guests moving from applied to booked">
+      <sc-for list="{{bookCols}}" as="b" hint-placeholder-count="4">
+        <div class="colhead" style="position: absolute; left: {{b.colLeft}}; top: 0; bottom: 0; width: 25%; border-left: {{b.divider}}; padding: 14px 14px 0; box-sizing: border-box; display: flex; justify-content: space-between; align-items: baseline">
+          <span class="clabel" style="font-size: 14px; font-weight: 600; color: {{b.headInk}}">{{b.label}}</span>
+          <span class="dsp ccount" style="font-size: 26px; color: {{b.headInk}}">{{b.count}}</span>
+        </div>
+      </sc-for>
+      <sc-for list="{{bookCols}}" as="b" hint-placeholder-count="4">
+        <div class="lanehead" style="position: absolute; left: 0; right: 0; top: {{b.laneTop}}; height: 112px; border-top: {{b.divider}}; background: {{b.laneBg}}; padding: 12px 16px 0; box-sizing: border-box; align-items: baseline; gap: 10px; transition: background .4s ease">
+          <span class="dsp" style="font-size: 22px; color: {{b.headInk}}">{{b.count}}</span>
+          <span style="font-size: 14px; font-weight: 600; color: {{b.headInk}}">{{b.label}}</span>
+        </div>
+      </sc-for>
+      <sc-for list="{{guests}}" as="g" hint-placeholder-count="10">
+        <div class="gchip" style="--l: {{g.left}}; --t: {{g.top}}; --ml: {{g.mLeft}}; --mt: {{g.mTop}}; width: calc(25% - 16px); background: {{g.chipBg}}"><span class="gav" style="background: {{g.bg}}">{{g.i}}</span><span class="gname">{{g.name}}</span></div>
+      </sc-for>
+    </div>
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: center">
+      <div style="display: flex; flex-direction: column; gap: 6px"><span class="dsp" style="font-size: 38px; line-height: 1; color: #141114">{{bookNow.stat}}</span><span style="font-size: 17px; line-height: 26px; color: #5A5450; max-width: 640px">{{bookNow.body}}</span></div>
+      <button type="button" class="pill" onClick="{{replay}}" style="height: 44px; background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)">Play again</button>
+    </div>
+  </section>
+
+  <section style="background: #F08AA0; overflow: hidden">
+    <div class="wrap split guest-grid" style="padding-top: 112px; align-items: end">
+      <div class="guest-phone" style="display: flex; justify-content: center"><div class="android android-phone" style="width: 320px; transform: rotate(-4deg); margin-bottom: -120px"><img class="screen" src="/_blob/5a8ae74f064cd2eb4c7ca78f6b106d2b" alt="Guest Explore screen on Android with tonight's pub quiz"></div></div>
+      <div class="guest-copy" style="display: flex; flex-direction: column; gap: 22px; padding-bottom: 112px">
+        <span class="eyebrow">For your guests</span>
+        <h2 class="dsp h2">Help people get more out of being there.</h2>
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 19px; font-weight: 600">A reason to say hello</span><span style="font-size: 16px; line-height: 24px; color: #4A2330">A group, a partner or a prompt, then attention goes back to the room.</span></span>
+          <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 19px; font-weight: 600">A quieter way to ask</span><span style="font-size: 16px; line-height: 24px; color: #4A2330">With Help me say hi, a guest asks you for an introduction, privately.</span></span>
+          <span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 19px; font-weight: 600">Nothing to install</span><span style="font-size: 16px; line-height: 24px; color: #4A2330">Guests join live moments in their phone’s browser, and can always skip.</span></span>
+        </div>
+        <div style="background: #141114; color: #F6EFE6; border-radius: 22px; padding: 20px 22px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap"><span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 13px; font-weight: 600; color: #F08AA0">What a guest sees</span><span class="dsp" style="font-size: 44px; line-height: 0.95">Steady 5K</span></span><span style="font-size: 14px; color: #BDB3A7; max-width: 220px">Meet by the fountain. Say hello to someone in your group.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" style="padding-top: 120px; padding-bottom: 112px; display: flex; flex-direction: column; gap: 32px">
+    <div class="split" style="align-items: end">
+      <h2 class="dsp h2">Know what brings people in, and brings them back.</h2>
+      <p class="lead" style="color: #5A5450">Give every partner, promoter and post its own link. Catch follows each one from the first visit to a paid booking, so you know where to put your next effort.</p>
+    </div>
+    <div class="track-grid">
+      <div style="display: flex; flex-direction: column; gap: 10px">
+        <span class="flabel">Pick a link</span>
+        <sc-for list="{{links}}" as="k" hint-placeholder-count="3">
+          <button type="button" class="linkbtn" onClick="{{k.pick}}" aria-pressed="{{k.selected}}" style="background: {{k.bg}}; color: {{k.ink}}">
+            <span style="display: flex; align-items: center; gap: 10px"><span style="width: 12px; height: 12px; border-radius: 999px; background: {{k.tone}}"></span><span style="font-size: 17px; font-weight: 700">{{k.name}}</span></span>
+            <span style="font-size: 14px; color: {{k.subInk}}">{{k.who}}</span>
+          </button>
+        </sc-for>
+        <div style="display: flex; flex-direction: column; gap: 12px; padding-top: 14px">
+          <span style="display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; font-size: 15px; line-height: 22px"><span class="dsp" style="font-size: 22px">1</span><span>Make a link for each partner, post or poster.</span></span>
+          <span style="display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; font-size: 15px; line-height: 22px"><span class="dsp" style="font-size: 22px">2</span><span>Share it anywhere: a bio, a newsletter, a WhatsApp group.</span></span>
+          <span style="display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; font-size: 15px; line-height: 22px"><span class="dsp" style="font-size: 22px">3</span><span>Every visit and booking counts against the link it came from.</span></span>
+        </div>
+      </div>
+      <div style="background: #141114; color: #F6EFE6; border-radius: 28px; padding: 28px; display: flex; flex-direction: column; gap: 20px">
+        <span style="align-self: flex-start; max-width: 100%; display: inline-flex; align-items: center; gap: 8px; background: #231E23; border-radius: 999px; padding: 8px 14px; font-size: 14px; color: #F6EFE6; overflow: hidden"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"></path><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg><span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{linkNow.url}}</span></span>
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <div class="funnel-row" style="display: grid; grid-template-columns: 90px minmax(0, 1fr) 64px; gap: 12px; align-items: center"><span style="font-size: 15px; color: #BDB3A7">Visits</span><span style="display: block; height: 30px; border-radius: 8px; background: #2E282E; overflow: hidden"><span style="display: block; height: 30px; width: {{linkNow.visitsW}}; background: {{linkNow.tone}}; border-radius: 8px; transition: width .5s ease"></span></span><span class="dsp" style="font-size: 26px; text-align: right">{{linkNow.visits}}</span></div>
+          <div class="funnel-row" style="display: grid; grid-template-columns: 90px minmax(0, 1fr) 64px; gap: 12px; align-items: center"><span style="font-size: 15px; color: #BDB3A7">Bookings</span><span style="display: block; height: 30px; border-radius: 8px; background: #2E282E; overflow: hidden"><span style="display: block; height: 30px; width: {{linkNow.bookingsW}}; background: {{linkNow.tone}}; border-radius: 8px; transition: width .5s ease"></span></span><span class="dsp" style="font-size: 26px; text-align: right">{{linkNow.bookings}}</span></div>
+        </div>
+        <div class="track-stats" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; border-top: 1px solid rgba(246,239,230,0.14); padding-top: 18px">
+          <span style="display: flex; flex-direction: column; gap: 4px"><span class="dsp" style="font-size: 38px; line-height: 1">{{linkNow.rate}}</span><span style="font-size: 13px; color: #BDB3A7">of visitors booked</span></span>
+          <span style="display: flex; flex-direction: column; gap: 4px"><span class="dsp" style="font-size: 38px; line-height: 1; color: {{linkNow.tone}}">{{linkNow.revenueText}}</span><span style="font-size: 13px; color: #BDB3A7">in ticket sales</span></span>
+          <span style="display: flex; flex-direction: column; gap: 4px"><span class="dsp" style="font-size: 38px; line-height: 1">{{linkNow.perVisit}}</span><span style="font-size: 13px; color: #BDB3A7">per visit</span></span>
+        </div>
+        <span style="font-size: 15px; line-height: 22px; color: #DCD3C8">Instagram sends the most visitors, but Meera’s link books the biggest share of them.</span>
+      </div>
+    </div>
+    <div style="display: flex; gap: 8px 16px; flex-wrap: wrap; align-items: baseline; border-top: 1px solid rgba(20,17,20,0.12); padding-top: 20px">
+      <span style="font-size: 17px; font-weight: 700">Your regulars, remembered.</span>
+      <span style="font-size: 16px; line-height: 24px; color: #5A5450">Every guest keeps one record across your events, so the next invitation goes to the people who’ll come.</span>
+    </div>
+    <span style="font-size: 14px; color: #5A5450">Illustrative data. Link tracking counts recorded visits and bookings; it doesn’t see private forwards. Private answers and matching choices stay private.</span>
+  </section>
+
+  <section id="ways" style="background: #8C9BF2">
+    <div class="wrap" style="padding-top: 112px; padding-bottom: 112px; display: flex; flex-direction: column; gap: 28px">
+      <div class="split" style="align-items: end">
+        <h2 class="dsp h2">Start with what you need.</h2>
+        <p class="lead" style="color: #1E2550">Keep the tools you like. Hand Catch as much of the evening as you want, one layer at a time.</p>
+      </div>
+      <div class="layers" role="tablist" aria-label="How much of the evening runs on Catch">
+        <sc-for list="{{layers}}" as="l" hint-placeholder-count="3">
+          <button type="button" role="tab" aria-selected="{{l.selected}}" class="layerbtn" onClick="{{l.pick}}" style="background: {{l.bg}}; color: {{l.ink}}">
+            <span class="dsp" style="font-size: 28px; line-height: 1">{{l.n}} · {{l.title}}</span>
+            <span style="font-size: 14px; font-weight: 600; color: {{l.subInk}}">{{l.sub}}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 22px; flex-wrap: wrap; align-items: center">
+        <span style="display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700"><span style="width: 22px; height: 22px; border-radius: 7px; background: #FFFFFF; display: inline-flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1F7A57" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>Catch runs this</span>
+        <span style="display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: #1E2550"><span style="width: 22px; height: 22px; border-radius: 7px; border: 2px dashed rgba(30,37,80,0.6); box-sizing: border-box"></span>Stays on your own tools</span>
+      </div>
+      <div class="nodes" aria-label="Who runs each part of the evening">
+        <sc-for list="{{nodes}}" as="nd" hint-placeholder-count="6">
+          <div class="node" style="background: {{nd.bg}}; color: {{nd.ink}}; border: {{nd.border}}; box-shadow: {{nd.ring}}">
+            <span style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px">
+              <span style="font-size: 12px; font-weight: 700; color: #1E2550">{{nd.fromText}}</span>
+              <sc-if value="{{nd.onCatch}}" hint-placeholder-val="{{true}}"><span style="width: 28px; height: 28px; border-radius: 999px; background: #5CCB9F; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#123D2C" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span></sc-if>
+              <sc-if value="{{nd.offCatch}}" hint-placeholder-val="{{false}}"><span style="width: 28px; height: 28px; border-radius: 999px; border: 2px dashed rgba(30,37,80,0.6); box-sizing: border-box; flex: 0 0 auto"></span></sc-if>
+            </span>
+            <span style="font-size: 18px; font-weight: 700; line-height: 23px">{{nd.label}}</span>
+            <sc-if value="{{nd.onCatch}}" hint-placeholder-val="{{true}}"><span style="margin-top: auto; font-size: 13px; font-weight: 700; color: #1F7A57">Catch runs this<sc-if value="{{nd.isNew}}" hint-placeholder-val="{{false}}"> · new here</sc-if></span></sc-if>
+            <sc-if value="{{nd.offCatch}}" hint-placeholder-val="{{false}}"><span style="margin-top: auto; font-size: 13px; font-weight: 600; line-height: 18px; color: #1E2550">You keep {{nd.yours}}</span></sc-if>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; align-items: center; padding-top: 8px">
+        <span style="font-size: 20px; line-height: 29px; font-weight: 600; max-width: 720px">{{layerNow.body}}</span>
+        <a class="btn" href="#pricing" style="background: #141114; color: #FFFFFF">See pricing</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing" style="background: #5CCB9F">
+    <div class="wrap price-grid" style="padding-top: 112px; padding-bottom: 112px">
+      <div style="display: flex; flex-direction: column; gap: 16px">
+        <span class="eyebrow" style="color: #123D2C">Pricing</span>
+        <span class="dsp five" style="font-size: 220px; line-height: 0.82; letter-spacing: -0.05em">5%</span>
+        <span class="dsp" style="font-size: 38px; line-height: 1.05">of ticket sales. Never more than ₹10,000 a month.</span>
+        <p class="lead" style="color: #123D2C">Free during the selected live-event pilot. After that, the fee is a share of the tickets you sell, and it stops growing once it reaches ₹10,000 in a month. Payment gateway fees are charged separately.</p>
+      </div>
+      <div style="background: #FFFFFF; border-radius: 28px; padding: 28px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 24px 60px rgba(18,61,44,0.2)">
+        <label for="pricing-revenue" style="font-size: 15px; font-weight: 600; color: #5A5450">Your ticket sales this month</label>
+        <span class="dsp" style="font-size: 60px; line-height: 1">{{pricing.revenueText}}</span>
+        <input id="pricing-revenue" type="range" min="0" max="500000" step="5000" value="{{pricing.revenue}}" onInput="{{pricing.setRevenue}}" onChange="{{pricing.setRevenue}}" style="width: 100%; accent-color: #141114">
+        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #5A5450"><span>₹0</span><span>₹5,00,000</span></div>
+        <div class="fee-grid" style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px">
+          <div style="background: #F3F3F1; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 14px; font-weight: 600; color: #5A5450">Catch fee</span><span class="dsp" style="font-size: 36px; line-height: 1">{{pricing.feeText}}</span><span style="font-size: 13px; color: #5A5450">5% until the cap</span></div>
+          <div style="background: #141114; color: #F6EFE6; border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 4px"><span style="font-size: 14px; font-weight: 600; color: #BDB3A7">Your effective rate</span><span class="dsp" style="font-size: 36px; line-height: 1; color: #5CCB9F">{{pricing.rateText}}</span><span style="font-size: 13px; color: #BDB3A7">of this month’s ticket sales</span></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <div style="height: 12px; border-radius: 999px; background: #F3F3F1; overflow: hidden"><div style="height: 12px; width: {{pricing.barWidth}}; background: #141114; border-radius: 999px; transition: width .2s ease"></div></div>
+          <sc-if value="{{pricing.capped}}" hint-placeholder-val="{{false}}"><span style="font-size: 14px; font-weight: 700; color: #1F7A57">Capped. You pay ₹10,000 however much more you sell this month.</span></sc-if>
+          <sc-if value="{{pricing.notCapped}}" hint-placeholder-val="{{true}}"><span style="font-size: 14px; font-weight: 600; color: #5A5450">The cap kicks in at ₹2,00,000 of ticket sales in a month.</span></sc-if>
+        </div>
+        <span style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 20px; color: #5A5450; border-top: 1px solid rgba(20,17,20,0.1); padding-top: 14px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5A5450" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 auto; margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 8h.01M11 12h1v5h1"></path></svg>Payment gateway fees are separate. Your payment provider charges them at its own rate, on top of the Catch fee.</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="wrap" style="padding-top: 112px; padding-bottom: 112px">
+    <div class="split" style="align-items: start">
+      <h2 class="dsp h2">A few things you might be wondering.</h2>
+      <div style="display: flex; flex-direction: column; border-bottom: 1px solid rgba(20,17,20,0.12)">
+        <sc-for list="{{faqs}}" as="f" hint-placeholder-count="6">
+          <div>
+            <button type="button" class="faqq" onClick="{{f.toggle}}" aria-expanded="{{f.open}}">{{f.q}}<span aria-hidden="true" style="font-size: 26px; font-weight: 400">{{f.sign}}</span></button>
+            <sc-if value="{{f.open}}" hint-placeholder-val="{{false}}"><p style="margin: 0 0 22px; font-size: 17px; line-height: 26px; color: #5A5450; max-width: 560px">{{f.a}}</p></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="apply" style="background: #F5C451">
+    <div class="wrap apply-grid" style="padding-top: 120px; padding-bottom: 112px">
+      <div class="apply-left" style="display: flex; flex-direction: column; gap: 24px">
+        <h2 class="dsp mega">Your next event. A stronger foundation.</h2>
+        <p class="lead" style="color: #4A3608">Apply with a real upcoming event. Free during the selected live-event pilot, with hands-on setup.</p>
+        <div class="apply-steps" style="display: flex; flex-direction: column; border-top: 2px solid #141114">
+          <div style="display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; padding: 16px 0; border-bottom: 1px solid rgba(20,17,20,0.15)"><span class="dsp" style="font-size: 30px">1</span><span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 18px; font-weight: 600">Tell us about your event</span><span style="font-size: 15px; color: #4A3608">Two minutes: your format, your tools, how to reach you.</span></span></div>
+          <div style="display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; padding: 16px 0; border-bottom: 1px solid rgba(20,17,20,0.15)"><span class="dsp" style="font-size: 30px">2</span><span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 18px; font-weight: 600">Agree the setup</span><span style="font-size: 15px; color: #4A3608">We review the fit and confirm the tools, support and terms with you.</span></span></div>
+          <div style="display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 12px; padding: 16px 0; border-bottom: 1px solid rgba(20,17,20,0.15)"><span class="dsp" style="font-size: 30px">3</span><span style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 18px; font-weight: 600">Host, learn, build</span><span style="font-size: 15px; color: #4A3608">Run your event, review it together, and plan the next one.</span></span></div>
+        </div>
+      </div>
+
+      <div class="apply-card" style="background: #FFFFFF; border-radius: 28px; padding: 28px; box-shadow: 0 24px 60px rgba(74,54,8,0.2); display: flex; flex-direction: column; gap: 22px">
+        <sc-if value="{{apply.notDone}}" hint-placeholder-val="{{true}}">
+          <div style="display: flex; flex-direction: column; gap: 10px">
+            <div style="display: flex; justify-content: space-between; align-items: baseline"><span class="dsp" style="font-size: 30px">Apply for a pilot</span><span style="font-size: 14px; font-weight: 600; color: #5A5450">{{apply.stepText}}</span></div>
+            <div style="height: 6px; border-radius: 999px; background: #F3F3F1; overflow: hidden"><div style="height: 6px; width: {{apply.progress}}; min-width: 12%; background: #141114; border-radius: 999px; transition: width .3s ease"></div></div>
+          </div>
+
+          <sc-if value="{{apply.step1}}" hint-placeholder-val="{{true}}">
+            <div class="field">
+              <span class="flabel" id="apply-format-label">What kind of event do you run?</span>
+              <div role="group" aria-labelledby="apply-format-label" style="display: flex; flex-wrap: wrap; gap: 8px">
+                <sc-for list="{{apply.formats}}" as="o" hint-placeholder-count="6"><button type="button" class="ochip" onClick="{{o.pick}}" style="{{o.style}}">{{o.f}}</button></sc-for>
+              </div>
+              <sc-if value="{{apply.hasEFormat}}" hint-placeholder-val="{{false}}"><span class="ferr">{{apply.eFormat}}</span></sc-if>
+            </div>
+            <div class="field">
+              <label class="flabel" for="apply-city">Which city do you host in?</label>
+              <input id="apply-city" class="finput" type="text" value="{{apply.city}}" onInput="{{apply.setCity}}" placeholder="Mumbai">
+              <sc-if value="{{apply.hasECity}}" hint-placeholder-val="{{false}}"><span class="ferr">{{apply.eCity}}</span></sc-if>
+            </div>
+            <div class="field">
+              <span class="flabel" id="apply-size-label">How many guests usually come?</span>
+              <div role="group" aria-labelledby="apply-size-label" style="display: flex; flex-wrap: wrap; gap: 8px">
+                <sc-for list="{{apply.sizes}}" as="o" hint-placeholder-count="4"><button type="button" class="ochip" onClick="{{o.pick}}" style="{{o.style}}">{{o.f}}</button></sc-for>
+              </div>
+              <sc-if value="{{apply.hasESize}}" hint-placeholder-val="{{false}}"><span class="ferr">{{apply.eSize}}</span></sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{apply.step2}}" hint-placeholder-val="{{false}}">
+            <div class="field">
+              <span class="flabel" id="apply-tools-label">What do you use today? Pick all that apply.</span>
+              <div role="group" aria-labelledby="apply-tools-label" style="display: flex; flex-wrap: wrap; gap: 8px">
+                <sc-for list="{{apply.tools}}" as="o" hint-placeholder-count="7"><button type="button" class="ochip" onClick="{{o.pick}}" style="{{o.style}}">{{o.f}}</button></sc-for>
+              </div>
+              <sc-if value="{{apply.hasETools}}" hint-placeholder-val="{{false}}"><span class="ferr">{{apply.eTools}}</span></sc-if>
+            </div>
+            <div class="field">
+              <label class="flabel" for="apply-improve">What would you most like to improve? <span style="font-weight: 500; color: #5A5450">Optional</span></label>
+              <textarea id="apply-improve" class="finput" onInput="{{apply.setImprove}}" placeholder="Matching payments to names, getting newcomers talking…" style="height: 96px; padding: 12px 14px; resize: vertical">{{apply.improve}}</textarea>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{apply.step3}}" hint-placeholder-val="{{false}}">
+            <div class="field">
+              <label class="flabel" for="apply-name">Your name</label>
+              <input id="apply-name" class="finput" type="text" value="{{apply.name}}" onInput="{{apply.setName}}" placeholder="Meher Bhatia">
+              <sc-if value="{{apply.hasEName}}" hint-placeholder-val="{{false}}"><span class="ferr">{{apply.eName}}</span></sc-if>
+            </div>
+            <div class="field">
+              <label class="flabel" for="apply-contact">Phone or email</label>
+              <input id="apply-contact" class="finput" type="text" value="{{apply.contact}}" onInput="{{apply.setContact}}" placeholder="meher@eveningclub.in">
+              <sc-if value="{{apply.hasEContact}}" hint-placeholder-val="{{false}}"><span class="ferr">{{apply.eContact}}</span></sc-if>
+            </div>
+            <div class="field">
+              <label class="flabel" for="apply-link">Instagram or website <span style="font-weight: 500; color: #5A5450">Optional</span></label>
+              <input id="apply-link" class="finput" type="text" value="{{apply.link}}" onInput="{{apply.setLink}}" placeholder="@eveningclub">
+            </div>
+          </sc-if>
+
+          <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap">
+            <sc-if value="{{apply.notFirst}}" hint-placeholder-val="{{false}}"><button type="button" class="btn" onClick="{{apply.back}}" style="height: 52px; background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)">Back</button></sc-if>
+            <button type="button" class="btn" onClick="{{apply.next}}" style="height: 52px; background: #141114; color: #FFFFFF">{{apply.nextLabel}}</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{apply.done}}" hint-placeholder-val="{{false}}">
+          <div style="display: flex; flex-direction: column; gap: 16px">
+            <span style="width: 56px; height: 56px; border-radius: 999px; background: #5CCB9F; display: inline-flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#123D2C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"></path></svg></span>
+            <span class="dsp" style="font-size: 44px; line-height: 1">Application received</span>
+            <span style="font-size: 17px; font-weight: 600">{{apply.summary}}</span>
+            <span style="font-size: 16px; line-height: 24px; color: #5A5450">We review each application and follow up if it’s a fit. Applying doesn’t book a call or grant access.</span>
+            <div style="display: flex; flex-direction: column; gap: 10px; background: #F3F3F1; border-radius: 18px; padding: 16px 18px">
+              <span style="font-size: 15px; font-weight: 600">While you wait</span>
+              <a href="#night" style="font-size: 15px; font-weight: 600">See a night on Catch</a>
+              <a href="#pricing" style="font-size: 15px; font-weight: 600">Check the pricing</a>
+            </div>
+            <div><button type="button" class="btn" onClick="{{apply.restart}}" style="height: 44px; padding: 0 16px; font-size: 15px; background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)">Start another application</button></div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background: #141114; color: #BDB3A7">
+    <div class="wrap" style="padding-top: 40px; padding-bottom: 40px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 14px"><span><span class="dsp" style="font-size: 24px; color: #F6EFE6">Catch</span> for hosts · Mumbai</span><span>Interactive mockup · app screens are House lights drawings with fictional data</span></div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"hero":{"editor":"color","default":"#F07A55","options":["#F07A55","#8C9BF2","#F08AA0","#5CCB9F","#F5C451"]},"$preview":{"width":1280,"height":11600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      format: 2, active: 0, menuOpen: false, faq: -1,
+      bookStep: 0, bookAuto: true, layer: 0, revenue: 120000,
+      applyStep: 0, applyDone: false, applyErrors: {},
+      aFormat: "", aCity: "", aSize: "", aTools: [], aImprove: "", aName: "", aContact: "", aLink: ""
+    };
+  }
+  screens() {
+    return {
+      today: "/_blob/d1f6c7bb9c9b9f60ca970341f0144003",
+      door: "/_blob/e57d9aa2351df38e438b4255ecc98f01",
+      room: "/_blob/2f85e67dbf04c73bd2c953476c5b2d0c",
+      live: "/_blob/5ecd2e85ee802241d2de72f6df689beb",
+      reveal: "/_blob/4a20ccdce7849d2fe4cae16fc56a4ff3",
+      crawl: "/_blob/2621025c8c0fea2863ef69bbfc12ee1c",
+      after: "/_blob/fac447e8f00f2f81812fc5a6cd8953e2"
+    };
+  }
+  journeyData() {
+    const S = this.screens();
+    return [
+      { name: "Run club", tile: "Run clubs", line: "Pace groups, and a first hello for every newcomer.", tone: "#F07A55", ink: "#3B1F14", photo: "/_blob/8294b5d46800331739b8ee58199a7d53", photoAlt: "Runners laughing on an evening run", panel: false,
+        event: "Sunday Social Run", where: "Carter Road Runners · Carter Road, Bandra", lead: "Follow one Sunday run, from the first booking to next week’s invitation.",
+        chapters: [
+          { time: "Saturday", title: "Know your runners", body: "Every booking brings a distance and a pace, so you know who is chasing a 5K time and who is coming to chat.", screen: S.today },
+          { time: "6:20 AM", title: "Check in at the fountain", body: "Tap runners in as they arrive. Anyone running late still finds their group.", screen: S.door },
+          { time: "6:30 AM", title: "Give everyone a place to start", body: "Catch forms pace groups from what people told you, and every newcomer gets a group and a first hello.", screen: S.room },
+          { time: "7:15 AM", title: "Bring everyone back together", body: "Mark who is back at the finish. People can leave quietly, and you still know who you haven’t seen.", screen: S.crawl },
+          { time: "Sunday evening", title: "Make the next run easier to join", body: "Feedback comes in, and runners who want a steadier pace get next week’s invitation first.", screen: S.after }
+        ] },
+      { name: "Dinner", tile: "Dinners", line: "Seat strangers well, then invite them back.", tone: "#F08AA0", ink: "#4A2330", photo: "/_blob/409d3ee3e6896b80188944189323718b", photoAlt: "Strangers sharing dinner at a long table", panel: false,
+        event: "Long Table Supper", where: "Khar Table · Khar West", lead: "Follow one supper club, from the guest list to the morning after.",
+        chapters: [
+          { time: "Tuesday", title: "Seat strangers well", body: "Applications tell you who is coming and why, so you can plan the tables before anyone arrives.", screen: S.today },
+          { time: "8:00 PM", title: "Welcome everyone by name", body: "Check guests in, collect at the door, and seat a late arrival wherever there is room.", screen: S.door },
+          { time: "8:20 PM", title: "See the whole room at once", body: "The seating map shows who is at which table. Move someone with a tap, and table sizes and separations hold.", screen: S.room },
+          { time: "9:10 PM", title: "Keep the conversation going", body: "Swap seats for dessert, and send a table a conversation cue when it goes quiet.", screen: S.live },
+          { time: "Next morning", title: "Invite them back", body: "Feedback comes in, and the guests who would come again hear about the next date first.", screen: S.after }
+        ] },
+      { name: "Games and mixers", tile: "Games and mixers", line: "Teams, rounds, partners and a reveal the room shares.", tone: "#F5C451", ink: "#4A3608", photo: "", photoAlt: "", panel: true,
+        event: "Saturday Singles Mixer", where: "Evening Club · Harbour Room, Bandra West", lead: "Follow one Saturday mixer, from doors to the afterglow.",
+        chapters: [
+          { time: "6:00 PM", title: "Before doors", body: "Two things left: the arrival message and a quizmaster for round two. Twenty-four people are coming, five of them for the first time.", screen: S.today },
+          { time: "6:30 PM", title: "Doors open", body: "Check guests in with a tap, collect at the door, and offer the waitlist a seat the moment one opens.", screen: S.door },
+          { time: "8:16 PM", title: "Round two", body: "Partner rotations run on a timer. Wingman requests and anyone left out reach you before the room notices.", screen: S.live },
+          { time: "8:24 PM", title: "The reveal", body: "A ten-second countdown, then everyone sees their next partner at the same moment.", screen: S.reveal },
+          { time: "The next day", title: "The afterglow", body: "Feedback comes in, guests say who they would like to see again, and the people who would come back get the next date first.", screen: S.after }
+        ] },
+      { name: "Pickleball", tile: "Pickleball", line: "Courts and partners, rotated by level.", tone: "#5CCB9F", ink: "#123D2C", photo: "/_blob/9cac328026e387b37fc5fab2457553c6", photoAlt: "Players mid-rally at a pickleball social", panel: false,
+        event: "Pickleball Social", where: "Dink and Drink · Andheri West", lead: "Follow one social session, from levels to the next invitation.",
+        chapters: [
+          { time: "Friday", title: "Know everyone’s level", body: "Each booking brings a skill level, so the courts are balanced before anyone arrives.", screen: S.today },
+          { time: "4:45 PM", title: "Check in, level confirmed", body: "Players check in and confirm their level. Walk-ins join the rotation, not a queue.", screen: S.door },
+          { time: "5:00 PM", title: "Courts and partners", body: "Catch puts players on courts by level. Move a pair with a tap when a court runs long.", screen: S.room },
+          { time: "5:40 PM", title: "New partners every round", body: "Partners rotate on a timer, so everyone plays with someone new.", screen: S.live },
+          { time: "That evening", title: "Invite them to the next one", body: "Feedback comes in, and players who want a beginner session get the next invitation.", screen: S.after }
+        ] },
+      { name: "Pub crawl", tile: "Pub crawls", line: "Move a group between venues and know who arrived.", tone: "#E58AC8", ink: "#46163A", photo: "/_blob/b766451d5b4e5bf9ae506afe33116fa6", photoAlt: "A group gathering for a night out", panel: false,
+        event: "Friday Bandra Pub Crawl", where: "Night Shift Socials · four stops in Bandra", lead: "Follow one crawl, from the route to the morning after.",
+        chapters: [
+          { time: "Thursday", title: "Plan the route", body: "Four stops, two groups and a lead host for each, shared with your team before the night.", screen: S.today },
+          { time: "7:30 PM", title: "Check in at the first bar", body: "Tap guests in as they arrive. Late arrivals can meet you at the next stop.", screen: S.door },
+          { time: "8:42 PM", title: "Move groups between venues", body: "Record each departure: who left, who they are with, and where they are heading.", screen: S.crawl },
+          { time: "11:15 PM", title: "The return sweep", body: "Mark each guest as returned or departed. It is a safety aid, not a checkout.", screen: S.door },
+          { time: "Saturday", title: "The morning after", body: "Feedback comes in, and the regulars hear about next month’s route first.", screen: S.after }
+        ] }
+    ];
+  }
+  guestData() {
+    return [
+      { i: "AM", name: "Asha", bg: "#F0D8CC", max: 3 }, { i: "KR", name: "Kabir", bg: "#D9E3F5", max: 3 },
+      { i: "IS", name: "Ishaan", bg: "#DCEBDD", max: 3 }, { i: "NK", name: "Neha", bg: "#F3E1BF", max: 3 },
+      { i: "RD", name: "Rohan", bg: "#E6DDF3", max: 1 }, { i: "ZK", name: "Zara", bg: "#FBE4EA", max: 3 },
+      { i: "TB", name: "Tara", bg: "#DDF3EA", max: 3 }, { i: "VS", name: "Vikram", bg: "#E9ECFB", max: 1 },
+      { i: "MJ", name: "Meera", bg: "#FBE7DF", max: 3 }, { i: "DV", name: "Dev", bg: "#EFEAE3", max: 0 }
+    ];
+  }
+  bookSteps() {
+    return [
+      { label: "Applied", title: "They apply", tone: "#8C9BF2", ink: "#1E2550", stat: "10 applications", body: "Applications arrive with the answers you asked for: who they are, who they’re bringing, what they’re hoping for." },
+      { label: "Approved", title: "You approve", tone: "#5CCB9F", ink: "#123D2C", stat: "9 approved · 1 on the waitlist", body: "Approve with a tap. Offers stay open for as long as you choose, and the waitlist stays warm." },
+      { label: "Paid", title: "They pay", tone: "#F5C451", ink: "#4A3608", stat: "7 paid · ₹4,200", body: "UPI or card. Every payment lands next to the right name, with no screenshots to chase." },
+      { label: "Booked", title: "They show up", tone: "#F07A55", ink: "#3B1F14", stat: "7 booked · arrival details sent", body: "Booked guests get where to meet and a reminder the day before. You get a guest list that’s ready." }
+    ];
+  }
+  layerData() {
+    return {
+      layers: [
+        { n: "1", title: "Keep your tools", sub: "Catch runs the night", body: "Import your guest list from any tool. Nothing changes for your guests until the doors open." },
+        { n: "2", title: "Take bookings on Catch", sub: "Plus applications and payments", body: "Applications, payments and reminders run on Catch, with one record for every guest." },
+        { n: "3", title: "Get found on Catch", sub: "Plus new guests", body: "Your events appear where people in your city look for something worth showing up for." }
+      ],
+      nodes: [
+        { n: "1", label: "Get found", yours: "Instagram and your own page", from: 2 },
+        { n: "2", label: "Bookings and payments", yours: "Luma, forms and UPI screenshots", from: 1 },
+        { n: "3", label: "Messages", yours: "your WhatsApp groups", from: 1 },
+        { n: "4", label: "Check-in", yours: "", from: 0 },
+        { n: "5", label: "The night", yours: "", from: 0 },
+        { n: "6", label: "Follow-up", yours: "", from: 0 }
+      ]
+    };
+  }
+  faqData() {
+    return [
+      { q: "Is Catch only for singles events?", a: "No. Catch is for independent hosts, clubs, communities, and event teams. Runs, dinners, games, sports, and nights out can all benefit from easier coordination and more opportunities to participate. Social tools are optional." },
+      { q: "Do my guests need to download an app?", a: "For supported live-event pilots, guests use a phone-verified mobile browser. They don’t need to download the app or create a dating profile. Participation is scoped to your event; the wider Catch member network is separate." },
+      { q: "Do I have to move my bookings to Catch?", a: "No. You can keep your existing booking or RSVP tool and start with a reviewed CSV or XLSX guest-list import. We’ll confirm the handoff and capacity together." },
+      { q: "Can I choose which activities guests see?", a: "Yes. Agree the tools and format during setup, and use the host controls to adjust groups or override assignments during the live event. Introductions, prompts, and group activities are optional, and guests can skip them." },
+      { q: "What guest information can my team see?", a: "Your team uses the booking and application information guests provide for the event, with access suited to each role. Private questionnaire answers and matching choices stay out of guest records, and private feedback is shown as combined patterns." },
+      { q: "What does the pilot involve?", a: "Apply with a real upcoming event, your current setup, and the tools you’d like to try. If it’s a fit, we’ll agree the scope, review your guest list, and help you prepare and rehearse. Afterwards, we’ll review what worked." }
+    ];
+  }
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      if (this.state.bookAuto) this.setState({ bookStep: (this.state.bookStep + 1) % 4 });
+    }, 2800);
+    if (typeof IntersectionObserver === "undefined") return;
+    this.io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const index = Number(entry.target.getAttribute("data-chapter"));
+        if (!Number.isNaN(index) && index !== this.state.active) this.setState({ active: index });
+      });
+    }, { rootMargin: "-58% 0px -32% 0px" });
+    this.observeChapters();
+  }
+  componentDidUpdate() {
+    this.observeChapters();
+  }
+  componentWillUnmount() {
+    if (this.io) this.io.disconnect();
+    if (this.timer) clearInterval(this.timer);
+  }
+  observeChapters() {
+    if (!this.io) return;
+    document.querySelectorAll("[data-chapter]").forEach((el) => {
+      if (el.dataset.observed) return;
+      el.dataset.observed = "yes";
+      this.io.observe(el);
+    });
+  }
+  pick(index) {
+    this.setState({ active: index });
+    const el = document.querySelector('[data-chapter="' + index + '"]');
+    if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  pickFormat(index, scroll) {
+    this.setState({ format: index, active: 0, menuOpen: false });
+    if (!scroll) return;
+    const el = document.getElementById("night");
+    if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  inr(n) {
+    return "₹" + Math.round(n).toLocaleString("en-IN");
+  }
+  toggleTool(tool) {
+    const tools = this.state.aTools.includes(tool) ? this.state.aTools.filter((t) => t !== tool) : this.state.aTools.concat([tool]);
+    const errors = Object.assign({}, this.state.applyErrors, { tools: "" });
+    this.setState({ aTools: tools, applyErrors: errors });
+  }
+  setField(key, value) {
+    const errors = Object.assign({}, this.state.applyErrors, { [key]: "" });
+    this.setState({ [key]: value, applyErrors: errors });
+  }
+  validate(step) {
+    const s = this.state;
+    const e = {};
+    if (step === 0) {
+      if (!s.aFormat) e.aFormat = "Choose the kind of event you run";
+      if (!s.aCity.trim()) e.aCity = "Enter the city you host in";
+      if (!s.aSize) e.aSize = "Choose a typical guest count";
+    }
+    if (step === 1 && s.aTools.length === 0) e.tools = "Pick at least one, or Nothing yet";
+    if (step === 2) {
+      if (!s.aName.trim()) e.aName = "Enter your name";
+      if (!s.aContact.trim()) e.aContact = "Enter a phone number or email";
+    }
+    return e;
+  }
+  applyNext() {
+    const errors = this.validate(this.state.applyStep);
+    if (Object.keys(errors).length > 0) { this.setState({ applyErrors: errors }); return; }
+    if (this.state.applyStep === 2) { this.setState({ applyDone: true, applyErrors: {} }); return; }
+    this.setState({ applyStep: this.state.applyStep + 1, applyErrors: {} });
+  }
+  renderVals() {
+    const s = this.state;
+    const journeys = this.journeyData();
+    const fi = Math.min(s.format, journeys.length - 1);
+    const journey = journeys[fi];
+    const active = Math.min(s.active, journey.chapters.length - 1);
+    const count = journey.chapters.length;
+    const formats = journeys.map((j, i) => ({
+      ...j, selected: i === fi,
+      optBg: i === fi ? "rgba(246,239,230,0.08)" : "transparent",
+      pick: () => this.pickFormat(i, false),
+      choose: () => this.pickFormat(i, true)
+    }));
+    const chapters = journey.chapters.map((c, i) => ({
+      ...c, alt: journey.event + ": " + c.title, tone: journey.tone, index: i,
+      num: String(i + 1).padStart(2, "0"),
+      opacity: i === active ? 1 : 0.3,
+      imgOpacity: i === active ? 1 : 0,
+      segBg: i <= active ? journey.tone : "rgba(246,239,230,0.18)"
+    }));
+    const steps = this.bookSteps();
+    const step = s.bookStep;
+    const colCounts = [0, 0, 0, 0];
+    const guests = this.guestData().map((g) => {
+      const col = Math.min(step, g.max);
+      const row = colCounts[col];
+      colCounts[col] += 1;
+      return { ...g,
+        left: "calc(" + (col * 25) + "% + 8px)", top: (64 + row * 44) + "px",
+        mLeft: (16 + (row % 6) * 42) + "px", mTop: (col * 112 + 42 + Math.floor(row / 6) * 38) + "px",
+        chipBg: col === 3 ? "#FFF1EB" : "#FFFFFF" };
+    });
+    const reached = [10, 9, 7, 7];
+    const bookCols = steps.map((st, i) => ({
+      ...st, index: i, num: String(i + 1), selected: i === step,
+      colLeft: "calc(" + (i * 25) + "%)",
+      laneTop: (i * 112) + "px",
+      laneBg: i === step ? "rgba(255,255,255,0.7)" : "transparent",
+      divider: i > 0 ? "1px solid rgba(20,17,20,0.08)" : "0",
+      count: i <= step ? reached[i] : 0,
+      headInk: i <= step ? "#141114" : "#9C958A",
+      btnBg: i === step ? st.tone : "#F3F3F1",
+      btnInk: i === step ? st.ink : "#5A5450",
+      pick: () => this.setState({ bookStep: i, bookAuto: false })
+    }));
+    const L = this.layerData();
+    const layers = L.layers.map((l, i) => ({
+      ...l, index: i, selected: i === s.layer,
+      bg: i === s.layer ? "#141114" : "rgba(255,255,255,0.55)",
+      ink: i === s.layer ? "#F6EFE6" : "#141114",
+      subInk: i === s.layer ? "#BDB3A7" : "#1E2550",
+      pick: () => this.setState({ layer: i })
+    }));
+    const nodes = L.nodes.map((nd) => {
+      const onCatch = s.layer >= nd.from;
+      const isNew = onCatch && nd.from === s.layer && s.layer > 0;
+      return { ...nd, onCatch, offCatch: !onCatch, isNew,
+        fromText: nd.from === 0 ? "Every layer" : "From layer " + (nd.from + 1),
+        bg: onCatch ? "#FFFFFF" : "transparent",
+        ink: onCatch ? "#141114" : "#1E2550",
+        border: onCatch ? "2px solid #FFFFFF" : "2px dashed rgba(30,37,80,0.55)",
+        ring: onCatch ? "0 14px 32px rgba(30,37,80,0.28)" : "none" };
+    });
+    const revenue = s.revenue;
+    const fee = Math.min(revenue * 0.05, 10000);
+    const capped = revenue * 0.05 >= 10000;
+    const pricing = {
+      revenue, revenueText: this.inr(revenue), feeText: this.inr(fee),
+      capped, notCapped: !capped,
+      rateText: revenue > 0 ? (Math.round((fee / revenue) * 1000) / 10) + "%" : "5%",
+      barWidth: Math.round((fee / 10000) * 100) + "%",
+      setRevenue: (e) => this.setState({ revenue: Number(e.target.value) })
+    };
+    const e = s.applyErrors;
+    const chipStyle = (on) => (on ? "background: #141114; color: #FFFFFF; border: 1.5px solid #141114" : "background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)");
+    const apply = {
+      step1: s.applyStep === 0 && !s.applyDone, step2: s.applyStep === 1 && !s.applyDone, step3: s.applyStep === 2 && !s.applyDone,
+      done: s.applyDone, notDone: !s.applyDone, notFirst: s.applyStep > 0,
+      stepText: "Step " + (s.applyStep + 1) + " of 3",
+      nextLabel: s.applyStep === 2 ? "Send application" : "Continue",
+      progress: Math.round(((s.applyStep + (s.applyDone ? 1 : 0)) / 3) * 100) + "%",
+      formats: ["Run club", "Dinner", "Games and mixers", "Pickleball", "Pub crawl", "Something else"].map((f) => ({ f, style: chipStyle(s.aFormat === f), pick: () => this.setField("aFormat", f) })),
+      sizes: ["Under 20", "20 to 50", "50 to 150", "More than 150"].map((f) => ({ f, style: chipStyle(s.aSize === f), pick: () => this.setField("aSize", f) })),
+      tools: ["Luma", "Eventbrite", "Google Forms", "Instagram DMs", "WhatsApp", "A spreadsheet", "Nothing yet"].map((f) => ({ f, style: chipStyle(s.aTools.includes(f)), pick: () => this.toggleTool(f) })),
+      city: s.aCity, name: s.aName, contact: s.aContact, link: s.aLink, improve: s.aImprove,
+      eFormat: e.aFormat || "", eCity: e.aCity || "", eSize: e.aSize || "", eTools: e.tools || "", eName: e.aName || "", eContact: e.aContact || "",
+      hasEFormat: !!e.aFormat, hasECity: !!e.aCity, hasESize: !!e.aSize, hasETools: !!e.tools, hasEName: !!e.aName, hasEContact: !!e.aContact,
+      setCity: (ev) => this.setField("aCity", ev.target.value),
+      setName: (ev) => this.setField("aName", ev.target.value),
+      setContact: (ev) => this.setField("aContact", ev.target.value),
+      setLink: (ev) => this.setField("aLink", ev.target.value),
+      setImprove: (ev) => this.setField("aImprove", ev.target.value),
+      next: () => this.applyNext(),
+      back: () => this.setState({ applyStep: Math.max(0, s.applyStep - 1), applyErrors: {} }),
+      restart: () => this.setState({ applyStep: 0, applyDone: false, applyErrors: {}, aFormat: "", aCity: "", aSize: "", aTools: [], aImprove: "", aName: "", aContact: "", aLink: "" }),
+      summary: (s.aName || "You") + " · " + (s.aFormat || "an event") + " in " + (s.aCity || "your city")
+    };
+    const linkData = [
+      { name: "Community newsletter", who: "Your monthly email", url: "catchdates.com/e/sat-mixer?via=newsletter", visits: 180, bookings: 24, revenue: 14400, tone: "#8C9BF2" },
+      { name: "Partner · Meera", who: "A promoter who brings friends", url: "catchdates.com/e/sat-mixer?via=meera", visits: 120, bookings: 18, revenue: 10800, tone: "#F08AA0" },
+      { name: "Instagram bio", who: "The link in your profile", url: "catchdates.com/e/sat-mixer?via=instagram", visits: 240, bookings: 12, revenue: 7200, tone: "#F5C451" }
+    ];
+    const li = Math.min(s.link || 0, linkData.length - 1);
+    const maxVisits = 240;
+    const links = linkData.map((l, i) => ({ ...l, index: i, selected: i === li,
+      bg: i === li ? "#141114" : "#FFFFFF", ink: i === li ? "#F6EFE6" : "#141114", subInk: i === li ? "#BDB3A7" : "#5A5450",
+      pick: () => this.setState({ link: i }) }));
+    const L0 = linkData[li];
+    const linkNow = { ...L0,
+      visitsW: Math.round((L0.visits / maxVisits) * 100) + "%",
+      bookingsW: Math.max(6, Math.round((L0.bookings / maxVisits) * 100)) + "%",
+      rate: Math.round((L0.bookings / L0.visits) * 100) + "%",
+      revenueText: this.inr(L0.revenue),
+      perVisit: this.inr(L0.revenue / L0.visits) };
+    const faqs = this.faqData().map((f, i) => ({ ...f, open: s.faq === i, sign: s.faq === i ? "−" : "+", toggle: () => this.setState({ faq: s.faq === i ? -1 : i }) }));
+    return {
+      hero: this.props.hero ?? "#F07A55",
+      formats, journey, chapters, count,
+      menuOpen: s.menuOpen,
+      toggleMenu: () => this.setState({ menuOpen: !s.menuOpen }),
+      now: chapters[active],
+      position: String(active + 1).padStart(2, "0") + " / " + String(count).padStart(2, "0"),
+      prev: () => this.pick(Math.max(0, active - 1)),
+      next: () => this.pick(Math.min(count - 1, active + 1)),
+      prevOpacity: active === 0 ? 0.35 : 1,
+      nextOpacity: active === count - 1 ? 0.35 : 1,
+      bookCols, guests, bookNow: steps[step],
+      replay: () => this.setState({ bookStep: 0, bookAuto: true }),
+      layers, nodes, layerNow: L.layers[s.layer],
+      pricing, apply, faqs, links, linkNow
+    };
+  }
+}
+</script>
+</body>
+</html>
