@@ -10,6 +10,7 @@ import 'package:analyzer/error/error.dart';
 import 'catch_drawing_migration.dart';
 import 'catch_text_migration.dart';
 import 'catch_ui_rules_tables.g.dart';
+import 'catch_ui_surface_geometry.dart';
 
 part 'catch_ui_test_rules.dart';
 part 'catch_ui_mutation_rules.dart';
@@ -1541,7 +1542,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (_isRoundedAffordanceConstructor(typeName)) return false;
 
     if (typeName == 'CatchSurface') {
-      return _isDisplayCatchSurface(node);
+      return isCatchUiDisplaySurface(node);
     }
 
     if (typeName == 'CatchSection') {
@@ -1566,23 +1567,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   bool _isRoundedAffordanceConstructor(String typeName) {
     return _roundedAffordanceConstructors.contains(typeName) ||
         _roundedAffordanceNameFragments.any(typeName.contains);
-  }
-
-  bool _isDisplayCatchSurface(InstanceCreationExpression node) {
-    final constructorName = _constructorMemberName(node);
-    if (constructorName == 'tinted' || constructorName == 'message') {
-      return false;
-    }
-
-    if (_namedArgumentSourceContains(
-      node,
-      'tone',
-      'CatchSurfaceTone.transparent',
-    )) {
-      return false;
-    }
-
-    return true;
   }
 
   bool _isAllowedPrimitiveRawButtonControl(String typeName) {

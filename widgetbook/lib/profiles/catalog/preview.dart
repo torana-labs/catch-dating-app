@@ -70,7 +70,7 @@ class WidgetbookProfileStateCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: CatchTextStyles.labelL(context, color: t.ink)),
+          CatchText(label, variant: CatchTextVariant.titleS, color: t.ink),
           gapH8,
           child,
         ],

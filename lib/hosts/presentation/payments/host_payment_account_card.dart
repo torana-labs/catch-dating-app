@@ -128,7 +128,7 @@ class HostPaymentAccountCard extends StatelessWidget {
                 tone: presentation.tone,
               ),
               gapH14,
-              Text(
+              CatchText(
                 isRazorpay
                     ? context
                           .l10n
@@ -136,10 +136,8 @@ class HostPaymentAccountCard extends StatelessWidget {
                     : context
                           .l10n
                           .hostsHostPaymentAccountCardTextCatchPaysHostsThrough,
-                style: CatchTextStyles.supporting(
-                  sheetContext,
-                  color: sheetTokens.ink2,
-                ),
+                variant: CatchTextVariant.supporting,
+                color: sheetTokens.ink2,
               ),
               gapH16,
               CatchSection.fieldRows(
@@ -162,13 +160,11 @@ class HostPaymentAccountCard extends StatelessWidget {
                 ],
               ),
               gapH12,
-              Text(
+              CatchText(
                 context.l10n.hostsHostPaymentAccountCardTextWeWillRefreshYour,
+                variant: CatchTextVariant.supporting,
+                color: sheetTokens.ink3,
                 textAlign: TextAlign.center,
-                style: CatchTextStyles.supporting(
-                  sheetContext,
-                  color: sheetTokens.ink3,
-                ),
               ),
             ],
           ),

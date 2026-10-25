@@ -116,9 +116,9 @@ class _ProgramHotelDeskScreenState
       CatchSectionListItem(
         child: CatchFieldRow.standard(
           leading: Icon(CatchIcons.keyOutlined),
-          body: Text(
+          body: CatchText(
             context.l10n.programsHotelRoomsOpen,
-            style: Theme.of(context).textTheme.titleMedium,
+            variant: CatchTextVariant.sectionTitle,
           ),
           trailing: Icon(CatchIcons.chevronRightRounded),
           onTap: () => context.pushNamed(
@@ -221,9 +221,9 @@ class _ProgramHotelDeskScreenState
                         body: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            CatchText(
                               leg.partyLabel ?? leg.guestDisplayName,
-                              style: Theme.of(context).textTheme.titleMedium,
+                              variant: CatchTextVariant.sectionTitle,
                             ),
                             CatchMetaRow(
                               icon: CatchIcons.group,
@@ -306,9 +306,9 @@ class _ProgramHotelInboundTripTileState
           Row(
             children: [
               Expanded(
-                child: Text(
+                child: CatchText(
                   trip.plateDisplay,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  variant: CatchTextVariant.sectionTitle,
                 ),
               ),
               CatchBadge.functional(
@@ -328,9 +328,9 @@ class _ProgramHotelInboundTripTileState
             ),
           ),
           if (trip.manifestSource == TransportManifestSource.currentRecords)
-            Text(
+            CatchText(
               context.l10n.programsTripCurrentNames,
-              style: Theme.of(context).textTheme.bodySmall,
+              variant: CatchTextVariant.bodyS,
             ),
           CatchMetaRow(
             icon: CatchIcons.clock,

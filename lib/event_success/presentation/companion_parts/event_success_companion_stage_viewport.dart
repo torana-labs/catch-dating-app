@@ -247,17 +247,15 @@ class CompanionStageNavigationRow extends StatelessWidget {
         ),
         gapW8,
         Expanded(
-          child: Text(
+          child: CatchText(
             context
                 .l10n
                 .eventSuccessEventSuccessCompanionSharedTextEventCompanion,
-            textAlign: TextAlign.center,
-            style: CatchTextStyles.labelL(
-              context,
-              color: foreground.withValues(
-                alpha: CatchOpacity.eventSuccessChrome,
-              ),
+            variant: CatchTextVariant.titleS,
+            color: foreground.withValues(
+              alpha: CatchOpacity.eventSuccessChrome,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
         gapW8,

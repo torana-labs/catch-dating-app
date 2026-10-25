@@ -200,7 +200,7 @@ class ProgramFunctionNowNextRow extends StatelessWidget {
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(fn.name, style: Theme.of(context).textTheme.titleMedium),
+        CatchText(fn.name, variant: CatchTextVariant.sectionTitle),
         CatchMetaRow(
           icon: CatchIcons.clock,
           label:

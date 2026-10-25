@@ -38,8 +38,10 @@ class EventRehearsalGuestLinkSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ColoredBox(
-              color: CatchTokens.editorialWhite,
+            CatchSurface(
+              duration: Duration.zero,
+              radius: CatchRadius.none,
+              backgroundColor: CatchTokens.editorialWhite,
               child: Padding(
                 padding: CatchInsets.iconChipContent,
                 child: QrImageView(

@@ -275,9 +275,11 @@ class ExploreFilterSheet extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                context.l10n.exploreExploreFilterRailTextDistanceEventsOnly,
-                style: CatchTextStyles.kicker(context, color: t.ink2),
+              CatchKickerText(
+                label:
+                    context.l10n.exploreExploreFilterRailTextDistanceEventsOnly,
+                color: t.ink2,
+                maxLines: null,
               ),
               gapH12,
               Wrap(
@@ -298,9 +300,10 @@ class ExploreFilterSheet extends StatelessWidget {
                 ],
               ),
               gapH20,
-              Text(
-                context.l10n.exploreExploreFilterRailTextClubs,
-                style: CatchTextStyles.kicker(context, color: t.ink2),
+              CatchKickerText(
+                label: context.l10n.exploreExploreFilterRailTextClubs,
+                color: t.ink2,
+                maxLines: null,
               ),
               gapH12,
               Wrap(
@@ -329,9 +332,10 @@ class ExploreFilterSheet extends StatelessWidget {
                 ],
               ),
               gapH20,
-              Text(
-                context.l10n.exploreExploreFilterRailTextActivity,
-                style: CatchTextStyles.kicker(context, color: t.ink2),
+              CatchKickerText(
+                label: context.l10n.exploreExploreFilterRailTextActivity,
+                color: t.ink2,
+                maxLines: null,
               ),
               gapH12,
               Wrap(
@@ -355,9 +359,10 @@ class ExploreFilterSheet extends StatelessWidget {
               ),
               if (sheetState.areaOptions.isNotEmpty) ...[
                 gapH20,
-                Text(
-                  context.l10n.exploreExploreFilterRailTextArea,
-                  style: CatchTextStyles.kicker(context, color: t.ink2),
+                CatchKickerText(
+                  label: context.l10n.exploreExploreFilterRailTextArea,
+                  color: t.ink2,
+                  maxLines: null,
                 ),
                 gapH12,
                 Wrap(

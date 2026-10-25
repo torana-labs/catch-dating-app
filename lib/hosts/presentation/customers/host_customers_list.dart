@@ -99,7 +99,11 @@ class HostCustomerFilterSummarySection extends StatelessWidget {
           spacing: CatchSpacing.s3,
           runSpacing: CatchSpacing.s1,
           children: [
-            Text(header, style: CatchTextStyles.labelL(context)),
+            CatchText(
+              header,
+              variant: CatchTextVariant.titleS,
+              color: CatchTokens.of(context).ink,
+            ),
             if (onClear != null || trailing != null)
               Wrap(
                 alignment: WrapAlignment.end,

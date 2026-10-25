@@ -712,7 +712,7 @@ class _CompanionOthersInRoomTextState extends State<CompanionOthersInRoomText>
                 ),
                 gapW6,
                 Flexible(
-                  child: Text(
+                  child: CatchText(
                     count == 1
                         ? context
                               .l10n
@@ -721,9 +721,9 @@ class _CompanionOthersInRoomTextState extends State<CompanionOthersInRoomText>
                               .eventSuccessEventSuccessCompanionSharedTextCountPeopleInThe(
                                 count: count,
                               ),
+                    variant: CatchTextVariant.titleS,
+                    color: t.ink,
                     maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.labelL(context, color: t.ink),
                   ),
                 ),
               ],

@@ -126,11 +126,11 @@ class HostWaitlistBulkOfferNotice extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              CatchText(
                 context.l10n.hostsHostEventAttendancePanelTextWaitlistMovement,
+                variant: CatchTextVariant.titleS,
+                color: t.ink,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.labelL(context, color: t.ink),
               ),
               CatchText(
                 detail,

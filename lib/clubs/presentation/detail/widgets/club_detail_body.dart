@@ -52,8 +52,10 @@ class ClubDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return ColoredBox(
-      color: t.bg,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: t.bg,
       child: CustomScrollView(
         slivers: [
           ClubDetailSliverBody(
@@ -290,14 +292,9 @@ class ClubNextRunBanner extends StatelessWidget {
             Icon(activity.glyph, size: CatchIcon.sm, color: activity.deep),
             gapW10,
             Expanded(
-              child: Text(
+              child: CatchMetadataText(
                 _nextRunLabel(event),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.monoLabelS(
-                  context,
-                  color: activity.deep,
-                ),
+                color: activity.deep,
               ),
             ),
             gapW10,
