@@ -88,14 +88,9 @@ class _HostInboxScopeMenuState extends State<HostInboxScopeMenu> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(
+                        child: CatchMetadataText(
                           selectedLabel.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: CatchTextStyles.monoLabel(
-                            context,
-                            color: labelColor,
-                          ).copyWith(fontWeight: FontWeight.w700),
+                          color: labelColor,
                         ),
                       ),
                       gapW8,

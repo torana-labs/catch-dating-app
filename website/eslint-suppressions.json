@@ -81,7 +81,7 @@
   },
   "src/features/events/sections/EventDetailSections.tsx": {
     "react/forbid-elements": {
-      "count": 38
+      "count": 35
     }
   },
   "src/features/forms/PublicFormPage.tsx": {
@@ -237,10 +237,10 @@
       "count": 6
     },
     "react/forbid-dom-props": {
-      "count": 34
+      "count": 33
     },
     "react/forbid-elements": {
-      "count": 34
+      "count": 33
     }
   },
   "src/shared/ui/primitives/eventDetail.tsx": {

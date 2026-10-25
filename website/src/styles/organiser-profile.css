@@ -2,8 +2,6 @@
 .organiser-profile .listing-profile-primary > section:first-child { gap: 0; }
 .organiser-profile .listing-polaroid { padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
 .organiser-profile .listing-polaroid__media { border: 0; border-radius: 5px; }
-.organiser-profile .listing-polaroid__fallback { min-height: 180px; background: var(--catch-color-light-primary-soft); }
-.organiser-profile .listing-polaroid__fallback .activity-mark { width: 88px; height: 88px; }
 .organiser-profile .listing-polaroid__caption { padding: 26px 0 0; grid-template-columns: 1fr; gap: var(--catch-space-s3); }
 .organiser-profile .listing-polaroid__caption > h1 { font-family: var(--catch-font-voice), sans-serif; font-size: clamp(44px, 5.2vw, 72px); line-height: .98; max-width: none; overflow-wrap: anywhere; }
 .organiser-profile .listing-polaroid__caption > small { grid-column: 1; text-align: left; }
@@ -57,7 +55,6 @@
   .organiser-profile .listing-profile-rail__section { margin-top: var(--catch-space-micro14); }
 }
 @media (max-width: 600px) {
-  .organiser-profile .listing-polaroid__fallback { min-height: 140px; }
   .organiser-profile .listing-polaroid__caption > h1 { font-size: 48px; }
   .profile-navigation { gap: var(--catch-space-s2) var(--catch-space-s5); }
   .organiser-profile .listing-profile-primary > section:first-child > p { font-size: 17px; }

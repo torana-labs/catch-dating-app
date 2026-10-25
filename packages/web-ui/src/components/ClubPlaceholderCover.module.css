@@ -1,0 +1,84 @@
+/* Typographic organiser cover (G7): brand type roles over the activity artwork. */
+.cover {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.type {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  display: grid;
+  gap: var(--catch-space-s2);
+  padding: var(--catch-space-s5);
+  color: var(--catch-color-light-surface);
+}
+
+.city {
+  font-family: var(--catch-font-mono), monospace;
+  font-size: var(--catch-typography-brand-kicker-size);
+  font-weight: var(--catch-typography-brand-kicker-weight);
+  line-height: var(--catch-typography-brand-kicker-line-height);
+  letter-spacing: var(--catch-typography-brand-kicker-tracking);
+  text-transform: uppercase;
+}
+
+.name,
+.monogram {
+  font-family: var(--catch-font-voice), sans-serif;
+  font-size: var(--catch-typography-brand-headline-s-size);
+  font-weight: var(--catch-typography-brand-headline-s-weight);
+  line-height: var(--catch-typography-brand-headline-s-line-height);
+  letter-spacing: var(--catch-typography-brand-headline-s-tracking);
+}
+
+.name {
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.monogram,
+.type[data-compact] .city,
+.type[data-compact] .name {
+  display: none;
+}
+
+.type[data-compact] .monogram {
+  display: block;
+}
+
+@container (max-width: 159px) {
+  .type {
+    padding: var(--catch-space-s3);
+  }
+
+  .city,
+  .name {
+    display: none;
+  }
+
+  .monogram {
+    display: block;
+  }
+}
+
+@container (min-width: 600px) {
+  .type {
+    padding: var(--catch-space-s8);
+  }
+
+  .name {
+    font-size: var(--catch-typography-brand-display-size);
+    font-weight: var(--catch-typography-brand-display-weight);
+    line-height: var(--catch-typography-brand-display-line-height);
+    letter-spacing: var(--catch-typography-brand-display-tracking);
+  }
+}
