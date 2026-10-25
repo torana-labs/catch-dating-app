@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "supply-event-publication-v1",
+  "mode": "auto_publish_approved_organizers",
+  "decision": {
+    "decidedBy": "owner",
+    "decidedAt": "2026-10-25",
+    "reference": "Linear CAT-213, owner comment 2026-10-25",
+    "summary": "Imported events auto-publish for organisers whose listing staff have already approved, provided the event passes automated checks. Staff can withdraw any auto-published event. Everything else waits for staff review."
+  }
+}

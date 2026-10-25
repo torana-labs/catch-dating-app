@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/operations/supply-intake/event-publication-policy.schema.json",
+  "title": "SupplyIntakeEventPublicationPolicy",
+  "description": "Whether events Supply Intake imported for an approved organizer listing publish automatically when they pass every automated check, or always wait for staff. Either way staff can publish what is waiting and withdraw anything published.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "policyVersion", "mode", "decision"],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "policyVersion": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,119}$"},
+    "mode": {
+      "type": "string",
+      "enum": ["staff_review", "auto_publish_approved_organizers"],
+      "description": "staff_review: every imported event waits for staff. auto_publish_approved_organizers: once staff approve an organizer's listing, its events that pass every automated check publish without a person; the rest wait for staff."
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decidedBy", "decidedAt", "reference", "summary"],
+      "description": "The product decision this mode records.",
+      "properties": {
+        "decidedBy": {"type": "string", "minLength": 1, "maxLength": 80},
+        "decidedAt": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
+        "reference": {"type": "string", "minLength": 1, "maxLength": 200},
+        "summary": {"type": "string", "minLength": 1, "maxLength": 1000}
+      }
+    }
+  }
+}
