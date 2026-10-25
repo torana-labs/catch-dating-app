@@ -3403,6 +3403,22 @@
             "dartType": "String?",
             "tsType": "string",
             "notes": "The select recipe's empty first choice, which selects null."
+          },
+          {
+            "name": "prefixText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Input recipe: fixed text before the value, such as a \"+91\" dialling code, in the secondary ink. React describes the input with it."
+          },
+          {
+            "name": "suffixText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Input recipe: fixed text after the value, such as a unit, in the secondary ink."
           }
         ],
         "states": [
@@ -4670,6 +4686,8 @@
             "select-hint",
             "hidden-label",
             "leading",
+            "prefix",
+            "suffix",
             "dark"
           ]
         },
@@ -8709,6 +8727,28 @@
           "CatchStepper.actions"
         ]
       },
+      "react": {
+        "symbol": "CatchStepper",
+        "file": "packages/web-ui/src/components/CatchStepper.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchStepper.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "interactive",
+            "min-bound",
+            "max-bound",
+            "disabled",
+            "custom-step",
+            "custom-format",
+            "explicit-actions",
+            "keyboard-focused",
+            "dark"
+          ]
+        },
+        "notes": "CatchStepper.actions is recipe=\"actions\" on the one component. A pointer press steps and then repeats on Flutter's cadence (400ms, 110ms, then 55ms after ten repeats) while held; a keyboard click steps once. labelledBy is web-only: it names the stepper as a group from visible text such as the board's \"Places\"."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -12449,6 +12489,27 @@
         "constructors": [
           "CatchCodeInput"
         ]
+      },
+      "react": {
+        "symbol": "CatchCodeInput",
+        "file": "packages/web-ui/src/components/CatchCodeInput.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchCodeInput.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "empty",
+            "partial",
+            "active-caret",
+            "complete",
+            "custom-length",
+            "no-caret",
+            "error",
+            "dark"
+          ]
+        },
+        "notes": "Digit cells over one transparent native input with autocomplete one-time-code and a numeric keyboard, so paste, SMS autofill and screen readers use one text field, as in Flutter. Flutter's controller has no React prop; value is the web's optional controlled code, and the component keeps its own otherwise."
       },
       "design": {
         "figma": {

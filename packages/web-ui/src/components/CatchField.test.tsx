@@ -66,6 +66,25 @@ describe("CatchField input recipe", () => {
     expect(counter.hasAttribute("data-visible")).toBe(false);
   });
 
+  it("draws prefix and suffix text beside the value and describes the input with them", () => {
+    render(<CatchField recipe="input" title="Your mobile number" prefixText="+91" suffixText="IN"
+      helperText="Your pass comes by text." keyboardType="phone" value="" />);
+
+    const input = screen.getByLabelText("Your mobile number");
+    const described = input.getAttribute("aria-describedby")!.split(" ")
+      .map((id) => document.getElementById(id)?.textContent);
+    expect(described).toEqual(["+91", "IN", "Your pass comes by text."]);
+    expect(input.previousElementSibling?.textContent).toBe("+91");
+    expect(input.nextElementSibling?.textContent).toBe("IN");
+  });
+
+  it("ignores blank affixes", () => {
+    render(<CatchField recipe="input" title="Name" prefixText=" " value="" />);
+    const input = screen.getByLabelText("Name");
+    expect(input.getAttribute("aria-describedby")).toBeNull();
+    expect(input.previousElementSibling?.tagName).toBe("LABEL");
+  });
+
   it("describes the field with its error before its helper", () => {
     const {rerender} = render(<CatchField recipe="input" title="Name" helperText="As on your ID"
       value="" />);
