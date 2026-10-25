@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.38.2
+version: 0.39.0
 updated: 2026-10-25
 owner: web_platform
 status: active
@@ -577,8 +577,12 @@ only `firebase.ts` to import the generated callable types.
   updates while another surface refactor is dirty. Platform ownership is part
   of the contract because `system-ui` is intentionally stack-native: Darwin
   and Linux captures never compare against one another. React CI pins the
-  blocking Linux capture to Ubuntu 24.04 and uploads actual plus diff images on
-  failure; manual baseline-capture runs upload review artifacts before commit.
+  Linux capture to Ubuntu 24.04 and runs `--report`: changed, missing and stale
+  baselines are listed in the job summary with actual plus diff images in the
+  diagnostics artifact, and never fail the run, because the product is still
+  changing visually on purpose. A ready story that cannot render still fails.
+  Plain `--check` (`npm run test:visual`) stays strict for local review.
+  Manual baseline-capture runs upload review artifacts before commit.
 - `web:admin-bundle-budget` reads the built Vite manifest and ratchets both the
   admin entry chunk and largest async chunk. Query/API controllers belong
   behind lazy route wrappers; importing one into `admin/src/app/App.tsx` is a

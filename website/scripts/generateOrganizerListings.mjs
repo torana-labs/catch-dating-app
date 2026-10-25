@@ -13,6 +13,14 @@ import {
   schemaErrorMessages,
   validateWebsiteHostListingProjection,
 } from "../../tool/contracts/generated/schema_contract_validators.mjs";
+import {
+  civilInstant,
+  eventOutcomesAt,
+  eventStateAt,
+  personaForPerson,
+  validateDemoWorld,
+} from "../../tool/demo/lib/demo_world.mjs";
+import {marketForIdOrAlias} from "../../tool/lib/location_markets.mjs";
 import {inMarket} from "../src/content/markets/in.ts";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -74,6 +82,9 @@ const demoScenarioRoot = path.resolve(
   args.demoScenarioRoot ??
     path.join(repoRoot, "tool", "demo", "demo_seed", "scenarios")
 );
+// The New York host sales demo world, shown at the moment its story is set.
+const demoListingWorlds = [{file: "us-nyc-host-demo.json", moment: "live"}];
+
 const generatedPath = path.resolve(
   args.output ??
     path.join(websiteRoot, "src", "generated", "hostListings.json")
@@ -475,14 +486,12 @@ function validateListingProjections(listings) {
 }
 
 function appCreatedDemoListings() {
-  return ["host-demo.json"]
-    .map((file) => {
-      const config = JSON.parse(
-        fs.readFileSync(path.join(demoScenarioRoot, file), "utf8")
-      );
-      return listingFromSalesDemo(config);
-    })
-    .filter(Boolean);
+  return demoListingWorlds.map(({file, moment}) => {
+    const world = validateDemoWorld(JSON.parse(
+      fs.readFileSync(path.join(demoScenarioRoot, file), "utf8")
+    ), file);
+    return listingFromDemoWorld(world, moment);
+  });
 }
 
 function listingFromOrganizerIntakeProjection(entry, {liveMarketsOnly = false} = {}) {
@@ -593,17 +602,18 @@ function listingFromOrganizerIntakeProjection(entry, {liveMarketsOnly = false} =
   };
 }
 
-function listingFromSalesDemo(config) {
-  const demo = config.salesDemo;
-  if (!demo?.club || !demo.market) return null;
-  const club = demo.club;
+function listingFromDemoWorld(world, moment) {
+  const club = world.organizer;
+  const market = marketForIdOrAlias(club.city);
+  if (!market) fail(`${world.id} organizer city ${club.city} is not a known market.`);
   const slug = slugForName(club.name);
-  const citySlug = demo.market.city;
-  const city = demo.market.cityLabel;
+  const citySlug = market.slug;
+  const city = market.cityLabel;
   const path = `/organizers/${citySlug}/${slug}/`;
-  const events = salesDemoEvents(demo);
-  const reviews = salesDemoReviews(demo);
-  const scorecard = events.find((event) => event.scorecard)?.scorecard ?? null;
+  const now = civilInstant(world.timeZone, world.moments[moment]);
+  const events = demoWorldEvents(world, moment, now);
+  const reviews = demoWorldReviews(world, now);
+  const reported = latestEndedEvent(world, moment);
   const nextEvent = events.find((event) => event.timeline === "upcoming");
   const authority = organizerAuthority({
     ownershipState: "userCreated",
@@ -627,8 +637,8 @@ function listingFromSalesDemo(config) {
     slug,
     city,
     citySlug,
-    region: "New York",
-    country: "United States",
+    region: market.regionName,
+    country: market.countryName,
     path,
     category: "Catch-created host club",
     status: "claimed",
@@ -647,7 +657,7 @@ function listingFromSalesDemo(config) {
     formats: titleCaseList(club.tags ?? []),
     facts: [
       {label: "Location", value: `${club.area}, ${city}`},
-      {label: "Host", value: demo.host.displayName},
+      {label: "Host", value: world.host.displayName},
       {label: "Members", value: String(club.memberCount)},
       {label: "Rating", value: `${club.rating.toFixed(1)} from ${club.reviewCount} reviews`},
       {label: "Next event", value: nextEvent?.date ?? "Demo event schedule"},
@@ -661,19 +671,12 @@ function listingFromSalesDemo(config) {
       nextEventLabel: nextEvent?.title ?? null,
     },
     host: {
-      name: demo.host.displayName,
+      name: world.host.displayName,
       role: "Owner",
       avatarUrl: null,
     },
     catchEvents: events,
-    eventSuccessSummary: scorecard ? {
-      bookedCount: scorecard.bookedCount,
-      checkedInCount: scorecard.checkedInCount,
-      mutualMatchCount: scorecard.mutualMatchCount,
-      chatStartedCount: scorecard.chatStartedCount,
-      catchSentCount: scorecard.catchSentCount,
-      safetyIncidentCount: scorecard.safetyIncidentCount,
-    } : null,
+    eventSuccessSummary: reported ? eventSuccessSummary(world, reported.id, moment) : null,
     eventEvidence: [],
     reviews,
     fitNotes: [
@@ -684,7 +687,7 @@ function listingFromSalesDemo(config) {
     missingEvidence: [],
     sources: [{
       type: "catch_demo",
-      label: "Catch host-demo scenario",
+      label: "Catch demo world",
       detail:
         "First-party synthetic club used for host workflow, roster, review, payment, and Playbook QA.",
       confidence: "high",
@@ -696,12 +699,12 @@ function listingFromSalesDemo(config) {
     publicApi,
     authority,
     capabilities: listingCapabilities(authority, publicApi),
-    lastVerifiedAt: dateLabel({_seconds: Date.parse(demo.referenceNow) / 1000}),
+    lastVerifiedAt: dateLabel({_seconds: now.getTime() / 1000}),
     searchText: searchText([
       club.name,
       city,
       club.area,
-      demo.host.displayName,
+      world.host.displayName,
       ...(club.tags ?? []),
       ...events.flatMap((event) => [event.title, event.activityKind]),
     ]),
@@ -725,104 +728,106 @@ function publicSourcesForOrganizerIntake(sources) {
   });
 }
 
-function salesDemoEvents(demo) {
-  const now = new Date(demo.referenceNow);
-  return (demo.events ?? []).map((event) => {
-    const start = new Date(event.startTime);
-    const end = new Date(event.endTime);
-    return {
-      id: event.id,
-      role: event.role,
-      title: titleForDemoEvent(event),
-      activityKind: event.activityKind,
-      timeline: start > now ? "upcoming" : "past",
-      startTime: event.startTime,
-      endTime: event.endTime,
-      timezone: "America/New_York",
-      date: eventDateLabel(start, end),
-      location: event.meetingPoint,
-      locationDetails: event.locationDetails ?? "",
-      summary: event.description,
-      capacityLimit: event.capacityLimit,
-      bookedCount: event.bookedCount,
-      checkedInCount: event.checkedInCount,
-      waitlistedCount: event.waitlistedCount,
-      priceLabel: priceLabel(event.priceInPaise),
-      scorecard: event.scorecard ?? null,
-    };
-  });
+// Each world event as the website shows it at the moment; counts are
+// derived from the world's guest records.
+function demoWorldEvents(world, moment, now) {
+  return world.events
+    .map((event) => {
+      const venue = world.venues.find((item) => item.id === event.venueId);
+      const start = civilInstant(world.timeZone, `${event.civilDate}T${event.startTime}:00`);
+      const end = civilInstant(world.timeZone, `${event.civilDate}T${event.endTime}:00`);
+      const state = eventStateAt(world, event.id, moment);
+      return {
+        id: event.id,
+        role: "Hosted event",
+        title: event.name,
+        activityKind: event.activityKind,
+        timeline: start > now ? "upcoming" : "past",
+        startTime: start.toISOString(),
+        endTime: end.toISOString(),
+        timezone: world.timeZone,
+        date: eventDateLabel(start, end, world.timeZone),
+        location: venue.name,
+        locationDetails: venue.directions,
+        summary: event.description,
+        capacityLimit: event.capacity,
+        bookedCount: state.booked,
+        checkedInCount: state.checkedIn,
+        waitlistedCount: state.waitlisted,
+        priceLabel: priceLabel(event.priceInPaise),
+        scorecard: null,
+      };
+    })
+    .sort((a, b) => b.startTime.localeCompare(a.startTime));
 }
 
-function salesDemoReviews(demo) {
-  const baseDate = new Date(demo.referenceNow);
-  const reviewedEventId =
-    demo.events?.find((event) => event.role === "hostPostEventReport")?.id ?? null;
-  return [
-    {
-      id: `${demo.club.id}-verified-review-1`,
-      eventId: reviewedEventId,
-      reviewerName: "Maya S.",
-      rating: 5,
-      comment:
-        "The host kept the dinner moving without making it feel forced. Easy arrivals, good prompts, and useful follow-up after.",
-      createdAt: offsetIso(baseDate, -2),
-      verificationStatus: "verified",
-      source: "catchEvent",
-      isAnonymous: false,
-      ownerResponse: null,
-    },
-    {
-      id: `${demo.club.id}-verified-review-2`,
-      eventId: reviewedEventId,
-      reviewerName: "Daniel K.",
-      rating: 5,
-      comment:
-        "The rotations made it simple to meet more people than I would have on my own, and the post-event catch window felt private.",
-      createdAt: offsetIso(baseDate, -3),
-      verificationStatus: "verified",
-      source: "catchEvent",
-      isAnonymous: false,
-      ownerResponse: null,
-    },
-    {
-      id: `${demo.club.id}-verified-review-3`,
-      eventId: reviewedEventId,
-      reviewerName: "Anonymous attendee",
-      rating: 4,
-      comment:
-        "Good crowd and clear structure. I liked that the host could adjust the live flow when the group changed.",
-      createdAt: offsetIso(baseDate, -5),
-      verificationStatus: "verified",
-      source: "catchEvent",
-      isAnonymous: true,
-      ownerResponse: null,
-    },
-  ];
+function latestEndedEvent(world, moment) {
+  return world.events
+    .filter((event) => eventStateAt(world, event.id, moment).phase === "ended")
+    .sort((a, b) => `${b.civilDate}T${b.endTime}`.localeCompare(`${a.civilDate}T${a.endTime}`))[0] ?? null;
 }
 
-function titleForDemoEvent(event) {
-  if (event.activityKind === "dinner") return "Hosted long-table dinner";
-  if (event.activityKind === "pickleball") return "Social pickleball night";
-  if (event.activityKind === "socialRun") return "Hudson River social run";
-  return "Hosted singles mixer";
+// The format has no safety incident records, so the count is zero.
+function eventSuccessSummary(world, eventId, moment) {
+  const state = eventStateAt(world, eventId, moment);
+  const outcomes = eventOutcomesAt(world, eventId, moment);
+  return {
+    bookedCount: state.booked,
+    checkedInCount: state.checkedIn,
+    mutualMatchCount: outcomes.mutualMatches,
+    chatStartedCount: outcomes.chatsStarted,
+    catchSentCount: outcomes.catchSent,
+    safetyIncidentCount: 0,
+  };
 }
 
-function eventDateLabel(start, end) {
+// Reviews written by the moment, newest first.
+function demoWorldReviews(world, now) {
+  const club = world.organizer;
+  return world.events
+    .flatMap((event) => (event.reviews ?? []).map((review) => ({event, review})))
+    .map(({event, review}) => ({
+      event,
+      review,
+      createdAt: civilInstant(world.timeZone, review.createdAt),
+    }))
+    .filter(({createdAt}) => createdAt <= now)
+    .sort((a, b) => b.createdAt - a.createdAt)
+    .map(({event, review, createdAt}, index) => {
+      const persona = personaForPerson(world, review.personId);
+      return {
+        id: `${club.id}-verified-review-${index + 1}`,
+        eventId: event.id,
+        reviewerName: review.anonymous ?
+          "Anonymous attendee" :
+          `${persona.firstName} ${persona.lastName[0]}.`,
+        rating: review.rating,
+        comment: review.comment,
+        createdAt: createdAt.toISOString(),
+        verificationStatus: "verified",
+        source: "catchEvent",
+        isAnonymous: review.anonymous,
+        ownerResponse: null,
+      };
+    });
+}
+
+function eventDateLabel(start, end, timeZone) {
   const date = new Intl.DateTimeFormat("en", {
     month: "short",
     day: "numeric",
     year: "numeric",
-    timeZone: "America/New_York",
+    timeZone,
   }).format(start);
   const time = new Intl.DateTimeFormat("en", {
     hour: "numeric",
     minute: "2-digit",
-    timeZone: "America/New_York",
+    timeZone,
   }).format(start);
   const endTime = new Intl.DateTimeFormat("en", {
     hour: "numeric",
     minute: "2-digit",
-    timeZone: "America/New_York",
+    timeZone,
   }).format(end);
   return `${date}, ${time}-${endTime}`;
 }
@@ -838,12 +843,6 @@ function uniqueById(items) {
     if (!byId.has(item.id)) byId.set(item.id, item);
   }
   return Array.from(byId.values());
-}
-
-function offsetIso(date, days) {
-  const next = new Date(date);
-  next.setUTCDate(next.getUTCDate() + days);
-  return next.toISOString();
 }
 
 function titleCaseList(values) {

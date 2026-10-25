@@ -32,13 +32,9 @@ export function EventDetailHeroLayout({activityToken, children, eyebrow, facts, 
   </section>;
 }
 
-export function EventDetailMedia({alt, src, fallback}: {
-  alt: string; src?: string | null; fallback: ReactNode;
-}) {
-  const [failed, setFailed] = useState<string | null>(null);
-  return src && failed !== src ? <picture className="event-detail-media">
-    <img alt={alt} src={src} onError={() => setFailed(src)} />
-  </picture> : <div className="event-detail-media event-detail-media--typographic" aria-hidden="true">{fallback}</div>;
+/** Frames the hero's event media; EventThumbnail draws the photo or activity cover. */
+export function EventDetailMedia({children}: {children: ReactNode}) {
+  return <div className="event-detail-media">{children}</div>;
 }
 
 export function EventDetailBodyLayout({children, host}: {children: ReactNode; host: ReactNode}) {

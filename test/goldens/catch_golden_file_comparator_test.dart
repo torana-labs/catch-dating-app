@@ -67,6 +67,68 @@ void main() {
       throwsA(isA<FlutterError>()),
     );
   });
+
+  test(
+    'report mode records changed and missing baselines without failing',
+    () async {
+      final directory = await Directory.systemTemp.createTemp(
+        'catch-golden-comparator-report-',
+      );
+      addTearDown(() => directory.delete(recursive: true));
+
+      await File(
+        '${directory.path}/baseline.png',
+      ).writeAsBytes(_pngWithChangedPixels(0));
+      final report = File('${directory.path}/report.tsv');
+      final comparator = CatchGoldenFileComparator(
+        directory.uri.resolve('comparator_test.dart'),
+        reportPath: report.path,
+      );
+
+      // Inside tolerance: nothing reported.
+      expect(
+        await comparator.compare(
+          _pngWithChangedPixels(1),
+          Uri.parse('baseline.png'),
+        ),
+        isTrue,
+      );
+      expect(report.existsSync(), isFalse);
+
+      // Two of 400 pixels differ: 0.50%, reported with diff images.
+      expect(
+        await comparator.compare(
+          _pngWithChangedPixels(2),
+          Uri.parse('baseline.png'),
+        ),
+        isTrue,
+      );
+      expect(
+        File(
+          '${directory.path}/failures/baseline_isolatedDiff.png',
+        ).existsSync(),
+        isTrue,
+      );
+
+      // No baseline yet: the render is kept for review.
+      expect(
+        await comparator.compare(
+          _pngWithChangedPixels(0),
+          Uri.parse('new.png'),
+        ),
+        isTrue,
+      );
+      expect(
+        File('${directory.path}/failures/new_testImage.png').existsSync(),
+        isTrue,
+      );
+
+      expect(report.readAsLinesSync(), [
+        'baseline.png\t0.5000%\t0.30%',
+        'new.png\tno baseline\t0.30%',
+      ]);
+    },
+  );
 }
 
 Uint8List _pngWithChangedPixels(int count) {

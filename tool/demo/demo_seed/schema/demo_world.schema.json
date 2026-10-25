@@ -49,7 +49,7 @@
         "description": {"$ref": "#/$defs/text"},
         "city": {"$ref": "#/$defs/slug"},
         "area": {"$ref": "#/$defs/text"},
-        "tags": {"type": "array", "items": {"$ref": "#/$defs/slug"}},
+        "tags": {"type": "array", "items": {"$ref": "#/$defs/text"}},
         "memberCount": {"type": "integer", "minimum": 0},
         "rating": {"type": "number", "minimum": 0, "maximum": 5},
         "reviewCount": {"type": "integer", "minimum": 0}
@@ -89,7 +89,8 @@
       "type": "array",
       "minItems": 1,
       "items": {"$ref": "#/$defs/event"}
-    }
+    },
+    "seedWorld": {"$ref": "#/$defs/seedWorld"}
   },
   "$defs": {
     "slug": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$"},
@@ -97,7 +98,7 @@
     "civilDate": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
     "civilTime": {"type": "string", "pattern": "^\\d{2}:\\d{2}$"},
     "civilDateTime": {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}$"},
-    "demoPhone": {"type": "string", "pattern": "^\\+9190000\\d{5}$"},
+    "demoPhone": {"type": "string", "pattern": "^(\\+9190000\\d{5}|\\+1[2-9]\\d{2}55501\\d{2})$"},
     "demoEmail": {"type": "string", "pattern": "^[a-z0-9._-]+@example\\.test$"},
     "event": {
       "type": "object",
@@ -149,7 +150,93 @@
               "cancelledAt": {"$ref": "#/$defs/civilDateTime"}
             }
           }
+        },
+        "waitlist": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["personId", "joinedAt"],
+            "properties": {
+              "personId": {"$ref": "#/$defs/slug"},
+              "joinedAt": {"$ref": "#/$defs/civilDateTime"}
+            }
+          }
+        },
+        "catches": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["personId", "targetId", "sentAt"],
+            "properties": {
+              "personId": {"$ref": "#/$defs/slug"},
+              "targetId": {"$ref": "#/$defs/slug"},
+              "sentAt": {"$ref": "#/$defs/civilDateTime"}
+            }
+          }
+        },
+        "chats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["personIds", "startedAt"],
+            "properties": {
+              "personIds": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/slug"}},
+              "startedAt": {"$ref": "#/$defs/civilDateTime"}
+            }
+          }
+        },
+        "reviews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["personId", "rating", "comment", "createdAt", "anonymous"],
+            "properties": {
+              "personId": {"$ref": "#/$defs/slug"},
+              "rating": {"type": "integer", "minimum": 1, "maximum": 5},
+              "comment": {"$ref": "#/$defs/text"},
+              "createdAt": {"$ref": "#/$defs/civilDateTime"},
+              "anonymous": {"type": "boolean"}
+            }
+          }
         }
+      }
+    },
+    "seedWorld": {
+      "description": "Generator for seeded demo environments (tool/demo/seed_demo_data.mjs). It casts the world's people; its event patterns are relative to the seed time.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "cities", "usersPerCity", "clubsPerCity", "eventsPerClub", "anchorsPerRun", "preferPaidEvents", "eventPatterns", "recommendedCommands"],
+      "properties": {
+        "description": {"$ref": "#/$defs/text"},
+        "cities": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/slug"}},
+        "usersPerCity": {"type": "integer", "minimum": 1},
+        "clubsPerCity": {"type": "integer", "minimum": 1},
+        "eventsPerClub": {"type": "integer", "minimum": 1},
+        "anchorsPerRun": {"type": "integer", "minimum": 0},
+        "preferPaidEvents": {"type": "boolean"},
+        "eventPatterns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "offsetHours", "price", "capacity", "durationMinutes", "activityKind", "meetingPointKey"],
+            "properties": {
+              "kind": {"enum": ["upcomingFree", "upcomingPaid", "upcomingFull", "upcomingWaitlist", "pastOpen", "pastOld"]},
+              "offsetHours": {"type": "number"},
+              "price": {"type": "integer", "minimum": 0},
+              "capacity": {"type": "integer", "minimum": 1},
+              "durationMinutes": {"type": "integer", "minimum": 1},
+              "activityKind": {"type": "string"},
+              "meetingPointKey": {"$ref": "#/$defs/slug"}
+            }
+          }
+        },
+        "recommendedCommands": {"type": "array", "items": {"$ref": "#/$defs/text"}}
       }
     }
   }

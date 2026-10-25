@@ -21,9 +21,6 @@
     "lib/core/celebration/celebration_screen.dart": {
       "display": 2
     },
-    "lib/core/widgets/activity_map_pin.dart": {
-      "badge": 1
-    },
     "lib/core/widgets/ordered_photo_picker.dart": {
       "monoLabel": 1
     },

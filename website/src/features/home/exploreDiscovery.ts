@@ -1,6 +1,7 @@
 import {activeMarket} from "@content/markets";
 import {exploreCopy} from "@content/explore";
-import {homeRouteStateForSearch, categoryForActivity, homeEditorialImage, type HomeCategory} from "./homeDiscovery";
+import {activityKindFromValue} from "@catch/web-ui/artwork";
+import {homeRouteStateForSearch, categoryForActivity, type HomeCategory} from "./homeDiscovery";
 import {buildPublicEventDetailRecords} from "../events/eventDetailModel";
 import type {HostListing} from "../organizers/types";
 import {publicExperienceActivities} from "../organizers/publicExperience";
@@ -26,7 +27,7 @@ export function buildExploreDiscovery(listings: readonly HostListing[], filters:
   }).map(event => {
     const category = categoryForActivity(event.activityKind);
     return {...event, category, experienceActivities: publicExperienceActivities(event.catchExperienceActivities),
-      image: event.photoUrl || homeEditorialImage(category), illustrative: !event.photoUrl,
+      coverActivityKind: activityKindFromValue(event.activityKind),
       availability: event.remainingCapacity === 0 ? exploreCopy.full : event.registrationState === "closed" ? exploreCopy.closed : null};
   }).sort((a,b) => Date.parse(a.startTime)-Date.parse(b.startTime) || a.eventId.localeCompare(b.eventId));
   const terms = filters.query.toLocaleLowerCase().split(/\s+/).filter(Boolean);
