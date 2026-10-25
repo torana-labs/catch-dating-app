@@ -310,7 +310,7 @@ function QualityTable({
                 <span>{row.source} · {row.category}</span>
               </AdminRowTitle>
             </td>
-            <td><CatchBadge tone={riskTone(row)} label={row.severity} /></td>
+            <td><CatchBadge recipe="status" tone={riskTone(row)} label={row.severity} /></td>
             <td>{row.owner}</td>
             <td>{row.timestampLabel}</td>
             <td><TableActionButton onClick={() => onSelect(row)}>Review</TableActionButton></td>
@@ -347,7 +347,7 @@ function QualityDetailPanel({
         <StateRow label="Source" value={selected.source} />
         <StateRow label="Category" value={selected.category} />
         <StateRow label="Source state" value={selected.state} />
-        <StateRow label="Severity" value={<CatchBadge tone={riskTone(selected)} label={selected.severity} />} />
+        <StateRow label="Severity" value={<CatchBadge recipe="status" tone={riskTone(selected)} label={selected.severity} />} />
         <StateRow label="Owner" value={selected.owner} />
         <StateRow label="Freshness" value={selected.timestampLabel} />
         <StateRow label="Generated" value={formatDateTime(selected.updatedAt)} />

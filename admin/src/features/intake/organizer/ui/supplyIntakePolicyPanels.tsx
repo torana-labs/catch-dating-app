@@ -49,7 +49,7 @@ function SupplyIntakePolicies({controller}: {controller: SupplyIntakePolicyContr
       const [label, tone] = stateOf(policy);
       return <AdminIntakeSection key={policy.gapId}>
         <StateRow label={policy.label} value={<>
-          <CatchBadge tone={tone} label={label} />{" "}
+          <CatchBadge recipe="status" tone={tone} label={label} />{" "}
           <AdminButton onClick={() => setOpen(policy.gapId)}>Decide</AdminButton>
         </>} />
         <CatchText as="p" variant="supporting">{policy.enables}</CatchText>

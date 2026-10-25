@@ -1,9 +1,10 @@
 /*
  * Flutter CatchBadge (packages/catch_ui): _BadgeMetrics and _BadgePalette.
- * Every declaration is scoped under .badge so a surface's legacy element
- * rules cannot restyle library badges.
+ * The badge root is a span, so its base rule carries two selectors and its
+ * inner spans reset what they inherit: a surface's legacy element rule
+ * (".state-row span") cannot restyle library badges.
  */
-.badge {
+.badge[data-recipe] {
   /* Interim values until the token generator carries them (badgeParity.test.ts). */
   --catch-badge-subtle-fill-alpha: 0.12;
   --catch-badge-subtle-border-alpha: 0.22;
@@ -67,8 +68,20 @@
   vertical-align: middle;
 }
 
+.badge :is(.label, .icon, .dot) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
 .badge .label {
   min-width: 0;
+  background: none;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -78,6 +91,7 @@
   flex: none;
   width: var(--catch-badge-icon-size);
   height: var(--catch-badge-icon-size);
+  background: none;
 }
 
 .badge .icon > svg {

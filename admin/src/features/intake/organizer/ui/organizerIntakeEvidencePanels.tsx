@@ -113,7 +113,7 @@ function OrganizerPromotionExecutionView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{phase.label}</CatchText>
               </div>
-              <CatchBadge tone={promotionPhaseTone(phase.status)} label={phase.status.replaceAll("_", " ")} />
+              <CatchBadge recipe="status" tone={promotionPhaseTone(phase.status)} label={phase.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -228,7 +228,7 @@ function OrganizerPolicyGapRegisterView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{gap.gapId.replaceAll("_", " ")}</CatchText>
                 </div>
-                <CatchBadge tone={gap.status === "ready" ? "success" : "neutral"} label={gap.severity} />
+                <CatchBadge recipe="status" tone={gap.status === "ready" ? "success" : "neutral"} label={gap.severity} />
               </AdminSearchCandidateHeader>
               <AdminIntakeStateGrid>
                 <StateRow label="Status" value={gap.status.replaceAll("_", " ")} />
@@ -378,7 +378,7 @@ function OrganizerPolicyDecisionPacketsView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{packet.decisionPrompt}</CatchText>
               </div>
-              <CatchBadge tone={packet.status === "ready" ? "success" : "neutral"} label={packet.severity} />
+              <CatchBadge recipe="status" tone={packet.status === "ready" ? "success" : "neutral"} label={packet.severity} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -459,7 +459,7 @@ function OrganizerCanonicalHostRegistryView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{entry.displayName}</CatchText>
               </div>
-              <CatchBadge tone={entry.publicPresence.publishStatus === "published" ? "success" : "neutral"} label={entry.publicPresence.publishStatus} />
+              <CatchBadge recipe="status" tone={entry.publicPresence.publishStatus === "published" ? "success" : "neutral"} label={entry.publicPresence.publishStatus} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -535,7 +535,7 @@ function OrganizerCanonicalEvidenceIndexView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{record.displayName}</CatchText>
               </div>
-              <CatchBadge tone={record.evidence.status === "resolved_artifact" ? "success" : "neutral"} label={record.evidence.status.replaceAll("_", " ")} />
+              <CatchBadge recipe="status" tone={record.evidence.status === "resolved_artifact" ? "success" : "neutral"} label={record.evidence.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -619,7 +619,7 @@ function OrganizerPublicationReviewPacketsView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{packet.displayName}</CatchText>
               </div>
-              <CatchBadge tone={packet.status === "ready_for_manual_publication_review" ? "success" : "neutral"} label={packet.status.replaceAll("_", " ")} />
+              <CatchBadge recipe="status" tone={packet.status === "ready_for_manual_publication_review" ? "success" : "neutral"} label={packet.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -751,7 +751,7 @@ function OrganizerPublicationImpactPreviewView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{entry.displayName}</CatchText>
               </div>
-              <CatchBadge tone={entry.status.includes("would_publish") ? "success" : "neutral"} label={entry.status.replaceAll("_", " ")} />
+              <CatchBadge recipe="status" tone={entry.status.includes("would_publish") ? "success" : "neutral"} label={entry.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>

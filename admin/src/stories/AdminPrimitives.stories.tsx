@@ -1199,7 +1199,7 @@ export const AdminStateRowStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminStateRow label="Canonical route" value="/organizers/afterfly/" />
-      <AdminStateRow label="Risk" value={<CatchBadge tone="success" label="Low" />} />
+      <AdminStateRow label="Risk" value={<CatchBadge recipe="status" tone="success" label="Low" />} />
     </AdminWorkspace>
   ),
 };
@@ -1260,7 +1260,7 @@ export const AdminTagListStory: Story = {
       <AdminTagList>
         <CatchBadge label="evidence" />
         <CatchBadge label="claim handoff" />
-        <CatchBadge tone="success" label="ready" />
+        <CatchBadge recipe="status" tone="success" label="ready" />
       </AdminTagList>
     </AdminWorkspace>
   ),
@@ -1299,7 +1299,7 @@ export const TagListStory: Story = {
     <AdminWorkspace>
       <TagList>
         <CatchBadge label="queued" />
-        <CatchBadge tone="success" label="ready" />
+        <CatchBadge recipe="status" tone="success" label="ready" />
       </TagList>
     </AdminWorkspace>
   ),

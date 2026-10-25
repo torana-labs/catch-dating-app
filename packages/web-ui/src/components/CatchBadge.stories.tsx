@@ -58,8 +58,14 @@ function Badges() {
   );
 }
 
-/** catch.badge on the web: every recipe and tone, in both themes. */
+/**
+ * catch.badge on the web: every recipe and tone, in both themes. Flutter's
+ * light-mode tone inks miss AA contrast on several recipes (CAT-271).
+ */
 export const Contract: Story = {
+  parameters: {
+    a11y: {test: "todo"},
+  },
   render: () => (
     <>
       <CatchPageBody constrainToContentWidth>

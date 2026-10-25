@@ -87,7 +87,6 @@
   margin-top: var(--catch-space-s6);
 }
 
-.listing-badge-row span,
 .listing-format-row span {
   padding: 9px var(--catch-space-micro10);
   border: var(--catch-stroke-hairline) solid var(--website-line);

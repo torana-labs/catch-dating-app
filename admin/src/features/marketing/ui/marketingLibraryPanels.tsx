@@ -439,7 +439,7 @@ function MarketingRecommendations({
         <AdminCard key={set.id}>
           <CardHeader
             action={(
-              <CatchBadge tone={set.items.length > 0 ? "success" : "neutral"} label={`${set.items.length} picks`} />
+              <CatchBadge recipe="status" tone={set.items.length > 0 ? "success" : "neutral"} label={`${set.items.length} picks`} />
             )}
           >
             <div>
@@ -596,7 +596,7 @@ function MarketingAppFeatureMediaView({
             <AdminCard key={capture.id}>
               <CardHeader
                 action={(
-                  <CatchBadge tone={capture.assetState === "website_synced" ? "success" : "neutral"} label={capture.assetState.replaceAll("_", " ")} />
+                  <CatchBadge recipe="status" tone={capture.assetState === "website_synced" ? "success" : "neutral"} label={capture.assetState.replaceAll("_", " ")} />
                 )}
               >
                 <div>

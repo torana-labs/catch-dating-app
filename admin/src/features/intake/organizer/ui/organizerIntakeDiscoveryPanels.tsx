@@ -88,7 +88,7 @@ function OrganizerClaimTargetSyncPreviewView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{action.path}</CatchText>
                 </div>
-                <CatchBadge tone={action.writesRemoteData ? "success" : "neutral"} label={action.status.replaceAll("_", " ")} />
+                <CatchBadge recipe="status" tone={action.writesRemoteData ? "success" : "neutral"} label={action.status.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
               <AdminIntakeStateGrid>
@@ -167,7 +167,7 @@ function OrganizerCrawlRunPlanView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{intent.displayName}</CatchText>
               </div>
-              <CatchBadge tone={intent.action === "would_fetch" ? "success" : "neutral"} label={intent.action.replaceAll("_", " ")} />
+              <CatchBadge recipe="status" tone={intent.action === "would_fetch" ? "success" : "neutral"} label={intent.action.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
             <AdminIntakeStateGrid>
               <StateRow label="Run" value={intent.crawlRunId} />
@@ -240,7 +240,7 @@ function OrganizerRawArtifactStorageView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{artifact.path}</CatchText>
               </div>
-              <CatchBadge tone={artifact.storagePlan.action === "would_upload" ? "success" : "neutral"} label={artifact.storagePlan.action.replaceAll("_", " ")} />
+              <CatchBadge recipe="status" tone={artifact.storagePlan.action === "would_upload" ? "success" : "neutral"} label={artifact.storagePlan.action.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
             <AdminIntakeStateGrid>
               <StateRow label="Firestore" value={artifact.firestoreMode.replaceAll("_", " ")} />
@@ -533,7 +533,7 @@ function OrganizerPublishingContractsView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{contract.callablePayloadSchema}</CatchText>
               </div>
-              <CatchBadge tone="success" label="schema source" />
+              <CatchBadge recipe="status" tone="success" label="schema source" />
             </AdminSearchCandidateHeader>
             <AdminIntakeStateGrid>
               <StateRow label="Firestore" value={contract.firestoreSchema} />
@@ -626,7 +626,7 @@ function OrganizerSourceMentionResolutionView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{packet.packetId}</CatchText>
                 </div>
-                <CatchBadge tone={packet.humanReviewRequired ? "danger" : "success"} label={packet.resolutionState.replaceAll("_", " ")} />
+                <CatchBadge recipe="status" tone={packet.humanReviewRequired ? "danger" : "success"} label={packet.resolutionState.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
               <AdminIntakeStateGrid>
                 <StateRow label="Score" value={String(packet.score)} />
@@ -667,7 +667,7 @@ function OrganizerSourceMentionResolutionView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{cluster.displayNames.slice(0, 3).join(" / ") || cluster.clusterId}</CatchText>
               </div>
-              <CatchBadge tone={organizerIntakeEvidencePanels.sourceResolutionTone(cluster.resolutionState)} label={cluster.resolutionState.replaceAll("_", " ")} />
+              <CatchBadge recipe="status" tone={organizerIntakeEvidencePanels.sourceResolutionTone(cluster.resolutionState)} label={cluster.resolutionState.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
             <AdminIntakeStateGrid>
               <StateRow label="Score" value={String(cluster.score)} />
@@ -767,7 +767,7 @@ function OrganizerSearchCandidateCard({
           </AdminEyebrow>
           <CatchText as="h3" variant="sectionTitle">{candidate.title}</CatchText>
         </div>
-        <CatchBadge tone={candidate.reviewAction.includes("attach") ? "success" : "neutral"} label={candidate.reviewAction.replaceAll("_", " ")} />
+        <CatchBadge recipe="status" tone={candidate.reviewAction.includes("attach") ? "success" : "neutral"} label={candidate.reviewAction.replaceAll("_", " ")} />
       </AdminSearchCandidateHeader>
       <AdminIntakeStateGrid>
         <StateRow label="Candidate" value={candidate.candidateId} />

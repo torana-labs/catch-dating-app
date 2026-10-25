@@ -239,7 +239,7 @@ export const AdminPublishingLoadbarStory: Story = {
     <AdminWorkspace>
       <AdminPublishingLoadbar>
         <span>Publication packet loaded</span>
-        <CatchBadge tone="success" label="Synced" />
+        <CatchBadge recipe="status" tone="success" label="Synced" />
       </AdminPublishingLoadbar>
     </AdminWorkspace>
   ),
@@ -258,7 +258,7 @@ export const AdminSurfacePreviewStory: Story = {
       <AdminSurfacePreview>
         <AdminTagList>
           <CatchBadge label="public listing" />
-          <CatchBadge tone="success" label="claim CTA" />
+          <CatchBadge recipe="status" tone="success" label="claim CTA" />
         </AdminTagList>
         <QualityRow icon={<Eye size={16} />} tone="success">
           Preview copy matches the generated route payload.
@@ -298,7 +298,7 @@ export const AdminEventSupplyReviewGridStory: Story = {
           <tbody>
             <tr>
               <td>Venue import</td>
-              <td><CatchBadge tone="warning" label="Review" /></td>
+              <td><CatchBadge recipe="status" tone="warning" label="Review" /></td>
             </tr>
           </tbody>
         </DataTable>
@@ -633,7 +633,7 @@ export const AdminFeatureDropFeatureListStory: Story = {
         <AdminFeatureDropFeatureEditor>
           <strong>Organizer profiles</strong>
           <AdminTagList>
-            <CatchBadge tone="success" label="ready" />
+            <CatchBadge recipe="status" tone="success" label="ready" />
             <CatchBadge label="public route" />
           </AdminTagList>
         </AdminFeatureDropFeatureEditor>

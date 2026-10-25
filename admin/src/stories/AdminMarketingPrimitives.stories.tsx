@@ -402,7 +402,7 @@ export const AdminMarketingComposerStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminMarketingComposer>
-        <AdminMarketingComposerHeader status={<CatchBadge tone="success" label="Saved" />}>
+        <AdminMarketingComposerHeader status={<CatchBadge recipe="status" tone="success" label="Saved" />}>
           <AdminMarketingComposerBackButton>Back</AdminMarketingComposerBackButton>
           <h3>Launch post</h3>
         </AdminMarketingComposerHeader>
@@ -608,7 +608,7 @@ export const AdminMarketingFeatureShotCardStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminMarketingFeatureShotCard headline="Host live console" meta={<CatchBadge tone="success" label="Approved" />}>
+      <AdminMarketingFeatureShotCard headline="Host live console" meta={<CatchBadge recipe="status" tone="success" label="Approved" />}>
         <span>Recommended for launch carousel.</span>
       </AdminMarketingFeatureShotCard>
     </AdminWorkspace>
@@ -736,7 +736,7 @@ export const AdminMarketingLibraryCardStory: Story = {
       >
         <AdminTagList>
           <CatchBadge label="claim ready" />
-          <CatchBadge tone="success" label="verified" />
+          <CatchBadge recipe="status" tone="success" label="verified" />
         </AdminTagList>
       </AdminMarketingLibraryCard>
     </AdminWorkspace>
@@ -991,7 +991,7 @@ export const AdminMarketingSectionStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminMarketingSection meta={<CatchBadge tone="success" label="Ready" />} title="Caption">
+      <AdminMarketingSection meta={<CatchBadge recipe="status" tone="success" label="Ready" />} title="Caption">
         <AdminMarketingHelpText>Host-facing copy is ready for export.</AdminMarketingHelpText>
       </AdminMarketingSection>
     </AdminWorkspace>
@@ -1111,7 +1111,7 @@ export const AdminMarketingSlideEditorToplineStory: Story = {
     <AdminWorkspace>
       <AdminMarketingSlideEditorTopline>
         <strong>Slide 2</strong>
-        <CatchBadge tone="success" label="Ready" />
+        <CatchBadge recipe="status" tone="success" label="Ready" />
       </AdminMarketingSlideEditorTopline>
     </AdminWorkspace>
   ),
@@ -1417,7 +1417,7 @@ export const AdminMarketingImageEditorHeaderStory: Story = {
     <AdminWorkspace>
       <AdminMarketingImageEditorHeader>
         <strong>Visual review</strong>
-        <CatchBadge tone="success" label="Ready" />
+        <CatchBadge recipe="status" tone="success" label="Ready" />
       </AdminMarketingImageEditorHeader>
     </AdminWorkspace>
   ),

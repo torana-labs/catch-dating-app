@@ -161,7 +161,7 @@ function ListingEvents({row, controller, onClose}: {
       const reasons = event.blockers.map((code) => blockerLabels[code] ?? code);
       return <AdminIntakeSection key={event.eventWorkItemId}>
         <StateRow label={event.title ?? "Untitled event"} value={<>
-          <CatchBadge tone={tone} label={`${label}${event.publishedBy === "policy" ? " by policy" :
+          <CatchBadge recipe="status" tone={tone} label={`${label}${event.publishedBy === "policy" ? " by policy" :
             event.publishedBy === "staff" && event.state === "published" ? " by staff" : ""}`} />{" "}
           {when(event.startAt)}{event.venue ? ` · ${event.venue}` : ""}{event.priceLabel ? ` · ${event.priceLabel}` : ""}{" "}
           <AdminLinkButton href={event.sourceUrl} rel="noreferrer" target="_blank">{event.platform}</AdminLinkButton>

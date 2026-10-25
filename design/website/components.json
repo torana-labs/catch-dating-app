@@ -1711,6 +1711,10 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "BadgeRow",
+      "comparedWith": [
+        "catch.badge"
+      ],
+      "comparisonReason": "Wrapping row that lays out listing badges; each badge is the library CatchBadge.",
       "css": [
         "website/src/styles/organizers.css"
       ],

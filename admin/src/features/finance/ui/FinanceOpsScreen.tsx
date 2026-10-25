@@ -360,7 +360,7 @@ function FinanceTable({
               </AdminRowTitle>
             </td>
             <td>{row.sourceScope}</td>
-            <td><CatchBadge tone={riskTone(row.severity)} label={row.severity} /></td>
+            <td><CatchBadge recipe="status" tone={riskTone(row.severity)} label={row.severity} /></td>
             <td>{row.status}</td>
             <td><TableActionButton onClick={() => onSelect(row)}>Review</TableActionButton></td>
           </AdminTableRow>

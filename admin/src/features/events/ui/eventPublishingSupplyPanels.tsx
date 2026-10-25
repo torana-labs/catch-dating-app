@@ -257,7 +257,7 @@ function ExternalEventSupplyDetail({
           <AdminEyebrow>{event.targetPath}</AdminEyebrow>
           <CatchText as="h3" variant="sectionTitle">{event.title}</CatchText>
         </div>
-        <CatchBadge tone={externalEventNeedsReview(event) ? "neutral" : "success"} label={externalEventNeedsReview(event) ? "review open" : "reviewed"} />
+        <CatchBadge recipe="status" tone={externalEventNeedsReview(event) ? "neutral" : "success"} label={externalEventNeedsReview(event) ? "review open" : "reviewed"} />
       </AdminSearchCandidateHeader>
       <QualityList>
         <StateRow label="Canonical organizer" value={event.canonicalHostId} />

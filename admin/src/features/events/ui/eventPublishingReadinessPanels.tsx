@@ -335,7 +335,7 @@ function EventReadinessDetail({
           <AdminEyebrow>{row.targetPath}</AdminEyebrow>
           <CatchText as="h3" variant="sectionTitle">{row.title}</CatchText>
         </div>
-        <CatchBadge tone={row.publishReady ? "success" : "neutral"} label={row.publishReady ? "ready" : "blocked"} />
+        <CatchBadge recipe="status" tone={row.publishReady ? "success" : "neutral"} label={row.publishReady ? "ready" : "blocked"} />
       </AdminSearchCandidateHeader>
       <AdminIntakeStateGrid>
         <StateRow label="Source action" value={row.sourceActionId} />

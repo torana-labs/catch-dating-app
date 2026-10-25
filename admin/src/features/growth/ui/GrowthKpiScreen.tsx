@@ -273,7 +273,7 @@ function GrowthSignalTable({
             <td>{row.stage}</td>
             <td>{formatValue(row.value, row.unit)}</td>
             <td>
-              <CatchBadge tone={row.status === "ready" ? "success" : "warning"} label={row.status} />
+              <CatchBadge recipe="status" tone={row.status === "ready" ? "success" : "warning"} label={row.status} />
             </td>
             <td>
               <AdminRowTitle compact>

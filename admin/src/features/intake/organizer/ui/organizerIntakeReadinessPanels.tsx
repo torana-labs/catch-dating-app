@@ -145,7 +145,7 @@ function OrganizerOperatorActionQueueView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{action.subjectName}</CatchText>
               </div>
-              <CatchBadge tone={action.status === "requires_admin_decision" ? "success" : "neutral"} label={action.status.replaceAll("_", " ")} />
+              <CatchBadge recipe="status" tone={action.status === "requires_admin_decision" ? "success" : "neutral"} label={action.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -232,7 +232,7 @@ function OrganizerOperationalHealthView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{stream.label}</CatchText>
               </div>
-              <CatchBadge tone={organizerIntakeEvidencePanels.healthStatusTone(stream.status)} label={stream.status.replaceAll("_", " ")} />
+              <CatchBadge recipe="status" tone={organizerIntakeEvidencePanels.healthStatusTone(stream.status)} label={stream.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -335,7 +335,7 @@ function OrganizerPendingWorkCoverageView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{entry.label}</CatchText>
               </div>
-              <CatchBadge tone={organizerIntakeEvidencePanels.coverageStatusTone(entry.coverageStatus)} label={entry.coverageStatus.replaceAll("_", " ")} />
+              <CatchBadge recipe="status" tone={organizerIntakeEvidencePanels.coverageStatusTone(entry.coverageStatus)} label={entry.coverageStatus.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -461,7 +461,7 @@ function OrganizerPendingInputRequestView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{input.subjectName}</CatchText>
                 </div>
-                <CatchBadge tone={input.priority === "p0" ? "success" : "neutral"} label={input.owner.replaceAll("_", " ")} />
+                <CatchBadge recipe="status" tone={input.priority === "p0" ? "success" : "neutral"} label={input.owner.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
               <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
                 <strong>{input.prompt}</strong>
@@ -611,7 +611,7 @@ function OrganizerPendingInputRequestView({
                     </AdminEyebrow>
                     <CatchText as="h3" variant="sectionTitle">{followUp.label}</CatchText>
                   </div>
-                  <CatchBadge tone={organizerIntakeEvidencePanels.healthStatusTone(followUp.status)} label={followUp.status.replaceAll("_", " ")} />
+                  <CatchBadge recipe="status" tone={organizerIntakeEvidencePanels.healthStatusTone(followUp.status)} label={followUp.status.replaceAll("_", " ")} />
                 </AdminSearchCandidateHeader>
                 <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
                   <strong>{followUp.nextActions[0] ?? "Review workflow state."}</strong>
@@ -688,7 +688,7 @@ function OrganizerReviewedDecisionAnswerPacketsView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{entry.path}</CatchText>
                 </div>
-                <CatchBadge tone={entry.readyToApply ? "success" : "neutral"} label={entry.status.replaceAll("_", " ")} />
+                <CatchBadge recipe="status" tone={entry.readyToApply ? "success" : "neutral"} label={entry.status.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
               <AdminIntakeStateGrid>

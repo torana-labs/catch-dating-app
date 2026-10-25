@@ -185,7 +185,7 @@ function ActionExecutionTable({
                 </AdminRowTitle>
               </td>
               <td>
-                <CatchBadge tone={statusTone(row.status)} label={statusLabel(row.status)} />
+                <CatchBadge recipe="status" tone={statusTone(row.status)} label={statusLabel(row.status)} />
                 <AdminRowTitle compact>
                   <span>{durationLabel(row)}</span>
                   {row.errorMessage ? (

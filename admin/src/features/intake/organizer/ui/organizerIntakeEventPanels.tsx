@@ -226,7 +226,7 @@ function OrganizerExternalEventImportPlanView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{action.proposedReadOnlyEventDraft.eventId}</CatchText>
                 </div>
-                <CatchBadge tone={action.status === "write_ready" ? "success" : "neutral"} label={action.action.replaceAll("_", " ")} />
+                <CatchBadge recipe="status" tone={action.status === "write_ready" ? "success" : "neutral"} label={action.action.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
               <AdminIntakeStateGrid>
@@ -251,7 +251,7 @@ function OrganizerExternalEventImportPlanView({
 
               <AdminTagList>
                 {action.proposedReadOnlyEventDraft.booking.externalLinks.map((link) => (
-                  <CatchBadge key={`${link.platform}-${link.url}`} tone="success" label={`${link.platform} outbound`} />
+                  <CatchBadge key={`${link.platform}-${link.url}`} recipe="status" tone="success" label={`${link.platform} outbound`} />
                 ))}
                 {action.blockers.map((blocker) => (
                   <CatchBadge key={blocker} label={blocker} />
@@ -502,7 +502,7 @@ function OrganizerExternalEventImportExecutionPlanView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{action.readOnlyEventProjection?.eventId ?? action.createEventPayload?.eventId ?? action.sourceActionId}</CatchText>
                 </div>
-                <CatchBadge tone={action.status === "would_publish_read_only" ? "success" : "neutral"} label={action.sourceAction.replaceAll("_", " ")} />
+                <CatchBadge recipe="status" tone={action.status === "would_publish_read_only" ? "success" : "neutral"} label={action.sourceAction.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
               <AdminIntakeStateGrid>
@@ -610,7 +610,7 @@ function OrganizerExternalEventCandidateCard({
           </AdminEyebrow>
           <CatchText as="h3" variant="sectionTitle">{candidate.title}</CatchText>
         </div>
-        <CatchBadge tone={candidate.reviewStatus === "approved_for_import" ? "success" : "neutral"} label={candidate.entityId} />
+        <CatchBadge recipe="status" tone={candidate.reviewStatus === "approved_for_import" ? "success" : "neutral"} label={candidate.entityId} />
       </AdminSearchCandidateHeader>
       <AdminIntakeStateGrid>
         <StateRow label="Candidate" value={candidate.candidateId} />
@@ -748,7 +748,7 @@ function OrganizerIntakeCard({
         </div>
         <AdminOrganizerIntakeBadges>
           <CatchBadge
-            tone={item.projectionStatus === "ready" ? "success" :
+            recipe="status" tone={item.projectionStatus === "ready" ? "success" :
               item.projectionStatus === "blocked" ? "danger" : "neutral"}
             label={item.projectionStatus}
           />
