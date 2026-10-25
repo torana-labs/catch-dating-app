@@ -51,11 +51,31 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
   };
   assert.equal(git("rev-parse", "HEAD"), sourceSha, "Planner source differs from the requested source.");
   const captures = canonicalInventory(JSON.parse(fs.readFileSync(path.join(root, manifestPath), "utf8")));
+  const ancestors = new Map();
+  const verifiedAncestor = revision => {
+    if (!/^[0-9a-f]{40}$/u.test(revision ?? "")) return false;
+    if (!ancestors.has(revision)) {
+      ancestors.set(revision, run("git", ["merge-base", "--is-ancestor", revision, sourceSha]).status === 0);
+    }
+    return ancestors.get(revision);
+  };
   // The source's own exporter judges every candidate, with the source's hashing.
   const stale = () => {
     const result = run(process.execPath, ["tool/marketing/export_app_screenshots.mjs", "--plan", "--inputs-only"]);
     assert.equal(result.status, 0, result.stderr || "Capture planning failed.");
-    return new Set(JSON.parse(result.stdout).filter(item => item.render).map(item => item.id));
+    const remaining = new Set(JSON.parse(result.stdout).filter(item => item.render).map(item => item.id));
+    // Current input hashes alone do not prove that a committed PNG may be
+    // reused: its original PR render commit can disappear after a squash.
+    // Search trusted ancestor seeds or render afresh, rather than selecting
+    // a reuse job that the unchanged ancestry validator must later reject.
+    for (const capture of captures) {
+      if (remaining.has(capture.id)) continue;
+      try {
+        const provenance = readProvenance(fs.readFileSync(path.join(root, capture.sourcePath)));
+        if (!verifiedAncestor(provenance.sourceRevision)) remaining.add(capture.id);
+      } catch { remaining.add(capture.id); }
+    }
+    return remaining;
   };
   const seeds = new Map();
   const sources = [];
@@ -88,8 +108,7 @@ export async function planHostedCaptures({sourceDir, sourceSha, repository, even
         let provenance;
         try { provenance = readProvenance(png); } catch { continue; }
         if (font && provenance.nativeFontSha256 !== font) continue;
-        if (!/^[0-9a-f]{40}$/u.test(provenance.sourceRevision ?? "") ||
-            run("git", ["merge-base", "--is-ancestor", provenance.sourceRevision, sourceSha]).status !== 0) continue;
+        if (!verifiedAncestor(provenance.sourceRevision)) continue;
         fs.writeFileSync(path.join(root, capture.sourcePath), png);
         tried.push({capture, png, provenance});
       }
