@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "912b36e372b629df0ba96fd2d9152e640075773860f593a85d0b64bff7dbf493",
+  "sourceDigest": "62cf4fa09bc39335c295df069ebfb17a1bb3491a406dc48511b8c19caeef33c8",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "912b36e372b629df0ba96fd2d9152e640075773860f593a85d0b64bff7dbf493",
-    "contractDigest": "912b36e372b629df0ba96fd2d9152e640075773860f593a85d0b64bff7dbf493"
+    "digest": "62cf4fa09bc39335c295df069ebfb17a1bb3491a406dc48511b8c19caeef33c8",
+    "contractDigest": "62cf4fa09bc39335c295df069ebfb17a1bb3491a406dc48511b8c19caeef33c8"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "9b7f9d67e98250cc481772f15abf8ddb29cbbd05bef6b4a11e8ee954275819f3",
+    "handoffRequestDigest": "4a6098e4cbd7738f3a7621d9d0c32f0bda09f8183952f28d2995313cb5b08a8d",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -82,15 +82,15 @@
     }
   },
   "metrics": {
-    "contractCount": 69,
-    "publicClassCount": 239,
-    "conceptCount": 56,
+    "contractCount": 70,
+    "publicClassCount": 240,
+    "conceptCount": 57,
     "memberCount": 159,
-    "membersPerConcept": 2.84,
+    "membersPerConcept": 2.79,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 9,
-      "concept": 56,
+      "concept": 57,
       "member": 159,
       "screen": 15
     },
@@ -443,12 +443,12 @@
       }
     ],
     "naming": {
-      "canonicalConceptNames": 54,
+      "canonicalConceptNames": 55,
       "documentedConceptNameExceptions": 2,
       "undocumentedConceptNameExceptions": 0
     },
     "figmaMappingStates": {
-      "missing": 67,
+      "missing": 68,
       "stale": 2
     },
     "figmaPropertyDriftCount": 2,
@@ -456,12 +456,12 @@
     "figmaReviewSnapshotMappings": 2,
     "figmaPublishedMappings": 0,
     "codeConnectMappingStates": {
-      "planned": 69
+      "planned": 70
     },
-    "claudeAllowed": 69,
+    "claudeAllowed": 70,
     "reactImplementationStates": {
       "headless-control": 8,
-      "styled": 4
+      "styled": 5
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -1995,6 +1995,41 @@
       "claudeHandoffName": "Toggle",
       "claudeAllowed": true,
       "contractDigest": "e48120689c7e7d2c57600f45ea925daadf93dc87783c304da115a9138ea5648a"
+    },
+    {
+      "contractId": "catch.checkbox",
+      "conceptRole": "concept",
+      "conceptId": "catch.checkbox",
+      "dartSymbol": "CatchCheckboxInput",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_checkbox_input.dart",
+      "reactSymbol": "CatchCheckboxInput",
+      "reactFile": "packages/web-ui/src/components/CatchCheckboxInput.tsx",
+      "reactApi": "styled",
+      "figmaName": "Catch/Checkbox",
+      "figmaPropertyProjectionMode": "inferred",
+      "figmaReviewStatePolicy": "variant",
+      "figmaPropertySources": {},
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaPublishStatus": null,
+      "figmaSnapshotCaptureMethod": "figma-mcp",
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 5,
+      "figmaExpectedPropertyDigest": "e54c12207ee0b0032cdfa522e5a9938fa9a0429fb93871b93bae11b3748a7aef",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "Checkbox",
+      "claudeAllowed": true,
+      "contractDigest": "d703c438035f7bb088308cad400b529f1ead8839444596d42defe63669cae560"
     },
     {
       "contractId": "catch.step_header",
