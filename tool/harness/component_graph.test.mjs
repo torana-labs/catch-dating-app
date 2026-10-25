@@ -326,12 +326,8 @@ for (const [file, target] of [
 
 test("backend-only delivery controls validate the backend without granting mutation", () => {
   const paths = [
-    ".github/workflows/delivery.yml", ".github/workflows/_firebase-promote.yml",
-    ".github/workflows/backend-staging.yml", ".github/workflows/backend-rebaseline.yml",
-    "tool/ci/backend_source_review.mjs", "tool/ci/backend_source_review.test.mjs",
+    ".github/workflows/backend-deploy.yml", ".github/workflows/_backend-deploy.yml",
     "tool/ci/package_firebase_delivery.mjs", "tool/ci/package_firebase_delivery.test.mjs",
-    "tool/ci/firebase_delivery_workflow.test.mjs",
-    "tool/ci/firebase_functions_checkpoint.mjs", "tool/ci/firebase_functions_checkpoint.test.mjs",
   ];
   for (const file of paths) {
     assert.ok(fs.existsSync(new URL(`../../${file}`, import.meta.url)), file);
@@ -344,16 +340,16 @@ test("backend-only delivery controls validate the backend without granting mutat
       assert.deepEqual(result.operations.releaseTargets, []);
       assert.deepEqual(result.operations.releaseRoles, []);
       for (const check of ["agent:harness-v2", "ci:delivery-core", "ci:firebase-delivery-package",
-        "ci:firebase-delivery-workflow", "ci:backend-source-review", "ci:firebase-functions-checkpoint"]) {
+        "firebase:affected-function-targets"]) {
         assert.ok(result.operations.checkIds.includes(check), `${file}: ${check}`);
       }
     }
   }
-  // Reproduce the exact two-file repair that previously rebuilt both apps.
-  const repair = planAffected({changedPaths: [paths[1], paths[8]], graph, mode: "pr"});
+  // A workflow-plus-packager repair must not rebuild either app.
+  const repair = planAffected({changedPaths: [paths[1], paths[3]], graph, mode: "pr"});
   assert.deepEqual(repair.operations.ciTargets,
     ["contracts", "firestore_rules", "functions", "policy_docs", "tools"]);
-  const tools = planAffectedToolChecks({changedPaths: [paths[1], paths[8]],
+  const tools = planAffectedToolChecks({changedPaths: [paths[1], paths[3]],
     manifest: toolsManifest, componentGraph: graph, mode: "pr"});
   assert.equal(tools.mode, "affected");
   for (const id of repair.operations.checkIds) {
@@ -545,7 +541,7 @@ test("React workflow routing preserves mixed native and backend ownership", () =
 
 test("backend control routing cannot suppress a changed native app or its release ownership", () => {
   const result = planAffected({changedPaths: [
-    ".github/workflows/_firebase-promote.yml", "apps/host/ios/Runner/Info.plist",
+    ".github/workflows/_backend-deploy.yml", "apps/host/ios/Runner/Info.plist",
   ], graph, mode: "main"});
   assert.ok(result.operations.ciTargets.includes("flutter_build_ios"));
   assert.ok(result.operations.ciTargets.includes("functions"));
@@ -1507,7 +1503,6 @@ test("every selector control input routes to full validation before comparison",
 test("harness tests and release workflows validate without full fan-out", () => {
   for (const file of ["tool/harness/workflow_wiring.test.mjs",
     "tool/ci/delivery_core.test.mjs", ".github/workflows/mobile-internal-release.yml",
-    ".github/workflows/host-store-rules-release.yml", "tool/ci/host_store_rules_release.mjs",
     ".github/workflows/marketing-website.yml"]) {
     for (const mode of ["pr", "merge_group", "main", "nightly"]) {
       const result = plan(file, mode);

@@ -782,9 +782,9 @@
         "storage.rules",
         "firebase.json",
         "tool/firebase/check_rules_deployment_drift.mjs",
-        ".github/workflows/_firebase-promote.yml"
+        ".github/workflows/_backend-deploy.yml"
       ],
-      "instruction": "Compare the active Firestore and Storage Rules releases with the exact committed sources after authenticated backend promotion. Missing credentials may skip local or untrusted CI checks; present but insufficient credentials, missing releases, and normalized-content drift fail closed.",
+      "instruction": "Compare the active Firestore and Storage Rules releases with the exact committed sources after every Deploy backend run. Missing credentials may skip local or untrusted CI checks; present but insufficient credentials, missing releases, and normalized-content drift fail closed.",
       "sunset_when": [
         "Firebase deployment natively proves the active release source against the exact CI-approved repository source"
       ],
@@ -3391,6 +3391,49 @@
           "stage": "scanner-ratchet",
           "docAnchor": "docs/app_architecture.md#source-size-budgets",
           "baseline": "tool/architecture/flutter_source_size_baseline.json"
+        }
+      ]
+    },
+    "ICON-ROLES-001": {
+      "title": "Features draw catalogued icon roles through the shared icon layer",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.86.0"
+      },
+      "applies_to": [
+        "design/tokens/catch.icons*",
+        "packages/catch_ui/**",
+        "lib/**",
+        "apps/**",
+        "widgetbook/**",
+        "test/**",
+        "integration_test/**",
+        "website/**",
+        "admin/**",
+        "packages/web-ui/**"
+      ],
+      "instruction": "Features name semantic icon roles from the shared catalog. Keep the vendored Flutter font and React icon family at the catalogued version, with exactly one role per activity kind. Existing direct family references and legacy CatchIcons aliases may only decrease; record each reduction rather than increasing an allowance. The catalog owns glyph selection, so changing a family does not require feature code to select glyphs.",
+      "sunset_when": [
+        "Equivalent framework lint rules and catalog generation enforce the same role and family constraints without the migration scanner"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "design:icon-catalog",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#icon-roles"
+        },
+        {
+          "tool": "design:icon-family-usage",
+          "stage": "scanner-ratchet",
+          "baseline": "tool/design/icon_family_usage_baseline.json",
+          "docAnchor": "docs/app_architecture.md#icon-roles"
         }
       ]
     }
