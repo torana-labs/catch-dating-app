@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "20dd432f3df555da10998a2a9a294443f79c2632334f7126f98b09467ad02765",
+  "sourceDigest": "9e37762b6a0144ff88604097294d8e6048f73dbcc1995647194815158d269e5e",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "20dd432f3df555da10998a2a9a294443f79c2632334f7126f98b09467ad02765",
-    "contractDigest": "20dd432f3df555da10998a2a9a294443f79c2632334f7126f98b09467ad02765"
+    "digest": "9e37762b6a0144ff88604097294d8e6048f73dbcc1995647194815158d269e5e",
+    "contractDigest": "9e37762b6a0144ff88604097294d8e6048f73dbcc1995647194815158d269e5e"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "b660619d9166ce54200cc093b703dd504ea7572e1130043e6ec190b09ed250bb",
+    "handoffRequestDigest": "cfc2ecdc0af87c3e64adaeb5ffbbc2b3e4e63587e9299f35ab9239d08fc99115",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,7 +461,7 @@
     "claudeAllowed": 70,
     "reactImplementationStates": {
       "headless-control": 8,
-      "styled": 7
+      "styled": 8
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -2247,9 +2247,9 @@
       "conceptId": "catch.person_avatar",
       "dartSymbol": "CatchAvatar",
       "dartFile": "packages/catch_ui/lib/src/components/catch_avatar.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchAvatar",
+      "reactFile": "packages/web-ui/src/components/CatchAvatar.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Avatar",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2265,8 +2265,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 11,
-      "figmaExpectedPropertyDigest": "28a42e9b4d8a370319f42f0b3c87ecca07849083ca80b270b6231c62a35dbab3",
+      "figmaExpectedPropertyCount": 12,
+      "figmaExpectedPropertyDigest": "e21f5ae62f779793c98b347ce9cbc8dd917d362ad3126e1c24aa794cd40762cc",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2274,7 +2274,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Avatar",
       "claudeAllowed": true,
-      "contractDigest": "28b94621dd3bda25d10215c8f688b3354c202d0d5b03b9c8f75de06945d464ab"
+      "contractDigest": "fe48ecc16b4a046a3f8a70fba3ecd293b900af5088f9c1844387e94d27e2315a"
     },
     {
       "contractId": "catch.event_card",

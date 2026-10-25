@@ -1,0 +1,7 @@
+/* Flutter CatchAvatarRow: each avatar after the first overlaps the last by the overlap. */
+.row {
+  display: inline-flex;
+  flex: none;
+}
+
+.row > * + * { margin-inline-start: calc(-1 * var(--catch-avatar-overlap)); }
