@@ -1,0 +1,14 @@
+{
+  "$comment": "Shrink-only. Recorded 2026-10-25 when the gate landed; record falls with node tool/design/check_icon_family_usage.mjs --update.",
+  "version": 1,
+  "owner": "app_architecture",
+  "targetPhase": "docs/app_architecture.md#phase-icon-role-adoption",
+  "counts": {
+    "cupertinoGlyph": 10,
+    "dartFamilyImport": 0,
+    "legacyCatchIconsName": 2060,
+    "materialGlyph": 106,
+    "phosphorGlyph": 0,
+    "reactFamilyImport": 417
+  }
+}

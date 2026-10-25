@@ -310,7 +310,8 @@ void main() {
       );
 
       expect(find.text('Event location'), findsNothing);
-      expect(find.byIcon(CatchIcons.locationOnOutlined), findsOneWidget);
+      // The map marker and the address row both draw the location role.
+      expect(find.byIcon(CatchIcons.location), findsNWidgets(2));
       expect(find.text('Race Course Road main gate'), findsOneWidget);
       expect(
         find.text('Look for the Catch demo pacer near the entrance.'),
@@ -946,7 +947,7 @@ void main() {
         );
         await tester.pump();
 
-        expect(find.byIcon(CatchIcons.directionsRun), findsNothing);
+        expect(find.byIcon(CatchIcons.activity), findsNothing);
         expect(find.byType(Image), findsNothing);
       },
     );
@@ -971,7 +972,8 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byIcon(CatchIcons.sportsTennis), findsNothing);
+      // Only the backdrop art draws the activity; no chip repeats it.
+      expect(find.byIcon(CatchIcons.activityPickleball), findsOneWidget);
       expect(find.text(event.title), findsNothing);
       expect(find.text('Deuce'), findsNothing);
       expect(find.text('Pickleball'), findsNothing);
