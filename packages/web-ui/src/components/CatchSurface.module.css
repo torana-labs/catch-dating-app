@@ -1,0 +1,48 @@
+/* Tones, radius and elevation follow CatchSurface; padding is caller-composed. */
+.surface[data-recipe] {
+  position: relative;
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--catch-radius-lg);
+  background: var(--catch-theme-surface);
+  color: var(--catch-theme-ink);
+  box-shadow: none;
+  text-align: start;
+  font: inherit;
+  transition: background-color var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    box-shadow var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+.surface[data-recipe="card"] { border-radius: var(--catch-radius-md); }
+.surface[data-recipe="tinted"] { border-radius: var(--catch-radius-sm); }
+.surface[data-tone="raised"] { background: var(--catch-theme-raised); }
+.surface[data-tone="primarySoft"] { background: var(--catch-theme-primary-soft); }
+.surface[data-tone="transparent"] { background: transparent; }
+.surface[data-emphasis="subtle"] { box-shadow: var(--catch-elevation-card); }
+.surface[data-emphasis="raised"] { box-shadow: var(--catch-elevation-raised); }
+.surface[data-emphasis="floating"] { box-shadow: var(--catch-elevation-overlay); }
+button.surface[data-recipe] {
+  display: block;
+  min-width: var(--catch-interaction-ios-minimum-extent);
+  min-height: var(--catch-interaction-ios-minimum-extent);
+  appearance: none;
+  cursor: pointer;
+}
+button.surface::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  content: "";
+}
+button.surface:hover::after { background: currentColor; opacity: var(--catch-opacity-control-overlay-hover); }
+button.surface:active::after { background: currentColor; opacity: 0.08; }
+button.surface:focus-visible {
+  outline: var(--catch-stroke-emphasis) solid var(--catch-theme-primary);
+  outline-offset: var(--catch-space-micro3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .surface[data-recipe] { transition: none; }
+}

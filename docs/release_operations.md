@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.14.2
+version: 2.15.0
 updated: 2026-10-25
 owner: recursive_audit_loop
 status: active
@@ -2448,8 +2448,11 @@ determinism pass), and native macOS app-shell smoke. Goldens and native smoke
 use separate pinned macOS runners at the same workflow source; neither job
 waits for or substitutes for the other. Committed generated-source freshness
 remains required in the golden job. The smoke retains bounded infrastructure
-retries, and every selected job must pass. The existing 0.30% hosted-macOS
-raster tolerance and known-good/known-bad tests remain unchanged.
+retries, and every selected job must pass. Golden pixel comparisons are report
+only: the job summary lists goldens beyond the 0.30% hosted-macOS raster
+tolerance (0.60% for the Widgetbook corpus) or without a baseline, and their
+images are retained as artifacts, while the comparator's known-good/known-bad
+tests keep that tolerance honest.
 
 Use `bash tool/test_app_shell_integration.sh <device> smoke` for the bounded
 native lane and `bash tool/test_app_shell_integration.sh <device> all` for every

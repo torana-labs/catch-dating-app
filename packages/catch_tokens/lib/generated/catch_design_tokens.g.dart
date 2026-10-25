@@ -451,6 +451,8 @@ abstract final class GeneratedCatchGapTokens {
 abstract final class GeneratedCatchOpacityTokens {
   static const double activityMapPinShadow = 0.3;
   static const double controlOverlayHover = 0.04;
+  static const double activityArtworkPattern = 0.22;
+  static const double activityArtworkGlyph = 0.2;
 }
 
 abstract final class GeneratedCatchFieldTokens {

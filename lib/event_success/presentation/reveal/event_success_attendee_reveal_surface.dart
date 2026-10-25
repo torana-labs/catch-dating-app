@@ -229,8 +229,10 @@ class _EventSuccessAttendeeRevealSurfaceState
           ],
           if (!isStandings) ...[
             gapH14,
-            ColoredBox(
-              color: t.ink.withValues(
+            CatchSurface(
+              duration: Duration.zero,
+              radius: CatchRadius.none,
+              backgroundColor: t.ink.withValues(
                 alpha: CatchOpacity.revealAttendeeActionDock,
               ),
               child: Padding(

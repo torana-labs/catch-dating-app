@@ -150,7 +150,12 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             onMapCreated: (controller) => _mapController = controller,
             onTap: _setSelectedPoint,
           )
-        : ColoredBox(color: t.bg);
+        : CatchSurface(
+            duration: Duration.zero,
+            radius: CatchRadius.none,
+            backgroundColor: t.bg,
+            child: const SizedBox.shrink(),
+          );
 
     return CatchScaffold.workspace(
       body: Stack(
@@ -617,11 +622,11 @@ class SelectedPointSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    CatchText(
                       title,
+                      variant: CatchTextVariant.titleS,
+                      color: t.ink,
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: CatchTextStyles.labelL(context, color: t.ink),
                     ),
                     gapH4,
                     CatchText(

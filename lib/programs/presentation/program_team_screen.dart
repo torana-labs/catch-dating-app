@@ -231,11 +231,11 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
                       body: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          CatchText(
                             member.displayName.isEmpty
                                 ? '•••${member.phoneLastFour}'
                                 : member.displayName,
-                            style: Theme.of(context).textTheme.titleMedium,
+                            variant: CatchTextVariant.sectionTitle,
                           ),
                           const SizedBox(height: CatchSpacing.s1),
                           Wrap(
@@ -410,30 +410,30 @@ class _ProgramStaffAccessDialogState extends State<ProgramStaffAccessDialog> {
         ),
         CatchFieldRow.standard(
           leading: Icon(CatchIcons.calendarTodayOutlined),
-          body: Text(
+          body: CatchText(
             _expiresAt == null
                 ? context.l10n.programsTeamExpiryLabel
                 : AppTimeFormatters.shortDate(_expiresAt!),
-            style: Theme.of(context).textTheme.bodyMedium,
+            variant: CatchTextVariant.bodyM,
           ),
           trailing: Icon(CatchIcons.chevronRightRounded),
           onTap: _pickExpiry,
         ),
         gapH8,
-        Text(
+        CatchText(
           context.l10n.programsTeamDutiesLabel,
-          style: Theme.of(context).textTheme.labelMedium,
+          variant: CatchTextVariant.statusLabel,
         ),
         for (final duty in ProgramStaffDuty.values)
           CatchFieldRow.standard(
-            body: Text(
+            body: CatchText(
               duty == ProgramStaffDuty.programAdmin
                   ? context.l10n.programsTeamProgramAdmin
                   : duty.name.replaceAllMapped(
                       RegExp('([a-z])([A-Z])'),
                       (m) => '${m[1]} ${m[2]}'.toLowerCase(),
                     ),
-              style: Theme.of(context).textTheme.bodyMedium,
+              variant: CatchTextVariant.bodyM,
             ),
             trailing: _duties.contains(duty)
                 ? Icon(CatchIcons.checkRounded, size: CatchIcon.md)

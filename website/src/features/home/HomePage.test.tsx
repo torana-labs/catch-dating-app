@@ -20,7 +20,13 @@ describe("consumer homepage", () => {
   expect(main.getByRole("link", {name: /Preview social run/}).getAttribute("href")).toBe("/events/run/");
   expect(main.getByRole("link", {name: "Explore Catch Host"}).getAttribute("href")).toBe("/host/");
   expect(main.getByText(/independent hosts, growing clubs, community organisers/i)).toBeTruthy();
-  expect(main.getAllByText("Illustrative image", {selector: "span"})).toHaveLength(2);
+  // Without photos the event and organiser cards draw the activity covers, never a stand-in photo.
+  expect(main.queryByText("Illustrative image")).toBeNull();
+  expect(main.getByRole("link", {name: /Preview social run/}).querySelector("img")).toBeNull();
+  expect(main.getByRole("link", {name: /Preview social run/}).querySelector("[data-activity-kind=socialRun]")).not.toBeNull();
+  const organiser = main.getAllByRole("link").find(link => link.getAttribute("href") === "/organizers/preview-club/" && link.querySelector("h3"));
+  expect(organiser?.querySelector("img")).toBeNull();
+  expect(organiser?.querySelector("[data-activity-kind=socialRun]")).not.toBeNull();
  });
  it("distinguishes a format with no matches from a city with no events", () => {
   show();

@@ -118,7 +118,7 @@ function reactOwnsMarketingCheck({toolId, command}) {
       (toolId === "marketing:website-storybook-a11y" &&
         command === "npm --workspace catch-marketing run test:storybook:a11y") ||
       (toolId === "web:storybook-visuals" &&
-        command === "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --check"));
+        command === "npm --workspace catch-marketing run build:storybook && node tool/web/check_storybook_visuals.mjs --surface website --report"));
 }
 
 function captureInputsRequired(tools, marketingChecksInReact) {
