@@ -43,6 +43,7 @@ jobs:
       contents: read
     outputs:
       render: ${{ steps.plan.outputs.render }}
+      web_render: ${{ steps.plan.outputs.web_render }}
       seeded: ${{ steps.plan.outputs.seeded }}
     env:
       CAPTURE_SOURCE_SHA: ${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
@@ -103,10 +104,67 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+  storybook:
+    name: Build website Storybook for web captures
+    needs: plan
+    # Prepare for web renders, including native-font changes only macOS can
+    # detect, without installing the website's dependencies on the Mac.
+    if: ${{ needs.plan.outputs.web_render == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CAPTURE_SOURCE_SHA: ${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
+      CAPTURE_WORKFLOW_SHA: ${{ inputs.automatic_source_sha && github.sha || (github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha) }}
+      CAPTURE_AUTOMATIC_SOURCE_SHA: ${{ inputs.automatic_source_sha }}
+      CAPTURE_RUN_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      CAPTURE_WORKFLOW_DEFINITION_SHA: ${{ github.workflow_sha }}
+      CAPTURE_SOURCE_DIR: ${{ github.workspace }}/capture-source
+      TZ: UTC
+    steps:
+      - name: Validate immutable source selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          for sha in "$CAPTURE_SOURCE_SHA" "$CAPTURE_WORKFLOW_SHA" "$CAPTURE_WORKFLOW_DEFINITION_SHA"; do
+            [[ "$sha" =~ ^[a-f0-9]{40}$ ]] || {
+              echo 'Full lowercase source, controller and workflow-definition commit SHAs are required.' >&2
+              exit 1
+            }
+          done
+      - name: Checkout immutable exporter controller
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.CAPTURE_WORKFLOW_SHA }}
+          persist-credentials: false
+      - name: Checkout exact capture source separately
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ env.CAPTURE_SOURCE_SHA }}
+          path: capture-source
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - name: Install source dependencies
+        working-directory: capture-source
+        run: npm ci
+      - name: Build the website Storybook
+        working-directory: capture-source
+        run: npm --workspace website run build:storybook
+      - name: Hand the Storybook to the producing job
+        uses: actions/upload-artifact@v7
+        with:
+          name: capture-storybook-${{ env.CAPTURE_SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: capture-source/website/storybook-static/
+          if-no-files-found: error
+          retention-days: 1
+
   export:
     name: Render and validate canonical iPhone captures
-    needs: plan
-    if: ${{ needs.plan.outputs.render == 'true' }}
+    needs: [plan, storybook]
+    if: ${{ !cancelled() && needs.plan.outputs.render == 'true' && (needs.storybook.result == 'success' || needs.storybook.result == 'skipped') }}
     concurrency:
       group: marketing-captures-${{ inputs.automatic_source_sha || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || inputs.source_sha) }}
       cancel-in-progress: false
@@ -176,6 +234,40 @@ jobs:
       - name: Resolve exact source Flutter dependencies
         working-directory: capture-source
         run: flutter pub get --enforce-lockfile
+      - name: Receive the website Storybook
+        if: ${{ needs.plan.outputs.web_render == 'true' }}
+        uses: actions/download-artifact@v7
+        with:
+          name: capture-storybook-${{ env.CAPTURE_SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/capture-storybook
+      - name: Resolve the source's Playwright pin
+        id: playwright
+        if: ${{ needs.plan.outputs.web_render == 'true' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p 'const p = require(process.argv[1]).packages; ["", "website/"].map(at => p[at + "node_modules/playwright"]?.version).find(Boolean)' "$CAPTURE_SOURCE_DIR/package-lock.json")"
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright WebKit
+        if: ${{ needs.plan.outputs.web_render == 'true' }}
+        uses: actions/cache@v5
+        with:
+          path: ~/Library/Caches/ms-playwright
+          key: playwright-webkit-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}
+      - name: Install only Playwright and WebKit
+        if: ${{ needs.plan.outputs.web_render == 'true' }}
+        shell: bash
+        env:
+          PLAYWRIGHT_VERSION: ${{ steps.playwright.outputs.version }}
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --ignore-scripts --prefix "$RUNNER_TEMP/playwright" "playwright@$PLAYWRIGHT_VERSION"
+          "$RUNNER_TEMP/playwright/node_modules/.bin/playwright" install webkit
+          {
+            echo "CAPTURE_PLAYWRIGHT_DIR=$RUNNER_TEMP/playwright"
+            echo "CAPTURE_STORYBOOK_DIR=$RUNNER_TEMP/capture-storybook"
+          } >> "$GITHUB_ENV"
       - name: Render, frame, validate and package canonical outputs
         run: node tool/marketing/export_hosted_captures.mjs
       - name: Upload validated immutable capture bundle

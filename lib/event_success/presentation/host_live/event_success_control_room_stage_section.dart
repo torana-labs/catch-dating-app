@@ -33,26 +33,23 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
     final eventIdentity = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        CatchText(
           event.title,
+          variant: CatchTextVariant.titleL,
+          color: dark.ink,
           maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.consoleTitle(context, color: dark.ink),
         ),
         if (showVenue) ...[
           gapH4,
-          Text(
-            event.locationName,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.monoLabel(context, color: dark.ink2),
-          ),
+          CatchMetadataText(event.locationName, color: dark.ink2),
         ],
       ],
     );
     final syncPill = EventSuccessControlRoomSyncBadge(state: syncState);
-    return ColoredBox(
-      color: CatchTokens.editorialBlack,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: CatchTokens.editorialBlack,
       child: SafeArea(
         top: false,
         bottom: false,
@@ -116,11 +113,11 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
                 style: CatchTextStyles.monoLabel(context, color: dark.ink2),
               ),
               gapH6,
-              Text(
+              CatchText(
                 nextStepTitle,
+                variant: CatchTextVariant.bodyLead,
+                color: dark.ink,
                 maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.fieldRowTitle(context, color: dark.ink),
               ),
             ],
           ),

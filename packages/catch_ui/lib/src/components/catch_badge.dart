@@ -365,7 +365,7 @@ class _BadgeMetrics {
         centerContent: false,
         textStyle: functional
             ? (context, color) => CatchTextStyles.kicker(context, color: color)
-            : (context, color) => CatchTextStyles.labelL(context, color: color),
+            : (context, color) => CatchTextStyles.titleS(context, color: color),
       );
     }
     if (recipe == _CatchBadgeRecipe.privacy) {
@@ -412,7 +412,7 @@ class _BadgeMetrics {
         centerContent: false,
         textStyle: functional
             ? (context, color) => CatchTextStyles.kicker(context, color: color)
-            : (context, color) => CatchTextStyles.labelL(context, color: color),
+            : (context, color) => CatchTextStyles.titleS(context, color: color),
       ),
       CatchBadgeSize.action => _BadgeMetrics(
         padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.micro14),

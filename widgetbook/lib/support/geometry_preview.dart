@@ -16,7 +16,7 @@ Widget widgetbookGeometrySectionHeaderComparison(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(label, style: CatchTextStyles.labelL(context, color: t.ink)),
+        CatchText(label, variant: CatchTextVariant.titleS, color: t.ink),
         const SizedBox(height: CatchSpacing.s1),
         Text(
           description,

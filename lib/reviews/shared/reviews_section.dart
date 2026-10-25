@@ -343,11 +343,12 @@ class ReviewCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    CatchText(
                       isOwn
                           ? context.l10n.reviewsReviewsSectionTextYou
                           : review.reviewerName,
-                      style: CatchTextStyles.labelL(context),
+                      variant: CatchTextVariant.titleS,
+                      color: CatchTokens.of(context).ink,
                     ),
                     StarRatingRow(
                       rating: review.rating,

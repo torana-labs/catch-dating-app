@@ -242,10 +242,10 @@ class ProgramDispatchGroupTile extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
+                child: CatchText(
                   '${AppTimeFormatters.time(group.earliestCurbAt)}'
                   ' – ${AppTimeFormatters.time(group.latestCurbAt)}',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  variant: CatchTextVariant.sectionTitle,
                 ),
               ),
               CatchBadge.functional(
@@ -531,16 +531,16 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
           ),
           if (widget.holdCandidates.isNotEmpty) ...[
             gapH16,
-            Text(
+            CatchText(
               context.l10n.programsDispatchHoldTitle,
-              style: Theme.of(context).textTheme.titleSmall,
+              variant: CatchTextVariant.supportingStrong,
             ),
             gapH4,
-            Text(
+            CatchText(
               context.l10n.programsDispatchHoldSubtitle(
                 destination: widget.group.destinationLabel,
               ),
-              style: Theme.of(context).textTheme.bodySmall,
+              variant: CatchTextVariant.bodyS,
             ),
             gapH8,
             CatchChoiceInput<int>(
@@ -686,9 +686,9 @@ List<CatchSectionListItem> _planSections(
               for (final item in plan.unassigned)
                 CatchFieldRow.standard(
                   leading: Icon(CatchIcons.warningAmberRounded),
-                  body: Text(
+                  body: CatchText(
                     _unassignedReasonText(context, item.reason),
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    variant: CatchTextVariant.bodyM,
                   ),
                 ),
             ],

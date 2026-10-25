@@ -60,8 +60,10 @@ class _ExploreDiscoveryCoverHeaderState
     final coverItem = featuredItem;
 
     if (!chrome.showCoverStory || coverItem == null) {
-      return ColoredBox(
-        color: CatchTokens.of(context).bg,
+      return CatchSurface(
+        duration: Duration.zero,
+        radius: CatchRadius.none,
+        backgroundColor: CatchTokens.of(context).bg,
         child: _ExploreDiscoveryTopBar(
           chrome: chrome,
           cityPickerState: widget.cityPickerState,

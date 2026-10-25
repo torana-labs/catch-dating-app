@@ -594,11 +594,10 @@ class PrivateEventPreferencesScreen extends ConsumerWidget {
                       ],
                     ),
                     gapH4,
-                    Text(
+                    CatchText(
                       l10n.hostsEventPreferenceProviderHint,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: tokens.ink2),
+                      variant: CatchTextVariant.bodyM,
+                      color: tokens.ink2,
                     ),
                   ],
                 ),

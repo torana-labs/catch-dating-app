@@ -372,16 +372,11 @@ class FiltersSection extends StatelessWidget {
     return CatchSurface(
       padding: CatchInsets.tileVerticalCompact,
       borderRole: CatchBorderRole.separator,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title.toUpperCase(),
-            style: CatchTextStyles.kicker(context, color: t.ink3),
-          ),
-          gapH10,
-          child,
-        ],
+      child: CatchSection.plain(
+        title: title.toUpperCase(),
+        titleColor: t.ink3,
+        bodyGap: CatchSpacing.micro10,
+        child: Align(alignment: AlignmentDirectional.topStart, child: child),
       ),
     );
   }
