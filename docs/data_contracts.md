@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.176.0
+version: 1.177.0
 updated: 2026-10-25
 owner: recursive_audit_loop
 status: active
@@ -4382,6 +4382,51 @@ Read-only dry-runs on 2026-05-26 found:
 | `dev` | 146 | 146 | 0 |
 | `staging` | 0 | 0 | 0 |
 | `prod` | 166 | 166 | 0 |
+
+## Public Page Read Models
+
+`organizerPublicPage/{organizerId}` and `eventPublicPage/{eventId}` hold
+exactly what one public organizer or event page shows, so the website server
+renders each page from one Admin SDK read (CAT-250). Their contracts are
+`contracts/firestore/organizer_public_pages.schema.json`,
+`contracts/firestore/event_public_pages.schema.json` and the shared
+definitions in `contracts/shared/public_page_common.schema.json`.
+
+- The organizer page holds identity, owner links (empty until CAT-254),
+  upcoming events from every source with their booking target, past moments,
+  a review summary (verified-only rating, count and distribution of every
+  published review) with the latest reviews marked verified or unverified,
+  the follower count, claim state, capabilities and today's recommendation
+  rail. The event page holds every public event field, a capacity snapshot,
+  the organizer card, two reviews and three more upcoming events. Both keep
+  today's listing projection (`listing`, without events) so the current pages
+  render unchanged until CAT-251 and CAT-252.
+- `functions/src/publicPages` builds both from the organizer, its published
+  events, its public imported events and its reviews, with a port of the
+  website reader's publication and suppression rules and projectors.
+  `contracts/fixtures/public_pages` holds the shared parity inputs and the
+  expected output the website reader writes; the Functions port must
+  reproduce it. A page that fails those rules has no document, and an id
+  published as both a Catch and an imported event has no event page.
+- The pages never hold contact details, owner identities, rosters or dating
+  framing: no `balanced` admission label, `rotations` experience,
+  `singlesMixer` activity, Event Success scorecard or `mutualMatchCount`. The
+  schemas reject them.
+- Triggers on `organizers`, `events`, `externalEvents` and `reviews` rebuild
+  an organizer's pages only when the changed document's public projection
+  differs, so bookings rebuild but roster and payment writes do not. Follows
+  reach pages through `refreshPublicPageFollowers` every 30 minutes, and
+  `reconcilePublicPages` rebuilds every page daily.
+- Each commit runs in a transaction guarded by the private
+  `publicPageBuilds/{organizerId}` marker: a rebuild that read its sources
+  before the last committed one is discarded, so it cannot overwrite a newer
+  page or revive a withdrawn one. Unchanged pages are not rewritten.
+- All three collections are server-only in `firestore.rules`.
+- Backfill with `node functions/scripts/backfill-public-pages.cjs --project
+  <id>` (dry run by default, `--check` fails while any page is out of date,
+  `--apply` writes, `--allow-prod` for prod). Until an environment is
+  backfilled the website assembles a page without a read model from its
+  sources under the same rules.
 
 ## Read Path Discipline
 
