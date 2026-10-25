@@ -25,6 +25,7 @@ import {assertValidSuvbotDocument} from "./suvbotDocValidation";
 import {
   SUVBOT_DEMO_MOMENTS,
   SuvbotDemoMoment,
+  parseDemoWorldRequest,
   suvbotDemoWorldChoices,
   suvbotSeedPrefix,
 } from "./suvbotWorld";
@@ -301,11 +302,25 @@ test("eventStateAt matches tool/demo/lib/demo_world.mjs", async () => {
   }
 });
 
-test("every bundled world offers every Suvbot moment", () => {
+test("bundled worlds offer their declared Suvbot moments", () => {
   for (const {world, moments} of suvbotDemoWorldChoices()) {
-    assert.deepEqual(moments, SUVBOT_DEMO_MOMENTS.map((item) => item.id),
-      world.id);
+    assert.ok(moments.length > 0, world.id);
+    assert.deepEqual(moments, SUVBOT_DEMO_MOMENTS
+      .filter((item) => world.moments[item.worldMoment] !== undefined)
+      .map((item) => item.id),
+    world.id);
   }
+  const nyc = suvbotDemoWorldChoices()
+    .find(({world}) => world.id === "us-nyc-host-demo");
+  const india = suvbotDemoWorldChoices()
+    .find(({world}) => world.id === "host-marketing-india");
+  assert.deepEqual(india?.moments,
+    SUVBOT_DEMO_MOMENTS.map((item) => item.id));
+  assert.deepEqual(nyc?.moments, ["live"]);
+  assert.equal(parseDemoWorldRequest("us-nyc-host-demo before"), null);
+  assert.equal(parseDemoWorldRequest("us-nyc-host-demo after"), null);
+  assert.equal(parseDemoWorldRequest("us-nyc-host-demo live")?.moment,
+    "live");
 });
 
 test("civil times convert through the world's time zone", () => {
@@ -334,7 +349,8 @@ test("civil times convert through the world's time zone", () => {
 
 for (const city of TESTER_CITIES) {
   for (const world of suvbotWorldBundle.worlds) {
-    for (const moment of SUVBOT_DEMO_MOMENTS) {
+    for (const moment of SUVBOT_DEMO_MOMENTS.filter((item) =>
+      world.moments[item.worldMoment] !== undefined)) {
       test(
         `a ${city} tester starts ${world.id} at ${moment.id}`,
         async () => {
@@ -482,6 +498,25 @@ function assertConsistentWorld({
     assert.equal(matches.length, 0);
   }
 }
+
+test("a preset never starts a world without its requested moment", async () => {
+  const worlds = [...suvbotWorldBundle.worlds];
+  const nyc = worlds.find((world) => world.id === "us-nyc-host-demo");
+  assert.ok(nyc);
+  suvbotWorldBundle.worlds.splice(0, worlds.length, nyc);
+  try {
+    const uid = "tester_partial_world";
+    const store = storeWithTester(uid, "in-mh-mumbai");
+    const reply = await run(store, uid, "warmPaymentState");
+    assert.equal(reply, "No paid demo world is bundled for today yet.");
+    assert.equal([...store.docs.keys()]
+      .filter((docPath) => docPath.startsWith("events/")).length, 0);
+    assertStoreMatchesContracts(store);
+  } finally {
+    suvbotWorldBundle.worlds.splice(0,
+      suvbotWorldBundle.worlds.length, ...worlds);
+  }
+});
 
 test("warm presets and resets keep every write on contract", async () => {
   const uid = "tester_presets";
