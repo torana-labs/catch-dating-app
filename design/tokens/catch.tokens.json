@@ -2389,6 +2389,520 @@
       }
     }
   },
+  "palette": {
+    "$type": "color",
+    "$description": "Website v2 (House lights) brand palette. Owner decision 2026-10-25 (CAT-245): brand-wide, adopted by the website first and by the apps when their screens are redrawn. Every <accent>Deep passes WCAG AA text contrast on white and paper; every <accent>Ink passes it on its accent. packages/web-ui/src/components/palette.test.ts enforces both.",
+    "ink": {
+      "$description": "Warm ink: primary text on white, paper and every accent, and the fill of the ink ground.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0784313725,
+          0.0666666667,
+          0.0784313725
+        ],
+        "hex": "#141114"
+      }
+    },
+    "inkSecondary": {
+      "$description": "Supporting text on white and paper.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.3529411765,
+          0.3294117647,
+          0.3137254902
+        ],
+        "hex": "#5A5450"
+      }
+    },
+    "paper": {
+      "$description": "Warm page ground.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9647058824,
+          0.9411764706,
+          0.9098039216
+        ],
+        "hex": "#F6F0E8"
+      }
+    },
+    "white": {
+      "$description": "Card and section ground.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1,
+          1,
+          1
+        ],
+        "hex": "#FFFFFF"
+      }
+    },
+    "nightSurface": {
+      "$description": "Raised surface on the ink ground.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.137254902,
+          0.1176470588,
+          0.137254902
+        ],
+        "hex": "#231E23"
+      }
+    },
+    "nightInk": {
+      "$description": "Primary text on the ink ground and night surface.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9647058824,
+          0.937254902,
+          0.9019607843
+        ],
+        "hex": "#F6EFE6"
+      }
+    },
+    "nightSecondary": {
+      "$description": "Supporting text on the ink ground and night surface.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7411764706,
+          0.7019607843,
+          0.6549019608
+        ],
+        "hex": "#BDB3A7"
+      }
+    },
+    "coral": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9411764706,
+          0.4784313725,
+          0.3333333333
+        ],
+        "hex": "#F07A55"
+      }
+    },
+    "coralDeep": {
+      "$description": "Coral as text on white or paper.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7098039216,
+          0.2705882353,
+          0.1215686275
+        ],
+        "hex": "#B5451F"
+      }
+    },
+    "coralInk": {
+      "$description": "Supporting text on a coral ground.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.231372549,
+          0.1215686275,
+          0.0784313725
+        ],
+        "hex": "#3B1F14"
+      }
+    },
+    "pink": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9411764706,
+          0.5411764706,
+          0.6274509804
+        ],
+        "hex": "#F08AA0"
+      }
+    },
+    "pinkDeep": {
+      "$description": "Pink as text on white or paper.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6980392157,
+          0.2274509804,
+          0.3529411765
+        ],
+        "hex": "#B23A5A"
+      }
+    },
+    "pinkInk": {
+      "$description": "Supporting text on a pink ground.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2901960784,
+          0.137254902,
+          0.1882352941
+        ],
+        "hex": "#4A2330"
+      }
+    },
+    "yellow": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9607843137,
+          0.768627451,
+          0.3176470588
+        ],
+        "hex": "#F5C451"
+      }
+    },
+    "yellowDeep": {
+      "$description": "Yellow as text on white or paper.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.5411764706,
+          0.3921568627,
+          0.062745098
+        ],
+        "hex": "#8A6410"
+      }
+    },
+    "yellowInk": {
+      "$description": "Supporting text on a yellow ground.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2901960784,
+          0.2117647059,
+          0.031372549
+        ],
+        "hex": "#4A3608"
+      }
+    },
+    "mint": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.3607843137,
+          0.7960784314,
+          0.6235294118
+        ],
+        "hex": "#5CCB9F"
+      }
+    },
+    "mintDeep": {
+      "$description": "Mint as text on white or paper.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1215686275,
+          0.4784313725,
+          0.3411764706
+        ],
+        "hex": "#1F7A57"
+      }
+    },
+    "mintInk": {
+      "$description": "Supporting text on a mint ground.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0705882353,
+          0.2392156863,
+          0.1725490196
+        ],
+        "hex": "#123D2C"
+      }
+    },
+    "indigo": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.5490196078,
+          0.6078431373,
+          0.9490196078
+        ],
+        "hex": "#8C9BF2"
+      }
+    },
+    "indigoDeep": {
+      "$description": "Indigo as text on white or paper.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2980392157,
+          0.3568627451,
+          0.768627451
+        ],
+        "hex": "#4C5BC4"
+      }
+    },
+    "indigoInk": {
+      "$description": "Supporting text on a indigo ground.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.1176470588,
+          0.1450980392,
+          0.3137254902
+        ],
+        "hex": "#1E2550"
+      }
+    },
+    "magenta": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8980392157,
+          0.5411764706,
+          0.7843137255
+        ],
+        "hex": "#E58AC8"
+      }
+    },
+    "magentaDeep": {
+      "$description": "Magenta as text on white or paper.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.6392156863,
+          0.1882352941,
+          0.4980392157
+        ],
+        "hex": "#A3307F"
+      }
+    },
+    "magentaInk": {
+      "$description": "Supporting text on a magenta ground.",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.2745098039,
+          0.0862745098,
+          0.2274509804
+        ],
+        "hex": "#46163A"
+      }
+    }
+  },
+  "ground": {
+    "$type": "color",
+    "$description": "Grounds a surface or full-width band can take. Each names its fill, its primary ink and its supporting ink; both inks pass WCAG AA text contrast on the fill.",
+    "white": {
+      "fill": {
+        "$value": "{palette.white}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.inkSecondary}"
+      }
+    },
+    "paper": {
+      "fill": {
+        "$value": "{palette.paper}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.inkSecondary}"
+      }
+    },
+    "ink": {
+      "fill": {
+        "$value": "{palette.ink}"
+      },
+      "ink": {
+        "$value": "{palette.nightInk}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.nightSecondary}"
+      }
+    },
+    "coral": {
+      "fill": {
+        "$value": "{palette.coral}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.coralInk}"
+      }
+    },
+    "pink": {
+      "fill": {
+        "$value": "{palette.pink}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.pinkInk}"
+      }
+    },
+    "yellow": {
+      "fill": {
+        "$value": "{palette.yellow}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.yellowInk}"
+      }
+    },
+    "mint": {
+      "fill": {
+        "$value": "{palette.mint}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.mintInk}"
+      }
+    },
+    "indigo": {
+      "fill": {
+        "$value": "{palette.indigo}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.indigoInk}"
+      }
+    },
+    "magenta": {
+      "fill": {
+        "$value": "{palette.magenta}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.magentaInk}"
+      }
+    }
+  },
+  "format": {
+    "$type": "color",
+    "$description": "Website v2 activity formats and the accent each one takes. accent fills a poster or tile, ink and inkSecondary are text on that fill, and deep is the format's colour as text on white or paper. singlesMixer belongs to no format, so its activity accent stays out of website use; the other activity kinds have no v2 format yet.",
+    "run": {
+      "$extensions": {
+        "org.catch": {
+          "activityKinds": [
+            "socialRun",
+            "running"
+          ]
+        }
+      },
+      "accent": {
+        "$value": "{palette.coral}"
+      },
+      "deep": {
+        "$value": "{palette.coralDeep}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.coralInk}"
+      }
+    },
+    "dinner": {
+      "$extensions": {
+        "org.catch": {
+          "activityKinds": [
+            "dinner"
+          ]
+        }
+      },
+      "accent": {
+        "$value": "{palette.pink}"
+      },
+      "deep": {
+        "$value": "{palette.pinkDeep}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.pinkInk}"
+      }
+    },
+    "games": {
+      "$extensions": {
+        "org.catch": {
+          "activityKinds": [
+            "pubQuiz"
+          ]
+        }
+      },
+      "accent": {
+        "$value": "{palette.yellow}"
+      },
+      "deep": {
+        "$value": "{palette.yellowDeep}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.yellowInk}"
+      }
+    },
+    "courts": {
+      "$extensions": {
+        "org.catch": {
+          "activityKinds": [
+            "pickleball",
+            "padel",
+            "tennis",
+            "badminton"
+          ]
+        }
+      },
+      "accent": {
+        "$value": "{palette.mint}"
+      },
+      "deep": {
+        "$value": "{palette.mintDeep}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.mintInk}"
+      }
+    },
+    "nightsOut": {
+      "$extensions": {
+        "org.catch": {
+          "activityKinds": [
+            "barCrawl"
+          ]
+        }
+      },
+      "accent": {
+        "$value": "{palette.magenta}"
+      },
+      "deep": {
+        "$value": "{palette.magentaDeep}"
+      },
+      "ink": {
+        "$value": "{palette.ink}"
+      },
+      "inkSecondary": {
+        "$value": "{palette.magentaInk}"
+      }
+    }
+  },
   "space": {
     "$type": "dimension",
     "s0": {
