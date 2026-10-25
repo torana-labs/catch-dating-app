@@ -8988,6 +8988,17 @@
       "decidedBy": "owner-delegated:2026-10-24 -> claude",
       "date": "2026-10-24",
       "status": "deferred"
+    },
+    {
+      "clusterId": "CAT-244:checkbox-input-material",
+      "patternFamilyId": "checkbox-input-material",
+      "decision": "merge-new-primitive",
+      "canonicalSymbol": "CatchCheckboxInput",
+      "members": [],
+      "rationale": "CAT-244 option B (coordinator comment 1a0b6881-11f1-4a94-a3ee-9223d9019fe7) approves one acknowledgement/checklist material with checked semantics, twinned in Flutter and React. Settings keep CatchToggleInput and multi-select groups keep CatchChoiceInput. No tri-state, raw styling, form API or new token is added; existing checkbox and consent adapters migrate after acceptance by their meaning.",
+      "decidedBy": "owner-delegated:2026-10-24 -> claude",
+      "date": "2026-10-25",
+      "status": "implemented"
     }
   ]
 }
