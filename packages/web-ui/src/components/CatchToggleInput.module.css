@@ -1,0 +1,70 @@
+/* Private geometry and field timing mirror Dart until their web token family exists. */
+.control[data-recipe] {
+  --catch-toggle-width: 46px;
+  --catch-toggle-height: 28px;
+  --catch-toggle-knob: 22px;
+  --catch-toggle-inset: var(--catch-space-micro3);
+  --catch-toggle-duration: var(--catch-motion-fast);
+  --catch-toggle-curve: var(--catch-motion-standard-curve);
+  --catch-toggle-disabled-opacity: 0.40;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: max(var(--catch-toggle-width), var(--catch-interaction-ios-minimum-extent));
+  min-height: var(--catch-interaction-ios-minimum-extent);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--catch-radius-pill);
+  background: transparent;
+  color: var(--catch-theme-ink);
+  box-shadow: none;
+  appearance: none;
+  cursor: pointer;
+  transition: opacity var(--catch-toggle-duration) var(--catch-toggle-curve);
+}
+.control[data-recipe="field"] {
+  --catch-toggle-width: 44px;
+  --catch-toggle-height: 26px;
+  --catch-toggle-knob: 20px;
+  --catch-toggle-duration: 200ms;
+  --catch-toggle-curve: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --catch-toggle-disabled-opacity: 0.55;
+}
+.track {
+  position: relative;
+  display: block;
+  width: var(--catch-toggle-width);
+  height: var(--catch-toggle-height);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-line2);
+  pointer-events: none;
+  transition: background-color var(--catch-toggle-duration) var(--catch-toggle-curve);
+}
+.knob {
+  position: absolute;
+  top: var(--catch-toggle-inset);
+  inset-inline-start: var(--catch-toggle-inset);
+  display: block;
+  width: var(--catch-toggle-knob);
+  height: var(--catch-toggle-knob);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: inset-inline-start var(--catch-toggle-duration) var(--catch-toggle-curve);
+}
+.control[aria-checked="true"] .track { background: var(--catch-theme-primary); }
+.control[aria-checked="true"] .knob {
+  inset-inline-start: calc(var(--catch-toggle-width) - var(--catch-toggle-inset) - var(--catch-toggle-knob));
+}
+.control:disabled { opacity: var(--catch-toggle-disabled-opacity); cursor: default; }
+.control:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .control[data-recipe], .control .track, .control .knob { transition: none; }
+}
