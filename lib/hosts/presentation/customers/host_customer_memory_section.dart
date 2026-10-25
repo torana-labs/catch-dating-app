@@ -336,7 +336,7 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
           CatchButton(
             label: context.l10n.hostCustomersAddTag,
             variant: CatchButtonVariant.secondary,
-            size: CatchButtonSize.sm,
+            size: CatchButtonSize.md,
             onPressed: _selectionCount >= _contactTagCap ? null : _addTag,
           ),
           if (_newLabels.isNotEmpty) ...[

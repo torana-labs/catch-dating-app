@@ -278,19 +278,19 @@ class EventRehearsalRecapSection extends StatelessWidget {
               children: [
                 CatchButton(
                   label: context.l10n.hostEventRehearsalReset,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.secondary,
                   onPressed: isLoading ? null : onReset,
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalFork,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.secondary,
                   onPressed: isLoading ? null : onFork,
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalExport,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.ghost,
                   onPressed: isLoading ? null : onExport,
                 ),

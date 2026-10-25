@@ -122,7 +122,7 @@ class HostBookingProviderSection extends StatelessWidget {
                         status: (mutationPending)
                             ? CatchButtonStatus.loading
                             : CatchButtonStatus.idle,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         leading: Icon(CatchIcons.keyOutlined),
                       )
                     else
@@ -133,14 +133,14 @@ class HostBookingProviderSection extends StatelessWidget {
                         status: (mutationPending)
                             ? CatchButtonStatus.loading
                             : CatchButtonStatus.idle,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         leading: Icon(CatchIcons.syncRounded),
                       ),
                     CatchButton(
                       label:
                           context.l10n.hostsOperationalRosterProviderDisconnect,
                       onPressed: mutationPending ? null : onDisconnect,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       variant: CatchButtonVariant.ghost,
                     ),
                   ],
@@ -185,14 +185,14 @@ class HostBookingProviderSection extends StatelessWidget {
                       status: (mutationPending)
                           ? CatchButtonStatus.loading
                           : CatchButtonStatus.idle,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       leading: Icon(CatchIcons.keyOutlined),
                     ),
                   if (entry.capabilities.fileImport)
                     CatchButton(
                       label: context.l10n.hostsOperationalRosterProviderImport,
                       onPressed: mutationPending ? null : onImport,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       variant: CatchButtonVariant.secondary,
                       leading: Icon(CatchIcons.cloudUploadOutlined),
                     ),

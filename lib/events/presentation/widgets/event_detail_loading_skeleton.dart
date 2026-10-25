@@ -394,7 +394,7 @@ class EventDetailCompanionSkeleton extends StatelessWidget {
                 gapH12,
                 CatchSkeleton.box(
                   width: double.infinity,
-                  height: CatchLayout.buttonLgHeight,
+                  height: CatchButtonTokens.largeHeight,
                   radius: CatchRadius.pill,
                 ),
               ],

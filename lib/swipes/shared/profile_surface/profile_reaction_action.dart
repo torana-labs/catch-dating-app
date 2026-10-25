@@ -163,7 +163,7 @@ class _ProfileReactionCommentSheetState
             label: context.l10n.swipesProfileReactionControlsLabelSendLike,
             leading: Icon(CatchIcons.favoriteBorderRounded, size: CatchIcon.md),
             onPressed: _canSend ? _submit : null,
-            size: CatchButtonSize.sm,
+            size: CatchButtonSize.md,
           ),
         ],
       ),

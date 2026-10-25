@@ -74,7 +74,7 @@ class ChatMessageList extends StatelessWidget {
                             : AlignmentDirectional.centerStart,
                         widthFactor: spec.widthFactor,
                         child: CatchSkeleton.box(
-                          height: CatchLayout.buttonLgHeight,
+                          height: CatchButtonTokens.largeHeight,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(
                               spec.isMe ? CatchRadius.lg : CatchRadius.sm,

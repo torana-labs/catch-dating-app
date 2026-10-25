@@ -553,7 +553,7 @@ class HostTodayOrganizerEmptyState extends StatelessWidget {
         CatchButton(
           label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
           leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-          size: CatchButtonSize.sm,
+          size: CatchButtonSize.md,
           onPressed: onCreateOrganizer,
         ),
       ],

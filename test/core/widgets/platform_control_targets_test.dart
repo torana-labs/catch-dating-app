@@ -55,7 +55,7 @@ void main() {
     'small button': (activate) => CatchButton(
       key: _controlKey,
       label: 'Go',
-      size: CatchButtonSize.sm,
+      size: CatchButtonSize.md,
       onPressed: activate,
     ),
     'command': (activate) =>
@@ -275,7 +275,7 @@ void main() {
               children: [
                 CatchButton(
                   label: 'Continue with the selected organizer',
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   onPressed: () {},
                 ),
                 CatchButton.text(

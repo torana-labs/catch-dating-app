@@ -133,7 +133,7 @@ class SuvbotDock extends StatelessWidget {
                             ? null
                             : () => unawaited(onAction(checkAction)),
                         variant: CatchButtonVariant.secondary,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         fullWidth: true,
                         status: (pending)
                             ? CatchButtonStatus.loading
@@ -156,7 +156,7 @@ class SuvbotDock extends StatelessWidget {
                             ? null
                             : () => unawaited(onAction(refreshAction)),
                         variant: CatchButtonVariant.danger,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         fullWidth: true,
                         status: (pending)
                             ? CatchButtonStatus.loading
@@ -189,7 +189,7 @@ class SuvbotDock extends StatelessWidget {
                               ? null
                               : () => unawaited(onAction(action)),
                           variant: CatchButtonVariant.secondary,
-                          size: CatchButtonSize.sm,
+                          size: CatchButtonSize.md,
                           fullWidth: true,
                           leading: Icon(_iconFor(action.icon)),
                           foregroundColor: t.ink,
@@ -217,7 +217,7 @@ class SuvbotDock extends StatelessWidget {
                                 onTextAction: onTextAction,
                               ),
                         variant: CatchButtonVariant.secondary,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         fullWidth: true,
                         status: (pending)
                             ? CatchButtonStatus.loading
@@ -243,7 +243,7 @@ class SuvbotDock extends StatelessWidget {
                                 onAction: onAction,
                               ),
                         variant: CatchButtonVariant.danger,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         fullWidth: true,
                         status: (pending)
                             ? CatchButtonStatus.loading
@@ -271,7 +271,7 @@ class SuvbotDock extends StatelessWidget {
             label: context.l10n.chatsSuvbotActionBarLabelReloadControls,
             onPressed: onRetry,
             variant: CatchButtonVariant.secondary,
-            size: CatchButtonSize.sm,
+            size: CatchButtonSize.md,
             fullWidth: true,
             leading: Icon(CatchIcons.syncRounded),
             foregroundColor: t.ink,

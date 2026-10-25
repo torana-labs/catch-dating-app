@@ -234,7 +234,6 @@ abstract final class CatchLayout {
   static const double menuViewportInset = CatchSpacing.s4;
   static const double activityChipIconSize = 15.0;
   static const double activityChipIconGap = 7.0;
-  static const double buttonLgHeight = CatchSpacing.s12 + CatchSpacing.s2;
   static const double bottomActionHorizontalPadding = CatchSpacing.screenPx;
   static const double bottomActionMinimumBottomPadding = CatchSpacing.micro18;
   static const double bottomActionBlurSigma = 10.0;

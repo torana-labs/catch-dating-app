@@ -192,7 +192,7 @@ Widget hostEmptyStateStates(BuildContext context) {
                   CatchButton(
                     label: 'Events',
                     variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                     onPressed: () {},
                   ),
                 ],

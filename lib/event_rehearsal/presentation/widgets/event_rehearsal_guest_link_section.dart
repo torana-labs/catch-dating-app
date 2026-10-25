@@ -65,21 +65,21 @@ class EventRehearsalGuestLinkSection extends StatelessWidget {
                 CatchButton(
                   label: context.l10n.hostEventRehearsalCopyLink,
                   leading: Icon(CatchIcons.contentCopyRounded),
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.secondary,
                   onPressed: isLoading ? null : onCopy,
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalShareLink,
                   leading: Icon(CatchIcons.share),
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.secondary,
                   onPressed: isLoading ? null : onShare,
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalRotateLink,
                   leading: Icon(CatchIcons.refresh),
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.ghost,
                   onPressed: isLoading ? null : onRotate,
                 ),
@@ -134,7 +134,7 @@ class EventRehearsalRunSection extends StatelessWidget {
                 EventRehearsalStatus.draft || EventRehearsalStatus.ready => [
                   CatchButton(
                     label: context.l10n.hostEventRehearsalStart,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                     status: isLoading
                         ? CatchButtonStatus.loading
                         : CatchButtonStatus.idle,
@@ -149,7 +149,7 @@ class EventRehearsalRunSection extends StatelessWidget {
                 EventRehearsalStatus.running => [
                   CatchButton(
                     label: context.l10n.hostEventRehearsalPause,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                     variant: CatchButtonVariant.secondary,
                     status: isLoading
                         ? CatchButtonStatus.loading
@@ -165,7 +165,7 @@ class EventRehearsalRunSection extends StatelessWidget {
                 EventRehearsalStatus.paused => [
                   CatchButton(
                     label: context.l10n.hostEventRehearsalResume,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                     status: isLoading
                         ? CatchButtonStatus.loading
                         : CatchButtonStatus.idle,
@@ -184,7 +184,7 @@ class EventRehearsalRunSection extends StatelessWidget {
                   session.status != EventRehearsalStatus.complete) ...[
                 CatchButton(
                   label: context.l10n.hostEventRehearsalPrevious,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.ghost,
                   status: isLoading
                       ? CatchButtonStatus.loading
@@ -198,7 +198,7 @@ class EventRehearsalRunSection extends StatelessWidget {
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalNext,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.secondary,
                   status: isLoading
                       ? CatchButtonStatus.loading
@@ -212,7 +212,7 @@ class EventRehearsalRunSection extends StatelessWidget {
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalAdvanceFive,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.secondary,
                   onPressed: isLoading
                       ? null
@@ -223,7 +223,7 @@ class EventRehearsalRunSection extends StatelessWidget {
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalAdvanceFifteen,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.secondary,
                   onPressed: isLoading
                       ? null
@@ -235,7 +235,7 @@ class EventRehearsalRunSection extends StatelessWidget {
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalComplete,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.danger,
                   status: isLoading
                       ? CatchButtonStatus.loading

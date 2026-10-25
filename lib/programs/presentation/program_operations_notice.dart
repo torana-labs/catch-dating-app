@@ -223,14 +223,14 @@ class ProgramArrivalsOutboxBanner extends StatelessWidget {
       actions: [
         CatchButton(
           label: context.l10n.programsArrivalsOutboxSync,
-          size: CatchButtonSize.sm,
+          size: CatchButtonSize.md,
           status: busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
           onPressed: busy ? null : onFlush,
         ),
         if (review > 0)
           CatchButton(
             label: context.l10n.programsArrivalsOutboxClear,
-            size: CatchButtonSize.sm,
+            size: CatchButtonSize.md,
             variant: CatchButtonVariant.secondary,
             onPressed: busy ? null : onClearReview,
           ),

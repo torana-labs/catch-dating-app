@@ -137,7 +137,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   CatchButton(
                     label: context.l10n.hostsEventItineraryDelete,
                     variant: CatchButtonVariant.danger,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                     onPressed: () => Navigator.of(
                       dialogContext,
                     ).pop(const _ItineraryDialogResult.delete()),
@@ -145,12 +145,12 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                 CatchButton(
                   label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
                   variant: CatchButtonVariant.secondary,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   onPressed: () => Navigator.of(dialogContext).pop(),
                 ),
                 CatchButton(
                   label: context.l10n.hostsEventItinerarySave,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   onPressed: () {
                     final normalizedTitle = title.text.trim();
                     final normalizedOffset = int.tryParse(offset.text.trim());

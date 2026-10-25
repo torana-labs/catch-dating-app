@@ -217,7 +217,7 @@ class ParticipantRowAction extends StatelessWidget {
         CatchButton(
           key: buttonKey,
           label: label,
-          size: CatchButtonSize.sm,
+          size: CatchButtonSize.md,
           variant: primary
               ? CatchButtonVariant.primary
               : CatchButtonVariant.secondary,

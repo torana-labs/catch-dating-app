@@ -55,7 +55,7 @@ class EventSuccessGroupOverrideRoundSection extends StatelessWidget {
                     .l10n
                     .eventSuccessEventSuccessHostOverridesLabelAddGroup,
                 leading: Icon(CatchIcons.addRounded),
-                size: CatchButtonSize.sm,
+                size: CatchButtonSize.md,
                 variant: CatchButtonVariant.secondary,
                 onPressed: onAddGroup,
               ),
@@ -175,7 +175,7 @@ class EventSuccessGroupOverrideFieldLanes extends StatelessWidget {
                 .l10n
                 .eventSuccessEventSuccessHostOverridesLabelAddAttendee,
             leading: Icon(CatchIcons.personAddAlt1Rounded),
-            size: CatchButtonSize.sm,
+            size: CatchButtonSize.md,
             variant: CatchButtonVariant.secondary,
             onPressed: onAddMember,
           ),

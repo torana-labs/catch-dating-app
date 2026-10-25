@@ -229,7 +229,7 @@ void _registerCatchPrimitivesControlsTests() {
 
       expect(
         tester.getSize(find.widgetWithText(CatchButton, 'Join event')).height,
-        56,
+        CatchButtonTokens.largeHeight,
       );
       expect(
         tester.getSize(find.widgetWithText(CatchButton, 'Join event')).width,

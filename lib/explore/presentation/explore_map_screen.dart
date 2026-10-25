@@ -206,7 +206,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                                     .exploreExploreMapScreenActionExpandToDistance(
                                       distanceKm: widerEmptyDistanceKm,
                                     ),
-                                size: CatchButtonSize.sm,
+                                size: CatchButtonSize.md,
                                 onPressed: () => unawaited(
                                   _applyDistanceFilter(widerEmptyFilter),
                                 ),
@@ -216,7 +216,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                                 label: context
                                     .l10n
                                     .exploreExploreMapScreenActionShowAll,
-                                size: CatchButtonSize.sm,
+                                size: CatchButtonSize.md,
                                 variant: CatchButtonVariant.secondary,
                                 onPressed: () => unawaited(
                                   _applyDistanceFilter(
@@ -229,7 +229,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                                 label: context
                                     .l10n
                                     .exploreExploreScreenLabelClearFilters,
-                                size: CatchButtonSize.sm,
+                                size: CatchButtonSize.md,
                                 onPressed: () => ref
                                     .read(exploreFiltersProvider.notifier)
                                     .clear(),

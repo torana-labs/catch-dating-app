@@ -59,7 +59,7 @@ class _HostCustomerFilterSheetState extends State<HostCustomerFilterSheet> {
       trailing: CatchButton(
         label: context.l10n.hostFiltersResetAll,
         variant: CatchButtonVariant.ghost,
-        size: CatchButtonSize.sm,
+        size: CatchButtonSize.md,
         onPressed: _filters.isEmpty && _tags.isEmpty
             ? null
             : () {

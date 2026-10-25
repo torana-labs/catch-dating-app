@@ -216,7 +216,7 @@ class _HostSavedAudiencesListState
                           CatchButton(
                             label: context.l10n.hostCustomersLoadMore,
                             variant: CatchButtonVariant.secondary,
-                            size: CatchButtonSize.sm,
+                            size: CatchButtonSize.md,
                             status: continuation.loadingMore
                                 ? CatchButtonStatus.loading
                                 : CatchButtonStatus.idle,

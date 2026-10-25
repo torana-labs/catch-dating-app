@@ -127,7 +127,7 @@ class LaunchAccessLoadingBody extends StatelessWidget {
         ],
         CatchSkeleton.card(height: CatchSpacing.s16),
         gapH32,
-        CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
+        CatchSkeleton.card(height: CatchButtonTokens.largeHeight),
         gapH32,
       ],
     );
@@ -474,7 +474,6 @@ class _LaunchAccessApplicationFormState
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
               fullWidth: true,
-              size: CatchButtonSize.lg,
             ),
             gapH32,
           ],

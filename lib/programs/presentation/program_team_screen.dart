@@ -201,7 +201,7 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
                         size: CatchIcon.md,
                       ),
                       variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       onPressed: _pending
                           ? null
                           : () => _grantOrInvite(invite: false),
@@ -210,7 +210,7 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
                       label: context.l10n.programsTeamInvite,
                       leading: Icon(CatchIcons.sendRounded, size: CatchIcon.md),
                       variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       onPressed: _pending
                           ? null
                           : () => _grantOrInvite(invite: true),

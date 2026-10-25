@@ -54,7 +54,7 @@ class PaymentConfirmationLoadingScreen extends StatelessWidget {
               ],
             ),
             gapH20,
-            CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
+            CatchSkeleton.card(height: CatchButtonTokens.largeHeight),
           ],
         ),
       ),

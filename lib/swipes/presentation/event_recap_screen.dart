@@ -303,7 +303,7 @@ class EventRecapLoadingBody extends StatelessWidget {
               gapH24,
               CatchSkeleton.box(
                 width: double.infinity,
-                height: CatchLayout.buttonLgHeight,
+                height: CatchButtonTokens.largeHeight,
                 radius: CatchRadius.pill,
                 borderColor: t.line,
               ),

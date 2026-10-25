@@ -17,7 +17,7 @@ Future<void> _showHostFormsFilters(
         trailing: CatchButton(
           label: context.l10n.hostFiltersResetAll,
           variant: CatchButtonVariant.ghost,
-          size: CatchButtonSize.sm,
+          size: CatchButtonSize.md,
           onPressed: selectedPurposes.isEmpty && selectedStatuses.isEmpty
               ? null
               : () {

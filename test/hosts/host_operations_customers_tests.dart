@@ -111,7 +111,7 @@ void _registerHostOperationsCustomersTests() {
           matching: find.byType(CatchButton),
         ),
       );
-      expect(createButton.size, CatchButtonSize.md);
+      expect(createButton.size, CatchButtonSize.lg);
     }
   });
 

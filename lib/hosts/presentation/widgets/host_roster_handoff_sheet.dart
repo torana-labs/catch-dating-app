@@ -49,7 +49,7 @@ class HostRosterHandoffSheet extends StatelessWidget {
                     : CatchButton(
                         label: context.l10n.hostsOperationalRosterForwardCopy,
                         onPressed: () => unawaited(onCopy(emailAlias)),
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         variant: CatchButtonVariant.ghost,
                       ),
               ),
@@ -70,7 +70,7 @@ class HostRosterHandoffSheet extends StatelessWidget {
                         onPressed: () => unawaited(
                           onCopy('$whatsappNumber\n$whatsappMessage'),
                         ),
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         variant: CatchButtonVariant.ghost,
                       ),
               ),

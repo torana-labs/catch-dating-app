@@ -90,7 +90,6 @@ class OnboardingInstagramStep extends StatelessWidget {
             label: context.l10n.onboardingInstagramPageLabelContinue,
             onPressed: callbacks.onContinue,
             fullWidth: true,
-            size: CatchButtonSize.lg,
           ),
           gapH12,
           Center(
@@ -98,7 +97,7 @@ class OnboardingInstagramStep extends StatelessWidget {
               label: context.l10n.onboardingInstagramPageLabelSkipForNow,
               onPressed: callbacks.onSkip,
               variant: CatchButtonVariant.ghost,
-              size: CatchButtonSize.sm,
+              size: CatchButtonSize.md,
               foregroundColor: t.ink2,
             ),
           ),

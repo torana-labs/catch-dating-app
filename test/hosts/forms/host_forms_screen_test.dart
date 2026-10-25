@@ -227,7 +227,7 @@ void main() {
           matching: find.byType(CatchButton),
         ),
       );
-      expect(createButton.size, CatchButtonSize.sm);
+      expect(createButton.size, CatchButtonSize.md);
     }
   });
 

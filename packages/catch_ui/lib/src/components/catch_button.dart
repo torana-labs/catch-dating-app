@@ -43,7 +43,7 @@ class CatchButton extends StatefulWidget {
     required this.label,
     required this.onPressed,
     this.variant = CatchButtonVariant.primary,
-    this.size = CatchButtonSize.md,
+    this.size = CatchButtonSize.lg,
     this.mode = CatchButtonMode.pill,
     this.leading,
     this.status = CatchButtonStatus.idle,
@@ -125,7 +125,7 @@ class CatchButton extends StatefulWidget {
        value = null,
        count = null,
        variant = CatchButtonVariant.secondary,
-       size = CatchButtonSize.sm,
+       size = CatchButtonSize.md,
        mode = CatchButtonMode.pill,
        status = CatchButtonStatus.idle,
        fullWidth = false,
@@ -159,7 +159,7 @@ class CatchButton extends StatefulWidget {
        value = null,
        count = null,
        variant = CatchButtonVariant.ghost,
-       size = CatchButtonSize.md,
+       size = CatchButtonSize.lg,
        mode = CatchButtonMode.rounded,
        status = CatchButtonStatus.idle,
        fullWidth = false,
@@ -204,7 +204,7 @@ class CatchButton extends StatefulWidget {
        leading = null,
        trailing = null,
        variant = CatchButtonVariant.secondary,
-       size = CatchButtonSize.md,
+       size = CatchButtonSize.lg,
        mode = CatchButtonMode.pill,
        status = CatchButtonStatus.idle,
        fullWidth = false,
@@ -242,7 +242,7 @@ class CatchButton extends StatefulWidget {
        count = null,
        trailing = null,
        variant = CatchButtonVariant.ghost,
-       size = CatchButtonSize.md,
+       size = CatchButtonSize.lg,
        mode = CatchButtonMode.rounded,
        status = CatchButtonStatus.idle,
        fullWidth = false,
@@ -257,12 +257,11 @@ class CatchButton extends StatefulWidget {
   final bool _command;
   final IconData? _floatingIcon;
 
-  /// Minimum width for a text-only standard action without breaking its label.
-  /// Dialog action reflow uses the same typography and padding as this recipe.
+  /// Unbroken label width of a text-only action; dialog action reflow uses it.
   static double minimumLabelWidth(
     BuildContext context,
     String label, {
-    CatchButtonSize size = CatchButtonSize.md,
+    CatchButtonSize size = CatchButtonSize.lg,
   }) {
     final spec = _ButtonSizeSpec.from(size);
     final painter = TextPainter(
@@ -721,27 +720,28 @@ class _ButtonSizeSpec {
   final double padding;
   final TextStyle Function(BuildContext context) textStyle;
 
-  static _ButtonSizeSpec from(CatchButtonSize size) {
-    // D20: sm draws medium and md large; the rename folds lg in, adds small.
-    return switch (size) {
-      CatchButtonSize.sm => const _ButtonSizeSpec(
-        height: CatchButtonTokens.mediumHeight,
-        padding: CatchButtonTokens.mediumPaddingX,
-        textStyle: CatchTextStyles.buttonSm,
-      ),
-      CatchButtonSize.md => const _ButtonSizeSpec(
-        height: CatchButtonTokens.largeHeight,
-        padding: CatchButtonTokens.largePaddingX,
-        textStyle: CatchTextStyles.buttonMd,
-      ),
-      CatchButtonSize.lg => const _ButtonSizeSpec(
-        height: CatchLayout.buttonLgHeight,
-        padding: CatchSpacing.s6,
-        textStyle: CatchTextStyles.buttonLg,
-      ),
-    };
-  }
+  // D20: S 32, M 40 and L 48; labels are 15/600, or 13/600 at S.
+  static _ButtonSizeSpec from(CatchButtonSize size) => switch (size) {
+    CatchButtonSize.sm => const _ButtonSizeSpec(
+      height: CatchButtonTokens.smallHeight,
+      padding: CatchButtonTokens.smallPaddingX,
+      textStyle: _smallLabel,
+    ),
+    CatchButtonSize.md => const _ButtonSizeSpec(
+      height: CatchButtonTokens.mediumHeight,
+      padding: CatchButtonTokens.mediumPaddingX,
+      textStyle: CatchTextStyles.buttonSm,
+    ),
+    CatchButtonSize.lg => const _ButtonSizeSpec(
+      height: CatchButtonTokens.largeHeight,
+      padding: CatchButtonTokens.largePaddingX,
+      textStyle: CatchTextStyles.buttonMd,
+    ),
+  };
 }
+
+TextStyle _smallLabel(BuildContext context) =>
+    CatchTextStyles.bodyS(context).copyWith(fontWeight: FontWeight.w600);
 
 class _ButtonPalette {
   const _ButtonPalette({

@@ -53,8 +53,9 @@ void main() {
 
   testWidgets('sizes draw the D20 heights', (tester) async {
     const expected = {
-      CatchButtonSize.sm: CatchButtonTokens.mediumHeight,
-      CatchButtonSize.md: CatchButtonTokens.largeHeight,
+      CatchButtonSize.sm: CatchButtonTokens.smallHeight,
+      CatchButtonSize.md: CatchButtonTokens.mediumHeight,
+      CatchButtonSize.lg: CatchButtonTokens.largeHeight,
     };
     for (final entry in expected.entries) {
       await pump(
