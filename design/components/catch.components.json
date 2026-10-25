@@ -597,7 +597,7 @@
             "explicit-submit"
           ]
         },
-        "notes": "Shared safe button type and loading semantics used by both surface adapters; styling, density, icons, and labels remain surface-owned."
+        "notes": "Shared safe button type and loading semantics used by both surface adapters; styling, density, icons, and labels remain surface-owned. CatchButton (packages/web-ui/src/components/CatchButton.tsx) is the prepared D20 styled twin with every recipe, and the library's own parts (CatchNotice, CatchErrorState) render it. This record moves to it when the Admin and website ButtonControl adapters migrate (the D20 web rollout)."
       },
       "design": {
         "figma": {
@@ -1666,6 +1666,29 @@
           "CatchErrorState"
         ]
       },
+      "react": {
+        "symbol": "CatchErrorState",
+        "file": "packages/web-ui/src/components/CatchErrorState.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchErrorState.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "full-screen",
+            "inline",
+            "compact",
+            "from-error",
+            "with-retry",
+            "secondary-action",
+            "scaffold",
+            "sliver",
+            "icon",
+            "dark"
+          ]
+        },
+        "notes": "mode is \"fullScreen\" | \"inline\" | \"compact\". The retry is a D20 CatchButton with a leading refresh glyph, md when compact and lg otherwise; actions follow it. Scaffold and sliver are Flutter placements; on the web the page places the full-screen or inline state."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -2342,6 +2365,33 @@
         "constructors": [
           "CatchNotice"
         ]
+      },
+      "react": {
+        "symbol": "CatchNotice",
+        "file": "packages/web-ui/src/components/CatchNotice.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "CatchNoticeRegion"
+        ],
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchNotice.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "status",
+            "success",
+            "warning",
+            "danger",
+            "event",
+            "with-action",
+            "dismissible",
+            "arrival-tap-to-open",
+            "arrival-swipe-to-dismiss",
+            "arrival-reduced-motion",
+            "dark"
+          ]
+        },
+        "notes": "CatchNoticeData is a plain object with icon as a node and accentColor as a CSS colour. The action is a D20 md secondary CatchButton and the dismiss control a 48px plain icon button. An arrival notice (onOpen) is one button that dismisses and opens; Escape dismisses it, standing in for the app's swipe. CatchNoticeRegion is the app-level overlay: one polite live region fixed above the bottom edge and safe area; the host owns timing, dedupe and priority."
       },
       "design": {
         "figma": {
