@@ -9,13 +9,6 @@
 
 /* ------------------------------------------------- create-flow showcase */
 
-.host-create-flow {
-  width: min(calc(100% - (var(--website-gutter) * 2)), var(--website-content));
-  margin: 0 auto;
-  padding: clamp(72px, 10vw, 112px) 0;
-  border-top: 1px solid var(--website-line);
-}
-
 .host-create-flow__actions {
   display: flex;
   gap: var(--catch-space-s4);
@@ -34,70 +27,6 @@
 }
 
 /* ---------------------------------------------------- playbook showcase */
-
-.event-success-showcase {
-  width: min(calc(100% - (var(--website-gutter) * 2)), var(--website-content));
-  margin: 0 auto;
-  padding: clamp(72px, 10vw, 112px) 0;
-  border-top: 1px solid var(--website-line);
-}
-
-.event-success-showcase__grid {
-  display: grid;
-  gap: var(--catch-space-s6);
-  margin-top: var(--catch-space-s10);
-}
-
-.event-success-stage-rail {
-  display: flex;
-  gap: 1px;
-  margin-top: var(--catch-space-s7);
-  overflow-x: auto;
-  border: 1px solid var(--website-line);
-  border-radius: var(--catch-radius-md);
-  background: var(--website-line);
-}
-
-.event-success-stage-rail button {
-  display: grid;
-  min-width: 170px;
-  gap: var(--catch-space-micro6);
-  padding: var(--catch-space-s4);
-  border: 0;
-  background: var(--website-surface);
-  color: var(--website-text-muted);
-  cursor: pointer;
-  text-align: left;
-  transition:
-    background-color var(--catch-motion-fast) var(--catch-motion-standard-curve),
-    color var(--catch-motion-fast) var(--catch-motion-standard-curve),
-    box-shadow var(--catch-motion-fast) var(--catch-motion-standard-curve);
-}
-
-.event-success-stage-rail button.is-active {
-  box-shadow: inset 0 3px 0 var(--website-text);
-  color: var(--website-text);
-}
-
-.event-success-stage-rail span {
-  color: var(--website-text-muted);
-  font-family: var(--catch-font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.event-success-stage-rail strong {
-  font-size: 17px;
-  font-weight: 600;
-}
-
-.event-success-stage-rail small {
-  color: var(--website-text-muted);
-  font-size: 12px;
-  line-height: 1.35;
-}
 
 .event-success-module-grid {
   display: grid;
@@ -198,11 +127,6 @@
 @media (min-width: 980px) {
   .loop-list--host {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .event-success-showcase__grid {
-    grid-template-columns: minmax(0, 1fr) 340px;
-    align-items: start;
   }
 
   .host-preview-product-split {
