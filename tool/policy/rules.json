@@ -3255,7 +3255,7 @@
         ".github/workflows/admin-website.yml",
         ".github/workflows/marketing-website.yml"
       ],
-      "instruction": "Every Storybook registry entry marked ready must resolve to a built story and match committed desktop and mobile baselines for the current operating system with reduced motion, loaded fonts, and the configured pixel tolerance. Never compare Darwin-authored system-ui pixels against Linux; blocking CI uses reviewed Ubuntu 24.04 baselines and retains actual plus diff artifacts on failure.",
+      "instruction": "Every Storybook registry entry marked ready must resolve to a built story that renders with reduced motion and loaded fonts; a story that cannot render fails. Each desktop and mobile capture is compared with committed baselines for the current operating system at the configured pixel tolerance, and CI reports changed, missing or stale baselines in the job summary and diagnostics artifact without failing while the product is still changing visually. Never compare Darwin-authored system-ui pixels against Linux; CI uses reviewed Ubuntu 24.04 baselines.",
       "sunset_when": [
         "A replacement visual-regression service enforces the same registry-backed coverage"
       ],
