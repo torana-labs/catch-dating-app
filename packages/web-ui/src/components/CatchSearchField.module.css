@@ -123,19 +123,27 @@
 }
 
 .search .action {
+  position: relative;
   border: 0;
   border-radius: var(--catch-radius-pill);
   background: transparent;
   cursor: pointer;
 }
+.search .action::before {
+  position: absolute;
+  width: var(--catch-search-clear-size);
+  height: var(--catch-search-clear-size);
+  border-radius: inherit;
+  content: "";
+}
 .search .trigger { --catch-search-action-bg: var(--catch-theme-surface); width: 100%; color: var(--catch-theme-ink); cursor: pointer; }
 .search .trigger svg { width: var(--catch-search-trigger-icon-size); height: var(--catch-search-trigger-icon-size); }
-.search .action svg { width: var(--catch-search-clear-icon-size); height: var(--catch-search-clear-icon-size); }
+.search .action svg { position: relative; width: var(--catch-search-clear-icon-size); height: var(--catch-search-clear-icon-size); }
 .search .leading svg { height: var(--catch-search-icon-size); }
 .search button:disabled { cursor: default; }
 .search button:focus-visible { outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-primary); outline-offset: var(--catch-space-micro2); }
-.search button:enabled:hover { background: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-control-overlay-hover) * 100%), var(--catch-search-action-bg)); }
-.search button:enabled:active { background: color-mix(in srgb, var(--catch-theme-ink) 8%, var(--catch-search-action-bg)); }
+.search .trigger:enabled:hover, .search .action:enabled:hover::before { background: color-mix(in srgb, var(--catch-theme-ink) calc(var(--catch-opacity-control-overlay-hover) * 100%), var(--catch-search-action-bg)); }
+.search .trigger:enabled:active, .search .action:enabled:active::before { background: color-mix(in srgb, var(--catch-theme-ink) 8%, var(--catch-search-action-bg)); }
 
 @media (prefers-reduced-motion: reduce) {
   .search, .search .field { transition: none; }

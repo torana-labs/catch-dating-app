@@ -33,6 +33,7 @@ describe("SearchField Dart-owned interim geometry", () => {
     expect(styles).toContain("var(--catch-theme-raised)");
     expect(styles).toContain("var(--catch-typography-web-secondary-line-height) + var(--catch-search-linebox-padding)");
     expect(styles).toContain("min-height: var(--catch-search-target)");
+    expect(styles).toMatch(/\.action::before\s*\{[^}]*width: var\(--catch-search-clear-size\);[^}]*height: var\(--catch-search-clear-size\);/);
   });
   it("pins derived native sizes without using spacing tokens as web dimensions", () => {
     const space = (name: string) => Number(generated.match(new RegExp(`static const double ${name} = ([\\d.]+);`))?.[1]);
