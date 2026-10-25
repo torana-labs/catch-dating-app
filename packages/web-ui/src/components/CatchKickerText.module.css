@@ -1,0 +1,57 @@
+.atom {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  text-align: inherit;
+  text-transform: none;
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+.kicker {
+  color: var(--catch-theme-ink2);
+  font-family: var(--catch-typography-brand-kicker-family), monospace;
+  font-size: var(--catch-typography-brand-kicker-size);
+  font-weight: var(--catch-typography-brand-kicker-weight);
+  line-height: var(--catch-typography-brand-kicker-line-height);
+  letter-spacing: var(--catch-typography-brand-kicker-tracking);
+  overflow-wrap: anywhere;
+}
+.kicker[data-variant="lg"] {
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-typography-brand-kicker-lg-family), monospace;
+  font-size: var(--catch-typography-brand-kicker-lg-size);
+  font-weight: var(--catch-typography-brand-kicker-lg-weight);
+  line-height: var(--catch-typography-brand-kicker-lg-line-height);
+  letter-spacing: var(--catch-typography-brand-kicker-lg-tracking);
+}
+.kicker[data-variant="fieldSection"] {
+  font-family: var(--catch-typography-brand-field-section-kicker-family), monospace;
+  font-size: var(--catch-typography-brand-field-section-kicker-size);
+  font-weight: var(--catch-typography-brand-field-section-kicker-weight);
+  line-height: var(--catch-typography-brand-field-section-kicker-line-height);
+  letter-spacing: var(--catch-typography-brand-field-section-kicker-tracking);
+}
+.kicker[data-clamped] {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--catch-kicker-lines);
+  overflow: hidden;
+}
+.metadata {
+  font-family: var(--catch-typography-brand-mono-label-family), monospace;
+  font-size: var(--catch-typography-brand-mono-label-size);
+  font-weight: var(--catch-typography-brand-mono-label-weight);
+  line-height: var(--catch-typography-brand-mono-label-line-height);
+  letter-spacing: var(--catch-typography-brand-mono-label-tracking);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.metadata[data-uppercase] {
+  font-family: var(--catch-typography-brand-mono-caps-label-family), monospace;
+  font-size: var(--catch-typography-brand-mono-caps-label-size);
+  font-weight: var(--catch-typography-brand-mono-caps-label-weight);
+  line-height: var(--catch-typography-brand-mono-caps-label-line-height);
+  letter-spacing: var(--catch-typography-brand-mono-caps-label-tracking);
+}

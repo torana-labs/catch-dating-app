@@ -64,7 +64,7 @@ class CatchFieldLabelText extends StatelessWidget {
     final showOptionalBadge =
         isOptional && MediaQuery.textScalerOf(context).scale(1) < 1.5;
     final labelStyle = size == CatchFieldLabelTextSize.lg
-        ? CatchTextStyles.labelL(context, color: hasError ? t.danger : t.ink2)
+        ? CatchTextStyles.titleS(context, color: hasError ? t.danger : t.ink2)
         // `.t-field-label` — 11.5 / w500 / ink3 (sentence case, not mono).
         : CatchTextStyles.fieldLabel(
             context,

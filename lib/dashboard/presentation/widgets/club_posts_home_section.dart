@@ -88,18 +88,13 @@ class ClubPostHomeCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  clubName.toUpperCase(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-                ),
+                CatchMetadataText(clubName.toUpperCase(), color: t.ink3),
                 gapH4,
-                Text(
+                CatchText(
                   notification.body,
+                  variant: CatchTextVariant.bodyLead,
+                  color: CatchTokens.of(context).ink,
                   maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: CatchTextStyles.fieldRowTitle(context),
                 ),
                 if (hasEventLink) ...[
                   gapH8,

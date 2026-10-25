@@ -70,8 +70,10 @@ class EventLocationMapScreen extends StatelessWidget {
                       SizedBox(
                         width: CatchLayout.eventInfoTileExtent,
                         height: CatchLayout.eventInfoTileExtent,
-                        child: ColoredBox(
-                          color: t.primarySoft,
+                        child: CatchSurface(
+                          duration: Duration.zero,
+                          radius: CatchRadius.none,
+                          backgroundColor: t.primarySoft,
                           child: Icon(
                             CatchIcons.locationOnOutlined,
                             color: t.primary,

@@ -1,5 +1,14 @@
 export {CatchAppCaptureImage} from "./components/CatchAppCaptureImage";
 export type {CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
+export * from "./artwork";
+export {ClubCover} from "./components/ClubCover";
+export type {ClubCoverProps} from "./components/ClubCover";
+export {ClubPlaceholderCover} from "./components/ClubPlaceholderCover";
+export type {ClubPlaceholderCoverProps} from "./components/ClubPlaceholderCover";
+export {EventBackdropImage} from "./components/EventBackdropImage";
+export type {EventBackdropImageProps} from "./components/EventBackdropImage";
+export {EventThumbnail} from "./components/EventThumbnail";
+export type {EventThumbnailProps} from "./components/EventThumbnail";
 export {CatchField} from "./components/CatchField";
 export type {
   CatchFieldInputProps,

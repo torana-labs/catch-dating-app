@@ -132,13 +132,11 @@ class EventSuccessCountdownSurface extends StatelessWidget {
                   intensity: urgency,
                 ),
                 gapH16,
-                Text(
+                CatchText(
                   _countdownStageHeadline(seconds),
+                  variant: CatchTextVariant.titleL,
+                  color: t.ink,
                   textAlign: TextAlign.center,
-                  style: CatchTextStyles.titleL(
-                    context,
-                    color: t.ink,
-                  ).copyWith(),
                 ),
                 gapH8,
                 CatchText(

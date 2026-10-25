@@ -24,9 +24,9 @@
 .consumer-event-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--catch-space-s7); }
 .consumer-event { min-width: 0; display: block; padding-bottom: var(--catch-space-micro14); }
 .consumer-event__media,.consumer-organiser__media { position: relative; overflow: hidden; border-radius: 5px; background: var(--catch-color-light-primary-soft); }
-.consumer-event__media img { width: 100%; height: auto; aspect-ratio: 1.18; object-fit: cover; transition: transform var(--catch-motion-micro) ease; }
-.consumer-event:hover img,.consumer-organiser:hover img { transform: scale(1.025); }
-.consumer-photo-note { position: absolute; bottom: 6px; right: 6px; color: var(--catch-color-dark-ink); background: color-mix(in srgb, var(--catch-color-light-ink) 80%, transparent); font-size: 10px; line-height: 1.4; padding: var(--catch-space-micro2) 5px; border-radius: 2px; }
+.consumer-event__media { aspect-ratio: 1.18; }
+.consumer-event__media > *,.consumer-organiser__media > * { transition: transform var(--catch-motion-micro) ease; }
+.consumer-event:hover .consumer-event__media > *,.consumer-organiser:hover .consumer-organiser__media > * { transform: scale(1.025); }
 .consumer-category { display: block; margin-top: var(--catch-space-s4); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; font-weight: 650; }
 .consumer-category--runs { color: var(--catch-activity-social-run-deep); }.consumer-category--food { color: var(--catch-activity-dinner-deep); }.consumer-category--sport { color: var(--catch-activity-pickleball-deep); }.consumer-category--games { color: var(--catch-activity-pub-quiz-deep); }.consumer-category--nights { color: var(--catch-activity-bar-crawl-deep); }
 .consumer-event h3 { margin: var(--catch-space-s2) 0 var(--catch-space-s4); font-size: 25px; line-height: 1.06; }
@@ -59,7 +59,7 @@
 .consumer-organisers { padding-bottom: var(--catch-space-s5); }
 .consumer-organisers>p { font-size: 18px; margin: var(--catch-space-micro18) 0 30px; }
 .consumer-organiser-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 34px; margin-bottom: var(--catch-space-s2); }
-.consumer-organiser__media img { width: 100%; aspect-ratio: 1.85; height: auto; object-fit: cover; transition: transform var(--catch-motion-micro) ease; }
+.consumer-organiser__media { aspect-ratio: 1.85; }
 .consumer-organiser h3 { font-size: 26px; margin: 13px 0 var(--catch-space-s2); }
 .consumer-organiser p { font-size: 14px; margin: var(--catch-space-s2) 0; }
 .consumer-organiser__location { display: flex; align-items: center; gap: var(--catch-space-micro6); flex-wrap: wrap; }
@@ -108,7 +108,7 @@
   .consumer-filters button { padding: var(--catch-space-s2) 0; font-size: 14px; }
   .consumer-event-grid { display: flex; flex-direction: column; gap: 26px; }
   .consumer-event-grid:not(.consumer-event-grid--all) .consumer-event:nth-child(n+3) { display: none; }
-  .consumer-event__media img { aspect-ratio: 1.8; }
+  .consumer-event__media { aspect-ratio: 1.8; }
   .consumer-event h3 { font-size: 28px; margin: var(--catch-space-s2) 0 var(--catch-space-s4); }
   .consumer-event p { font-size: 15px; gap: var(--catch-space-s3); }
   .consumer-events>.consumer-text-action { display: flex; border: 1px solid var(--website-input-border); justify-content: center; min-height: 48px; border-radius: var(--catch-radius-xs); }
@@ -123,8 +123,7 @@
   .consumer-organisers>p { font-size: 16px; margin: 15px 0 22px; }
   .consumer-organiser-grid { display: flex; flex-direction: column; gap: 0; }
   .consumer-organiser { display: grid; grid-template-columns: 108px minmax(0,1fr); gap: var(--catch-space-micro14); padding: var(--catch-space-micro18) 0; border-bottom: 1px solid var(--website-line-strong); }
-  .consumer-organiser__media { align-self: start; }.consumer-organiser__media img { height: 110px; aspect-ratio: auto; }
-  .consumer-organiser .consumer-photo-note { font-size: 8px; right: 3px; bottom: 3px; }
+  .consumer-organiser__media { align-self: start; height: 110px; aspect-ratio: auto; }
   .consumer-organiser h3 { font-size: 23px; margin: 0 0 var(--catch-space-s2); }.consumer-organiser p { font-size: 12px; line-height: 1.45; }.consumer-organiser__location svg { width: 13px; }
   .consumer-organiser .consumer-text-action { font-size: 13px; min-height: 36px; }
   .consumer-organisers>.consumer-text-action { display: flex; justify-content: center; margin-top: 22px; border: 1px solid var(--website-input-border); border-radius: var(--catch-radius-xs); min-height: 48px; }

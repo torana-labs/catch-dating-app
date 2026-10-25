@@ -96,7 +96,7 @@ class CatchStepper extends StatelessWidget {
               key: const ValueKey('catch-field-stepper-value'),
               maxLines: 1,
               textAlign: TextAlign.center,
-              style: CatchTextStyles.fieldRowTitle(context, color: t.ink),
+              style: CatchTextStyles.bodyLead(context, color: t.ink),
             ),
           ),
           SizedBox(width: CatchStepperRepeatButton.layoutGap),

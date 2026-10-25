@@ -13,8 +13,8 @@ class EventBackdropImage extends StatelessWidget {
     this.dense = false,
     this.iconAlignment = Alignment.bottomRight,
     this.iconSize = 132,
-    this.iconOpacity = 0.2,
-    this.patternOpacity = 0.22,
+    this.iconOpacity = CatchOpacity.activityArtworkGlyph,
+    this.patternOpacity = CatchOpacity.activityArtworkPattern,
   });
 
   final EventActivityVisualSpec visual;

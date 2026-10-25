@@ -8804,6 +8804,190 @@
       "decidedBy": "codex-rule:existing-library-swap+D1",
       "date": "2026-10-24",
       "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:canonical-field-title-alias",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.fieldRowTitle",
+          "action": "absorb",
+          "note": "CatchTextVariant.bodyLead for supported Text callers; CatchTextStyles.bodyLead for library carriers. Preserve the old ink fallback explicitly."
+        }
+      ],
+      "rationale": "The handoff exact-recipe rule authorizes absorbing the fieldValue typography recipe into the existing bodyLead variant. The aliases share metrics but default to different colors: every migrated caller preserves fieldRowTitle ink explicitly, including nullable overrides; fieldRowValue already requires a color. Retire the public alias and duplicate specimen/context entry and replace registry references without adding a variant or changing field value geometry.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-24",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:d19-sub24-function-roles",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.welcomeIntroBody",
+          "action": "absorb",
+          "note": "One caller uses existing bodyL, retaining its explicit welcome opacity/colour binding."
+        },
+        {
+          "name": "CatchTextStyles.consoleTitle",
+          "action": "absorb",
+          "note": "One caller uses existing titleL (the D19 title mapping), retaining dark ink and the two-line ellipsis limit."
+        },
+        {
+          "name": "CatchTextStyles.hint",
+          "action": "absorb",
+          "note": "Two callers use existing sectionTitle, retaining their explicit text colour and unbounded content."
+        }
+      ],
+      "rationale": "D19 limits Archivo to display text at24px and above. D21 authorizes moving these four sub24px callers onto the nearest existing function roles. Intro15px/400 Archivo adopts bodyL; console20px/800 Archivo adopts titleL; hint16.5px/600 Archivo adopts sectionTitle. The function roles use their existing platform metrics and emphasis. Retire the three unused public style helpers and their duplicate specimen/context entries. No component API, variant, prop or token is added; no content, callback, colour binding or line-limit behavior changes.",
+      "decidedBy": "codex-rule:D19+D21-existing-function-roles",
+      "date": "2026-10-25",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-211:canonical-label-alias",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchText",
+      "members": [
+        {
+          "name": "CatchTextStyles.labelL",
+          "action": "absorb",
+          "note": "Existing titleS uses the identical functionStrong14 helper, ink default and colour-override contract. All production role callers, including the accepted D20 button fallback, now use titleS; the sole alias specimen becomes the canonical titleS specimen."
+        }
+      ],
+      "rationale": "The handoff exact-recipe rule authorizes retiring synonyms into existing roles. After accepted #873 releases its button path, the final fallback call adopts identical titleS. Retire the public labelL method and duplicate context alias entry, update the six current registry role references and current choice-chip note, and regenerate dependent metadata. Historical decision prose remains unchanged. No rendering delta, new public variant, prop or token.",
+      "decidedBy": "codex-rule:exact-text-role-identity",
+      "date": "2026-10-25",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "CAT-241:fixed-metadata-api-screen-rebuild-deferral",
+      "decision": "defer-to-rebuild",
+      "canonicalSymbol": "CatchMetadataText",
+      "members": [
+        {
+          "name": "lib/auth/presentation/otp_step.dart:368",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/clubs/presentation/detail/widgets/club_photo_rail.dart:48",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/clubs/presentation/detail/widgets/club_photo_rail.dart:53",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/core/widgets/ordered_photo_picker.dart:593",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/dashboard/presentation/widgets/activity_section.dart:303",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart:68",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/event_success/presentation/host_live/event_success_control_room_stage_section.dart:114",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart:38",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart:126",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_dock.dart:467",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_fact_list.dart:528",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_fact_list.dart:533",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_fact_list.dart:616",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart:404",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/presentation/widgets/event_detail_hero_top_bar.dart:430",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/shared/event_tiles/event_date_rail_card.dart:285",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/shared/event_tiles/event_date_rail_card.dart:567",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/events/shared/event_tiles/event_date_rail_card.dart:587",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/explore/presentation/widgets/featured_event_poster.dart:343",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/hosts/presentation/host_operations/host_club_media_rail.dart:56",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/hosts/presentation/widgets/host_event_manage_section.dart:105",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/image_uploads/shared/photo_slot_tile.dart:262",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        },
+        {
+          "name": "lib/onboarding/presentation/pages/onboarding_profile_prompts_step.dart:151",
+          "action": "defer",
+          "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
+        }
+      ],
+      "rationale": "Coordinator chose option 1 now: preserve all 23 wrapping/alignment sites as recorded debt with target zero and keep CatchMetadataText name/API/tier fixed. At each screen rebuild, features may arrange a one-line component with Align or row/column alignment only after captures prove the longest real value fits at the largest supported text scale. Multiline metadata requires a separate packet; no textAlign or maxLines prop is approved. Source: CAT-241 coordinator comment 8c4c50cc-1e4f-4637-bc33-253c821779f6, 2026-10-24. Original locations listed above are historical identifiers from the packet, not an assertion of current line numbers.",
+      "decidedBy": "owner-delegated:2026-10-24 -> claude",
+      "date": "2026-10-24",
+      "status": "deferred"
     }
   ]
 }

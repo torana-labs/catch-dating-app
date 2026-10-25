@@ -443,10 +443,10 @@ void _registerExploreClubDetailTests() {
       expect(location, findsOneWidget);
       expect(find.descendant(of: posterFrame, matching: title), findsOneWidget);
 
-      final module = tester.widget<ColoredBox>(
+      final module = tester.widget<CatchSurface>(
         find.byKey(const ValueKey('club-detail-hero-module')),
       );
-      expect(module.color, CatchTokens.editorialLight.surface);
+      expect(module.backgroundColor, CatchTokens.editorialLight.surface);
     },
   );
 
@@ -757,15 +757,15 @@ void _registerExploreClubDetailTests() {
 
     expect(find.text('Follow organizer'), findsNothing);
     expect(find.text('Following'), findsNothing);
-    final scrollBackground = tester.widget<ColoredBox>(
+    final scrollBackground = tester.widget<CatchSurface>(
       find
           .ancestor(
             of: find.byType(CustomScrollView),
-            matching: find.byType(ColoredBox),
+            matching: find.byType(CatchSurface),
           )
           .first,
     );
-    expect(scrollBackground.color, CatchTokens.editorialLight.bg);
+    expect(scrollBackground.backgroundColor, CatchTokens.editorialLight.bg);
     final metrics = tester.widget<CatchMetricSection>(
       find.byType(CatchMetricSection),
     );

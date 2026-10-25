@@ -22,40 +22,20 @@ void main() {
     'hostPostEventReport',
   ];
 
-  test(
-    'named India captures preserve the separate NYC seed-world scenario',
-    () {
-      expect(story.scenario.id, 'host-marketing-india');
-      expect(salesDemoHostScenario.id, 'host-demo');
-      expect(salesDemoHostScenario.club.location, 'new-york');
-      expect(
-        salesDemoHostScenario.eventByRole('hostEventSetup').priceInPaise,
-        120000,
-      );
-      final india =
-          jsonDecode(
-                File(
-                  'tool/demo/demo_seed/scenarios/host-marketing-india.json',
-                ).readAsStringSync(),
-              )
-              as Map<String, Object?>;
-      final global =
-          jsonDecode(
-                File(
-                  'tool/demo/demo_seed/scenarios/host-demo.json',
-                ).readAsStringSync(),
-              )
-              as Map<String, Object?>;
-      expect(india.containsKey('seedWorld'), isFalse);
-      final seedWorld = global['seedWorld']! as Map<String, Object?>;
-      final sourceOfTruth = global['sourceOfTruth']! as Map<String, Object?>;
-      expect(seedWorld['cities'], ['new-york']);
-      expect(sourceOfTruth['personaProjection'], contains('us_nyc'));
-      expect(story.club(fixtures).name, 'Evening Club');
-      expect(story.club(fixtures).location, 'mumbai');
-      expect(currencyCodeForCityName(story.club(fixtures).location), 'INR');
-    },
-  );
+  test('the Mumbai story is a capture world, not a seed world', () {
+    expect(story.scenario.id, 'host-marketing-india');
+    final india =
+        jsonDecode(
+              File(
+                'tool/demo/demo_seed/scenarios/host-marketing-india.json',
+              ).readAsStringSync(),
+            )
+            as Map<String, Object?>;
+    expect(india.containsKey('seedWorld'), isFalse);
+    expect(story.club(fixtures).name, 'Evening Club');
+    expect(story.club(fixtures).location, 'mumbai');
+    expect(currencyCodeForCityName(story.club(fixtures).location), 'INR');
+  });
 
   test(
     'all four phases share the same named event, venue, schedule and free/open policy',

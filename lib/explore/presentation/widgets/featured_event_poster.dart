@@ -191,14 +191,12 @@ class FeaturedEventTopBar extends StatelessWidget {
                 final label = Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      location.toUpperCase(),
-                      style: CatchTextStyles.kicker(
-                        context,
-                        color: paper.withValues(
-                          alpha: CatchOpacity.coverStoryLocation,
-                        ),
+                    CatchKickerText(
+                      label: location.toUpperCase(),
+                      color: paper.withValues(
+                        alpha: CatchOpacity.coverStoryLocation,
                       ),
+                      maxLines: null,
                     ),
                     const SizedBox(width: CatchSpacing.micro6),
                     Icon(
@@ -283,16 +281,11 @@ class FeaturedEventBody extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (story.kicker != null && story.kicker!.isNotEmpty) ...[
-          Text(
-            story.kicker!.toUpperCase(),
-            style: CatchTextStyles.kickerLg(
-              context,
-              color: Color.lerp(
-                paper,
-                accent,
-                CatchOpacity.coverStoryKickerMix,
-              ),
-            ),
+          CatchKickerText(
+            label: story.kicker!.toUpperCase(),
+            color: Color.lerp(paper, accent, CatchOpacity.coverStoryKickerMix),
+            variant: CatchKickerTextVariant.lg,
+            maxLines: null,
           ),
           const SizedBox(height: CatchSpacing.s3),
         ],

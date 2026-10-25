@@ -43,7 +43,6 @@ function validateScenarioConfig(config, filePath) {
     }
   }
   if (config.seedWorld != null) validateSeedWorld(config.seedWorld, label);
-  if (config.salesDemo != null) validateSalesDemo(config.salesDemo, label);
 }
 
 function validateSeedWorld(seedWorld, label) {
@@ -83,53 +82,6 @@ function validateEventPattern(pattern, label) {
   for (const field of ["offsetHours", "price", "capacity", "durationMinutes"]) {
     if (!Number.isFinite(pattern[field])) {
       throw new Error(`${label}.${field} must be a finite number.`);
-    }
-  }
-}
-
-function validateSalesDemo(salesDemo, label) {
-  if (!isRecord(salesDemo.host)) {
-    throw new Error(`${label}.salesDemo.host must be an object.`);
-  }
-  if (!isRecord(salesDemo.club)) {
-    throw new Error(`${label}.salesDemo.club must be an object.`);
-  }
-  if (!Array.isArray(salesDemo.rosterPersonaIds) ||
-      salesDemo.rosterPersonaIds.length === 0) {
-    throw new Error(`${label}.salesDemo.rosterPersonaIds must be non-empty.`);
-  }
-  if (!Array.isArray(salesDemo.events) || salesDemo.events.length === 0) {
-    throw new Error(`${label}.salesDemo.events must be non-empty.`);
-  }
-  if (salesDemo.proofCoverage != null) {
-    validateProofCoverage(salesDemo.proofCoverage, `${label}.salesDemo.proofCoverage`);
-  }
-}
-
-function isRecord(value) {
-  return value != null && typeof value === "object" && !Array.isArray(value);
-}
-
-function validateProofCoverage(items, label) {
-  if (!Array.isArray(items) || items.length === 0) {
-    throw new Error(`${label} must be a non-empty array when present.`);
-  }
-  for (const [index, item] of items.entries()) {
-    const itemLabel = `${label}[${index}]`;
-    if (!isRecord(item)) {
-      throw new Error(`${itemLabel} must be an object.`);
-    }
-    for (const field of ["claim", "productSurface", "fixtureKey"]) {
-      if (typeof item[field] !== "string" || item[field].trim() === "") {
-        throw new Error(`${itemLabel}.${field} must be a non-empty string.`);
-      }
-    }
-    if (
-      !Array.isArray(item.evidence) ||
-      item.evidence.length === 0 ||
-      item.evidence.some((entry) => typeof entry !== "string" || entry.trim() === "")
-    ) {
-      throw new Error(`${itemLabel}.evidence must be a non-empty string array.`);
     }
   }
 }

@@ -102,6 +102,16 @@ abstract final class CatchOpacity {
   /// Activity-art fallback icon opacity on photo-replacement surfaces.
   static const double fallbackArtworkIcon = 0.24;
 
+  /// Pattern marks over activity artwork (EventBackdropImage); the website
+  /// reads the same token as --catch-opacity-activity-artwork-pattern.
+  static const double activityArtworkPattern =
+      GeneratedCatchOpacityTokens.activityArtworkPattern;
+
+  /// Activity glyph over activity artwork (EventBackdropImage); the website
+  /// reads the same token as --catch-opacity-activity-artwork-glyph.
+  static const double activityArtworkGlyph =
+      GeneratedCatchOpacityTokens.activityArtworkGlyph;
+
   /// Muted border on medium-contrast component shells (activity stamps).
   static const double mutedBorder = 0.54;
 

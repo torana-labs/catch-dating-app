@@ -1,0 +1,46 @@
+/* Recipe geometry mirrors CatchIconTile; raw overrides remain native-only. */
+.root {
+  --catch-icon-tile-box: 42px;
+  --catch-icon-tile-glyph: 21px;
+  display: inline-flex;
+  min-width: 0;
+  vertical-align: middle;
+  color: inherit;
+}
+.root[data-recipe="empty"] { --catch-icon-tile-box: 76px; --catch-icon-tile-glyph: 34px; }
+.root[data-recipe="error"] { --catch-icon-tile-box: 64px; --catch-icon-tile-glyph: 30px; }
+.root.center { display: flex; align-items: center; justify-content: center; }
+.material {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex: none;
+  width: var(--catch-icon-tile-box);
+  height: var(--catch-icon-tile-box);
+  border: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-theme-raised);
+}
+.root[data-variant="bubble"] .material,
+.root[data-variant="error"] .material {
+  border: 0;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-primary-soft);
+}
+.glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--catch-icon-tile-glyph);
+  height: var(--catch-icon-tile-glyph);
+}
+.glyph > svg { width: 100%; height: 100%; color: inherit; }
+.root[data-color="ink"] { color: var(--catch-theme-ink); }
+.root[data-color="ink2"] { color: var(--catch-theme-ink2); }
+.root[data-color="ink3"] { color: var(--catch-theme-ink3); }
+.root[data-color="primary"] { color: var(--catch-theme-primary); }
+.root[data-color="danger"] { color: var(--catch-theme-danger); }
+.root[data-color="positiveText"] { color: var(--catch-theme-positive-text); }
+.root[data-color="attentionText"] { color: var(--catch-theme-attention-text); }

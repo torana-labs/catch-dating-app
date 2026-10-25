@@ -157,9 +157,10 @@ class _HostBroadcastComposerSheetState
             ),
           ),
           gapH20,
-          Text(
+          CatchText(
             context.l10n.hostsHostBroadcastComposerSheetTextAudience,
-            style: CatchTextStyles.fieldRowTitle(context),
+            variant: CatchTextVariant.bodyLead,
+            color: CatchTokens.of(context).ink,
           ),
           gapH8,
           CatchChoiceInput<EventBroadcastAudience>.segmented(
@@ -196,9 +197,10 @@ class _HostBroadcastComposerSheetState
             onChanged: mutation.isPending ? null : _selectAudience,
           ),
           gapH20,
-          Text(
+          CatchText(
             context.l10n.hostsHostBroadcastComposerSheetTextTemplate,
-            style: CatchTextStyles.fieldRowTitle(context),
+            variant: CatchTextVariant.bodyLead,
+            color: CatchTokens.of(context).ink,
           ),
           gapH8,
           CatchChoiceInput<HostBroadcastTemplate>.described(
