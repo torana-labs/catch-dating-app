@@ -5,6 +5,10 @@ import {
 } from "firebase-admin/firestore";
 import {logger} from "firebase-functions";
 import {canonicalMarkets} from "../locations/marketConfig";
+import {validateEventPublicPageDocument} from
+  "../shared/generated/validators/eventPublicPageDocument";
+import {validateOrganizerPublicPageDocument} from
+  "../shared/generated/validators/organizerPublicPageDocument";
 import {
   buildOrganizerScope,
   contentHash,
@@ -283,6 +287,31 @@ export async function commitOrganizerScope(
   });
 }
 
+/**
+ * Only pages that match their contract are stored. An invalid organizer page
+ * withholds the organizer's pages; an invalid event page withholds itself.
+ */
+export function contractValidPages(
+  pages: OrganizerScopePages, builtAt: Timestamp
+): OrganizerScopePages {
+  const stored = (page: OrganizerPage | EventPage) =>
+    ({...page, builtAt, contentHash: contentHash(page)});
+  if (pages.organizerPage &&
+      !validateOrganizerPublicPageDocument(stored(pages.organizerPage))) {
+    logger.error("Organizer public page breaks its contract.", {
+      organizerId: pages.organizerPage.organizerId,
+      errors: validateOrganizerPublicPageDocument.errors,
+    });
+    return {organizerPage: null, eventPages: []};
+  }
+  return {...pages, eventPages: pages.eventPages.filter((page) => {
+    if (validateEventPublicPageDocument(stored(page))) return true;
+    logger.error("Event public page breaks its contract.", {
+      eventId: page.eventId, errors: validateEventPublicPageDocument.errors});
+    return false;
+  })};
+}
+
 export interface RebuildOptions {
   now?: () => number;
   /** Refresh other pages' recommendation rails when this card changes. */
@@ -295,7 +324,8 @@ export async function rebuildOrganizerScope(
 ): Promise<CommitResult> {
   const readStart = (options.now ?? Date.now)();
   const sources = await readOrganizerScope(db, organizerId, readStart);
-  const pages = buildOrganizerScope(sources);
+  const pages = contractValidPages(buildOrganizerScope(sources),
+    Timestamp.fromMillis(readStart));
   const result = await commitOrganizerScope(
     db, organizerId, pages, readStart);
   if (result.status === "committed" && result.railChanged &&
@@ -428,8 +458,8 @@ export interface ScopePlan {
 export async function planOrganizerScope(
   db: Firestore, organizerId: string, now: number
 ): Promise<ScopePlan> {
-  const pages = buildOrganizerScope(
-    await readOrganizerScope(db, organizerId, now));
+  const pages = contractValidPages(buildOrganizerScope(
+    await readOrganizerScope(db, organizerId, now)), Timestamp.fromMillis(now));
   const eventPages = db.collection(collections.eventPages);
   const [current, owned, targets] = await Promise.all([
     db.collection(collections.organizerPages).doc(organizerId).get(),

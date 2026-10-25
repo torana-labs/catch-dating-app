@@ -20,7 +20,6 @@ import {
 } from "./rebuild";
 
 const projectId = "demo-catch-rules";
-const skip = !process.env.FIRESTORE_EMULATOR_HOST;
 type Row = Record<string, unknown>;
 interface RawCase {
   name: string;
@@ -102,7 +101,7 @@ const json = (data: unknown) => JSON.parse(JSON.stringify(data));
 const at = (offset: number) => () => inputs.now + offset;
 
 test("publishing builds valid organizer and event pages once",
-  {skip}, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
     const h = await fixture();
     try {
       // The backfill's dry run reports the pages without writing them.
@@ -148,7 +147,7 @@ test("publishing builds valid organizer and event pages once",
   });
 
 test("withdrawing an event removes its page and its listing",
-  {skip}, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
     const h = await fixture();
     try {
       await rebuildOrganizerScope(h.db, h.organizerId,
@@ -174,7 +173,7 @@ test("withdrawing an event removes its page and its listing",
   });
 
 test("suppression removes every page and a stale rebuild cannot revive it",
-  {skip}, async () => {
+  {skip: !process.env.FIRESTORE_EMULATOR_HOST}, async () => {
     const h = await fixture();
     try {
       await rebuildOrganizerScope(h.db, h.organizerId,

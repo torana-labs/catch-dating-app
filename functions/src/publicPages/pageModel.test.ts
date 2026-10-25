@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {Timestamp} from "firebase-admin/firestore";
 import {validateEventPublicPageDocument} from
   "../shared/generated/validators/eventPublicPageDocument";
 import {validateOrganizerPublicPageDocument} from
@@ -12,6 +13,7 @@ import {
   type OrganizerPage,
   type OrganizerScopeSources,
 } from "./pageModel";
+import {contractValidPages} from "./rebuild";
 import {
   FixtureTimestamp,
   parityCase,
@@ -220,4 +222,22 @@ test("content hashes ignore key order and follow content", () => {
   assert.equal(contentHash({a: 1, b: [1, {c: 2, d: 3}]}),
     contentHash({b: [1, {d: 3, c: 2}], a: 1}));
   assert.notEqual(contentHash({a: 1}), contentHash({a: 2}));
+});
+
+test("pages that break their contract are withheld before writing", () => {
+  const {organizerPage, eventPages} = built();
+  const builtAt = Timestamp.fromMillis(inputs.now);
+  const valid = contractValidPages({organizerPage, eventPages}, builtAt);
+  assert.equal(valid.organizerPage, organizerPage);
+  assert.equal(valid.eventPages.length, eventPages.length);
+  const brokenEvent = {...eventPages[0], moreEvents: [
+    ...eventPages[0].moreEvents, ...eventPages[0].moreEvents,
+    ...eventPages[0].moreEvents]};
+  assert.equal(contractValidPages({organizerPage,
+    eventPages: [brokenEvent, ...eventPages.slice(1)]}, builtAt)
+    .eventPages.length, eventPages.length - 1);
+  const brokenOrganizer = {...organizerPage,
+    identity: {...organizerPage.identity, name: ""}};
+  assert.deepEqual(contractValidPages({organizerPage: brokenOrganizer,
+    eventPages}, builtAt), {organizerPage: null, eventPages: []});
 });
