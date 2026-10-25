@@ -62,7 +62,8 @@ const selectable = (event: ImportedEvent) => event.state === "ready" || event.st
 
 function findingText(event: ImportedEvent): string | null {
   const reasons = event.automatedFindings.map((finding) => finding.check === "dating_framing" ?
-    `its ${finding.field} says "${finding.match}"` : `it names another organizer (${finding.match})`);
+    `its ${finding.field} says "${finding.match}"` : finding.check === "price_missing" ?
+      "its page states no price" : `it names another organizer (${finding.match})`);
   return reasons.length ? `Left for a person: ${reasons.join("; ")}.` : null;
 }
 

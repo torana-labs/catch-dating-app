@@ -8126,7 +8126,7 @@ abstract final class CatchContractConstraints {
   static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsAutomatedFindingsItemsCheck = CatchContractFieldConstraints(
     path: 'adminListListingEventImportsCallableResponse.rows.items.events.items.automatedFindings.items.check',
     required: true,
-    enumValues: <String>['dating_framing', 'organizer_attribution'],
+    enumValues: <String>['dating_framing', 'organizer_attribution', 'price_missing'],
   );
 
   static const adminListListingEventImportsCallableResponseRowsItemsEventsItemsAutomatedFindingsItemsField = CatchContractFieldConstraints(

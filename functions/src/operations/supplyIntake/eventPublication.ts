@@ -67,7 +67,7 @@ export interface ListingEventPlan {
 }
 
 export interface AutomatedFinding {
-  check: "dating_framing" | "organizer_attribution";
+  check: "dating_framing" | "organizer_attribution" | "price_missing";
   field: string;
   match: string;
 }

@@ -7,13 +7,15 @@ import {
   automatedEventReview,
   datingFramingFindings,
   loadEventPublicationPolicy,
+  priceFindings,
   staffEventReview,
 } from "../src/workflows/supply-intake/event-publication.mjs";
 
 const NOW = "2026-10-25T08:00:00.000Z";
 const organizer = {name: "BlrDroid Community", links: ["https://luma.com/blrdroid", "https://instagram.com/blrdroid"]};
 const event = (overrides = {}) => ({title: "Android Dev Meetup", description: "Talks and demos on Compose.",
-  organizerName: "BlrDroid Community", organizerUrl: "https://luma.com/blrdroid", ...overrides});
+  organizerName: "BlrDroid Community", organizerUrl: "https://luma.com/blrdroid",
+  price: {min: 0, max: 0, currency: "INR"}, ...overrides});
 
 test("the shipped policy records the owner's decision to auto-publish approved organizers' events", async () => {
   const policy = await loadEventPublicationPolicy();
@@ -58,6 +60,18 @@ test("dating framing in the organizer's copy waits for a person", async () => {
     assert.deepEqual(datingFramingFindings(event({title})), [], `ordinary English passes: ${title}`);
   }
   assert.equal(datingFramingFindings(event({description: "A night for single professionals."})).length, 1);
+});
+
+test("an event whose page states no price waits for a person; a free one does not", async () => {
+  const policy = await loadEventPublicationPolicy();
+  for (const price of [null, {min: null, max: null, currency: "INR"}]) {
+    const result = automatedEventReview({event: event({price}), organizer, policy, now: NOW});
+    assert.equal(result.eligible, false);
+    assert.deepEqual(result.findings.map((finding) => finding.check), ["price_missing"]);
+    assert.equal(result.review.ownerSafeCopyReviewed, true, "a missing price is not a copy problem");
+  }
+  assert.deepEqual(priceFindings(event({price: {min: 0, max: 0, currency: "INR"}})), []);
+  assert.deepEqual(priceFindings(event({price: {min: 499, max: 499, currency: "INR"}})), []);
 });
 
 test("an event naming another organizer waits for a person", () => {

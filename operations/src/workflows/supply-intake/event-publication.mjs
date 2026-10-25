@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {OperationsError} from "../../platform/errors.mjs";
+import {price} from "./event-import.mjs";
 import {normalizeOrganizerSurfaceUrl} from "./sources/surfaces.mjs";
 
 // Who reviews an imported event before it publishes. The policy names one
@@ -62,6 +63,15 @@ export function datingFramingFindings(event) {
 }
 
 /**
+ * A published event shows its price beside the outbound link, "Free" when the
+ * page says so. A page that states no price leaves a person to check it.
+ */
+export function priceFindings(event) {
+  return price(event?.price).displayText === null ?
+    [{check: "price_missing", field: "price", match: "The source page states no price."}] : [];
+}
+
+/**
  * An event read from the organizer's own pages may still be someone else's:
  * a co-hosted event on their calendar, or an event page a nominator pasted.
  * It is attributed when it names no other organizer, or its organizer link
@@ -85,7 +95,8 @@ export function attributionFindings(event, organizer) {
  * @param {{event: object, organizer: {name: string | null, links: string[]}, policy: object, now: string}} input
  */
 export function automatedEventReview({event, organizer, policy, now}) {
-  const findings = [...datingFramingFindings(event), ...attributionFindings(event, organizer)];
+  const copyFindings = [...datingFramingFindings(event), ...attributionFindings(event, organizer)];
+  const findings = [...copyFindings, ...priceFindings(event)];
   const autoPublish = policy?.mode === AUTO_PUBLISH_MODE;
   return {
     eligible: autoPublish && findings.length === 0,
@@ -95,7 +106,7 @@ export function automatedEventReview({event, organizer, policy, now}) {
       decidedAt: now,
       note: `Published under ${policy?.policyVersion ?? "the event publication policy"}: the organizer's listing ` +
         "was approved and the event passed every automated check.",
-      ownerSafeCopyReviewed: findings.length === 0,
+      ownerSafeCopyReviewed: copyFindings.length === 0,
       importPolicyAcknowledged: autoPublish,
       blockerResolutions: [],
     },

@@ -248,7 +248,8 @@ export const adminListListingEventImportsCallableResponseSchema: Record<string, 
                       "check": {
                         "enum": [
                           "dating_framing",
-                          "organizer_attribution"
+                          "organizer_attribution",
+                          "price_missing"
                         ]
                       },
                       "field": {

@@ -66,7 +66,7 @@ export interface AdminListListingEventImportsCallableResponse {
        * @maxItems 20
        */
       automatedFindings: {
-        check: "dating_framing" | "organizer_attribution";
+        check: "dating_framing" | "organizer_attribution" | "price_missing";
         field: string;
         match: string;
       }[];

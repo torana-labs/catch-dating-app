@@ -251,6 +251,7 @@ const schemaAdminListListingEventImportsCallableResponseSchema = <String, Object
                         'enum': <Object?>[
                           'dating_framing',
                           'organizer_attribution',
+                          'price_missing',
                         ],
                       },
                       'field': <String, Object?>{

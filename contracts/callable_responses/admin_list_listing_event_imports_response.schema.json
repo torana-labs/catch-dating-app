@@ -80,7 +80,7 @@
                     "additionalProperties": false,
                     "required": ["check", "field", "match"],
                     "properties": {
-                      "check": {"enum": ["dating_framing", "organizer_attribution"]},
+                      "check": {"enum": ["dating_framing", "organizer_attribution", "price_missing"]},
                       "field": {"type": "string", "minLength": 1, "maxLength": 80},
                       "match": {"type": "string", "minLength": 1, "maxLength": 500}
                     }
