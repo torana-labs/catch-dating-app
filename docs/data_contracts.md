@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.175.0
+version: 1.176.0
 updated: 2026-10-25
 owner: recursive_audit_loop
 status: active
@@ -4348,14 +4348,19 @@ website only.
 `adminListExternalEventDetails` lists that collection for admin event-supply
 review with the same bounded launch-city and time-window filters.
 
-`adminPublishExternalEvent` is the only publication writer. It requires a
-dry-run or apply execution mode, an idempotency key, exact launch-market
-identity, the organizer visibility ceiling, accepted per-blocker decisions,
-and the reviewed candidate snapshot. Dry-run and apply append immutable
-`externalEventPublicationReceipts/{receiptId}` records; a replay with the same
-key returns the same result and changed input is rejected. The callable writes
-one outbound-only `externalEvents/{id}` record and never creates a canonical
-Catch-hosted `events/{id}` record.
+Supply Intake listing events publish through `adminPublishListingEvents`
+(staff) and `onSupplyIntakeListingApproved` (the event publication policy),
+both through one writer. Each event of an approved listing is planned by the
+Supply Intake import plan and written in its own transaction after contract
+validation, the organizer's market, verified capability and app visibility
+checks, and accepted waivers, with an immutable
+`externalEventPublicationReceipts/{receiptId}` keyed on the caller's
+idempotency key; a replay returns the same result and changed input is
+rejected. A published event is never overwritten by a later import and a
+withdrawn one is never republished. Nothing writes a canonical Catch-hosted
+`events/{id}` record. `adminPublishExternalEvent` remains only for the retired
+`eventSupplyReadiness/current` snapshot, which no environment has, and is
+retired with it.
 
 The governed blockers are `missing_exact_coordinates`, `missing_end_time`,
 `missing_location_detail`, `requires_event_defaults_policy`,

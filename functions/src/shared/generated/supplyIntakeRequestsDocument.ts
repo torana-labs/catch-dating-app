@@ -71,7 +71,7 @@ export interface SupplyIntakeRequestsDocument {
     attempts: number;
   };
   /**
-   * Set once, when staff approve the listing this request built: the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays.
+   * Set once: when staff approve the listing this request built (the organizer it became, who approved it, who owns its Sales work, and a hash of what was approved so an identical retry replays), or at creation for an event_refresh, naming the listed organizer it reads events for and the staff member who asked.
    */
   approval: null | {
     approvalId: string;

@@ -14,7 +14,7 @@ import {supplyIntakeCollections} from "./worker";
 
 const UNMAPPED_MARKET = "unassigned";
 
-export function supplyIntakeRequestId(prefix: "nom" | "intent" | "discovery", parts: readonly string[]): string {
+export function supplyIntakeRequestId(prefix: "nom" | "intent" | "discovery" | "refresh", parts: readonly string[]): string {
   return `${prefix}-${createHash("sha256").update(JSON.stringify(parts)).digest("hex").slice(0, 40)}`;
 }
 
@@ -28,8 +28,22 @@ export function intakeMarket(value: string | null | undefined): string {
   return slug && /^[a-z][a-z0-9-]{1,49}$/u.test(slug) ? slug : UNMAPPED_MARKET;
 }
 
-export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, request: SupplyIntakeRequest, now: Date):
-  Promise<{requestId: string; created: boolean}> {
+export interface SupplyIntakeRequestApproval {
+  approvalId: string;
+  organizerId: string;
+  approvedByUid: string;
+  approvedAt: string;
+  materialHash: string;
+  salesOwnerUid: string;
+}
+
+/**
+ * Writes one queued request. An event refresh for an organizer Catch already
+ * lists is created with that organizer's approval, so it never waits for
+ * listing review and its events go straight to the publication policy.
+ */
+export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, request: SupplyIntakeRequest, now: Date,
+  {approval = null}: {approval?: SupplyIntakeRequestApproval | null} = {}): Promise<{requestId: string; created: boolean}> {
   if (!validateSupplyIntakeRequest(request)) {
     throw new HttpsError("invalid-argument", "The intake request does not satisfy its contract.");
   }
@@ -43,7 +57,7 @@ export async function createSupplyIntakeRequest(tx: Transaction, db: Firestore, 
   }
   const at = now.toISOString();
   tx.create(ref, {schemaVersion: 1, requestId: request.requestId, request, status: "queued", attempts: 0,
-    leaseUntil: null, result: null, failure: null, approval: null, createdAt: at, updatedAt: at});
+    leaseUntil: null, result: null, failure: null, approval, createdAt: at, updatedAt: at});
   return {requestId: request.requestId, created: true};
 }
 

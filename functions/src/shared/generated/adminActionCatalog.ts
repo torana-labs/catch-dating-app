@@ -208,6 +208,47 @@ export const ADMIN_ACTION_CATALOG = {
       "support"
     ]
   },
+  "organizer-intake.list-listing-event-imports": {
+    "callable": "adminListListingEventImports",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
+    ]
+  },
+  "organizer-intake.publish-listing-events": {
+    "callable": "adminPublishListingEvents",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
+    ]
+  },
+  "organizer-intake.refresh-organizer-events": {
+    "callable": "adminRefreshOrganizerEvents",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support",
+      "salesStaff"
+    ]
+  },
+  "organizer-intake.list-supply-intake-policies": {
+    "callable": "adminListSupplyIntakePolicies",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "support"
+    ]
+  },
   "organizer-intake.list-listing-reviews": {
     "callable": "adminListOrganizerListingReviews",
     "controlPlane": false,

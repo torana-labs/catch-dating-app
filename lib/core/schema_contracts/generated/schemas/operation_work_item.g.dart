@@ -89,6 +89,7 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                           'nomination',
                           'self_submission',
                           'discovery',
+                          'event_refresh',
                         ],
                       },
                       'submittedBy': <String, Object?>{
@@ -5404,6 +5405,7 @@ const schemaOperationWorkItemSchema = <String, Object?>{
                 'nomination',
                 'self_submission',
                 'discovery',
+                'event_refresh',
               ],
             },
             'submittedBy': <String, Object?>{

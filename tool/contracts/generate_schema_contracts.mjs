@@ -3730,6 +3730,78 @@ const schemaSpecs = [
     ],
   },
   {
+    name: "AdminListListingEventImportsCallablePayload",
+    source: "callables/admin_list_listing_event_imports_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListListingEventImportsCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListListingEventImportsCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminListListingEventImportsCallableResponse",
+    source: "callable_responses/admin_list_listing_event_imports_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListListingEventImportsCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListListingEventImportsCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminPublishListingEventsCallablePayload",
+    source: "callables/admin_publish_listing_events_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminPublishListingEventsCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminPublishListingEventsCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminListSupplyIntakePoliciesCallablePayload",
+    source: "callables/admin_list_supply_intake_policies_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListSupplyIntakePoliciesCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListSupplyIntakePoliciesCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminListSupplyIntakePoliciesCallableResponse",
+    source: "callable_responses/admin_list_supply_intake_policies_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListSupplyIntakePoliciesCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListSupplyIntakePoliciesCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminRefreshOrganizerEventsCallablePayload",
+    source: "callables/admin_refresh_organizer_events_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminRefreshOrganizerEventsCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminRefreshOrganizerEventsCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminRefreshOrganizerEventsCallableResponse",
+    source: "callable_responses/admin_refresh_organizer_events_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminRefreshOrganizerEventsCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminRefreshOrganizerEventsCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminPublishListingEventsCallableResponse",
+    source: "callable_responses/admin_publish_listing_events_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminPublishListingEventsCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminPublishListingEventsCallableResponse.ts",
+    ],
+  },
+  {
     name: "AdminDecideOrganizerPolicyGapCallablePayload",
     source: "callables/admin_decide_organizer_policy_gap_payload.schema.json",
     typeOutput:

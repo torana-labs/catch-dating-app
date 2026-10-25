@@ -22,6 +22,12 @@ import {organizerIntakeWorkbench} from "./organizerIntakeWorkbench";
 import {useOrganizerListingReviewController} from
   "../controllers/useOrganizerListingReviewController";
 import {renderOrganizerListingReview} from "./organizerListingReviewPanels";
+import {useListingEventImportsController} from
+  "../controllers/useListingEventImportsController";
+import {renderListingEventImports} from "./listingEventImportPanels";
+import {useSupplyIntakePolicyController} from
+  "../controllers/useSupplyIntakePolicyController";
+import {renderSupplyIntakePolicies} from "./supplyIntakePolicyPanels";
 
 const LazyOrganizerIntakeDiagnostics = lazy(async () => {
   const module = await import("./organizerIntakeDiagnostics");
@@ -61,9 +67,13 @@ function OrganizerIntakeLoadedScreen() {
       navigate(`/organizers/${encodeURIComponent(organizerId)}`),
   });
   const listingReview = useOrganizerListingReviewController({onError, onNotice});
+  const eventImports = useListingEventImportsController({onError, onNotice});
+  const policies = useSupplyIntakePolicyController({onError, onNotice});
   return (
     <>
       {renderOrganizerListingReview(listingReview)}
+      {renderListingEventImports(eventImports)}
+      {renderSupplyIntakePolicies(policies)}
       <OrganizerIntakeWorkspace controller={controller} />
     </>
   );

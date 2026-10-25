@@ -1509,6 +1509,7 @@ const INTAKE_KIND_LABELS = Object.freeze({
   nomination: "Nomination",
   self_submission: "Organizer submission",
   discovery: "Discovery",
+  event_refresh: "Event refresh",
 });
 
 function intakeListingProjection(listing) {

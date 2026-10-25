@@ -54,6 +54,7 @@ export function planListingEventImport({event, workItemId, organizer, review, du
   if (!organizer) blockers.add("organizer_listing_pending");
   if (!PUBLISHABLE_PLATFORMS.includes(event.platform)) blockers.add("platform_not_publishable");
   if (event.status === "cancelled") blockers.add("event_cancelled");
+  if (typeof event.title !== "string" || event.title.trim() === "") blockers.add("title_missing");
   const start = Date.parse(event.startAt ?? "");
   if (!Number.isFinite(start)) blockers.add("start_time_missing");
   if (Date.parse(event.endAt ?? event.startAt ?? "") < Date.parse(now)) blockers.add("event_already_ended");
@@ -86,8 +87,9 @@ export function planListingEventImport({event, workItemId, organizer, review, du
 }
 
 function externalEventDocument({event, eventId, organizer, review, duplicates, citySlug, now}) {
-  const locationName = event.venue ?? event.address ?? "External event location";
-  const notes = [event.address, event.sourceUrl].filter(Boolean).join("\n") || null;
+  // The work item allows longer free text than externalEvents; clip to the contract.
+  const locationName = clip(event.venue ?? event.address ?? "External event location", 240);
+  const notes = clip([event.address, event.sourceUrl].filter(Boolean).join("\n"), 1000) || null;
   const latitude = Number.isFinite(event.latitude) ? event.latitude : null;
   const longitude = Number.isFinite(event.longitude) ? event.longitude : null;
   const reviewed = timestamp(now);
@@ -96,7 +98,7 @@ function externalEventDocument({event, eventId, organizer, review, duplicates, c
     eventId,
     canonicalHostId: organizer.organizerId,
     compatibilityClubId: organizer.organizerId,
-    title: event.title,
+    title: clip(event.title, 240),
     description: event.description ?? event.title,
     startTime: timestamp(event.startAt),
     endTime: timestamp(event.endAt ?? event.startAt),
@@ -201,6 +203,11 @@ function isHttpUrl(value) {
   } catch {
     return false;
   }
+}
+
+function clip(value, maximum) {
+  if (typeof value !== "string") return value;
+  return value.length > maximum ? `${value.slice(0, maximum - 1)}…` : value;
 }
 
 function slugify(value) {

@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.34.0
-updated: 2026-10-18
+version: 1.35.0
+updated: 2026-10-25
 owner: operations_platform
 status: active
 ---
@@ -177,7 +177,7 @@ outcome, hashes, sizes and budget window.
 
 #### Front doors
 
-Three front doors create requests today, all through one in-transaction
+Four front doors create requests today, all through one in-transaction
 service (`functions/src/operations/supplyIntake/requests.ts`). Each door
 derives its request id deterministically, so a retried submission finds its
 own request, and the same id with different content is refused rather than
@@ -193,6 +193,15 @@ overwritten. Every request records its `origin`.
   organizer or a link into a request: a `self_submission` for the website, a
   `nomination` credited to the partner for a partner. Applicant name and email
   stay on the intent; only the organizer name, link, city and notes travel.
+- **Event refresh.** `adminRefreshOrganizerEvents` (roles `admin`,
+  `adminOwner`, `support`, `salesStaff`) reads new events for an unclaimed
+  organizer Catch already lists, from links staff give or the event-calendar
+  links on its page (Luma, District, Urbanaut). The request is an
+  `event_refresh` that names its `target` organizer and is created with that
+  organizer's approval, so it never waits in "Listings to review"; when it
+  completes, its events go through the event publication policy below. A
+  claimed organizer manages its own events and cannot be refreshed. Events
+  already published keep their id, so a refresh never publishes one twice.
 
 Free-text cities resolve to the market slug Supply Intake keys work by
 (`mumbai`, `bengaluru`). An unknown city becomes `unassigned` for staff to
@@ -259,6 +268,65 @@ approver does. Approval is idempotent per listing: an identical retry replays,
 and a different approval of the same listing is refused. Indexing and app
 discovery remain later decisions, after the organizer is verified. Matching a
 listing to an organizer Catch already lists is the reviewer's check for now.
+
+#### Imported events
+
+A listing's upcoming events (its `listing_event_candidate` work items) become
+read-only, outbound-only `externalEvents` once staff approve the listing. One
+policy decides who reviews them first:
+`supply-intake/config/event_publication_policy.json` names a mode and the
+decision it records. `auto_publish_approved_organizers` (the owner's
+2026-10-25 decision on CAT-213) publishes each event that passes every
+automated check without a person; `staff_review` leaves every event for staff.
+Changing the mode is a one-line edit of that file.
+
+`onSupplyIntakeListingApproved` runs the policy when a request's approval is
+recorded. For each event it builds the Supply Intake import plan
+(`event-import.mjs`) under the policy's own review
+(`event-publication.mjs`). An event publishes only when the policy
+auto-publishes, the plan has no blocker, and the automated checks pass:
+
+- the organizer's own title and description carry no dating framing (singles,
+  speed dating, mixers, matchmaking);
+- the event is attributed to the approved organizer: it names no other
+  organizer, or its organizer link or name matches.
+
+The plan's own blockers still apply: an end time, a venue or address, map
+coordinates, no duplicate, a start in the future, not cancelled, and a
+platform the `externalEvents` contract lists. Everything else waits in Admin
+Organizer Intake under "Imported events", where `adminListListingEventImports`
+shows each approved listing's events as published (by the policy or staff),
+withdrawn, ready, needing a check, or blocked, with the reasons.
+
+Staff publish waiting events with `adminPublishListingEvents` (roles `admin`,
+`adminOwner`, `support`): they confirm the outbound links, that Catch takes no
+booking, payment or waitlist, and the copy, and add a note for each governed
+blocker they accept (or cite an accepted policy waiver). Each event is planned
+and written in its own transaction with a receipt keyed on the reviewer's
+idempotency key, so a retry replays and one blocked event never holds back the
+rest. A published event is never overwritten by a later import, and one staff
+withdrew (`adminTakedownExternalEvent`) is never brought back.
+
+Every write goes through the same checks as any external event: contract
+validation, the organizer's market, its verified capabilities, its app
+visibility (an approved listing is hidden in the app, so its events are
+website-only until the organizer is made discoverable), and the outbound-only
+booking posture.
+
+#### Owner decisions
+
+Four Supply Intake capabilities stay off until the owner records a decision:
+fetching the pages a request names (`on_demand_page_fetch_policy`),
+scheduled refresh through a crawl provider (`recurring_event_crawl_policy`),
+agent research (`agent_research_policy`) and model extraction
+(`llm_extraction_fallback_policy`). Admin Organizer Intake lists them under
+"Supply Intake policies" (`adminListSupplyIntakePolicies`): what each would
+do, its limits, the recorded decision and whether its policy file switches it
+on. The owner records accept, hold or reject with `adminDecideOrganizerPolicyGap`
+(decision id `policy-<gap id with dashes>`). A decision changes nothing by
+itself: the capability turns on only when a reviewed change to its policy file
+sets `enabled` and cites that decision id, and the runtime refuses a cited
+decision that is not accepted.
 
 ## Reference Layout
 

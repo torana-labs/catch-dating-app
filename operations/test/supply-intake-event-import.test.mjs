@@ -75,6 +75,16 @@ test("a complete, reviewed event plans a read-only external event that satisfies
   assert.equal(result.eventId, externalEventId(event(), organizer.organizerId), "the id is stable across re-plans");
 });
 
+test("long organizer copy is clipped to the externalEvents contract, and an untitled event is blocked", () => {
+  const long = plan({event: event({title: "T".repeat(400), venue: "V".repeat(400), address: "A".repeat(500),
+    sourceUrl: `https://luma.com/${"x".repeat(1900)}`})});
+  assert.equal(long.status, "write_ready");
+  assert.equal(validateExternalEvent(long.document), true, JSON.stringify(validateExternalEvent.errors));
+  assert.deepEqual([long.document.title.length, long.document.meetingPoint.length,
+    long.document.locationDetails.length], [240, 240, 1000]);
+  assert.ok(plan({event: event({title: null})}).blockers.includes("title_missing"));
+});
+
 test("missing facts block, and only governed blockers can be resolved or waived per event", () => {
   const sparse = plan({event: event({endAt: null, venue: null, address: null, latitude: null, longitude: null}),
     review: review({ownerSafeCopyReviewed: false})});
