@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "02b7e40801337e14735eed2af7793b67b3100581196d47710704e2150f5c7a10",
+  "sourceDigest": "6af74c1cfe71925bc8bf17cb74906ce4ff151e75a842834e1ce9133c57b38f33",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",
@@ -138,7 +138,7 @@
         "facts"
       ],
       "supportedStatesDigest": "e7e2cc960bc251ddaa6f499b1301475c7b1a5381d6f5a3140da45953afaafe75",
-      "propsDigest": "72bf548131d54d47140ad8ed3134d8d841616a01886b2d90377abc815e52503a",
+      "propsDigest": "9aa6beb0f88420f27a806f6f44a06c4a9fe788a5f07e8ebe871a065f86ca5d28",
       "tokens": [
         "space.micro10",
         "space.micro14",

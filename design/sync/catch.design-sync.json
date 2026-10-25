@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "02b7e40801337e14735eed2af7793b67b3100581196d47710704e2150f5c7a10",
+  "sourceDigest": "6af74c1cfe71925bc8bf17cb74906ce4ff151e75a842834e1ce9133c57b38f33",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "02b7e40801337e14735eed2af7793b67b3100581196d47710704e2150f5c7a10",
-    "contractDigest": "02b7e40801337e14735eed2af7793b67b3100581196d47710704e2150f5c7a10"
+    "digest": "6af74c1cfe71925bc8bf17cb74906ce4ff151e75a842834e1ce9133c57b38f33",
+    "contractDigest": "6af74c1cfe71925bc8bf17cb74906ce4ff151e75a842834e1ce9133c57b38f33"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "fe5d90192b18d2ef52625f9132eb2d8d61c1c92bd56a34bf0f737df89c7ae1fa",
+    "handoffRequestDigest": "8c1b8fef68515d856a74f929f93c3437f4a813f7cd2094f3280867adb17eb1f3",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,7 +461,7 @@
     "claudeAllowed": 70,
     "reactImplementationStates": {
       "headless-control": 8,
-      "styled": 5
+      "styled": 7
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -839,7 +839,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "6ab144c45090d4b304a5a2ea2fadc23d6134933f54a339be4ba2e24cfd5e2cb2"
+      "contractDigest": "9f692230fedbc17901aa96f1d7318380f4291ec14f05994cb44b80e60bb20f33"
     },
     {
       "contractId": "catch.section",
@@ -1337,9 +1337,9 @@
       "conceptId": "catch.number_stepper",
       "dartSymbol": "CatchStepper",
       "dartFile": "packages/catch_ui/lib/src/components/catch_stepper.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchStepper",
+      "reactFile": "packages/web-ui/src/components/CatchStepper.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Stepper",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1827,9 +1827,9 @@
       "conceptId": "catch.code_input",
       "dartSymbol": "CatchCodeInput",
       "dartFile": "packages/catch_ui/lib/src/components/catch_code_input.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchCodeInput",
+      "reactFile": "packages/web-ui/src/components/CatchCodeInput.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/CodeInput",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
