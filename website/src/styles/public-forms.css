@@ -18,7 +18,7 @@
 }
 
 .public-form[data-appearance="editorial"] .public-form__panel {
-  border-radius: 6px;
+  border-radius: var(--catch-radius-sm);
   box-shadow: 0 32px 100px rgba(60, 40, 25, 0.14);
 }
 
@@ -66,10 +66,10 @@
 
 .public-form__panel {
   background: #fffdfa;
-  border: 1px solid var(--form-border);
-  border-radius: 28px;
+  border: var(--catch-stroke-hairline) solid var(--form-border);
+  border-radius: var(--catch-radius-lg);
   box-shadow: 0 24px 80px rgba(60, 40, 25, 0.1);
-  padding: clamp(var(--catch-space-s6), 6vw, 52px);
+  padding: clamp(var(--catch-space-s6), 6vw, var(--catch-space-s12));
 }
 
 .public-form__intro > p:first-child {
@@ -100,7 +100,7 @@
   display: grid;
   gap: var(--catch-space-s2);
   grid-template-columns: 1fr auto;
-  margin: 34px 0;
+  margin: var(--catch-space-s9) 0;
 }
 
 .public-form__progress > span:first-child,
@@ -126,9 +126,9 @@
 }
 
 .public-form__section > header {
-  border-bottom: 1px solid var(--form-border);
+  border-bottom: var(--catch-stroke-hairline) solid var(--form-border);
   margin-bottom: var(--catch-space-s7);
-  padding-bottom: 22px;
+  padding-bottom: var(--catch-space-s6);
 }
 
 .public-form__section h2,
@@ -196,10 +196,10 @@
 
 .public-form .choice-chip {
   background: #f7f3ed;
-  border: 1px solid var(--form-border);
+  border: var(--catch-stroke-hairline) solid var(--form-border);
   border-radius: var(--catch-radius-pill);
   color: inherit;
-  padding: 11px var(--catch-space-s4);
+  padding: var(--catch-space-s3) var(--catch-space-s4);
 }
 
 .public-form .choice-chip.is-selected {
@@ -222,7 +222,7 @@
 
 .public-form__upload > label {
   align-items: center;
-  border: 1px dashed color-mix(in srgb, #171513 34%, transparent);
+  border: var(--catch-stroke-hairline) dashed color-mix(in srgb, #171513 34%, transparent);
   border-radius: var(--catch-radius-md);
   cursor: pointer;
   display: flex;
@@ -253,7 +253,7 @@
 
 .public-form__signature canvas {
   background: color-mix(in srgb, white 94%, #f3efe7);
-  border: 1px solid color-mix(in srgb, #171513 24%, transparent);
+  border: var(--catch-stroke-hairline) solid color-mix(in srgb, #171513 24%, transparent);
   border-radius: var(--catch-radius-md);
   height: 150px;
   touch-action: none;
@@ -262,7 +262,7 @@
 
 .public-form__signature > label {
   display: grid;
-  gap: 7px;
+  gap: var(--catch-space-s2);
 }
 
 .public-form__signature > label span {
@@ -274,7 +274,7 @@
   width: 100%;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid color-mix(in srgb, #171513 30%, transparent);
+  border-bottom: var(--catch-stroke-hairline) solid color-mix(in srgb, #171513 30%, transparent);
   color: #171513;
   font: inherit;
   min-height: 44px;
@@ -296,16 +296,16 @@
   display: flex;
   gap: var(--catch-space-s3);
   justify-content: flex-end;
-  margin-top: 34px;
+  margin-top: var(--catch-space-s9);
 }
 
 .public-form__review {
-  border-top: 1px solid var(--form-border);
+  border-top: var(--catch-stroke-hairline) solid var(--form-border);
   margin: var(--catch-space-s8) 0;
 }
 
 .public-form__review > div {
-  border-bottom: 1px solid var(--form-border);
+  border-bottom: var(--catch-stroke-hairline) solid var(--form-border);
   display: grid;
   gap: var(--catch-space-s2);
   padding: var(--catch-space-micro18) 0;
@@ -324,7 +324,7 @@
 
 .public-form__consent {
   background: #f7f3ed;
-  border-radius: 18px;
+  border-radius: var(--catch-radius-lg);
   margin-top: var(--catch-space-s6);
   padding: var(--catch-space-s5);
 }
@@ -370,8 +370,8 @@
 }
 
 .public-form__verification {
-  border: 1px solid var(--form-hairline, #ddd8d1);
-  border-radius: 16px;
+  border: var(--catch-stroke-hairline) solid var(--form-hairline, #ddd8d1);
+  border-radius: var(--catch-radius-md);
   padding: var(--catch-space-s4);
 }
 
@@ -417,7 +417,7 @@
 
 @media (max-width: 560px) {
   .public-form { padding-inline: var(--catch-space-s3); }
-  .public-form__panel { border-radius: 22px; padding: var(--catch-space-s6) var(--catch-space-micro18); }
+  .public-form__panel { border-radius: var(--catch-radius-lg); padding: var(--catch-space-s6) var(--catch-space-micro18); }
   .public-form__actions { align-items: stretch; flex-direction: column-reverse; }
   .public-form__actions .button { width: 100%; }
 }
