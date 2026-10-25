@@ -5,6 +5,9 @@ import {describe, expect, it} from "vitest";
 const read = (path: string) => fs.readFileSync(fileURLToPath(new URL(path, import.meta.url)), "utf8");
 const dart = read("../../../catch_ui/lib/src/components/catch_search_field.dart");
 const layout = read("../../../catch_tokens/lib/src/semantic/catch_layout.dart");
+const generated = read("../../../catch_tokens/lib/generated/catch_design_tokens.g.dart");
+const icons = read("../../../catch_tokens/lib/src/primitives/catch_icon.dart");
+const border = read("../../../catch_tokens/lib/src/semantic/catch_border.dart");
 const control = read("../../../catch_ui/lib/src/primitives/catch_control_surface.dart");
 const styles = read("./CatchSearchField.module.css");
 const source = read("./CatchSearchField.tsx");
@@ -28,8 +31,20 @@ describe("SearchField Dart-owned interim geometry", () => {
     expect(control).toContain("CatchPlatformTokens.minimumInteractiveExtent");
     expect(styles).toContain("var(--catch-radius-pill)");
     expect(styles).toContain("var(--catch-theme-raised)");
-    expect(styles).toContain("var(--catch-typography-web-secondary-line-height) + var(--catch-space-s4)");
+    expect(styles).toContain("var(--catch-typography-web-secondary-line-height) + var(--catch-search-linebox-padding)");
     expect(styles).toContain("min-height: var(--catch-search-target)");
+  });
+  it("pins derived native sizes without using spacing tokens as web dimensions", () => {
+    const space = (name: string) => Number(generated.match(new RegExp(`static const double ${name} = ([\\d.]+);`))?.[1]);
+    expect(layout).toMatch(/controlCompactMinHeight =\s*CatchSpacing.s12 \+ CatchSpacing.s1/);
+    expect(styles).toContain(`--catch-search-compact-height: ${space("s12") + space("s1")}px;`);
+    expect(layout).toContain("iconButtonNavSize = CatchSpacing.s11");
+    expect(styles).toContain(`--catch-search-nav-extent: ${space("s11")}px;`);
+    const glyph = Number(icons.match(/static const double md = ([\d.]+);/)?.[1]);
+    expect(styles).toContain(`--catch-search-trigger-icon-size: ${glyph}px;`);
+    expect(styles).toContain(`--catch-search-linebox-padding: ${space("s4")}px;`);
+    expect(border).toContain("Color.lerp(tokens.ink3, tokens.ink, 0.10)");
+    expect(styles).toContain("var(--catch-theme-ink3) 90%, var(--catch-theme-ink)");
   });
   it("retains the native motion family and skips it for reduced motion", () => {
     expect(dart).toContain("CatchMotion.base");
