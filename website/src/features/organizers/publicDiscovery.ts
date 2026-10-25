@@ -1,3 +1,4 @@
+import {activityKindFromValue, type CatchActivityKind} from "@catch/web-ui/artwork";
 import {websiteCopy} from "@content/generated";
 import {organizerListingCopy} from "@content/organizer";
 import type {
@@ -211,6 +212,41 @@ export function activityForListing(listing: HostListing): ActivityMeta {
     return activityMeta.racket;
   }
   return activityMeta.open;
+}
+
+/**
+ * The activity an organiser cover draws: its events' kind first, then its
+ * category and formats. Organisers without either draw the open format.
+ */
+export function activityKindForListing(listing: HostListing): CatchActivityKind {
+  const eventKind = [...(listing.catchEvents ?? []), ...(listing.externalEvents ?? [])]
+    .map((event) => activityKindFromValue(event.activityKind))
+    .find((kind) => kind !== "openActivity");
+  if (eventKind) return eventKind;
+  const text = [listing.category, ...listing.formats].join(" ").toLowerCase();
+  return listingActivityWords.find(([pattern]) => pattern.test(text))?.[1] ?? "openActivity";
+}
+
+const listingActivityWords: ReadonlyArray<readonly [RegExp, CatchActivityKind]> = [
+  [/dinner|supper|table/, "dinner"],
+  [/mixer|singles/, "singlesMixer"],
+  [/quiz|trivia/, "pubQuiz"],
+  [/crawl/, "barCrawl"],
+  [/pickle/, "pickleball"],
+  [/padel/, "padel"],
+  [/tennis/, "tennis"],
+  [/badminton/, "badminton"],
+  [/\brun/, "socialRun"],
+  [/walk|hike/, "walking"],
+  [/cycl|\bbike|\bride/, "cycling"],
+  [/spin/, "spinClass"],
+  [/yoga/, "yoga"],
+  [/strength|\bgym|lifting/, "strengthTraining"],
+];
+
+/** The organiser's own imagery: today, its first published event photo. */
+export function coverPhotoForListing(listing: HostListing): string | null {
+  return listing.catchEvents?.find((event) => event.photoUrl?.trim())?.photoUrl ?? null;
 }
 
 export function activityForKind(kind: string): ActivityMeta {

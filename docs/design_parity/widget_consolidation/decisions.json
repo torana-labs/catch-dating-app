@@ -8990,6 +8990,22 @@
       "status": "deferred"
     },
     {
+      "clusterId": "CAT-242:chip-contrast-deep-fill",
+      "decision": "repair-canonical",
+      "canonicalSymbol": "CatchChip",
+      "members": [
+        {
+          "name": "CatchChip",
+          "action": "repair",
+          "note": "Keep both framework APIs and activity hues. Solid and selected activity recipes use the existing deep fill and white labels; dark soft labels use theme ink while icons retain the activity accent."
+        }
+      ],
+      "rationale": "Coordinator approved option C as the library default in both twins, source CAT-242 comment 8a5b18bb-7c3b-4045-8198-ecb269fd1092. Keep all activity hues and existing APIs. Solid/selected activity recipes use the existing deep fill with white labels; light soft labels use deep, dark soft labels use theme ink and retain activity-accent icons. Native and React each compute all 16 activity pigments across solid, selected and soft recipes in both themes at a minimum 4.5:1 label contrast. All 96 pairs pass in each framework; no pigment needs the approved black/white fallback. Keep selection semantics. The React counterpart is accepted in PR #888; this Native follow-up preserves the approved library default, state/theme regression coverage and six targeted catalog goldens. Public React registry/export/adoption wiring remains a separate held integration step. Source and protected CI acceptance for this Native follow-up remain pending.",
+      "decidedBy": "owner-delegated:2026-10-24 -> claude",
+      "date": "2026-10-25",
+      "status": "implemented-source-pending-ci"
+    },
+    {
       "clusterId": "CAT-244:checkbox-input-material",
       "patternFamilyId": "checkbox-input-material",
       "decision": "merge-new-primitive",

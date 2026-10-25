@@ -1,3 +1,4 @@
+import {EventThumbnail, activityKindFromValue} from "@catch/web-ui";
 import {consumerEventCopy} from "../../../content/consumerEvent";
 import {EventExperiencePanel} from "../../../shared/ui/primitives/consumerEvent";
 import {exploreCopy} from "../../../content/explore";
@@ -28,8 +29,8 @@ export function EventDetailHeroSection({event, guestEntry}: {
     title={event.title}
     badge={publicExperienceActivities(event.catchExperienceActivities).length ?
       <EventDetailSourceLink href="#catch-experience"><ExploreBadge>{exploreCopy.experienceLabel}</ExploreBadge></EventDetailSourceLink> : undefined}
-    media={<EventDetailMedia src={event.photoUrl} alt={interpolateContent(copy.invitation.coverAlt, {title: event.title})}
-      fallback={<><span>{activity.label}</span><strong>{event.title}</strong><span>{event.listing.name}</span></>} />}
+    media={<EventDetailMedia><EventThumbnail photoUrl={event.photoUrl} activityKind={activityKindFromValue(event.activityKind)}
+      semanticLabel={interpolateContent(copy.invitation.coverAlt, {title: event.title})} fit="contain" loading="eager" /></EventDetailMedia>}
     host={<><ActivityMark listing={event.listing} size="sm" /><div><span>{copy.hero.hostedByLabel}</span>
       <EventDetailSourceLink href={event.listing.path}>{event.listing.name}</EventDetailSourceLink></div></>}
     facts={[

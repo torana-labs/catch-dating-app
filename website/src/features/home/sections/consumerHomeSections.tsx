@@ -1,14 +1,15 @@
-import {ConsumerCity, ConsumerHero, ConsumerHeroCopy, ConsumerActions, ConsumerHeroImage, ConsumerEventsSection, ConsumerSectionHeading, ConsumerFilters, ConsumerSrOnly, ConsumerEmpty, ConsumerButton, ConsumerEventGrid, ConsumerEventLink, ConsumerEventMedia, ConsumerPhotoNote, ConsumerCategory, ConsumerEventArrow, ConsumerAvailability, ConsumerTextActionLink, ConsumerExperience, ConsumerExperienceImage, ConsumerExperienceCopy, ConsumerExperienceBadge, ConsumerExperienceReassurance, ConsumerPaperButton, ConsumerExperiencePrompt, ConsumerOrganisersSection, ConsumerOrganiserGrid, ConsumerOrganiserLink, ConsumerOrganiserMedia, ConsumerOrganiserLocation, ConsumerOrganiserDescription, ConsumerOrganizerAction, ConsumerFaqSection, ConsumerFaqItem, ConsumerHost, ConsumerHostCopy, ConsumerEyebrow, ConsumerHostAudience, ConsumerHostMedia, ConsumerClosingSection} from "../../../shared/ui/primitives/consumerHome";
+import {ConsumerCity, ConsumerHero, ConsumerHeroCopy, ConsumerActions, ConsumerHeroImage, ConsumerEventsSection, ConsumerSectionHeading, ConsumerFilters, ConsumerSrOnly, ConsumerEmpty, ConsumerButton, ConsumerEventGrid, ConsumerEventLink, ConsumerEventMedia, ConsumerCategory, ConsumerEventArrow, ConsumerAvailability, ConsumerTextActionLink, ConsumerExperience, ConsumerExperienceImage, ConsumerExperienceCopy, ConsumerExperienceBadge, ConsumerExperienceReassurance, ConsumerPaperButton, ConsumerExperiencePrompt, ConsumerOrganisersSection, ConsumerOrganiserGrid, ConsumerOrganiserLink, ConsumerOrganiserMedia, ConsumerOrganiserLocation, ConsumerOrganiserDescription, ConsumerOrganizerAction, ConsumerFaqSection, ConsumerFaqItem, ConsumerHost, ConsumerHostCopy, ConsumerEyebrow, ConsumerHostAudience, ConsumerHostMedia, ConsumerClosingSection} from "../../../shared/ui/primitives/consumerHome";
 import {useState} from "react";
 import {ArrowRight, CalendarDays, MapPin, Users, MessageCircle, Shuffle, Plus, Minus} from "lucide-react";
 import {consumerHomeCopy as copy} from "@content/consumerHome";
 import {activeMarket} from "@content/markets";
 import {interpolateContent as fill} from "@content/interpolate";
-import {CatchField} from "@catch/web-ui";
+import {CatchField, ClubCover, EventThumbnail} from "@catch/web-ui";
 import {ButtonLink, PlainButton, PlainLink} from "../../../shared/ui/primitives";
 import {useConsumerHomeController} from "../useConsumerHomeController";
 import {MediaSlot, type CaptureSlots} from "../../../shared/media/MediaSlot";
-import {categoryForActivity, homeEditorialImage} from "../homeDiscovery";
+import {categoryForActivity} from "../homeDiscovery";
+import {activityKindForListing, coverPhotoForListing} from "../../organizers/publicDiscovery";
 
 type Controller = ReturnType<typeof useConsumerHomeController>;
 const icons = [MessageCircle, Users, Shuffle];
@@ -41,7 +42,7 @@ export function renderConsumerEvents(home: Controller, showAll = false) {
   </ConsumerEmpty> : home.events.length ? <>
    <ConsumerEventGrid showAll={showAll}>
     {(showAll ? home.events : home.events.slice(0, 4)).map(event => <ConsumerEventLink key={event.id} href={event.href}>
-     <ConsumerEventMedia ><img src={event.image} alt="" width={600} height={420} loading="lazy" />{event.illustrative ? <ConsumerPhotoNote >{copy.events.illustration}</ConsumerPhotoNote> : null}</ConsumerEventMedia>
+     <ConsumerEventMedia ><EventThumbnail photoUrl={event.photoUrl} activityKind={event.activityKind} /></ConsumerEventMedia>
      <ConsumerCategory category={event.category}>{copy.categories.find(category => category.id === event.category)?.label}</ConsumerCategory>
      <h3>{event.title}</h3>
      <p><CalendarDays size={17} aria-hidden="true" />{event.date}</p>
@@ -75,10 +76,9 @@ function Experience() {
 function Organisers({home}: {home: Controller}) {
  return <ConsumerOrganisersSection aria-labelledby="home-organisers-title"><h2 id="home-organisers-title">{home.cityEvents.length ? copy.organisers.title : copy.organisers.across}</h2><p>{copy.organisers.body}</p>
   <ConsumerOrganiserGrid >{home.phase === "ready" ? home.organisers.map(listing => {
-   const event = listing.catchEvents?.find(item => item.photoUrl);
    const category = categoryForActivity(listing.category);
    return <ConsumerOrganiserLink key={listing.id} href={listing.path}>
-    <ConsumerOrganiserMedia ><img src={event?.photoUrl || homeEditorialImage(category)} alt="" width={600} height={330} loading="lazy" />{!event?.photoUrl ? <ConsumerPhotoNote >{copy.events.illustration}</ConsumerPhotoNote> : null}</ConsumerOrganiserMedia>
+    <ConsumerOrganiserMedia ><ClubCover photoUrl={coverPhotoForListing(listing)} name={listing.name} city={listing.city} activityKind={activityKindForListing(listing)} /></ConsumerOrganiserMedia>
     <div><h3>{listing.name}</h3><ConsumerOrganiserLocation ><MapPin size={16} aria-hidden="true" />{listing.city}<span aria-hidden="true"> · </span>{listing.formats[0] || listing.category}</ConsumerOrganiserLocation><ConsumerOrganiserDescription >{listing.description}</ConsumerOrganiserDescription><ConsumerOrganizerAction category={category}>{copy.actions.organiser}<ArrowRight size={18} aria-hidden="true" /></ConsumerOrganizerAction></div>
    </ConsumerOrganiserLink>;
   }) : null}</ConsumerOrganiserGrid>

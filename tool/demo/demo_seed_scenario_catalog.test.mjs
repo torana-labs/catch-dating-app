@@ -1,59 +1,7 @@
 import assert from "node:assert/strict";
-import fs from "node:fs";
-import os from "node:os";
-import path from "node:path";
 import test from "node:test";
 import {listScenarioConfigs, loadScenarioConfig} from "./demo_seed_scenario_catalog.mjs";
-import {demoWorldFacts, eventStateAt, isDemoWorld, validateDemoWorld} from "./lib/demo_world.mjs";
-
-test("host demo scenario declares host sales proof coverage", () => {
-  const scenario = loadScenarioConfig("host-demo");
-  const coverage = scenario.salesDemo.proofCoverage;
-
-  assert.ok(Array.isArray(coverage));
-  assert.ok(coverage.length >= 4);
-  assert.ok(
-    coverage.some((item) => item.claim.includes("Invite links")),
-    "invite-link proof should stay represented"
-  );
-  assert.ok(
-    coverage.some((item) => item.claim.includes("waitlist")),
-    "waitlist-offer proof should stay represented"
-  );
-  assert.ok(
-    coverage.some((item) => item.claim.includes("private-interest")),
-    "catch metrics proof should stay represented"
-  );
-  assert.ok(
-    coverage.some((item) => item.claim.includes("table seating")),
-    "assignment primitive proof should stay represented"
-  );
-});
-
-test("scenario catalog rejects malformed proof coverage", () => {
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "catch-scenario-"));
-  const scenarioPath = path.join(tempDir, "bad-proof.json");
-  fs.writeFileSync(
-    scenarioPath,
-    JSON.stringify({
-      id: "bad-proof",
-      label: "Bad Proof",
-      description: "Invalid proof coverage fixture.",
-      salesDemo: {
-        host: {},
-        club: {},
-        events: [{role: "demo"}],
-        rosterPersonaIds: ["persona-1"],
-        proofCoverage: [{claim: "Missing evidence"}],
-      },
-    })
-  );
-
-  assert.throws(
-    () => loadScenarioConfig(scenarioPath),
-    /proofCoverage\[0\]\.productSurface must be a non-empty string/
-  );
-});
+import {civilInstant, demoWorldFacts, eventOutcomesAt, eventStateAt, isDemoWorld, validateDemoWorld} from "./lib/demo_world.mjs";
 
 // Demo world scenarios (schemaVersion 2): docs/plans/demo_world_scenarios_spec.md
 
@@ -61,6 +9,7 @@ test("every demo world in the scenarios folder validates", () => {
   // Loading validates each schemaVersion 2 world; a new world needs no test of its own.
   const worlds = listScenarioConfigs().filter(isDemoWorld);
   assert.ok(worlds.some((world) => world.id === "host-marketing-india"));
+  assert.ok(worlds.some((world) => world.id === "us-nyc-host-demo"));
 });
 
 const trivia = loadScenarioConfig("host-marketing-india");
@@ -147,3 +96,46 @@ test("the schema check reports missing fields and wrong types by path", () => {
   wrongType.events[0].capacity = "thirty";
   assert.throws(() => validateDemoWorld(wrongType), /\/events\/0\/capacity must be integer/);
 });
+
+const nyc = loadScenarioConfig("us-nyc-host-demo");
+const nycClone = () => structuredClone(nyc);
+const nycEvent = (world, id) => world.events.find((event) => event.id === id);
+
+test("the New York world derives the counts the host captures and demo listing show", () => {
+  const counts = Object.fromEntries(nyc.events.map((event) => {
+    const {booked, checkedIn, waitlisted, phase} = eventStateAt(nyc, event.id, "live");
+    return [event.id, [booked, checkedIn, waitlisted, phase]];
+  }));
+  assert.deepEqual(counts, {
+    "event-host-setup-sales-demo": [0, 0, 0, "upcoming"],
+    "event-host-live-console": [17, 7, 3, "live"],
+    "event-host-post-report": [17, 13, 2, "ended"],
+  });
+  assert.deepEqual(eventOutcomesAt(nyc, "event-host-post-report", "live"),
+    {catchSent: 41, mutualMatches: 18, chatsStarted: 12});
+});
+
+test("civil times convert to instants in the world's time zone, across DST", () => {
+  assert.equal(civilInstant("America/New_York", "2026-05-31T05:00:00").toISOString(), "2026-05-31T09:00:00.000Z");
+  assert.equal(civilInstant("America/New_York", "2026-01-15T05:00:00").toISOString(), "2026-01-15T10:00:00.000Z");
+  assert.equal(civilInstant("Asia/Kolkata", "2026-10-17T18:30:00").toISOString(), "2026-10-17T13:00:00.000Z");
+});
+
+const report = "event-host-post-report";
+const recordCases = [
+  ["a waitlisted guest who also holds a booking", (world) => { nycEvent(world, report).waitlist[0].personId = "p01"; }, /waitlisted p01 also holds a booking/],
+  ["a catch from a guest who never checked in", (world) => { nycEvent(world, report).catches[0].personId = "p20"; }, /names p20, who never checked in/],
+  ["a chat without a mutual match", (world) => { nycEvent(world, report).chats[0].personIds = ["p01", "p13"]; }, /chat p01\+p13 has no mutual match/],
+  ["a review written before the event ends", (world) => { nycEvent(world, report).reviews[0].createdAt = "2026-05-30T17:00:00"; }, /is written before the event ends/],
+  ["a review from a no-show", (world) => { nycEvent(world, report).reviews[0].personId = "p20"; }, /comes from someone who never checked in/],
+  ["a phone from another country's range", (world) => { world.host.phoneNumber = "+919000000001"; }, /not in the US demo range/],
+  ["a seed generator the world does not declare", (world) => { world.uses = world.uses.filter((use) => use !== "demo-seed"); }, /has a seedWorld but does not use demo-seed/],
+];
+
+for (const [name, mutate, expected] of recordCases) {
+  test(`rejects ${name}`, () => {
+    const world = nycClone();
+    mutate(world);
+    assert.throws(() => validateDemoWorld(world), expected);
+  });
+}

@@ -365,7 +365,7 @@
       },
       {
         "label": "Host",
-        "value": "Rohan Mehta"
+        "value": "Victor Alvarez"
       },
       {
         "label": "Members",
@@ -392,14 +392,14 @@
       "nextEventLabel": "Hosted long-table dinner"
     },
     "host": {
-      "name": "Rohan Mehta",
+      "name": "Victor Alvarez",
       "role": "Owner",
       "avatarUrl": null
     },
     "catchEvents": [
       {
         "id": "event-host-setup-sales-demo",
-        "role": "hostEventSetup",
+        "role": "Hosted event",
         "title": "Hosted long-table dinner",
         "activityKind": "dinner",
         "timeline": "upcoming",
@@ -419,7 +419,7 @@
       },
       {
         "id": "event-host-live-console",
-        "role": "hostLiveConsole",
+        "role": "Hosted event",
         "title": "Hosted singles mixer",
         "activityKind": "singlesMixer",
         "timeline": "past",
@@ -439,7 +439,7 @@
       },
       {
         "id": "event-host-post-report",
-        "role": "hostPostEventReport",
+        "role": "Hosted event",
         "title": "Hosted singles mixer",
         "activityKind": "singlesMixer",
         "timeline": "past",
@@ -455,53 +455,7 @@
         "checkedInCount": 13,
         "waitlistedCount": 2,
         "priceLabel": "$14",
-        "scorecard": {
-          "bookedCount": 17,
-          "checkedInCount": 13,
-          "attendeesWhoMetTwoPlusPeople": 11,
-          "mutualMatchCount": 18,
-          "chatStartedCount": 12,
-          "averageWelcomeRating": 4.8,
-          "averageStructureRating": 4.6,
-          "safetyIncidentCount": 0,
-          "catchSentCount": 31,
-          "attendeesWhoCaughtSomeone": 11,
-          "catchRecipientCount": 12,
-          "catchRate": 0.846,
-          "feedbackResponseCount": 9,
-          "assignmentParticipantCount": 13,
-          "assignmentOptOutCount": 1,
-          "wingmanRequestCount": 2,
-          "funnel": {
-            "inviteLinkCount": 3,
-            "inviteOpenCount": 64,
-            "totalDemandCount": 24,
-            "requestCount": 5,
-            "pendingRequestCount": 1,
-            "approvedRequestCount": 3,
-            "declinedRequestCount": 1,
-            "directSignupCount": 11,
-            "waitlistJoinCount": 6,
-            "waitlistOfferCount": 4,
-            "waitlistOfferActiveCount": 1,
-            "waitlistOfferAcceptedCount": 2,
-            "waitlistOfferDeclinedCount": 0,
-            "waitlistOfferExpiredCount": 1,
-            "checkoutStartedCount": 15,
-            "paymentPendingCount": 1,
-            "paymentCompletedCount": 13,
-            "paymentFailedCount": 1,
-            "paymentRefundedCount": 0,
-            "bookedCount": 17,
-            "checkedInCount": 13,
-            "noShowCount": 4,
-            "catchSentCount": 31,
-            "attendeesWhoCaughtSomeone": 11,
-            "mutualMatchCount": 18,
-            "chatStartedCount": 12,
-            "repeatAttendeeCount": 6
-          }
-        }
+        "scorecard": null
       }
     ],
     "eventSuccessSummary": {
@@ -509,7 +463,7 @@
       "checkedInCount": 13,
       "mutualMatchCount": 18,
       "chatStartedCount": 12,
-      "catchSentCount": 31,
+      "catchSentCount": 41,
       "safetyIncidentCount": 0
     },
     "eventEvidence": [],
@@ -519,8 +473,8 @@
         "eventId": "event-host-post-report",
         "reviewerName": "Maya S.",
         "rating": 5,
-        "comment": "The host kept the dinner moving without making it feel forced. Easy arrivals, good prompts, and useful follow-up after.",
-        "createdAt": "2026-05-29T09:00:00.000Z",
+        "comment": "The host kept the night moving without making it feel forced. Easy arrivals, good prompts, and useful follow-up after.",
+        "createdAt": "2026-05-31T02:30:00.000Z",
         "verificationStatus": "verified",
         "source": "catchEvent",
         "isAnonymous": false,
@@ -532,7 +486,7 @@
         "reviewerName": "Daniel K.",
         "rating": 5,
         "comment": "The rotations made it simple to meet more people than I would have on my own, and the post-event catch window felt private.",
-        "createdAt": "2026-05-28T09:00:00.000Z",
+        "createdAt": "2026-05-31T00:45:00.000Z",
         "verificationStatus": "verified",
         "source": "catchEvent",
         "isAnonymous": false,
@@ -544,7 +498,7 @@
         "reviewerName": "Anonymous attendee",
         "rating": 4,
         "comment": "Good crowd and clear structure. I liked that the host could adjust the live flow when the group changed.",
-        "createdAt": "2026-05-26T09:00:00.000Z",
+        "createdAt": "2026-05-30T23:10:00.000Z",
         "verificationStatus": "verified",
         "source": "catchEvent",
         "isAnonymous": true,
@@ -560,7 +514,7 @@
     "sources": [
       {
         "type": "catch_demo",
-        "label": "Catch host-demo scenario",
+        "label": "Catch demo world",
         "detail": "First-party synthetic club used for host workflow, roster, review, payment, and Playbook QA.",
         "confidence": "high"
       }
@@ -606,6 +560,6 @@
       }
     },
     "lastVerifiedAt": "2026-05-31",
-    "searchText": "sunday table club new york west village rohan mehta dinner singles mixer hosted hosted long-table dinner dinner hosted singles mixer singlesmixer hosted singles mixer singlesmixer"
+    "searchText": "sunday table club new york west village victor alvarez dinner singles mixer hosted hosted long-table dinner dinner hosted singles mixer singlesmixer hosted singles mixer singlesmixer"
   }
 ]
