@@ -108,7 +108,10 @@ Widget catchFieldLabelTextCatalogStates(BuildContext context) {
           copy: catchFieldLabelTextCopy(context.l10n),
           label: 'Religion',
           mode: CatchFieldLabelTextMode.optional,
-          style: CatchTextStyles.fieldRowTitle(context),
+          style: CatchTextStyles.bodyLead(
+            context,
+            color: CatchTokens.of(context).ink,
+          ),
         ),
       ),
     ],

@@ -233,10 +233,13 @@ class PaymentHistoryTile extends StatelessWidget {
       ),
       child: Padding(
         padding: CatchInsets.contentVertical,
-        child: InkWell(
+        child: CatchSurface(
           key: PaymentHistoryKeys.paymentTile(payment.id),
+          tone: CatchSurfaceTone.transparent,
+          radius: CatchRadius.none,
           borderRadius: BorderRadius.circular(CatchRadius.md),
           onTap: () => _showDetailSheet(context, eventTitle),
+          duration: Duration.zero,
           child: Padding(
             padding: CatchInsets.paymentHistoryTileContent,
             child: Column(
