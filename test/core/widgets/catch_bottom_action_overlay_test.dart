@@ -94,7 +94,6 @@ void main() {
                       label: 'Save and continue',
                       onPressed: () => presses++,
                       fullWidth: true,
-                      size: CatchButtonSize.lg,
                     ),
                     const SizedBox(height: 8),
                     CatchButton(
@@ -102,7 +101,6 @@ void main() {
                       onPressed: () {},
                       variant: CatchButtonVariant.ghost,
                       fullWidth: true,
-                      size: CatchButtonSize.lg,
                     ),
                   ],
                 ),

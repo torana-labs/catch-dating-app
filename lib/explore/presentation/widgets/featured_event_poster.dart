@@ -319,7 +319,6 @@ class FeaturedEventBody extends StatelessWidget {
                     backgroundColor: paper,
                     foregroundColor: CatchTokens.light.ink,
                     fullWidth: true,
-                    size: CatchButtonSize.lg,
                   ),
                 ),
               if (hasData) ...[

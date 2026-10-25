@@ -111,7 +111,6 @@ class OnboardingPhotosStep extends StatelessWidget {
             label: context.l10n.onboardingPhotosPageLabelContinue,
             onPressed: callbacks.onContinue,
             fullWidth: true,
-            size: CatchButtonSize.lg,
           ),
           if (state.continueHint(context.l10n) case final continueHint?) ...[
             gapH12,

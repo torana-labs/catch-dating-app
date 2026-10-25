@@ -212,7 +212,6 @@ void _registerCatchPrimitivesControlsTests() {
                 CatchButton(
                   label: 'Join event',
                   onPressed: () => taps++,
-                  size: CatchButtonSize.lg,
                   fullWidth: true,
                 ),
                 const SizedBox(height: 12),

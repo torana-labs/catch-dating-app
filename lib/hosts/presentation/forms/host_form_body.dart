@@ -87,7 +87,6 @@ class _HostFormBodyState extends State<HostFormBody> {
               : context.l10n.hostFormSubmit,
           onPressed: widget.preview ? null : widget.onSubmit,
           fullWidth: true,
-          size: CatchButtonSize.lg,
         ),
         gapH12,
         CatchText(

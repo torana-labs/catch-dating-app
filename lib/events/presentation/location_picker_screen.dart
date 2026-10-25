@@ -644,7 +644,6 @@ class SelectedPointSection extends StatelessWidget {
             label: context.l10n.eventsLocationPickerScreenLabelConfirmLocation,
             onPressed: onConfirm,
             fullWidth: true,
-            size: CatchButtonSize.lg,
           ),
         ],
       ),

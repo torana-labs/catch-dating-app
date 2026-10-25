@@ -195,7 +195,6 @@ class OnboardingNameDobStep extends StatelessWidget {
               ? CatchButtonStatus.loading
               : CatchButtonStatus.idle,
           fullWidth: true,
-          size: CatchButtonSize.lg,
         ),
         children: [
           CatchSection.fieldRows(
