@@ -487,6 +487,236 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
     },
     {
       "schemaVersion": 2,
+      "id": "pickleball-gurugram",
+      "label": "Gurugram Pickleball Social",
+      "description": "Fictional Gurugram after-work pickleball social with rotating doubles partners, used by the launch-format captures. Draft capture input, never a seed world or an availability claim.",
+      "uses": [
+        "marketing-capture"
+      ],
+      "locale": "en-IN",
+      "timeZone": "Asia/Kolkata",
+      "currency": "INR",
+      "moments": {
+        "planning": "2026-10-27T11:00:00",
+        "today": "2026-10-29T15:00:00",
+        "live": "2026-10-29T19:40:00",
+        "followUp": "2026-10-30T10:00:00"
+      },
+      "host": {
+        "uid": "pickleball-gurugram-host",
+        "personaId": "in_aryan_mathur_056",
+        "displayName": "Aryan Mathur",
+        "firstName": "Aryan",
+        "phoneNumber": "+919000000501",
+        "email": "host@example.test"
+      },
+      "organizer": {
+        "id": "club-kitchen-line-social",
+        "name": "Kitchen Line Social",
+        "description": "Fictional Gurugram pickleball club that runs a weekly after-work social doubles session off Golf Course Road.",
+        "city": "delhi",
+        "area": "Golf Course Road, Gurugram",
+        "tags": [
+          "pickleball",
+          "social-doubles",
+          "beginner-friendly"
+        ],
+        "memberCount": 0,
+        "rating": 0,
+        "reviewCount": 0
+      },
+      "venues": [
+        {
+          "id": "kikar-courts",
+          "name": "Kikar Courts",
+          "area": "Sector 54, Gurugram",
+          "lat": 28.4383,
+          "lng": 77.1032,
+          "directions": "Enter from the Sector 54 service lane; the courts are behind the clubhouse. Check in at the paddle rack."
+        }
+      ],
+      "people": [
+        {
+          "id": "p01",
+          "personaId": "in_kunal_arora_054"
+        },
+        {
+          "id": "p02",
+          "personaId": "in_ishani_kapoor_053"
+        },
+        {
+          "id": "p03",
+          "personaId": "in_arnav_bose_033"
+        },
+        {
+          "id": "p04",
+          "personaId": "in_raghav_tandon_060"
+        },
+        {
+          "id": "p05",
+          "personaId": "in_gurleen_sandhu_059"
+        },
+        {
+          "id": "p06",
+          "personaId": "in_siddhant_bhalla_058"
+        },
+        {
+          "id": "p07",
+          "personaId": "in_kritika_bansal_057"
+        },
+        {
+          "id": "p08",
+          "personaId": "in_aditi_chawla_032"
+        },
+        {
+          "id": "p09",
+          "personaId": "in_varun_khanna_031"
+        },
+        {
+          "id": "p10",
+          "personaId": "in_simran_kaur_030"
+        },
+        {
+          "id": "p11",
+          "personaId": "in_noor_rizvi_055"
+        }
+      ],
+      "events": [
+        {
+          "id": "event-pickleball-doubles-2026-10-29",
+          "name": "Thursday Social Doubles",
+          "description": "A fictional after-work pickleball social. Guests share their playing level when they book, then play timed doubles rounds with a new partner each round. Paddles and balls are at the courts.",
+          "venueId": "kikar-courts",
+          "civilDate": "2026-10-29",
+          "startTime": "19:00",
+          "endTime": "21:00",
+          "activityKind": "pickleball",
+          "format": {
+            "interactionModel": "pairedRotations",
+            "admissionPreset": "openCapacity",
+            "playbookId": "pickleball_rotations",
+            "selectedModuleIds": [
+              "host_script",
+              "guided_rotations",
+              "live_reveal",
+              "safety_controls"
+            ],
+            "hostGoal": "Rotate doubles partners every round so everyone plays with someone new at a similar level."
+          },
+          "capacity": 12,
+          "priceInPaise": 49900,
+          "guestPerspective": {
+            "viewer": "p07",
+            "wingmanTarget": "p01"
+          },
+          "attendance": [
+            {
+              "personId": "p01",
+              "bookedAt": "2026-10-22T21:14:00",
+              "checkedInAt": "2026-10-29T18:34:00"
+            },
+            {
+              "personId": "p02",
+              "bookedAt": "2026-10-22T21:36:00",
+              "checkedInAt": "2026-10-29T18:37:00"
+            },
+            {
+              "personId": "p03",
+              "bookedAt": "2026-10-23T13:20:00",
+              "checkedInAt": "2026-10-29T18:44:00"
+            },
+            {
+              "personId": "p04",
+              "bookedAt": "2026-10-24T18:05:00",
+              "checkedInAt": "2026-10-29T18:58:00"
+            },
+            {
+              "personId": "p05",
+              "bookedAt": "2026-10-25T10:40:00",
+              "cancelledAt": "2026-10-29T09:10:00"
+            },
+            {
+              "personId": "p06",
+              "bookedAt": "2026-10-26T20:15:00",
+              "checkedInAt": "2026-10-29T18:52:00"
+            },
+            {
+              "personId": "p07",
+              "bookedAt": "2026-10-27T12:40:00",
+              "checkedInAt": "2026-10-29T18:41:00"
+            },
+            {
+              "personId": "p08",
+              "bookedAt": "2026-10-28T09:30:00",
+              "checkedInAt": "2026-10-29T18:50:00"
+            },
+            {
+              "personId": "p09",
+              "bookedAt": "2026-10-28T12:50:00",
+              "checkedInAt": "2026-10-29T18:47:00"
+            },
+            {
+              "personId": "p10",
+              "bookedAt": "2026-10-28T19:25:00",
+              "checkedInAt": "2026-10-29T18:55:00"
+            },
+            {
+              "personId": "p11",
+              "bookedAt": "2026-10-29T08:05:00",
+              "checkedInAt": "2026-10-29T19:03:00"
+            }
+          ]
+        },
+        {
+          "id": "event-pickleball-doubles-2026-11-05",
+          "name": "Thursday Social Doubles",
+          "description": "The following week's session of the same fictional after-work doubles social, which the follow-up invites guests to book.",
+          "venueId": "kikar-courts",
+          "civilDate": "2026-11-05",
+          "startTime": "19:00",
+          "endTime": "21:00",
+          "activityKind": "pickleball",
+          "format": {
+            "interactionModel": "pairedRotations",
+            "admissionPreset": "openCapacity",
+            "playbookId": "pickleball_rotations",
+            "selectedModuleIds": [
+              "host_script",
+              "guided_rotations",
+              "live_reveal",
+              "safety_controls"
+            ],
+            "hostGoal": "Rotate doubles partners every round so everyone plays with someone new at a similar level."
+          },
+          "capacity": 12,
+          "priceInPaise": 49900,
+          "attendance": [
+            {
+              "personId": "p01",
+              "bookedAt": "2026-10-29T21:18:00"
+            },
+            {
+              "personId": "p07",
+              "bookedAt": "2026-10-29T21:42:00"
+            },
+            {
+              "personId": "p02",
+              "bookedAt": "2026-10-30T07:55:00"
+            },
+            {
+              "personId": "p05",
+              "bookedAt": "2026-10-30T08:20:00"
+            },
+            {
+              "personId": "p03",
+              "bookedAt": "2026-10-30T09:05:00"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "schemaVersion": 2,
       "id": "us-nyc-host-demo",
       "label": "New York Host Demo",
       "description": "Fictional Sunday Table Club in New York, the host sales demo. Host app captures, the website's demo organiser listing and seeded demo environments read it. Never an availability claim.",
@@ -1347,6 +1577,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
       ]
     },
     {
+      "id": "in_aditi_chawla_032",
+      "firstName": "Aditi",
+      "lastName": "Chawla",
+      "displayName": "Aditi Chawla",
+      "gender": "woman",
+      "dateOfBirth": "1997-02-14",
+      "heightCm": 161,
+      "occupation": "Fashion buyer",
+      "company": "Retail group",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A good outfit, a better crowd, and a playlist that does not quit."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Planning brunch for the next morning."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You compliment people and mean it."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aditi-chawla/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aditi-chawla/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/aditi-chawla/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/aditi-chawla/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "rooftop_night",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aditi-chawla/02-rooftop-night.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aditi-chawla/thumbs/02-rooftop-night.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/aditi-chawla/02-rooftop-night.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/aditi-chawla/thumbs/02-rooftop-night.jpg"
+        },
+        {
+          "id": "sunday_brunch",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aditi-chawla/03-sunday-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aditi-chawla/thumbs/03-sunday-brunch.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/aditi-chawla/03-sunday-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/aditi-chawla/thumbs/03-sunday-brunch.jpg"
+        },
+        {
+          "id": "market_lane",
+          "position": 3,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aditi-chawla/04-market-lane.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aditi-chawla/thumbs/04-market-lane.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/aditi-chawla/04-market-lane.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/aditi-chawla/thumbs/04-market-lane.jpg"
+        }
+      ]
+    },
+    {
       "id": "in_aditya_bhosale_011",
       "firstName": "Aditya",
       "lastName": "Bhosale",
@@ -1532,6 +1825,132 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aniket-pawar/thumbs/04-peth-walk.jpg",
           "storagePath": "demo/sales-personas/india-core-v1/aniket-pawar/04-peth-walk.jpg",
           "thumbnailStoragePath": "demo/sales-personas/india-core-v1/aniket-pawar/thumbs/04-peth-walk.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_arnav_bose_033",
+      "firstName": "Arnav",
+      "lastName": "Bose",
+      "displayName": "Arnav Bose",
+      "gender": "man",
+      "dateOfBirth": "1995-10-26",
+      "heightCm": 178,
+      "occupation": "Economist",
+      "company": "Research organisation",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A friendly game, a hard question, and a long dinner after."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Recommending a book and a fish curry, in that order."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You have a reading list and you let me borrow from it."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/arnav-bose/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/arnav-bose/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/arnav-bose/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/arnav-bose/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "weekend_pickleball",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/arnav-bose/02-weekend-pickleball.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/arnav-bose/thumbs/02-weekend-pickleball.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/arnav-bose/02-weekend-pickleball.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/arnav-bose/thumbs/02-weekend-pickleball.jpg"
+        },
+        {
+          "id": "book_market",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/arnav-bose/03-book-market.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/arnav-bose/thumbs/03-book-market.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/arnav-bose/03-book-market.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/arnav-bose/thumbs/03-book-market.jpg"
+        },
+        {
+          "id": "friends_brunch",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/arnav-bose/04-friends-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/arnav-bose/thumbs/04-friends-brunch.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/arnav-bose/04-friends-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/arnav-bose/thumbs/04-friends-brunch.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_aryan_mathur_056",
+      "firstName": "Aryan",
+      "lastName": "Mathur",
+      "displayName": "Aryan Mathur",
+      "gender": "man",
+      "dateOfBirth": "1994-11-02",
+      "heightCm": 182,
+      "occupation": "Sports club manager",
+      "company": "Pickleball club, Gurugram",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Beginners and regulars mixed together, with nobody stuck on the bench."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Asking the beginners how it went and meaning it."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You try a new shot even if it might not work."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aryan-mathur/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aryan-mathur/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/aryan-mathur/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/aryan-mathur/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "coaching_session",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aryan-mathur/02-coaching-session.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aryan-mathur/thumbs/02-coaching-session.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/aryan-mathur/02-coaching-session.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/aryan-mathur/thumbs/02-coaching-session.jpg"
+        },
+        {
+          "id": "club_brunch",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aryan-mathur/03-club-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aryan-mathur/thumbs/03-club-brunch.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/aryan-mathur/03-club-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/aryan-mathur/thumbs/03-club-brunch.jpg"
+        },
+        {
+          "id": "park_picnic",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aryan-mathur/04-park-picnic.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/aryan-mathur/thumbs/04-park-picnic.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/aryan-mathur/04-park-picnic.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/aryan-mathur/thumbs/04-park-picnic.jpg"
         }
       ]
     },
@@ -1788,6 +2207,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
       ]
     },
     {
+      "id": "in_gurleen_sandhu_059",
+      "firstName": "Gurleen",
+      "lastName": "Sandhu",
+      "displayName": "Gurleen Sandhu",
+      "gender": "woman",
+      "dateOfBirth": "1993-07-07",
+      "heightCm": 168,
+      "occupation": "Dermatologist",
+      "company": "Hospital",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A calm morning, a good brunch, and people who stay to chat."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Handing out sunscreen tips nobody asked for."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You drink water without being reminded."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/gurleen-sandhu/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/gurleen-sandhu/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/gurleen-sandhu/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/gurleen-sandhu/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "park_yoga",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/gurleen-sandhu/02-park-yoga.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/gurleen-sandhu/thumbs/02-park-yoga.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/gurleen-sandhu/02-park-yoga.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/gurleen-sandhu/thumbs/02-park-yoga.jpg"
+        },
+        {
+          "id": "sunday_brunch",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/gurleen-sandhu/03-sunday-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/gurleen-sandhu/thumbs/03-sunday-brunch.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/gurleen-sandhu/03-sunday-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/gurleen-sandhu/thumbs/03-sunday-brunch.jpg"
+        },
+        {
+          "id": "dilli_haat",
+          "position": 3,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/gurleen-sandhu/04-dilli-haat.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/gurleen-sandhu/thumbs/04-dilli-haat.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/gurleen-sandhu/04-dilli-haat.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/gurleen-sandhu/thumbs/04-dilli-haat.jpg"
+        }
+      ]
+    },
+    {
       "id": "in_harsh_agarwal_050",
       "firstName": "Harsh",
       "lastName": "Agarwal",
@@ -1847,6 +2329,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/harsh-agarwal/thumbs/04-sunday-brunch.jpg",
           "storagePath": "demo/sales-personas/india-core-v1/harsh-agarwal/04-sunday-brunch.jpg",
           "thumbnailStoragePath": "demo/sales-personas/india-core-v1/harsh-agarwal/thumbs/04-sunday-brunch.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_ishani_kapoor_053",
+      "firstName": "Ishani",
+      "lastName": "Kapoor",
+      "displayName": "Ishani Kapoor",
+      "gender": "woman",
+      "dateOfBirth": "1995-01-30",
+      "heightCm": 167,
+      "occupation": "Investment banker",
+      "company": "Bank, Gurugram",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Competitive but friendly, with partners who change every round."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Booking the court for next week before I leave."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You clap for the other team's good shots."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ishani-kapoor/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ishani-kapoor/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/ishani-kapoor/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/ishani-kapoor/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "league_night",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ishani-kapoor/02-league-night.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ishani-kapoor/thumbs/02-league-night.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/ishani-kapoor/02-league-night.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/ishani-kapoor/thumbs/02-league-night.jpg"
+        },
+        {
+          "id": "golf_course_rooftop",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ishani-kapoor/03-golf-course-rooftop.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ishani-kapoor/thumbs/03-golf-course-rooftop.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/ishani-kapoor/03-golf-course-rooftop.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/ishani-kapoor/thumbs/03-golf-course-rooftop.jpg"
+        },
+        {
+          "id": "weekend_brunch",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ishani-kapoor/04-weekend-brunch.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/ishani-kapoor/thumbs/04-weekend-brunch.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/ishani-kapoor/04-weekend-brunch.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/ishani-kapoor/thumbs/04-weekend-brunch.jpg"
         }
       ]
     },
@@ -2036,6 +2581,132 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/karan-mehra/thumbs/04-park-picnic.jpg",
           "storagePath": "demo/sales-personas/india-core-v1/karan-mehra/04-park-picnic.jpg",
           "thumbnailStoragePath": "demo/sales-personas/india-core-v1/karan-mehra/thumbs/04-park-picnic.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_kritika_bansal_057",
+      "firstName": "Kritika",
+      "lastName": "Bansal",
+      "displayName": "Kritika Bansal",
+      "gender": "woman",
+      "dateOfBirth": "1997-02-26",
+      "heightCm": 160,
+      "occupation": "Product manager",
+      "company": "Fintech company, Gurugram",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A well-run night where every round has new partners."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Ranking the night's best rallies in the group chat."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You ask how my day was and wait for the real answer."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kritika-bansal/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kritika-bansal/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/kritika-bansal/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/kritika-bansal/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "night_rally",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kritika-bansal/02-night-rally.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kritika-bansal/thumbs/02-night-rally.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/kritika-bansal/02-night-rally.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/kritika-bansal/thumbs/02-night-rally.jpg"
+        },
+        {
+          "id": "hauz_khas_jazz",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kritika-bansal/03-hauz-khas-jazz.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kritika-bansal/thumbs/03-hauz-khas-jazz.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/kritika-bansal/03-hauz-khas-jazz.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/kritika-bansal/thumbs/03-hauz-khas-jazz.jpg"
+        },
+        {
+          "id": "sunday_bookshop",
+          "position": 3,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kritika-bansal/04-sunday-bookshop.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kritika-bansal/thumbs/04-sunday-bookshop.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/kritika-bansal/04-sunday-bookshop.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/kritika-bansal/thumbs/04-sunday-bookshop.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_kunal_arora_054",
+      "firstName": "Kunal",
+      "lastName": "Arora",
+      "displayName": "Kunal Arora",
+      "gender": "man",
+      "dateOfBirth": "1993-04-16",
+      "heightCm": 180,
+      "occupation": "Management consultant",
+      "company": "Consulting firm, Gurugram",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A fair rotation, a quick format, and dinner straight after."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Finding the best butter chicken within ten minutes."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You keep score honestly even when you're losing."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kunal-arora/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kunal-arora/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/kunal-arora/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/kunal-arora/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "social_doubles",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kunal-arora/02-social-doubles.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kunal-arora/thumbs/02-social-doubles.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/kunal-arora/02-social-doubles.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/kunal-arora/thumbs/02-social-doubles.jpg"
+        },
+        {
+          "id": "dinner_out",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kunal-arora/03-dinner-out.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kunal-arora/thumbs/03-dinner-out.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/kunal-arora/03-dinner-out.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/kunal-arora/thumbs/03-dinner-out.jpg"
+        },
+        {
+          "id": "evening_walk",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kunal-arora/04-evening-walk.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/kunal-arora/thumbs/04-evening-walk.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/kunal-arora/04-evening-walk.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/kunal-arora/thumbs/04-evening-walk.jpg"
         }
       ]
     },
@@ -2418,6 +3089,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
       ]
     },
     {
+      "id": "in_noor_rizvi_055",
+      "firstName": "Noor",
+      "lastName": "Rizvi",
+      "displayName": "Noor Rizvi",
+      "gender": "woman",
+      "dateOfBirth": "1996-08-21",
+      "heightCm": 163,
+      "occupation": "Photographer",
+      "company": "Freelance",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Good light, interesting people, and time to wander."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Sending everyone the candid photo they didn't know I took."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You look up when you walk through a city."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/noor-rizvi/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/noor-rizvi/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/noor-rizvi/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/noor-rizvi/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "photo_exhibition",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/noor-rizvi/02-photo-exhibition.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/noor-rizvi/thumbs/02-photo-exhibition.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/noor-rizvi/02-photo-exhibition.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/noor-rizvi/thumbs/02-photo-exhibition.jpg"
+        },
+        {
+          "id": "khan_market_cafe",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/noor-rizvi/03-khan-market-cafe.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/noor-rizvi/thumbs/03-khan-market-cafe.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/noor-rizvi/03-khan-market-cafe.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/noor-rizvi/thumbs/03-khan-market-cafe.jpg"
+        },
+        {
+          "id": "stepwell_steps",
+          "position": 3,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/noor-rizvi/04-stepwell-steps.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/noor-rizvi/thumbs/04-stepwell-steps.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/noor-rizvi/04-stepwell-steps.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/noor-rizvi/thumbs/04-stepwell-steps.jpg"
+        }
+      ]
+    },
+    {
       "id": "in_omkar_jadhav_023",
       "firstName": "Omkar",
       "lastName": "Jadhav",
@@ -2540,6 +3274,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/pooja-iyer/thumbs/04-sunday-cooking.jpg",
           "storagePath": "demo/sales-personas/india-core-v1/pooja-iyer/04-sunday-cooking.jpg",
           "thumbnailStoragePath": "demo/sales-personas/india-core-v1/pooja-iyer/thumbs/04-sunday-cooking.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_raghav_tandon_060",
+      "firstName": "Raghav",
+      "lastName": "Tandon",
+      "displayName": "Raghav Tandon",
+      "gender": "man",
+      "dateOfBirth": "1995-05-24",
+      "heightCm": 176,
+      "occupation": "Copywriter and stand-up comic",
+      "company": "Ad agency",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A room that starts shy and ends loud, with nobody left out."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Testing tonight's best line on the walk home."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You laugh at the joke and the person, never at them."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/raghav-tandon/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/raghav-tandon/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/raghav-tandon/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/raghav-tandon/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "open_mic",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/raghav-tandon/02-open-mic.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/raghav-tandon/thumbs/02-open-mic.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/raghav-tandon/02-open-mic.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/raghav-tandon/thumbs/02-open-mic.jpg"
+        },
+        {
+          "id": "jazz_evening",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/raghav-tandon/03-jazz-evening.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/raghav-tandon/thumbs/03-jazz-evening.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/raghav-tandon/03-jazz-evening.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/raghav-tandon/thumbs/03-jazz-evening.jpg"
+        },
+        {
+          "id": "lodhi_walk",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/raghav-tandon/04-lodhi-walk.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/raghav-tandon/thumbs/04-lodhi-walk.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/raghav-tandon/04-lodhi-walk.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/raghav-tandon/thumbs/04-lodhi-walk.jpg"
         }
       ]
     },
@@ -3048,6 +3845,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
       ]
     },
     {
+      "id": "in_siddhant_bhalla_058",
+      "firstName": "Siddhant",
+      "lastName": "Bhalla",
+      "displayName": "Siddhant Bhalla",
+      "gender": "man",
+      "dateOfBirth": "1992-09-13",
+      "heightCm": 177,
+      "occupation": "Architect",
+      "company": "Studio",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A beautiful old building, a good story, and coffee after."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Leading a detour to see one more courtyard."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You ask why a building looks the way it does."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/siddhant-bhalla/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/siddhant-bhalla/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/siddhant-bhalla/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/siddhant-bhalla/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "studio_models",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/siddhant-bhalla/02-studio-models.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/siddhant-bhalla/thumbs/02-studio-models.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/siddhant-bhalla/02-studio-models.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/siddhant-bhalla/thumbs/02-studio-models.jpg"
+        },
+        {
+          "id": "crafts_museum",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/siddhant-bhalla/03-crafts-museum.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/siddhant-bhalla/thumbs/03-crafts-museum.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/siddhant-bhalla/03-crafts-museum.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/siddhant-bhalla/thumbs/03-crafts-museum.jpg"
+        },
+        {
+          "id": "courtyard_cafe",
+          "position": 3,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/siddhant-bhalla/04-courtyard-cafe.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/siddhant-bhalla/thumbs/04-courtyard-cafe.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/siddhant-bhalla/04-courtyard-cafe.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/siddhant-bhalla/thumbs/04-courtyard-cafe.jpg"
+        }
+      ]
+    },
+    {
       "id": "in_siddharth_menon_009",
       "firstName": "Siddharth",
       "lastName": "Menon",
@@ -3111,6 +3971,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
       ]
     },
     {
+      "id": "in_simran_kaur_030",
+      "firstName": "Simran",
+      "lastName": "Kaur",
+      "displayName": "Simran Kaur",
+      "gender": "woman",
+      "dateOfBirth": "1994-01-24",
+      "heightCm": 166,
+      "occupation": "Policy researcher",
+      "company": "Think tank",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "A good question on every table and time for everyone to answer it."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Finding the best chole bhature in the neighbourhood."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You make space for the quietest person in the room."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/simran-kaur/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/simran-kaur/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/simran-kaur/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/simran-kaur/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "delhi_cafe",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/simran-kaur/02-delhi-cafe.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/simran-kaur/thumbs/02-delhi-cafe.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/simran-kaur/02-delhi-cafe.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/simran-kaur/thumbs/02-delhi-cafe.jpg"
+        },
+        {
+          "id": "national_museum",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/simran-kaur/03-national-museum.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/simran-kaur/thumbs/03-national-museum.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/simran-kaur/03-national-museum.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/simran-kaur/thumbs/03-national-museum.jpg"
+        },
+        {
+          "id": "garden_picnic",
+          "position": 3,
+          "promptId": "favoritePeople",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/simran-kaur/04-garden-picnic.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/simran-kaur/thumbs/04-garden-picnic.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/simran-kaur/04-garden-picnic.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/simran-kaur/thumbs/04-garden-picnic.jpg"
+        }
+      ]
+    },
+    {
       "id": "in_tanvi_shetty_004",
       "firstName": "Tanvi",
       "lastName": "Shetty",
@@ -3170,6 +4093,69 @@ export const suvbotWorldBundle: SuvbotWorldBundle = {
           "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/tanvi-shetty/thumbs/04-flower-market.jpg",
           "storagePath": "demo/sales-personas/india-core-v1/tanvi-shetty/04-flower-market.jpg",
           "thumbnailStoragePath": "demo/sales-personas/india-core-v1/tanvi-shetty/thumbs/04-flower-market.jpg"
+        }
+      ]
+    },
+    {
+      "id": "in_varun_khanna_031",
+      "firstName": "Varun",
+      "lastName": "Khanna",
+      "displayName": "Varun Khanna",
+      "gender": "man",
+      "dateOfBirth": "1993-05-09",
+      "heightCm": 181,
+      "occupation": "Hotelier",
+      "company": "Boutique hotel group",
+      "profilePrompts": [
+        {
+          "promptId": "perfectRun",
+          "answer": "Long tables, shared plates, and a host who makes introductions."
+        },
+        {
+          "promptId": "afterEvent",
+          "answer": "Leading a detour to the best kulfi in the city."
+        },
+        {
+          "promptId": "greenFlag",
+          "answer": "You thank the kitchen on the way out."
+        }
+      ],
+      "photos": [
+        {
+          "id": "hero_portrait",
+          "position": 0,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/varun-khanna/01-hero-portrait.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/varun-khanna/thumbs/01-hero-portrait.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/varun-khanna/01-hero-portrait.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/varun-khanna/thumbs/01-hero-portrait.jpg"
+        },
+        {
+          "id": "shared_plates",
+          "position": 1,
+          "promptId": "notRunning",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/varun-khanna/02-shared-plates.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/varun-khanna/thumbs/02-shared-plates.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/varun-khanna/02-shared-plates.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/varun-khanna/thumbs/02-shared-plates.jpg"
+        },
+        {
+          "id": "delhi_jazz",
+          "position": 2,
+          "promptId": "weekendEnergy",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/varun-khanna/03-delhi-jazz.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/varun-khanna/thumbs/03-delhi-jazz.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/varun-khanna/03-delhi-jazz.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/varun-khanna/thumbs/03-delhi-jazz.jpg"
+        },
+        {
+          "id": "stepwell",
+          "position": 3,
+          "promptId": "captionThis",
+          "url": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/varun-khanna/04-stepwell.jpg",
+          "thumbnailUrl": "https://storage.googleapis.com/catch-demo-assets/sales-personas/india-core-v1/varun-khanna/thumbs/04-stepwell.jpg",
+          "storagePath": "demo/sales-personas/india-core-v1/varun-khanna/04-stepwell.jpg",
+          "thumbnailStoragePath": "demo/sales-personas/india-core-v1/varun-khanna/thumbs/04-stepwell.jpg"
         }
       ]
     },
