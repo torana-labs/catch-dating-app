@@ -1,5 +1,4 @@
 import 'package:catch_ui/src/components/catch_error_state.dart';
-import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/patterns/catch_state_viewport.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +10,7 @@ class CatchSliverErrorState extends StatelessWidget {
     this.onRetry,
     this.retryLabel,
     this.actions = const [],
-    this.icon = CatchIcons.errorOutlineRounded,
+    this.icon,
     this.fillRemaining = true,
   }) : assert(
          onRetry == null || retryLabel != null,
@@ -25,7 +24,9 @@ class CatchSliverErrorState extends StatelessWidget {
   /// Caller-resolved label, required when [onRetry] is supplied.
   final String? retryLabel;
   final List<Widget> actions;
-  final IconData icon;
+
+  /// Defaults to [CatchErrorState]'s error icon.
+  final IconData? icon;
   final bool fillRemaining;
 
   @override
