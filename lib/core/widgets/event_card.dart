@@ -58,16 +58,17 @@ class EventCard extends StatelessWidget {
               bottom: CatchSpacing.s4,
               child: Transform.rotate(
                 angle: -0.08,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: t.accent,
-                      width: CatchStroke.underline,
-                    ),
-                    color: t.primaryInk.withValues(
-                      alpha: CatchOpacity.subtleFill,
-                    ),
+                child: CatchSurface(
+                  backgroundColor: t.primaryInk.withValues(
+                    alpha: CatchOpacity.subtleFill,
                   ),
+                  radius: CatchRadius.none,
+                  borderSpec: CatchBorderSpec(
+                    role: CatchBorderRole.boundary,
+                    color: t.accent,
+                    width: CatchStroke.underline,
+                  ),
+                  duration: Duration.zero,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: CatchSpacing.s2,
@@ -127,9 +128,10 @@ class EventCard extends StatelessWidget {
                   ),
                 ),
                 gapW8,
-                Text(
+                CatchText(
                   priceLabel,
-                  style: CatchTextStyles.labelL(context, color: t.ink),
+                  variant: CatchTextVariant.titleS,
+                  color: t.ink,
                 ),
               ],
             ),

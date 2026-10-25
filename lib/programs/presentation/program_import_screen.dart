@@ -207,12 +207,12 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
                   ),
                   if (table != null) ...[
                     const SizedBox(height: CatchSpacing.s2),
-                    Text(
+                    CatchText(
                       context.l10n.programsImportFileSummary(
                         count: table.rows.length,
                         columns: table.headers.length,
                       ),
-                      style: Theme.of(context).textTheme.bodySmall,
+                      variant: CatchTextVariant.bodyS,
                     ),
                   ],
                 ],
@@ -228,15 +228,15 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
                   children: [
                     for (final field in ProgramManifestField.values)
                       CatchFieldRow.standard(
-                        body: Text(
+                        body: CatchText(
                           _fieldLabel(field),
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          variant: CatchTextVariant.bodyM,
                         ),
-                        trailing: Text(
+                        trailing: CatchText(
                           _mapping[field] == null
                               ? context.l10n.programsImportFieldSkip
                               : table.headers[_mapping[field]!],
-                          style: Theme.of(context).textTheme.bodySmall,
+                          variant: CatchTextVariant.bodyS,
                         ),
                         onTap: _pending ? null : () => _pickColumn(field),
                       ),
@@ -251,12 +251,12 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
+                    CatchText(
                       context.l10n.programsImportRowSummary(
                         mapped: mapped.rows.length,
                         skipped: mapped.rowIssues.length,
                       ),
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      variant: CatchTextVariant.bodyM,
                     ),
                     const SizedBox(height: CatchSpacing.s3),
                     CatchButton(
@@ -352,17 +352,17 @@ class ProgramImportResultSection extends StatelessWidget {
       ),
       if (result.rowErrors.isNotEmpty) ...[
         const SizedBox(height: CatchSpacing.s2),
-        Text(
+        CatchText(
           context.l10n.programsImportErrors(count: result.rowErrors.length),
-          style: Theme.of(context).textTheme.titleSmall,
+          variant: CatchTextVariant.supportingStrong,
         ),
         for (final error in result.rowErrors.take(20))
-          Text(
+          CatchText(
             context.l10n.programsImportRowError(
               index: error.index + 1,
               message: error.message,
             ),
-            style: Theme.of(context).textTheme.bodySmall,
+            variant: CatchTextVariant.bodyS,
           ),
       ],
     ],

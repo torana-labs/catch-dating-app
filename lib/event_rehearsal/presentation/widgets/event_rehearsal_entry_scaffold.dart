@@ -59,8 +59,10 @@ class EventRehearsalEntryScaffold extends StatelessWidget {
               ),
             ],
           ),
-          meta: ColoredBox(
-            color: CatchTokens.of(context).bg,
+          meta: CatchSurface(
+            duration: Duration.zero,
+            radius: CatchRadius.none,
+            backgroundColor: CatchTokens.of(context).bg,
             child: Padding(
               padding: CatchInsets.content,
               child: CatchText(

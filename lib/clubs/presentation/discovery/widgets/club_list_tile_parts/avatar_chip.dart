@@ -22,7 +22,10 @@ class AvatarChip extends StatelessWidget {
     return Semantics(
       button: onTap != null,
       label: context.l10n.clubsAvatarChipLabelOpenNameClub(name: club.name),
-      child: GestureDetector(
+      child: CatchSurface(
+        tone: CatchSurfaceTone.transparent,
+        radius: CatchRadius.none,
+        duration: Duration.zero,
         onTap: onTap,
         child: SizedBox(
           width: _avatarChipColumnWidth,
@@ -37,8 +40,11 @@ class AvatarChip extends StatelessWidget {
                     ? CatchBorder.resolve(t, CatchBorderRole.selected)
                     : CatchBorder.resolve(t, CatchBorderRole.boundary),
                 padding: CatchInsets.iconChipContentTight,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
+                child: CatchSurface(
+                  duration: Duration.zero,
+                  tone: CatchSurfaceTone.transparent,
+                  radius: CatchRadius.pill,
+                  clipBehavior: Clip.antiAlias,
                   child: ClubImage(club: club, preferProfileImage: true),
                 ),
               ),

@@ -1,3 +1,4 @@
+import {ClubCover} from "@catch/web-ui";
 import {organiserProfileCopy} from "../../../content/organiserProfile";
 import {ProfileContext, ProfileNavigation} from "../../../shared/ui/primitives/organiserProfile";
 import {accountCopy} from "../../../content/account";
@@ -7,7 +8,7 @@ import {
   ActivityMark,
   StatusBadge,
 } from "../OrganizerIdentity";
-import {activityForListing} from "../publicDiscovery";
+import {activityForListing, activityKindForListing, coverPhotoForListing} from "../publicDiscovery";
 import {organizerPolicyForListing} from "../organizerPolicy";
 import type {HostListing} from "../types";
 import {
@@ -31,7 +32,8 @@ export function ListingHeroSection({listing}: {listing: HostListing}) {
     <section aria-labelledby="listing-profile-title">
       <ListingPolaroid
         caption={location}
-        fallback={<ActivityMark listing={listing} size="lg" />}
+        fallback={<ClubCover photoUrl={coverPhotoForListing(listing)} name={listing.name} city={listing.city}
+          activityKind={activityKindForListing(listing)} />}
         media={null}
         provenance={policy.badge.label}
         title={listing.name}

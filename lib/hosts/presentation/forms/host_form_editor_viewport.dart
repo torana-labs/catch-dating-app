@@ -57,8 +57,10 @@ class HostFormEditorViewport extends StatelessWidget {
               ),
               CatchDivider.vertical(color: t.line),
               Expanded(
-                child: ColoredBox(
-                  color: t.surface,
+                child: CatchSurface(
+                  duration: Duration.zero,
+                  radius: CatchRadius.none,
+                  backgroundColor: t.surface,
                   child: SingleChildScrollView(
                     padding: CatchInsets.pageBody,
                     child: Center(

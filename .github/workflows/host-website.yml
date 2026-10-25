@@ -22,8 +22,6 @@ on:
       - "tool/ci/delivery_core.mjs"
       - "tool/ci/package_web_hosting.mjs"
       - "tool/ci/toolchain.env"
-      - "tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json"
-      - "tool/demo/demo_seed/scenarios/host-demo.json"
       - "tool/env/dart_defines/**"
       - "tool/firebase_with_env.sh"
       - "tool/flutter_with_env.sh"

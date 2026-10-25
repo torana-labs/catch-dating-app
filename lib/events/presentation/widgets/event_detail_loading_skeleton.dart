@@ -143,8 +143,10 @@ class EventDetailTicketStubSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return ColoredBox(
-      color: t.surface,
+    return CatchSurface(
+      duration: Duration.zero,
+      radius: CatchRadius.none,
+      backgroundColor: t.surface,
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           minHeight: CatchLayout.eventDetailTicketStubBandHeight,

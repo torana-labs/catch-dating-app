@@ -1,0 +1,59 @@
+/* Activity artwork (G6). Colours and opacities are the app's generated tokens. */
+.backdrop {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden;
+  background: var(--artwork-deep);
+}
+
+.art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.accentStop {
+  stop-color: var(--artwork-accent);
+}
+
+.deepStop {
+  stop-color: var(--artwork-deep);
+}
+
+/* Per-mark opacity, like the painter's translucent paint: crossings darken. */
+.marks {
+  fill: var(--catch-color-light-surface);
+  stroke: var(--catch-color-light-surface);
+  fill-opacity: var(--catch-opacity-activity-artwork-pattern);
+  stroke-opacity: var(--catch-opacity-activity-artwork-pattern);
+}
+
+.fill {
+  stroke: none;
+}
+
+.stroke {
+  fill: none;
+}
+
+/* CatchInsets.tileContent from the corner, at the glyph token's opacity. */
+.glyph {
+  position: absolute;
+  inset-block-end: var(--catch-space-micro18);
+  inset-inline-end: var(--catch-space-micro18);
+  display: block;
+  block-size: 60%;
+  aspect-ratio: 1;
+  color: var(--catch-color-light-surface);
+  opacity: var(--catch-opacity-activity-artwork-glyph);
+}
+
+.glyph > svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}

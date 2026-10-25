@@ -33,7 +33,7 @@ class CatchNotice extends StatelessWidget {
     final person = notice.person;
     final actionLabel = notice.actionLabel;
     final onAction = notice.onAction;
-    final titleStyle = CatchTextStyles.labelL(
+    final titleStyle = CatchTextStyles.titleS(
       context,
       color: palette.foreground,
     );

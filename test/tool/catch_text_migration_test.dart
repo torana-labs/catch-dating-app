@@ -167,6 +167,34 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
     style: CatchTextStyles.supporting(context)),
   const CatchText('library', variant: CatchTextVariant.supporting),
 ]);
+
+Widget themeProbe(BuildContext context, TextTheme suppliedTheme, TextStyle suppliedStyle) {
+  final textTheme = fw.Theme.of(context).textTheme;
+  final metadataStyle = CatchTextStyles.supporting(context, color: Colors.red);
+  var mutableTheme = fw.Theme.of(context).textTheme;
+  return Column(children: [
+    Text('headline slot', style: fw.Theme.of(context).textTheme.headlineSmall),
+    Text('title large slot', style: fw.Theme.of(context).textTheme.titleLarge),
+    Text('title medium slot', style: fw.Theme.of(context).textTheme.titleMedium),
+    Text('title small slot', style: fw.Theme.of(context).textTheme.titleSmall),
+    Text('body medium slot', style: fw.Theme.of(context).textTheme.bodyMedium),
+    Text('body small slot', style: fw.Theme.of(context).textTheme.bodySmall),
+    Text('label medium slot', style: fw.Theme.of(context).textTheme.labelMedium),
+    Text('theme alias color', style: textTheme.bodySmall?.copyWith(color: Colors.red)),
+    Text('style alias color', style: metadataStyle),
+    Text('public theme', style: suppliedTheme.titleMedium),
+    Text('public style', style: suppliedStyle),
+    Text('mutable alias', style: mutableTheme.bodySmall),
+    Text('unsupported theme slot', style: fw.Theme.of(context).textTheme.displayLarge),
+    Text('modified theme metrics', style: textTheme.bodySmall?.copyWith(fontSize: 99)),
+    Text('semantic theme', semanticsLabel: 'label', style: textTheme.bodySmall),
+    Text('foreign theme', style: OtherTheme.of(context).textTheme.bodySmall),
+  ]);
+}
+
+abstract final class OtherTheme {
+  static ThemeData of(BuildContext context) => fw.Theme.of(context);
+}
 ''');
       // Parts own their budgets; a larger defining-library budget cannot hide
       // a new call in one part (the analyzer registers rules per library).
@@ -212,10 +240,33 @@ Widget probe(BuildContext context, dynamic data, int? nullableLines) => Column(c
         'sectionTitle',
         'titleL',
         'supporting',
+        'titleL',
+        'titleL',
+        'sectionTitle',
+        'supportingStrong',
+        'bodyM',
+        'bodyS',
+        'statusLabel',
+        'bodyS',
+        'supporting',
       ]);
       expect(
         sites.map((site) => site.node.argumentList.arguments.first.toSource()),
-        ["'plain'", "'clamped'", "'aligned'", 'data'],
+        [
+          "'plain'",
+          "'clamped'",
+          "'aligned'",
+          'data',
+          "'headline slot'",
+          "'title large slot'",
+          "'title medium slot'",
+          "'title small slot'",
+          "'body medium slot'",
+          "'body small slot'",
+          "'label medium slot'",
+          "'theme alias color'",
+          "'style alias color'",
+        ],
       );
       final part =
           await collection
