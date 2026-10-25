@@ -7,7 +7,7 @@
     "seed-cross-paths --seed-prefix cross_paths_mumbai_qa --uid cross_paths_mumbai_qa_user_002 --event-id cross_paths_mumbai_qa_run_mumbai_01_01 --organizer-id courtside --candidate-count 2"
   ],
   "sourceOfTruth": {
-    "personaProjection": "tool/demo/demo_seed/personas/us_nyc_sales_profile_projection.planned.json",
+    "personaCatalog": "tool/demo/demo_seed/personas/us_nyc_sales_personas.draft.json",
     "scope": "internal production QA only; never real-member pilot supply"
   },
   "seedWorld": {

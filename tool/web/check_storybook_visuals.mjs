@@ -80,13 +80,22 @@ const unusedOverrides = [...thresholdOverrides.keys()].filter((id) => !knownStor
 if (unusedOverrides.length > 0) {
   fail(`storybook_visual_thresholds.json lists unknown ready-story id(s): ${unusedOverrides.join(", ")}`);
 }
+// Report mode lists changed, missing and stale baselines instead of failing;
+// a story that cannot render still fails.
+const failures = [];
+const changes = [];
+const recordChange = (capture, detail, message = `${capture}: ${detail}`) => {
+  if (args.report) changes.push({capture, detail});
+  else failures.push(message);
+};
 const expiredOverrides = expiredThresholdOverrides(thresholdOverrides, currentDateKey());
 if (expiredOverrides.length > 0) {
-  fail(
+  const message =
     "Expired visual threshold override(s): " +
     expiredOverrides.map(([id, entry]) => `${id} (expired ${entry.expires})`).join(", ") +
-    "; renew or remove them in tool/web/storybook_visual_thresholds.json."
-  );
+    "; renew or remove them in tool/web/storybook_visual_thresholds.json.";
+  if (!args.report) fail(message);
+  console.warn(message);
 }
 const viewports = [
   {name: "desktop", width: 1280, height: 800},
@@ -107,7 +116,6 @@ const browser = await chromium.launch({headless: true});
 const jobs = resolvedStories.flatMap((story) =>
   viewports.map((viewport) => ({story, viewport}))
 );
-const failures = [];
 const source = {
   head: execFileSync("git", ["rev-parse", "HEAD"], {cwd: fromRepo("."), encoding: "utf8"}).trim(),
   dirty: execFileSync("git", ["status", "--porcelain", "--untracked-files=no"], {
@@ -121,7 +129,7 @@ if (args.components.length === 0) {
   if (args.update) {
     staleFiles.forEach((fileName) => fs.rmSync(path.join(baselineRoot, fileName)));
   } else {
-    staleFiles.forEach((fileName) => failures.push(`${fileName}: stale baseline`));
+    staleFiles.forEach((fileName) => recordChange(fileName, "stale baseline"));
   }
 }
 let completed = 0;
@@ -184,7 +192,7 @@ try {
         fs.writeFileSync(baselinePath, actual);
       } else if (!fs.existsSync(baselinePath)) {
         fs.writeFileSync(actualPath, actual);
-        failures.push(`${story.id} (${viewport.name}): missing baseline`);
+        recordChange(`${story.id} (${viewport.name})`, "missing baseline");
       } else {
         const threshold = thresholdOverrides.get(story.id)?.threshold ?? args.threshold;
         const comparison = comparePng(fs.readFileSync(baselinePath), actual, threshold);
@@ -192,10 +200,13 @@ try {
           const diffPath = path.join(diffRoot, fileName);
           fs.writeFileSync(actualPath, actual);
           fs.writeFileSync(diffPath, comparison.diff);
-          failures.push(
-            `${story.id} (${viewport.name}): ${(comparison.ratio * 100).toFixed(3)}% pixels changed ` +
-            `(threshold ${(threshold * 100).toFixed(3)}%); ` +
-            `diff ${path.relative(fromRepo("."), diffPath)}`
+          const detail =
+            `${(comparison.ratio * 100).toFixed(3)}% pixels changed ` +
+            `(threshold ${(threshold * 100).toFixed(3)}%)`;
+          recordChange(
+            `${story.id} (${viewport.name})`,
+            detail,
+            `${story.id} (${viewport.name}): ${detail}; diff ${path.relative(fromRepo("."), diffPath)}`
           );
         }
       }
@@ -218,6 +229,14 @@ try {
   await server.close();
 }
 
+if (args.report) {
+  const report = visualReportMarkdown(args.surface, changes, jobs.length);
+  console.log(report);
+  if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${report}\n`);
+  // Only ever set true, so a later surface in the same step cannot clear it.
+  if (process.env.GITHUB_OUTPUT && changes.length > 0) fs.appendFileSync(process.env.GITHUB_OUTPUT, "has_changes=true\n");
+}
+
 if (failures.length > 0) {
   console.error(`Storybook visual check failed (${failures.length}/${jobs.length} capture(s)):`);
   failures.forEach((failure) => console.error(`- ${failure}`));
@@ -225,7 +244,7 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `Storybook visuals ${args.update ? "updated" : "passed"}: ` +
+  `Storybook visuals ${args.update ? "updated" : args.report ? "reported" : "passed"}: ` +
   `${resolvedStories.length} ready story(s), ${jobs.length} capture(s), ` +
   `surface ${args.surface}, platform ${capturePlatform}.`
 );
@@ -493,6 +512,23 @@ function comparePng(expectedBuffer, actualBuffer, ratioThreshold) {
   return {matches: ratio <= ratioThreshold, ratio, diff: PNG.sync.write(diff)};
 }
 
+function visualReportMarkdown(surface, changes, captureCount) {
+  const heading = `### Storybook visual changes: ${surface}`;
+  if (changes.length === 0) return `${heading}\n\nNo visual changes across ${captureCount} capture(s).\n`;
+  const escape = (value) => String(value).replaceAll("|", "\\|");
+  return [
+    heading,
+    "",
+    `${changes.length} of ${captureCount} capture(s) differ from their baselines. ` +
+      "Report only: nothing here blocks the merge. Diff images are in this run's visual diagnostics artifact.",
+    "",
+    "| Capture | Change |",
+    "|---|---|",
+    ...changes.map(({capture, detail}) => `| \`${escape(capture)}\` | ${escape(detail)} |`),
+    "",
+  ].join("\n");
+}
+
 async function runPool(items, concurrency, worker) {
   let cursor = 0;
   await Promise.all(Array.from({length: Math.min(concurrency, items.length)}, async () => {
@@ -567,6 +603,7 @@ function parseArgs(argv) {
     selfTest: false,
     storybook: null,
     surface: "website",
+    report: false,
     threshold: 0.001,
     update: false,
   };
@@ -577,6 +614,7 @@ function parseArgs(argv) {
     else if (arg === "--self-test-browser") parsed.browserSelfTest = true;
     else if (arg === "--update") parsed.update = true;
     else if (arg === "--check") {}
+    else if (arg === "--report") parsed.report = true;
     else if (arg === "--component") parsed.components.push(requiredValue(argv, ++index, arg));
     else if (arg === "--surface") parsed.surface = requiredValue(argv, ++index, arg);
     else if (arg === "--storybook") parsed.storybook = requiredValue(argv, ++index, arg);
@@ -584,6 +622,7 @@ function parseArgs(argv) {
     else if (arg === "--threshold") parsed.threshold = Number(requiredValue(argv, ++index, arg));
     else fail(`Unknown argument: ${arg}`);
   }
+  if (parsed.report && parsed.update) fail("--report and --update cannot be combined");
   if (!Number.isFinite(parsed.threshold) || parsed.threshold < 0 || parsed.threshold > 1) {
     fail("--threshold must be between 0 and 1");
   }
@@ -794,6 +833,17 @@ async function runSelfTest() {
   ];
   assert.deepEqual(selectStories(stories, ["two"]), [stories[1]]);
   assert.throws(() => selectStories(stories, ["missing"]), /Ready visual component not found: missing/u);
+  assert.equal(parseArgs(["--surface", "admin"]).report, false);
+  assert.equal(parseArgs(["--surface", "admin", "--report"]).report, true);
+  assert.match(visualReportMarkdown("website", [], 4), /No visual changes across 4 capture\(s\)/u);
+  const report = visualReportMarkdown("website", [
+    {capture: "story-a (mobile)", detail: "0.349% pixels changed (threshold 0.100%)"},
+    {capture: "a|b.desktop.png", detail: "stale baseline"},
+  ], 182);
+  assert.match(report, /^### Storybook visual changes: website$/mu);
+  assert.match(report, /2 of 182 capture\(s\) differ from their baselines\. Report only/u);
+  assert.match(report, /^\| `story-a \(mobile\)` \| 0\.349% pixels changed \(threshold 0\.100%\) \|$/mu);
+  assert.match(report, /^\| `a\\\|b\.desktop\.png` \| stale baseline \|$/mu);
   assert.equal(parseArgs(["--surface", "admin"]).concurrency, 2);
   assert.equal(parseArgs(["--surface", "website"]).concurrency, 1);
   assert.equal(parseArgs(["--surface", "webui"]).concurrency, 1);
@@ -882,6 +932,9 @@ Options:
   --component <registry-id>      Limit to one ready registry component; repeatable.
   --update                       Write committed baselines for the current platform.
   --check                        Compare against current-platform baselines (default).
+  --report                       Compare, but list changed, missing and stale baselines in
+                                 the output (and GITHUB_STEP_SUMMARY) instead of failing.
+                                 Stories that cannot render still fail.
   --threshold <ratio>            Maximum changed-pixel ratio (default 0.001).
   --concurrency <1|2>            Capture workers (default: admin 2, website/webui 1).
   --self-test                    Run lifecycle, pixel-comparison and scheduler proofs.
@@ -890,7 +943,8 @@ Options:
 Per-story overrides live in tool/web/storybook_visual_thresholds.json:
 {"version": 1, "stories": {"<story-id>": {"surface": "admin|website|webui", "threshold": <ratio>, "reason": "...", "expires": "YYYY-MM-DD"}}}
 Overrides apply only to the named surface, cover both viewports, and must reference a
-registry-ready story, and fail the check once their expires date passes.
+registry-ready story, and fail the check once their expires date passes (report mode
+only warns).
 `);
 }
 
