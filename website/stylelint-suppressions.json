@@ -47,7 +47,7 @@
   },
   "src/styles/event-runtime.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 115
+      "count": 91
     },
     "declaration-property-value-allowed-list": {
       "count": 15
