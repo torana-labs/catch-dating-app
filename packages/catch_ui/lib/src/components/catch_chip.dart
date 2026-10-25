@@ -313,15 +313,16 @@ class _CatchChipState extends State<CatchChip> {
         break;
       case _CatchChipVariant.activity:
         final solid = widget._emphasis == CatchChipEmphasis.solid;
-        background = solid ? data!.accent : data!.soft;
+        final dark = Theme.of(context).brightness == Brightness.dark;
+        background = solid ? data!.deep : data!.soft;
         foreground = solid
-            ? _inkForFill(t, data.accent)
-            : Theme.of(context).brightness == Brightness.dark
-            ? data.accent
+            ? CatchTokens.editorialWhite
+            : dark
+            ? t.ink
             : data.deep;
         border = Colors.transparent;
         shadow = CatchElevation.none;
-        leading = Icon(data.icon);
+        leading = Icon(data.icon, color: !solid && dark ? data.accent : null);
         textStyle = CatchTextStyles.bodyLead(context, color: foreground);
         padding = const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s4,
