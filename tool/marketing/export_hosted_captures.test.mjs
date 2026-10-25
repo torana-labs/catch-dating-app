@@ -825,6 +825,50 @@ test("a change that leaves capture inputs alone is planned entirely from an earl
   assert.deepEqual(plan.seedSources.map(s => s.event), ["merge_group"]);
 });
 
+test("planner rerenders committed captures when their original revision is missing or unrelated", async t => {
+  const f = fixture(t);
+  const rendered = exportHostedCaptures(f.options);
+  preserveAndAdvance(f, "Preserve current-input captures");
+  const calls = fs.readFileSync(f.calls, "utf8");
+  const request = async endpoint => {
+    if (endpoint === "repos/owner/repo") return {id: 1};
+    if (endpoint.endsWith("/workflows/ci.yml")) return {id: 7};
+    if (endpoint.includes("/workflows/7/runs?")) return {workflow_runs: []};
+    throw new Error(`Unexpected endpoint ${endpoint}`);
+  };
+  const plan = (sourceDir, sourceSha) => planHostedCaptures({sourceDir, sourceSha,
+    repository: "owner/repo", eventName: "pull_request", request});
+  assert.equal((await plan(f.root, f.options.sourceSha)).render, false,
+    "a valid committed ancestor still reuses without an artifact");
+  // A fresh repository with the same files models a squash snapshot whose
+  // PNGs still record the original, unavailable PR render commit.
+  const fresh = path.join(path.dirname(f.root), "squashed-source");
+  fs.cpSync(f.root, fresh, {recursive: true,
+    filter: source => !path.relative(f.root, source).split(path.sep).includes(".git")});
+  const git = (...args) => {
+    const result = spawnSync("git", args, {cwd: fresh, encoding: "utf8"});
+    assert.equal(result.status, 0, result.stderr);
+    return result.stdout.trim();
+  };
+  git("init", "-q");
+  git("add", ".");
+  git("-c", "user.name=Capture Test", "-c", "user.email=capture@example.invalid", "commit", "-qm", "Squashed source snapshot");
+  const sha = git("rev-parse", "HEAD");
+  const inputs = spawnSync(process.execPath,
+    ["tool/marketing/export_app_screenshots.mjs", "--plan", "--inputs-only"], {cwd: fresh, encoding: "utf8"});
+  assert.equal(inputs.status, 0, inputs.stderr);
+  assert.ok(JSON.parse(inputs.stdout).every(capture => !capture.render), "all render inputs remain current");
+  assert.notEqual(spawnSync("git", ["cat-file", "-e", `${rendered.sourceSha}^{commit}`], {cwd: fresh}).status, 0);
+  for (const state of ["missing", "unrelated"]) {
+    if (state === "unrelated") git("fetch", "--no-tags", f.root, rendered.sourceSha);
+    const result = await plan(fresh, sha);
+    assert.equal(result.render, true, state);
+    assert.deepEqual(result.renderIds.sort(), f.manifest.captures.map(capture => capture.id).sort(), state);
+    assert.deepEqual(result.seedIds, []);
+  }
+  assert.equal(fs.readFileSync(f.calls, "utf8"), calls, "planning never renders or reframes");
+});
+
 for (const [label, runOverrides, artifactOverrides] of [
   ["a pull request run", {event: "pull_request", head_branch: "feature"}, {}],
   ["another repository's run", {head_repository: {id: 2}}, {}],
