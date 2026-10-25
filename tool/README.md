@@ -978,6 +978,8 @@ node tool/web/check_storybook_visuals.mjs --surface website --check
 node tool/web/check_storybook_visuals.mjs --surface webui --check
 npm --workspace catch-admin run build:storybook
 node tool/web/check_storybook_visuals.mjs --surface admin --check
+# What CI runs: list changed, missing and stale baselines without failing.
+node tool/web/check_storybook_visuals.mjs --surface admin --report
 # Limit a baseline update/check to task-owned registry entries in a dirty refactor.
 node tool/web/check_storybook_visuals.mjs --surface admin --component workspace_intake_operations --update
 ```
