@@ -19,9 +19,13 @@
       // install; only a whole-repository run can see those workspace configs.
       "ignoreDependencies": ["@vitest/coverage-v8"]
     },
-    "admin": {},
+    "admin": {
+      // ESLint loads its app config implicitly from the CLI's working directory.
+      "entry": ["eslint.config.mjs"]
+    },
     "website": {
       "entry": [
+        "eslint.config.mjs",
         // Loaded by their HTML document or an embed script tag, not an ESM import.
         "measurement-runtime/catch-acquisition-runtime.js",
         "public/form-embed-resize.js",
