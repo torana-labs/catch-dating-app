@@ -13,6 +13,7 @@
   "lib/eventSuccess/operations/participantContext.test.js",
   "lib/eventSuccess/operations/messageRecipient.test.js",
   "lib/organizers/organizerWhatsappWebhook.test.js",
+  "lib/organizers/organizerClaimVerification.emulator.test.js",
   "lib/eventSuccess/operations/whatsappReplies.test.js",
   "lib/eventSuccess/operations/whatsappPreference.test.js",
   "lib/eventSuccess/operations/whatsappDispatch.test.js",
