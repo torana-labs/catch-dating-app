@@ -466,7 +466,7 @@ class HostResponseContactSection extends StatelessWidget {
           fullWidth: singleColumn,
           variant: singleColumn
               ? CatchButtonVariant.secondary
-              : CatchButtonVariant.ghost,
+              : CatchButtonVariant.quiet,
           onPressed: () => onContact(action.uri),
         ),
     ];

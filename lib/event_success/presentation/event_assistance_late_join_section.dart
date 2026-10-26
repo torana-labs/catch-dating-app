@@ -245,7 +245,7 @@ class _EventAssistanceLateJoinSectionState
               label: _customizing
                   ? l10n.eventAssistanceLateJoinHideRules
                   : l10n.eventAssistanceLateJoinCustomize,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: () => setState(() => _customizing = !_customizing),
             ),
             if (_customizing)
@@ -262,7 +262,7 @@ class _EventAssistanceLateJoinSectionState
             if (_customizing && widget.suggestedRules != null)
               CatchButton(
                 label: l10n.eventAssistanceLateJoinRestore,
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 onPressed: () =>
                     _change(_draft.withRules(widget.suggestedRules!)),
               ),

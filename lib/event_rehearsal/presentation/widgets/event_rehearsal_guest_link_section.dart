@@ -80,7 +80,7 @@ class EventRehearsalGuestLinkSection extends StatelessWidget {
                   label: context.l10n.hostEventRehearsalRotateLink,
                   leading: Icon(CatchIcons.refresh),
                   size: CatchButtonSize.md,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   onPressed: isLoading ? null : onRotate,
                 ),
               ],
@@ -185,7 +185,7 @@ class EventRehearsalRunSection extends StatelessWidget {
                 CatchButton(
                   label: context.l10n.hostEventRehearsalPrevious,
                   size: CatchButtonSize.md,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   status: isLoading
                       ? CatchButtonStatus.loading
                       : CatchButtonStatus.idle,

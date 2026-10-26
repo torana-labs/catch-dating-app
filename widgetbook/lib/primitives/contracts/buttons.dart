@@ -100,8 +100,8 @@ Widget catchButtonContractStates(BuildContext context) {
               onPressed: widgetbookNoop,
             ),
             CatchButton(
-              label: 'Ghost',
-              variant: CatchButtonVariant.ghost,
+              label: 'Quiet',
+              variant: CatchButtonVariant.quiet,
               onPressed: widgetbookNoop,
             ),
             CatchButton(

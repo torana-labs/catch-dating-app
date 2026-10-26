@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-10-25",
+  "updated": "2026-10-26",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "9e37762b6a0144ff88604097294d8e6048f73dbcc1995647194815158d269e5e",
+  "sourceDigest": "adf54c1fd15f43cc9289640959c66e5c789bf88e11bf77b4ffaca01c602b6778",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "9e37762b6a0144ff88604097294d8e6048f73dbcc1995647194815158d269e5e",
-    "contractDigest": "9e37762b6a0144ff88604097294d8e6048f73dbcc1995647194815158d269e5e"
+    "digest": "adf54c1fd15f43cc9289640959c66e5c789bf88e11bf77b4ffaca01c602b6778",
+    "contractDigest": "adf54c1fd15f43cc9289640959c66e5c789bf88e11bf77b4ffaca01c602b6778"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "cfc2ecdc0af87c3e64adaeb5ffbbc2b3e4e63587e9299f35ab9239d08fc99115",
+    "handoffRequestDigest": "837ea8ec2d0519e0eb39e98459ce85b1d0ec0a94d8e5bd6db56f2816e5ba2814",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -571,7 +571,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 15,
-      "figmaExpectedPropertyDigest": "d64ba397b3505ba759c0466ae7a3ca15d6855bf9442b1dd497858ad848591e15",
+      "figmaExpectedPropertyDigest": "70fbbeff2a1d0263b8f9be68386b55f22d4e6e1f98b891bbb2ad8ef5c550805a",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -579,7 +579,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Button",
       "claudeAllowed": true,
-      "contractDigest": "023f1b3ae078773f45c51ec961685f199f1c78746c9a71aa07312d30d88c354c"
+      "contractDigest": "91c0d7a724a27f4f57a0d106e39e8cc8148bb8010e69a72236d99ce540b12e03"
     },
     {
       "contractId": "catch.chip",

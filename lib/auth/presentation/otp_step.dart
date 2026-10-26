@@ -379,7 +379,7 @@ class _OtpStepState extends ConsumerState<OtpStep> {
                   ? l10n.authSendingCodeAction
                   : l10n.authResendCodeAction,
               onPressed: viewState.canResend ? _resendOtp : null,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               size: CatchButtonSize.md,
               foregroundColor: t.ink,
             ),
@@ -391,7 +391,7 @@ class _OtpStepState extends ConsumerState<OtpStep> {
                         .read(authControllerProvider.notifier)
                         .goToStep(AuthStep.phone)
                   : null,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               size: CatchButtonSize.md,
               foregroundColor: t.ink2,
             ),

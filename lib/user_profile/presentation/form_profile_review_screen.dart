@@ -324,7 +324,7 @@ class _FormProfileReviewPageBodyState extends State<FormProfileReviewPageBody> {
           gapH12,
           CatchButton(
             label: l10n.formProfileReload,
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             onPressed: widget.busy ? null : widget.onReload,
           ),
         ],

@@ -114,7 +114,7 @@ class HostCustomerFilterSummarySection extends StatelessWidget {
                   if (onClear case final clear?)
                     CatchButton(
                       label: context.l10n.hostCustomersClearFilter,
-                      variant: CatchButtonVariant.ghost,
+                      variant: CatchButtonVariant.quiet,
                       size: CatchButtonSize.md,
                       onPressed: clear,
                     ),

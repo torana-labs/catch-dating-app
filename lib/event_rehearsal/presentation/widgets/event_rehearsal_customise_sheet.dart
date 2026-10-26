@@ -267,7 +267,7 @@ class _EventRehearsalCustomiseSheetState
           gapH16,
           CatchButton(
             label: l10n.hostRehearsalReset,
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             fullWidth: true,
             onPressed: () => setState(() {
               _draft = _draft.reset();

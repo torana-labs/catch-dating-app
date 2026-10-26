@@ -111,7 +111,7 @@ class HostCustomerApplicationsSection extends ConsumerWidget {
               status: (state.loadingMore)
                   ? CatchButtonStatus.loading
                   : CatchButtonStatus.idle,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: state.canLoadMore
                   ? () => ref.read(provider.notifier).loadMore()
                   : null,

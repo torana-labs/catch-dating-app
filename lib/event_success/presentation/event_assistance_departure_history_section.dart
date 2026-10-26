@@ -107,7 +107,7 @@ class EventAssistanceDepartureHistorySection extends StatelessWidget {
               ),
             CatchButton(
               label: l10n.eventAssistanceHistoryReload,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: onReload,
             ),
           ],

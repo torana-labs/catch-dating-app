@@ -64,7 +64,7 @@ class HostTodayFocusPageBody extends StatelessWidget {
         CatchButton(
           key: const ValueKey('host-today-focus-skip'),
           label: l10n.hostTodayFocusSkip,
-          variant: CatchButtonVariant.ghost,
+          variant: CatchButtonVariant.quiet,
           onPressed: pending ? null : onSkip,
         ),
       ],

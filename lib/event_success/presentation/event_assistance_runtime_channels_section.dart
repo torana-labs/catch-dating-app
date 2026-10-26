@@ -133,7 +133,7 @@ class EventAssistanceRuntimeChannelsSection extends StatelessWidget {
               AssistanceMessageRoute.organizerEventWhatsapp =>
                 l.eventAssistanceRuntimeMoreWhatsapp,
             },
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             onPressed: enabled && loadingRoute == null
                 ? () => onMore(route)
                 : null,

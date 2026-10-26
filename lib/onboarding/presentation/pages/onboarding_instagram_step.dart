@@ -96,7 +96,7 @@ class OnboardingInstagramStep extends StatelessWidget {
             child: CatchButton(
               label: context.l10n.onboardingInstagramPageLabelSkipForNow,
               onPressed: callbacks.onSkip,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               size: CatchButtonSize.md,
               foregroundColor: t.ink2,
             ),

@@ -65,7 +65,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
                 CatchButton(
                   label: context.l10n.hostsEventStaffCopyLink,
                   leading: Icon(CatchIcons.linkRounded),
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   onPressed: () => unawaited(_copyLink()),
                 ),
               ],

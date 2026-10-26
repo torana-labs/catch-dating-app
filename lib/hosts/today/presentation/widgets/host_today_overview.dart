@@ -140,7 +140,7 @@ class _HostTodayHorizonAndActions extends StatelessWidget {
               CatchButton(
                 key: const ValueKey<String>('host-today-view-events'),
                 label: context.l10n.hostTodayViewAllEvents,
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 size: CatchButtonSize.md,
                 onPressed: onViewEvents,
               ),
@@ -154,7 +154,7 @@ class _HostTodayHorizonAndActions extends StatelessWidget {
                     CatchIcons.scienceOutlined,
                     size: CatchIconSize.sm,
                   ),
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   size: CatchButtonSize.md,
                   onPressed: onStartRehearsal,
                 ),
