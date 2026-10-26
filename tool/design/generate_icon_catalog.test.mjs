@@ -10,6 +10,7 @@ const family = (overrides = {}) => ({
   reactVersion: "1.55.0",
   lockVersion: "1.55.0",
   reactExports: new Set(["ArrowLeft", "SportShoe", "Share2", "Share"]),
+  iconNode: (glyph) => (glyph === "sport-shoe" ? [["path", {d: "M2 20h20", key: "k1"}]] : null),
   ...overrides,
 });
 
@@ -36,13 +37,13 @@ const build = (overrides = {}) => buildIconOutputs({
   ...overrides,
 });
 
-test("the real catalog resolves in the font and in lucide-react, and CatchIcons is current", () => {
+test("the real catalog resolves in the font and in lucide-react, and both icon layers are current", () => {
   const result = spawnSync(process.execPath, ["tool/design/generate_icon_catalog.mjs", "--check"], {
     cwd: process.cwd(),
     encoding: "utf8",
   });
   assert.equal(result.status, 0, result.stderr);
-  assert.match(result.stdout, /roles resolve in both frameworks and CatchIcons is current/u);
+  assert.match(result.stdout, /roles resolve in both frameworks and both icon layers are current/u);
 });
 
 test("a valid catalog renders role getters over const glyphs in the vendored font", () => {
@@ -121,4 +122,20 @@ test("names convert the way Lucide and the catalog spell them", () => {
   assert.equal(pascalCase("trash-2"), "Trash2");
   assert.equal(pascalCase("circle-check"), "CircleCheck");
   assert.equal(activityRoleName("strengthTraining"), "activityStrengthTraining");
+});
+
+test("React gets every role's glyph, the activity map and node data for artwork roles", () => {
+  const {errors, outputs} = build();
+  assert.deepEqual(errors, []);
+  assert.match(outputs.glyphs, /import \{\n {2}ArrowLeft,\n {2}SportShoe,\n\} from "lucide-react";/u);
+  assert.match(outputs.glyphs, /back: ArrowLeft,\n {2}activityRunning: SportShoe,/u);
+  assert.match(outputs.glyphs, /running: "activityRunning",/u);
+  assert.match(outputs.nodes, /activityRunning: \[\n {4}\["path", \{"d":"M2 20h20"\}\],\n {2}\],/u);
+  assert.doesNotMatch(outputs.nodes, /"key"/u);
+  assert.doesNotMatch(outputs.nodes, /back:/u);
+});
+
+test("an artwork role without node data fails", () => {
+  const {errors} = build({family: family({iconNode: () => null})});
+  assert.ok(errors.includes("Role 'activityRunning': no icon node data for glyph 'sport-shoe'."), errors.join("\n"));
 });

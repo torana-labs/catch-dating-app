@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "0c217a07409712016eee5c2877ed1e76474e09d1475951f6009a1538499a2d73",
+  "sourceDigest": "58d635ab2f497b66a12abfae92d5929fa11109c7a31a46c964d3b4328ed7a93b",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "0c217a07409712016eee5c2877ed1e76474e09d1475951f6009a1538499a2d73",
-    "contractDigest": "0c217a07409712016eee5c2877ed1e76474e09d1475951f6009a1538499a2d73"
+    "digest": "58d635ab2f497b66a12abfae92d5929fa11109c7a31a46c964d3b4328ed7a93b",
+    "contractDigest": "58d635ab2f497b66a12abfae92d5929fa11109c7a31a46c964d3b4328ed7a93b"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "e7174cbc3593af4b5c32d7d7a0551efa9eb360865333db8780960f7b7c5d5c7c",
+    "handoffRequestDigest": "6a8c0b928fa3ab799dde0d8138a2ab9777c1500d46fc97d4fe836d90d28e4b6c",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -82,15 +82,15 @@
     }
   },
   "metrics": {
-    "contractCount": 70,
-    "publicClassCount": 240,
-    "conceptCount": 57,
+    "contractCount": 71,
+    "publicClassCount": 241,
+    "conceptCount": 58,
     "memberCount": 159,
-    "membersPerConcept": 2.79,
+    "membersPerConcept": 2.74,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 9,
-      "concept": 57,
+      "concept": 58,
       "member": 159,
       "screen": 15
     },
@@ -443,12 +443,12 @@
       }
     ],
     "naming": {
-      "canonicalConceptNames": 55,
+      "canonicalConceptNames": 56,
       "documentedConceptNameExceptions": 2,
       "undocumentedConceptNameExceptions": 0
     },
     "figmaMappingStates": {
-      "missing": 68,
+      "missing": 69,
       "stale": 2
     },
     "figmaPropertyDriftCount": 2,
@@ -456,12 +456,12 @@
     "figmaReviewSnapshotMappings": 2,
     "figmaPublishedMappings": 0,
     "codeConnectMappingStates": {
-      "planned": 70
+      "planned": 71
     },
-    "claudeAllowed": 70,
+    "claudeAllowed": 71,
     "reactImplementationStates": {
       "headless-control": 7,
-      "styled": 17
+      "styled": 18
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -1190,6 +1190,41 @@
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
       "contractDigest": "dbaf84d72bc4c0fe856777eec302aa4712128364b87b4f77cb200f6c13c80ccd"
+    },
+    {
+      "contractId": "catch.icon",
+      "conceptRole": "concept",
+      "conceptId": "catch.icon",
+      "dartSymbol": "CatchIcon",
+      "dartFile": "packages/catch_ui/lib/src/primitives/catch_icon.dart",
+      "reactSymbol": "CatchIcon",
+      "reactFile": "packages/web-ui/src/components/CatchIcon.tsx",
+      "reactApi": "styled",
+      "figmaName": "Catch/Icon",
+      "figmaPropertyProjectionMode": "inferred",
+      "figmaReviewStatePolicy": "variant",
+      "figmaPropertySources": {},
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaPublishStatus": null,
+      "figmaSnapshotCaptureMethod": "figma-mcp",
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 4,
+      "figmaExpectedPropertyDigest": "1ce2bf6349ee9fc8ea01eb841fac514cea82ad511f47071c2e416b8143bde501",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "Icon",
+      "claudeAllowed": true,
+      "contractDigest": "ea0de9179840e6de2c188815bbbfd6f3934d15f386eeef4ff362abbc13152a2c"
     },
     {
       "contractId": "catch.icon_button",

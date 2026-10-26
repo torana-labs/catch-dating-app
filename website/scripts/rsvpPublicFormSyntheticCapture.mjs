@@ -293,7 +293,12 @@ createRoot(document.getElementById("root")).render(<QueryClientProvider client={
         });
       }}],
       resolve: {alias: [...(domainMode ? [] : [{find: controllerSource, replacement: mock}]), {find: "@content", replacement: path.join(website, "src/content")}]},
-      optimizeDeps: {entries: [entry], include: ["react", "react-dom/client", "react-router", ...(domainMode ? ["@tanstack/react-query"] : [])]},
+      // Pre-bundle every dependency the form reaches through @catch/web-ui, so Vite
+      // never re-optimizes and reloads the page mid-capture.
+      optimizeDeps: {entries: [entry], include: [
+        "react", "react-dom/client", "react-router", "lucide-react", "lottie-web/build/player/lottie_light",
+        "qrcode-generator", ...(domainMode ? ["@tanstack/react-query"] : []),
+      ]},
       server: {host: "127.0.0.1", port: 0, fs: {allow: [snapshot]}},
     });
     await server.listen();
