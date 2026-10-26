@@ -4,7 +4,7 @@
  * outside the button on keyboard focus, and the 0.97 press scale.
  */
 .button {
-  --catch-store-height: var(--catch-space-s12);
+  --catch-store-height: 48px;
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -20,7 +20,7 @@
 }
 
 .button[data-size="m"] {
-  --catch-store-height: var(--catch-space-s10);
+  --catch-store-height: 40px;
   padding-inline: var(--catch-space-s3) var(--catch-space-s4);
 }
 

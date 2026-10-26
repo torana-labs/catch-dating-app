@@ -48,7 +48,7 @@ describe("CatchStepper parity", () => {
 describe("CatchCodeInput parity", () => {
   it("draws Flutter's cell height, gap, caret and digit size", () => {
     expect(dartSpacing(layoutTokens, "otpDigitHeight")).toBe("s16");
-    expect(codeCss).toContain("--catch-code-height: var(--catch-space-s16)");
+    expect(codeCss).toContain(`--catch-code-height: ${spacing("s16")}px`);
     expect(dartSpacing(layoutTokens, "otpDigitGap")).toBe("micro10");
     expect(codeCss).toContain("--catch-code-gap: var(--catch-space-micro10)");
     expect(dartSpacing(layoutTokens, "otpCaretHeight")).toBe("s6");

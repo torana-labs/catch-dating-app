@@ -8,7 +8,7 @@
 .indicator {
   --catch-loading-color: currentColor;
   --catch-loading-stroke: var(--catch-stroke-progress-indicator);
-  --catch-loading-size: var(--catch-space-s4);
+  --catch-loading-size: 16px;
 
   display: inline-flex;
   flex: none;

@@ -5,7 +5,7 @@
  * and 26px mono digits. The real input lies over the cells, transparent.
  */
 .code {
-  --catch-code-height: var(--catch-space-s16);
+  --catch-code-height: 64px;
   --catch-code-gap: var(--catch-space-micro10);
   position: relative;
   width: 100%;

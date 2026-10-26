@@ -74,6 +74,9 @@ test("spacing tokens on sizes and radii fail", async () => {
     ".p { inline-size: var(--catch-space-s8); block-size: var(--catch-space-s1); }",
     ".p { border-radius: var(--catch-space-s3); }",
     ".p { border-top-left-radius: var(--catch-space-micro3); }",
+    ".p { --catch-button-height: var(--catch-space-s12); }",
+    ".p { --catch-loading-size: var(--catch-space-s4); --catch-tile-extent: var(--catch-space-s16); }",
+    ".p { --catch-card-radius: var(--catch-space-s3); --catch-thumb-inset-size: var(--catch-space-s2); }",
   ];
   for (const code of probes) {
     assert.ok((await sizeRules(code)).includes(disallowed), `${code} should fail ${disallowed}`);
@@ -85,6 +88,8 @@ test("gaps, padding, roles, literal geometry and radius tokens pass the size rul
     ".p { gap: var(--catch-space-s2); padding: var(--catch-space-s3) var(--catch-space-s4); margin-top: var(--catch-space-micro6); }",
     ".p { width: var(--catch-interaction-ios-minimum-extent); height: 32px; min-height: var(--catch-avatar-size); }",
     ".p { border-radius: var(--catch-radius-xs); border-top-left-radius: 26px; }",
+    ".p { --catch-code-gap: var(--catch-space-micro10); --catch-band-gutter: var(--catch-space-s10); --catch-button-pad: var(--catch-space-s5); }",
+    ".p { --catch-button-height: 48px; --catch-avatar-size: 56px; }",
   ];
   for (const code of clean) {
     assert.deepEqual(await sizeRules(code), [], code);
