@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "0c217a07409712016eee5c2877ed1e76474e09d1475951f6009a1538499a2d73",
+  "sourceDigest": "599a34e2c538ad9ba80518cee4041fc0dfbbc040940025eda4843fd43b74403c",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "0c217a07409712016eee5c2877ed1e76474e09d1475951f6009a1538499a2d73",
-    "contractDigest": "0c217a07409712016eee5c2877ed1e76474e09d1475951f6009a1538499a2d73"
+    "digest": "599a34e2c538ad9ba80518cee4041fc0dfbbc040940025eda4843fd43b74403c",
+    "contractDigest": "599a34e2c538ad9ba80518cee4041fc0dfbbc040940025eda4843fd43b74403c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "e7174cbc3593af4b5c32d7d7a0551efa9eb360865333db8780960f7b7c5d5c7c",
+    "handoffRequestDigest": "0f8057e895da0edfba1db55c97dad0ccb5454507d73257490ee536766cd71a40",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,7 +461,7 @@
     "claudeAllowed": 70,
     "reactImplementationStates": {
       "headless-control": 7,
-      "styled": 17
+      "styled": 18
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -1407,9 +1407,9 @@
       "conceptId": "catch.chip.field",
       "dartSymbol": "CatchChoiceTile",
       "dartFile": "packages/catch_ui/lib/src/components/catch_choice_tile.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchChoiceTile",
+      "reactFile": "packages/web-ui/src/components/CatchChoiceTile.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/ChoiceTile",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1434,7 +1434,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ChoiceTile",
       "claudeAllowed": true,
-      "contractDigest": "ae42b80eeb38ded3d4e044a1b896ca28773a11b38b6661e031f138ee8a0df031"
+      "contractDigest": "020dff5d71ac363772f8e88837b957fd76a98464bbdaaa2f9975592d9edf8f7d"
     },
     {
       "contractId": "catch.surface",
