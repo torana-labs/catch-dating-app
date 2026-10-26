@@ -71,7 +71,8 @@ export const rawValueRules = {
  * layout or interaction role (or, in @catch/web-ui component modules, the
  * literal geometry) and radii take a --catch-radius-* token. A component
  * variable named for a size or radius counts as one; gap and padding
- * variables keep the spacing scale.
+ * variables keep the spacing scale. Both apps take it through tokenRules;
+ * stylelint.test.mjs checks the @catch/web-ui component modules.
  */
 const spacingToken = "/var\\(--catch-space-/";
 
@@ -83,4 +84,4 @@ export const sizeSpacingRules = {
   },
 };
 
-export const tokenRules = {...rawColorRules, ...rawValueRules};
+export const tokenRules = {...rawColorRules, ...rawValueRules, ...sizeSpacingRules};

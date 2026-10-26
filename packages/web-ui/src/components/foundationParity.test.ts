@@ -23,16 +23,17 @@ const textContract = JSON.parse(read("../../../../design/components/catch.compon
 const gapCss = read("./CatchGap.module.css");
 const sectionListCss = read("./CatchSectionList.module.css");
 const insetCss = read("./CatchInset.module.css");
-const textCssSource = read("./CatchText.module.css");
-// The flat role table; responsive steps live in the one container block below it.
-const containerBlocks = /@container[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g;
-const textCss = textCssSource.replace(containerBlocks, "");
-const textPhoneCss = textCssSource.match(containerBlocks)?.join("\n") ?? "";
+const textCss = read("./CatchText.module.css");
 
 const kebab = (name: string) => name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
+// Top-level CSS only: comments and at-rule blocks such as @container removed.
+function topLevel(css: string) {
+  return css.replace(/\/\*[\s\S]*?\*\//g, "").replace(/@[^{}]+\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g, "");
+}
+
 function cssRule(css: string, selector: string) {
-  const rules = [...css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+  const rules = [...topLevel(css).matchAll(/([^{}]+)\{([^{}]*)\}/g)]
     .filter((rule) => rule[1].split(",").map((value) => value.trim()).includes(selector));
   expect(rules.length, `missing or duplicate flat CSS rule ${selector}`).toBe(1);
   return `{${rules[0][2]}}`;
@@ -44,7 +45,7 @@ function declaration(rule: string, property: string) {
 }
 
 function selectorValues(css: string, attribute: string) {
-  return [...css.matchAll(new RegExp(`\\[data-${attribute}="([A-Za-z]+)"\\]`, "g"))]
+  return [...topLevel(css).matchAll(new RegExp(`\\[data-${attribute}="([A-Za-z]+)"\\]`, "g"))]
     .map((match) => match[1]);
 }
 
@@ -185,7 +186,8 @@ describe("CatchTextStyles parity", () => {
   }
 
   // The six display steps (D19) set Archivo from one step table rather than a
-  // platform profile; the web pins each interim literal to that table.
+  // platform profile; the web reads typography.brand.display* tokens, and these
+  // tests pin each generated token to that table.
   const displaySteps: Record<string, {size: number; height: number; tracking: number}> =
     Object.fromEntries(
       [...textStylesDart.matchAll(/^  (x*[sml])\(([\d.]+), ([\d.]+), (-?[\d.]+)\)[,;]$/gm)]
@@ -208,15 +210,23 @@ describe("CatchTextStyles parity", () => {
     expect(declaration(rule, "font-variation-settings")).toBe(`"wdth" ${width}`);
   });
 
-  it("renders the two largest steps two steps down on a page narrower than 640px (D19)", () => {
-    expect(textPhoneCss).toMatch(/^@container catch-page \(width < 640px\)/);
-    for (const [variant, step] of [["displayXxl", "l"], ["displayXl", "m"]] as const) {
-      const rule = textPhoneCss.match(new RegExp(`\\.text\\[data-variant="${variant}"\\]\\s*\\{([^}]*)\\}`))?.[1] ?? "";
-      expect(declaration(rule, "--catch-text-size"), variant).toBe(`${displaySteps[step].size}px`);
-      expect(Number(declaration(rule, "--catch-text-line-height")), variant).toBe(displaySteps[step].height);
-      expect(declaration(rule, "--catch-text-tracking"), variant).toBe(`${displaySteps[step].tracking}em`);
+  // D19 (blueprint): "Below 640px wide, displayXxl and displayXl render two
+  // steps down."
+  it("steps the two hero sizes down two steps below 640px, as D19 specifies", () => {
+    const block = textCss.replace(/\/\*[\s\S]*?\*\//g, "")
+      .match(/@container catch-page \(width < 640px\) \{((?:[^{}]*\{[^{}]*\})*)[^{}]*\}/)?.[1];
+    expect(block, "missing @container catch-page (width < 640px)").toBeDefined();
+    const steps = {displayXxl: "l", displayXl: "m"};
+    const rules = [...block!.matchAll(/\.text\[data-variant="(\w+)"\]\s*\{([^{}]*)\}/g)];
+    expect(rules.map((rule) => rule[1]).sort()).toEqual(Object.keys(steps).sort());
+    for (const [, variant, body] of rules) {
+      const token = `--catch-typography-brand-display-${steps[variant as keyof typeof steps]}`;
+      const rule = `{${body}}`;
+      for (const property of ["size", "line-height", "tracking"]) {
+        expect(declaration(rule, `--catch-text-${property}`), `${variant} ${property}`)
+          .toBe(`var(${token}-${property})`);
+      }
     }
-    expect([...textPhoneCss.matchAll(/data-variant="(\w+)"/g)].map((match) => match[1])).toEqual(["displayXxl", "displayXl"]);
   });
 
   it("offers exactly the Flutter CatchTextVariant values", () => {
@@ -249,12 +259,21 @@ describe("CatchTextStyles parity", () => {
     for (const variant of variants) {
       const rule = cssRule(textCss, `.text[data-variant="${variant}"]`);
       if (variant.startsWith("display")) {
-        const step = displaySteps[variant.slice("display".length).toLowerCase()];
+        const stepName = variant.slice("display".length).toLowerCase();
+        const step = displaySteps[stepName];
         expect(step, `missing Flutter display step for ${variant}`).toBeDefined();
-        expect(declaration(rule, "--catch-text-size"), variant).toBe(`${step.size}px`);
-        expect(Number(declaration(rule, "--catch-text-line-height")), variant).toBe(step.height);
-        expect(declaration(rule, "--catch-text-tracking"), variant).toBe(`${step.tracking}em`);
-        expect(declaration(rule, "--catch-text-weight"), variant).toBe(displayWeight);
+        const token = `--catch-typography-brand-display-${stepName}`;
+        for (const [property, value] of [
+          ["size", `${step.size}px`],
+          ["line-height", `${step.height}`],
+          ["weight", displayWeight],
+          ["tracking", `${step.tracking}em`],
+        ]) {
+          expect(declaration(rule, `--catch-text-${property}`), variant)
+            .toBe(`var(${token}-${property})`);
+          expect(generatedTokensCss, `${variant} ${property}`)
+            .toContain(`${token}-${property}: ${value};`);
+        }
         expect(declaration(rule, "--catch-text-role-color"), variant)
           .toBe("var(--catch-theme-ink)");
         continue;

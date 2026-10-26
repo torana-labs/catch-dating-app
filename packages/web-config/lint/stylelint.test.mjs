@@ -96,6 +96,16 @@ test("gaps, padding, roles, literal geometry and radius tokens pass the size rul
   }
 });
 
+test("the apps' token preset carries the size rule", async () => {
+  assert.deepEqual(tokenRules[disallowed], sizeSpacingRules[disallowed]);
+  const result = await stylelint.lint({
+    code: ".p { width: var(--catch-space-s4); }",
+    codeFilename: "probe.css",
+    config: {...reportingOptions, rules: tokenRules},
+  });
+  assert.ok(result.results[0].warnings.some((warning) => warning.rule === disallowed));
+});
+
 /**
  * @catch/web-ui has no stylelint run of its own, so its component modules are
  * checked here. These files still borrow a spacing step for a size; the
