@@ -16,7 +16,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // catchComponent names the website registry's T4 entry (design/website/components.json).
-const storyRoutes = ["home", "host_landing"];
+const storyRoutes = ["home", "host"];
 
 const questions: CatchAccordionItem[] = [
   {answer: "No. You can browse and book on the website. The app adds reminders, your plans and check-in.", id: "app", question: "Do I need the app?"},

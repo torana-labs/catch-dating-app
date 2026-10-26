@@ -57,7 +57,7 @@ describe("CatchMenu anchored", () => {
         label="Choose your city"
         onSelected={onSelected}
         recipe="anchored"
-        trigger={({props}) => <button type="button" {...props}>Mumbai</button>}
+        builder={({triggerProps}) => <button type="button" {...triggerProps}>Mumbai</button>}
       />,
     );
     const trigger = screen.getByRole("button", {name: "Mumbai"});
@@ -72,5 +72,19 @@ describe("CatchMenu anchored", () => {
     fireEvent.click(screen.getByRole("option", {name: "Pune Launching soon"}));
     expect(onSelected).toHaveBeenCalledWith("pune", expect.objectContaining({label: "Pune"}));
     expect(screen.queryByRole("listbox")).toBeNull();
+  });
+
+  it("moves the panel by Flutter's alignmentOffset", () => {
+    render(
+      <CatchMenu
+        alignmentOffset={{x: 4, y: -2}}
+        builder={({triggerProps}) => <button type="button" {...triggerProps}>Sort</button>}
+        items={cities}
+        label="Sort"
+        recipe="anchored"
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", {name: "Sort"}));
+    expect(screen.getByRole("listbox").style.transform).toBe("translate(4px, -2px)");
   });
 });

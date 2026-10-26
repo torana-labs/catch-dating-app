@@ -64,19 +64,6 @@ function States() {
   );
 }
 
-/**
- * catch.menu on the web: action and choice rows, icons, sublabels, sections,
- * disabled and danger rows and a scrolling panel, light and dark. Flutter's
- * compact selection sheet is a CatchSheet of the same rows on the web.
- */
-export const Contract: Story = {
-  render: () => (
-    <StoryPage>
-      <CatchBand aria-label="Light" pb="compact" pt="compact"><States /></CatchBand>
-      <CatchBand aria-label="Dark" ground="ink" pb="compact" pt="compact"><States /></CatchBand>
-    </StoryPage>
-  ),
-};
 
 const pillStyle: CSSProperties = {
   alignItems: "center",
@@ -105,8 +92,8 @@ function CityPicker() {
       label="Choose your city"
       onSelected={setCity}
       recipe="anchored"
-      trigger={({props}) => (
-        <button style={pillStyle} type="button" {...props}>
+      builder={({triggerProps}) => (
+        <button style={pillStyle} type="button" {...triggerProps}>
           <span aria-hidden="true" style={iconStyle}>{pin}</span>{name}<span aria-hidden="true" style={iconStyle}>{chevron}</span>
         </button>
       )}
@@ -138,8 +125,8 @@ function FormatPicker() {
       label="Event type"
       onSelected={setFormat}
       recipe="anchored"
-      trigger={({props}) => (
-        <button style={{...pillStyle, background: "var(--catch-theme-raised)", borderRadius: "var(--catch-radius-md)", height: 60}} type="button" {...props}>
+      builder={({triggerProps}) => (
+        <button style={{...pillStyle, background: "var(--catch-theme-raised)", borderRadius: "var(--catch-radius-md)", height: 60}} type="button" {...triggerProps}>
           <CatchText as="span" variant="displayXs">{formats.find((item) => item.value === format)?.label}</CatchText>
           <span aria-hidden="true" style={iconStyle}>{chevron}</span>
         </button>
@@ -148,6 +135,45 @@ function FormatPicker() {
     />
   );
 }
+
+/** An anchored action menu opened from a plain trigger: Flutter's anchored-trigger state. */
+function ActionsTrigger() {
+  return (
+    <CatchMenu
+      builder={({triggerProps}) => (
+        <button style={pillStyle} type="button" {...triggerProps}>
+          Event actions<span aria-hidden="true" style={iconStyle}>{chevron}</span>
+        </button>
+      )}
+      items={actions}
+      label="Event actions"
+      recipe="anchored"
+      width={300}
+    />
+  );
+}
+
+/**
+ * catch.menu on the web: action and choice rows, icons, sublabels, sections,
+ * disabled and danger rows and a scrolling panel, light and dark; then the
+ * anchored recipe from a trigger and from a current selection. Flutter's
+ * compact-selection-sheet is CatchSelectionMenu's adaptive sheet, which has
+ * no web member yet.
+ */
+export const Contract: Story = {
+  render: () => (
+    <StoryPage>
+      <CatchBand aria-label="Light" pb="compact" pt="compact"><States /></CatchBand>
+      <CatchBand aria-label="Dark" ground="ink" pb="compact" pt="compact"><States /></CatchBand>
+      <CatchBand aria-label="Anchored" pb="spacious" pt="compact">
+        <CatchGap direction="horizontal" size="inline" wrap>
+          <State label="anchored trigger"><ActionsTrigger /></State>
+          <State label="anchored selection"><CityPicker /></State>
+        </CatchGap>
+      </CatchBand>
+    </StoryPage>
+  ),
+};
 
 /** Both v2 pickers. Open one with a click or the arrow keys; Escape returns to its trigger. */
 export const Pickers: Story = {

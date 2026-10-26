@@ -32,13 +32,14 @@ export interface CatchMenuItem<T> {
   onSelected?: (value: T) => void;
 }
 
-/** What `CatchMenu.anchored`'s trigger receives, in place of Flutter's MenuController. */
-export interface CatchMenuTrigger {
-  open: boolean;
-  toggle: () => void;
+/** What `CatchMenu.anchored`'s builder receives, in place of Flutter's MenuController. */
+export interface CatchMenuController {
+  isOpen: boolean;
+  open: () => void;
   close: () => void;
-  /** Spread on the trigger button: its popup semantics, ref and keys. */
-  props: {
+  toggle: () => void;
+  /** Web only: spread on the trigger button for its popup semantics, ref and keys. */
+  triggerProps: {
     "aria-controls": string;
     "aria-expanded": boolean;
     "aria-haspopup": "listbox" | "menu";
@@ -62,11 +63,13 @@ export interface CatchMenuPanelProps<T> extends CatchMenuBase<T> {
   recipe?: "panel";
 }
 
-/** `CatchMenu.anchored`: a panel that opens from a caller-owned trigger. */
+/** `CatchMenu.anchored`: a panel that opens from a trigger the caller builds. */
 export interface CatchMenuAnchoredProps<T> extends CatchMenuBase<T> {
   recipe: "anchored";
-  trigger: (trigger: CatchMenuTrigger) => ReactNode;
-  /** Which trigger edge the panel lines up with. */
+  builder: (controller: CatchMenuController) => ReactNode;
+  /** Moves the panel from its anchored place, in px, as Flutter's alignmentOffset. */
+  alignmentOffset?: {x: number; y: number};
+  /** Web only: which trigger edge the panel lines up with. */
   align?: "start" | "end";
 }
 
@@ -176,7 +179,7 @@ export function CatchMenu<T>(props: CatchMenuProps<T>) {
   return <AnchoredMenu {...props} id={id} />;
 }
 
-function AnchoredMenu<T>({align = "start", id, items, label, onSelected, trigger, width}: CatchMenuAnchoredProps<T> & {id: string}) {
+function AnchoredMenu<T>({align = "start", alignmentOffset, builder, id, items, label, onSelected, width}: CatchMenuAnchoredProps<T> & {id: string}) {
   const [open, setOpen] = useState(false);
   const [placement, setPlacement] = useState<{place: "below" | "above"; maxHeight?: number}>({place: "below"});
   const anchor = useRef<HTMLDivElement>(null);
@@ -210,10 +213,12 @@ function AnchoredMenu<T>({align = "start", id, items, label, onSelected, trigger
     return () => document.removeEventListener("pointerdown", outside);
   }, [open, close]);
 
-  const handle: CatchMenuTrigger = {
+  const controller: CatchMenuController = {
     close: () => close(true),
-    open,
-    props: {
+    isOpen: open,
+    open: () => setOpen(true),
+    toggle: () => setOpen((value) => !value),
+    triggerProps: {
       "aria-controls": `${id}-panel`,
       "aria-expanded": open,
       "aria-haspopup": listbox ? "listbox" : "menu",
@@ -226,12 +231,14 @@ function AnchoredMenu<T>({align = "start", id, items, label, onSelected, trigger
       },
       ref: button,
     },
-    toggle: () => setOpen((value) => !value),
   };
+  const offset = alignmentOffset && (alignmentOffset.x || alignmentOffset.y)
+    ? {transform: `translate(${alignmentOffset.x}px, ${alignmentOffset.y}px)`}
+    : {};
 
   return (
     <div className={styles.anchor} data-align={align} ref={anchor}>
-      {trigger(handle)}
+      {builder(controller)}
       {open ? (
         <Panel
           id={`${id}-panel`}
@@ -241,7 +248,7 @@ function AnchoredMenu<T>({align = "start", id, items, label, onSelected, trigger
           onSelected={onSelected}
           panelRef={panel}
           place={placement.place}
-          style={placement.maxHeight === undefined ? undefined : {maxHeight: placement.maxHeight}}
+          style={{...offset, ...(placement.maxHeight === undefined ? {} : {maxHeight: placement.maxHeight})}}
           width={width}
         />
       ) : null}

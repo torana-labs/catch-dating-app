@@ -1,3 +1,5 @@
+export {CatchAccordion} from "./components/CatchAccordion";
+export type {CatchAccordionItem, CatchAccordionProps} from "./components/CatchAccordion";
 export {CatchAppCaptureImage} from "./components/CatchAppCaptureImage";
 export type {CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
 export {CatchAvatar, catchAvatarInitialsOf} from "./components/CatchAvatar";
@@ -150,6 +152,15 @@ export {CatchLoadingIndicator} from "./components/CatchLoadingIndicator";
 export type {CatchLoadingIndicatorProps, CatchLoadingIndicatorVariant} from "./components/CatchLoadingIndicator";
 export {CatchLinkTile} from "./components/CatchLinkTile";
 export type {CatchLinkTileProps} from "./components/CatchLinkTile";
+export {CatchMenu} from "./components/CatchMenu";
+export type {
+  CatchMenuAnchoredProps,
+  CatchMenuController,
+  CatchMenuItem,
+  CatchMenuItemVariant,
+  CatchMenuPanelProps,
+  CatchMenuProps,
+} from "./components/CatchMenu";
 export {CatchNotice} from "./components/CatchNotice";
 export type {CatchNoticeData, CatchNoticeProps, CatchNoticeTone} from "./components/CatchNotice";
 export {CatchNoticeRegion} from "./components/CatchNoticeRegion";
