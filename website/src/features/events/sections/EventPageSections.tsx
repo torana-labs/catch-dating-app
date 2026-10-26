@@ -216,7 +216,8 @@ function EventMore({more}: {more: NonNullable<EventPageView["more"]>}) {
 
 /**
  * The price, the time and where to book. A Catch event takes the guest entry
- * the page passes; an imported event links out to its source.
+ * the page passes; an imported event links out to its source. The sticky aside
+ * that will hold it names the booking landmark, so the card is not one.
  */
 export function EventBookingCard({view, catchEntry, externalAction, onExternalClick}: {
   view: EventPageView;
@@ -228,10 +229,10 @@ export function EventBookingCard({view, catchEntry, externalAction, onExternalCl
   const {booking, facts} = view;
   const when = [facts.when.value, facts.when.note].filter(Boolean).join(" · ");
   return (
-    <CatchGroundCard aria-labelledby="event-booking" as="aside" ground="white" outlined>
+    <CatchGroundCard ground="white" outlined>
       <CatchGap size="formField">
         <CatchGap crossAxisAlignment="baseline" direction="horizontal" size="inline" wrap>
-          <CatchText as="h2" id="event-booking" variant="displayM">{view.priceLabel}</CatchText>
+          <CatchText as="h2" variant="displayM">{view.priceLabel}</CatchText>
           {facts.price.note ? <CatchText as="span" color="ink2" variant="bodyM">{facts.price.note}</CatchText> : null}
         </CatchGap>
         <CatchText variant="sectionTitle">{when}</CatchText>
