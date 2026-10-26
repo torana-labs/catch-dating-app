@@ -641,7 +641,7 @@
             "values": [
               "primary",
               "secondary",
-              "ghost",
+              "quiet",
               "danger",
               "light"
             ]
