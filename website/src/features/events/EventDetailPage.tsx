@@ -14,9 +14,12 @@ import {EventBookingCard, EventPageHeader, EventPageMain} from "./sections/Event
 
 /**
  * The public event page, rendered from its eventPublicPage read model.
- * `listing` is the organizer listing the analytics observers still read.
+ * `listing` is the organizer listing the analytics observers still read;
+ * `mapImageUrl` is the server's map of the meeting point while maps are on.
  */
-export function EventDetailPage({page, listing}: {page: EventPageData; listing: HostListing}) {
+export function EventDetailPage({page, listing, mapImageUrl}: {
+  page: EventPageData; listing: HostListing; mapImageUrl?: string;
+}) {
   const view = useMemo(() => buildEventPageView(page), [page]);
   const {eventId} = view;
   useEffect(() => observeOrganizerPageView(listing, "eventView", "event_detail", eventId), [listing, eventId]);
@@ -73,7 +76,7 @@ export function EventDetailPage({page, listing}: {page: EventPageData; listing: 
           gap="regular"
           railSide="end"
           ratio="narrowRail"
-          start={<EventPageMain view={view} />}
+          start={<EventPageMain mapImageUrl={mapImageUrl} view={view} />}
         />
       </CatchBand>
       <PublicSiteFooter />

@@ -147,6 +147,15 @@ describe("EventDetailPage", () => {
     expect(screen.getByText("Guest entry for salt-air-15k-training")).toBeTruthy();
   });
 
+  it("draws the server's map of the meeting point when maps are on", () => {
+    const {rerender} = render(<EventDetailPage listing={listing} page={fullEventPage} />);
+    expect(screen.queryByRole("img", {name: "Map of Seaface Steps, Bandra West"})).toBeNull();
+    rerender(<EventDetailPage listing={listing} mapImageUrl="/maps/events/salt-air-15k-training/map.png?v=abc" page={fullEventPage} />);
+    expect(screen.getByRole("img", {name: "Map of Seaface Steps, Bandra West"}).getAttribute("src"))
+      .toBe("/maps/events/salt-air-15k-training/map.png?v=abc");
+    expect(screen.getByRole("link", {name: /Open in Google Maps/})).toBeTruthy();
+  });
+
   it("copies the link and says so when the browser cannot share", async () => {
     const writeText = vi.fn(() => Promise.resolve());
     Object.defineProperty(navigator, "clipboard", {configurable: true, value: {writeText}});

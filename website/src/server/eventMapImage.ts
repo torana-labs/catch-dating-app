@@ -1,5 +1,6 @@
 import "server-only";
-import {createHash, createHmac} from "node:crypto";
+import {createHmac} from "node:crypto";
+import {eventMapCoordinate, eventMapSecrets, eventMapVersion, mapPoint as point, type MapCoordinate} from "./eventMapLink";
 import {publicDocumentId} from "./publicReadPolicy";
 import {resolvePublicRoute} from "./publicRoute";
 import {readWebsiteSecret} from "./websiteSecrets";
@@ -14,45 +15,10 @@ import {readWebsiteSecret} from "./websiteSecrets";
  * fetch fails, there is no map and the page keeps its place text and
  * "Open in Google Maps".
  */
-// Secret Manager secrets in the website's project, read by its service account.
-const apiKeySecret = "CATCH_WEBSITE_MAPS_STATIC_KEY";
-const signingSecretName = "CATCH_WEBSITE_MAPS_SIGNING_SECRET";
-
-export interface MapCoordinate {
-  latitude: number;
-  longitude: number;
-}
-
 // The framed MapPreview is 5:2 on a page at least 840px wide; scale 2 makes
 // the 640px request a 1280px image, and a phone crops it to 2:1.
 const look = {size: "640x256", scale: "2", zoom: "15", marker: "0xF07A55",
   styles: ["feature:poi|visibility:off", "feature:transit|visibility:off"]} as const;
-const lookVersion = "1";
-
-const point = ({latitude, longitude}: MapCoordinate) => `${latitude.toFixed(6)},${longitude.toFixed(6)}`;
-
-function validCoordinate(value: Partial<MapCoordinate> | null | undefined): value is MapCoordinate {
-  const latitude = value?.latitude ?? Number.NaN;
-  const longitude = value?.longitude ?? Number.NaN;
-  return Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180;
-}
-
-/** Changes when the meeting point or the map's look changes. */
-export function eventMapVersion(coordinate: MapCoordinate): string {
-  return createHash("sha256").update(`${lookVersion}:${point(coordinate)}`).digest("hex").slice(0, 12);
-}
-
-/** Where the event page loads its map from. */
-export function eventMapImagePath(eventId: string, coordinate: MapCoordinate): string {
-  return `/maps/events/${encodeURIComponent(eventId)}/map.png?v=${eventMapVersion(coordinate)}`;
-}
-
-/** Whether the page should draw maps: both secrets are readable. */
-export async function eventMapsAvailable(readSecret = readWebsiteSecret): Promise<boolean> {
-  const [key, secret] = await Promise.all([readSecret(apiKeySecret), readSecret(signingSecretName)]);
-  return Boolean(key && secret);
-}
-
 /** A Static API URL signed with the URL signing secret (HMAC-SHA1 over path and query). */
 export function signedStaticMapUrl(coordinate: MapCoordinate, apiKey: string, signingSecret: string): string {
   const params = new URLSearchParams({center: point(coordinate), zoom: look.zoom, size: look.size, scale: look.scale,
@@ -79,8 +45,7 @@ const drawn = new Map<string, {png: Uint8Array; until: number}>();
 
 /** The meeting point of the event the public route would render, under the same publication rules. */
 export async function defaultMeetingPoint(eventId: string): Promise<MapCoordinate | null> {
-  const location = (await resolvePublicRoute(`/events/${encodeURIComponent(eventId)}/`)).event?.meetingLocation;
-  return validCoordinate(location) ? {latitude: location.latitude, longitude: location.longitude} : null;
+  return eventMapCoordinate((await resolvePublicRoute(`/events/${encodeURIComponent(eventId)}/`)).event?.meetingLocation);
 }
 
 const defaultDependencies = (): EventMapDependencies => ({
@@ -103,9 +68,9 @@ export async function eventMapResponse(
   try {
     const coordinate = await dependencies.meetingPoint(eventId);
     if (!coordinate) return missing("public, max-age=300, s-maxage=300");
-    const [apiKey, signingSecret] = await Promise.all([
-      dependencies.readSecret(apiKeySecret), dependencies.readSecret(signingSecretName)]);
-    if (!apiKey || !signingSecret) return missing("no-store");
+    const secrets = await eventMapSecrets(dependencies.readSecret);
+    if (!secrets) return missing("no-store");
+    const {apiKey, signingSecret} = secrets;
     const version = eventMapVersion(coordinate);
     let png = drawn.get(version);
     if (!png || png.until <= dependencies.now()) {

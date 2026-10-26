@@ -2,8 +2,11 @@
 import fs from "node:fs";
 import {describe, expect, it, vi} from "vitest";
 vi.mock("server-only", () => ({}));
+// Maps stay off unless a test turns them on: no Secret Manager call from tests.
+vi.mock("./websiteSecrets", () => ({readWebsiteSecret: async () => null}));
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/events/eventDetailModel";
 import {eventPageFromListing} from "../features/events/eventPageFromListing";
+import {eventMapImagePath} from "./eventMapLink";
 import {
   assembleEventDetailCatalog,
   assembleEventDetailFromSources,
@@ -352,6 +355,17 @@ describe("public page read models", () => {
     const event = await assembleEventDetailCatalog(fakeReader(world).reader, "open-upcoming", now);
     const fromSources = await assembleEventDetailFromSources(fakeReader(world).reader, "open-upcoming", now);
     expect(event).toEqual({...fromSources, eventPage: eventPageFromListing(fromSources!.listings[0], "open-upcoming")});
+  });
+
+  it("link the meeting point's map only while maps are on (CAT-272)", async () => {
+    const {world, now} = readModelWorld();
+    const off = await assembleEventDetailCatalog(fakeReader(world).reader, "open-upcoming", now);
+    expect(off?.eventMap).toBeUndefined();
+    const on = await assembleEventDetailCatalog(fakeReader(world).reader, "open-upcoming", now, async () => true);
+    expect(on?.eventMap).toBe(eventMapImagePath("open-upcoming", {latitude: 22.7196, longitude: 75.8577}));
+    delete world.eventPublicPage["open-upcoming"];
+    const fromSources = await assembleEventDetailCatalog(fakeReader(world).reader, "open-upcoming", now, async () => true);
+    expect(fromSources?.eventMap).toBe(on?.eventMap);
   });
 
   it("arrange an event without a read model as its read model does", async () => {
