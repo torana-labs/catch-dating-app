@@ -15,6 +15,8 @@ const generatedDart = read(`${tokensRoot}/generated/catch_design_tokens.g.dart`)
 const opacityDart = read(`${tokensRoot}/src/semantic/catch_opacity.dart`);
 const layoutDart = read(`${tokensRoot}/src/semantic/catch_layout.dart`);
 const iconDart = read(`${tokensRoot}/src/primitives/catch_icon_size.dart`);
+const spacingDart = read(`${tokensRoot}/src/primitives/catch_spacing.dart`);
+const strokeDart = read(`${tokensRoot}/src/primitives/catch_stroke.dart`);
 const tokensDart = read(`${tokensRoot}/src/semantic/catch_tokens.dart`);
 const badgeDart = read("../../../catch_ui/lib/src/components/catch_badge.dart");
 const badgeCss = read("./CatchBadge.module.css");
@@ -74,8 +76,21 @@ describe("CatchBadge parity", () => {
       .toBe(`${dartNumber(layoutDart, "badgeActionIconSize")}px`);
     expect(cssValue("--catch-badge-icon-sm")).toBe(`${dartNumber(iconDart, "sm")}px`);
     expect(cssValue("--catch-badge-icon-micro")).toBe(`${dartNumber(iconDart, "micro")}px`);
+    // D21: sizes take literals, not spacing tokens, even where Dart aliases one.
     expect(dartValue(iconDart, "badge")).toBe("CatchSpacing.s3");
-    expect(cssValue("--catch-badge-icon-size")).toBe("var(--catch-space-s3)");
+    expect(cssValue("--catch-badge-icon-badge")).toBe(`${dartNumber(spacingDart, "s3")}px`);
+    expect(cssValue("--catch-badge-icon-size")).toBe("var(--catch-badge-icon-badge)");
+  });
+
+  it("draws the dot at CatchSpacing.micro6, and at CatchLayout.badgeMdDotExtent for md", () => {
+    expect(badgeDart).toContain("dotSize: CatchSpacing.micro6,");
+    expect(cssValue("--catch-badge-dot")).toBe(`${dartNumber(spacingDart, "micro6")}px`);
+    expect(cssValue("--catch-badge-dot-size")).toBe("var(--catch-badge-dot)");
+    expect(dartValue(layoutDart, "badgeMdDotExtent")).toBe("CatchSpacing.micro6 + CatchStroke.hairline");
+    expect(cssValue("--catch-badge-md-dot-extent"))
+      .toBe(`${dartNumber(spacingDart, "micro6") + dartNumber(strokeDart, "hairline")}px`);
+    expect(badgeCss).toContain('.badge[data-size="md"] {');
+    expect(badgeCss).toContain("--catch-badge-dot-size: var(--catch-badge-md-dot-extent);");
   });
 
   it("pads the md badge by CatchLayout.badgeMdVerticalPadding", () => {

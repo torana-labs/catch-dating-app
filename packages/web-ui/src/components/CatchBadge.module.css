@@ -20,12 +20,15 @@
   --catch-badge-action-icon-size: 15px;
   --catch-badge-icon-sm: 14px;
   --catch-badge-icon-micro: 11px;
+  --catch-badge-icon-badge: 12px;
+  --catch-badge-dot: 6px;
+  --catch-badge-md-dot-extent: 7px;
 
   /* Metrics: size sm, the default constructor's default. */
   --catch-badge-padding: var(--catch-space-s1) var(--catch-space-micro10);
   --catch-badge-gap: var(--catch-space-s1);
-  --catch-badge-icon-size: var(--catch-space-s3);
-  --catch-badge-dot-size: var(--catch-space-micro6);
+  --catch-badge-icon-size: var(--catch-badge-icon-badge);
+  --catch-badge-dot-size: var(--catch-badge-dot);
   --catch-badge-min-height: 0;
   --catch-badge-radius: var(--catch-radius-pill);
   --catch-badge-border-width: var(--catch-stroke-hairline);
@@ -117,7 +120,7 @@
   --catch-badge-padding: calc(var(--catch-space-micro6) + var(--catch-stroke-hairline))
     var(--catch-space-s3);
   --catch-badge-icon-size: var(--catch-badge-icon-sm);
-  --catch-badge-dot-size: calc(var(--catch-space-micro6) + var(--catch-stroke-hairline));
+  --catch-badge-dot-size: var(--catch-badge-md-dot-extent);
 }
 
 .badge[data-size="action"] {
