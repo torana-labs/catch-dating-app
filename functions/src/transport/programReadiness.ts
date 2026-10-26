@@ -32,7 +32,9 @@ export async function setProgramTravelReadinessHandler(
       request, validateSetProgramTravelReadinessCallablePayload,
       normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "setProgramTravelReadiness");
+  await deps.checkRateLimit(db, actorUid, "setProgramTravelReadiness", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const requestHash = hashRequest({
     programId: data.programId,
     legId: data.legId,

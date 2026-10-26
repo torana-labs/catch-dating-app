@@ -52,7 +52,9 @@ export async function getOrganizerCrmSummaryHandler(
     normalizePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerCrmSummary");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerCrmSummary", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   await requireOrganizerManager({
     db,

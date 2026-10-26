@@ -21,11 +21,7 @@ const curationCollection = "organizerIntakeCurationDecisions";
 interface OrganizerCurationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: OrganizerCurationDeps = {
@@ -67,7 +63,8 @@ export async function adminRecordOrganizerCurationHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminRecordOrganizerCuration"
+    "adminRecordOrganizerCuration",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const operationId = data.operationId ?? generatedOperationId(data);
   const operationRef = db.collection(curationCollection).doc(operationId);

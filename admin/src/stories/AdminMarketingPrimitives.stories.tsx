@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   CheckCircle2,
@@ -88,13 +88,11 @@ import {
   AdminMarketingTitleInput,
   AdminPanel,
   AdminStateRow,
-  AdminTag,
   AdminTagList,
   AdminWorkspace,
   EmptyState,
   QualityList,
   QualityRow,
-  StatusChip,
 } from "../shared/ui/AdminPrimitives";
 
 const imageData =
@@ -404,7 +402,7 @@ export const AdminMarketingComposerStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminMarketingComposer>
-        <AdminMarketingComposerHeader status={<StatusChip tone="success">Saved</StatusChip>}>
+        <AdminMarketingComposerHeader status={<CatchBadge recipe="status" tone="success" label="Saved" />}>
           <AdminMarketingComposerBackButton>Back</AdminMarketingComposerBackButton>
           <h3>Launch post</h3>
         </AdminMarketingComposerHeader>
@@ -431,7 +429,7 @@ export const AdminMarketingComposerHeaderStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminMarketingComposerHeader status={<StatusChip>Draft</StatusChip>}>
+      <AdminMarketingComposerHeader status={<CatchBadge label="Draft" />}>
         <AdminMarketingComposerBackButton>Back</AdminMarketingComposerBackButton>
         <h3>Feature post</h3>
       </AdminMarketingComposerHeader>
@@ -589,10 +587,10 @@ export const AdminMarketingFeatureShotGridStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminMarketingFeatureShotGrid>
-        <AdminMarketingFeatureShotCard headline="Event setup" meta={<AdminTag>Host</AdminTag>}>
+        <AdminMarketingFeatureShotCard headline="Event setup" meta={<CatchBadge label="Host" />}>
           <span>Use in carousel slot one.</span>
         </AdminMarketingFeatureShotCard>
-        <AdminMarketingFeatureShotCard headline="Live console" meta={<AdminTag>Ops</AdminTag>}>
+        <AdminMarketingFeatureShotCard headline="Live console" meta={<CatchBadge label="Ops" />}>
           <span>Use for product proof.</span>
         </AdminMarketingFeatureShotCard>
       </AdminMarketingFeatureShotGrid>
@@ -610,7 +608,7 @@ export const AdminMarketingFeatureShotCardStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminMarketingFeatureShotCard headline="Host live console" meta={<AdminTag tone="success">Approved</AdminTag>}>
+      <AdminMarketingFeatureShotCard headline="Host live console" meta={<CatchBadge recipe="status" tone="success" label="Approved" />}>
         <span>Recommended for launch carousel.</span>
       </AdminMarketingFeatureShotCard>
     </AdminWorkspace>
@@ -737,8 +735,8 @@ export const AdminMarketingLibraryCardStory: Story = {
         title="Afterfly Social"
       >
         <AdminTagList>
-          <AdminTag>claim ready</AdminTag>
-          <AdminTag tone="success">verified</AdminTag>
+          <CatchBadge label="claim ready" />
+          <CatchBadge recipe="status" tone="success" label="verified" />
         </AdminTagList>
       </AdminMarketingLibraryCard>
     </AdminWorkspace>
@@ -993,7 +991,7 @@ export const AdminMarketingSectionStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminMarketingSection meta={<StatusChip tone="success">Ready</StatusChip>} title="Caption">
+      <AdminMarketingSection meta={<CatchBadge recipe="status" tone="success" label="Ready" />} title="Caption">
         <AdminMarketingHelpText>Host-facing copy is ready for export.</AdminMarketingHelpText>
       </AdminMarketingSection>
     </AdminWorkspace>
@@ -1010,7 +1008,7 @@ export const AdminMarketingSectionHeaderStory: Story = {
   },
   render: () => (
     <AdminWorkspace>
-      <AdminMarketingSectionHeader meta={<StatusChip>Draft</StatusChip>} title="Visual direction" />
+      <AdminMarketingSectionHeader meta={<CatchBadge label="Draft" />} title="Visual direction" />
     </AdminWorkspace>
   ),
 };
@@ -1087,7 +1085,7 @@ export const AdminMarketingSlideEditorStory: Story = {
       <AdminMarketingSlideEditor>
         <AdminMarketingSlideEditorTopline>
           <strong>Slide 1</strong>
-          <StatusChip>Draft</StatusChip>
+          <CatchBadge label="Draft" />
         </AdminMarketingSlideEditorTopline>
         <CatchField
           recipe="input"
@@ -1113,7 +1111,7 @@ export const AdminMarketingSlideEditorToplineStory: Story = {
     <AdminWorkspace>
       <AdminMarketingSlideEditorTopline>
         <strong>Slide 2</strong>
-        <StatusChip tone="success">Ready</StatusChip>
+        <CatchBadge recipe="status" tone="success" label="Ready" />
       </AdminMarketingSlideEditorTopline>
     </AdminWorkspace>
   ),
@@ -1388,7 +1386,7 @@ export const AdminMarketingImageEditorStory: Story = {
       <AdminMarketingImageEditor>
         <AdminMarketingImageEditorHeader>
           <strong>Image review</strong>
-          <StatusChip>Draft</StatusChip>
+          <CatchBadge label="Draft" />
         </AdminMarketingImageEditorHeader>
         <AdminMarketingImageControls>
           <AdminMarketingFilePickerButton icon={<Upload size={16} />} inputLabel="Upload marketing image">
@@ -1419,7 +1417,7 @@ export const AdminMarketingImageEditorHeaderStory: Story = {
     <AdminWorkspace>
       <AdminMarketingImageEditorHeader>
         <strong>Visual review</strong>
-        <StatusChip tone="success">Ready</StatusChip>
+        <CatchBadge recipe="status" tone="success" label="Ready" />
       </AdminMarketingImageEditorHeader>
     </AdminWorkspace>
   ),

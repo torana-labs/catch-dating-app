@@ -54,7 +54,9 @@ export async function manageWebsiteAccountHandler(
     validateManageWebsiteAccountCallablePayload
   );
   const db = deps.db();
-  await deps.rateLimit(db, uid, "manageWebsiteAccount");
+  await deps.rateLimit(db, uid, "manageWebsiteAccount", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (tx) => {
     const ref = db.collection("users").doc(uid);
     const [snapshot, deleted, authUser, follow, eventSnapshot] =

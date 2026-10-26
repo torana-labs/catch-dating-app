@@ -65,11 +65,7 @@ interface ClubDetailsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now?: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ClubDetailsDeps = {
@@ -275,7 +271,9 @@ export async function adminGetClubDetailsHandler(
     normalizeAdminGetClubDetailsPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetClubDetails");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetClubDetails", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const clubRef = db.collection("organizers").doc(data.clubId);
   const clubSnap = await clubRef.get();
   if (!clubSnap.exists) {
@@ -302,7 +300,9 @@ export async function adminListClubDetailsHandler(
     normalizeAdminListClubDetailsPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminListClubDetails");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminListClubDetails", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
 
   const limit = clampLimit(data.limit);
   const queryText = normalizeSearchText(data.query);
@@ -386,7 +386,9 @@ export async function adminUpdateClubDetailsHandler(
   }, "This organizer edit");
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateClubDetails");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateClubDetails", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const clubRef = db.collection("organizers").doc(data.clubId);
   await db.runTransaction(async (tx) => {
     const clubSnap = await tx.get(clubRef);

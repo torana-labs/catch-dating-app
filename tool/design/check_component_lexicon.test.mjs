@@ -30,7 +30,7 @@ test("component lexicon rejects a declared surface symbol that does not exist", 
 test("component lexicon rejects a surface adapter of a Flutter-only contract", () => {
   const result = run(["--known-bad-adapter", "--surfaces-only"]);
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /known_bad_adapter: StatusBadge points at catch\.sheet, a T3 contract/u);
+  assert.match(result.stderr, /known_bad_adapter: BadgeRow points at catch\.sheet, a T3 contract/u);
 });
 
 test("one registry assigns identity and the retired web-ui registry stays deleted", () => {
@@ -47,15 +47,14 @@ test("structural labels remain distinct from status badges on every stack", () =
   const registry = readJson("design/components/catch.components.json");
   const byId = new Map(registry.components.map((component) => [component.id, component]));
   assert.equal(byId.get("catch.typography")?.react?.symbol, "UiLabel");
-  assert.equal(byId.get("catch.badge")?.react?.symbol, "BadgeControl");
+  assert.equal(byId.get("catch.badge")?.react?.symbol, "CatchBadge");
   const adapters = (path) => new Map(readJson(path).components
     .filter((entry) => entry.componentId).map((entry) => [entry.exportName, entry.componentId]));
   const website = adapters("design/website/components.json");
   const admin = adapters("design/admin/components.json");
   assert.equal(website.get("UiLabel"), "catch.typography");
-  assert.equal(website.get("StatusBadge"), "catch.badge");
   assert.equal(admin.get("AdminEyebrow"), "catch.typography");
-  assert.equal(admin.get("StatusChip"), "catch.badge");
+  assert.equal([...website.values(), ...admin.values()].includes("catch.badge"), false);
 });
 
 test("component lexicon rejects a third boolean on a production constructor", () => {

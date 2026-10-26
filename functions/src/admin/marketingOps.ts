@@ -50,11 +50,7 @@ interface MarketingOpsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now?: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: MarketingOpsDeps = {
@@ -125,7 +121,8 @@ export async function adminGetMarketingOpsDashboardHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminGetMarketingOpsDashboard"
+    "adminGetMarketingOpsDashboard",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
 
   const snap = await db
@@ -165,7 +162,8 @@ export async function adminRecordMarketingReviewDecisionHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminRecordMarketingReviewDecision"
+    "adminRecordMarketingReviewDecision",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const decisionId = decisionIdForMarketingTarget(
     data.targetType,
@@ -244,7 +242,8 @@ export async function adminCreateMarketingContentDraftHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminCreateMarketingContentDraft"
+    "adminCreateMarketingContentDraft",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
 
   const dashboardRef = db.collection("marketingOpsDashboards").doc("current");

@@ -1,12 +1,8 @@
 import type {HTMLAttributes, MouseEvent, ReactNode} from "react";
-import {BadgeControl, EmptyStateControl, classNames} from "@catch/web-ui";
+import {CatchBadge, EmptyStateControl, classNames} from "@catch/web-ui";
 import type {AppDownloadCtaItem, ProcessStatusAction} from "./actions";
 import {ButtonLink} from "./actionControls";
 import {UiLabel} from "./layout";
-
-export type StatusBadgeTone = "claimed" | "unclaimed" | "verified";
-
-export type ReviewSignalBadgeTone = "neutral" | "unverified" | "verified";
 
 export type AuthStatusRowVariant = "default" | "flow";
 
@@ -141,51 +137,9 @@ export function ListingReviewEmptyState({
   return <EmptyState {...props} variant="listing-review" className={className} />;
 }
 
-export function StatusBadge({
-  children,
-  className,
-  tone,
-  ...props
-}: HTMLAttributes<HTMLSpanElement> & {
-  children: ReactNode;
-  tone: StatusBadgeTone;
-}) {
-  return (
-    <BadgeControl
-      {...props}
-      className={classNames("status-badge", `is-${tone}`, className)}
-    >
-      {children}
-    </BadgeControl>
-  );
-}
-
-export function ReviewSignalBadge({
-  children,
-  className,
-  tone = "neutral",
-  ...props
-}: HTMLAttributes<HTMLSpanElement> & {
-  children: ReactNode;
-  tone?: ReviewSignalBadgeTone;
-}) {
-  return (
-    <BadgeControl
-      {...props}
-      className={classNames(
-        "review-signal-badge",
-        tone !== "neutral" && `is-${tone}`,
-        className
-      )}
-    >
-      {children}
-    </BadgeControl>
-  );
-}
-
 export interface BadgeRowItem {
   key?: string;
-  label: ReactNode;
+  label: string;
 }
 
 export function BadgeRow({
@@ -206,7 +160,7 @@ export function BadgeRow({
       data-reveal={reveal || undefined}
     >
       {items?.map((item, index) => (
-        <span key={item.key ?? index}>{item.label}</span>
+        <CatchBadge key={item.key ?? index} label={item.label} />
       )) ?? children}
     </div>
   );

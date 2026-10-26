@@ -1,5 +1,6 @@
+import {CatchBadge} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {ActivityMark, BadgeRow, ButtonLink, ContentGrid, ListingEventEvidenceList, ListingFactGrid, ListingFormatRow, ListingPolaroid, ListingProfileLayout, ListingProfilePrimary, ListingProfileRail, ListingRailActions, ListingRailIdentity, ListingRailLinkList, ListingRailSection, ListingReviewLanes, ListingReviewSummary, ListingReviewWorkspace, ListingSection, ListingSectionIntro, ListingStatusLedger, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, ReviewSignalLane, StatusBadge, type ActivityMeta, type PublicReviewCardModel} from "../shared/ui/primitives";
+import {ActivityMark, BadgeRow, ButtonLink, ContentGrid, ListingEventEvidenceList, ListingFactGrid, ListingFormatRow, ListingPolaroid, ListingProfileLayout, ListingProfilePrimary, ListingProfileRail, ListingRailActions, ListingRailIdentity, ListingRailLinkList, ListingRailSection, ListingReviewLanes, ListingReviewSummary, ListingReviewWorkspace, ListingSection, ListingSectionIntro, ListingStatusLedger, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, ReviewSignalLane, type ActivityMeta, type PublicReviewCardModel} from "../shared/ui/primitives";
 
 const listingRouteIds = ["organizer_listing_canonical", "organizer_listing_legacy"];
 
@@ -79,8 +80,8 @@ export const IdentityDisplayShellStory: Story = {
         />
         <h3>Sunday Table Club</h3>
         <BadgeRow>
-          <StatusBadge tone="verified">Verified on Catch</StatusBadge>
-          <StatusBadge tone="claimed">Owner claimed</StatusBadge>
+          <CatchBadge recipe="solidStatus" label="Verified on Catch" />
+          <CatchBadge recipe="functional" label="Owner claimed" />
         </BadgeRow>
       </article>
       <article>
@@ -91,7 +92,7 @@ export const IdentityDisplayShellStory: Story = {
         />
         <h3>Afterfly</h3>
         <BadgeRow>
-          <StatusBadge tone="unclaimed">Claimable</StatusBadge>
+          <CatchBadge recipe="functional" label="Claimable" />
         </BadgeRow>
       </article>
     </ContentGrid>
@@ -144,7 +145,7 @@ export const ListingHeroShellStory: Story = {
           eyebrow="Organizer"
           location="Indore · India"
           name="After Fly"
-          status={<StatusBadge tone="claimed">Source-backed listing</StatusBadge>}
+          status={<CatchBadge recipe="functional" label="Source-backed listing" />}
         />
         <ListingRailActions description="Claim to manage copy, publish events and respond to reviews.">
           <ButtonLink href="/claim/?listing=afterfly">Claim this listing</ButtonLink>
@@ -307,7 +308,7 @@ export const OrganizerResultShellStory: Story = {
           <div>
             <h3>Afterfly</h3>
             <BadgeRow>
-              <StatusBadge tone="unclaimed">Claimable</StatusBadge>
+              <CatchBadge recipe="functional" label="Claimable" />
             </BadgeRow>
           </div>
         </OrganizerResultCardTopline>

@@ -36,7 +36,7 @@ interface ListingApprovalDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now: () => Date;
-  checkRateLimit?: (db: FirebaseFirestore.Firestore, uid: string, action: string) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   reserveCanonicalRoute?: typeof reserveOrganizerCanonicalRoute;
 }
 
@@ -94,7 +94,12 @@ export async function adminApproveOrganizerListingHandler(
     throw new HttpsError("failed-precondition", "Choose an open organizer launch market for this listing.");
   }
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminApproveOrganizerListing");
+  await deps.checkRateLimit?.(
+    db,
+    adminContext.uid,
+    "adminApproveOrganizerListing",
+    {maxRequests: 10, windowMs: 60 * 1000}
+  );
   const workItemRef = db.collection("operationWorkItems").doc(data.listingWorkItemId);
   const allocatedOrganizerRef = db.collection("organizers").doc();
   const materialHash = crypto.createHash("sha256").update(JSON.stringify([data.listingWorkItemId,

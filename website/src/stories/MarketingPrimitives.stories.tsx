@@ -1,5 +1,6 @@
+import {CatchBadge} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {ActivityMark, Button, FeaturedOrganizerCardGrid, MarketingConsentBannerShell, MarketingLoopList, StatusBadge, type ActivityMeta, type FeaturedOrganizerCardItem} from "../shared/ui/primitives";
+import {ActivityMark, Button, FeaturedOrganizerCardGrid, MarketingConsentBannerShell, MarketingLoopList, type ActivityMeta, type FeaturedOrganizerCardItem} from "../shared/ui/primitives";
 import {memberLoop} from "@content/marketing";
 
 const appStoreItems = [
@@ -41,7 +42,7 @@ const featuredOrganizerItems: FeaturedOrganizerCardItem[] = [
     detail: "Dinner clubs, hosted introductions, and owner responses.",
     href: "/organizers/club-sales-sunday-table/",
     name: "Sunday Table Club",
-    status: <StatusBadge tone="verified">Verified on Catch</StatusBadge>,
+    status: <CatchBadge recipe="solidStatus" label="Verified on Catch" />,
   },
   {
     activity: (
@@ -54,7 +55,7 @@ const featuredOrganizerItems: FeaturedOrganizerCardItem[] = [
     detail: "Source-backed run socials ready for owner claim review.",
     href: "/organizers/afterfly/",
     name: "Afterfly",
-    status: <StatusBadge tone="unclaimed">Claimable</StatusBadge>,
+    status: <CatchBadge recipe="functional" label="Claimable" />,
   },
 ];
 

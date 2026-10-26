@@ -95,7 +95,9 @@ export async function decideEventJoinRequestHandler(
   );
 
   const db = deps.firestore();
-  await deps.checkRateLimit(db, hostUid, "decideEventJoinRequest");
+  await deps.checkRateLimit(db, hostUid, "decideEventJoinRequest", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const eventRef = db.collection("events").doc(eventId);
   const participationRef = db

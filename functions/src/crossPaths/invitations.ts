@@ -120,11 +120,7 @@ interface InvitationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => FirebaseFirestore.Timestamp;
   loadCurrentAuthPhone?: (uid: string) => Promise<string | null>;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   verifyToken?: (
     token: string,
     nowMillis: number
@@ -151,7 +147,9 @@ export async function sendCrossPathsInvitationHandler(
   );
   if (senderUid === data.recipientUid) throw unavailable();
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, senderUid, "sendCrossPathsInvitation");
+  await deps.checkRateLimit?.(db, senderUid, "sendCrossPathsInvitation", {
+    maxRequests: 5, windowMs: 60 * 60 * 1000,
+  });
   const now = deps.now();
   const token = deps.verifyToken?.(data.suggestionToken, now.toMillis());
   if (
@@ -365,7 +363,9 @@ export async function respondCrossPathsInvitationHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "respondCrossPathsInvitation");
+  await deps.checkRateLimit?.(db, uid, "respondCrossPathsInvitation", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const now = deps.now();
   const invitationRef = db.collection("crossPathsInvitations")
     .doc(data.invitationId);
@@ -802,7 +802,8 @@ export async function cancelCrossPathsInvitationOrPlanHandler(
   await deps.checkRateLimit?.(
     db,
     uid,
-    "cancelCrossPathsInvitationOrPlan"
+    "cancelCrossPathsInvitationOrPlan",
+    {maxRequests: 20, windowMs: 60 * 1000}
   );
   const now = deps.now();
   const invitationRef = db.collection("crossPathsInvitations")

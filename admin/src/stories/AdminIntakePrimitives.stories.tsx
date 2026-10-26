@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
   CheckCircle2,
@@ -53,7 +53,6 @@ import {
   AdminSearchCandidatePanel,
   AdminSearchCandidateSnippet,
   AdminStateRow,
-  AdminTag,
   AdminTagList,
   AdminWorkspace,
   AlertRow,
@@ -61,7 +60,6 @@ import {
   QualityList,
   QualityRow,
   SearchField,
-  StatusChip,
 } from "../shared/ui/AdminPrimitives";
 
 const meta = {
@@ -598,8 +596,8 @@ export const AdminOrganizerIntakeCurationPanelStory: Story = {
           <span>Ready for review</span>
         </AdminIntakeSectionTitle>
         <AdminOrganizerIntakeBadges>
-          <StatusChip tone="success">evidence</StatusChip>
-          <StatusChip>claim ready</StatusChip>
+          <CatchBadge recipe="status" tone="success" label="evidence" />
+          <CatchBadge label="claim ready" />
         </AdminOrganizerIntakeBadges>
       </AdminOrganizerIntakeCurationPanel>
     </AdminWorkspace>
@@ -641,7 +639,7 @@ export const AdminOrganizerIntakeCardStory: Story = {
             <span>San Francisco</span>
           </AdminIntakeSectionTitle>
           <AdminOrganizerIntakeBadges>
-            <StatusChip tone="success">ready</StatusChip>
+            <CatchBadge recipe="status" tone="success" label="ready" />
           </AdminOrganizerIntakeBadges>
         </AdminOrganizerIntakeCardHeader>
         <AdminIntakeDecisionActions>
@@ -670,8 +668,8 @@ export const AdminOrganizerIntakeCardHeaderStory: Story = {
             <span>Profile confidence high</span>
           </AdminIntakeSectionTitle>
           <AdminOrganizerIntakeBadges>
-            <StatusChip tone="success">verified</StatusChip>
-            <StatusChip>external events</StatusChip>
+            <CatchBadge recipe="status" tone="success" label="verified" />
+            <CatchBadge label="external events" />
           </AdminOrganizerIntakeBadges>
         </AdminOrganizerIntakeCardHeader>
       </AdminOrganizerIntakeCard>
@@ -690,9 +688,9 @@ export const AdminOrganizerIntakeBadgesStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminOrganizerIntakeBadges>
-        <StatusChip tone="success">ready</StatusChip>
-        <StatusChip tone="warning">source gap</StatusChip>
-        <StatusChip>owner handoff</StatusChip>
+        <CatchBadge recipe="status" tone="success" label="ready" />
+        <CatchBadge recipe="status" tone="warning" label="source gap" />
+        <CatchBadge label="owner handoff" />
       </AdminOrganizerIntakeBadges>
     </AdminWorkspace>
   ),
@@ -813,7 +811,7 @@ export const AdminOrganizerSurfaceRowStory: Story = {
     <AdminWorkspace>
       <AdminOrganizerSurfaceRow>
         <strong>Ticketing page</strong>
-        <AdminTag tone="success">verified</AdminTag>
+        <CatchBadge recipe="status" tone="success" label="verified" />
       </AdminOrganizerSurfaceRow>
     </AdminWorkspace>
   ),
@@ -928,7 +926,7 @@ export const AdminSearchCandidateCardStory: Story = {
       <AdminSearchCandidateCard>
         <AdminSearchCandidateHeader>
           <strong>Afterfly Social</strong>
-          <AdminTag tone="success">matched</AdminTag>
+          <CatchBadge recipe="status" tone="success" label="matched" />
         </AdminSearchCandidateHeader>
         <AdminSearchCandidateSnippet>Public profile and imported source agree.</AdminSearchCandidateSnippet>
         <AdminSearchCandidateActions>
@@ -953,7 +951,7 @@ export const AdminSearchCandidateHeaderStory: Story = {
       <AdminSearchCandidateCard>
         <AdminSearchCandidateHeader>
           <strong>Afterfly Social</strong>
-          <AdminTag tone="success">96% match</AdminTag>
+          <CatchBadge recipe="status" tone="success" label="96% match" />
         </AdminSearchCandidateHeader>
       </AdminSearchCandidateCard>
     </AdminWorkspace>

@@ -31,7 +31,9 @@ export async function actOnEventChatMessageHandler(
     throw new HttpsError("invalid-argument", "Choose a reason for the report.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, uid, "actOnEventChatMessage");
+  await deps.rateLimit(db, uid, "actOnEventChatMessage", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const receiptRef = db.collection("eventChatAccessReceipts")
     .doc(chatHash(["messageAction", uid, data.requestId]));
   const payloadHash = chatHash([data.eventId, data.messageId,

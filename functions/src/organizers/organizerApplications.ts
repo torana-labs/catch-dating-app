@@ -75,6 +75,7 @@ import {applicationAdmissionContactId} from "./organizerApplicationAdmission";
 import {createOrganizerContactInTransaction} from "./organizerContacts";
 import {organizerContactIdentityKey} from "./organizerAudienceSecrets";
 import {resolveOrganizerAudienceCoverage} from "./organizerAudienceCoverage";
+import {applicationReviewRateLimit} from "./applicationReviewRateLimit";
 
 type Question = OrganizerApplicationFormVersionDocument["questions"][number];
 type Answer = OrganizerApplicationResponseDocument["answers"][number];
@@ -145,7 +146,8 @@ export async function publishOrganizerApplicationFormHandler(
   await deps.checkRateLimit(
     db,
     actorUid,
-    "publishOrganizerApplicationForm"
+    "publishOrganizerApplicationForm",
+    {maxRequests: 20, windowMs: 60 * 60 * 1000}
   );
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
 
@@ -282,7 +284,8 @@ export async function previewOrganizerApplicationImportHandler(
   await deps.checkRateLimit(
     db,
     actorUid,
-    "previewOrganizerApplicationImport"
+    "previewOrganizerApplicationImport",
+    {maxRequests: 30, windowMs: 60 * 60 * 1000}
   );
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const version = await requireFormVersion({
@@ -348,7 +351,9 @@ export async function importOrganizerApplicationsHandler(
   }
   assertTarget(data.targetKind, data.targetId);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "importOrganizerApplications");
+  await deps.checkRateLimit(db, actorUid, "importOrganizerApplications", {
+    maxRequests: 5, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const [version, formSnap] = await Promise.all([
     requireFormVersion({
@@ -531,7 +536,9 @@ export async function listOrganizerApplicationsHandler(
     normalizeListPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerApplications");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerApplications", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   let customerAccountUid: string | null = null;
   if (data.contactId) {
@@ -669,7 +676,8 @@ export async function getOrganizerApplicationDetailHandler(
   await deps.checkRateLimit(
     db,
     actorUid,
-    "getOrganizerApplicationDetail"
+    "getOrganizerApplicationDetail",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const applicationSnap = await db.collection("organizerApplications")
@@ -726,7 +734,8 @@ export async function reviewOrganizerApplicationHandler(
     normalizeReviewPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "reviewOrganizerApplication");
+  await deps.checkRateLimit(db, actorUid, "reviewOrganizerApplication",
+    applicationReviewRateLimit);
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const ref = db.collection("organizerApplications").doc(data.applicationId);
   const now = deps.timestamp();

@@ -10,22 +10,18 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import {BadgeControl} from "@catch/web-ui";
 import {CheckCircle2, FileWarning, Lock, RefreshCw} from "lucide-react";
 
 import {
   classNames,
   layoutSpanClass,
   type SelectOption,
-  type ChipTone,
   type AlertTone,
-  type TagTone,
   type MetricTone,
   type MetricVariant,
   type QualityRowTone,
   type AdminOverviewQueueIntent,
   type AdminOverviewSignalTone,
-  type RiskTone,
   type DataTableVariant,
   type AdminFormVariant,
   type AdminEditorGridElement,
@@ -159,67 +155,6 @@ export function CardHeader({
       {action}
     </header>
   );
-}
-
-export function StatusChip({
-  children,
-  className = "",
-  tone = "base",
-  ...props
-}: {
-  children: ReactNode;
-  className?: string;
-  tone?: ChipTone;
-} & HTMLAttributes<HTMLSpanElement>) {
-  const toneClass = tone === "base" || tone === "neutral" ?
-    "" :
-    tone === "warning" ?
-    "blocked" :
-    tone === "success" ?
-    "ready" :
-    tone;
-  return (
-    <BadgeControl className={`intake-badge ${toneClass} ${className}`.trim()} {...props}>
-      {children}
-    </BadgeControl>
-  );
-}
-
-export function AdminTag({
-  children,
-  className = "",
-  href,
-  rel,
-  target,
-  tone = "neutral",
-}: {
-  children: ReactNode;
-  className?: string;
-  href?: string;
-  rel?: string;
-  target?: string;
-  tone?: TagTone;
-}) {
-  const toneClass = tone === "base" || tone === "neutral" ?
-    "" :
-    tone === "warning" || tone === "danger" ?
-    "blocked" :
-    tone === "success" ?
-    "ready" :
-    tone;
-  const classes = [
-    "intake-tag",
-    toneClass,
-    className,
-  ].filter(Boolean).join(" ");
-  if (href) {
-    return (
-      <a className={classes} href={href} rel={rel} target={target}>
-        {children}
-      </a>
-    );
-  }
-  return <span className={classes}>{children}</span>;
 }
 
 export function AdminTagList({

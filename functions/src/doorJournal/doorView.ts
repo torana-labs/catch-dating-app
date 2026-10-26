@@ -108,7 +108,9 @@ export async function getProgramFunctionDoorViewHandler(
   const data = validateCallableWithAjv<ProgramFunctionScopeCallablePayload>(
     request, validateProgramFunctionScopeCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramFunctionDoorView");
+  await deps.checkRateLimit(db, actorUid, "getProgramFunctionDoorView", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
@@ -297,7 +299,9 @@ export async function createProgramWalkInHandler(
   const data = validateCallableWithAjv<CreateProgramWalkInCallablePayload>(
     request, validateCreateProgramWalkInCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "createProgramWalkIn");
+  await deps.checkRateLimit(db, actorUid, "createProgramWalkIn", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });

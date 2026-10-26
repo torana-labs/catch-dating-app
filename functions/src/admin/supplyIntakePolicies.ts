@@ -66,7 +66,7 @@ const policyText: Record<string, {label: string; enables: string; configPath: st
 
 interface Deps {
   firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit?: (db: FirebaseFirestore.Firestore, uid: string, action: string) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   loadConfigs?: () => Promise<PolicyConfig[]>;
 }
 
@@ -83,7 +83,12 @@ export async function adminListSupplyIntakePoliciesHandler(
   const adminContext = requireAdminRole(request, reviewRoles);
   validateCallableWithAjv(request, validateAdminListSupplyIntakePoliciesCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminListSupplyIntakePolicies");
+  await deps.checkRateLimit?.(
+    db,
+    adminContext.uid,
+    "adminListSupplyIntakePolicies",
+    {maxRequests: 60, windowMs: 60 * 1000}
+  );
   const configs = await (deps.loadConfigs ?? loadConfigs)();
   const decisions = await Promise.all(configs.map((config) =>
     db.collection("organizerPolicyGapReviewDecisions").doc(decisionIdForPolicyGap(config.gapId)).get()));

@@ -72,7 +72,9 @@ export async function dispatchProgramTripHandler(
   const data = validateCallableWithAjv<DispatchProgramTripCallablePayload>(
     request, validateDispatchProgramTripCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "dispatchProgramTrip");
+  await deps.checkRateLimit(db, actorUid, "dispatchProgramTrip", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const requestHash = hashRequest({
     ...data,
     destinationHotelId: data.destinationHotelId ?? null,
@@ -621,7 +623,8 @@ export async function markProgramTripArrivedHandler(
 ): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
   await deps.checkRateLimit(
-    deps.firestore(), actorUid, "markProgramTripArrived");
+    deps.firestore(), actorUid, "markProgramTripArrived",
+    {maxRequests: 60, windowMs: 60 * 1000});
   return tripActionHandler(request, "markArrived", deps);
 }
 
@@ -631,7 +634,8 @@ export async function voidProgramTripHandler(
 ): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
   await deps.checkRateLimit(
-    deps.firestore(), actorUid, "voidProgramTrip");
+    deps.firestore(), actorUid, "voidProgramTrip",
+    {maxRequests: 60, windowMs: 60 * 1000});
   return tripActionHandler(request, "void", deps);
 }
 

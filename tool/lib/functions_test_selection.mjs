@@ -10,6 +10,7 @@ import path from "node:path";
 const fullInputs = [
   /^(?:firestore|storage)\.rules$/u,
   /^functions\/package(?:-lock)?\.json$/u,
+  /^functions\/test\/emulator-tests\.json$/u,
   /^functions\/tsconfig[^/]*\.json$/u,
   /^functions\/scripts\//u,
   /^firebase\.json$/u,
@@ -19,12 +20,6 @@ const dataInputs = [
   {pattern: /^firestore\.indexes\.json$/u, mentions: ["firestore.indexes"]},
   {pattern: /^contracts\//u, mentions: ["contracts"]},
 ];
-
-/** Strict emulator test paths (relative to functions/) listed by `npm run test:rules`. */
-export function listedEmulatorTests(functionsPackage) {
-  const script = functionsPackage?.scripts?.["test:rules"] ?? "";
-  return script.split(/\s+/u).filter((token) => /\.test\.(?:js|cjs)$/u.test(token));
-}
 
 /** The authored source of a listed test: compiled lib/**.test.js comes from src/**.test.ts. */
 export function sourceForListedTest(test) {

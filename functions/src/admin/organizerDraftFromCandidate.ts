@@ -38,11 +38,7 @@ interface OrganizerDraftDeps {
   sourceTimestamp: (
     verifiedAt: string | null
   ) => FirebaseFirestore.Timestamp;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   reserveCanonicalRoute?: typeof reserveOrganizerCanonicalRoute;
 }
 
@@ -93,7 +89,8 @@ export async function adminCreateOrganizerDraftFromCandidateHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminCreateOrganizerDraftFromCandidate"
+    "adminCreateOrganizerDraftFromCandidate",
+    {maxRequests: 10, windowMs: 60 * 1000}
   );
 
   const workItemRef = db.collection("operationWorkItems").doc(data.workItemId);

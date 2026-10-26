@@ -73,11 +73,7 @@ interface RazorpayHostAccountDeps {
   firestore: () => FirebaseFirestore.Firestore;
   razorpay: () => RazorpayHostAccountClient;
   serverTimestamp: () => unknown;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: RazorpayHostAccountDeps = {
@@ -108,7 +104,9 @@ export async function createRazorpayHostPaymentAccountHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "createRazorpayHostPaymentAccount");
+  await deps.checkRateLimit?.(db, uid, "createRazorpayHostPaymentAccount", {
+    maxRequests: 5, windowMs: 60 * 1000,
+  });
   const hostClaim = await db.collection("clubHostClaims").doc(uid).get();
   if (!hostClaim.exists) {
     throw new HttpsError(
@@ -213,7 +211,9 @@ export async function refreshRazorpayHostPaymentAccountHandler(
     (data) => data ?? {}
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "refreshRazorpayHostPaymentAccount");
+  await deps.checkRateLimit?.(db, uid, "refreshRazorpayHostPaymentAccount", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const existing = await findHostPaymentAccount(db, uid, "razorpay");
   if (!existing.account) return {account: null};
 

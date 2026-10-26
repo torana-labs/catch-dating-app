@@ -30,7 +30,8 @@ export async function getEventAssistanceSmsWithdrawalHandler(
   await deps.checkRateLimit(db, networkIdentity(request),
     "getEventAssistanceSmsWithdrawal", {maxRequests: 600, windowMs: 60_000});
   await deps.checkRateLimit(db, credentialIdentity(input),
-    "getEventAssistanceSmsWithdrawal");
+    "getEventAssistanceSmsWithdrawal",
+    {maxRequests: 60, windowMs: 60 * 1000});
   const output = await new SmsWithdrawalStore(db, deps.now).get(input);
   if (!validateEventAssistanceSmsWithdrawalCallableResponse(output)) {
     throw new HttpsError("internal", "Text preference unavailable.");
@@ -47,7 +48,8 @@ export async function withdrawEventAssistanceSmsHandler(
   await deps.checkRateLimit(db, networkIdentity(request),
     "withdrawEventAssistanceSms", {maxRequests: 120, windowMs: 60_000});
   await deps.checkRateLimit(db, credentialIdentity(input),
-    "withdrawEventAssistanceSms");
+    "withdrawEventAssistanceSms",
+    {maxRequests: 20, windowMs: 60 * 1000});
   const output = await new SmsWithdrawalStore(db, deps.now).withdraw(input);
   if (!validateEventAssistanceSmsWithdrawalCallableResponse(output)) {
     throw new HttpsError("internal", "Text withdrawal could not be confirmed.");

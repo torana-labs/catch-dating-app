@@ -8,11 +8,7 @@ const eventSupplyReadinessRoles = ["admin", "adminOwner", "support"] as const;
 
 interface EventSupplyReadinessDeps {
   firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: EventSupplyReadinessDeps = {
@@ -43,7 +39,8 @@ export async function adminGetEventSupplyReadinessHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminGetEventSupplyReadiness"
+    "adminGetEventSupplyReadiness",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
 
   const snap = await db

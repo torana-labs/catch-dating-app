@@ -23,6 +23,7 @@ export type {
 } from "./components/CatchBand";
 /** A Website v2 ground (CAT-245); Flutter's `CatchGround` names the same nine. */
 export type {Ground as CatchGround} from "./components/palette";
+export {catchFormatAccentOf} from "./components/palette";
 export {CatchButton} from "./components/CatchButton";
 export type {
   CatchButtonCommandProps,
@@ -60,6 +61,14 @@ export type {
 } from "./components/CatchCodeInput";
 export {CatchDateTile} from "./components/CatchDateTile";
 export type {CatchDateTileProps} from "./components/CatchDateTile";
+export {CatchBadge} from "./components/CatchBadge";
+export type {
+  CatchBadgeEmphasis,
+  CatchBadgeProps,
+  CatchBadgeRecipe,
+  CatchBadgeSize,
+  CatchBadgeTone,
+} from "./components/CatchBadge";
 export {CatchEmptyState} from "./components/CatchEmptyState";
 export type {CatchEmptyStateAnnouncement, CatchEmptyStateProps, CatchEmptyStateVariant} from "./components/CatchEmptyState";
 export {CatchErrorState} from "./components/CatchErrorState";
@@ -94,6 +103,8 @@ export type {
   CatchGridElement,
   CatchGridProps,
 } from "./components/CatchGrid";
+export {CatchGroundCard} from "./components/CatchGroundCard";
+export type {CatchGroundCardElement, CatchGroundCardPadding, CatchGroundCardProps} from "./components/CatchGroundCard";
 export {CatchHeroImage} from "./components/CatchHeroImage";
 export type {CatchHeroImageProps} from "./components/CatchHeroImage";
 export {CatchIcon, catchIconSizes} from "./components/CatchIcon";
@@ -124,7 +135,9 @@ export type {
 export {CatchPhotoTile} from "./components/CatchPhotoTile";
 export type {CatchPhotoTileProps} from "./components/CatchPhotoTile";
 export {CatchPreviewCard} from "./components/CatchPreviewCard";
-export type {CatchPreviewCardProps} from "./components/CatchPreviewCard";
+export type {CatchPreviewCardProps, CatchPreviewCardSize} from "./components/CatchPreviewCard";
+export {CatchProfileHeader} from "./components/CatchProfileHeader";
+export type {CatchProfileHeaderProps, CatchProfileHeaderStat} from "./components/CatchProfileHeader";
 export {CatchQrCode} from "./components/CatchQrCode";
 export type {CatchQrCodeErrorCorrection, CatchQrCodeProps, CatchQrCodeSize} from "./components/CatchQrCode";
 export {CatchRatingSummary} from "./components/CatchRatingSummary";
@@ -182,7 +195,6 @@ export type {
   CatchTextVariant,
 } from "./components/CatchText";
 export {
-  BadgeControl,
   ButtonControl,
   CheckboxControl,
   DataTableControl,
@@ -194,7 +206,6 @@ export {
   classNames,
 } from "./primitives";
 export type {
-  BadgeControlProps,
   ButtonControlProps,
   CheckboxControlProps,
   DataTableControlProps,

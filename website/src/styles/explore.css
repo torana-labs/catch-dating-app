@@ -19,14 +19,14 @@
 .explore-experience[open] summary::after { content: "−"; }
 .explore-experience h2 { font-size: 25px; margin-top: var(--catch-space-s5); }
 .explore-experience>p { max-width: 780px; font-size: 14px; }
-.explore-badge { display: inline-flex; gap: var(--catch-space-micro6); align-items: center; border: 1px solid var(--website-line-strong); padding: 5px 9px; border-radius: var(--catch-radius-xs); background: var(--catch-color-light-primary-soft); color: var(--website-text); font: 600 11px/1.35 system-ui,sans-serif; }
 .explore-results { padding: var(--catch-space-s9) var(--consumer-gutter) 60px; min-height: 400px; }
 .explore-results-heading { display: flex; justify-content: space-between; align-items: baseline; gap: var(--catch-space-s5); margin-bottom: var(--catch-space-s7); }
 .explore-results-heading h2 { font-size: 32px; }
 .explore-results-heading p { font-size: 13px; color: var(--website-text-muted); }
 .explore-page .consumer-event-grid { grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--catch-space-s9) var(--catch-space-s7); }
 .explore-page .consumer-event { border-bottom: 1px solid var(--website-line-strong); padding-bottom: var(--catch-space-s6); }
-.explore-page .consumer-event .explore-badge { margin-top: var(--catch-space-micro14); margin-right: var(--catch-space-micro10); }
+/* An event card's badge is the only non-category element after its media. */
+.explore-page .consumer-event__media + :not(.consumer-category) { margin-top: var(--catch-space-micro14); margin-right: var(--catch-space-micro10); }
 .explore-page .consumer-event h3 { font-size: 29px; }
 .explore-page .consumer-event p { line-height: 1.55; }
 .explore-page .consumer-empty>a { display: inline-flex; align-items: center; gap: var(--catch-space-micro10); margin-top: var(--catch-space-s5); }

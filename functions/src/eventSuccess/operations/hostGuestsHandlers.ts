@@ -19,7 +19,9 @@ export async function getEventAssistanceHostGuestsHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventAssistanceHostGuests");
+  await deps.rateLimit(db, uid, "getEventAssistanceHostGuests", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).get(uid, request.data);
 }
 

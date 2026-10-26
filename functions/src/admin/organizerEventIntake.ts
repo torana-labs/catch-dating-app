@@ -25,11 +25,7 @@ const decisionCollection = "organizerEventCandidateReviewDecisions";
 interface OrganizerEventIntakeDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: OrganizerEventIntakeDeps = {
@@ -82,7 +78,8 @@ export async function adminDecideOrganizerEventCandidateHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminDecideOrganizerEventCandidate"
+    "adminDecideOrganizerEventCandidate",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const decisionId = decisionIdForCandidate(data.candidateId);
   const decisionRef = db.collection(decisionCollection).doc(decisionId);

@@ -55,11 +55,7 @@ interface CrossPathsShowcaseEligibilityDeps {
   now: () => FirebaseFirestore.Timestamp;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   documentIdField: () => FirebaseFirestore.FieldPath;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: CrossPathsShowcaseEligibilityDeps = {
@@ -105,7 +101,8 @@ export async function adminListCrossPathsShowcaseCandidatesHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminListCrossPathsShowcaseCandidates"
+    "adminListCrossPathsShowcaseCandidates",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   const limit = data.limit ?? 25;
   const profileSnapshots = data.uid ?
@@ -172,7 +169,8 @@ export async function adminSetCrossPathsShowcaseEligibilityHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminSetCrossPathsShowcaseEligibility"
+    "adminSetCrossPathsShowcaseEligibility",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const profileRef = db.collection(publicProfilesCollection).doc(data.uid);
   const eligibilityRef = db.collection(eligibilityCollection).doc(data.uid);

@@ -298,7 +298,9 @@ export async function createOrganizerFormHandler(
     throw new HttpsError("invalid-argument", "Form template not found.");
   }
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "createOrganizerForm");
+  await deps.checkRateLimit(db, actorUid, "createOrganizerForm", {
+    maxRequests: 20, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
 
   const formId = deterministicFormId(
@@ -333,7 +335,9 @@ export async function updateOrganizerFormDraftHandler(
   const definition = definitionFromWire(data.definition);
   assertTarget(definition.defaultTargetKind, definition.defaultTargetId);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "updateOrganizerFormDraft");
+  await deps.checkRateLimit(db, actorUid, "updateOrganizerFormDraft", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const formRef = db.collection("organizerForms").doc(data.formId);
   const draftRef = db.collection("organizerFormDrafts").doc(data.formId);
@@ -414,7 +418,9 @@ export async function getOrganizerFormEditorHandler(
     normalizeFormIdentityPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerFormEditor");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerFormEditor", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const [formSnap, draftSnap] = await Promise.all([
     db.collection("organizerForms").doc(data.formId).get(),
@@ -443,7 +449,9 @@ export async function listOrganizerFormsHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerForms");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerForms", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const filterHash = createHash("sha256").update(JSON.stringify({
     organizerId: data.organizerId,
@@ -522,7 +530,9 @@ export async function validateOrganizerFormDraftHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "validateOrganizerFormDraft");
+  await deps.checkRateLimit(db, actorUid, "validateOrganizerFormDraft", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   if (data.formId) {
     const formSnap = await db.collection("organizerForms")
@@ -546,7 +556,9 @@ export async function publishOrganizerFormHandler(
     normalizeFormMutationPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "publishOrganizerForm");
+  await deps.checkRateLimit(db, actorUid, "publishOrganizerForm", {
+    maxRequests: 20, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const formRef = db.collection("organizerForms").doc(data.formId);
   const draftRef = db.collection("organizerFormDrafts").doc(data.formId);
@@ -695,7 +707,9 @@ export async function setOrganizerFormLifecycleHandler(
     normalizeFormMutationPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "setOrganizerFormLifecycle");
+  await deps.checkRateLimit(db, actorUid, "setOrganizerFormLifecycle", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const formRef = db.collection("organizerForms").doc(data.formId);
   const form = await db.runTransaction(async (tx) => {
@@ -768,7 +782,9 @@ export async function duplicateOrganizerFormHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "duplicateOrganizerForm");
+  await deps.checkRateLimit(db, actorUid, "duplicateOrganizerForm", {
+    maxRequests: 20, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const formId = deterministicFormId(
     "duplicate",
@@ -868,7 +884,9 @@ export async function deleteOrganizerFormDraftHandler(
     normalizeFormMutationPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "deleteOrganizerFormDraft");
+  await deps.checkRateLimit(db, actorUid, "deleteOrganizerFormDraft", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const formRef = db.collection("organizerForms").doc(data.formId);
   const draftRef = db.collection("organizerFormDrafts").doc(data.formId);
@@ -915,7 +933,9 @@ export async function listOrganizerFormTemplatesHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerFormTemplates");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerFormTemplates", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   return {
     templates: formTemplates.map((template) => ({

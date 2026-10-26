@@ -22,7 +22,7 @@ interface NominationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (db: FirebaseFirestore.Firestore, uid: string, action: string) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: NominationDeps = {
@@ -49,7 +49,9 @@ export async function adminNominateOrganizerHandler(request: CallableRequest<unk
   const data = validateCallableWithAjv<AdminNominateOrganizerCallablePayload>(request,
     validateAdminNominateOrganizerCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, context.uid, "adminNominateOrganizer");
+  await deps.checkRateLimit?.(db, context.uid, "adminNominateOrganizer", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const now = deps.now();
   const intake = {
     schemaVersion: 1 as const,

@@ -45,11 +45,7 @@ interface ConversationGraphDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ConversationGraphDeps = {
@@ -82,7 +78,8 @@ export async function getEventSuccessConversationGraphHandler(
   await deps.checkRateLimit?.(
     db,
     uid,
-    "getEventSuccessConversationGraph"
+    "getEventSuccessConversationGraph",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const context = await loadConversationGraphContext({
     db,
@@ -134,7 +131,8 @@ export async function submitEventSuccessConversationGraphHandler(
   await deps.checkRateLimit?.(
     db,
     uid,
-    "submitEventSuccessConversationGraph"
+    "submitEventSuccessConversationGraph",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const context = await loadConversationGraphContext({
     db,

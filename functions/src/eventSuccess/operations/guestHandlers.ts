@@ -34,7 +34,8 @@ export async function getEventAssistanceGuestViewHandler(
   await deps.checkRateLimit(db, networkIdentity(request),
     "getEventAssistanceGuestView", {maxRequests: 600, windowMs: 60_000});
   await deps.checkRateLimit(db, credentialIdentity(input),
-    "getEventAssistanceGuestView");
+    "getEventAssistanceGuestView",
+    {maxRequests: 60, windowMs: 60 * 1000});
   const output = await new GuestAssistanceStore(db, deps.now)
     .getView(input.linkId, input.secret);
   if (!validateEventAssistanceGuestViewCallableResponse(output)) {
@@ -52,7 +53,8 @@ export async function submitEventAssistanceGuestChoiceHandler(
   await deps.checkRateLimit(db, networkIdentity(request),
     "submitEventAssistanceGuestChoice", {maxRequests: 120, windowMs: 60_000});
   await deps.checkRateLimit(db, credentialIdentity(input),
-    "submitEventAssistanceGuestChoice");
+    "submitEventAssistanceGuestChoice",
+    {maxRequests: 20, windowMs: 60 * 1000});
   const output = await new GuestAssistanceStore(db, deps.now).submit(input);
   if (!validateSubmitEventAssistanceGuestChoiceCallableResponse(output)) {
     throw new HttpsError("internal", "Your reply could not be confirmed.");

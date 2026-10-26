@@ -37,11 +37,7 @@ import {
 interface SelfCheckInDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => FirebaseFirestore.Timestamp;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   verifyToken?: typeof verifyEventVenueSessionToken;
   recordSignalFacts?: typeof recordParticipantSignalFactsBestEffort;
   incrementInviteLink?: typeof incrementInviteLinkCounterBestEffort;
@@ -70,7 +66,9 @@ export async function selfCheckInAttendanceHandler(
     normalizeEventIdPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, userId, "selfCheckInAttendance");
+  await deps.checkRateLimit?.(db, userId, "selfCheckInAttendance", {
+    maxRequests: 5, windowMs: 60 * 1000,
+  });
   const now = deps.now();
   const claims = deps.verifyToken!({
     token: venueSessionToken,

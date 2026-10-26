@@ -153,7 +153,9 @@ export async function getEventChatAccessHandler(
   const data = validateCallableWithAjv(request,
     validateGetEventChatAccessCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventChatAccess");
+  await deps.rateLimit(db, uid, "getEventChatAccess", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (tx) =>
     (await readEventChatAccess(db, tx, data.eventId, uid,
       deps.now().toMillis())).view);
@@ -185,7 +187,9 @@ export async function updateEventChatAccessHandler(
     throw new HttpsError("invalid-argument", "Timing applies to schedule.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, uid, "updateEventChatAccess");
+  await deps.rateLimit(db, uid, "updateEventChatAccess", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const receiptRef = db.collection("eventChatAccessReceipts")
     .doc(hash([uid, data.requestId]));
   const legacyPayload = [data.eventId, data.action,

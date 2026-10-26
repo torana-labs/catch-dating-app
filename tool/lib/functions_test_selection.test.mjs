@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {listedEmulatorTests, selectEmulatorTests, sourceForListedTest} from "./functions_test_selection.mjs";
+import {selectEmulatorTests, sourceForListedTest} from "./functions_test_selection.mjs";
 
 const dependency = (resolved) => ({module: `./${resolved}`, resolved, coreModule: false, couldNotResolve: false});
 const listed = [
@@ -28,10 +28,7 @@ const sources = {
 const select = (changedPaths) => selectEmulatorTests({changedPaths, listed, modules,
   readSource: (file) => sources[file] ?? ""});
 
-test("listed tests come from test:rules and map compiled tests to their sources", () => {
-  assert.deepEqual(listedEmulatorTests({scripts: {"test:rules":
-    "npm run build && node scripts/run-tests.cjs --require-emulators lib/a/x.test.js test/y.rules.test.cjs"}}),
-  ["lib/a/x.test.js", "test/y.rules.test.cjs"]);
+test("listed tests map compiled tests to their sources", () => {
   assert.equal(sourceForListedTest("lib/a/x.test.js"), "src/a/x.test.ts");
   assert.equal(sourceForListedTest("test/y.rules.test.cjs"), "test/y.rules.test.cjs");
 });
@@ -48,6 +45,7 @@ test("contract files select the tests that read them as data", () => {
 
 test("shared inputs and unexplained functions files run every listed test", () => {
   for (const changed of ["firestore.rules", "storage.rules", "functions/package.json", "functions/package-lock.json", "functions/tsconfig.json",
+    "functions/test/emulator-tests.json",
     "functions/scripts/run-tests.cjs", "firebase.json"]) {
     const result = select([changed]);
     assert.equal(result.mode, "full", changed);

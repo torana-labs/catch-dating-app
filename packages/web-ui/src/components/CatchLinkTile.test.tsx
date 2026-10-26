@@ -15,6 +15,13 @@ describe("CatchLinkTile", () => {
     expect(screen.getByTestId("icon").parentElement!.getAttribute("aria-hidden")).toBe("true");
   });
 
+  it("leaves out the icon tile when there is no icon", () => {
+    render(<CatchLinkTile href="/strava" title="Strava club" />);
+    const link = screen.getByRole("link", {name: "Strava club"});
+    expect(link.dataset.icon).toBeUndefined();
+    expect(link.querySelectorAll("[aria-hidden='true']")).toHaveLength(1);
+  });
+
   it("pins on the coral ground by default and on any accent", () => {
     const {rerender} = render(<CatchLinkTile href="#" pinned title="Run & Rave" />);
     expect(screen.getByRole("link").dataset).toMatchObject({ground: "coral", pinned: "true"});

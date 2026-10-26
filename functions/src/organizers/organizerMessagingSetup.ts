@@ -35,7 +35,7 @@ import {
   "../shared/generated/validators/sendOrganizerWhatsappTestInput";
 import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
-import {checkRateLimit} from "../shared/rateLimit";
+import {checkRateLimit, RateLimitConfig} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
   hashEndpoint,
@@ -103,7 +103,8 @@ export async function completeOrganizerWhatsappConnectionHandler(
   );
   const db = deps.firestore();
   await deps.checkRateLimit(
-    db, actorUid, "completeOrganizerWhatsappConnection"
+    db, actorUid, "completeOrganizerWhatsappConnection",
+    {maxRequests: 10, windowMs: 60 * 60 * 1000}
   );
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   assertProviderConfigured();
@@ -173,7 +174,8 @@ export async function getOrganizerMessagingSetupHandler(
   deps: OrganizerMessagingSetupDeps = defaultDeps
 ): Promise<OrganizerMessagingSetupCallableResponse> {
   const {actorUid, data, db} = await authorizeAction(
-    request, "getOrganizerMessagingSetup", deps
+    request, "getOrganizerMessagingSetup",
+    {maxRequests: 30, windowMs: 60 * 1000}, deps
   );
   void actorUid;
   return getSetupResponse(db, data.organizerId, data.connectionId ?? null);
@@ -184,7 +186,8 @@ export async function syncOrganizerWhatsappTemplatesHandler(
   deps: OrganizerMessagingSetupDeps = defaultDeps
 ): Promise<OrganizerMessagingSetupCallableResponse> {
   const {data, db} = await authorizeAction(
-    request, "syncOrganizerWhatsappTemplates", deps
+    request, "syncOrganizerWhatsappTemplates",
+    {maxRequests: 30, windowMs: 60 * 1000}, deps
   );
   assertProviderConfigured();
   const {connectionId, connection} = await requireConnection(
@@ -236,7 +239,9 @@ export async function sendOrganizerWhatsappTestHandler(
     "A WhatsApp test value contains language that cannot be delivered.",
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "sendOrganizerWhatsappTest");
+  await deps.checkRateLimit(db, actorUid, "sendOrganizerWhatsappTest", {
+    maxRequests: 5, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   assertProviderConfigured();
   const {connection} = await requireConnection(
@@ -281,7 +286,8 @@ export async function disconnectOrganizerWhatsappConnectionHandler(
   deps: OrganizerMessagingSetupDeps = defaultDeps
 ): Promise<OrganizerMessagingSetupCallableResponse> {
   const {data, db} = await authorizeAction(
-    request, "disconnectOrganizerWhatsappConnection", deps
+    request, "disconnectOrganizerWhatsappConnection",
+    {maxRequests: 30, windowMs: 60 * 1000}, deps
   );
   const {connectionId, connection} = await requireConnection(
     db, data.organizerId, data.connectionId ?? null
@@ -313,6 +319,7 @@ export async function disconnectOrganizerWhatsappConnectionHandler(
 async function authorizeAction(
   request: CallableRequest<unknown>,
   operation: string,
+  limit: RateLimitConfig,
   deps: OrganizerMessagingSetupDeps
 ): Promise<{
   actorUid: string;
@@ -328,7 +335,7 @@ async function authorizeAction(
     normalizePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, operation);
+  await deps.checkRateLimit(db, actorUid, operation, limit);
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   return {actorUid, data, db};
 }

@@ -124,6 +124,8 @@ import {
 import {organizerCommunicationPreferenceId} from
   "../shared/organizerCommunicationPreferences";
 
+// Creating and changing contacts share one mutation budget.
+const mutateContactRateLimit = {maxRequests: 60, windowMs: 60 * 1000};
 const defaultContactPageSize = 50;
 const maxDetailEvents = 100;
 const maxDetailNotes = 100;
@@ -192,7 +194,9 @@ export async function listOrganizerContactsHandler(
     normalizeListContactsPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerContacts");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerContacts", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,
@@ -389,7 +393,8 @@ export async function createOrganizerContactHandler(
     normalizeCreateContactPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "mutateOrganizerContact");
+  await deps.checkRateLimit(db, actorUid, "mutateOrganizerContact",
+    mutateContactRateLimit);
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   return createOrganizerContactRecord({
     db,
@@ -634,7 +639,9 @@ export async function getOrganizerContactDetailHandler(
   const historyQuery = <T>(read: () => Promise<T>): Promise<T | null> =>
     includeHistory ? read() : Promise.resolve(null);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerContactDetail");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerContactDetail", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,
@@ -1725,7 +1732,8 @@ export async function mutateOrganizerContactHandler(
     normalizeContactMutationPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "mutateOrganizerContact");
+  await deps.checkRateLimit(db, actorUid, "mutateOrganizerContact",
+    mutateContactRateLimit);
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const contactRef = db.collection("organizerContacts").doc(data.contactId);
   const channelRef = db.collection("organizerContactChannelStates").doc(
@@ -1931,7 +1939,9 @@ export async function createOrganizerContactNoteHandler(
     normalizeContactNotePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "createOrganizerContactNote");
+  await deps.checkRateLimit(db, actorUid, "createOrganizerContactNote", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const contactRef = db.collection("organizerContacts").doc(data.contactId);
   const noteRef = db.collection("organizerContactNotes").doc();
@@ -1969,7 +1979,9 @@ export async function mutateOrganizerContactNoteHandler(
     normalizeContactNotePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "mutateOrganizerContactNote");
+  await deps.checkRateLimit(db, actorUid, "mutateOrganizerContactNote", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const contactRef = db.collection("organizerContacts").doc(data.contactId);
   const noteRef = db.collection("organizerContactNotes").doc(data.noteId);
@@ -2027,7 +2039,9 @@ export async function recordOrganizerContactOutreachHandler(
     normalizeContactOutreachPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "recordOrganizerContactOutreach");
+  await deps.checkRateLimit(db, actorUid, "recordOrganizerContactOutreach", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const contactRef = db.collection("organizerContacts").doc(data.contactId);
   const outreachRef = db.collection("organizerContactOutreach").doc();
@@ -2073,7 +2087,9 @@ export async function exportOrganizerContactsHandler(
     normalizeExportPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "exportOrganizerContacts");
+  await deps.checkRateLimit(db, actorUid, "exportOrganizerContacts", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const filters = contactFilterSelection(data);
   const [page, summarySnap] = await Promise.all([

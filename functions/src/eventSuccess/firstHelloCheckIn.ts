@@ -64,11 +64,7 @@ interface FirstHelloDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
   verifyVenueSessionToken?: typeof verifyEventVenueSessionToken;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   recordSignalFacts?: (
     db: FirebaseFirestore.Firestore,
     facts: ParticipantSignalFactInput[]
@@ -146,7 +142,8 @@ export async function startEventSuccessFirstHelloMissionHandler(
   await deps.checkRateLimit?.(
     db,
     observerUid,
-    "startEventSuccessFirstHelloMission"
+    "startEventSuccessFirstHelloMission",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
 
   const eventRef = db.collection("events").doc(data.eventId);
@@ -294,7 +291,8 @@ export async function completeEventSuccessFirstHelloMissionHandler(
   await deps.checkRateLimit?.(
     db,
     observerUid,
-    "completeEventSuccessFirstHelloMission"
+    "completeEventSuccessFirstHelloMission",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
 
   const eventRef = db.collection("events").doc(data.eventId);

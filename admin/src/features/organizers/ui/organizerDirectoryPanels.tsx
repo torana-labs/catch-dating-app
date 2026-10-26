@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -29,7 +29,6 @@ import {
   AdminMetricGrid,
   AdminRoadmapListItem,
   AdminTableRow,
-  AdminTag,
   AdminToolbar,
   AdminWorkbenchNote,
   DataTable,
@@ -107,7 +106,7 @@ function OrganizerClaimReviewWorkspace({
         </AdminButton>
         <PageHeader
           actions={controller.selected ? (
-            <AdminTag tone="muted">{controller.selected.status}</AdminTag>
+            <CatchBadge label={controller.selected.status} />
           ) : null}
           title={controller.selected?.requesterName ?? controller.selectedRequestId}
         />

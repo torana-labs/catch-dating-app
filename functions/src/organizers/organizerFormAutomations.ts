@@ -142,7 +142,9 @@ export async function createOrganizerFormAutomationHandler(
       normalizeCreateAutomationPayload,
     );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "createOrganizerFormAutomation");
+  await deps.checkRateLimit(db, actorUid, "createOrganizerFormAutomation", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,
@@ -377,7 +379,9 @@ export async function setOrganizerFormAutomationStateHandler(
       validateSetOrganizerFormAutomationStateCallablePayload,
     );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "setOrganizerFormAutomationState");
+  await deps.checkRateLimit(db, actorUid, "setOrganizerFormAutomationState", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,
@@ -531,7 +535,9 @@ export async function listOrganizerFormAutomationRunsHandler(
         }),
     );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerFormAutomationRuns");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerFormAutomationRuns", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,

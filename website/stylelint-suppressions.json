@@ -58,7 +58,7 @@
   },
   "src/styles/explore.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 46
+      "count": 43
     },
     "declaration-property-value-allowed-list": {
       "count": 3
@@ -80,10 +80,13 @@
   },
   "src/styles/home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 46
+      "count": 44
     },
     "declaration-property-value-allowed-list": {
-      "count": 14
+      "count": 13
+    },
+    "declaration-property-value-disallowed-list": {
+      "count": 5
     },
     "media-feature-name-value-allowed-list": {
       "count": 5
@@ -154,10 +157,10 @@
   },
   "src/styles/organizers.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 142
+      "count": 140
     },
     "declaration-property-value-allowed-list": {
-      "count": 55
+      "count": 54
     },
     "media-feature-name-value-allowed-list": {
       "count": 2

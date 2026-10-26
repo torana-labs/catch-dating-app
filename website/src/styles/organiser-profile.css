@@ -31,7 +31,6 @@
 .organiser-profile .listing-catch-event-grid { grid-template-columns: 1fr; }
 .organiser-profile .event-action-card { background: var(--website-surface); border: 1px solid var(--website-line-strong); border-radius: 5px; padding: var(--catch-space-s6); box-shadow: none; }
 .organiser-profile .event-action-card h3 { font-size: 30px; line-height: 1.1; }
-.organiser-profile .event-action-card .explore-badge { justify-self: start; }
 .organiser-profile .event-action-card__meta { gap: 1px; }
 .organiser-profile .event-action-card__meta dd { color: var(--website-text); }
 .organiser-profile .event-action-card__counts { background: var(--website-bg); border-radius: var(--catch-radius-xs); }
@@ -64,7 +63,8 @@
   .organiser-profile .listing-status-ledger { grid-template-columns: 1fr; }
 }
 
-.organiser-profile .event-action-card__lead .explore-badge { align-self: start; margin-bottom: var(--catch-space-micro10); }
+/* The card's badge, when present, leads before the eyebrow label. */
+.organiser-profile .event-action-card__lead > :first-child:not(.ui-label) { justify-self: start; align-self: start; margin-bottom: var(--catch-space-micro10); }
 @media (max-width: 600px) {
   .organiser-profile .event-action-card__counts { grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--catch-space-s2); }
   .organiser-profile .event-action-card__counts span { font-size: 9px; letter-spacing: 0; }

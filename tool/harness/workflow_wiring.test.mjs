@@ -1426,9 +1426,10 @@ test("backend integration runs strict execution inside both emulators with a bou
   assert.match(source, /timeout-minutes: 35/u);
   assert.match(source, /firebase emulators:exec[^\n]+--only firestore,storage[^\n]+npm --prefix functions run test:rules/u);
   const pkg = JSON.parse(fs.readFileSync(new URL("../../functions/package.json", import.meta.url), "utf8"));
-  assert.match(pkg.scripts["test:rules"], /^npm run build && node scripts\/run-tests.cjs --require-emulators /u);
-  assert.ok(pkg.scripts["test:rules"].includes("test/firestore.rules.test.cjs"));
-  assert.ok(pkg.scripts["test:rules"].includes("lib/chats/eventChatAccessEmulator.test.js"));
+  assert.equal(pkg.scripts["test:rules"], "npm run build && node scripts/run-tests.cjs --require-emulators");
+  const listed = JSON.parse(fs.readFileSync(new URL("../../functions/test/emulator-tests.json", import.meta.url), "utf8"));
+  assert.ok(listed.includes("test/firestore.rules.test.cjs"));
+  assert.ok(listed.includes("lib/chats/eventChatAccessEmulator.test.js"));
 });
 
 test("only pull requests narrow the strict emulator list", () => {

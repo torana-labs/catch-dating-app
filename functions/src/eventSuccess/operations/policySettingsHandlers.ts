@@ -19,7 +19,9 @@ export async function getEventAssistanceSettingHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventAssistanceSetting");
+  await deps.rateLimit(db, uid, "getEventAssistanceSetting", {
+    maxRequests: 60, windowMs: 60_000,
+  });
   return deps.store(db).get(uid, request.data);
 }
 
@@ -28,7 +30,9 @@ export async function setEventAssistanceSettingHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "setEventAssistanceSetting");
+  await deps.rateLimit(db, uid, "setEventAssistanceSetting", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).set(uid, request.data);
 }
 

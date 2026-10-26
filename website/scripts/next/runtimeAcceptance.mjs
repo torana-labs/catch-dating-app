@@ -69,6 +69,8 @@ try {
   const unpublishedCard = await fetch(origin + "/og/events/not-published/card.png", {redirect: "manual"});
   assert.equal(unpublishedCard.status, 302);
   assert.match(unpublishedCard.headers.get("location"), /^\/assets\/og\/default\.png\?v=/);
+  // Event maps call the Static API only for a published event's meeting point.
+  assert.equal((await fetch(origin + "/maps/events/not-published/map.png")).status, 404);
   await check(`/events/${external.eventId}/`, 200, "Takeoff: Run + Rave");
   await check("/missing-route-proof/", 404);
   const missingRsc = await fetch(origin + "/missing-route-proof/?_rsc", {headers: {RSC: "1"}});
@@ -98,6 +100,7 @@ try {
   assert.match(custom.headers["cache-control"], /no-store/);
   assert.equal((await customHostRequest("/api/public-catalog")).status, 404);
   assert.equal((await customHostRequest("/og/organizers/next-proof/card.png")).status, 404);
+  assert.equal((await customHostRequest("/maps/events/next-native-event/map.png")).status, 404);
   browser = await chromium.launch({headless: true});
   const nojs = await browser.newContext({javaScriptEnabled: false, viewport: {width: 1440, height: 1000}});
   const nojsPage = await nojs.newPage();

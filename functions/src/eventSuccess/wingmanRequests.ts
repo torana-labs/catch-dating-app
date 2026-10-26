@@ -42,11 +42,7 @@ interface WingmanRequestDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 interface EventSuccessPlanDocument {
@@ -101,7 +97,8 @@ export async function fetchEventSuccessWingmanCandidatesHandler(
   await deps.checkRateLimit?.(
     db,
     viewerUid,
-    "fetchEventSuccessWingmanCandidates"
+    "fetchEventSuccessWingmanCandidates",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
 
   const [
@@ -187,7 +184,8 @@ export async function submitEventSuccessWingmanRequestHandler(
   await deps.checkRateLimit?.(
     db,
     requesterUid,
-    "submitEventSuccessWingmanRequest"
+    "submitEventSuccessWingmanRequest",
+    {maxRequests: 10, windowMs: 60 * 1000}
   );
 
   const requestRef = db
@@ -284,7 +282,8 @@ export async function withdrawEventSuccessWingmanRequestHandler(
   await deps.checkRateLimit?.(
     db,
     requesterUid,
-    "withdrawEventSuccessWingmanRequest"
+    "withdrawEventSuccessWingmanRequest",
+    {maxRequests: 10, windowMs: 60 * 1000}
   );
 
   const requestRef = db

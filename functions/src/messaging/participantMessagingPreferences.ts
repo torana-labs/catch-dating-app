@@ -134,7 +134,9 @@ export async function listParticipantMessagingPreferencesHandler(
   const data = validateCallableWithAjv(request,
     validateListParticipantMessagingPreferencesCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "listParticipantMessagingPreferences");
+  await deps.rateLimit(db, uid, "listParticipantMessagingPreferences", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const catchPreference = await transact(db, async (tx) => {
     await assertActiveAccount(db, tx, uid);
     const value = readPreference(await tx.get(db.collection(
@@ -186,7 +188,9 @@ export async function withdrawParticipantMessagingPermissionHandler(
       "Catch has no event-operations permission here.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, uid, "withdrawParticipantMessagingPermission");
+  await deps.rateLimit(db, uid, "withdrawParticipantMessagingPermission", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const scope = data.scope;
   const purpose = data.purpose ?? null;
   const receiptIdentity = purpose ?

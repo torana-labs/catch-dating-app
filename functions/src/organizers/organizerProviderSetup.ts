@@ -119,7 +119,9 @@ export async function getOrganizerProviderSetupHandler(
     normalizePayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerProviderSetup");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerProviderSetup", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   await requireScopedEvent(db, data.organizerId, data.eventId);
   return providerSetupResponse(db, data.organizerId, data.eventId);
@@ -138,7 +140,9 @@ export async function connectOrganizerLumaProviderHandler(
     normalizePayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "connectOrganizerLumaProvider");
+  await deps.checkRateLimit(db, actorUid, "connectOrganizerLumaProvider", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const event = await requireScopedEvent(
     db, data.organizerId, data.eventId, "luma"
@@ -263,7 +267,9 @@ export async function listOrganizerLumaEventsHandler(
     normalizePayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerLumaEvents");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerLumaEvents", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const event = await requireScopedEvent(
     db, data.organizerId, data.eventId, "luma"
@@ -311,7 +317,9 @@ export async function syncOrganizerProviderEventHandler(
     normalizePayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "syncOrganizerProviderEvent");
+  await deps.checkRateLimit(db, actorUid, "syncOrganizerProviderEvent", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   await requireScopedEvent(db, data.organizerId, data.eventId);
   const mappingId = externalEventMappingId(data.eventId);
@@ -505,7 +513,9 @@ export async function disconnectOrganizerProviderHandler(
     normalizePayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "disconnectOrganizerProvider");
+  await deps.checkRateLimit(db, actorUid, "disconnectOrganizerProvider", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   await requireScopedEvent(db, data.organizerId, data.eventId);
   const connectionRef = db.collection("organizerProviderConnections")

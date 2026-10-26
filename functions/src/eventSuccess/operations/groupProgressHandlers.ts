@@ -19,7 +19,9 @@ export async function getEventAssistanceGroupProgressHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventAssistanceGroupProgress");
+  await deps.rateLimit(db, uid, "getEventAssistanceGroupProgress", {
+    maxRequests: 60, windowMs: 60_000,
+  });
   return deps.store(db).get(uid, request.data);
 }
 
@@ -28,7 +30,9 @@ export async function confirmEventAssistanceDepartureHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "confirmEventAssistanceDeparture");
+  await deps.rateLimit(db, uid, "confirmEventAssistanceDeparture", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).confirmDeparture(uid, request.data);
 }
 
@@ -37,7 +41,9 @@ export async function changeEventAssistanceRouteHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "changeEventAssistanceRoute");
+  await deps.rateLimit(db, uid, "changeEventAssistanceRoute", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).changeRoute(uid, request.data);
 }
 

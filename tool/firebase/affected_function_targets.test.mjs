@@ -139,6 +139,116 @@ for (const [label, file, content] of [
   });
 }
 
+const deployPackage = {
+  main: "lib/index.js",
+  engines: {node: "24"},
+  scripts: {
+    lint: "eslint src",
+    prebuild: "node scripts/clean-lib.cjs",
+    build: "tsc",
+    postbuild: "node scripts/copy-operations-runtime.cjs",
+    "test:rules": "npm run build && node scripts/run-tests.cjs --require-emulators",
+    deploy: "node ../tool/firebase_functions.mjs deploy",
+  },
+  dependencies: {"firebase-functions": "^7.4.0"},
+  overrides: {uuid: "^11.1.1"},
+};
+
+// The real deploy runs lint and build through firebase.json predeploy hooks.
+function packageFixture(t, predeploy = ['npm --prefix "$RESOURCE_DIR" run lint',
+  'npm --prefix "$RESOURCE_DIR" run build']) {
+  const f = fixture(t);
+  f.write("firebase.json", JSON.stringify({functions: {source: "functions", predeploy}}));
+  f.write("functions/package.json", JSON.stringify(deployPackage, null, 2));
+  const base = f.commit();
+  const writePackage = (edit) => {
+    const next = structuredClone(deployPackage);
+    edit(next);
+    f.write("functions/package.json", JSON.stringify(next, null, 2));
+  };
+  return {...f, base, writePackage, select: () => affectedFunctionTargets({
+    sourceRoot: f.root, baseSha: base, sourceSha: f.commit(), authorizedTargets: targets,
+  })};
+}
+
+test("package scripts no deploy runs leave every Function deployed", (t) => {
+  for (const [label, edit] of [
+    ["listed emulator test", (next) => { next.scripts["test:rules"] += " lib/new.test.js"; }],
+    ["new operator script", (next) => { next.scripts["backfill:pages"] = "node scripts/backfill-pages.cjs"; }],
+    ["changed deploy wrapper", (next) => { next.scripts.deploy = "node ../tool/firebase_functions.mjs deploy --force"; }],
+    ["removed script", (next) => { delete next.scripts["test:rules"]; }],
+  ]) {
+    const f = packageFixture(t);
+    f.writePackage(edit);
+    const result = f.select();
+    assert.equal(result.mode, "no-op", label);
+    assert.deepEqual(result.targets, [], label);
+  }
+});
+
+test("package fields and scripts a deploy runs retain the full authorized set", (t) => {
+  for (const [label, edit] of [
+    ["build", (next) => { next.scripts.build = "tsc -p tsconfig.build.json"; }],
+    ["prebuild", (next) => { next.scripts.prebuild = "node scripts/clean.cjs"; }],
+    ["postbuild", (next) => { next.scripts.postbuild = "node scripts/copy.cjs"; }],
+    ["predeploy lint", (next) => { next.scripts.lint = "eslint --fix src"; }],
+    ["predeploy pre hook", (next) => { next.scripts.prelint = "node scripts/generate.cjs"; }],
+    ["install lifecycle", (next) => { next.scripts.postinstall = "node scripts/patch.cjs"; }],
+    ["Cloud Build hook", (next) => { next.scripts["gcp-build"] = "npm run build"; }],
+    ["dependency", (next) => { next.dependencies.sharp = "^0.35.5"; }],
+    ["optional dependency", (next) => { next.optionalDependencies = {fsevents: "^2.3.3"}; }],
+    ["peer dependency", (next) => { next.peerDependencies = {"firebase-admin": "^13.10.0"}; }],
+    ["override", (next) => { next.overrides.uuid = "^12.0.0"; }],
+    ["engine", (next) => { next.engines.node = "26"; }],
+    ["entrypoint", (next) => { next.main = "lib/main.js"; }],
+    ["module type", (next) => { next.type = "module"; }],
+    ["unknown field", (next) => { next.imports = {"#shared/*": "./lib/shared/*.js"}; }],
+  ]) {
+    const f = packageFixture(t);
+    f.writePackage(edit);
+    const result = f.select();
+    assert.equal(result.mode, "full", label);
+    assert.deepEqual(result.targets, targets, label);
+  }
+});
+
+test("unreadable package metadata or predeploy scripts retain the full authorized set", (t) => {
+  const broken = packageFixture(t);
+  broken.write("functions/package.json", "{not json");
+  assert.equal(broken.select().mode, "full");
+  const unnamed = packageFixture(t, ['npm --prefix "$RESOURCE_DIR" ci']);
+  unnamed.writePackage((next) => { next.scripts["test:rules"] += " lib/new.test.js"; });
+  assert.equal(unnamed.select().mode, "full", "An unnamed package-manager hook may run any script.");
+  const lockfile = packageFixture(t);
+  lockfile.write("functions/package-lock.json", "{}");
+  lockfile.writePackage((next) => { next.scripts["test:rules"] += " lib/new.test.js"; });
+  assert.equal(lockfile.select().mode, "full", "Any lockfile change still forces a full deploy.");
+});
+
+test("Functions test files and the strict emulator list are never runtime inputs", (t) => {
+  const f = fixture(t);
+  f.write("functions/scripts/backfill-public-pages.test.cjs", "// backfill CLI tests");
+  f.write("functions/scripts/run-tests.test.cjs", "// runner tests");
+  f.write("functions/test/emulator-tests.json", '["lib/new.emulator.test.js"]');
+  const result = f.select();
+  assert.equal(result.mode, "no-op");
+  assert.deepEqual(result.targets, []);
+});
+
+test("adding a callable with its emulator test selects only that callable", (t) => {
+  const f = packageFixture(t);
+  f.write("functions/test/emulator-tests.json", "[]");
+  const base = f.commit();
+  f.write("functions/src/delta.ts", 'import {shared} from "./shared"; export const delta = shared;');
+  f.write("functions/src/delta.emulator.test.ts", 'import {delta} from "./delta"; console.log(delta);');
+  f.write("functions/src/index.ts", f.files["functions/src/index.ts"] + '\nexport {delta} from "./delta";');
+  f.write("functions/test/emulator-tests.json", '["lib/delta.emulator.test.js"]');
+  const result = affectedFunctionTargets({sourceRoot: f.root, baseSha: base, sourceSha: f.commit(),
+    authorizedTargets: [...targets, "functions:delta"]});
+  assert.equal(result.mode, "affected");
+  assert.deepEqual(result.targets, ["functions:delta"]);
+});
+
 test("dynamic loading always redeploys only the Functions that reach it", (t) => {
   const f = fixture(t);
   f.write("functions/src/alpha.ts", "const loaded = require(process.env.MODULE); export const alpha = loaded;");

@@ -19,9 +19,7 @@ export function selectOptions(options: readonly SelectOption[]): {
   };
 }
 
-export type ChipTone = "base" | "neutral" | "muted" | "warning" | "success" | "danger" | "ready" | "blocked" | string;
 export type AlertTone = "neutral" | "warning" | "success" | "blocked";
-export type TagTone = "base" | "neutral" | "muted" | "ready" | "blocked" | "warning" | "success" | "danger" | string;
 export type MetricTone = "normal" | "attention";
 export type MetricVariant = "card" | "tile";
 export type AdminMetricGridColumns = 3 | 4 | 6 | "auto";
@@ -29,7 +27,6 @@ export type QualityRowTone = "base" | AlertTone | string;
 export type AdminOverviewQueueIntent = "danger" | "warning" | "neutral";
 export type AdminSignalTone = "neutral" | "green" | "teal" | "orange" | "red";
 export type AdminOverviewSignalTone = AdminSignalTone;
-export type RiskTone = "low" | "medium" | "high" | "watch";
 export type DataTableVariant = "default" | "workbench";
 export type AdminFormVariant = "default" | "publishing";
 export type AdminEditorGridElement = "div" | "section";

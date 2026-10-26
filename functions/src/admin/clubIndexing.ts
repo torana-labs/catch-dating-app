@@ -27,11 +27,7 @@ const indexReviewRoles = ["admin", "adminOwner", "support"] as const;
 interface ClubIndexingDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ClubIndexingDeps = {
@@ -76,7 +72,9 @@ export async function adminSetClubIndexStatusHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminSetClubIndexStatus");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminSetClubIndexStatus", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const clubRef = db.collection("organizers").doc(data.clubId);
   const timestamp = deps.serverTimestamp();
   const publishStatus = data.indexStatus === "noindex" ? "qa" : "published";

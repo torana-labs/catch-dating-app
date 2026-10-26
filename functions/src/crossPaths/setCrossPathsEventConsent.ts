@@ -32,11 +32,7 @@ export const currentCrossPathsTermsVersion = 1;
 interface SetCrossPathsEventConsentDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => FirebaseFirestore.Timestamp;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: SetCrossPathsEventConsentDeps = {
@@ -78,7 +74,9 @@ export async function setCrossPathsEventConsentHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "setCrossPathsEventConsent");
+  await deps.checkRateLimit?.(db, uid, "setCrossPathsEventConsent", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const response: SetCrossPathsEventConsentCallableResponse = {
     eventId: data.eventId,
     enabled: data.enabled,

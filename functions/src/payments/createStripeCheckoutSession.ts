@@ -59,11 +59,7 @@ interface CreateStripeCheckoutSessionDeps {
   firestore: () => FirebaseFirestore.Firestore;
   stripe: () => StripeClient;
   serverTimestamp: () => unknown;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof checkRateLimit;
 }
 
 const defaultDeps: CreateStripeCheckoutSessionDeps = {
@@ -234,7 +230,9 @@ export async function createStripeCheckoutSessionHandler(
   const organizerRef = db.collection("organizers").doc(event.organizerId);
   const [organizerSnap] = await Promise.all([
     organizerRef.get(),
-    deps.checkRateLimit?.(db, uid, "createStripeCheckoutSession"),
+    deps.checkRateLimit?.(db, uid, "createStripeCheckoutSession", {
+      maxRequests: 10, windowMs: 60 * 1000,
+    }),
   ]);
   if (!organizerSnap.exists) {
     throw new HttpsError("not-found", "Organizer not found.");

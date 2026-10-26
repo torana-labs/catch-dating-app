@@ -72,7 +72,9 @@ export async function getEventAssistanceParticipantContextHandler(
   const input = validateCallableWithAjv(request,
     validateGetEventAssistanceParticipantContextCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "getEventAssistanceParticipantContext");
+  await deps.checkRateLimit(db, uid, "getEventAssistanceParticipantContext", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const result = await readParticipantContext(db, uid, input.eventId, deps.now);
   if (!validateEventAssistanceParticipantContextCallableResponse(result)) {
     throw new HttpsError("internal", "Event identity unavailable.");

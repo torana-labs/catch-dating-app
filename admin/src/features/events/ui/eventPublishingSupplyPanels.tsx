@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {useState} from "react";
 import {CheckCircle2, Clock3, ExternalLink, FileWarning, FolderSearch, Lock} from "lucide-react";
 import type {
@@ -14,14 +14,12 @@ import {
   AdminEventSupplyLinks,
   AdminLinkButton,
   AdminTableRow,
-  AdminTag,
   CheckboxField,
   DataTable,
   EmptyState,
   QualityList,
   QualityRow,
   StateRow,
-  StatusChip,
   TableActionButton,
   AdminEyebrow,
   AdminTagList,
@@ -124,10 +122,8 @@ function EventDirectoryTable({
                 </span>
               </AdminRowTitle>
               <AdminTagRow>
-                <AdminTag tone={row.searchIndexStatus === "indexed" ? "muted" : "neutral"}>
-                  {row.searchIndexStatus}
-                </AdminTag>
-                {eventIsFull(row) ? <AdminTag>full</AdminTag> : null}
+                <CatchBadge label={row.searchIndexStatus} />
+                {eventIsFull(row) ? <CatchBadge label="full" /> : null}
               </AdminTagRow>
             </td>
             <td>
@@ -199,29 +195,17 @@ function ExternalEventSupplyTable({
             <td>{eventPublishingEditorPanels.formatDateTime(row.startTime)}</td>
             <td>
               <AdminTagRow>
-                <AdminTag
-                  tone={row.publicationStatus === "public" ? "muted" : "neutral"}
-                >
-                  {row.publicationStatus}
-                </AdminTag>
-                <AdminTag tone="muted">{row.status}</AdminTag>
-                <AdminTag tone="muted">{row.availability}</AdminTag>
+                <CatchBadge label={row.publicationStatus} />
+                <CatchBadge label={row.status} />
+                <CatchBadge label={row.availability} />
               </AdminTagRow>
             </td>
             <td>
               <AdminTagRow>
-                <AdminTag
-                  tone={row.importPolicyAcknowledged ? "muted" : "neutral"}
-                >
-                  policy {row.importPolicyAcknowledged ? "ok" : "open"}
-                </AdminTag>
-                <AdminTag tone={row.ownerSafeCopyReviewed ? "muted" : "neutral"}>
-                  copy {row.ownerSafeCopyReviewed ? "ok" : "open"}
-                </AdminTag>
+                <CatchBadge label={`policy ${row.importPolicyAcknowledged ? "ok" : "open"}`} />
+                <CatchBadge label={`copy ${row.ownerSafeCopyReviewed ? "ok" : "open"}`} />
                 {row.duplicateCandidateCount > 0 ? (
-                  <AdminTag tone="muted">
-                    {row.duplicateCandidateCount} duplicate
-                  </AdminTag>
+                  <CatchBadge label={`${row.duplicateCandidateCount} duplicate`} />
                 ) : null}
               </AdminTagRow>
             </td>
@@ -273,9 +257,7 @@ function ExternalEventSupplyDetail({
           <AdminEyebrow>{event.targetPath}</AdminEyebrow>
           <CatchText as="h3" variant="sectionTitle">{event.title}</CatchText>
         </div>
-        <StatusChip tone={externalEventNeedsReview(event) ? "" : "ready"}>
-          {externalEventNeedsReview(event) ? "review open" : "reviewed"}
-        </StatusChip>
+        <CatchBadge recipe="status" tone={externalEventNeedsReview(event) ? "neutral" : "success"} label={externalEventNeedsReview(event) ? "review open" : "reviewed"} />
       </AdminSearchCandidateHeader>
       <QualityList>
         <StateRow label="Canonical organizer" value={event.canonicalHostId} />
@@ -296,16 +278,10 @@ function ExternalEventSupplyDetail({
         <StateRow label="Publication" value={event.publicationStatus} />
       </QualityList>
       <AdminTagRow>
-        <AdminTag tone={event.importPolicyAcknowledged ? "muted" : "neutral"}>
-          import policy {event.importPolicyAcknowledged ? "ok" : "open"}
-        </AdminTag>
-        <AdminTag tone={event.ownerSafeCopyReviewed ? "muted" : "neutral"}>
-          owner-safe copy {event.ownerSafeCopyReviewed ? "ok" : "open"}
-        </AdminTag>
-        <AdminTag tone={event.duplicateCandidateCount > 0 ? "neutral" : "muted"}>
-          {event.duplicateCandidateCount} duplicate candidates
-        </AdminTag>
-        <AdminTag tone="muted">{event.availability}</AdminTag>
+        <CatchBadge label={`import policy ${event.importPolicyAcknowledged ? "ok" : "open"}`} />
+        <CatchBadge label={`owner-safe copy ${event.ownerSafeCopyReviewed ? "ok" : "open"}`} />
+        <CatchBadge label={`${event.duplicateCandidateCount} duplicate candidates`} />
+        <CatchBadge label={event.availability} />
       </AdminTagRow>
       <AdminIntakeSourceList>
         <StateRow label="Platform" value={event.platform} />
@@ -390,9 +366,7 @@ function ExternalEventImportReviewPanel({
       {review.blockers.length > 0 ? (
         <AdminTagList>
           {review.blockers.map((blocker) => (
-            <AdminTag key={blocker} tone="muted">
-              {blocker.replaceAll("_", " ")}
-            </AdminTag>
+            <CatchBadge key={blocker} label={blocker.replaceAll("_", " ")} />
           ))}
         </AdminTagList>
       ) : (

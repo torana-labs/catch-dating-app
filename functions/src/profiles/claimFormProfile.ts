@@ -58,7 +58,9 @@ export async function getParticipantFormProfileHandler(
   const data = validateCallableWithAjv(request,
     validateGetParticipantFormProfileCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getParticipantFormProfile");
+  await deps.rateLimit(db, uid, "getParticipantFormProfile", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (tx) => {
     const [userSnap, intakeSnap] = await Promise.all([
       tx.get(db.collection("users").doc(uid)),
@@ -101,7 +103,9 @@ export async function claimParticipantFormProfileHandler(
   const data = validateCallableWithAjv(request,
     validateClaimParticipantFormProfileCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "claimParticipantFormProfile");
+  await deps.rateLimit(db, uid, "claimParticipantFormProfile", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const now = deps.now();
   const fingerprint = hash(stableJson(data));
   const receiptRef = db.collection("participantProfileClaimReceipts")

@@ -46,6 +46,23 @@ const more: (CatchPreviewCardProps & {key: string})[] = [
   {ground: "mint", href: "#tempo", key: "tempo", label: "Wed 5 Nov · 7:00 PM", meta: "Free · On Catch", title: "Wednesday Tempo 6K"},
 ];
 
+/** The organiser page's "Next up" card: the feature size on ink, with a tag, a detail line and an action. */
+export const Feature: Story = {
+  parameters: {catchComponent: {id: "shared_preview_card", routeIds: ["organizer_listing_canonical"], states: ["feature", "tag", "action"]}},
+  render: () => (
+    <StoryPage>
+      <CatchBand aria-label="Feature" pb="compact" pt="compact">
+        <CatchGrid columns={2} compactColumns={1}>
+          <CatchPreviewCard action="Book" actionAccent="coral" detail="Sun 2 Nov, 6:30 AM · Lantern Lane jetty" ground="ink" href="#next"
+            label="Next up · in 2 days" labelAccent="coral" meta="Free · 31 spots left" size="feature" tag="On Catch" title="Sunday Social Run" />
+          <CatchPreviewCard action="Get tickets" detail="Sat 15 Nov, 5:30 PM · Worli Sea Face" ground="paper" href="#luma"
+            label="Next up · in 3 weeks" labelAccent="coral" meta="₹799 · Tickets on Luma" size="feature" tag="Luma" title="Sunset Run: Harbour Edition" />
+        </CatchGrid>
+      </CatchBand>
+    </StoryPage>
+  ),
+};
+
 /** The event page's "More from" row. */
 export const Reference: Story = {
   parameters: {catchComponent: {id: "shared_preview_card", routeIds: storyRoutes, states: ["board-reference"]}},

@@ -281,7 +281,9 @@ export async function getEventChatProfileSharingHandler(
   requireEventChatActor(uid, data.expectedUid);
   if (data.previewSelection) requireVerifiedParticipant(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventChatProfileSharing");
+  await deps.rateLimit(db, uid, "getEventChatProfileSharing", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const inspect = async (tx: FirebaseFirestore.Transaction) => {
     const user = await readEventChatAccount(db, tx, uid);
     const share = await readShare(db, tx, data.eventId, uid);
@@ -352,7 +354,9 @@ export async function updateEventChatProfileSharingHandler(
     throw new HttpsError("invalid-argument", "Choose information to share.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, uid, "updateEventChatProfileSharing");
+  await deps.rateLimit(db, uid, "updateEventChatProfileSharing", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const receiptRef = db
     .collection("eventChatAccessReceipts")
     .doc(chatHash(["profileSharing", uid, data.requestId]));
@@ -436,7 +440,9 @@ export async function getEventChatProfileHandler(
   );
   requireEventChatActor(uid, data.expectedUid);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventChatProfile");
+  await deps.rateLimit(db, uid, "getEventChatProfile", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const inspect = async (tx: FirebaseFirestore.Transaction) => {
     await requireEventChatMember(db, tx, data.eventId, uid);
     const target = await requireEventChatMember(

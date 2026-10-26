@@ -30,11 +30,7 @@ const MATCHES_COLLECTION = "matches";
 interface BlockingDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: BlockingDeps = {
@@ -157,7 +153,9 @@ export async function blockUserHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, blockerUserId, "blockUser");
+  await deps.checkRateLimit?.(db, blockerUserId, "blockUser", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
 
   await db
     .collection(BLOCKS_COLLECTION)
@@ -203,7 +201,9 @@ export async function unblockUserHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, blockerUserId, "unblockUser");
+  await deps.checkRateLimit?.(db, blockerUserId, "unblockUser", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
 
   await db
     .collection(BLOCKS_COLLECTION)

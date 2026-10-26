@@ -19,7 +19,9 @@ export async function getEventAssistanceCheckpointHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventAssistanceCheckpoint");
+  await deps.rateLimit(db, uid, "getEventAssistanceCheckpoint", {
+    maxRequests: 60, windowMs: 60_000,
+  });
   return deps.store(db).get(uid, request.data);
 }
 export async function recordEventAssistanceCheckpointHandler(
@@ -27,7 +29,9 @@ export async function recordEventAssistanceCheckpointHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "recordEventAssistanceCheckpoint");
+  await deps.rateLimit(db, uid, "recordEventAssistanceCheckpoint", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).record(uid, request.data);
 }
 export const getEventAssistanceCheckpoint = onCall(appCheckCallableOptions,

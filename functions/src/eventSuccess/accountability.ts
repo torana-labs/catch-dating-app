@@ -36,11 +36,7 @@ type AccountabilityResult = AccountabilityVisit &
 interface EventSuccessAccountabilityDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: EventSuccessAccountabilityDeps = {
@@ -123,7 +119,8 @@ export async function setEventSuccessAccountabilityResolutionHandler(
   await deps.checkRateLimit?.(
     db,
     hostUid,
-    "setEventSuccessAccountabilityResolution"
+    "setEventSuccessAccountabilityResolution",
+    {maxRequests: 120, windowMs: 60 * 1000}
   );
   const event = await requireEventManager(
     db,
