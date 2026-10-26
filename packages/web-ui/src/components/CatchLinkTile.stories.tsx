@@ -46,7 +46,7 @@ export const OwnerStats: Story = {
 
 /** A pinned link can take any accent; a bare link needs only a title. */
 export const Accents: Story = {
-  parameters: {catchComponent: {id: "shared_link_tile", routeIds: storyRoutes, states: ["accents", "title-only"]}},
+  parameters: {catchComponent: {id: "shared_link_tile", routeIds: storyRoutes, states: ["accents", "title-only", "no-icon"]}},
   render: () => (
     <StoryPage>
       <CatchBand aria-label="Accents" pb="compact" pt="compact">
@@ -55,6 +55,7 @@ export const Accents: Story = {
             <CatchLinkTile accent={accent} href={`#${accent}`} icon={<StoryGlyph name="calendar" />} key={accent} pinned subtitle="Pinned until 15 Nov" title={`Pinned on ${accent}`} />
           ))}
           <CatchLinkTile href="#instagram" icon={<StoryGlyph name="instagram" />} title="Instagram" />
+          <CatchLinkTile href="#luma" subtitle="luma.com/harbour-line" title="Luma calendar" />
         </CatchGap>
       </CatchBand>
     </StoryPage>

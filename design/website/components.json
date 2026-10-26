@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 111,
-  "updated": "2026-10-25",
+  "version": 112,
+  "updated": "2026-10-26",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -3647,6 +3647,63 @@
       "notes": "Website T4 under D18 (CAT-249). One pill split into ground-coloured segments by share, with a legend that reads each segment and its formatted share; the bar itself is hidden from assistive technology. The owner view uses it for visitor sources. Nearest concept: catch.mini_bar_chart (CatchBarIndicator), one vertical bar against a maximum; a share bar divides one whole, so it is not a CatchBarIndicator recipe. Search aliases: StackedBar, ProportionBar, SplitBar, PercentBar, SourceBreakdown, ShareChart."
     },
     {
+      "id": "shared_profile_header",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchProfileHeader.tsx",
+      "exportName": "CatchProfileHeader",
+      "css": [
+        "packages/web-ui/src/components/CatchProfileHeader.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchProfileHeader.stories.tsx",
+        "exportName": "Claimed",
+        "states": [
+          "claimed",
+          "cover-photo",
+          "verified-seal",
+          "actions",
+          "generated",
+          "ground-cover",
+          "tag",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-251). The organiser page's identity: a cover photo or ground, an 88px monogram over its foot, the name with an optional verified seal, a tag, the headline, a meta line, a stats line and the caller's actions. Search aliases: ProfileHero, OrganiserHeader, ClubHeader, IdentityHeader, BioHeader."
+    },
+    {
+      "id": "shared_ground_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchGroundCard.tsx",
+      "exportName": "CatchGroundCard",
+      "css": [
+        "packages/web-ui/src/components/CatchGroundCard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchGroundCard.stories.tsx",
+        "exportName": "Grounds",
+        "states": [
+          "grounds",
+          "compact",
+          "spacious",
+          "dark-ground",
+          "outlined",
+          "share-card",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-251). A rounded card on one Website v2 ground that holds what the page arranges in it: the share card, a form step, the claim pitch and its points. Library text inside takes the ground's inks, ink resolves through the dark theme, and an outlined card draws the emphasis stroke in its ground's ink at 12% (the boards' white cards). Nearest concept: catch.surface (CatchSurface), whose tones are theme surfaces, not palette grounds. Search aliases: GroundPanel, ColorCard, PitchCard, TintCard, Callout."
+    },
+    {
       "id": "shared_link_tile",
       "kind": "supporting-component",
       "routeIds": [
@@ -3671,10 +3728,11 @@
           "pinned-stats",
           "accents",
           "title-only",
-          "board-reference"
+          "board-reference",
+          "no-icon"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). One link in an organiser's link-in-bio list: icon tile, title, subtitle, an optional owner stats line and an outward arrow; a pinned link takes an accent ground. A new-tab link carries rel noopener and a screen-reader note. Search aliases: LinkButton, LinkCard, LinkRow, BioLink, LinkInBio, LinkItem, LinktreeLink."
+      "notes": "Website T4 under D18 (CAT-249). One link in an organiser's link-in-bio list: an optional icon tile, title, subtitle, an optional owner stats line and an outward arrow; a pinned link takes an accent ground. A new-tab link carries rel noopener and a screen-reader note. Search aliases: LinkButton, LinkCard, LinkRow, BioLink, LinkInBio, LinkItem, LinktreeLink."
     },
     {
       "id": "shared_rating_summary",
@@ -3818,7 +3876,8 @@
           "ground",
           "figure",
           "phone-size",
-          "board-reference"
+          "board-reference",
+          "placeholder"
         ]
       },
       "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile."
@@ -3827,6 +3886,7 @@
       "id": "shared_preview_card",
       "kind": "supporting-component",
       "routeIds": [
+        "organizer_listing_canonical",
         "event_detail_canonical"
       ],
       "owner": "shared/parts",
@@ -3847,10 +3907,13 @@
           "grounds",
           "no-meta",
           "phone-size",
-          "board-reference"
+          "board-reference",
+          "feature",
+          "tag",
+          "action"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). One link on a ground: a status-role label, a displayXs title and a meta line held to the foot, at least 150px tall (sized to its copy below 840px). The event page uses it for \"More from\" the organiser. Nearest concepts: catch.event_card (EventCard, the app ticket with an activity backdrop and clock) and catch.organizer_poster (CatchPoster); the v2 card has no media, so it is neither. Search aliases: EventCard, EventTile, MoreCard, TeaserCard, SummaryCard, LinkCard."
+      "notes": "Website T4 under D18 (CAT-249). One link on a ground: a status-role label, a displayXs title and a meta line held to the foot, at least 150px tall (sized to its copy below 840px). The event page uses it for \"More from\" the organiser; the organiser page's \"Next up\" card is its feature size on ink, with a tag, a detail line and an action label (CAT-251). Nearest concepts: catch.event_card (EventCard, the app ticket with an activity backdrop and clock) and catch.organizer_poster (CatchPoster); the v2 card has no media, so it is neither. Search aliases: EventCard, EventTile, MoreCard, TeaserCard, SummaryCard, LinkCard."
     },
     {
       "id": "shared_event_poster",

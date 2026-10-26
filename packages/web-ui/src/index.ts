@@ -130,7 +130,9 @@ export type {
 export {CatchPhotoTile} from "./components/CatchPhotoTile";
 export type {CatchPhotoTileProps} from "./components/CatchPhotoTile";
 export {CatchPreviewCard} from "./components/CatchPreviewCard";
-export type {CatchPreviewCardProps} from "./components/CatchPreviewCard";
+export type {CatchPreviewCardProps, CatchPreviewCardSize} from "./components/CatchPreviewCard";
+export {CatchProfileHeader} from "./components/CatchProfileHeader";
+export type {CatchProfileHeaderProps, CatchProfileHeaderStat} from "./components/CatchProfileHeader";
 export {CatchQrCode} from "./components/CatchQrCode";
 export type {CatchQrCodeErrorCorrection, CatchQrCodeProps, CatchQrCodeSize} from "./components/CatchQrCode";
 export {CatchRatingSummary} from "./components/CatchRatingSummary";
