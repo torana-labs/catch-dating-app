@@ -219,7 +219,9 @@ export async function getEventRosterInsightsHandler(
     normalizePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getEventRosterInsights");
+  await deps.checkRateLimit(db, actorUid, "getEventRosterInsights", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const eventSnap = await db.collection("events").doc(data.eventId).get();
   if (!eventSnap.exists) throw new HttpsError("not-found", "Event not found.");
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");

@@ -62,11 +62,7 @@ export interface UnitOutcomeResolution {
 interface UnitOutcomeDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: UnitOutcomeDeps = {
@@ -170,7 +166,9 @@ export async function recordEventSuccessUnitOutcomesHandler(
       validateRecordEventSuccessUnitOutcomesCallablePayload
     );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "recordEventSuccessUnitOutcomes");
+  await deps.checkRateLimit?.(db, uid, "recordEventSuccessUnitOutcomes", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const eventRef = db.collection("events").doc(payload.eventId);
   const eventSnap = await eventRef.get();
   if (!eventSnap.exists) {

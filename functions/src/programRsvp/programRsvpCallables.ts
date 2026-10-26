@@ -145,7 +145,9 @@ export async function applyProgramFunctionInvitationsHandler(
     validateCallableWithAjv<ApplyProgramFunctionInvitationsCallablePayload>(
       request, validateApplyProgramFunctionInvitationsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "applyProgramFunctionInvitations");
+  await deps.checkRateLimit(db, actorUid, "applyProgramFunctionInvitations", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const functionRef = db.collection("programFunctions").doc(data.functionId);
   let result: ProgramFunctionInvitationsCallableResponse | null = null;
   await db.runTransaction(async (tx) => {
@@ -309,7 +311,9 @@ export async function recordProgramFunctionRsvpHandler(
     validateCallableWithAjv<RecordProgramFunctionRsvpCallablePayload>(
       request, validateRecordProgramFunctionRsvpCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "recordProgramFunctionRsvp");
+  await deps.checkRateLimit(db, actorUid, "recordProgramFunctionRsvp", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const functionRef = db.collection("programFunctions").doc(data.functionId);
   const guestRef = db.collection("programGuests").doc(data.guestId);
   let result: RecordProgramFunctionRsvpCallableResponse | null = null;

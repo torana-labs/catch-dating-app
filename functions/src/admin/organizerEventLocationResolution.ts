@@ -22,11 +22,7 @@ const decisionCollection = "organizerEventLocationResolutionDecisions";
 interface OrganizerEventLocationResolutionDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: OrganizerEventLocationResolutionDeps = {
@@ -72,7 +68,8 @@ export async function adminResolveOrganizerEventLocationHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminResolveOrganizerEventLocation"
+    "adminResolveOrganizerEventLocation",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const resolutionId = resolutionIdForCandidate(data.candidateId);
   const decisionRef = db.collection(decisionCollection).doc(resolutionId);

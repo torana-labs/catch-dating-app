@@ -35,11 +35,7 @@ interface EventIntakeDashboardDeps {
     db: FirebaseFirestore.Firestore,
     organizerIds: string[]
   ) => Promise<Map<string, OrganizerCeiling>>;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 interface OrganizerCeiling {
@@ -73,7 +69,8 @@ export async function adminGetEventIntakeDashboardHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminGetEventIntakeDashboard"
+    "adminGetEventIntakeDashboard",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
 
   const repository = deps.repository ??

@@ -10,7 +10,6 @@ import {
   validateOrganizerIntakeCurationDecisionDocument,
   schemaErrorMessages,
 } from "../shared/generated/schemaValidators";
-import {RATE_LIMITS} from "../shared/rateLimit";
 import {
   organizerPublicContentIssues,
   type OrganizerPublicContent,
@@ -430,11 +429,24 @@ test("refuses a draft whose seeded public copy carries intake wording",
     assert.equal(h.firestore.auditLogs().length, 0);
   });
 
-test("uses an explicit low-volume admin mutation rate limit", () => {
-  assert.deepEqual(
-    RATE_LIMITS.adminCreateOrganizerDraftFromCandidate,
-    {maxRequests: 10, windowMs: 60 * 1000}
+test("uses an explicit low-volume admin mutation rate limit", async () => {
+  const h = harness({
+    "operationWorkItems/work-courtside": workItem(),
+  });
+  const checked: unknown[] = [];
+  await adminCreateOrganizerDraftFromCandidateHandler(
+    callableRequest(payload()),
+    {
+      ...h.deps,
+      checkRateLimit: async (...args: unknown[]) => {
+        checked.push(args.slice(2));
+      },
+    }
   );
+  assert.deepEqual(checked, [[
+    "adminCreateOrganizerDraftFromCandidate",
+    {maxRequests: 10, windowMs: 60 * 1000},
+  ]]);
 });
 
 test("exact retry reuses the organizer without duplicate audit", async () => {

@@ -99,7 +99,8 @@ export const reportUser = onCall(appCheckCallableOptions, async (request) => {
     await checkRateLimit(
       admin.firestore(),
       request.auth.uid,
-      "reportUser"
+      "reportUser",
+      {maxRequests: 5, windowMs: 60 * 1000}
     );
   }
   return reportUserHandler(request);

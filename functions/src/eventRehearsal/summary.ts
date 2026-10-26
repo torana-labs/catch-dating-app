@@ -24,7 +24,9 @@ export async function getEventRehearsalSummaryHandler(
   const data = validateCallableWithAjv<GetEventRehearsalSummaryCallablePayload>(
     request, validateGetEventRehearsalSummaryCallablePayload
   );
-  await checkRateLimit(db, uid, "getEventRehearsalSummary");
+  await checkRateLimit(db, uid, "getEventRehearsalSummary", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId,
     actorUid: uid});
   const milestone = await db.collection("eventRehearsalMilestones")

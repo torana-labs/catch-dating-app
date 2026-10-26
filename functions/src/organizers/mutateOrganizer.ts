@@ -44,11 +44,7 @@ import {
 interface OrganizerLifecycleDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp?: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   reserveCanonicalRoute?: typeof reserveOrganizerCanonicalRoute;
   deleteStoragePaths?: (paths: string[]) => Promise<void>;
 }
@@ -72,7 +68,9 @@ export async function updateOrganizerHandler(
     normalizeUpdateOrganizerPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, actorUid, "updateOrganizer");
+  await deps.checkRateLimit?.(db, actorUid, "updateOrganizer", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(actorUid);
   let removedStoragePaths: string[] = [];
@@ -146,7 +144,9 @@ export async function archiveOrganizerHandler(
     normalizeArchiveOrganizerPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, actorUid, "archiveOrganizer");
+  await deps.checkRateLimit?.(db, actorUid, "archiveOrganizer", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(actorUid);
 
@@ -181,7 +181,9 @@ export async function deleteOrganizerHandler(
     normalizeOrganizerIdPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, actorUid, "deleteOrganizer");
+  await deps.checkRateLimit?.(db, actorUid, "deleteOrganizer", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const deletedUserRef = db.collection("deletedUsers").doc(actorUid);
   let removedStoragePaths: string[] = [];

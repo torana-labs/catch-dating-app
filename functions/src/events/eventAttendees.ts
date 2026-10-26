@@ -255,7 +255,9 @@ export async function importEventAttendeesForHost(
 ): Promise<EventAttendeeImportResult> {
   const {hostUid, payload} = params;
   const db = deps.firestore();
-  await deps.checkRateLimit(db, hostUid, "importEventAttendees");
+  await deps.checkRateLimit(db, hostUid, "importEventAttendees", {
+    maxRequests: 5, windowMs: 60 * 60 * 1000,
+  });
 
   const eventRef = db.collection("events").doc(payload.eventId);
 
@@ -541,7 +543,9 @@ export async function markEventAttendeeAttendanceHandler(
     normalizeAttendancePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, hostUid, "markEventAttendeeAttendance");
+  await deps.checkRateLimit(db, hostUid, "markEventAttendeeAttendance", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
 
   const eventRef = db.collection("events").doc(payload.eventId);
   const attendeeRef = db.collection("eventAttendees").doc(payload.attendeeId);
@@ -634,7 +638,9 @@ export async function setEventAttendeeAttendanceHandler(
     normalizeSetAttendancePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, hostUid, "setEventAttendeeAttendance");
+  await deps.checkRateLimit(db, hostUid, "setEventAttendeeAttendance", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const eventRef = db.collection("events").doc(payload.eventId);
   const attendeeRef = db.collection("eventAttendees")
     .doc(payload.attendeeId);
@@ -812,7 +818,9 @@ export async function registerPublicEventHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "registerPublicEvent");
+  await deps.checkRateLimit(db, uid, "registerPublicEvent", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   const inviteAttribution = await resolveInviteAttributionToken({
     db,
     eventId: payload.eventId,

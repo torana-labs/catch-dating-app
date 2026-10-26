@@ -37,11 +37,7 @@ interface VerifyRazorpayPaymentDeps {
   serverTimestamp: () => unknown;
   signUpForEvent: typeof signUpUserForEvent;
   verifySignature: typeof verifyPaymentSignature;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   runtimeProjectId?: () => string;
 }
 
@@ -75,7 +71,9 @@ export async function verifyRazorpayPaymentHandler(
   );
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, userId, "verifyRazorpayPayment");
+  await deps.checkRateLimit?.(db, userId, "verifyRazorpayPayment", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
 
   if (!deps.verifySignature({orderId, paymentId, signature})) {
     throw new HttpsError(

@@ -58,7 +58,9 @@ export async function getProgramAttendanceReportHandler(
   const data = validateCallableWithAjv<ProgramIdCallablePayload>(
     request, validateProgramIdCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramAttendanceReport");
+  await deps.checkRateLimit(db, actorUid, "getProgramAttendanceReport", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });

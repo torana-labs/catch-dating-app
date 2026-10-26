@@ -118,7 +118,9 @@ export async function createEventInviteLinkHandler(
     normalizeInviteLinkPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, hostUid, "createEventInviteLink");
+  await deps.checkRateLimit(db, hostUid, "createEventInviteLink", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
 
   const inviteRef = db.collection("eventInviteLinks").doc();
   const secretRef = db.collection("eventInviteLinkSecrets").doc(inviteRef.id);
@@ -281,7 +283,9 @@ export async function createAttendeeInviteLinkHandler(
     );
   }
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "createAttendeeInviteLink");
+  await deps.checkRateLimit(db, actorUid, "createAttendeeInviteLink", {
+    maxRequests: 5, windowMs: 60 * 60 * 1000,
+  });
   const inviteRef = db.collection("eventInviteLinks")
     .doc(attendeeInviteLinkId(payload.eventId, actorUid));
   const secretRef = db.collection("eventInviteLinkSecrets").doc(inviteRef.id);
@@ -470,7 +474,9 @@ export async function getEventInviteLinkTokenHandler(
     normalizeInviteLinkPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, hostUid, "getEventInviteLinkToken");
+  await deps.checkRateLimit(db, hostUid, "getEventInviteLinkToken", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const linkRef = db.collection("eventInviteLinks").doc(payload.inviteLinkId);
   const secretRef = db.collection("eventInviteLinkSecrets")
     .doc(payload.inviteLinkId);
@@ -531,7 +537,9 @@ export async function disableEventInviteLinkHandler(
     normalizeInviteLinkPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, hostUid, "disableEventInviteLink");
+  await deps.checkRateLimit(db, hostUid, "disableEventInviteLink", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
 
   await db.runTransaction(async (tx) => {
     const linkRef = db.collection("eventInviteLinks")
@@ -696,7 +704,8 @@ export async function resolveEventInviteLandingHandler(
     db,
     request.auth?.uid ??
       `invite_${inviteLinkTokenHash(payload.inviteToken).slice(0, 40)}`,
-    "resolveEventInviteLanding"
+    "resolveEventInviteLanding",
+    {maxRequests: 120, windowMs: 60 * 1000}
   );
   const resolved = await resolveVersionedInviteToken({
     db,
@@ -797,7 +806,9 @@ export async function recordEventShareIntentHandler(
     normalizeInviteLinkPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "recordEventShareIntent");
+  await deps.checkRateLimit(db, actorUid, "recordEventShareIntent", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const linkRef = db.collection("eventInviteLinks").doc(payload.inviteLinkId);
   const now = deps.timestamp();
   await db.runTransaction(async (tx) => {

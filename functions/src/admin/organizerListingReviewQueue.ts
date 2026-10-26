@@ -22,7 +22,7 @@ type Row = Response["rows"][number];
 
 interface ListingReviewDeps {
   firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit?: (db: FirebaseFirestore.Firestore, uid: string, action: string) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ListingReviewDeps = {
@@ -45,7 +45,12 @@ export async function adminListOrganizerListingReviewsHandler(
   const data = validateCallableWithAjv<AdminListOrganizerListingReviewsCallablePayload>(request,
     validateAdminListOrganizerListingReviewsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminListOrganizerListingReviews");
+  await deps.checkRateLimit?.(
+    db,
+    adminContext.uid,
+    "adminListOrganizerListingReviews",
+    {maxRequests: 60, windowMs: 60 * 1000}
+  );
   let query = db.collection(supplyIntakeCollections.requests)
     .where("status", "==", "completed")
     .where("approval", "==", null)

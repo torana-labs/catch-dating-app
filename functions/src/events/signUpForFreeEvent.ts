@@ -42,11 +42,7 @@ import {requireActiveCrossPathsPairHold} from
 
 interface SignUpForFreeEventDeps {
   firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit: typeof checkRateLimit;
   signUpForEvent: (
     db: FirebaseFirestore.Firestore,
     eventId: string,
@@ -86,7 +82,9 @@ export async function signUpForFreeEventHandler(
   const {eventId, inviteCode, inviteLinkId, crossPathsPairHoldId} = payload;
   const db = deps.firestore();
 
-  await deps.checkRateLimit(db, uid, "signUpForFreeEvent");
+  await deps.checkRateLimit(db, uid, "signUpForFreeEvent", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
 
   // Verify the event exists and is actually free.
   const [eventSnap, userSnap, participationSnap] = await Promise.all([

@@ -31,7 +31,9 @@ export async function listEventChatParticipantsHandler(
     throw new HttpsError("permission-denied", "Refresh the participant list.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, uid, "listEventChatParticipants");
+  await deps.rateLimit(db, uid, "listEventChatParticipants", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (tx) => {
     const viewer = await requireEventChatMember(db, tx, data.eventId, uid,
       deps.now().toMillis());

@@ -85,7 +85,9 @@ export async function createEventRosterHandoffHandler(
     normalizeEventIdPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, hostUid, "createEventRosterHandoff");
+  await deps.checkRateLimit(db, hostUid, "createEventRosterHandoff", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   const eventSnap = await db.collection("events").doc(payload.eventId).get();
   if (!eventSnap.exists) {
     throw new HttpsError("not-found", "Event not found.");

@@ -27,7 +27,7 @@ interface RefreshDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (db: FirebaseFirestore.Firestore, uid: string, action: string) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: RefreshDeps = {
@@ -43,7 +43,9 @@ export async function adminRefreshOrganizerEventsHandler(request: CallableReques
   const data = validateCallableWithAjv<AdminRefreshOrganizerEventsCallablePayload>(request,
     validateAdminRefreshOrganizerEventsCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, context.uid, "adminRefreshOrganizerEvents");
+  await deps.checkRateLimit?.(db, context.uid, "adminRefreshOrganizerEvents", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const now = deps.now();
   return db.runTransaction(async (tx) => {
     const organizerSnap = await tx.get(db.collection("organizers").doc(data.organizerId));

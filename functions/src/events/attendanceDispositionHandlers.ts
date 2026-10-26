@@ -19,7 +19,9 @@ export async function getEventAttendanceDispositionHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventAttendanceDisposition");
+  await deps.rateLimit(db, uid, "getEventAttendanceDisposition", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   return deps.store(db).get(uid, request.data);
 }
 
@@ -28,7 +30,9 @@ export async function recordEventNoShowHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "recordEventNoShow");
+  await deps.rateLimit(db, uid, "recordEventNoShow", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   return deps.store(db).recordNoShow(uid, request.data);
 }
 

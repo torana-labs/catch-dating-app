@@ -4,70 +4,128 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {
+  FROZEN_LEGACY_ACTIONS,
   extractCheckRateLimitActions,
-  extractRateLimitKeys,
+  findLimitTables,
   scanFunctionRateLimits,
 } from "./check_fn_rate_limits.mjs";
 
-test("extractRateLimitKeys reads RATE_LIMITS object keys", () => {
-  const keys = extractRateLimitKeys(`
-    export const RATE_LIMITS: Record<string, RateLimitConfig> = {
-      createClub: {maxRequests: 3, windowMs: 60 * 1000},
-      "joinWaitlist": {
-        maxRequests: 3,
-        windowMs: 60 * 1000,
-      },
-    };
-  `);
+const mechanism = `
+  export interface RateLimitConfig {maxRequests: number; windowMs: number}
+  export async function checkRateLimit(db, uid, action, limit: RateLimitConfig) {}
+`;
 
-  assert.deepEqual([...keys].sort(), ["createClub", "joinWaitlist"]);
-});
-
-test("extractCheckRateLimitActions reads literal actions from nested calls", () => {
+test("extractCheckRateLimitActions reads literal actions and whether each passes a limit", () => {
   const actions = extractCheckRateLimitActions(`
-    await checkRateLimit(admin.firestore(), userId, "placesAutocomplete");
-    await deps.checkRateLimit(db, hostUid, "decideEventJoinRequest");
+    await checkRateLimit(admin.firestore(), userId, "placesAutocomplete",
+      {maxRequests: 30, windowMs: 60_000});
+    await deps.checkRateLimit?.(db, hostUid, "decideEventJoinRequest");
   `);
 
-  assert.deepEqual(actions.map((action) => action.value), [
-    "placesAutocomplete",
-    "decideEventJoinRequest",
+  assert.deepEqual(actions.map((action) => [action.value, action.hasLimit]), [
+    ["placesAutocomplete", true],
+    ["decideEventJoinRequest", false],
   ]);
 });
 
 test("scanFunctionRateLimits flags checkRateLimit actions missing entries", () => {
   const root = createFixture({
-    "functions/src/shared/rateLimit.ts": `
-      export const RATE_LIMITS: Record<string, RateLimitConfig> = {
-        createClub: {maxRequests: 3, windowMs: 60 * 1000},
-      };
-    `,
+    "functions/src/shared/rateLimit.ts": mechanism,
     "functions/src/clubs/createClub.ts": `
-      await checkRateLimit(db, uid, "createClub");
-      await checkRateLimit(db, uid, "missingAction");
+      await checkRateLimit(db, uid, "createClub", {maxRequests: 3, windowMs: 60 * 1000});
+      await checkRateLimit(db, uid, "missingLimit");
     `,
   });
 
   const result = scanFunctionRateLimits({root});
 
-  assert.deepEqual(result.findings.map((finding) => finding.action), [
-    "missingAction",
+  assert.deepEqual(result.findings.map((finding) => [finding.rule, finding.action]), [
+    ["missingRateLimit", "missingLimit"],
   ]);
 });
 
 test("scanFunctionRateLimits passes when actions have explicit entries", () => {
   const root = createFixture({
-    "functions/src/shared/rateLimit.ts": `
-      export const RATE_LIMITS: Record<string, RateLimitConfig> = {
-        createClub: {maxRequests: 3, windowMs: 60 * 1000},
-      };
-    `,
+    "functions/src/shared/rateLimit.ts": mechanism,
     "functions/src/clubs/createClub.ts": `
-      await checkRateLimit(db, uid, "createClub");
+      const limit = {maxRequests: 3, windowMs: 60 * 1000};
+      await checkRateLimit(db, uid, "createClub", limit);
     `,
   });
 
   assert.deepEqual(scanFunctionRateLimits({root}).findings, []);
+});
+
+test("scanFunctionRateLimits flags a per-action table in the shared mechanism module", () => {
+  for (const table of [
+    "export const RATE_LIMITS: Record<string, RateLimitConfig> = {};",
+    `const LIMITS = {
+      createClub: {maxRequests: 3, windowMs: 60 * 1000},
+      joinClub: {maxRequests: 10, windowMs: 60 * 1000},
+    };`,
+  ]) {
+    const root = createFixture({
+      "functions/src/shared/rateLimit.ts": mechanism + table,
+      "functions/src/clubs/createClub.ts": `
+        await checkRateLimit(db, uid, "createClub", {maxRequests: 3, windowMs: 60 * 1000});
+      `,
+    });
+    assert.deepEqual(scanFunctionRateLimits({root}).findings.map((finding) => finding.rule),
+      ["sharedRateLimitTable"], table);
+  }
+  assert.deepEqual(findLimitTables(
+    "const fallback = {maxRequests: 30, windowMs: 60 * 1000};"), []);
+});
+
+test("the frozen legacy table may shrink but never grow", () => {
+  const legacy = (rows) => `${mechanism}
+    const LEGACY_RATE_LIMITS = {
+      ${rows}
+    } as const satisfies Record<string, RateLimitConfig>;
+    export function checkRateLimit(db, uid, action, ownLimit?: RateLimitConfig) {}
+  `;
+  const dispatcher = 'await deps.checkRateLimit(db, actorUid, "dispatchOrganizerCampaign");';
+  const frozen = createFixture({
+    "functions/src/shared/rateLimit.ts": legacy(
+      "dispatchOrganizerCampaign: {maxRequests: 3, windowMs: 60 * 60 * 1000},"),
+    "functions/src/organizers/dispatcher.ts": dispatcher,
+  });
+  assert.deepEqual(scanFunctionRateLimits({root: frozen}).findings, []);
+
+  const grown = createFixture({
+    "functions/src/shared/rateLimit.ts": legacy(`
+      dispatchOrganizerCampaign: {maxRequests: 3, windowMs: 60 * 60 * 1000},
+      "newCallable": {maxRequests: 10, windowMs: 60 * 1000},`),
+    "functions/src/organizers/dispatcher.ts": dispatcher,
+    "functions/src/organizers/newCallable.ts": 'await checkRateLimit(db, uid, "newCallable");',
+  });
+  assert.deepEqual(scanFunctionRateLimits({root: grown}).findings.map((finding) =>
+    [finding.rule, finding.action]), [["legacyRateLimitGrew", "newCallable"]]);
+
+  const removed = createFixture({
+    "functions/src/shared/rateLimit.ts": mechanism,
+    "functions/src/organizers/dispatcher.ts": dispatcher,
+  });
+  assert.deepEqual(scanFunctionRateLimits({root: removed}).findings.map((finding) =>
+    [finding.rule, finding.action]), [["missingRateLimit", "dispatchOrganizerCampaign"]]);
+  assert.deepEqual([...FROZEN_LEGACY_ACTIONS], ["dispatchOrganizerCampaign"],
+    "The frozen set may only shrink.");
+});
+
+test("scanFunctionRateLimits flags optional limits that let a call skip its limit", () => {
+  const root = createFixture({
+    "functions/src/shared/rateLimit.ts": mechanism,
+    "functions/src/clubs/deps.ts": `
+      interface Deps {
+        checkRateLimit: (db: Db, uid: string, action: string, limit?: RateLimitConfig) => Promise<void>;
+        other: (limit: RateLimitConfig | undefined) => void;
+      }
+    `,
+    "functions/src/clubs/deps.test.ts": "const fake = (limit?: RateLimitConfig) => undefined;",
+  });
+
+  assert.deepEqual(scanFunctionRateLimits({root}).findings.map((finding) => finding.rule),
+    ["optionalRateLimit", "optionalRateLimit"]);
 });
 
 function createFixture(files) {

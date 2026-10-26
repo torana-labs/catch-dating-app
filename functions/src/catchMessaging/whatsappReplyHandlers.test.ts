@@ -6,7 +6,7 @@ import {getFirestore, Timestamp, type Firestore} from
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {FormPaymentTestStore} from
   "../payments/formPayments/formPaymentTestStore";
-import {checkRateLimit} from "../shared/rateLimit";
+import {checkRateLimit, RateLimitConfig} from "../shared/rateLimit";
 import {createCatchReplyHandlers, adminReviewCatchWhatsappInbound,
   adminSendCatchWhatsappReply} from "./whatsappReplyHandlers";
 import {catchEndpointHash, CATCH_SUPPORT_WINDOW_MS} from "./whatsappReply";
@@ -71,9 +71,11 @@ function fixture(realDb?: Firestore) {
       customClaims: uid === "owner" ? {adminOwner: true} : {support: true},
       phoneNumber: uid === "participant" ? config.recipientE164 : undefined}),
     now: () => time + 1000,
-    rateLimit: async (...args: Parameters<typeof checkRateLimit>) => {
-      rateActions.push(args[2]);
-      await checkRateLimit(...args);
+    rateLimit: async (db: FirebaseFirestore.Firestore, uid: string,
+      action: string, limit?: RateLimitConfig) => {
+      rateActions.push(action);
+      assert.ok(limit, `${action} must pass its own limit`);
+      await checkRateLimit(db, uid, action, limit);
     },
     prepare: (controlled: CatchReplyConfig) => prepareCatchReplyProvider(
       controlled, {readCredential: async () => {

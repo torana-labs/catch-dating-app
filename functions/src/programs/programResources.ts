@@ -83,7 +83,9 @@ export async function upsertProgramFunctionHandler(
   const data = validateCallableWithAjv<UpsertProgramFunctionCallablePayload>(
     request, validateUpsertProgramFunctionCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertProgramFunction");
+  await deps.checkRateLimit(db, actorUid, "upsertProgramFunction", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   if (data.endsAtMillis <= data.startsAtMillis) {
     throw new HttpsError(
       "invalid-argument", "Function end must be after its start.");
@@ -137,7 +139,9 @@ export async function upsertProgramPickupPointHandler(
       request, validateUpsertProgramPickupPointCallablePayload,
       normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertProgramPickupPoint");
+  await deps.checkRateLimit(db, actorUid, "upsertProgramPickupPoint", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const ref = data.pickupPointId ?
     db.collection("programPickupPoints").doc(data.pickupPointId) :
     db.collection("programPickupPoints").doc();
@@ -179,7 +183,9 @@ export async function upsertProgramHotelHandler(
   const data = validateCallableWithAjv<UpsertProgramHotelCallablePayload>(
     request, validateUpsertProgramHotelCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertProgramHotel");
+  await deps.checkRateLimit(db, actorUid, "upsertProgramHotel", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const ref = data.hotelId ?
     db.collection("programHotels").doc(data.hotelId) :
     db.collection("programHotels").doc();
@@ -217,7 +223,9 @@ export async function upsertTransportVendorHandler(
   const data = validateCallableWithAjv<UpsertTransportVendorCallablePayload>(
     request, validateUpsertTransportVendorCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertTransportVendor");
+  await deps.checkRateLimit(db, actorUid, "upsertTransportVendor", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const ref = data.vendorId ?
     db.collection("transportVendors").doc(data.vendorId) :
     db.collection("transportVendors").doc();
@@ -284,7 +292,9 @@ export async function listTransportVendorsHandler(
   const data = validateCallableWithAjv<ListTransportVendorsCallablePayload>(
     request, validateListTransportVendorsCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listTransportVendors");
+  await deps.checkRateLimit(db, actorUid, "listTransportVendors", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   if (data.programId) {
     // Dispatchers and coordinators may resolve bound vendors for a program.
     const access = await requireProgramAccess({

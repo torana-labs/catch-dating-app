@@ -63,11 +63,7 @@ interface CreateEventVenueSessionDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => FirebaseFirestore.Timestamp;
   environment: NodeJS.ProcessEnv;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   sessionId?: () => string;
   signToken?: (claims: EventVenueSessionClaims) => string;
 }
@@ -120,7 +116,9 @@ export async function createEventVenueSessionHandler(
     normalizeEventIdPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "createEventVenueSession");
+  await deps.checkRateLimit?.(db, uid, "createEventVenueSession", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const eventRef = db.collection("events").doc(payload.eventId);
   const eventSnap = await eventRef.get();
   if (!eventSnap.exists) {

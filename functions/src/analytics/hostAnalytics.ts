@@ -42,11 +42,7 @@ interface HostAnalyticsDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   timestampFromDate: (date: Date) => FirebaseFirestore.Timestamp;
   bigQuerySource: HostAnalyticsBigQuerySource;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 interface AnalyticsRange {
@@ -142,7 +138,9 @@ export async function getHostAnalyticsHandler(
   const uid = requireAuth(request);
   const payload = validateAnalyticsPayload(request);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "getHostAnalytics");
+  await deps.checkRateLimit?.(db, uid, "getHostAnalytics", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   return loadHostAnalytics(db, payload, deps.now(), "host", uid, deps);
 }
 
@@ -162,7 +160,9 @@ export async function adminGetHostAnalyticsHandler(
   );
   const payload = validateAnalyticsPayload(request);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetHostAnalytics");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetHostAnalytics", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const response = await loadHostAnalytics(
     db,
     payload,

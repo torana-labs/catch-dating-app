@@ -19,7 +19,9 @@ export async function getEventAssistanceDepartureRosterHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventAssistanceDepartureRoster");
+  await deps.rateLimit(db, uid, "getEventAssistanceDepartureRoster", {
+    maxRequests: 60, windowMs: 60_000,
+  });
   return deps.store(db).get(uid, request.data);
 }
 

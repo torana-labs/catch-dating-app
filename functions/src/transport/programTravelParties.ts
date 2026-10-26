@@ -26,7 +26,9 @@ export async function upsertProgramTravelPartyHandler(
   const data = validateCallableWithAjv<UpsertProgramTravelPartyCallablePayload>(
     request, validateUpsertProgramTravelPartyCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertProgramTravelParty");
+  await deps.checkRateLimit(db, actorUid, "upsertProgramTravelParty", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const ref = data.partyId ?
     db.collection("programTravelParties").doc(data.partyId) :
     db.collection("programTravelParties").doc();

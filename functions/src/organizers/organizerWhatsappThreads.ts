@@ -214,7 +214,9 @@ export async function listOrganizerWhatsappThreadsHandler(
     normalizePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerWhatsappThreads");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerWhatsappThreads", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const limit = Math.min(data.limit ?? defaultPageSize, maxPageSize);
   let query: FirebaseFirestore.Query = db
@@ -301,7 +303,9 @@ export async function getOrganizerWhatsappThreadHandler(
     normalizePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerWhatsappThread");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerWhatsappThread", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const [threadSnapshot, messageSnapshot] = await Promise.all([
     db.collection("organizerWhatsappThreads").doc(data.threadId).get(),
@@ -373,7 +377,9 @@ export async function sendOrganizerWhatsappReplyHandler(
     "This WhatsApp reply contains language that cannot be delivered.",
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "sendOrganizerWhatsappReply");
+  await deps.checkRateLimit(db, actorUid, "sendOrganizerWhatsappReply", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const now = deps.now();
   const messageId = organizerWhatsappMessageId(

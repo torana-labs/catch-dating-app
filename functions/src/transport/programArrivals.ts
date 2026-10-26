@@ -40,7 +40,9 @@ export async function getProgramArrivalsRosterHandler(
   const data = validateCallableWithAjv<ProgramStationScopeCallablePayload>(
     request, validateProgramStationScopeCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramArrivalsRoster");
+  await deps.checkRateLimit(db, actorUid, "getProgramArrivalsRoster", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const now = deps.now();
   const stationAccess = await requireStationAccess(
     db, data.programId, actorUid, now);
@@ -121,7 +123,9 @@ export async function getProgramTransportPlanHandler(
   const data = validateCallableWithAjv<ProgramStationScopeCallablePayload>(
     request, validateProgramStationScopeCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramTransportPlan");
+  await deps.checkRateLimit(db, actorUid, "getProgramTransportPlan", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const now = deps.now();
   const stationAccess = await requireStationAccess(
     db, data.programId, actorUid, now);

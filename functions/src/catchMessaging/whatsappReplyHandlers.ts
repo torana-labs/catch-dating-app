@@ -9,7 +9,7 @@ import {
   type CallableRequest,
 } from "firebase-functions/v2/https";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
-import {checkRateLimit, RATE_LIMITS} from "../shared/rateLimit";
+import {checkRateLimit} from "../shared/rateLimit";
 import {validateAdminReviewCatchWhatsappInboundCallablePayload} from
   "../shared/generated/validators/adminReviewCatchWhatsappInboundInput";
 import {validateAdminReviewCatchWhatsappInboundCallableResponse} from
@@ -71,7 +71,7 @@ export function createCatchReplyHandlers(deps: {
         db,
         request.auth!.uid,
         "adminReviewCatchWhatsappInbound",
-        RATE_LIMITS.adminReviewCatchWhatsappInbound,
+        {maxRequests: 30, windowMs: 60 * 1000},
       );
       const result = await new CatchWhatsappReplyStore(db, {
         ...deps,
@@ -90,7 +90,7 @@ export function createCatchReplyHandlers(deps: {
         db,
         request.auth!.uid,
         "adminSendCatchWhatsappReply",
-        RATE_LIMITS.adminSendCatchWhatsappReply,
+        {maxRequests: 5, windowMs: 60 * 1000},
       );
       const result = await sendCatchWhatsappReply(
         {...request, data: input},

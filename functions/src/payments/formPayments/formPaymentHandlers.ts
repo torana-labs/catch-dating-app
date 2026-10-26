@@ -64,7 +64,9 @@ export async function prepareOrganizerFormPaymentHandler(
     PrepareOrganizerFormPaymentCallablePayload>(request,
       validatePrepareOrganizerFormPaymentCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "prepareOrganizerFormPayment");
+  await deps.rateLimit(db, uid, "prepareOrganizerFormPayment", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const draft = requireDoc<Draft>(await db
     .collection("organizerFormResponseDrafts").doc(data.draftId).get(),
   "OrganizerFormResponseDraftDocument");
@@ -111,7 +113,9 @@ export async function getOrganizerFormPaymentHandler(
   const data = validateCallableWithAjv<GetOrganizerFormPaymentCallablePayload>(
     request, validateGetOrganizerFormPaymentCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getOrganizerFormPayment");
+  await deps.rateLimit(db, uid, "getOrganizerFormPayment", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const current = requireDoc<Payment>(await db
     .collection("organizerFormPayments").doc(data.paymentId).get(),
   "OrganizerFormPaymentDocument");
@@ -144,7 +148,9 @@ export async function findOrganizerFormPaymentHandler(
   const data = validateCallableWithAjv<FindOrganizerFormPaymentCallablePayload>(
     request, validateFindOrganizerFormPaymentCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "findOrganizerFormPayment");
+  await deps.rateLimit(db, uid, "findOrganizerFormPayment", {
+    maxRequests: 15, windowMs: 60 * 1000,
+  });
   const forms = await db.collection("organizerForms")
     .where("publicFormId", "==", data.publicFormId).limit(2).get();
   if (forms.docs.length !== 1) return {payment: null};
@@ -181,7 +187,9 @@ export async function manageOrganizerFormPaymentConnectionHandler(
     ManageOrganizerFormPaymentConnectionCallablePayload>(request,
       validateManageOrganizerFormPaymentConnectionCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "manageOrganizerFormPaymentConnection");
+  await deps.rateLimit(db, uid, "manageOrganizerFormPaymentConnection", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await deps.requireManager({db, organizerId: data.organizerId, actorUid: uid});
   const result: ManageOrganizerFormPaymentConnectionCallableResponse = {
     available: deps.configured(), authorizationUrl: null, connectionId: null,

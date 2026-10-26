@@ -91,7 +91,9 @@ export async function upsertProgramGuestHandler(
     {fieldChoices?: WorkspaceFieldSelections}>(
       request, validateUpsertProgramGuestCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertProgramGuest");
+  await deps.checkRateLimit(db, actorUid, "upsertProgramGuest", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const ref = data.guestId ?
     db.collection("programGuests").doc(data.guestId) :
     db.collection("programGuests").doc();
@@ -226,7 +228,9 @@ export async function listProgramGuestsHandler(
   const data = validateCallableWithAjv<ListProgramGuestsCallablePayload>(
     request, validateListProgramGuestsCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listProgramGuests");
+  await deps.checkRateLimit(db, actorUid, "listProgramGuests", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (tx) => {
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
@@ -400,7 +404,9 @@ export async function upsertProgramHouseholdHandler(
     {fieldChoices?: WorkspaceFieldSelections}>(
       request, validateUpsertProgramHouseholdCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertProgramHousehold");
+  await deps.checkRateLimit(db, actorUid, "upsertProgramHousehold", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const ref = data.householdId ?
     db.collection("programHouseholds").doc(data.householdId) :
     db.collection("programHouseholds").doc();
@@ -536,7 +542,9 @@ export async function listProgramHouseholdsHandler(
   const data = validateCallableWithAjv<ProgramIdCallablePayload>(
     request, validateProgramIdCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listProgramHouseholds");
+  await deps.checkRateLimit(db, actorUid, "listProgramHouseholds", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (tx) => {
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,

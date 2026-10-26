@@ -45,7 +45,9 @@ export async function sendEventChatMessageHandler(
       "Please revise this message before sending.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, uid, "sendEventChatMessage");
+  await deps.rateLimit(db, uid, "sendEventChatMessage", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const messageRef = db.collection("eventChatMessages")
     .doc(chatHash([data.eventId, uid, data.requestId]));
   const kind = data.kind ?? "text";
@@ -122,7 +124,9 @@ export async function setEventChatReactionHandler(
     validateSetEventChatReactionCallablePayload);
   requireEventChatActor(uid, data.expectedUid);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "setEventChatReaction");
+  await deps.rateLimit(db, uid, "setEventChatReaction", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const receiptRef = db.collection("eventChatAccessReceipts").doc(chatHash([
     "reaction", uid, data.eventId, data.messageId, data.requestId]));
   const payloadHash = chatHash([data.reaction, data.expectedRevision]);
@@ -185,7 +189,9 @@ export async function setEventChatTypingHandler(
     validateSetEventChatTypingCallablePayload);
   requireEventChatActor(uid, data.expectedUid);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "setEventChatTyping");
+  await deps.rateLimit(db, uid, "setEventChatTyping", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const presenceRef = db.collection("eventChatPresence")
     .doc(eventChatMembershipId(data.eventId, uid));
   return db.runTransaction(async (tx) => {

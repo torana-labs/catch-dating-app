@@ -19,7 +19,9 @@ export async function listEventAssistanceDeliveriesHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "listEventAssistanceDeliveries");
+  await deps.rateLimit(db, uid, "listEventAssistanceDeliveries", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).list(uid, request.data);
 }
 
@@ -28,7 +30,9 @@ export async function repairEventAssistanceDeliveryHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "repairEventAssistanceDelivery");
+  await deps.rateLimit(db, uid, "repairEventAssistanceDelivery", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).repair(uid, request.data);
 }
 

@@ -100,7 +100,9 @@ export async function listOrganizerFormResponsesHandler(
     normalizeResponseListPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerFormResponses");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerFormResponses", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const answerFilters = data.answerFilters ?? [];
   const sortDirection = data.sortDirection ?? "desc";
@@ -291,7 +293,9 @@ export async function getOrganizerFormResponseDetailHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerFormResponseDetail");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerFormResponseDetail", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const responseSnap = await db.collection("organizerFormResponses")
     .doc(data.responseId).get();
@@ -426,7 +430,9 @@ export async function getOrganizerFormAnalyticsHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerFormAnalytics");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerFormAnalytics", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const formSnap = await db.collection("organizerForms").doc(data.formId).get();
   const form = requireOwnedForm(formSnap, data.organizerId);

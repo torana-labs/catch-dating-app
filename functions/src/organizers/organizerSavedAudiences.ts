@@ -115,7 +115,9 @@ export async function resolveOrganizerAudienceMembersHandler(
   >(
     request, validateResolveOrganizerAudienceMembersCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "resolveOrganizerAudienceMembers");
+  await deps.checkRateLimit(db, actorUid, "resolveOrganizerAudienceMembers", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   return {members: await resolveStaticAudienceSelection(db, data.organizerId,
     data.contactIds, false)};
@@ -133,7 +135,9 @@ export async function upsertOrganizerSavedAudienceHandler(
       normalizeSavedAudiencePayload,
     );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertOrganizerSavedAudience");
+  await deps.checkRateLimit(db, actorUid, "upsertOrganizerSavedAudience", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const definition = canonicalSavedAudienceDefinition(data.definition);
   await assertManualTagsExist(db, data.organizerId, definition);
@@ -205,7 +209,9 @@ export async function listOrganizerSavedAudiencesHandler(
       normalizeSavedAudiencePayload,
     );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerSavedAudiences");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerSavedAudiences", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const limit = data.limit ?? savedAudienceListDefaultLimit;
   const cursor = decodeSavedAudienceCursor(data.cursor ?? null);
@@ -259,7 +265,9 @@ export async function previewOrganizerSavedAudienceHandler(
       normalizeSavedAudiencePayload,
     );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "previewOrganizerSavedAudience");
+  await deps.checkRateLimit(db, actorUid, "previewOrganizerSavedAudience", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const ref = db.collection("organizerSavedAudiences").doc(data.audienceId);
   const snap = await ref.get();
@@ -357,7 +365,9 @@ export async function archiveOrganizerSavedAudienceHandler(
       normalizeSavedAudiencePayload,
     );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "archiveOrganizerSavedAudience");
+  await deps.checkRateLimit(db, actorUid, "archiveOrganizerSavedAudience", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const ref = db.collection("organizerSavedAudiences").doc(data.audienceId);
   const now = deps.now();

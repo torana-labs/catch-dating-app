@@ -34,11 +34,7 @@ const boundedCandidateLimit = 1000;
 interface SwipeCandidateDeps {
   firestore: () => FirebaseFirestore.Firestore;
   nowMillis: () => number;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: SwipeCandidateDeps = {
@@ -64,7 +60,9 @@ export async function fetchSwipeCandidatesHandler(
     normalizeEventIdPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, viewerUid, "fetchSwipeCandidates");
+  await deps.checkRateLimit?.(db, viewerUid, "fetchSwipeCandidates", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const [eventSnap, viewerParticipationSnap, viewerSnap] = await Promise.all([
     db.collection("events").doc(data.eventId).get(),

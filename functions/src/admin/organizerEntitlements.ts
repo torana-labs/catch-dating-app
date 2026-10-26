@@ -47,11 +47,7 @@ interface OrganizerEntitlementDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
   now: () => number;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: OrganizerEntitlementDeps = {
@@ -97,7 +93,8 @@ export async function adminGrantOrganizerEntitlementHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminGrantOrganizerEntitlement"
+    "adminGrantOrganizerEntitlement",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const docRef = db.collection(entitlementCollection).doc(data.organizerId);
   const receiptId = `${data.organizerId}_${data.operationId}`;
@@ -237,7 +234,8 @@ export async function adminRevokeOrganizerEntitlementGrantHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminRevokeOrganizerEntitlementGrant"
+    "adminRevokeOrganizerEntitlementGrant",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const docRef = db.collection(entitlementCollection).doc(data.organizerId);
   const receiptId = `${data.organizerId}_${data.operationId}`;

@@ -89,7 +89,9 @@ export async function markEventAttendanceHandler(
     );
 
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "markEventAttendance");
+  await deps.checkRateLimit(db, uid, "markEventAttendance", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const eventRef = db.collection("events").doc(eventId);
   const eventSnap = await eventRef.get();
