@@ -772,6 +772,145 @@
       ]
     },
     {
+      "id": "functions.secret.catch-instagram-app-secret",
+      "kind": "secret-version",
+      "name": "CATCH_INSTAGRAM_APP_SECRET",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:instagramClaimWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "organizer-claims",
+      "sourcePaths": [
+        "functions/src/organizers/instagramClaimWebhook.ts"
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
+    },
+    {
+      "id": "functions.secret.catch-instagram-access-token",
+      "kind": "secret-version",
+      "name": "CATCH_INSTAGRAM_ACCESS_TOKEN",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:instagramClaimWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "organizer-claims",
+      "sourcePaths": [
+        "functions/src/organizers/instagramClaimWebhook.ts"
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
+    },
+    {
+      "id": "functions.secret.catch-instagram-webhook-verify-token",
+      "kind": "secret-version",
+      "name": "CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:instagramClaimWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "organizer-claims",
+      "sourcePaths": [
+        "functions/src/organizers/instagramClaimWebhook.ts"
+      ],
+      "credentialClass": "provider-secret",
+      "binding": {
+        "kind": "firebase-secret-param",
+        "exactReference": "observed-numeric-version",
+        "identity": "observed-function-service-account"
+      },
+      "activationPolicy": "required-by-selected-consumer",
+      "rotationCompatibility": "provider-overlap"
+    },
+    {
+      "id": "firestore.ttl.organizer-claim-instagram-codes",
+      "kind": "firestore-ttl",
+      "collectionGroup": "organizerClaimInstagramCodes",
+      "field": "expiresAt",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:startOrganizerClaimVerification",
+          "functions:instagramClaimWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ACTIVE"
+      ],
+      "owner": "organizer-claims",
+      "sourcePaths": [
+        "contracts/firestore/organizer_claim_instagram_codes.schema.json",
+        "functions/src/organizers/organizerClaimVerification.ts"
+      ]
+    },
+    {
+      "id": "firestore.ttl.organizer-claim-instagram-messages",
+      "kind": "firestore-ttl",
+      "collectionGroup": "organizerClaimInstagramMessages",
+      "field": "expiresAt",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:instagramClaimWebhook"
+        ]
+      },
+      "acceptedStates": [
+        "ACTIVE"
+      ],
+      "owner": "organizer-claims",
+      "sourcePaths": [
+        "contracts/firestore/organizer_claim_instagram_messages.schema.json",
+        "functions/src/organizers/organizerClaimVerification.ts"
+      ]
+    },
+    {
       "id": "functions.secret.catch-host-meta-conversions-token",
       "kind": "secret-version",
       "name": "CATCH_HOST_META_CONVERSIONS_TOKEN",

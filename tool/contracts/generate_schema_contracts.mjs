@@ -2122,6 +2122,25 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerClaimRequestDocument.ts",
   },
   {
+    name: "OrganizerClaimVerificationDocument",
+    source: "firestore/organizer_claim_verifications.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerClaimVerificationDocument.ts",
+  },
+  {
+    name: "OrganizerClaimInstagramCodeDocument",
+    source: "firestore/organizer_claim_instagram_codes.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/organizerClaimInstagramCodeDocument.ts",
+  },
+  {
+    name: "OrganizerClaimInstagramMessageDocument",
+    source: "firestore/organizer_claim_instagram_messages.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerClaimInstagramMessageDocument.ts",
+  },
+  {
     name: "OrganizerScheduleLockDocument",
     source: "firestore/organizer_schedule_locks.schema.json",
     typeOutput:
@@ -3511,6 +3530,37 @@ const schemaSpecs = [
     source: "callable_responses/request_organizer_claim_response.schema.json",
     typeOutput:
       "functions/src/shared/generated/requestOrganizerClaimCallableResponse.ts",
+  },
+  {
+    name: "StartOrganizerClaimVerificationCallablePayload",
+    source: "callables/start_organizer_claim_verification_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "startOrganizerClaimVerificationCallablePayload.ts",
+  },
+  {
+    name: "StartOrganizerClaimVerificationCallableResponse",
+    source:
+      "callable_responses/start_organizer_claim_verification_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "startOrganizerClaimVerificationCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerClaimVerificationOptionsCallablePayload",
+    source:
+      "callables/get_organizer_claim_verification_options_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getOrganizerClaimVerificationOptionsCallablePayload.ts",
+  },
+  {
+    name: "OrganizerClaimVerificationOptionsCallableResponse",
+    source:
+      "callable_responses/organizer_claim_verification_options_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerClaimVerificationOptionsCallableResponse.ts",
   },
   {
     name: "AdminDecideOrganizerClaimCallablePayload",

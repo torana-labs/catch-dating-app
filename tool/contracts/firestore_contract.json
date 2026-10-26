@@ -3926,6 +3926,59 @@
       ]
     },
     {
+      "id": "organizerClaimVerifications",
+      "path": "organizerClaimVerifications/{attemptId}",
+      "rulesMatch": "/organizerClaimVerifications/{attemptId}",
+      "typescriptInterface": "OrganizerClaimVerificationDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets a requester follow only their own claim verification"
+      ],
+      "owner": "organizer claim verification callables and the Instagram claim webhook",
+      "read": "the requester may get only their own attempt, to show its code and follow its status",
+      "write": "server only",
+      "exportedFunctions": [
+        "startOrganizerClaimVerification",
+        "instagramClaimWebhook"
+      ]
+    },
+    {
+      "id": "organizerClaimInstagramCodes",
+      "path": "organizerClaimInstagramCodes/{code}",
+      "rulesMatch": "/organizerClaimInstagramCodes/{code}",
+      "typescriptInterface": "OrganizerClaimInstagramCodeDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets a requester follow only their own claim verification"
+      ],
+      "owner": "organizer claim verification callables and the Instagram claim webhook",
+      "read": "server only",
+      "write": "server only; TTL deletes a reservation after expiresAt",
+      "exportedFunctions": [
+        "startOrganizerClaimVerification",
+        "instagramClaimWebhook"
+      ]
+    },
+    {
+      "id": "organizerClaimInstagramMessages",
+      "path": "organizerClaimInstagramMessages/{messageKey}",
+      "rulesMatch": "/organizerClaimInstagramMessages/{messageKey}",
+      "typescriptInterface": "OrganizerClaimInstagramMessageDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "lets a requester follow only their own claim verification"
+      ],
+      "owner": "Instagram claim webhook",
+      "read": "server only",
+      "write": "server only, created once per signed message; TTL deletes it after expiresAt",
+      "exportedFunctions": [
+        "instagramClaimWebhook"
+      ]
+    },
+    {
       "id": "workspaceFieldAssertions",
       "path": "workspaceFieldAssertions/{assertionId}",
       "rulesMatch": "/workspaceFieldAssertions/{assertionId}",

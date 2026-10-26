@@ -630,6 +630,9 @@ export {validateOrganizerWhatsappThreadDocument} from "./validators/organizerWha
 export {validateOrganizerWhatsappMessageDocument} from "./validators/organizerWhatsappMessageDocument";
 export {validateOrganizerWhatsappReplyOperationDocument} from "./validators/organizerWhatsappReplyOperationDocument";
 export {validateOrganizerClaimRequestDocument} from "./validators/organizerClaimRequestDocument";
+export {validateOrganizerClaimVerificationDocument} from "./validators/organizerClaimVerificationDocument";
+export {validateOrganizerClaimInstagramCodeDocument} from "./validators/organizerClaimInstagramCodeDocument";
+export {validateOrganizerClaimInstagramMessageDocument} from "./validators/organizerClaimInstagramMessageDocument";
 export {validateOrganizerScheduleLockDocument} from "./validators/organizerScheduleLockDocument";
 export {validateClubPostDocument} from "./validators/clubPostDocument";
 export {validateClubMembershipDocument} from "./validators/clubMembershipDocument";
@@ -853,6 +856,10 @@ export {validateCreateOrganizerPostCallablePayload} from "./validators/createOrg
 export {validateCreateOrganizerPostCallableResponse} from "./validators/createOrganizerPostOutput";
 export {validateRequestOrganizerClaimCallablePayload} from "./validators/requestOrganizerClaimInput";
 export {validateRequestOrganizerClaimCallableResponse} from "./validators/requestOrganizerClaimOutput";
+export {validateStartOrganizerClaimVerificationCallablePayload} from "./validators/startOrganizerClaimVerificationInput";
+export {validateStartOrganizerClaimVerificationCallableResponse} from "./validators/startOrganizerClaimVerificationOutput";
+export {validateGetOrganizerClaimVerificationOptionsCallablePayload} from "./validators/getOrganizerClaimVerificationOptionsInput";
+export {validateOrganizerClaimVerificationOptionsCallableResponse} from "./validators/organizerClaimVerificationOptionsOutput";
 export {validateAdminDecideOrganizerClaimCallablePayload} from "./validators/adminDecideOrganizerClaimInput";
 export {validateCreateClubCallableResponse} from "./validators/createClubOutput";
 export {validateCreateClubPostCallablePayload} from "./validators/createClubPostInput";

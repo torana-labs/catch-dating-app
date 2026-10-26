@@ -58,8 +58,8 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 20);
-  assert.equal(execution.report.requirementCount, 25);
+  assert.equal(execution.report.secretCount, 23);
+  assert.equal(execution.report.requirementCount, 30);
   assert.equal(commandCalls, 0);
 });
 
@@ -194,9 +194,9 @@ test("target and capability filtering selects only relevant prerequisites", () =
     selected("dev", ["functions"]).filter(
       (entry) => entry.kind === "secret-version",
     ).length,
-    18,
+    21,
   );
-  assert.equal(selected("dev", ["functions"]).length, 29);
+  assert.equal(selected("dev", ["functions"]).length, 34);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
@@ -283,6 +283,31 @@ test("Catch webhook requires its own secrets and active receipt TTL", () => {
       "CATCH_WHATSAPP_APP_SECRET", "CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN",
     ]);
     assert(requirements.every((entry) => entry.owner === "catch-messaging"));
+  }
+});
+
+test("Instagram claim webhook requires its secrets and active TTLs", () => {
+  for (const environment of ["dev", "staging", "prod"]) {
+    const requirements = selectReadinessRequirements({
+      manifest, environment, targets: ["functions:instagramClaimWebhook"],
+      capabilities: [],
+    });
+    assert.deepEqual(requirements.map((entry) => entry.name ??
+      entry.collectionGroup).sort(), [
+      "CATCH_INSTAGRAM_ACCESS_TOKEN",
+      "CATCH_INSTAGRAM_APP_SECRET",
+      "CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN",
+      "organizerClaimInstagramCodes",
+      "organizerClaimInstagramMessages",
+    ]);
+    assert(requirements.every((entry) => entry.owner === "organizer-claims"));
+    // Starting a claim needs only the code reservation TTL, no secret.
+    assert.deepEqual(selectReadinessRequirements({
+      manifest, environment,
+      targets: ["functions:startOrganizerClaimVerification"],
+      capabilities: [],
+    }).map((entry) => entry.id),
+    ["firestore.ttl.organizer-claim-instagram-codes"]);
   }
 });
 

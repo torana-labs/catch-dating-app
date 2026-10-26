@@ -1194,6 +1194,40 @@ describe("firestore.rules", () => {
       )));
     });
 
+    it("lets a requester follow only their own claim verification", async () => {
+      await seed(["organizerClaimVerifications", "attempt-1"], {
+        attemptId: "attempt-1",
+        organizerId: "organizer-1",
+        requesterUid: "owner-1",
+        status: "awaitingProof",
+        code: "482173",
+      });
+      await seed(["organizerClaimInstagramCodes", "482173"], {
+        code: "482173",
+        attemptId: "attempt-1",
+      });
+      await seed(["organizerClaimInstagramMessages", "message-1"], {
+        messageKey: "message-1",
+        outcome: "verified",
+      });
+
+      const own = doc(authedDb("owner-1"), "organizerClaimVerifications",
+        "attempt-1");
+      await assertSucceeds(getDoc(own));
+      await assertFails(updateDoc(own, {status: "verified"}));
+      await assertFails(getDoc(doc(authedDb("owner-2"),
+        "organizerClaimVerifications", "attempt-1")));
+      await assertFails(getDoc(doc(testEnv.unauthenticatedContext().firestore(),
+        "organizerClaimVerifications", "attempt-1")));
+      await assertFails(getDocs(collection(authedDb("owner-1"),
+        "organizerClaimVerifications")));
+      for (const [name, id] of [["organizerClaimInstagramCodes", "482173"],
+        ["organizerClaimInstagramMessages", "message-1"]]) {
+        await assertFails(getDoc(doc(authedDb("owner-1"), name, id)));
+        await assertFails(setDoc(doc(authedDb("owner-1"), name, id), {}));
+      }
+    });
+
     it("keeps public page read models and build markers server-only", async () => {
       // Published, withdrawn and suppressed pages are all Admin SDK reads.
       for (const [id, organizerId] of [["published", "organizer-1"],
