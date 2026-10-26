@@ -38,6 +38,14 @@ describe("CatchButton", () => {
     expect(link.getAttribute("aria-disabled")).toBe("true");
   });
 
+  it("opens a link in a new tab without an opener only when asked", () => {
+    const {rerender} = render(<CatchButton href="https://lu.ma/x" label="Tickets" newTab onPressed={() => undefined} />);
+    const link = screen.getByRole("link", {name: "Tickets"});
+    expect([link.getAttribute("target"), link.getAttribute("rel")]).toEqual(["_blank", "noopener noreferrer"]);
+    rerender(<CatchButton href="/events/x/" label="Tickets" onPressed={() => undefined} />);
+    expect([link.getAttribute("target"), link.getAttribute("rel")]).toEqual([null, null]);
+  });
+
   it("maps the sheet role to its variant and fills the width", () => {
     render(<><CatchButton label="Save" onPressed={() => undefined} recipe="sheet" role="commit" />
       <CatchButton label="Cancel" onPressed={() => undefined} recipe="sheet" role="dismiss" /></>);

@@ -3,6 +3,7 @@ import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import {describe, expect, it} from "vitest";
 import {
+  catchActivityAccent,
   contrastRatio,
   type Format,
   formatAccents,
@@ -105,5 +106,12 @@ describe("activity formats", () => {
     expect(kinds).not.toContain("singlesMixer");
     expect(new Set(kinds).size).toBe(kinds.length);
     for (const kind of kinds) expect(tokenKeys(tokens.activity), kind).toContain(kind);
+  });
+
+  it("gives each covered activity kind its format's accent, and other kinds none", () => {
+    for (const [format, kinds] of Object.entries(formatActivityKinds)) {
+      for (const kind of kinds) expect(catchActivityAccent(kind), kind).toBe(formatAccents[format as Format]);
+    }
+    expect([catchActivityAccent("singlesMixer"), catchActivityAccent("yoga"), catchActivityAccent("")]).toEqual([null, null, null]);
   });
 });
