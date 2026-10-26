@@ -124,26 +124,6 @@
       "count": 5
     }
   },
-  "src/features/organizers/sections/HostListingSections.tsx": {
-    "react/forbid-elements": {
-      "count": 1
-    }
-  },
-  "src/features/organizers/sections/ListingClaimSections.tsx": {
-    "react/forbid-elements": {
-      "count": 8
-    }
-  },
-  "src/features/organizers/sections/ListingHeroSection.tsx": {
-    "react/forbid-elements": {
-      "count": 5
-    }
-  },
-  "src/features/organizers/sections/ListingReviewsSection.tsx": {
-    "react/forbid-elements": {
-      "count": 18
-    }
-  },
   "src/features/organizers/sections/OrganizerSearchSections.tsx": {
     "react/forbid-elements": {
       "count": 16
@@ -391,14 +371,6 @@
     },
     "react/forbid-elements": {
       "count": 8
-    }
-  },
-  "src/shared/ui/primitives/organiserProfile.tsx": {
-    "react/forbid-dom-props": {
-      "count": 2
-    },
-    "react/forbid-elements": {
-      "count": 2
     }
   },
   "src/shared/ui/primitives/organizer.tsx": {
