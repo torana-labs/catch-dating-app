@@ -75,4 +75,38 @@ void main() {
       semantics.dispose();
     }
   });
+
+  testWidgets('a stacked row reads its subtitle and keeps a band around it', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CatchIndexRow(
+              title: 'Sunday Long Run',
+              subtitle: '6:30 am · Carter Road',
+              footer: const Text('₹500'),
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+      expect(find.text('6:30 am · Carter Road'), findsOneWidget);
+      expect(find.text('₹500'), findsOneWidget);
+      expect(
+        find.semantics.byLabel('Sunday Long Run, 6:30 am · Carter Road'),
+        findsOne,
+      );
+      final title = tester.getRect(find.text('Sunday Long Run'));
+      final footer = tester.getRect(find.text('₹500'));
+      final row = tester.getRect(find.byType(CatchIndexRow));
+      expect(title.top - row.top, greaterThanOrEqualTo(CatchSpacing.s3));
+      expect(row.bottom - footer.bottom, greaterThanOrEqualTo(CatchSpacing.s3));
+    } finally {
+      semantics.dispose();
+    }
+  });
 }

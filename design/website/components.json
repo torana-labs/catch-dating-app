@@ -3844,6 +3844,57 @@
       "notes": "Website T4 under D18 (CAT-249). A read-only rating out of five in coral deep, read as one image with the caller's label; values round to whole stars. Search aliases: Stars, StarDisplay, RatingStars, StarScore, Rating."
     },
     {
+      "id": "shared_photo_tile",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchPhotoTile.tsx",
+      "exportName": "CatchPhotoTile",
+      "css": [
+        "packages/web-ui/src/components/CatchPhotoTile.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchPhotoTile.stories.tsx",
+        "exportName": "States",
+        "states": [
+          "photo",
+          "ground",
+          "figure",
+          "phone-size",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile."
+    },
+    {
+      "id": "shared_preview_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchPreviewCard.tsx",
+      "exportName": "CatchPreviewCard",
+      "css": [
+        "packages/web-ui/src/components/CatchPreviewCard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchPreviewCard.stories.tsx",
+        "exportName": "Grounds",
+        "states": [
+          "grounds",
+          "no-meta",
+          "phone-size",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249). One link on a ground: a status-role label, a displayXs title and a meta line held to the foot, at least 150px tall (sized to its copy below 840px). The event page uses it for \"More from\" the organiser. Nearest concepts: catch.event_card (EventCard, the app ticket with an activity backdrop and clock) and catch.organizer_poster (CatchPoster); the v2 card has no media, so it is neither. Search aliases: EventCard, EventTile, MoreCard, TeaserCard, SummaryCard, LinkCard."
+    },
+    {
       "id": "shared_qr_code",
       "kind": "supporting-component",
       "routeIds": [

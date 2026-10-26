@@ -139,6 +139,34 @@ export function StoryBadge({label, tone}: {label: string; tone: "verified" | "ne
   );
 }
 
+/**
+ * The look of a D20 small button inside a row that is itself the link, standing
+ * in for CatchButton until it has a React twin. It is not interactive.
+ */
+export function StoryCta({label, primary = false}: {label: string; primary?: boolean}) {
+  return (
+    <span
+      style={{
+        alignItems: "center",
+        background: primary ? "var(--catch-theme-primary)" : "var(--catch-theme-surface)",
+        border: primary ? 0 : "var(--catch-stroke-hairline) solid var(--catch-theme-line2)",
+        borderRadius: "var(--catch-radius-xs)",
+        boxSizing: "border-box",
+        color: primary ? "var(--catch-theme-primary-ink)" : "var(--catch-theme-ink)",
+        display: "inline-flex",
+        fontFamily: "var(--catch-font-function), system-ui, sans-serif",
+        fontSize: "var(--catch-typography-web-context-size)",
+        fontWeight: 600,
+        height: "var(--catch-space-s10)",
+        padding: "0 var(--catch-space-s4)",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
 /** Lucide glyph paths (ISC) for the link and social stand-ins in stories. */
 const glyphs = {
   bag: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0",

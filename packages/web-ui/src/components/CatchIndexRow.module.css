@@ -1,0 +1,72 @@
+/*
+ * Flutter CatchIndexRow over CatchRowPressSurface: a 66px minimum row above a
+ * hairline, 16px after the leading and 12px before the trailing. A stacked row
+ * keeps 12px above and below its copy, 2px under the title and 6px before the
+ * footer. Hover takes a 4% ink overlay and press 8%. Keyboard focus adds an
+ * inset ring on the web, where the overlay alone is too faint to find.
+ */
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 66px;
+  padding: 0;
+  border: 0;
+  border-bottom: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+  background: none;
+  color: var(--catch-theme-ink);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+}
+
+.row[data-stacked] { padding-block: var(--catch-space-s3); }
+
+.row::after {
+  position: absolute;
+  inset: 0;
+  background: var(--catch-theme-ink);
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+}
+
+:is(a, button).row { cursor: pointer; }
+:is(a, button).row:hover::after { opacity: var(--catch-opacity-control-overlay-hover); }
+:is(a, button).row:active::after { opacity: 0.08; }
+
+:is(a, button).row:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: calc(-1 * var(--catch-stroke-focus-ring));
+}
+
+.leading {
+  display: flex;
+  flex: none;
+  margin-inline-end: var(--catch-space-s4);
+}
+
+.copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+  min-width: 0;
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--catch-space-s2);
+  margin-top: calc(var(--catch-space-micro6) - var(--catch-space-micro2));
+}
+
+.trailing {
+  display: flex;
+  flex: none;
+  align-items: center;
+  margin-inline-start: var(--catch-space-s3);
+}

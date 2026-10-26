@@ -70,6 +70,10 @@ export type {
   CatchGridElement,
   CatchGridProps,
 } from "./components/CatchGrid";
+export {CatchHeroImage} from "./components/CatchHeroImage";
+export type {CatchHeroImageProps} from "./components/CatchHeroImage";
+export {CatchIndexRow} from "./components/CatchIndexRow";
+export type {CatchIndexRowProps} from "./components/CatchIndexRow";
 export {CatchInset} from "./components/CatchInset";
 export type {CatchInsetElement, CatchInsetPadding, CatchInsetProps} from "./components/CatchInset";
 export {CatchLinkTile} from "./components/CatchLinkTile";
@@ -80,6 +84,10 @@ export type {
   CatchPageBodyProps,
   CatchSpacingStep,
 } from "./components/CatchPageBody";
+export {CatchPhotoTile} from "./components/CatchPhotoTile";
+export type {CatchPhotoTileProps} from "./components/CatchPhotoTile";
+export {CatchPreviewCard} from "./components/CatchPreviewCard";
+export type {CatchPreviewCardProps} from "./components/CatchPreviewCard";
 export {CatchQrCode} from "./components/CatchQrCode";
 export type {CatchQrCodeErrorCorrection, CatchQrCodeProps, CatchQrCodeSize} from "./components/CatchQrCode";
 export {CatchRatingSummary} from "./components/CatchRatingSummary";
