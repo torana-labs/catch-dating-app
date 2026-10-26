@@ -5,7 +5,8 @@ import {validateEventParticipationDocument} from
   "../shared/generated/validators/eventParticipationDocument";
 import type {GetEventViewerStateCallableResponse} from
   "../shared/generated/getEventViewerStateCallableResponse";
-import type {EventAttendeeDocument, OrganizerApplicationDocument,
+import type {EventAttendeeDocument, EventParticipationDocument,
+  OrganizerApplicationDocument,
   OrganizerFormDocument, OrganizerFormVersionDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {validateEventAttendeeDocument} from
@@ -94,7 +95,8 @@ export async function readGuestEventViewerState(params: {
         .where("eventId", "==", eventId).where("recipientUid", "==", uid)
         .orderBy("createdAt", "desc").limit(1)),
     ]);
-    const participation = native.data();
+    const participation = native.data() as EventParticipationDocument |
+      undefined;
     if (participation && validateEventParticipationDocument(participation) &&
         participation.eventId === eventId && participation.uid === uid &&
         participation.clubId === event.clubId &&
@@ -103,7 +105,9 @@ export async function readGuestEventViewerState(params: {
         ["signedUp", "attended"].includes(participation.status)) {
       viewer.admission = "nativeParticipation";
       guest.action = "registered";
-      viewer.attendance = participation.status === "attended" ?
+      viewer.attendance = participation.status === "attended" &&
+        typeof participation.attendedAt?.toMillis === "function" &&
+        participation.attendedAt.toMillis() <= nowMillis ?
         "attended" : "notRecorded";
     }
     if (offerPayments.docs[0]) {

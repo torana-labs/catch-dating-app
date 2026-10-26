@@ -4,6 +4,18 @@ import {approvedApplicationFixture, responseId} from
   "../organizerFormAdmission/admissionTestFixture";
 import assert from "node:assert/strict";
 import test from "node:test";
+import {Timestamp} from "firebase-admin/firestore";
+import {eventParticipationId} from "../shared/relationshipDocuments";
+import {validateEventDocument} from
+  "../shared/generated/validators/eventDocument";
+import {validateEventParticipationDocument} from
+  "../shared/generated/validators/eventParticipationDocument";
+import {readEventViewerStateSource as readNative} from
+  "./eventViewerStateSource";
+import type {EventDocument} from
+  "../shared/generated/firestoreAdminTypes";
+import {eventPolicyFromEvent} from "./eventPolicy";
+import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {publicFixture, publicCapturedFixture, uid, phone, now, eventId} from
   "./publicRegistration/testFixture";
 import {readGuestEventViewerState as read} from "./guestEventViewerState";
@@ -16,6 +28,68 @@ async function fixture() {
   return {...h, read: () => read({db: h.store.db(), uid, phoneE164: phone,
     eventId, nowMillis: now, loadCurrentAuthUser: h.auth})};
 }
+
+for (const {status, attendedAt, attendance} of [
+  {status: "attended", attendedAt: null, attendance: "notRecorded"},
+  {status: "attended", attendedAt: now + 1, attendance: "notRecorded"},
+  {status: "attended", attendedAt: now - 1, attendance: "attended"},
+  {status: "attended", attendedAt: now, attendance: "attended"},
+  {status: "signedUp", attendedAt: null, attendance: "notRecorded"},
+  {status: "signedUp", attendedAt: now - 1, attendance: "notRecorded"},
+]) {
+  test(`native participation ${status}/${attendedAt} keeps guest and native ` +
+    "attendance evidence aligned without losing admission", async () => {
+    const h = await fixture();
+    Object.assign(h.event, {checkedInCount: 0, waitlistedCount: 0,
+      cancelledAt: null, cancellationReason: null, genderCounts: {},
+      cohortCounts: {}, waitlistedCohortCounts: {},
+      startingPointLat: 12, startingPointLng: 77, locationDetails: null,
+      distanceKm: 5, pace: "easy", description: "Synthetic event",
+      constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
+      eventFormat: {version: 1, activityKind: "socialRun",
+        interactionModel: "openFormat"},
+      runtimeAccess: {enabled: true, publicRuntimeId: "r".repeat(20),
+        walkInPolicy: "deny", termsVersion: "v1"}});
+    h.event.eventPolicy = eventPolicyFromEvent(h.event as unknown as
+      EventDocument);
+    Object.assign(h.event, eventDiscoveryProjection({
+      event: h.event as unknown as EventDocument, clubLocation: "mumbai",
+      clubLocationMarketId: "in-mh-mumbai", bookedCount: 0}));
+    assert.ok(validateEventDocument(h.event),
+      JSON.stringify(validateEventDocument.errors));
+    const participation = {eventId, clubId: h.event.clubId,
+      organizerId: h.event.organizerId, uid, status,
+      createdAt: Timestamp.fromMillis(now - 2000),
+      updatedAt: Timestamp.fromMillis(now - 1000),
+      signedUpAt: Timestamp.fromMillis(now - 2000), waitlistedAt: null,
+      attendedAt: attendedAt === null ? null :
+        Timestamp.fromMillis(attendedAt),
+      cancelledAt: null, deletedAt: null, genderAtSignup: "man",
+      paymentId: null};
+    assert.ok(validateEventParticipationDocument(participation),
+      JSON.stringify(validateEventParticipationDocument.errors));
+    h.store.put(`eventParticipations/${eventParticipationId(eventId, uid)}`,
+      {...participation});
+    const native = await readNative({db: h.store.db(), uid, eventId,
+      nowMillis: now});
+    const guest = await h.read();
+    assert.ok(native);
+    assert.ok(guest);
+    assert.equal(native.observedAtMillis, now);
+    assert.equal(guest.observedAtMillis, now);
+    assert.equal(native.admission, "nativeParticipation");
+    assert.equal(guest.admission, native.admission);
+    assert.equal(guest.guest.action, "registered");
+    assert.equal(guest.guest.runtimeId, "r".repeat(20));
+    assert.equal(guest.payment, "notRead");
+    assert.ok(validate({viewer: guest}), JSON.stringify(validate.errors));
+    assert.deepEqual(h.store.writes, []);
+    assert.equal(native.attendance, attendance);
+    assert.equal(guest.attendance, attendance);
+    assert.equal(guest.attendance, native.attendance);
+  });
+}
+
 test("guest entry needs current phone ownership but no native consumer profile",
   async () => {
     const h = await fixture();
