@@ -140,7 +140,7 @@ class HostLumaEventChoiceSheet extends StatelessWidget {
       child: choices.events.isEmpty
           ? CatchEmptyState(
               variant: CatchEmptyStateVariant.inline,
-              icon: CatchIcons.calendarMonthOutlined,
+              icon: CatchIcons.date,
               title: context.l10n.hostsOperationalRosterProviderNoEventsTitle,
               message: context.l10n.hostsOperationalRosterProviderNoEventsBody,
             )

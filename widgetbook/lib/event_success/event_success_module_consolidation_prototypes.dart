@@ -109,7 +109,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                         copy: catchFieldCopy(context.l10n),
                         title: 'Group flow',
                         body: _recommendationFor(_mode),
-                        icon: CatchIcons.groups3Outlined,
+                        icon: CatchIcons.people,
                         values: EventSuccessMixPrototypeMode.values,
                         itemLabelBuilder: _modeLabel,
                         selected: {_mode},

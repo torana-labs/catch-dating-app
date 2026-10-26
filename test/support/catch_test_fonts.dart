@@ -33,22 +33,6 @@ Future<void> loadCatchTestFonts({String? nativeIosFontPath}) async {
     FontLoader('MaterialIcons')..addFont(_fileBytes(_materialIconsFont())),
   ];
 
-  final phosphorRoot = _packageRoot('phosphor_flutter');
-  for (final spec in _phosphorFonts) {
-    final fontFile = File('${phosphorRoot.path}/${spec.path}');
-    if (!fontFile.existsSync()) {
-      throw StateError('Missing Phosphor test font: ${fontFile.path}');
-    }
-
-    // TextStyle(package: ...) resolves the family to packages/<pkg>/<family>.
-    loaders
-      ..add(FontLoader(spec.family)..addFont(_fileBytes(fontFile)))
-      ..add(
-        FontLoader('packages/phosphor_flutter/${spec.family}')
-          ..addFont(_fileBytes(fontFile)),
-      );
-  }
-
   await Future.wait([for (final loader in loaders) loader.load()]);
 }
 
@@ -164,22 +148,6 @@ class _PlatformFunctionFontFiles {
   final File medium;
   final File bold;
 }
-
-class _PackageFontSpec {
-  const _PackageFontSpec(this.family, this.path);
-
-  final String family;
-  final String path;
-}
-
-const _phosphorFonts = <_PackageFontSpec>[
-  _PackageFontSpec('PhosphorBold', 'lib/fonts/Phosphor-Bold.ttf'),
-  _PackageFontSpec('PhosphorDuotone', 'lib/fonts/Phosphor-Duotone.ttf'),
-  _PackageFontSpec('PhosphorFill', 'lib/fonts/Phosphor-Fill.ttf'),
-  _PackageFontSpec('PhosphorLight', 'lib/fonts/Phosphor-Light.ttf'),
-  _PackageFontSpec('PhosphorRegular', 'lib/fonts/Phosphor.ttf'),
-  _PackageFontSpec('PhosphorThin', 'lib/fonts/Phosphor-Thin.ttf'),
-];
 
 const _platformFunctionFamilies = <String>{
   'Roboto',

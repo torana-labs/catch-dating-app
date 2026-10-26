@@ -118,7 +118,7 @@ class EventRehearsalStaffSection extends ConsumerWidget {
                               CatchButton(
                                 label: l10n.hostEventRehearsalStaffEdit,
                                 variant: CatchButtonVariant.ghost,
-                                size: CatchButtonSize.sm,
+                                size: CatchButtonSize.md,
                                 onPressed: () => open(
                                   review,
                                   operatorId: operator.id,
@@ -129,7 +129,7 @@ class EventRehearsalStaffSection extends ConsumerWidget {
                               CatchButton(
                                 label: l10n.hostEventRehearsalStaffRemove,
                                 variant: CatchButtonVariant.ghost,
-                                size: CatchButtonSize.sm,
+                                size: CatchButtonSize.md,
                                 onPressed: () => open(
                                   review,
                                   operatorId: operator.id,

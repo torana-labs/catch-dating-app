@@ -99,7 +99,7 @@ class _EventProfileIdentitySectionState
             profile.photo == null &&
             profile.introduction == null)
           CatchEmptyState(
-            icon: CatchIcons.personOutlineRounded,
+            icon: CatchIcons.person,
             title: l.eventProfileEmpty,
             message: l.eventProfileEmptyBody,
           ),

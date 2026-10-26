@@ -30,7 +30,7 @@ Future<void> _boot(
           rows: [
             CatchFormSingleChoiceRow<Object?, String>(
               id: 'choice',
-              icon: CatchIcons.personOutlined,
+              icon: CatchIcons.person,
               label: 'Choice',
               values: const ['One', 'Two'],
               itemLabel: (v) => v,
@@ -40,7 +40,7 @@ Future<void> _boot(
             range ??
                 CatchFormRangeRow<Object?>(
                   id: 'range',
-                  icon: CatchIcons.personOutlined,
+                  icon: CatchIcons.person,
                   label: 'Range',
                   value: '1–5',
                   currentMin: 1,
@@ -53,7 +53,7 @@ Future<void> _boot(
                 ),
             CatchFormTextRow<Object?>(
               id: 'text',
-              icon: CatchIcons.personOutlined,
+              icon: CatchIcons.person,
               label: 'Text',
               currentValue: 'Maya',
               validationCopy: copy.validation,
@@ -173,7 +173,7 @@ void main() {
         t,
         range: CatchFormRangeRow<Object?>(
           id: 'range',
-          icon: CatchIcons.speedOutlined,
+          icon: CatchIcons.pace,
           label: 'Range',
           value: '1 to 5',
           currentMin: 1,

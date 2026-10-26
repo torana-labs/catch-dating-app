@@ -72,7 +72,7 @@ class CelebrationScreen extends ConsumerStatefulWidget {
   final bool? showCloseButton;
   final bool playEffects;
 
-  IconData get icon => _icon ?? CatchIcons.checkRounded;
+  IconData get icon => _icon ?? CatchIcons.check;
 
   @override
   ConsumerState<CelebrationScreen> createState() =>
@@ -136,7 +136,7 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
                                 ),
                                 onPressed: widget.onClose,
                                 child: Icon(
-                                  CatchIcons.closeRounded,
+                                  CatchIcons.close,
                                   color: _celebrationInk,
                                 ),
                               ),
@@ -288,7 +288,7 @@ class PaperCelebrationScaffold extends StatelessWidget {
                       child: CatchIconAction(
                         backgroundColor: t.primarySoft,
                         onPressed: onClose,
-                        child: Icon(CatchIcons.closeRounded, color: t.primary),
+                        child: Icon(CatchIcons.close, color: t.primary),
                       ),
                     ),
                     gapH20,
@@ -296,9 +296,7 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   Align(
                     child:
                         visual ??
-                        PaperCelebrationIcon(
-                          icon: icon ?? CatchIcons.checkRounded,
-                        ),
+                        PaperCelebrationIcon(icon: icon ?? CatchIcons.check),
                   ),
                   if (eyebrow != null) ...[
                     gapH16,
@@ -596,7 +594,7 @@ class CelebrationNote extends StatelessWidget {
         padding: const EdgeInsets.all(CatchSpacing.s4),
         child: Row(
           children: [
-            Icon(CatchIcons.boltRounded, color: _celebrationInk, size: 18),
+            Icon(CatchIcons.instant, color: _celebrationInk, size: 18),
             gapW10,
             Expanded(
               child: CatchText(

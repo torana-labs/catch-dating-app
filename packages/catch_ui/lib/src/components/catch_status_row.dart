@@ -37,7 +37,7 @@ class CatchStatusRow extends StatelessWidget {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchStatusIndicator(color: color, size: CatchIcon.unsavedDot),
+            CatchStatusIndicator(color: color, size: CatchIconSize.unsavedDot),
             gapW6,
             if (constraints.hasBoundedWidth) Flexible(child: copy) else copy,
           ],

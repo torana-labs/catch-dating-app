@@ -79,8 +79,12 @@ export interface CatchFieldInputProps extends CatchFieldCommonProps {
   /** Enter in a single-line field. */
   onSubmitted?: (value: string) => void;
   pattern?: string;
+  /** Fixed text before the value, such as a "+91" dialling code; read with the field. */
+  prefixText?: string;
   recipe: "input";
   step?: number | string;
+  /** Fixed text after the value, such as a unit. */
+  suffixText?: string;
   value?: string;
 }
 
@@ -124,6 +128,7 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
   const generatedId = useId();
   const id = props.id ?? `catch-field-${generatedId}`;
   const supportId = `${id}-support`;
+  const affixIds = {prefix: `${id}-prefix`, suffix: `${id}-suffix`};
   const [focused, setFocused] = useState(false);
   const [uncontrolledLength, setUncontrolledLength] = useState(
     props.recipe === "input" ? (props.initialValue ?? "").length : 0,
@@ -147,8 +152,12 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
       counter = `${length} / ${props.maxLength}`;
       counterVisible = focused || error !== null;
     }
+    const prefix = props.prefixText?.trim() ? props.prefixText : undefined;
+    const suffix = props.suffixText?.trim() ? props.suffixText : undefined;
+    const describedBy = [prefix ? affixIds.prefix : null, suffix ? affixIds.suffix : null, support ? supportId : null]
+      .filter(Boolean).join(" ");
     const common = {
-      "aria-describedby": support ? supportId : undefined,
+      "aria-describedby": describedBy || undefined,
       "aria-invalid": error ? true : undefined,
       autoComplete: props.autoComplete,
       autoFocus: props.autofocus,
@@ -201,6 +210,17 @@ export function CatchField<T = string>(props: CatchFieldProps<T>) {
               ? "number"
               : keyboard.type}
         />
+      );
+    }
+    if (prefix || suffix) {
+      // Flutter draws prefixText and suffixText inline with the value, in the
+      // secondary ink; the input is described by both.
+      control = (
+        <span className={styles.affixLane}>
+          {prefix ? <span className={styles.affix} id={affixIds.prefix}>{prefix}</span> : null}
+          {control}
+          {suffix ? <span className={styles.affix} id={affixIds.suffix}>{suffix}</span> : null}
+        </span>
       );
     }
   } else {

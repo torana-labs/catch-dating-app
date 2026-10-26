@@ -4122,6 +4122,83 @@
         "getSalesDemoContinuation",
         "prepareSalesDemoContinuationForm"
       ]
+    },
+    {
+      "id": "organizerPublicPage",
+      "path": "organizerPublicPage/{organizerId}",
+      "rulesMatch": "/organizerPublicPage/{organizerId}",
+      "typescriptInterface": "OrganizerPublicPageDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps public page read models and build markers server-only"
+      ],
+      "owner": "Public organizer page read model (CAT-250)",
+      "read": "server only; the website server reads one document per organizer page with the Admin SDK",
+      "write": "server only; rebuilt from published organizer, event, imported event and review sources by functions/src/publicPages",
+      "exportedFunctions": [
+        "onPublicPageOrganizerWritten",
+        "onPublicPageEventWritten",
+        "onPublicPageExternalEventWritten",
+        "onPublicPageReviewWritten",
+        "refreshPublicPageFollowers",
+        "reconcilePublicPages"
+      ],
+      "migrationNotes": [
+        "Backfill with functions/scripts/backfill-public-pages.cjs before the website reads organizer routes from this collection.",
+        "A document exists only while the organizer passes the website publication rules; withdrawal deletes it."
+      ]
+    },
+    {
+      "id": "eventPublicPage",
+      "path": "eventPublicPage/{eventId}",
+      "rulesMatch": "/eventPublicPage/{eventId}",
+      "typescriptInterface": "EventPublicPageDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps public page read models and build markers server-only"
+      ],
+      "owner": "Public event page read model (CAT-250)",
+      "read": "server only; the website server reads one document per event page with the Admin SDK",
+      "write": "server only; rebuilt with its organizer's page by functions/src/publicPages",
+      "exportedFunctions": [
+        "onPublicPageOrganizerWritten",
+        "onPublicPageEventWritten",
+        "onPublicPageExternalEventWritten",
+        "onPublicPageReviewWritten",
+        "refreshPublicPageFollowers",
+        "reconcilePublicPages"
+      ],
+      "migrationNotes": [
+        "Backfill with functions/scripts/backfill-public-pages.cjs before the website reads event routes from this collection.",
+        "An id published as both a Catch and an imported event has no page, as the website reader withholds it."
+      ]
+    },
+    {
+      "id": "publicPageBuilds",
+      "path": "publicPageBuilds/{organizerId}",
+      "rulesMatch": "/publicPageBuilds/{organizerId}",
+      "typescriptInterface": "PublicPageBuildDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps public page read models and build markers server-only"
+      ],
+      "owner": "Public page read model build ordering (CAT-250)",
+      "read": "server only; rebuild commits",
+      "write": "server only; each committed rebuild records when it read its sources",
+      "exportedFunctions": [
+        "onPublicPageOrganizerWritten",
+        "onPublicPageEventWritten",
+        "onPublicPageExternalEventWritten",
+        "onPublicPageReviewWritten",
+        "refreshPublicPageFollowers",
+        "reconcilePublicPages"
+      ],
+      "migrationNotes": [
+        "Private marker; a rebuild that read older sources than the marker is discarded, so it cannot revive a withdrawn page."
+      ]
     }
   ]
 }

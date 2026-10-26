@@ -144,7 +144,7 @@ class _EventSuccessHostRevealSurfaceState
                 label: context
                     .l10n
                     .eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal,
-                icon: CatchIcons.boltRounded,
+                icon: CatchIcons.instant,
               ),
               gapW8,
               CatchBadge.onDarkStatus(

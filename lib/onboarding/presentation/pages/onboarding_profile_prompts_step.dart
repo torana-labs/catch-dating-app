@@ -219,7 +219,7 @@ class PromptField extends StatelessWidget {
         CatchField<String>.choices(
           copy: catchFieldCopy(context.l10n),
           key: ValueKey('onboarding-prompt-question-$index'),
-          icon: CatchIcons.formatQuoteRounded,
+          icon: CatchIcons.quote,
           title: context.l10n.onboardingProfilePromptsPageTitleProfilePrompt,
           contract: CatchContractConstraints.profilePromptAnswerPromptId,
           contractValueBuilder: (value) => value,

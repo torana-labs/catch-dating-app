@@ -266,7 +266,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
           leading: operationPending
               ? CatchIconAction.toolbar(
-                  icon: CatchIcons.arrowBackIosNewRounded,
+                  icon: CatchIcons.back,
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                 )
               : null,
@@ -295,13 +295,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     copy: catchFieldCopy(context.l10n),
                     title: context.l10n.safetySettingsScreenTitlePhoneNumber,
                     valueText: state.profile.phoneNumber,
-                    icon: CatchIcons.phoneOutlined,
+                    icon: CatchIcons.phone,
                   ),
                   CatchField.read(
                     copy: catchFieldCopy(context.l10n),
                     title: context.l10n.safetySettingsScreenTitleEmail,
                     valueText: state.profile.email,
-                    icon: CatchIcons.emailOutlined,
+                    icon: CatchIcons.email,
                   ),
                   CatchField.nav(
                     copy: catchFieldCopy(context.l10n),
@@ -309,7 +309,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.safetySettingsScreenTitleReviewHistory,
                     valueText:
                         context.l10n.safetySettingsScreenBodyEventsYouReviewed,
-                    icon: CatchIcons.rateReviewOutlined,
+                    icon: CatchIcons.feedback,
                     onTap: operationPending
                         ? null
                         : () => context.pushNamed(
@@ -323,7 +323,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     valueText: context
                         .l10n
                         .safetySettingsScreenBodyBookingsAndReceipts,
-                    icon: CatchIcons.receiptLongOutlined,
+                    icon: CatchIcons.receipt,
                     onTap: operationPending
                         ? null
                         : () => context.pushNamed(
@@ -337,12 +337,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     valueText: context
                         .l10n
                         .safetySettingsScreenBodyManageEventsAndClubs,
-                    icon: CatchIcons.workOutlineRounded,
+                    icon: CatchIcons.work,
                     actions:
                         _pendingExternalLink ==
                             _SettingsExternalLinkAction.hostApp
                         ? const SizedBox.square(
-                            dimension: CatchIcon.control,
+                            dimension: CatchIconSize.control,
                             child: CatchLoadingIndicator(),
                           )
                         : null,
@@ -357,7 +357,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     valueText: context
                         .l10n
                         .launchAccessLaunchAccessApplicationScreenTextTellUsWhereYou,
-                    icon: CatchIcons.locationCityOutlined,
+                    icon: CatchIcons.city,
                     onTap: operationPending
                         ? null
                         : () =>
@@ -386,7 +386,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         .updateUserProfilePatchPrefsNewCatches,
                     title:
                         context.l10n.safetySettingsScreenTitlePushNotifications,
-                    icon: CatchIcons.favoriteOutline,
+                    icon: CatchIcons.like,
                     value: state.preferences.newCatches,
                     onChanged: preferenceChangesBlocked
                         ? null
@@ -403,7 +403,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context
                         .l10n
                         .safetySettingsScreenTitleCrossPathsInvitations,
-                    icon: CatchIcons.personSearchOutlined,
+                    icon: CatchIcons.findPerson,
                     value: state.preferences.crossPathsInvitations,
                     onChanged: preferenceChangesBlocked
                         ? null
@@ -419,7 +419,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     contract: CatchContractConstraints
                         .updateUserProfilePatchPrefsMessages,
                     title: context.l10n.safetySettingsScreenTitleMessages,
-                    icon: CatchIcons.chatBubbleOutlineRounded,
+                    icon: CatchIcons.chat,
                     value: state.preferences.messages,
                     onChanged: preferenceChangesBlocked
                         ? null
@@ -434,7 +434,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     contract: CatchContractConstraints
                         .updateUserProfilePatchPrefsEventReminders,
                     title: context.l10n.safetySettingsScreenTitleEventReminders,
-                    icon: CatchIcons.directionsRunOutlined,
+                    icon: CatchIcons.activity,
                     value: state.preferences.eventReminders,
                     onChanged: preferenceChangesBlocked
                         ? null
@@ -451,7 +451,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context
                         .l10n
                         .safetySettingsScreenTitleEventChangesAndCancellations,
-                    icon: CatchIcons.eventRepeatOutlined,
+                    icon: CatchIcons.recurring,
                     value: state.preferences.eventStatusUpdates,
                     onChanged: preferenceChangesBlocked
                         ? null
@@ -467,7 +467,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         .updateUserProfilePatchPrefsClubUpdates,
                     title:
                         context.l10n.safetySettingsScreenTitleClubAnnouncements,
-                    icon: CatchIcons.notificationsActiveOutlined,
+                    icon: CatchIcons.notificationsOn,
                     value: state.preferences.clubUpdates,
                     onChanged: preferenceChangesBlocked
                         ? null
@@ -482,7 +482,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     contract: CatchContractConstraints
                         .updateUserProfilePatchPrefsWeeklyDigest,
                     title: context.l10n.safetySettingsScreenTitleEmailUpdates,
-                    icon: CatchIcons.markEmailReadOutlined,
+                    icon: CatchIcons.emailRead,
                     value: state.preferences.weeklyDigest,
                     onChanged: preferenceChangesBlocked
                         ? null
@@ -526,7 +526,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title:
                         context.l10n.safetySettingsScreenTitleShowInCrossPaths,
                     body: context.l10n.safetySettingsScreenBodyShowInCrossPaths,
-                    icon: CatchIcons.favoriteBorderRounded,
+                    icon: CatchIcons.like,
                     value: state.preferences.showInCrossPaths,
                     onChanged: preferenceChangesBlocked
                         ? null
@@ -539,14 +539,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     copy: catchFieldCopy(context.l10n),
                     title: context.l10n.safetySettingsScreenTitleBlockedUsers,
                     valueText: state.blockedAccounts.count?.toString(),
-                    icon: CatchIcons.shieldOutlined,
+                    icon: CatchIcons.safety,
                   ),
                   CatchField.read(
                     copy: catchFieldCopy(context.l10n),
                     title: context.l10n.safetySettingsScreenTitleWhoCanSeeYou,
                     valueText:
                         context.l10n.safetySettingsScreenBodyRunnersOnMyEvents,
-                    icon: CatchIcons.visibilityOutlined,
+                    icon: CatchIcons.show,
                   ),
                   CatchField.toggle(
                     copy: catchFieldCopy(context.l10n),
@@ -554,7 +554,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     contract: CatchContractConstraints
                         .updateUserProfilePatchPrefsShowOnMap,
                     title: context.l10n.safetySettingsScreenTitleShowMeOnMap,
-                    icon: CatchIcons.mapOutlined,
+                    icon: CatchIcons.map,
                     value: state.preferences.showOnMap,
                     onChanged: preferenceChangesBlocked
                         ? null
@@ -569,12 +569,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       key: SettingsKeys.privacyPolicyRow,
                       title:
                           context.l10n.safetySettingsScreenTitlePrivacyPolicy,
-                      icon: CatchIcons.lockOutline,
+                      icon: CatchIcons.locked,
                       actions:
                           _pendingExternalLink ==
                               _SettingsExternalLinkAction.privacyPolicy
                           ? const SizedBox.square(
-                              dimension: CatchIcon.control,
+                              dimension: CatchIconSize.control,
                               child: CatchLoadingIndicator(),
                             )
                           : null,
@@ -591,11 +591,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context
                         .l10n
                         .safetySettingsScreenTitleDeleteAccount658588,
-                    icon: CatchIcons.deleteOutline,
+                    icon: CatchIcons.delete,
                     tone: CatchFieldTone.danger,
                     actions: state.mutations.deletingAccount
                         ? const SizedBox.square(
-                            dimension: CatchIcon.control,
+                            dimension: CatchIconSize.control,
                             child: CatchLoadingIndicator(),
                           )
                         : null,
@@ -612,12 +612,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       key: SettingsKeys.helpSupportRow,
                       title: context.l10n.safetySettingsScreenTitleHelpSupport,
                       valueText: context.l10n.safetySettingsScreenBodyContactUs,
-                      icon: CatchIcons.helpOutline,
+                      icon: CatchIcons.help,
                       actions:
                           _pendingExternalLink ==
                               _SettingsExternalLinkAction.helpSupport
                           ? const SizedBox.square(
-                              dimension: CatchIcon.control,
+                              dimension: CatchIconSize.control,
                               child: CatchLoadingIndicator(),
                             )
                           : null,
@@ -634,12 +634,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       key: SettingsKeys.termsRow,
                       title: context.l10n.safetySettingsScreenTitleTerms,
                       valueText: context.l10n.safetySettingsScreenBodyLegal,
-                      icon: CatchIcons.descriptionOutlined,
+                      icon: CatchIcons.document,
                       actions:
                           _pendingExternalLink ==
                               _SettingsExternalLinkAction.terms
                           ? const SizedBox.square(
-                              dimension: CatchIcon.control,
+                              dimension: CatchIconSize.control,
                               child: CatchLoadingIndicator(),
                             )
                           : null,
@@ -654,7 +654,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     copy: catchFieldCopy(context.l10n),
                     title: context.l10n.safetySettingsScreenTitleVersion,
                     valueText: version,
-                    icon: CatchIcons.infoOutline,
+                    icon: CatchIcons.info,
                   ),
                 ],
               ),
@@ -664,11 +664,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     copy: catchFieldCopy(context.l10n),
                     key: SettingsKeys.signOutRow,
                     title: context.l10n.safetySettingsScreenTitleLogOut,
-                    icon: CatchIcons.logoutRounded,
+                    icon: CatchIcons.signOut,
                     tone: CatchFieldTone.danger,
                     actions: state.mutations.signingOut
                         ? const SizedBox.square(
-                            dimension: CatchIcon.control,
+                            dimension: CatchIconSize.control,
                             child: CatchLoadingIndicator(),
                           )
                         : null,
@@ -752,7 +752,7 @@ class BlockedAccountsSkeleton extends StatelessWidget {
           for (var index = 0; index < 3; index++) ...[
             Row(
               children: [
-                CatchSkeleton.circle(size: CatchIcon.avatarLg),
+                CatchSkeleton.circle(size: CatchIconSize.avatarLg),
                 gapW12,
                 Expanded(
                   child: Column(

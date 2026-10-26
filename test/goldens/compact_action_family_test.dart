@@ -100,7 +100,7 @@ void main() {
                     tooltip: 'Close overlay',
                     variant: CatchIconActionVariant.float,
                     onPressed: _noop,
-                    child: Icon(Icons.close, size: CatchIcon.md),
+                    child: Icon(Icons.close, size: CatchIconSize.md),
                   ),
                 ],
               ),

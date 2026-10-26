@@ -475,13 +475,13 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
         CatchActionMenuItem(
           value: _PlacementSecondaryAction.confirm,
           label: context.l10n.eventSuccessRoomMapConfirmPosition,
-          icon: CatchIcons.checkCircleOutlineRounded,
+          icon: CatchIcons.success,
         ),
       if (onRelease != null)
         CatchActionMenuItem(
           value: _PlacementSecondaryAction.release,
           label: context.l10n.eventSuccessRoomMapReleasePinned,
-          icon: CatchIcons.lockOpenRounded,
+          icon: CatchIcons.unlocked,
         ),
     ];
     final identity = Row(
@@ -641,7 +641,7 @@ class _EventSuccessRoomLegend extends StatelessWidget {
         _EventSuccessRoomLegendItem(
           color: t.ink3,
           label: context.l10n.eventSuccessRoomMapUnavailable,
-          icon: CatchIcons.blockRounded,
+          icon: CatchIcons.block,
         ),
       ],
     );
@@ -666,8 +666,8 @@ class _EventSuccessRoomLegendItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         CatchSurface(
-          width: CatchIcon.md,
-          height: CatchIcon.md,
+          width: CatchIconSize.md,
+          height: CatchIconSize.md,
           radius: CatchRadius.pill,
           backgroundColor: t.surface,
           borderSpec: CatchBorderSpec(
@@ -677,7 +677,7 @@ class _EventSuccessRoomLegendItem extends StatelessWidget {
           ),
           child: icon == null
               ? const SizedBox.shrink()
-              : Icon(icon, size: CatchIcon.micro, color: color),
+              : Icon(icon, size: CatchIconSize.micro, color: color),
         ),
         gapW4,
         CatchText(label, variant: CatchTextVariant.statusLabel, color: t.ink2),
@@ -782,10 +782,8 @@ class _EventSuccessMapUnit extends StatelessWidget {
                   ),
                   if (invalid || alert)
                     Icon(
-                      invalid
-                          ? CatchIcons.blockRounded
-                          : CatchIcons.warningAmberRounded,
-                      size: CatchIcon.sm,
+                      invalid ? CatchIcons.block : CatchIcons.warning,
+                      size: CatchIconSize.sm,
                       color: invalid ? t.ink3 : t.warning,
                     ),
                 ],
@@ -921,11 +919,7 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
           width: CatchStroke.underline,
         ),
         child: unavailable
-            ? Icon(
-                CatchIcons.blockRounded,
-                size: CatchIcon.micro,
-                color: t.ink3,
-              )
+            ? Icon(CatchIcons.block, size: CatchIconSize.micro, color: t.ink3)
             : const SizedBox.shrink(),
       );
     }

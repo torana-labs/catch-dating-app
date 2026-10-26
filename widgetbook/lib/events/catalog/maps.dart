@@ -294,7 +294,7 @@ Widget mapOverlayControlsState(BuildContext context) {
           ),
         ),
         MapOverlayTopBar(
-          trailing: Icon(CatchIcons.locationOnOutlined),
+          trailing: Icon(CatchIcons.location),
           below: const Text('Carter Road Jetty'),
           onBack: widgetbookNoop,
         ),

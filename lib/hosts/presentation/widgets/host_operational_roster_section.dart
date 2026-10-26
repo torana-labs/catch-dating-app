@@ -568,7 +568,7 @@ class HostRosterInsightRail extends StatelessWidget {
         CatchButton(
           label: context.l10n.hostsOperationalRosterInsightsRetry,
           onPressed: onRetry,
-          size: CatchButtonSize.sm,
+          size: CatchButtonSize.md,
           variant: CatchButtonVariant.ghost,
         ),
       ],
@@ -632,7 +632,7 @@ class HostRosterInsightRail extends StatelessWidget {
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterInsightsRetry,
                   onPressed: onRetry,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: CatchButtonVariant.ghost,
                 ),
               ],

@@ -84,7 +84,6 @@ dependencies:
   qr_flutter: ^4.1.0
   audioplayers: ^6.6.0
   lottie: ^3.6.1
-  phosphor_flutter: ^2.1.0
   flutter_reorderable_grid_view: ^5.6.0
   flutter_native_splash: ^2.4.7
   flutter_timezone: ^5.1.1
@@ -121,10 +120,6 @@ dev_dependencies:
   firebase_auth_mocks: ^0.15.1
   json_schema: ^5.2.2
   test: ^1.31.0
-
-dependency_overrides:
-  phosphor_flutter:
-    path: packages/phosphor_flutter
 
 # Native brand colors mirror design_context_pack/design_system/tokens.json.
 # Run `dart run tool/branding/generate_native_brand_assets.dart` after token

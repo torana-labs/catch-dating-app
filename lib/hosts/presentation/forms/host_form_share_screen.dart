@@ -162,7 +162,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                       CatchField.nav(
                         copy: catchFieldCopy(context.l10n),
                         title: context.l10n.hostAudienceShowQr,
-                        icon: CatchIcons.qrCode2Outlined,
+                        icon: CatchIcons.qrCode,
                         emphasis: CatchFieldEmphasis.title,
                         onTap: () => _showQr(assets),
                       ),
@@ -171,14 +171,14 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                         title: _creatingLink
                             ? context.l10n.hostAudienceCreatingLink
                             : context.l10n.hostFormCreateTrackedLink,
-                        icon: CatchIcons.linkOutlined,
+                        icon: CatchIcons.link,
                         emphasis: CatchFieldEmphasis.title,
                         onTap: _creatingLink ? null : _createTrackedLink,
                       ),
                       CatchField.nav(
                         copy: catchFieldCopy(context.l10n),
                         title: context.l10n.hostFormEmbed,
-                        icon: CatchIcons.languageOutlined,
+                        icon: CatchIcons.web,
                         emphasis: CatchFieldEmphasis.title,
                         onTap: () => _showEmbed(assets),
                       ),

@@ -93,9 +93,9 @@ class _CatchErrorDetailsAccordionState
                   duration: duration,
                   curve: CatchMotion.standardCurve,
                   child: Icon(
-                    CatchIcons.chevronRightRounded,
+                    CatchIcons.disclosure,
                     color: tokens.danger,
-                    size: CatchIcon.sm,
+                    size: CatchIconSize.sm,
                   ),
                 ),
               ],

@@ -74,7 +74,7 @@ class ChatMessageList extends StatelessWidget {
                             : AlignmentDirectional.centerStart,
                         widthFactor: spec.widthFactor,
                         child: CatchSkeleton.box(
-                          height: CatchLayout.buttonLgHeight,
+                          height: CatchButtonTokens.largeHeight,
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(
                               spec.isMe ? CatchRadius.lg : CatchRadius.sm,
@@ -103,14 +103,14 @@ class ChatMessageList extends StatelessWidget {
         retryLabel: context.l10n.sharedActionTryAgain,
         title: context.l10n.chatsChatMessageListTitleMessagesUnavailable,
         message: context.l10n.chatsChatMessageListMessageUnableToLoadMessages,
-        icon: CatchIcons.chatBubbleOutlineRounded,
+        icon: CatchIcons.chat,
         onRetry: onBoundaryRetry,
       ),
       builder: (context, messages) {
         if (messages.isEmpty) {
           return Center(
             child: CatchEmptyState(
-              icon: CatchIcons.chatBubbleOutlineRounded,
+              icon: CatchIcons.chat,
               title: context.l10n.chatsChatMessageListTitleSayHi,
               message: chatEmptyThreadMessageFor(
                 event: event,

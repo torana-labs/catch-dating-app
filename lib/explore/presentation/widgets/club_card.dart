@@ -150,7 +150,7 @@ class ExploreFeedClubRow extends StatelessWidget {
             ),
           ),
           gapW12,
-          Icon(CatchIcons.forwardArrow, size: CatchIcon.md, color: t.ink3),
+          Icon(CatchIcons.forward, size: CatchIconSize.md, color: t.ink3),
         ],
       ),
     );

@@ -402,7 +402,7 @@ class CompanionPreviewText extends StatelessWidget {
       children: [
         Padding(
           padding: _companionPreviewIconInset,
-          child: Icon(icon, size: CatchIcon.xs, color: t.ink2),
+          child: Icon(icon, size: CatchIconSize.xs, color: t.ink2),
         ),
         gapW6,
         Expanded(child: CatchText(text, variant: CatchTextVariant.supporting)),
@@ -670,7 +670,7 @@ class StageCueCard extends StatelessWidget {
                     onPressed: () => _copyCue(context, cue),
                     child: Icon(
                       CatchIcons.contentCopyRounded,
-                      size: CatchIcon.md,
+                      size: CatchIconSize.md,
                       color: t.primary,
                     ),
                   ),
@@ -724,7 +724,7 @@ class StageSectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: CatchIcon.md, color: color),
+        Icon(icon, size: CatchIconSize.md, color: color),
         gapW6,
         Expanded(
           child: CatchText(

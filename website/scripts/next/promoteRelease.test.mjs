@@ -74,7 +74,10 @@ test("production workflow preserves credentials boundary, tested bytes, shared l
   assert.ok(workflow.indexOf("hostingState.mjs snapshot") < workflow.indexOf("gcloud run deploy"));
   assert.ok(workflow.indexOf("candidate-checks.json") < workflow.indexOf("firebase hosting:clone"));
   assert.match(workflow, /hosting:clone "catch-dating-app-64e51@\$version" catch-dating-app-64e51:live/u);
-  assert.match(workflow, /--min-instances 0 --max-instances 3/u);
+  // One warm instance for the serving revision only. A revision-level minimum
+  // would keep every Hosting-pinned tagged revision running and billed.
+  assert.match(workflow, /--min 1 --max-instances 3/u);
+  assert.doesNotMatch(workflow, /--min-instances/u);
   assert.match(workflow, /hostingState.mjs assert-current/u);
   assert.match(workflow, /EXPECTED_HOSTING_VERSION="\$version"/u);
   assert.match(workflow, /channelState.mjs" record next-release/u);

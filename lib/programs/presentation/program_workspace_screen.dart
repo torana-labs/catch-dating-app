@@ -252,7 +252,7 @@ class _ProgramWorkspacePageBodyState
                 CatchField.nav(
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.programsWorkspaceGuestsTitle,
-                  icon: CatchIcons.groupsOutlined,
+                  icon: CatchIcons.people,
                   emphasis: CatchFieldEmphasis.title,
                   onTap: () => context.pushNamed(
                     Routes.hostProgramGuestsScreen.name,
@@ -262,7 +262,7 @@ class _ProgramWorkspacePageBodyState
                 CatchField.nav(
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.programsWorkspaceTeamTitle,
-                  icon: CatchIcons.workOutlineRounded,
+                  icon: CatchIcons.work,
                   emphasis: CatchFieldEmphasis.title,
                   onTap: () => context.pushNamed(
                     Routes.hostProgramTeamScreen.name,
@@ -272,7 +272,7 @@ class _ProgramWorkspacePageBodyState
                 CatchField.nav(
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.programsWorkspaceImportTitle,
-                  icon: CatchIcons.cloudUploadOutlined,
+                  icon: CatchIcons.upload,
                   emphasis: CatchFieldEmphasis.title,
                   onTap: () => context.pushNamed(
                     Routes.hostProgramImportScreen.name,
@@ -289,7 +289,7 @@ class _ProgramWorkspacePageBodyState
                 CatchField.nav(
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.programsWorkspaceMomentsTitle,
-                  icon: CatchIcons.autoAwesomeOutlined,
+                  icon: CatchIcons.magic,
                   emphasis: CatchFieldEmphasis.title,
                   onTap: () => context.pushNamed(
                     Routes.hostProgramMomentsScreen.name,
@@ -300,7 +300,7 @@ class _ProgramWorkspacePageBodyState
                 CatchField.nav(
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.programsWorkspaceInboxTitle,
-                  icon: CatchIcons.forumOutlined,
+                  icon: CatchIcons.conversations,
                   emphasis: CatchFieldEmphasis.title,
                   onTap: () => context.pushNamed(
                     Routes.hostInboxScreen.name,
@@ -486,7 +486,7 @@ class ProgramWorkspaceFunctionTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchFieldRow.standard(
-          leading: Icon(CatchIcons.eventAvailable),
+          leading: Icon(CatchIcons.eventConfirmed),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -537,16 +537,16 @@ class ProgramWorkspaceFunctionTile extends StatelessWidget {
                 children: [
                   CatchButton(
                     label: context.l10n.programsWorkspaceFunctionEdit,
-                    leading: Icon(CatchIcons.editOutlined, size: CatchIcon.sm),
+                    leading: Icon(CatchIcons.edit, size: CatchIconSize.sm),
                     variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                     onPressed: onEdit,
                   ),
                   CatchButton(
                     label: context.l10n.programsWorkspaceFunctionInvitations,
-                    leading: Icon(CatchIcons.sendRounded, size: CatchIcon.sm),
+                    leading: Icon(CatchIcons.send, size: CatchIconSize.sm),
                     variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                     onPressed: onInvitations,
                   ),
                 ],

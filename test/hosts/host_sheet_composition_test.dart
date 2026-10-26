@@ -144,7 +144,7 @@ void main() {
       );
       for (final failure in [true, false]) {
         fail = failure;
-        await tester.tap(find.byIcon(CatchIcons.deleteOutlineRounded));
+        await tester.tap(find.byIcon(CatchIcons.delete));
         await pumpFeatureUi(tester);
         await tester.tap(find.text('Delete'));
         await pumpFeatureUi(tester);
@@ -195,16 +195,13 @@ void main() {
           );
           final content = find.byType(CatchFieldContentRow);
           final center = tester.getCenter(content).dy;
-          for (final icon in [
-            CatchIcons.descriptionOutlined,
-            CatchIcons.deleteOutlineRounded,
-          ]) {
+          for (final icon in [CatchIcons.document, CatchIcons.delete]) {
             expect(
               tester.getCenter(find.byIcon(icon)).dy,
               closeTo(center, 0.1),
             );
           }
-          expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
+          expect(find.byIcon(CatchIcons.disclosure), findsNothing);
           final title = tester.widget<Text>(find.text(draft.summary));
           final saved = tester.widget<Text>(find.textContaining('Saved '));
           expect(title.style!.fontSize!, greaterThan(saved.style!.fontSize!));

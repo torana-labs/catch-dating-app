@@ -1386,7 +1386,7 @@ void main() {
 
       await tester.enterText(find.byType(TextField), '  Hello Taylor  ');
       await tester.pump();
-      await tester.tap(find.byIcon(CatchIcons.sendRounded));
+      await tester.tap(find.byIcon(CatchIcons.send));
       await pumpFeatureUi(tester);
 
       expect(conversationRepository.sendCalls, hasLength(1));
@@ -1418,11 +1418,11 @@ void main() {
 
         await tester.enterText(find.byType(TextField), '  Still here  ');
         await tester.pump();
-        await tester.tap(find.byIcon(CatchIcons.sendRounded));
+        await tester.tap(find.byIcon(CatchIcons.send));
         await tester.pump();
 
         expect(conversationRepository.sendCalls, hasLength(1));
-        expect(find.byIcon(CatchIcons.sendRounded), findsNothing);
+        expect(find.byIcon(CatchIcons.send), findsNothing);
         expect(find.byType(CatchLoadingIndicator), findsOneWidget);
         expect(
           tester.widget<TextField>(find.byType(TextField)).enabled,
@@ -1449,7 +1449,7 @@ void main() {
           tester.widget<TextField>(find.byType(TextField)).enabled,
           isTrue,
         );
-        expect(find.byIcon(CatchIcons.sendRounded), findsOneWidget);
+        expect(find.byIcon(CatchIcons.send), findsOneWidget);
         expect(
           find.text('Something went wrong. Please try again.'),
           findsOneWidget,
@@ -1479,9 +1479,9 @@ void main() {
         expect(input.controller?.text, contains('\n'));
         expect(input.minLines, 1);
         expect(input.maxLines, 4);
-        expect(find.byIcon(CatchIcons.sendRounded), findsOneWidget);
+        expect(find.byIcon(CatchIcons.send), findsOneWidget);
         expect(
-          tester.getBottomLeft(find.byIcon(CatchIcons.sendRounded)).dy,
+          tester.getBottomLeft(find.byIcon(CatchIcons.send)).dy,
           lessThanOrEqualTo(844 - 318),
         );
       },
@@ -1881,7 +1881,7 @@ void main() {
       expect(find.text('This chat is closed.'), findsOneWidget);
 
       await tester.enterText(find.byType(TextField), 'Should not send');
-      await tester.tap(find.byIcon(CatchIcons.sendRounded));
+      await tester.tap(find.byIcon(CatchIcons.send));
       await pumpFeatureUi(tester);
 
       expect(conversationRepository.sendCalls, isEmpty);

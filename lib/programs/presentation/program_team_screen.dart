@@ -196,21 +196,18 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
                   children: [
                     CatchButton(
                       label: context.l10n.programsTeamGrant,
-                      leading: Icon(
-                        CatchIcons.howToRegOutlined,
-                        size: CatchIcon.md,
-                      ),
+                      leading: Icon(CatchIcons.checkIn, size: CatchIconSize.md),
                       variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       onPressed: _pending
                           ? null
                           : () => _grantOrInvite(invite: false),
                     ),
                     CatchButton(
                       label: context.l10n.programsTeamInvite,
-                      leading: Icon(CatchIcons.sendRounded, size: CatchIcon.md),
+                      leading: Icon(CatchIcons.send, size: CatchIconSize.md),
                       variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       onPressed: _pending
                           ? null
                           : () => _grantOrInvite(invite: true),
@@ -220,14 +217,14 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
                 const SizedBox(height: CatchSpacing.s3),
                 if (widget.staff.members.isEmpty)
                   CatchEmptyState(
-                    icon: CatchIcons.workOutlineRounded,
+                    icon: CatchIcons.work,
                     title: context.l10n.programsTeamEmptyTitle,
                     message: context.l10n.programsTeamEmptyMessage,
                   )
                 else
                   for (final member in widget.staff.members)
                     CatchFieldRow.standard(
-                      leading: Icon(CatchIcons.personOutlineRounded),
+                      leading: Icon(CatchIcons.person),
                       body: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -275,7 +272,7 @@ class _ProgramTeamPageBodyState extends ConsumerState<ProgramTeamPageBody> {
                       trailing: member.status == ProgramStaffStatus.revoked
                           ? null
                           : CatchIconAction.icon(
-                              icon: CatchIcons.blockOutlined,
+                              icon: CatchIcons.block,
                               variant: CatchIconActionVariant.plain,
                               accent: CatchTokens.of(context).danger,
                               tooltip: context.l10n.programsTeamRevoke,
@@ -409,14 +406,14 @@ class _ProgramStaffAccessDialogState extends State<ProgramStaffAccessDialog> {
           inputHint: '+14155552671',
         ),
         CatchFieldRow.standard(
-          leading: Icon(CatchIcons.calendarTodayOutlined),
+          leading: Icon(CatchIcons.date),
           body: CatchText(
             _expiresAt == null
                 ? context.l10n.programsTeamExpiryLabel
                 : AppTimeFormatters.shortDate(_expiresAt!),
             variant: CatchTextVariant.bodyM,
           ),
-          trailing: Icon(CatchIcons.chevronRightRounded),
+          trailing: Icon(CatchIcons.disclosure),
           onTap: _pickExpiry,
         ),
         gapH8,
@@ -436,7 +433,7 @@ class _ProgramStaffAccessDialogState extends State<ProgramStaffAccessDialog> {
               variant: CatchTextVariant.bodyM,
             ),
             trailing: _duties.contains(duty)
-                ? Icon(CatchIcons.checkRounded, size: CatchIcon.md)
+                ? Icon(CatchIcons.check, size: CatchIconSize.md)
                 : null,
             onTap: () => setState(
               () => _duties.contains(duty)

@@ -76,20 +76,12 @@ test("baseline metadata, duplicate entries, and an empty scan cannot pass", () =
 
 test("generated exclusions follow known producer identities, not arbitrary generated directories or comments", () => {
   for (const file of ["lib/data/value.g.dart", "lib/data/value.freezed.dart", "lib/l10n/generated/app_localizations_en.dart"]) {
-    assert.equal(isHandwrittenSource(file, ""), false);
+    assert.equal(isHandwrittenSource(file), false);
   }
-  const header = "// Auto generated File\n// DON'T EDIT BY HAND\n";
-  for (const file of ["packages/phosphor_flutter/lib/src/phosphor_icons_bold.dart",
-    "packages/phosphor_flutter/lib/src/phosphor_icons_base.dart",
-    "packages/phosphor_flutter/lib/src/phosphor_icons.dart",
-    "packages/phosphor_flutter/example/lib/constants/all_icons.dart"]) {
-    assert.equal(isHandwrittenSource(file, header), false);
+  for (const file of ["lib/generated/handwritten.dart", "lib/example.dart", "packages/catch_ui/lib/src/handwritten.dart"]) {
+    assert.equal(isHandwrittenSource(file), true);
   }
-  for (const file of ["lib/generated/handwritten.dart", "lib/example.dart", "packages/phosphor_flutter/lib/src/handwritten.dart"]) {
-    assert.equal(isHandwrittenSource(file, header), true);
-  }
-  assert.equal(isHandwrittenSource("packages/phosphor_flutter/lib/src/phosphor_icons_bold.dart", "class Handwritten {}"), true);
-  assert.equal(isHandwrittenSource("test/example_test.dart", ""), false);
+  assert.equal(isHandwrittenSource("test/example_test.dart"), false);
 });
 
 test("baseline generation is deterministic, includes the ratcheted facade, and excludes bounded files", () => {

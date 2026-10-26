@@ -136,7 +136,7 @@ class _HostEventRehearsalScreenState
                         staff?.operators[selectedRole]?.displayName ??
                         context.l10n.hostEventRehearsalUnavailableRole,
                   ),
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             color: CatchTokens.of(context).danger,
             actions: [
               CatchBannerAction(
@@ -165,7 +165,7 @@ class _HostEventRehearsalScreenState
         ),
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          icon: CatchIcons.arrowBackIosNewRounded,
+          icon: CatchIcons.back,
           onPressed: () => _leaveRehearsal(rehearsalState.value?.session),
         ),
         emphasis: scrolledUnder
@@ -484,7 +484,7 @@ class _HostEventRehearsalScreenState
     builder: (sheetContext) => CatchSheet.standard(
       title: context.l10n.hostEventRehearsalPracticeTools,
       subtitle: context.l10n.hostEventRehearsalPracticeToolsBody,
-      glyph: CatchIcons.scienceOutlined,
+      glyph: CatchIcons.labs,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -657,7 +657,7 @@ class _RehearsalCoachDock extends StatelessWidget {
     if (collapsed) {
       final coachIdentity = Row(
         children: [
-          Icon(CatchIcons.scienceOutlined, color: t.danger),
+          Icon(CatchIcons.labs, color: t.danger),
           gapW8,
           Expanded(
             child: CatchText(
@@ -670,7 +670,7 @@ class _RehearsalCoachDock extends StatelessWidget {
       );
       final showCoach = CatchButton(
         label: context.l10n.hostEventRehearsalCoachShow,
-        size: CatchButtonSize.sm,
+        size: CatchButtonSize.md,
         variant: CatchButtonVariant.secondary,
         fullWidth: largeText,
         onPressed: onToggle,
@@ -700,7 +700,7 @@ class _RehearsalCoachDock extends StatelessWidget {
           height: CatchIconAction.navSize,
           radius: CatchRadius.sm,
           backgroundColor: t.danger,
-          child: Icon(CatchIcons.scienceOutlined, color: t.primaryInk),
+          child: Icon(CatchIcons.labs, color: t.primaryInk),
         ),
         gapW12,
         Expanded(
@@ -741,13 +741,13 @@ class _RehearsalCoachDock extends StatelessWidget {
       children: [
         CatchButton(
           label: context.l10n.hostEventRehearsalCoachWhy,
-          size: CatchButtonSize.sm,
+          size: CatchButtonSize.md,
           variant: CatchButtonVariant.secondary,
           onPressed: onWhy,
         ),
         CatchButton(
           label: context.l10n.hostEventRehearsalCoachGotIt,
-          size: CatchButtonSize.sm,
+          size: CatchButtonSize.md,
           onPressed: onToggle,
         ),
       ],

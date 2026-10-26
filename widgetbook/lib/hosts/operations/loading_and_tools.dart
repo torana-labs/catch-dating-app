@@ -163,7 +163,7 @@ Widget hostEmptyStateStates(BuildContext context) {
             actions: [
               CatchButton(
                 label: 'Create club',
-                leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                leading: Icon(CatchIcons.add, size: CatchIconSize.md),
                 onPressed: () {},
               ),
             ],
@@ -186,13 +186,13 @@ Widget hostEmptyStateStates(BuildContext context) {
                 children: [
                   CatchButton(
                     label: 'New event',
-                    leading: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                    leading: Icon(CatchIcons.add, size: CatchIconSize.sm),
                     onPressed: () {},
                   ),
                   CatchButton(
                     label: 'Events',
                     variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                     onPressed: () {},
                   ),
                 ],
@@ -212,7 +212,7 @@ Widget hostEmptyStateStates(BuildContext context) {
             actions: [
               CatchButton(
                 label: 'Create host profile',
-                leading: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
+                leading: Icon(CatchIcons.business, size: CatchIconSize.md),
                 status: CatchButtonStatus.loading,
                 onPressed: null,
               ),

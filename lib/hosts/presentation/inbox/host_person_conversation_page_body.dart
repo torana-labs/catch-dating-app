@@ -407,7 +407,7 @@ class _HostPersonConversationPageBodyState
                         variant: selected == route.key
                             ? CatchButtonVariant.primary
                             : CatchButtonVariant.secondary,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         onPressed: _sending || _sendingImage
                             ? null
                             : () => _selectRoute(route.key),

@@ -194,7 +194,7 @@ Widget exploreCountedFilterActionStates(BuildContext context) {
         label: 'inactive',
         child: Center(
           child: CatchIconAction.counted(
-            icon: CatchIcons.tuneRounded,
+            icon: CatchIcons.filters,
             count: 0,
             variant: CatchIconActionVariant.plain,
             tooltip: 'Filters',
@@ -206,7 +206,7 @@ Widget exploreCountedFilterActionStates(BuildContext context) {
         label: 'active count',
         child: Center(
           child: CatchIconAction.counted(
-            icon: CatchIcons.tuneRounded,
+            icon: CatchIcons.filters,
             count: 3,
             variant: CatchIconActionVariant.plain,
             tooltip: 'Filters, 3 active',

@@ -75,7 +75,7 @@ void main() {
           expect(tester.getTopLeft(card).dy, 59 + CatchSpacing.s3);
           expect(tester.getTopLeft(find.text('Underlying route')), before);
           expect(find.text('Open'), findsNothing);
-          expect(find.byIcon(CatchIcons.closeRounded), findsNothing);
+          expect(find.byIcon(CatchIcons.close), findsNothing);
           expect(find.byType(CatchAvatar), findsOneWidget);
           await tester.tap(find.text('You and Ananya matched.'));
           await tester.pump();

@@ -226,7 +226,9 @@ class EventAgendaTileSkeleton extends StatelessWidget {
                     gapH10,
                     Row(
                       children: [
-                        CatchSkeleton.circle(size: CatchIcon.profileRunStat),
+                        CatchSkeleton.circle(
+                          size: CatchIconSize.profileRunStat,
+                        ),
                         gapW8,
                         CatchSkeleton.text(
                           width: CatchLayout.skeletonTextRowWidth,

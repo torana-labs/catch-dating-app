@@ -51,14 +51,19 @@ try {
   // Measure them unfaulted, then fail every query after the proxy's share.
   const route = "http://127.0.0.1:3122/organizers/next-proof/";
   queries = 0;
-  assert.equal((await fetch(route)).status, 200);
+  const rendered = await fetch(route);
+  assert.equal(rendered.status, 200);
+  assert.equal(rendered.headers.get("cache-control"), "public, s-maxage=60", "An authorized page renders into the shared cache");
   assert(queries > 0 && queries % 2 === 0, `Proxy and page must make the same reads, saw ${queries} queries`);
   faultAfter = queries / 2; queries = 0;
   const response = await fetch(route);
   const body = await response.text();
   assert(queries > faultAfter, "Fault must occur after the proxy's preflight reads");
   assert.equal(response.status, 500, "Next render failure must not become stale success or false 404");
+  // The page was authorized before rendering; its failed render must still not
+  // become a cacheable error.
   assert.match(response.headers.get("cache-control"), /no-store/);
+  assert.equal(response.headers.get("x-catch-public-page"), null);
   assert(!body.includes("Next proof organizer"));
   assert(!output.join("").includes("private-owner-runtime-sentinel"));
   console.log(JSON.stringify({passed: true, status: response.status, preflightQueriesAllowed: faultAfter,

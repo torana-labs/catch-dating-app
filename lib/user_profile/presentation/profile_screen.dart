@@ -195,7 +195,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                         )
                       else
                         CatchSliverEmptyState(
-                          icon: CatchIcons.personOffOutlined,
+                          icon: CatchIcons.personRemoved,
                           title: context
                               .l10n
                               .userProfileProfileScreenTitleProfileNotAvailable,

@@ -6,7 +6,7 @@ const read = (path: string) => fs.readFileSync(fileURLToPath(new URL(path, impor
 const dart = read("../../../catch_ui/lib/src/components/catch_search_field.dart");
 const layout = read("../../../catch_tokens/lib/src/semantic/catch_layout.dart");
 const generated = read("../../../catch_tokens/lib/generated/catch_design_tokens.g.dart");
-const icons = read("../../../catch_tokens/lib/src/primitives/catch_icon.dart");
+const icons = read("../../../catch_tokens/lib/src/primitives/catch_icon_size.dart");
 const border = read("../../../catch_tokens/lib/src/semantic/catch_border.dart");
 const control = read("../../../catch_ui/lib/src/primitives/catch_control_surface.dart");
 const styles = read("./CatchSearchField.module.css");

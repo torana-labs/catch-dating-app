@@ -151,7 +151,7 @@ class _EventChatParticipantsScreenState
         actions: [
           CatchIconAction.toolbar(
             tooltip: context.l10n.eventChatRefresh,
-            icon: CatchIcons.refreshRounded,
+            icon: CatchIcons.refresh,
             onPressed: !active || presented.isLoading
                 ? null
                 : () => unawaited(ref.read(provider.notifier).refresh()),

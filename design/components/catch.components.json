@@ -393,8 +393,8 @@
           "CatchTextStyles.titleS",
           "CatchTextStyles.kicker",
           "CatchTextStyles.buttonSm",
-          "CatchIcon.badge",
-          "CatchIcon.sm",
+          "CatchIconSize.badge",
+          "CatchIconSize.sm",
           "CatchLayout.badgeActionHeight",
           "CatchCountBadge",
           "CatchStatusIndicator",
@@ -942,7 +942,7 @@
           "CatchMotion.fast",
           "CatchOpacity.controlOverlayPressed",
           "CatchOpacity.controlOverlayHover",
-          "CatchIcon.md",
+          "CatchIconSize.md",
           "CatchTextStyles.buttonSm",
           "CatchTextStyles.buttonMd",
           "CatchTextStyles.buttonLg",
@@ -1334,7 +1334,7 @@
           "CatchBorderRole.focus",
           "CatchTextStyles.titleS",
           "CatchTextStyles.bodyLead",
-          "CatchIcon.sm",
+          "CatchIconSize.sm",
           "CatchLayout.activityChipIconSize",
           "ActivityPalette.resolve",
           "CatchElevation.segmentedSelected",
@@ -3226,6 +3226,22 @@
             "dartType": "String?",
             "tsType": "string",
             "notes": "The select recipe's empty first choice, which selects null."
+          },
+          {
+            "name": "prefixText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Input recipe: fixed text before the value, such as a \"+91\" dialling code, in the secondary ink. React describes the input with it."
+          },
+          {
+            "name": "suffixText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Input recipe: fixed text after the value, such as a unit, in the secondary ink."
           }
         ],
         "states": [
@@ -4493,6 +4509,8 @@
             "select-hint",
             "hidden-label",
             "leading",
+            "prefix",
+            "suffix",
             "dark"
           ]
         },
@@ -8165,7 +8183,7 @@
           "theme.light.color.primarySoft"
         ],
         "dartRoles": [
-          "CatchIcon.md",
+          "CatchIconSize.md",
           "CatchRadius.sm",
           "CatchRadius.md",
           "CatchIconTileVariant"
@@ -8450,6 +8468,28 @@
           "CatchStepper",
           "CatchStepper.actions"
         ]
+      },
+      "react": {
+        "symbol": "CatchStepper",
+        "file": "packages/web-ui/src/components/CatchStepper.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchStepper.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "interactive",
+            "min-bound",
+            "max-bound",
+            "disabled",
+            "custom-step",
+            "custom-format",
+            "explicit-actions",
+            "keyboard-focused",
+            "dark"
+          ]
+        },
+        "notes": "CatchStepper.actions is recipe=\"actions\" on the one component. A pointer press steps and then repeats on Flutter's cadence (400ms, 110ms, then 55ms after ten repeats) while held; a keyboard click steps once. labelledBy is web-only: it names the stepper as a group from visible text such as the board's \"Places\"."
       },
       "design": {
         "figma": {
@@ -9094,7 +9134,7 @@
           "CatchInsets.tileContentCompact",
           "CatchTextStyles.titleS",
           "CatchTextStyles.supporting",
-          "CatchIcon.lg"
+          "CatchIconSize.lg"
         ],
         "goldens": [],
         "accessibility": {
@@ -11724,7 +11764,7 @@
           "CatchTextStyles.monoLabel",
           "CatchTextStyles.name",
           "CatchTextStyles.bodyS",
-          "CatchIcon.md"
+          "CatchIconSize.md"
         ],
         "goldens": [],
         "accessibility": {
@@ -11884,7 +11924,7 @@
           "Image.asset",
           "ImageCache",
           "CatchIcons.imageOutlined",
-          "CatchIcon.md"
+          "CatchIconSize.md"
         ],
         "goldens": [],
         "members": [
@@ -12127,6 +12167,27 @@
         "constructors": [
           "CatchCodeInput"
         ]
+      },
+      "react": {
+        "symbol": "CatchCodeInput",
+        "file": "packages/web-ui/src/components/CatchCodeInput.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchCodeInput.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "empty",
+            "partial",
+            "active-caret",
+            "complete",
+            "custom-length",
+            "no-caret",
+            "error",
+            "dark"
+          ]
+        },
+        "notes": "Digit cells over one transparent native input with autocomplete one-time-code and a numeric keyboard, so paste, SMS autofill and screen readers use one text field, as in Flutter. Flutter's controller has no React prop; value is the web's optional controlled code, and the component keeps its own otherwise."
       },
       "design": {
         "figma": {
@@ -14436,8 +14497,41 @@
         "constructors": [
           "CatchAvatar",
           "CatchAvatar.count",
-          "CatchAvatar.veiled"
+          "CatchAvatar.veiled",
+          "CatchAvatar.monogram"
         ]
+      },
+      "react": {
+        "symbol": "CatchAvatar",
+        "file": "packages/web-ui/src/components/CatchAvatar.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "CatchAvatarRow"
+        ],
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchAvatar.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "photo",
+            "fallback-initials",
+            "activity-context",
+            "activity-dim",
+            "ring",
+            "status-dot",
+            "obscured",
+            "square",
+            "count",
+            "veiled-run",
+            "veiled-dinner",
+            "monogram",
+            "monogram-display",
+            "row",
+            "row-veiled",
+            "dark"
+          ]
+        },
+        "notes": "CatchAvatar.count, .veiled and .monogram are recipe=\"count\" | \"veiled\" | \"monogram\" on the one component; CatchAvatarRow is the stack member. Avatars render aria-hidden: the name beside them carries the identity, as in the board rows and review items. A photo that fails to load falls back to initials, as Flutter's errorBuilder does."
       },
       "design": {
         "figma": {
@@ -14564,6 +14658,25 @@
             "dartType": "int",
             "tsType": "number",
             "notes": "Only available through CatchAvatar.count."
+          },
+          {
+            "name": "ground",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchGround",
+            "tsType": "CatchGround",
+            "values": [
+              "white",
+              "paper",
+              "ink",
+              "coral",
+              "pink",
+              "yellow",
+              "mint",
+              "indigo",
+              "magenta"
+            ],
+            "notes": "Required by CatchAvatar.monogram: initials on a palette ground (CAT-245), in its fill and ink; initials of 24px and up take the display voice (D19)."
           }
         ],
         "states": [
@@ -14577,7 +14690,9 @@
           "square",
           "count",
           "veiled-run",
-          "veiled-dinner"
+          "veiled-dinner",
+          "monogram",
+          "monogram-display"
         ],
         "slots": [],
         "tokens": [
@@ -16834,7 +16949,7 @@
             "dartType": "double",
             "tsType": "number",
             "required": false,
-            "default": "CatchIcon.sm",
+            "default": "CatchIconSize.sm",
             "notes": "Compact entry, flow and group icon extent."
           },
           {

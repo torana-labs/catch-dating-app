@@ -5,6 +5,7 @@ import {availabilityCopy} from "./src/content/availability";
 import {NextRequest, NextResponse} from "next/server";
 import {retiredMarketingDestination} from "./src/app/retiredMarketingRoutes";
 import {isPrivateShellPath, privateShellFamily} from "./src/server/privateShellMetadata";
+import {isCachedPublicPage, PUBLIC_PAGE_CACHE_MARK} from "./src/app/next/publicPageCache";
 
 async function handleRequest(request: NextRequest) {
   const url = request.nextUrl;
@@ -36,6 +37,7 @@ async function handleRequest(request: NextRequest) {
     !["localhost", "127.0.0.1", "[::1]"].includes(hostname) ? `https://${hostname}` : url.origin;
   const destination = retiredMarketingDestination({pathname: url.pathname, search: url.search, hash: ""});
   if (destination) return NextResponse.redirect(new URL(destination, publicOrigin), 301);
+  let publicPage = false;
   if (!asset && !api && !card && !["/robots.txt", "/sitemap.xml", "/private-shell"].includes(url.pathname)) {
     try {
       const pathname = url.pathname.replace(/\/+$/, "") + "/";
@@ -54,12 +56,16 @@ async function handleRequest(request: NextRequest) {
         response.headers.set("X-Robots-Tag", "noindex, nofollow");
         return response;
       }
+      // Only an authorized, viewer-independent page may enter the CDN, and only
+      // if it then renders: the server promotes this mark on a 200 alone.
+      publicPage = ["GET", "HEAD"].includes(request.method) && isCachedPublicPage(route.page);
     } catch {
       return new NextResponse(`<!doctype html><html lang="en"><head><meta name="robots" content="noindex"><title>${availabilityCopy.title}</title></head><body><h1>${availabilityCopy.title}</h1><p>${availabilityCopy.body}</p></body></html>`,
         {status: 503, headers: {"Content-Type": "text/html; charset=utf-8", "Cache-Control": "private, no-store", "Retry-After": "30", "X-Robots-Tag": "noindex"}});
     }
   }
   const response = NextResponse.next();
+  if (publicPage) response.headers.set(PUBLIC_PAGE_CACHE_MARK, "1");
   if (url.pathname.startsWith("/_legacy/")) {
     response.headers.set("X-Robots-Tag", "noindex, nofollow");
     response.headers.set("Referrer-Policy", "no-referrer");

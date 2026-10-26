@@ -63,7 +63,7 @@ class ClubScheduleSection extends StatelessWidget {
             ),
             sliver: SliverToBoxAdapter(
               child: CatchEmptyState(
-                icon: CatchIcons.calendarMonthOutlined,
+                icon: CatchIcons.date,
                 title:
                     context.l10n.clubsClubScheduleSectionTitleNoEventsScheduled,
                 message: context

@@ -28,7 +28,7 @@ class EventSuccessCompatibilitySection extends StatelessWidget {
                     .l10n
                     .eventSuccessEventSuccessHostSharedTextAnswersCanStillShape,
           valueText: pack.title,
-          icon: CatchIcons.psychologyAltOutlined,
+          icon: CatchIcons.mind,
           actions: CatchBadge(
             label: rankingOn
                 ? context

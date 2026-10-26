@@ -216,7 +216,7 @@ class _OtpStepState extends ConsumerState<OtpStep> {
                   .goToStep(AuthStep.phone)
             : null,
         variant: CatchButtonVariant.secondary,
-        size: CatchButtonSize.sm,
+        size: CatchButtonSize.md,
         mode: CatchButtonMode.rounded,
         fullWidth: reflowPhoneSummary,
       );
@@ -298,7 +298,6 @@ class _OtpStepState extends ConsumerState<OtpStep> {
                 label: resendLabel,
                 onPressed: viewState.canResend ? _resendOtp : null,
                 variant: CatchButtonVariant.secondary,
-                size: CatchButtonSize.lg,
                 mode: CatchButtonMode.rounded,
                 fullWidth: true,
               ),
@@ -318,7 +317,6 @@ class _OtpStepState extends ConsumerState<OtpStep> {
             ? CatchButtonStatus.loading
             : CatchButtonStatus.idle,
         fullWidth: true,
-        size: CatchButtonSize.lg,
       ),
       children: [
         CatchStepHeader(
@@ -382,7 +380,7 @@ class _OtpStepState extends ConsumerState<OtpStep> {
                   : l10n.authResendCodeAction,
               onPressed: viewState.canResend ? _resendOtp : null,
               variant: CatchButtonVariant.ghost,
-              size: CatchButtonSize.sm,
+              size: CatchButtonSize.md,
               foregroundColor: t.ink,
             ),
             CatchButton(
@@ -394,7 +392,7 @@ class _OtpStepState extends ConsumerState<OtpStep> {
                         .goToStep(AuthStep.phone)
                   : null,
               variant: CatchButtonVariant.ghost,
-              size: CatchButtonSize.sm,
+              size: CatchButtonSize.md,
               foregroundColor: t.ink2,
             ),
           ],

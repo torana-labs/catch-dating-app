@@ -41,7 +41,7 @@ class ProfileReactionAction extends StatelessWidget {
         tooltip: context.l10n.swipesProfileReactionControlsTooltipLikeLabel(
           label: target.label,
         ),
-        icon: CatchIcons.favoriteBorderRounded,
+        icon: CatchIcons.like,
         onPressed: actionsEnabled
             ? () => unawaited(Future.sync(() => onReact(target, null)))
             : null,
@@ -53,7 +53,7 @@ class ProfileReactionAction extends StatelessWidget {
             .swipesProfileReactionControlsTooltipCommentOnLabel(
               label: target.label,
             ),
-        icon: CatchIcons.chatBubbleOutlineRounded,
+        icon: CatchIcons.chat,
         onPressed: actionsEnabled
             ? () => unawaited(_commentThenReact(context))
             : null,
@@ -161,9 +161,9 @@ class _ProfileReactionCommentSheetState
           const Spacer(),
           CatchButton(
             label: context.l10n.swipesProfileReactionControlsLabelSendLike,
-            leading: Icon(CatchIcons.favoriteBorderRounded, size: CatchIcon.md),
+            leading: Icon(CatchIcons.like, size: CatchIconSize.md),
             onPressed: _canSend ? _submit : null,
-            size: CatchButtonSize.sm,
+            size: CatchButtonSize.md,
           ),
         ],
       ),

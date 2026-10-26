@@ -96,10 +96,7 @@ void main() {
     expect(
       tester
           .widget<CatchStepperRepeatButton>(
-            find.widgetWithIcon(
-              CatchStepperRepeatButton,
-              CatchIcons.removeRounded,
-            ),
+            find.widgetWithIcon(CatchStepperRepeatButton, CatchIcons.remove),
           )
           .enabled,
       isFalse,

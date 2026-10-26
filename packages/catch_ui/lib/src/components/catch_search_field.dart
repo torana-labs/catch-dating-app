@@ -378,7 +378,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                                       value.text.isEmpty;
                                                   final icon = isEmpty
                                                       ? CatchIcons.close
-                                                      : CatchIcons.clearCircle;
+                                                      : CatchIcons.clear;
                                                   final tooltip = isEmpty
                                                       ? widget
                                                             .copy
@@ -447,7 +447,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                           child: Center(
                                             child: Icon(
                                               CatchIcons.search,
-                                              size: CatchIcon.md,
+                                              size: CatchIconSize.md,
                                               color: foreground,
                                             ),
                                           ),
@@ -514,7 +514,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                   tooltip: widget.copy.clearTooltip(placeholder),
                   onPressed: widget.enabled ? _clear : null,
                   child: Icon(
-                    CatchIcons.clearCircle,
+                    CatchIcons.clear,
                     size: CatchLayout.searchFieldClearIconSize,
                     color: mutedForeground,
                   ),

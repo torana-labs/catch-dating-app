@@ -145,7 +145,7 @@ void main() {
           find.byType(CatchIconAction),
         );
         expect(button.size, CatchIconAction.navSize);
-        expect(find.byIcon(CatchIcons.notificationsRounded), findsOneWidget);
+        expect(find.byIcon(CatchIcons.notifications), findsOneWidget);
         expect(find.text('2'), findsOneWidget);
         expect(find.byTooltip('Notifications'), findsOneWidget);
       },
@@ -790,7 +790,7 @@ void main() {
       expect(field.body, 'Sundowner 5K meets at Carter Road Jetty.');
       expect(field.emphasis, CatchFieldEmphasis.title);
       expect(field.onTap, isNotNull);
-      expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
+      expect(find.byIcon(CatchIcons.disclosure), findsNothing);
 
       expect(find.text('2H'), findsOneWidget);
       final titleRect = tester.getRect(find.text('Event starts tomorrow'));

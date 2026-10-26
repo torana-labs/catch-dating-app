@@ -138,8 +138,8 @@ class ClubHostRow extends StatelessWidget {
                   if (isOwner) ...[
                     const SizedBox(width: CatchSpacing.micro6),
                     Icon(
-                      CatchIcons.sealCheck,
-                      size: CatchIcon.sm,
+                      CatchIcons.verified,
+                      size: CatchIconSize.sm,
                       color: ownerSealColor,
                     ),
                   ],
@@ -158,8 +158,8 @@ class ClubHostRow extends StatelessWidget {
               key: ValueKey<String>('club-host-message-${host.uid}'),
               onPressed: onMessage,
               child: Icon(
-                CatchIcons.chatBubbleOutlineRounded,
-                size: CatchIcon.control,
+                CatchIcons.chat,
+                size: CatchIconSize.control,
                 color: t.primary,
               ),
             ),
@@ -167,11 +167,7 @@ class ClubHostRow extends StatelessWidget {
         ],
         if (onTap != null) ...[
           gapW8,
-          Icon(
-            CatchIcons.chevronRightRounded,
-            size: CatchIcon.lg,
-            color: t.ink3,
-          ),
+          Icon(CatchIcons.disclosure, size: CatchIconSize.lg, color: t.ink3),
         ],
       ],
     );

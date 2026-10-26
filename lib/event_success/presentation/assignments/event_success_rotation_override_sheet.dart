@@ -78,7 +78,7 @@ class _EventSuccessRotationOverrideSheetState
             label: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesLabelSaveOverrides,
-            leading: Icon(CatchIcons.checkRounded),
+            leading: Icon(CatchIcons.check),
             status: (_isSaving)
                 ? CatchButtonStatus.loading
                 : CatchButtonStatus.idle,

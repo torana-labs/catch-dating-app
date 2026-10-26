@@ -52,7 +52,7 @@ class ClubDetailReadOnlyPreview extends ConsumerWidget {
             retryLabel: context.l10n.sharedActionTryAgain,
             title: context.l10n.clubsClubDetailScreenTitleClubNotFound,
             message: context.l10n.clubsClubDetailScreenMessageThisClubIsNo,
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             fillRemaining: false,
             onRetry: () =>
                 ref.invalidate(clubDetailViewModelProvider(initialClub.id)),

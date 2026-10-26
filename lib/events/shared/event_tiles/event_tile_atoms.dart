@@ -113,15 +113,15 @@ String eventDateRailDayLabel(DateTime date, DateTime today) {
 
 IconData? eventTileStatusIcon(EventTileStatus status) {
   return switch (status) {
-    EventTileStatus.joined => CatchIcons.checkRounded,
-    EventTileStatus.saved => CatchIcons.bookmarkRounded,
-    EventTileStatus.recommended => CatchIcons.autoAwesomeRounded,
-    EventTileStatus.hosted => CatchIcons.adminPanelSettingsOutlined,
-    EventTileStatus.waitlisted => CatchIcons.scheduleRounded,
-    EventTileStatus.attended => CatchIcons.directionsRunRounded,
-    EventTileStatus.full => CatchIcons.groupOffOutlined,
-    EventTileStatus.ineligible => CatchIcons.blockRounded,
-    EventTileStatus.cancelled => CatchIcons.closeRounded,
+    EventTileStatus.joined => CatchIcons.check,
+    EventTileStatus.saved => CatchIcons.bookmark,
+    EventTileStatus.recommended => CatchIcons.magic,
+    EventTileStatus.hosted => CatchIcons.admin,
+    EventTileStatus.waitlisted => CatchIcons.time,
+    EventTileStatus.attended => CatchIcons.activity,
+    EventTileStatus.full => CatchIcons.personRemoved,
+    EventTileStatus.ineligible => CatchIcons.block,
+    EventTileStatus.cancelled => CatchIcons.close,
     EventTileStatus.open || EventTileStatus.past => null,
   };
 }

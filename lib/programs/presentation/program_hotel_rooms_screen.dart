@@ -89,7 +89,7 @@ class ProgramHotelRoomsScreen extends ConsumerWidget {
                 subtitle: context.l10n.programsRoomsUnplacedSubtitle,
                 child: rooms.unplacedGuests.isEmpty
                     ? CatchEmptyState(
-                        icon: CatchIcons.checkCircleOutlineRounded,
+                        icon: CatchIcons.success,
                         message: context.l10n.programsRoomsUnplacedEmpty,
                         variant: CatchEmptyStateVariant.inline,
                       )
@@ -139,7 +139,7 @@ class ProgramHotelRoomsScreen extends ConsumerWidget {
                 subtitle: context.l10n.programsRoomsBlocksSubtitle,
                 child: rooms.roomBlocks.isEmpty
                     ? CatchEmptyState(
-                        icon: CatchIcons.businessOutlined,
+                        icon: CatchIcons.business,
                         message: context.l10n.programsRoomsBlocksEmpty,
                         variant: CatchEmptyStateVariant.inline,
                       )
@@ -180,13 +180,13 @@ class ProgramUnplacedGuestRow extends StatelessWidget {
         .where((block) => block.roomBlockId == guest.suggestedRoomBlockId)
         .firstOrNull;
     return CatchFieldRow.standard(
-      leading: Icon(CatchIcons.personOutlined),
+      leading: Icon(CatchIcons.person),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchText(guest.displayName, variant: CatchTextVariant.sectionTitle),
           CatchMetaRow(
-            icon: CatchIcons.keyOutlined,
+            icon: CatchIcons.key,
             label: suggested != null
                 ? context.l10n.programsRoomsSuggestedBlock(
                     label: suggested.label,
@@ -195,7 +195,7 @@ class ProgramUnplacedGuestRow extends StatelessWidget {
           ),
         ],
       ),
-      trailing: Icon(CatchIcons.chevronRightRounded),
+      trailing: Icon(CatchIcons.disclosure),
       onTap: () => showCatchBottomSheet<void>(
         context: context,
         builder: (sheetContext) => ProgramStaySheet(
@@ -240,7 +240,7 @@ class ProgramStayRow extends StatelessWidget {
             variant: CatchTextVariant.sectionTitle,
           ),
           CatchMetaRow(
-            icon: CatchIcons.keyOutlined,
+            icon: CatchIcons.key,
             label: stay.roomLabel != null
                 ? context.l10n.programsRoomsStayRoom(
                     room: stay.roomLabel!,
@@ -250,7 +250,7 @@ class ProgramStayRow extends StatelessWidget {
           ),
           if (stay.roomReadyAt != null || stay.hotelArrivedAt != null)
             CatchMetaRow(
-              icon: CatchIcons.checkCircleOutlineRounded,
+              icon: CatchIcons.success,
               label: [
                 if (stay.roomReadyAt != null)
                   context.l10n.programsRoomsMarkedReady(
@@ -293,7 +293,7 @@ class ProgramRoomBlockRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchFieldRow.standard(
-      leading: Icon(CatchIcons.businessOutlined),
+      leading: Icon(CatchIcons.business),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -304,7 +304,7 @@ class ProgramRoomBlockRow extends StatelessWidget {
             variant: CatchTextVariant.sectionTitle,
           ),
           CatchMetaRow(
-            icon: CatchIcons.keyOutlined,
+            icon: CatchIcons.key,
             label: context.l10n.programsRoomsBlockWindow(
               checkIn: AppTimeFormatters.dateTime(block.startsAt),
               checkOut: AppTimeFormatters.dateTime(block.endsAt),
@@ -312,7 +312,7 @@ class ProgramRoomBlockRow extends StatelessWidget {
           ),
           if (block.heldForGroupIds.isNotEmpty)
             CatchMetaRow(
-              icon: CatchIcons.group,
+              icon: CatchIcons.people,
               label: context.l10n.programsRoomsBlockHeld(
                 count: block.heldForGroupIds.length,
               ),
@@ -487,8 +487,8 @@ class _ProgramStaySheetState extends ConsumerState<ProgramStaySheet> {
             CatchFieldRow.standard(
               leading: Icon(
                 _roomBlockId == option.$1
-                    ? CatchIcons.radioButtonCheckedRounded
-                    : CatchIcons.radioButtonUncheckedRounded,
+                    ? CatchIcons.selected
+                    : CatchIcons.unselected,
               ),
               body: CatchText(
                 option.$2,

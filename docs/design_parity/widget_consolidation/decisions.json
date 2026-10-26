@@ -209,7 +209,7 @@
         {
           "name": "CatchPersonRosterLayout",
           "action": "keep",
-          "note": "fix raw `size: 11` -> CatchIcon.micro (token drift vs chat layout)"
+          "note": "fix raw `size: 11` -> CatchIconSize.micro (token drift vs chat layout)"
         }
       ],
       "rationale": "Intentional presentation variants over shared CatchPersonRowData (chat preview with unread emphasis vs roster meta). Merging with flags would be a conditional mess. Real finding is the raw icon size literal.",
@@ -2404,7 +2404,7 @@
           "action": "absorb"
         }
       ],
-      "rationale": "K5 concept mismatch: CatchPrivacyBadge is a core uppercase privacy token badge with transparent surface styling, while the Event Success PrivacyBadge maps a private audience enum to CatchBadge labels and icons. REVIEW (claude, 2026-07-03): privacy vocabulary is a trust surface — one component. Extend CatchPrivacyBadgeKind with privateToYou/hostCanSee/catchPrivate (labels/icons from the companion widget); companion standardizes to the core mono-pill treatment (intentional visual change). Also fix raw size: 11 -> CatchIcon.micro in the core badge.",
+      "rationale": "K5 concept mismatch: CatchPrivacyBadge is a core uppercase privacy token badge with transparent surface styling, while the Event Success PrivacyBadge maps a private audience enum to CatchBadge labels and icons. REVIEW (claude, 2026-07-03): privacy vocabulary is a trust surface — one component. Extend CatchPrivacyBadgeKind with privateToYou/hostCanSee/catchPrivate (labels/icons from the companion widget); companion standardizes to the core mono-pill treatment (intentional visual change). Also fix raw size: 11 -> CatchIconSize.micro in the core badge.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "implemented-WO-019",
@@ -3416,7 +3416,7 @@
           "action": "keep"
         }
       ],
-      "rationale": "K5 concept mismatch: stage cue lines are copyable conversation prompts while privacy lines are locked explanatory notices with stage-theme foreground treatment. REVIEW (claude, 2026-07-03): cue content card vs privacy note; different roles in the stage family. WO-020 drift fixed raw icon size 18 to CatchIcon.md, which is the exact 18.0 token.",
+      "rationale": "K5 concept mismatch: stage cue lines are copyable conversation prompts while privacy lines are locked explanatory notices with stage-theme foreground treatment. REVIEW (claude, 2026-07-03): cue content card vs privacy note; different roles in the stage family. WO-020 drift fixed raw icon size 18 to CatchIconSize.md, which is the exact 18.0 token.",
       "decidedBy": "codex-rule:K5 -> claude",
       "date": "2026-07-03",
       "status": "recorded"
@@ -8797,7 +8797,7 @@
         {
           "name": "StarRatingRow",
           "action": "keep",
-          "note": "D1: exact 16 px default becomes CatchIcon.xs; the intentional 40 px picker default remains unchanged."
+          "note": "D1: exact 16 px default becomes CatchIconSize.xs; the intentional 40 px picker default remains unchanged."
         }
       ],
       "rationale": "The ratchet-first handoff authorizes existing-library swaps. Seventeen resolved constructor targets across sixteen files delegate clip, background and tap drawing to CatchSurface, or arrange CatchDivider with existing padded row content. Existing copy, colors, radii, keys, callbacks and determinate image progress stay bound at their callers. No component API or token is added; baselines shrink through their owning CLI. The existing shared tap feedback is an accepted canonical presentation change under the user direction.",

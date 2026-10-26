@@ -168,7 +168,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       event: event,
     ),
     'HostEventSummaryRow' => HostEventSummaryRow(
-      icon: CatchIcons.locationOnOutlined,
+      icon: CatchIcons.location,
       label: 'Meet',
       value: 'Carter Road Jetty',
     ),

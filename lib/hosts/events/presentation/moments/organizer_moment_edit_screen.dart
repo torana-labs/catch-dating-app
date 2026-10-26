@@ -235,7 +235,7 @@ class _OrganizerMomentEditScreenState
                         body: _scheduledAt == null
                             ? l.hostMomentFireTimeEmpty
                             : AppTimeFormatters.dateTime(_scheduledAt!),
-                        icon: CatchIcons.calendarMonthOutlined,
+                        icon: CatchIcons.date,
                         onTap: _busy ? null : _pickSchedule,
                       ),
                     if (_initiationKind ==

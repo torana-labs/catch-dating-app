@@ -97,9 +97,7 @@ class _CompatibilityQuestionnaireSectionState
                 tone: rankingOn
                     ? CatchBadgeTone.success
                     : CatchBadgeTone.neutral,
-                icon: rankingOn
-                    ? CatchIcons.autoAwesomeRounded
-                    : CatchIcons.lightbulbOutlineRounded,
+                icon: rankingOn ? CatchIcons.magic : CatchIcons.tip,
               ),
               if (widget.response != null)
                 CatchBadge(
@@ -107,7 +105,7 @@ class _CompatibilityQuestionnaireSectionState
                       .l10n
                       .eventSuccessEventSuccessCompanionQuestionnaireLabelSaved,
                   tone: CatchBadgeTone.success,
-                  icon: CatchIcons.checkRounded,
+                  icon: CatchIcons.check,
                 ),
             ],
           ),

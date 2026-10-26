@@ -303,7 +303,7 @@ class CalendarAgendaSliverSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (state) {
       CalendarAgendaEmptyState() => CatchSliverEmptyState(
-        icon: CatchIcons.calendarMonthOutlined,
+        icon: CatchIcons.date,
         title: const CalendarAgendaEmptyState().title(context.l10n),
         message: const CalendarAgendaEmptyState().body(context.l10n),
         iconSize: CatchLayout.calendarEmptyIconSize,

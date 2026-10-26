@@ -1,5 +1,18 @@
 export {CatchAppCaptureImage} from "./components/CatchAppCaptureImage";
 export type {CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
+export {CatchAvatar, catchAvatarInitialsOf} from "./components/CatchAvatar";
+export type {
+  CatchAvatarColors,
+  CatchAvatarCountProps,
+  CatchAvatarDefaultProps,
+  CatchAvatarMonogramProps,
+  CatchAvatarProps,
+  CatchAvatarStatus,
+  CatchAvatarVariant,
+  CatchAvatarVeiledProps,
+} from "./components/CatchAvatar";
+export {CatchAvatarRow} from "./components/CatchAvatarRow";
+export type {CatchAvatarRowProps, CatchPersonAvatarItem} from "./components/CatchAvatarRow";
 export {CatchBand} from "./components/CatchBand";
 export type {
   CatchBandElement,
@@ -8,6 +21,8 @@ export type {
   CatchBandSpacing,
   CatchBandWidth,
 } from "./components/CatchBand";
+/** A Website v2 ground (CAT-245); Flutter's `CatchGround` names the same nine. */
+export type {Ground as CatchGround} from "./components/palette";
 export {CatchCheckboxInput} from "./components/CatchCheckboxInput";
 export type {CatchCheckboxInputProps} from "./components/CatchCheckboxInput";
 export * from "./artwork";
@@ -19,6 +34,14 @@ export {EventBackdropImage} from "./components/EventBackdropImage";
 export type {EventBackdropImageProps} from "./components/EventBackdropImage";
 export {EventThumbnail} from "./components/EventThumbnail";
 export type {EventThumbnailProps} from "./components/EventThumbnail";
+export {CatchCodeInput} from "./components/CatchCodeInput";
+export type {
+  CatchCodeInputProps,
+  CatchCodeInputStatus,
+  CatchContractFieldConstraints,
+} from "./components/CatchCodeInput";
+export {CatchDateTile} from "./components/CatchDateTile";
+export type {CatchDateTileProps} from "./components/CatchDateTile";
 export {CatchField} from "./components/CatchField";
 export type {
   CatchFieldInputProps,
@@ -49,12 +72,20 @@ export type {
 } from "./components/CatchGrid";
 export {CatchInset} from "./components/CatchInset";
 export type {CatchInsetElement, CatchInsetPadding, CatchInsetProps} from "./components/CatchInset";
+export {CatchLinkTile} from "./components/CatchLinkTile";
+export type {CatchLinkTileProps} from "./components/CatchLinkTile";
 export {CatchPageBody} from "./components/CatchPageBody";
 export type {
   CatchPageBodyElement,
   CatchPageBodyProps,
   CatchSpacingStep,
 } from "./components/CatchPageBody";
+export {CatchQrCode} from "./components/CatchQrCode";
+export type {CatchQrCodeErrorCorrection, CatchQrCodeProps, CatchQrCodeSize} from "./components/CatchQrCode";
+export {CatchRatingSummary} from "./components/CatchRatingSummary";
+export type {CatchRatingSummaryProps, CatchRatingSummaryRow} from "./components/CatchRatingSummary";
+export {CatchReviewItem} from "./components/CatchReviewItem";
+export type {CatchReviewItemProps, CatchReviewItemVariant, CatchReviewReply} from "./components/CatchReviewItem";
 export {CatchScrollStory} from "./components/CatchScrollStory";
 export type {
   CatchScrollStoryChapter,
@@ -82,6 +113,14 @@ export type {
   CatchSplitRailSide,
   CatchSplitRatio,
 } from "./components/CatchSplit";
+export {CatchStarInput} from "./components/CatchStarInput";
+export type {CatchStarInputProps} from "./components/CatchStarInput";
+export {CatchStarRating} from "./components/CatchStarRating";
+export type {CatchStarRatingProps, CatchStarRatingSize} from "./components/CatchStarRating";
+export {CatchStepper} from "./components/CatchStepper";
+export type {CatchStepperProps} from "./components/CatchStepper";
+export {CatchStoreButton} from "./components/CatchStoreButton";
+export type {CatchStoreButtonProps, CatchStoreButtonSize, CatchStoreButtonStore} from "./components/CatchStoreButton";
 export {CatchText} from "./components/CatchText";
 export type {
   CatchTextAlign,

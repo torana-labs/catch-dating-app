@@ -25,7 +25,7 @@ void main() {
 
       expect(descriptor.title, 'Connection issue');
       expect(descriptor.message, 'The request timed out. Please try again.');
-      expect(descriptor.icon, CatchIcons.wifiOffRounded);
+      expect(descriptor.icon, CatchIcons.offline);
       expect(descriptor.retryable, isTrue);
       expect(descriptor.retryLabel, 'Try again');
       expect(descriptor.severity, AppErrorSeverity.warning);
@@ -44,7 +44,7 @@ void main() {
         descriptor.message,
         'Check the highlighted details and try again.',
       );
-      expect(descriptor.icon, CatchIcons.editNoteRounded);
+      expect(descriptor.icon, CatchIcons.note);
       expect(descriptor.retryable, isFalse);
     });
 
@@ -205,14 +205,14 @@ void main() {
         ),
       );
       expect(upload.title, 'Upload failed');
-      expect(upload.icon, CatchIcons.cloudUploadOutlined);
+      expect(upload.icon, CatchIcons.upload);
       expect(upload.retryLabel, 'Try upload again');
 
       final external = appErrorDescriptor(
         const ExternalActionException('Could not open that link.'),
       );
       expect(external.title, 'Action failed');
-      expect(external.icon, CatchIcons.openInNewRounded);
+      expect(external.icon, CatchIcons.openExternal);
       expect(external.retryable, isFalse);
     });
 

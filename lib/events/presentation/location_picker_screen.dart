@@ -405,7 +405,7 @@ class MapPickerSearchRow extends StatelessWidget {
             alpha: CatchOpacity.locationPickerTopChromeFill,
           ),
           onPressed: onBack,
-          child: Icon(CatchIcons.arrowBackIosNewRounded, size: CatchIcon.md),
+          child: Icon(CatchIcons.back, size: CatchIconSize.md),
         ),
         gapW12,
         Expanded(child: searchPanel),
@@ -456,12 +456,12 @@ class PlaceSearchSection extends StatelessWidget {
                 .eventsLocationPickerScreenPlaceholderSearchForAMeeting,
             errorText: errorText,
             size: CatchFieldSize.floating,
-            leading: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
+            leading: Icon(CatchIcons.search, size: CatchIconSize.md),
             suffixText: stateText,
             trailing: isPending
                 ? const Center(
                     child: SizedBox.square(
-                      dimension: CatchIcon.md,
+                      dimension: CatchIconSize.md,
                       child: CircularProgressIndicator(
                         strokeWidth: CatchStroke.focusRing,
                       ),
@@ -532,9 +532,9 @@ class PlaceSuggestionRow extends StatelessWidget {
           Padding(
             padding: CatchInsets.inlineIconTopTight,
             child: Icon(
-              CatchIcons.placeOutlined,
+              CatchIcons.location,
               color: t.ink2,
-              size: CatchIcon.md,
+              size: CatchIconSize.md,
             ),
           ),
           gapW12,
@@ -610,10 +610,8 @@ class SelectedPointSection extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                hasSelection
-                    ? CatchIcons.checkCircleOutlineRounded
-                    : CatchIcons.touchAppRounded,
-                size: CatchIcon.control,
+                hasSelection ? CatchIcons.success : CatchIcons.tap,
+                size: CatchIconSize.control,
                 color: hasSelection ? t.success : t.ink2,
               ),
               gapW12,
@@ -644,7 +642,6 @@ class SelectedPointSection extends StatelessWidget {
             label: context.l10n.eventsLocationPickerScreenLabelConfirmLocation,
             onPressed: onConfirm,
             fullWidth: true,
-            size: CatchButtonSize.lg,
           ),
         ],
       ),

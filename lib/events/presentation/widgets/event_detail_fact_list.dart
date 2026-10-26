@@ -267,9 +267,9 @@ class EventDetailMapCard extends StatelessWidget {
                     if (canOpen) ...[
                       gapW4,
                       Icon(
-                        CatchIcons.chevronRightRounded,
+                        CatchIcons.disclosure,
                         color: t.ink2,
-                        size: CatchIcon.xs,
+                        size: CatchIconSize.xs,
                       ),
                     ],
                   ],
@@ -396,10 +396,10 @@ class EventDetailFactList extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: CatchIcon.row,
+                width: CatchIconSize.row,
                 child: Icon(
                   _eventDetailFactIcon(row.icon, activityIcon: activity.glyph),
-                  size: CatchIcon.md,
+                  size: CatchIconSize.md,
                   color: iconColor,
                 ),
               ),
@@ -461,18 +461,18 @@ IconData _eventDetailFactIcon(
   required IconData activityIcon,
 }) {
   return switch (icon) {
-    EventDetailFactIcon.openSignup => CatchIcons.personAddAlt1Outlined,
-    EventDetailFactIcon.inviteOnly => CatchIcons.keyOutlined,
-    EventDetailFactIcon.hostApproval => CatchIcons.personSearchOutlined,
-    EventDetailFactIcon.cohortCaps => CatchIcons.groupsOutlined,
-    EventDetailFactIcon.balancedBooking => CatchIcons.balanceOutlined,
-    EventDetailFactIcon.membersOnly => CatchIcons.cardMembershipOutlined,
-    EventDetailFactIcon.waitlist => CatchIcons.hourglassEmptyRounded,
-    EventDetailFactIcon.pricing => CatchIcons.priceChangeOutlined,
-    EventDetailFactIcon.requirements => CatchIcons.ruleOutlined,
+    EventDetailFactIcon.openSignup => CatchIcons.addPerson,
+    EventDetailFactIcon.inviteOnly => CatchIcons.key,
+    EventDetailFactIcon.hostApproval => CatchIcons.findPerson,
+    EventDetailFactIcon.cohortCaps => CatchIcons.people,
+    EventDetailFactIcon.balancedBooking => CatchIcons.balance,
+    EventDetailFactIcon.membersOnly => CatchIcons.membership,
+    EventDetailFactIcon.waitlist => CatchIcons.pending,
+    EventDetailFactIcon.pricing => CatchIcons.pricing,
+    EventDetailFactIcon.requirements => CatchIcons.rules,
     EventDetailFactIcon.activity => activityIcon,
-    EventDetailFactIcon.attendance => CatchIcons.qrCode2Outlined,
-    EventDetailFactIcon.cancellation => CatchIcons.refreshRounded,
+    EventDetailFactIcon.attendance => CatchIcons.qrCode,
+    EventDetailFactIcon.cancellation => CatchIcons.refresh,
   };
 }
 
@@ -572,7 +572,7 @@ class EventDetailPhotoTile extends StatelessWidget {
                 duration: Duration.zero,
                 radius: CatchRadius.none,
                 backgroundColor: backgroundColor,
-                child: Icon(icon, color: iconColor, size: CatchIcon.lg),
+                child: Icon(icon, color: iconColor, size: CatchIconSize.lg),
               )
             : CatchSurface(
                 duration: Duration.zero,
@@ -582,7 +582,7 @@ class EventDetailPhotoTile extends StatelessWidget {
                   photo!.thumbnailOrUrl,
                   key: ValueKey('event-photo-strip-image-$index'),
                   errorBuilder: (_, _, _) =>
-                      Icon(icon, color: iconColor, size: CatchIcon.lg),
+                      Icon(icon, color: iconColor, size: CatchIconSize.lg),
                 ),
               ),
       ),
@@ -651,7 +651,7 @@ class TicketStubTile extends StatelessWidget {
                   top: 0,
                   child: Icon(
                     cell.icon,
-                    size: CatchIcon.heroSignalChip,
+                    size: CatchIconSize.heroSignalChip,
                     color: t.ink3,
                   ),
                 ),

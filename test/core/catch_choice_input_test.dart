@@ -170,7 +170,7 @@ void main() {
         expect(tester.state(find.byKey(key)), same(state));
         data = tester.getSemantics(find.byKey(key)).getSemanticsData();
         expect(data.flagsCollection.isInMutuallyExclusiveGroup, isFalse);
-        final icon = tester.widget<Icon>(find.byIcon(CatchIcons.checkRounded));
+        final icon = tester.widget<Icon>(find.byIcon(CatchIcons.check));
         expect(icon.size, CatchFieldTokens.chipSelectedGlyphExtent);
         rebuild(() => enabled = false);
         await pumpFeatureUi(tester);

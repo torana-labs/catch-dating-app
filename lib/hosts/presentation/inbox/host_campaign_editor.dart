@@ -224,7 +224,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
                     CatchButton(
                       label: context.l10n.hostSendsSchedule,
                       variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       onPressed: _campaign == null && !_busy
                           ? _pickSchedule
                           : null,
@@ -233,7 +233,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
                       CatchButton(
                         label: context.l10n.hostSendsClearSchedule,
                         variant: CatchButtonVariant.ghost,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         onPressed: _campaign == null && !_busy
                             ? () => setState(() {
                                 _scheduledAt = null;

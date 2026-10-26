@@ -22,7 +22,7 @@ SwipeEmptyContent defaultSwipeEmptyContent(AppLocalizations l10n) =>
     SwipeEmptyContent(
       title: l10n.swipesSwipeEmptyContentTitleNoMoreAttendees,
       message: l10n.swipesSwipeEmptyContentMessageJoinMoreEventsTo,
-      icon: CatchIcons.directionsRunRounded,
+      icon: CatchIcons.activity,
     );
 
 SwipeEmptyContent buildSwipeEmptyContent({
@@ -37,7 +37,7 @@ SwipeEmptyContent buildSwipeEmptyContent({
     return SwipeEmptyContent(
       title: l10n.swipesSwipeEmptyContentTitleCatchUnavailable,
       message: l10n.swipesSwipeEmptyContentMessageThisEventCouldNot,
-      icon: CatchIcons.searchOffRounded,
+      icon: CatchIcons.noResults,
     );
   }
 
@@ -45,7 +45,7 @@ SwipeEmptyContent buildSwipeEmptyContent({
     return SwipeEmptyContent(
       title: l10n.swipesSwipeEmptyContentTitleSignInRequired,
       message: l10n.swipesSwipeEmptyContentMessageSignInAgainTo,
-      icon: CatchIcons.lockOutlineRounded,
+      icon: CatchIcons.locked,
     );
   }
 
@@ -53,7 +53,7 @@ SwipeEmptyContent buildSwipeEmptyContent({
     return SwipeEmptyContent(
       title: l10n.swipesSwipeEmptyContentTitleCatchUnavailable,
       message: l10n.swipesSwipeEmptyContentMessageYouCanOnlyCatch,
-      icon: CatchIcons.verifiedUserOutlined,
+      icon: CatchIcons.verified,
     );
   }
 
@@ -61,7 +61,7 @@ SwipeEmptyContent buildSwipeEmptyContent({
     return SwipeEmptyContent(
       title: l10n.swipesSwipeEmptyContentTitleEventInProgress,
       message: l10n.swipesSwipeEmptyContentMessageCatchesUnlockFor24,
-      icon: CatchIcons.scheduleRounded,
+      icon: CatchIcons.time,
     );
   }
 
@@ -69,7 +69,7 @@ SwipeEmptyContent buildSwipeEmptyContent({
     return SwipeEmptyContent(
       title: l10n.swipesSwipeEmptyContentTitleCatchWindowClosed,
       message: l10n.swipesSwipeEmptyContentMessageThisEventIsPast,
-      icon: CatchIcons.hourglassDisabledRounded,
+      icon: CatchIcons.expired,
     );
   }
 

@@ -506,10 +506,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
             children: [
               CatchMetaRow.group(
                 entries: [
-                  CatchMetaEntry(
-                    label: 'Tonight',
-                    icon: CatchIcons.calendarTodayOutlined,
-                  ),
+                  CatchMetaEntry(label: 'Tonight', icon: CatchIcons.date),
                   const CatchMetaEntry(label: 'Bandra'),
                 ],
                 trailing: const CatchMetaEntry(label: '2.3 km'),
@@ -751,7 +748,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
         CatchSheet(
           title: 'Set up payouts',
           subtitle: 'Powered by Stripe',
-          glyph: CatchIcons.hostBadge,
+          glyph: CatchIcons.host,
           trailing: const Text('Soon'),
           grabber: false,
           child: const Text('Stripe body'),
@@ -776,7 +773,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       ),
       findsOneWidget,
     );
-    final glyph = tester.widget<Icon>(find.byIcon(CatchIcons.hostBadge));
+    final glyph = tester.widget<Icon>(find.byIcon(CatchIcons.host));
     expect(glyph.size, CatchLayout.sheetGlyphIconSize);
     expect(glyph.color, CatchTokens.editorialLight.primaryInk);
     expect(find.text('Set up payouts'), findsOneWidget);
@@ -929,7 +926,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     await tester.pumpWidget(_wrap(const CatchIconTile.error()));
 
     expect(find.byType(CatchIconTile), findsOneWidget);
-    expect(find.byIcon(CatchIcons.errorOutlineRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.error), findsOneWidget);
   });
 
   testWidgets(

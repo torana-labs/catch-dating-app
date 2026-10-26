@@ -227,7 +227,7 @@ class ReviewsPreviewSection extends StatelessWidget {
               if (avgRating != null) ...[
                 StarRatingRow(
                   rating: avgRating.round(),
-                  size: CatchIcon.rating,
+                  size: CatchIconSize.rating,
                 ),
                 gapW4,
                 CatchText(
@@ -246,7 +246,7 @@ class ReviewsPreviewSection extends StatelessWidget {
 
         if (reviews.isEmpty)
           CatchEmptyState(
-            icon: CatchIcons.rateReviewOutlined,
+            icon: CatchIcons.feedback,
             title: emptyPresentation == ReviewsEmptyPresentation.inline
                 ? null
                 : context.l10n.reviewsReviewsSectionTitleNoReviewsYet,
@@ -265,8 +265,8 @@ class ReviewsPreviewSection extends StatelessWidget {
                 ? CatchEmptyStateVariant.stacked
                 : CatchEmptyStateVariant.inline,
             iconSize: emptyPresentation == ReviewsEmptyPresentation.standalone
-                ? CatchIcon.tile
-                : CatchIcon.row,
+                ? CatchIconSize.tile
+                : CatchIconSize.row,
             iconContainerSize:
                 emptyPresentation == ReviewsEmptyPresentation.standalone
                 ? null
@@ -352,7 +352,7 @@ class ReviewCard extends StatelessWidget {
                     ),
                     StarRatingRow(
                       rating: review.rating,
-                      size: CatchIcon.rating,
+                      size: CatchIconSize.rating,
                     ),
                   ],
                 ),
@@ -364,8 +364,8 @@ class ReviewCard extends StatelessWidget {
                     key: ReviewKeys.editReviewButton(review.id),
                     onPressed: onEdit!,
                     child: Icon(
-                      CatchIcons.editOutlined,
-                      size: CatchIcon.xs,
+                      CatchIcons.edit,
+                      size: CatchIconSize.xs,
                       color: t.primary,
                     ),
                   ),
@@ -381,8 +381,8 @@ class ReviewCard extends StatelessWidget {
                     key: ReviewKeys.respondToReviewButton(review.id),
                     onPressed: onRespond!,
                     child: Icon(
-                      CatchIcons.rateReviewOutlined,
-                      size: CatchIcon.xs,
+                      CatchIcons.feedback,
+                      size: CatchIconSize.xs,
                       color: t.primary,
                     ),
                   ),

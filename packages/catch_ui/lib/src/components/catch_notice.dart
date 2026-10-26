@@ -42,7 +42,7 @@ class CatchNotice extends StatelessWidget {
         : CatchButton(
             label: actionLabel,
             onPressed: onAction,
-            size: CatchButtonSize.sm,
+            size: CatchButtonSize.md,
             variant: CatchButtonVariant.secondary,
           );
     final dismiss = onDismiss == null || notice.onOpen != null
@@ -53,9 +53,9 @@ class CatchNotice extends StatelessWidget {
             tooltip: dismissLabel,
             onPressed: onDismiss,
             child: Icon(
-              CatchIcons.closeRounded,
+              CatchIcons.close,
               color: palette.secondary,
-              size: CatchIcon.md,
+              size: CatchIconSize.md,
             ),
           );
 
@@ -103,7 +103,7 @@ class CatchNotice extends StatelessWidget {
                   CatchButton.minimumLabelWidth(
                     context,
                     actionLabel!,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                   ) +
                   (dismiss == null
                       ? 0
@@ -136,7 +136,7 @@ class CatchNotice extends StatelessWidget {
                           child: Icon(
                             notice.icon,
                             color: palette.icon,
-                            size: CatchIcon.control,
+                            size: CatchIconSize.control,
                           ),
                         ),
                       ),

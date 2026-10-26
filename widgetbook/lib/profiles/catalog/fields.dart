@@ -70,25 +70,25 @@ Widget profileFieldRowSectionStates(BuildContext context) {
                 children: [
                   CatchField.nav(
                     copy: catchFieldCopy(context.l10n),
-                    icon: CatchIcons.speedOutlined,
+                    icon: CatchIcons.pace,
                     title: 'Pace range',
                     body: '9:00-9:00/km',
                   ),
                   CatchField.nav(
                     copy: catchFieldCopy(context.l10n),
-                    icon: CatchIcons.straightenOutlined,
+                    icon: CatchIcons.measure,
                     title: 'Preferred distances',
                     body: '5 km, 10 km, 21 km',
                   ),
                   CatchField.nav(
                     copy: catchFieldCopy(context.l10n),
-                    icon: CatchIcons.directionsRunOutlined,
+                    icon: CatchIcons.activity,
                     title: 'Why I event',
                     body: 'Weight loss',
                   ),
                   CatchField.nav(
                     copy: catchFieldCopy(context.l10n),
-                    icon: CatchIcons.wbTwilightOutlined,
+                    icon: CatchIcons.twilight,
                     title: 'Favorite event times',
                     body: 'Early morning, Morning',
                   ),
@@ -112,13 +112,13 @@ Widget profileFieldRowSectionStates(BuildContext context) {
                 children: [
                   CatchField.nav(
                     copy: catchFieldCopy(context.l10n),
-                    icon: CatchIcons.formatQuoteRounded,
+                    icon: CatchIcons.quote,
                     title: 'A perfect event with me looks like...',
                     body: 'Catch me if you can',
                   ),
                   CatchField.nav(
                     copy: catchFieldCopy(context.l10n),
-                    icon: CatchIcons.formatQuoteRounded,
+                    icon: CatchIcons.quote,
                     title: 'After an event, you can usually find me...',
                     body: 'ABCD',
                   ),
@@ -143,13 +143,13 @@ Widget profileFieldRowSectionStates(BuildContext context) {
                 children: [
                   CatchField.read(
                     copy: catchFieldCopy(context.l10n),
-                    icon: CatchIcons.shieldOutlined,
+                    icon: CatchIcons.safety,
                     title: 'Blocked users',
                     valueText: '0',
                   ),
                   CatchField.read(
                     copy: catchFieldCopy(context.l10n),
-                    icon: CatchIcons.visibilityOutlined,
+                    icon: CatchIcons.show,
                     title: 'Who can see you',
                     valueText: 'Runners on my events',
                   ),
@@ -178,7 +178,7 @@ Widget profileSingleEnumEntryStates(BuildContext context) {
         child: WidgetbookProfileSectionFrame(
           height: CatchLayout.activityArtDefaultHeight,
           child: ProfileSingleEnumRow<EducationLevel>(
-            icon: CatchIcons.schoolOutlined,
+            icon: CatchIcons.education,
             label: 'Education',
             contract: CatchContractConstraints.updateUserProfilePatchEducation,
             contractValue: (value) => value.name,
@@ -198,7 +198,7 @@ Widget profileSingleEnumEntryStates(BuildContext context) {
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
           child: ProfileSingleEnumRow<EducationLevel>(
-            icon: CatchIcons.schoolOutlined,
+            icon: CatchIcons.education,
             label: 'Education',
             contract: CatchContractConstraints.updateUserProfilePatchEducation,
             contractValue: (value) => value.name,
@@ -232,7 +232,7 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
         child: WidgetbookProfileSectionFrame(
           height: CatchLayout.activityArtDefaultHeight,
           child: ProfileMultiEnumRow<Language>(
-            icon: CatchIcons.languageOutlined,
+            icon: CatchIcons.web,
             label: 'Languages',
             contract: CatchContractConstraints.updateUserProfilePatchLanguages,
             contractValue: (value) => value.name,
@@ -253,7 +253,7 @@ Widget profileMultiEnumEntryStates(BuildContext context) {
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
           child: ProfileMultiEnumRow<Language>(
-            icon: CatchIcons.languageOutlined,
+            icon: CatchIcons.web,
             label: 'Languages',
             contract: CatchContractConstraints.updateUserProfilePatchLanguages,
             contractValue: (value) => value.name,

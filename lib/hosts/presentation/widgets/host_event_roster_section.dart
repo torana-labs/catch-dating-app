@@ -23,14 +23,14 @@ class HostEventRosterSection extends StatelessWidget {
         count: bookedCount,
       ),
       leading: CatchIconAction.toolbar(
-        icon: CatchIcons.arrowBackIosNewRounded,
+        icon: CatchIcons.back,
         tooltip: context.l10n.hostsHostEventRosterDrawerClose,
         onPressed: onClose,
       ),
       actions: [
         if (onMessageGuests != null)
           CatchIconAction.toolbar(
-            icon: CatchIcons.forumOutlined,
+            icon: CatchIcons.conversations,
             tooltip: context.l10n.hostsHostEventRosterDrawerMessageGuests,
             onPressed: onMessageGuests,
           ),

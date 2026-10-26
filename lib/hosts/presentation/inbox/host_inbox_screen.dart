@@ -204,7 +204,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
                 CatchIconAction.toolbar(
                   tooltip: context.l10n.hostInboxNewMessage,
                   onPressed: () => _newMessage(selectedClub.id),
-                  icon: CatchIcons.editOutlined,
+                  icon: CatchIcons.edit,
                 ),
             ],
           ),
@@ -249,7 +249,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     }
     final detail = selectedThreadId == null || selectedClub == null
         ? CatchEmptyState(
-            icon: CatchIcons.chatBubbleOutlineRounded,
+            icon: CatchIcons.chat,
             title: context.l10n.hostInboxSelectConversationTitle,
             message: context.l10n.hostInboxSelectConversationBody,
           )
@@ -485,7 +485,7 @@ class _HostNoOrganizerSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CatchStateViewport.sliver(
     child: CatchEmptyState(
-      icon: CatchIcons.groupsOutlined,
+      icon: CatchIcons.people,
       title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
       message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
     ),
@@ -498,7 +498,7 @@ class _HostAuthRequiredSliver extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CatchStateViewport.sliver(
     child: CatchEmptyState(
-      icon: CatchIcons.lockOutlineRounded,
+      icon: CatchIcons.locked,
       title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
       message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
       actions: [

@@ -81,7 +81,7 @@ class CatchMetricTile extends StatelessWidget {
           : CrossAxisAlignment.start,
       children: [
         if (icon != null) ...[
-          Icon(icon, color: t.primary, size: CatchIcon.md),
+          Icon(icon, color: t.primary, size: CatchIconSize.md),
           gapH6,
         ],
         if (compact != null)

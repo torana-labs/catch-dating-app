@@ -194,16 +194,16 @@ class ClubJoinButton extends StatelessWidget {
       return CatchBadge(
         label: context.l10n.clubsDirectoryCardLabelJoined,
         tone: CatchBadgeTone.success,
-        icon: CatchIcons.joinedCheck,
+        icon: CatchIcons.check,
       );
     }
 
     final t = CatchTokens.of(context);
     return CatchButton(
       label: context.l10n.clubsDirectoryCardLabelJoin,
-      leading: Icon(CatchIcons.groupAddOutlined),
+      leading: Icon(CatchIcons.addPerson),
       onPressed: isPending ? null : onJoinPressed,
-      size: CatchButtonSize.sm,
+      size: CatchButtonSize.md,
       backgroundColor: t.ink,
       foregroundColor: t.primaryInk,
     );

@@ -40,7 +40,7 @@ Widget catchToolbarButtonContractStates(BuildContext context) {
               label: 'Mumbai',
               semanticLabel: 'Choose Mumbai',
               tooltip: 'Choose city',
-              icon: CatchIcons.locationOnOutlined,
+              icon: CatchIcons.location,
               onPressed: null,
             ),
             CatchToolbarButton.action(
@@ -74,7 +74,7 @@ Widget _selectorBar(BuildContext context) => CatchTopBar.screen(
   leading: const _ToolbarSelectorPreview(),
   actions: [
     CatchIconAction.toolbar(
-      icon: CatchIcons.savedOutlined,
+      icon: CatchIcons.bookmark,
       tooltip: 'Saved events',
       onPressed: widgetbookNoop,
     ),
@@ -106,7 +106,7 @@ class _ToolbarSelectorPreview extends StatelessWidget
       label: 'Mumbai',
       semanticLabel: 'Choose Mumbai',
       tooltip: 'Choose city',
-      icon: CatchIcons.locationOnOutlined,
+      icon: CatchIcons.location,
       onPressed: widgetbookNoop,
     ),
   );

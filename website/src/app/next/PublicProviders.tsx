@@ -5,6 +5,7 @@ import {WebsiteQueryProvider} from "../../shared/query/queryClient";
 import {PendingRequestProvider} from "../../shared/pendingRequest";
 import {publicEventListingsContext} from "../../features/organizers/usePublicEventListingsController";
 import type {PublicCatalog} from "./publicCatalogTypes";
+import {PUBLIC_PAGE_CACHE_SECONDS} from "./publicPageCache";
 
 export function PublicProviders({children, catalog, pathname, initialSearch = "", live = true}: {
   children: ReactNode; catalog: PublicCatalog; pathname: string; initialSearch?: string; live?: boolean;
@@ -24,7 +25,9 @@ export function PublicProviders({children, catalog, pathname, initialSearch = ""
     let active = true;
     let pending = false;
     const controller = new AbortController();
-    let expiresAt = Date.now() + Math.max(0, 30_000 - (Date.now() - catalog.readAt));
+    // Cached HTML may be up to the CDN window old on arrival. Keep it while the
+    // immediate live check below runs; that check removes withdrawn content.
+    let expiresAt = Date.now() + Math.max(0, PUBLIC_PAGE_CACHE_SECONDS * 1000 + 30_000 - (Date.now() - catalog.readAt));
     let expiry = window.setTimeout(() => setCurrent(null), Math.max(0, expiresAt - Date.now()));
     function accept(value: PublicCatalog) {
       const remaining = Math.max(0, 30_000 - (Date.now() - value.readAt));
@@ -49,6 +52,7 @@ export function PublicProviders({children, catalog, pathname, initialSearch = ""
       finally { clearTimeout(deadline); controller.signal.removeEventListener("abort", abort); pending = false; }
     }
     setCurrent(catalog);
+    void refresh();
     const timer = window.setInterval(() => {void refresh();}, 25_000);
     const focus = () => {void refresh();};
     document.addEventListener("visibilitychange", focus);

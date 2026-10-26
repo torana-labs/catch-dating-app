@@ -138,8 +138,8 @@ class WhereStep extends ConsumerWidget {
                       : _trimToNull(meetingPointController.text) ??
                             context.l10n.eventsMapPinTileTitlePinnedLocation,
                   icon: startingPoint == null
-                      ? CatchIcons.mapOutlined
-                      : CatchIcons.editLocationAltOutlined,
+                      ? CatchIcons.map
+                      : CatchIcons.editLocation,
                   error: field.errorText,
                   onTap: saveMutation.isPending ? null : onPickLocation,
                 ),
@@ -160,7 +160,7 @@ class WhereStep extends ConsumerWidget {
               helperText: startingPoint == null
                   ? context.l10n.hostsWhereStepHelpertextPickAMapLocation
                   : context.l10n.hostsWhereStepHelpertextEditThisIfAttendees,
-              icon: CatchIcons.locationOnOutlined,
+              icon: CatchIcons.location,
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
               onChanged: onMeetingPointChanged,
@@ -185,7 +185,7 @@ class WhereStep extends ConsumerWidget {
               inputHint: context.l10n.hostsWhereStepPlaceholderEGMeetOutside,
               helperText:
                   context.l10n.hostsWhereStepHelpertextGateEntranceFloorOr,
-              icon: CatchIcons.infoOutline,
+              icon: CatchIcons.info,
               maxLines: 3,
               textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.done,
@@ -250,7 +250,7 @@ class HostSavedPlacesSection extends StatelessWidget {
                 ? context.l10n.hostsWhereStepSavedPlaceSelected
                 : null,
             showChevron: false,
-            icon: CatchIcons.locationOnOutlined,
+            icon: CatchIcons.location,
             onTap: saving ? null : () => onVenueSelected(venue),
           ),
         CatchField.action(

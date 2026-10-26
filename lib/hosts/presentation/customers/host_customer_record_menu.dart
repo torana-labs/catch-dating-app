@@ -36,17 +36,17 @@ class HostCustomerRecordMenu extends StatelessWidget {
             CatchActionMenuItem(
               value: _HostCustomerRecordAction.message,
               label: context.l10n.hostCustomersWhatsappMessage,
-              icon: CatchIcons.tabChats,
+              icon: CatchIcons.chat,
             ),
           CatchActionMenuItem(
             value: _HostCustomerRecordAction.logOutreach,
             label: context.l10n.hostCustomersLogOutreach,
-            icon: CatchIcons.callOutlined,
+            icon: CatchIcons.phone,
           ),
           CatchActionMenuItem(
             value: _HostCustomerRecordAction.remove,
             label: context.l10n.hostsHostAudienceRemoveAction,
-            icon: CatchIcons.deleteOutline,
+            icon: CatchIcons.delete,
             isDestructive: true,
           ),
         ],

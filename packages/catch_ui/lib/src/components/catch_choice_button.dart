@@ -167,7 +167,7 @@ class CatchChoiceButton<T> extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (showIcon) ...[
-                  Icon(option.icon, size: CatchIcon.sm, color: foreground),
+                  Icon(option.icon, size: CatchIconSize.sm, color: foreground),
                   const SizedBox(width: CatchSpacing.s2),
                 ],
                 Flexible(

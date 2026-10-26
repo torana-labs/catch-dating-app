@@ -266,7 +266,7 @@ Widget catchStateViewportCatalogStates(BuildContext context) {
             bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             child: CatchStateViewport(
               child: CatchEmptyState(
-                icon: CatchIcons.calendarTodayOutlined,
+                icon: CatchIcons.date,
                 title: 'No upcoming events',
                 message: 'The optical center excludes floating chrome.',
               ),
@@ -300,7 +300,7 @@ Widget catchStateViewportSliverCatalogStates(BuildContext context) {
               slivers: [
                 CatchStateViewport.sliver(
                   child: CatchEmptyState(
-                    icon: CatchIcons.calendarTodayOutlined,
+                    icon: CatchIcons.date,
                     title: 'No upcoming events',
                     message: 'The optical center excludes floating chrome.',
                   ),
@@ -331,7 +331,7 @@ Widget catchSliverEmptyStateCatalogStates(BuildContext context) {
           child: CustomScrollView(
             slivers: [
               CatchSliverEmptyState(
-                icon: CatchIcons.eventBusyOutlined,
+                icon: CatchIcons.eventUnavailable,
                 title: 'Nothing scheduled',
                 message: 'Create an event to start filling this list.',
                 actions: [

@@ -1,0 +1,88 @@
+/*
+ * Flutter CatchStepper and CatchStepperRepeatButton: a 32px circle in a 44px
+ * target, 10px from the value (stepperGap 16 less the target's inset), the
+ * control border, a 0.92 press scale and 0.32 opacity at a bound.
+ */
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--catch-space-micro10);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--catch-space-s11);
+  height: var(--catch-space-s11);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--catch-radius-pill);
+  background: transparent;
+  color: var(--catch-theme-ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.visual {
+  --stepper-line: color-mix(in srgb, var(--catch-theme-ink3) 90%, var(--catch-theme-ink));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--catch-space-s8);
+  height: var(--catch-space-s8);
+  border: var(--catch-stroke-hairline) solid var(--stepper-line);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-surface);
+  transition: transform 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+[data-catch-theme="dark"] .visual { --stepper-line: var(--catch-theme-ink3); }
+
+.visual svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.button:hover:not(:disabled) .visual { background: color-mix(in srgb, var(--catch-theme-ink) 4%, var(--catch-theme-surface)); }
+
+.button:active:not(:disabled) .visual {
+  transform: scale(0.92);
+  transition-duration: 80ms;
+}
+
+.button:focus-visible { outline: none; }
+
+.button:focus-visible .visual {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-primary);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.32;
+}
+
+.value {
+  min-width: 30px;
+  color: var(--catch-theme-ink);
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+  font-size: var(--catch-typography-web-field-value-size);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--catch-typography-web-field-value-weight);
+  line-height: var(--catch-typography-web-field-value-line-height);
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visual { transition: none; }
+  .button:active:not(:disabled) .visual { transform: none; }
+}

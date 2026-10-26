@@ -40,8 +40,6 @@ updates:
     directories:
       - "/"
       - "/packages/catch_ui_lints"
-      - "/packages/phosphor_flutter"
-      - "/packages/phosphor_flutter/example"
       - "/tool/widget_dedupe"
       - "/widgetbook"
     schedule:

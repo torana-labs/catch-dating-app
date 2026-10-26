@@ -1,0 +1,76 @@
+/*
+ * Website v2 review item (CAT-249). The row recipe sits in a list divided by
+ * hairlines; the card recipe is a paper card. Replies take the paper ground.
+ */
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s2);
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+}
+
+.review[data-variant="row"] {
+  padding-block: var(--catch-space-micro18);
+  border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line2);
+}
+
+.review[data-variant="card"] {
+  height: 100%;
+  padding: var(--catch-space-s5);
+  border-radius: var(--catch-radius-lg);
+  background: var(--catch-ground-paper-fill);
+  --catch-theme-ink: var(--catch-ground-paper-ink);
+  --catch-theme-ink2: var(--catch-ground-paper-ink-secondary);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s2) var(--catch-space-micro10);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-micro10);
+  min-width: 0;
+}
+
+.names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--catch-space-s2);
+}
+
+.reply {
+  margin: 0;
+  padding: var(--catch-space-s3) var(--catch-space-micro14);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-ground-paper-fill);
+  color: var(--catch-ground-paper-ink);
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+  font-size: var(--catch-typography-web-secondary-size);
+  line-height: var(--catch-typography-web-secondary-line-height);
+}
+
+.reply strong { font-weight: 600; }
+
+.review[data-variant="card"] .reply { background: var(--catch-ground-white-fill); }
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--catch-space-s2);
+}

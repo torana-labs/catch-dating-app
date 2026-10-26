@@ -470,7 +470,7 @@ void main() {
       final expandedSearchWidth = tester.getSize(expandingSearchField).width;
       expect(expandedSearchWidth, greaterThanOrEqualTo(morphingSearchWidth));
       expect(find.byType(TextField), findsOneWidget);
-      expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
+      expect(find.byIcon(CatchIcons.hideKeyboard), findsNothing);
       expect(
         tester.widget<TextField>(find.byType(TextField)).textInputAction,
         TextInputAction.done,
@@ -481,7 +481,7 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(container.read(chatSearchQueryProvider), 'taylor');
 
-      await tester.tap(find.byIcon(CatchIcons.clearCircle));
+      await tester.tap(find.byIcon(CatchIcons.clear));
       await tester.pump();
 
       expect(tester.takeException(), isNull);

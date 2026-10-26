@@ -29,9 +29,7 @@ class HostAudienceNoOrganizerEmptyState extends StatelessWidget {
       onChanged: onChanged,
       slivers: [
         CatchSliverEmptyState(
-          icon: forms
-              ? CatchIcons.descriptionOutlined
-              : CatchIcons.groupsOutlined,
+          icon: forms ? CatchIcons.document : CatchIcons.people,
           title: forms
               ? context.l10n.hostFormsNoOrganizerTitle
               : context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
@@ -43,7 +41,7 @@ class HostAudienceNoOrganizerEmptyState extends StatelessWidget {
               label: forms
                   ? context.l10n.hostFormsCreateOrganizer
                   : context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-              size: forms ? CatchButtonSize.sm : CatchButtonSize.md,
+              size: forms ? CatchButtonSize.md : CatchButtonSize.lg,
               onPressed: () =>
                   context.pushNamed(Routes.hostCreateClubScreen.name),
             ),

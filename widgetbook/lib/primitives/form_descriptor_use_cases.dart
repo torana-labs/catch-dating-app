@@ -92,13 +92,13 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
     rows: [
       CatchFormReadRow<(String, Object?)>(
         id: 'identity',
-        icon: CatchIcons.personOutlined,
+        icon: CatchIcons.person,
         label: 'Identity',
         body: 'Verified',
       ),
       CatchFormTextRow<(String, Object?)>(
         id: 'name',
-        icon: CatchIcons.personOutlined,
+        icon: CatchIcons.person,
         label: 'Name',
         currentValue: _name,
         contract: const CatchContractFieldConstraints(
@@ -112,7 +112,7 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
       ),
       CatchFormTextRow<(String, Object?)>(
         id: 'nickname',
-        icon: CatchIcons.personOutlined,
+        icon: CatchIcons.person,
         label: 'Nickname',
         currentValue: _nickname ?? '',
         currentFieldValue: _nickname,
@@ -126,7 +126,7 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
       ),
       CatchFormSingleChoiceRow<(String, Object?), int>(
         id: 'single',
-        icon: CatchIcons.tabEvents,
+        icon: CatchIcons.ticket,
         label: 'One option',
         values: const [1, 2, 3],
         itemLabel: (value) => 'Option $value',
@@ -135,7 +135,7 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
       ),
       CatchFormMultiChoiceRow<(String, Object?), int>(
         id: 'multiple',
-        icon: CatchIcons.groupsOutlined,
+        icon: CatchIcons.people,
         label: 'Several options',
         values: const [1, 2, 3],
         itemLabel: (value) => 'Option $value',
@@ -144,7 +144,7 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
       ),
       CatchFormRangeRow<(String, Object?)>(
         id: 'range',
-        icon: CatchIcons.tuneRounded,
+        icon: CatchIcons.filters,
         label: 'Range',
         value: '${_range.start.round()} - ${_range.end.round()}',
         currentMin: _range.start.round(),
@@ -158,11 +158,11 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
       ),
       CatchFormCustomRow<(String, Object?)>(
         id: 'custom',
-        icon: CatchIcons.infoOutline,
+        icon: CatchIcons.info,
         label: 'Custom row',
         build: (context, scope) => CatchField.read(
           copy: scope.fieldCopy,
-          icon: CatchIcons.infoOutline,
+          icon: CatchIcons.info,
           title: 'Custom row',
           body: 'Content supplied by the owning feature',
         ),

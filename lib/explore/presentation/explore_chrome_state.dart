@@ -56,9 +56,7 @@ class ExploreCityButtonState {
       scopeLabel: l10n
           .exploreExploreScreenStateVisiblecopyExploreLabel(label: city.label)
           .toUpperCase(),
-      icon: focused
-          ? CatchIcons.locationOnRounded
-          : CatchIcons.locationOnOutlined,
+      icon: focused ? CatchIcons.location : CatchIcons.location,
     );
   }
 

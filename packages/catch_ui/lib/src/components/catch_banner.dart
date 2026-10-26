@@ -113,7 +113,7 @@ class CatchBanner extends StatelessWidget {
     final tokens = CatchTokens.of(context);
     final foreground = _readableAccent(tokens, status.color);
     final rowChildren = <Widget>[
-      Icon(status.icon, size: CatchIcon.md, color: status.color),
+      Icon(status.icon, size: CatchIconSize.md, color: status.color),
       const SizedBox(width: CatchSpacing.micro10),
       Expanded(
         child: Column(
@@ -230,10 +230,10 @@ class CatchBanner extends StatelessWidget {
     final glyph =
         icon ??
         switch (tone) {
-          CatchBannerTone.danger => CatchIcons.errorOutlineRounded,
-          CatchBannerTone.warning => CatchIcons.warningAmberRounded,
-          CatchBannerTone.success => CatchIcons.checkCircle,
-          _ => CatchIcons.infoOutlineRounded,
+          CatchBannerTone.danger => CatchIcons.error,
+          CatchBannerTone.warning => CatchIcons.warning,
+          CatchBannerTone.success => CatchIcons.success,
+          _ => CatchIcons.info,
         };
     final feedbackActions = <Widget>[
       ...actions,
@@ -262,7 +262,7 @@ class CatchBanner extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(glyph, color: accent, size: CatchIcon.md),
+                  Icon(glyph, color: accent, size: CatchIconSize.md),
                   const SizedBox(width: CatchSpacing.s2),
                   Expanded(
                     child: Text(

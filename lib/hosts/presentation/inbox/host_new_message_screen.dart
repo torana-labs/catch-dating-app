@@ -104,7 +104,7 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
                     CatchField.navigate(
                       content: CatchRecordLayout(
                         title: context.l10n.hostInboxAddPerson,
-                        icon: CatchIcons.personAddAlt1Outlined,
+                        icon: CatchIcons.addPerson,
                       ),
                       onActivate: _addPerson,
                     ),
@@ -309,12 +309,8 @@ class HostNewMessageRouteSection extends ConsumerWidget {
           CatchSection.loadingRows(
             title: context.l10n.hostInboxAvailableRoutes,
             layouts: [
-              CatchRecordLayout.placeholder(
-                icon: CatchIcons.chatBubbleOutlineRounded,
-              ),
-              CatchRecordLayout.placeholder(
-                icon: CatchIcons.personOutlineRounded,
-              ),
+              CatchRecordLayout.placeholder(icon: CatchIcons.chat),
+              CatchRecordLayout.placeholder(icon: CatchIcons.person),
             ],
           ),
         if (result.hasError)
@@ -335,7 +331,7 @@ class HostNewMessageRouteSection extends ConsumerWidget {
                     title: context.l10n.hostInboxMessageVia(
                       channel: context.l10n.hostInboxCatchChannel,
                     ),
-                    icon: CatchIcons.chatBubbleOutlineRounded,
+                    icon: CatchIcons.chat,
                   ),
                   states: {if (opening) WidgetState.disabled},
                   onActivate: onStartCatch,
@@ -346,7 +342,7 @@ class HostNewMessageRouteSection extends ConsumerWidget {
                     title: context.l10n.hostInboxMessageVia(
                       channel: context.l10n.hostInboxWhatsappReplyChannel,
                     ),
-                    icon: CatchIcons.chatBubbleOutlineRounded,
+                    icon: CatchIcons.chat,
                     description: whatsapp.serviceWindowOpen
                         ? null
                         : context.l10n.hostInboxWhatsappWindowClosed,
@@ -363,7 +359,7 @@ class HostNewMessageRouteSection extends ConsumerWidget {
               CatchField.navigate(
                 content: CatchRecordLayout(
                   title: context.l10n.hostInboxOpenPerson,
-                  icon: CatchIcons.personOutlineRounded,
+                  icon: CatchIcons.person,
                 ),
                 onActivate: () => context.pushNamed(
                   Routes.hostCustomerDetailScreen.name,

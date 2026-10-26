@@ -142,7 +142,7 @@ class _ClubDetailDockControls extends StatelessWidget {
       child: switch (state) {
         ClubDetailDockRole.guest => CatchButton(
           label: context.l10n.clubsClubDetailDockLabelSignInToJoin,
-          leading: Icon(CatchIcons.lockOutlineRounded),
+          leading: Icon(CatchIcons.locked),
           onPressed: onSignIn,
           fullWidth: true,
         ),
@@ -170,7 +170,7 @@ class _ClubDetailDockControls extends StatelessWidget {
               child: CatchButton(
                 key: manageKey,
                 label: context.l10n.clubsClubDetailDockLabelJoined,
-                leading: Icon(CatchIcons.checkCircle),
+                leading: Icon(CatchIcons.success),
                 variant: CatchButtonVariant.secondary,
                 status: (isJoinLoading)
                     ? CatchButtonStatus.loading
@@ -186,7 +186,7 @@ class _ClubDetailDockControls extends StatelessWidget {
             Expanded(
               child: CatchButton(
                 label: context.l10n.clubsClubDetailDockLabelManage,
-                leading: Icon(CatchIcons.settingsOutlined),
+                leading: Icon(CatchIcons.settings),
                 variant: CatchButtonVariant.secondary,
                 onPressed: onManage,
                 fullWidth: true,
@@ -282,13 +282,11 @@ class ClubBellButton extends StatelessWidget {
         onPressed: enabled ? onPressed : null,
         child: isLoading
             ? SizedBox.square(
-                dimension: CatchIcon.md,
+                dimension: CatchIconSize.md,
                 child: CatchLoadingIndicator(color: foreground),
               )
             : Icon(
-                active
-                    ? CatchIcons.notificationsActiveRounded
-                    : CatchIcons.notificationsNoneRounded,
+                active ? CatchIcons.notificationsOn : CatchIcons.notifications,
                 color: foreground,
               ),
       ),

@@ -136,6 +136,24 @@
   resize: vertical;
 }
 
+.field .affixLane {
+  display: flex;
+  align-items: baseline;
+  gap: var(--catch-space-s1);
+  min-width: 0;
+}
+
+.field .affix {
+  flex: none;
+  color: var(--catch-theme-ink2);
+  font-family: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-size: var(--catch-typography-web-field-value-size);
+  font-weight: var(--catch-typography-web-field-value-weight);
+  line-height: var(--catch-typography-web-field-value-line-height);
+  white-space: nowrap;
+}
+
 .field .selectLane {
   position: relative;
   display: block;

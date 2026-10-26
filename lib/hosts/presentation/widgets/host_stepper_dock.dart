@@ -41,7 +41,6 @@ class HostStepperDock extends StatelessWidget {
       label: context.l10n.hostsWizardPrevious,
       onPressed: isLoading ? null : onPrevious,
       variant: CatchButtonVariant.ghost,
-      size: CatchButtonSize.lg,
       leading: Icon(CatchIcons.arrowBackRounded),
       foregroundColor: t.primary,
       fullWidth: true,
@@ -51,7 +50,6 @@ class HostStepperDock extends StatelessWidget {
       onPressed: isLoading || !primaryEnabled ? null : onPrimary,
       status: (isLoading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       fullWidth: true,
-      size: CatchButtonSize.lg,
       leading:
           primaryIcon ??
           (isLastStep ? null : Icon(CatchIcons.arrowForwardRounded)),

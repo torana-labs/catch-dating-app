@@ -32,6 +32,6 @@ describe("Choice family source parity", () => {
     expect(tile).toContain("padding: CatchInsets.tileContentCompact");
     expect(insets).toMatch(/tileContentCompact = EdgeInsets\.all\(\s*CatchSpacing\.micro14/);
     expect(read("./CatchChoiceTile.module.css")).toContain("padding: var(--catch-space-micro14)");
-    expect(tile).toContain("size: CatchIcon.lg"); expect(css).toContain("width: 24px; height: 24px");
+    expect(tile).toContain("size: CatchIconSize.lg"); expect(css).toContain("width: 24px; height: 24px");
   });
 });

@@ -31,7 +31,7 @@ class HostFormAvailabilityField extends StatelessWidget {
           ? null
           : IconButton(
               tooltip: context.l10n.hostFormClearDate,
-              icon: Icon(CatchIcons.closeRounded),
+              icon: Icon(CatchIcons.close),
               onPressed: () => onChanged(null),
             ),
       onTap: () async {

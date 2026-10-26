@@ -111,8 +111,8 @@ class GuestWhoIsGoingCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  CatchIcons.lockOutlineRounded,
-                  size: CatchIcon.xs,
+                  CatchIcons.locked,
+                  size: CatchIconSize.xs,
                   color: surfaceStyle?.mutedColor ?? t.ink3,
                 ),
                 const SizedBox(width: CatchSpacing.s2),

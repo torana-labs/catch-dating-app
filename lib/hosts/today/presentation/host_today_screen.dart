@@ -546,14 +546,14 @@ class HostTodayOrganizerEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSliverEmptyState(
-      icon: CatchIcons.groupsOutlined,
+      icon: CatchIcons.people,
       title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
       message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
       actions: [
         CatchButton(
           label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-          leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-          size: CatchButtonSize.sm,
+          leading: Icon(CatchIcons.add, size: CatchIconSize.md),
+          size: CatchButtonSize.md,
           onPressed: onCreateOrganizer,
         ),
       ],

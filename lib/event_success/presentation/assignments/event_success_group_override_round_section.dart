@@ -54,8 +54,8 @@ class EventSuccessGroupOverrideRoundSection extends StatelessWidget {
                 label: context
                     .l10n
                     .eventSuccessEventSuccessHostOverridesLabelAddGroup,
-                leading: Icon(CatchIcons.addRounded),
-                size: CatchButtonSize.sm,
+                leading: Icon(CatchIcons.add),
+                size: CatchButtonSize.md,
                 variant: CatchButtonVariant.secondary,
                 onPressed: onAddGroup,
               ),
@@ -145,9 +145,9 @@ class EventSuccessGroupOverrideFieldLanes extends StatelessWidget {
                     .eventSuccessEventSuccessHostOverridesTooltipRemoveGroup,
                 onPressed: onRemoveGroup,
                 child: Icon(
-                  CatchIcons.deleteOutlineRounded,
+                  CatchIcons.delete,
                   color: t.danger,
-                  size: CatchIcon.md,
+                  size: CatchIconSize.md,
                 ),
               ),
             ],
@@ -174,8 +174,8 @@ class EventSuccessGroupOverrideFieldLanes extends StatelessWidget {
             label: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesLabelAddAttendee,
-            leading: Icon(CatchIcons.personAddAlt1Rounded),
-            size: CatchButtonSize.sm,
+            leading: Icon(CatchIcons.addPerson),
+            size: CatchButtonSize.md,
             variant: CatchButtonVariant.secondary,
             onPressed: onAddMember,
           ),
@@ -232,7 +232,7 @@ class EventSuccessGroupMemberField extends StatelessWidget {
               .l10n
               .eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee,
           onPressed: onRemove,
-          child: Icon(CatchIcons.closeRounded, size: CatchIcon.md),
+          child: Icon(CatchIcons.close, size: CatchIconSize.md),
         ),
       ],
     );

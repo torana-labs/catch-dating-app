@@ -84,10 +84,7 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
           onPressed: _canOpen
               ? () => controller.isOpen ? controller.close() : controller.open()
               : null,
-          child: Icon(
-            widget.icon ?? CatchIcons.moreHorizRounded,
-            size: CatchIcon.md,
-          ),
+          child: Icon(widget.icon ?? CatchIcons.more, size: CatchIconSize.md),
         );
       },
     );

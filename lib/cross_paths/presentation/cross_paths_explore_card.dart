@@ -109,7 +109,7 @@ class _CrossPathsExploreCardState extends State<CrossPathsExploreCard> {
               onTap: widget.onProfileSelected,
               showArrow: true,
               media: primaryPhotoUrl == null
-                  ? CatchImageFallbackSurface(icon: CatchIcons.personOutlined)
+                  ? CatchImageFallbackSurface(icon: CatchIcons.person)
                   : CatchNetworkImage(primaryPhotoUrl),
               kicker: context.l10n.crossPathsExploreCardLabelCrossPaths,
               name: '$firstName, ${profile.age}',
@@ -165,7 +165,7 @@ class CrossPathsEventContextCard extends StatelessWidget {
               EventActivityBadge(
                 visual: visual,
                 size: compact ? 30 : 38,
-                iconSize: CatchIcon.sm,
+                iconSize: CatchIconSize.sm,
               ),
               gapW10,
               Expanded(
@@ -198,8 +198,8 @@ class CrossPathsEventContextCard extends StatelessWidget {
           gapH10,
           CatchButton(
             label: context.l10n.crossPathsExploreCardActionSeeEvent,
-            leading: Icon(CatchIcons.forwardArrow, size: CatchIcon.sm),
-            size: CatchButtonSize.sm,
+            leading: Icon(CatchIcons.forward, size: CatchIconSize.sm),
+            size: CatchButtonSize.md,
             variant: CatchButtonVariant.secondary,
             fullWidth: true,
             onPressed: onEventSelected,
@@ -294,7 +294,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                         ),
                       ),
                       CatchIconAction.icon(
-                        icon: CatchIcons.closeRounded,
+                        icon: CatchIcons.close,
                         variant: CatchIconActionVariant.plain,
                         tooltip:
                             context.l10n.crossPathsProfilePreviewTooltipClose,
@@ -338,9 +338,9 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                       leading: Icon(
                         invitation?.status ==
                                 CrossPathsInvitationStatus.accepted
-                            ? CatchIcons.chatBubbleOutlineRounded
-                            : CatchIcons.favoriteOutline,
-                        size: CatchIcon.sm,
+                            ? CatchIcons.chat
+                            : CatchIcons.like,
+                        size: CatchIconSize.sm,
                       ),
                       fullWidth: true,
                       status: (mutation.isLoading)

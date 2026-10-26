@@ -139,7 +139,7 @@ void main() {
       matching: find.byType(CatchAvatar),
     );
     expect(avatars, findsNWidgets(5));
-    expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(4));
+    expect(find.byIcon(CatchIcons.person), findsNWidgets(4));
     expect(find.text('+1'), findsOneWidget);
   });
 }

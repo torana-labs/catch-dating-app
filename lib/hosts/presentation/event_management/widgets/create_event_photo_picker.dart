@@ -41,7 +41,7 @@ class CreateEventPhotoPicker extends StatelessWidget {
                   .l10n
                   .hostsCreateEventPhotoPickerVisiblecopyAddEventPhotos,
               body: context.l10n.hostsCreateEventPhotoPickerBodyInheritedLogo,
-              icon: CatchIcons.addPhotoAlternateOutlined,
+              icon: CatchIcons.addPhoto,
               onTap: onAddPhotos,
             ),
           ),
@@ -109,11 +109,11 @@ class _InheritedOrganizerLogo extends StatelessWidget {
             borderRole: CatchBorderRole.boundary,
             clipBehavior: Clip.antiAlias,
             child: organizerLogoUrl == null
-                ? Icon(CatchIcons.groupsOutlined, color: t.ink2)
+                ? Icon(CatchIcons.people, color: t.ink2)
                 : CatchNetworkImage(
                     organizerLogoUrl!,
                     errorBuilder: (_, _, _) =>
-                        Icon(CatchIcons.groupsOutlined, color: t.ink2),
+                        Icon(CatchIcons.people, color: t.ink2),
                   ),
           ),
         ),

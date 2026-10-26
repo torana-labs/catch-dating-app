@@ -29,7 +29,7 @@ void _registerExploreClubDetailTests() {
     );
     await _pumpClubUi(tester);
 
-    expect(find.byIcon(CatchIcons.locationOnOutlined), findsOneWidget);
+    expect(find.byIcon(CatchIcons.location), findsOneWidget);
     expect(find.text('HYD'), findsNothing);
     expect(find.text('Hyderabad'), findsOneWidget);
     final triggerSize = tester.getSize(find.byType(ExploreCityPicker));
@@ -389,7 +389,7 @@ void _registerExploreClubDetailTests() {
         findsOneWidget,
       );
 
-      await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
+      await tester.tap(find.byIcon(CatchIcons.back));
       await _pumpClubUi(tester);
 
       expect(find.text('Open hero'), findsOneWidget);
@@ -661,7 +661,7 @@ void _registerExploreClubDetailTests() {
 
     expect(find.byType(ClubPlaceholderCover), findsWidgets);
     expect(find.text('NC'), findsNothing);
-    expect(find.byIcon(CatchIcons.locationOnRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.location), findsOneWidget);
     // Index rows use the area/city/member line as the mono meta row; the
     // fallback artwork itself should not add a duplicate footer label.
     expect(find.text('SIGNAL HILL / MUMBAI · 1 FOLLOWER'), findsOneWidget);

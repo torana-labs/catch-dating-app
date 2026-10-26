@@ -267,7 +267,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             selected: {activityKind},
             onSelectionChanged: (selection) =>
                 widget.onActivityChanged!(selection.single),
-            icon: CatchIcons.eventOutlined,
+            icon: CatchIcons.event,
             iconColor: ActivityPalette.resolve(context, activityKind).accent,
           ),
         if (!widget.advancedOnly)
@@ -293,7 +293,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 ),
               );
             },
-            icon: CatchIcons.howToRegOutlined,
+            icon: CatchIcons.checkIn,
           ),
         if (selectedAdmissionPreset == EventAdmissionDefaultPreset.openCapacity)
           CatchField.toggle(
@@ -345,7 +345,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                           maxMen: _parseOptionalInt(_maxMenController),
                         ),
                       ),
-                      icon: CatchIcons.maleOutlined,
+                      icon: CatchIcons.male,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       error: _numericErrors['maxMen'],
@@ -381,7 +381,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                           maxWomen: _parseOptionalInt(_maxWomenController),
                         ),
                       ),
-                      icon: CatchIcons.femaleOutlined,
+                      icon: CatchIcons.female,
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       error: _numericErrors['maxWomen'],
@@ -452,7 +452,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                             ),
                           ),
                         ),
-                        icon: CatchIcons.trendingUpRounded,
+                        icon: CatchIcons.trend,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -495,7 +495,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                             ),
                           ),
                         ),
-                        icon: CatchIcons.priceChangeOutlined,
+                        icon: CatchIcons.pricing,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -539,7 +539,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             onChanged: (policyId) => _emit(
               (current) => current.copyWith(cancellationPolicyId: policyId),
             ),
-            icon: CatchIcons.ruleOutlined,
+            icon: CatchIcons.rules,
           ),
         ],
       ],

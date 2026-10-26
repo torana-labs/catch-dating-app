@@ -27,7 +27,7 @@ class HostClubLiveGuideScreen extends StatelessWidget {
               valueText: enabled
                   ? context.l10n.hostsHostClubEditTabValueOn
                   : context.l10n.hostsHostClubEditTabValueOff,
-              icon: CatchIcons.autoAwesomeOutlined,
+              icon: CatchIcons.magic,
             ),
           );
         }

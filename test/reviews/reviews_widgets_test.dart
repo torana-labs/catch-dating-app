@@ -90,7 +90,7 @@ void main() {
       expect(
         find.descendant(
           of: emptyFinder,
-          matching: find.byIcon(CatchIcons.rateReviewOutlined),
+          matching: find.byIcon(CatchIcons.feedback),
         ),
         findsNothing,
       );

@@ -1085,7 +1085,7 @@
         "lib/**",
         "packages/catch_tokens/**"
       ],
-      "instruction": "L0 generated scales, semantic roles, and component tokens live in packages/catch_tokens, whose only production dependency is Flutter. Shared foundations and branded font assets live under packages/catch_ui; its production dependencies are limited to Flutter, catch_tokens, Phosphor, and Skeletonizer 2.1.3. AppTheme only attaches the app activity palette to CatchTheme. Do not add new design primitives under generic lib/constants or a parallel top-level lib/theme folder.",
+      "instruction": "L0 generated scales, semantic roles, and component tokens live in packages/catch_tokens, whose only production dependency is Flutter. Shared foundations and branded font assets live under packages/catch_ui; its production dependencies are limited to Flutter, catch_tokens and Skeletonizer 2.1.3; icon glyphs come from the vendored font behind the icon role catalog. AppTheme only attaches the app activity palette to CatchTheme. Do not add new design primitives under generic lib/constants or a parallel top-level lib/theme folder.",
       "sunset_when": [
         "Legacy spacing compatibility usage is either migrated or intentionally documented"
       ],

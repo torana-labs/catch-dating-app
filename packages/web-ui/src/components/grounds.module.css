@@ -1,0 +1,65 @@
+/*
+ * A Website v2 ground (CAT-245 tokens) for any part that sits on one. Parts
+ * compose `.ground` and set data-ground; the theme ink roles inside resolve to
+ * the ground's ink and secondary ink, so library text on it clears AA.
+ */
+.ground {
+  --catch-theme-ink: var(--catch-on-ground-ink);
+  --catch-theme-ink2: var(--catch-on-ground-ink-secondary);
+  background: var(--catch-on-ground-fill);
+  color: var(--catch-theme-ink);
+}
+
+.ground[data-ground="white"] {
+  --catch-on-ground-fill: var(--catch-ground-white-fill);
+  --catch-on-ground-ink: var(--catch-ground-white-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-white-ink-secondary);
+}
+
+.ground[data-ground="paper"] {
+  --catch-on-ground-fill: var(--catch-ground-paper-fill);
+  --catch-on-ground-ink: var(--catch-ground-paper-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-paper-ink-secondary);
+}
+
+.ground[data-ground="ink"] {
+  --catch-on-ground-fill: var(--catch-ground-ink-fill);
+  --catch-on-ground-ink: var(--catch-ground-ink-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-ink-ink-secondary);
+}
+
+.ground[data-ground="coral"] {
+  --catch-on-ground-fill: var(--catch-ground-coral-fill);
+  --catch-on-ground-ink: var(--catch-ground-coral-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-coral-ink-secondary);
+}
+
+.ground[data-ground="pink"] {
+  --catch-on-ground-fill: var(--catch-ground-pink-fill);
+  --catch-on-ground-ink: var(--catch-ground-pink-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-pink-ink-secondary);
+}
+
+.ground[data-ground="yellow"] {
+  --catch-on-ground-fill: var(--catch-ground-yellow-fill);
+  --catch-on-ground-ink: var(--catch-ground-yellow-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-yellow-ink-secondary);
+}
+
+.ground[data-ground="mint"] {
+  --catch-on-ground-fill: var(--catch-ground-mint-fill);
+  --catch-on-ground-ink: var(--catch-ground-mint-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-mint-ink-secondary);
+}
+
+.ground[data-ground="indigo"] {
+  --catch-on-ground-fill: var(--catch-ground-indigo-fill);
+  --catch-on-ground-ink: var(--catch-ground-indigo-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-indigo-ink-secondary);
+}
+
+.ground[data-ground="magenta"] {
+  --catch-on-ground-fill: var(--catch-ground-magenta-fill);
+  --catch-on-ground-ink: var(--catch-ground-magenta-ink);
+  --catch-on-ground-ink-secondary: var(--catch-ground-magenta-ink-secondary);
+}

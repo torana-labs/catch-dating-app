@@ -185,7 +185,7 @@ class HostOfferPaymentDetailsSection extends StatelessWidget {
             body: DateFormat.yMMMd().add_jm().format(
               DateTime.fromMillisecondsSinceEpoch(millis),
             ),
-            icon: CatchIcons.scheduleOutlined,
+            icon: CatchIcons.time,
           ),
         if (mode == HostOfferPaymentMode.reusablePage) ...[
           CatchField.input(

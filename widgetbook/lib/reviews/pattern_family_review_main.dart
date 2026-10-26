@@ -300,13 +300,10 @@ class _BadgeStatusFamily extends StatelessWidget {
             runSpacing: CatchSpacing.s4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              CatchCountBadge(
-                count: 7,
-                child: Icon(CatchIcons.notificationsOutlined),
-              ),
+              CatchCountBadge(count: 7, child: Icon(CatchIcons.notifications)),
               CatchCountBadge(
                 count: 124,
-                child: Icon(CatchIcons.notificationsOutlined),
+                child: Icon(CatchIcons.notifications),
               ),
               CatchCountBadge.label(
                 semanticsLabel: catchPersonRowCopy(
@@ -353,7 +350,7 @@ class _BadgeStatusFamily extends StatelessWidget {
               CatchBadge.onDark(label: 'Starts in 2 hours'),
               CatchBadge.onDarkStatus(
                 label: 'Preview only',
-                icon: CatchIcons.visibilityOutlined,
+                icon: CatchIcons.show,
               ),
               CatchBadge.live(label: 'Live now'),
             ],
@@ -386,13 +383,13 @@ class _CompactControlFamily extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               CatchButton.floating(
-                icon: CatchIcons.mapOutlined,
+                icon: CatchIcons.map,
                 label: 'Map',
                 semanticsLabel: 'Show map',
                 onPressed: _noop,
               ),
               CatchButton.floating(
-                icon: CatchIcons.tuneRounded,
+                icon: CatchIcons.filters,
                 label: 'Filters',
                 count: 3,
                 onPressed: _noop,
@@ -412,7 +409,7 @@ class _CompactControlFamily extends StatelessWidget {
               _MeasuredControl(
                 label: '44 label',
                 child: CatchButton.floating(
-                  icon: CatchIcons.mapOutlined,
+                  icon: CatchIcons.map,
                   label: 'Map',
                   onPressed: _noop,
                 ),
@@ -420,7 +417,7 @@ class _CompactControlFamily extends StatelessWidget {
               _MeasuredControl(
                 label: '40',
                 child: CatchIconAction.icon(
-                  icon: CatchIcons.tuneRounded,
+                  icon: CatchIcons.filters,
                   size: CatchIconAction.navSize,
                   onPressed: _noop,
                 ),
@@ -428,7 +425,7 @@ class _CompactControlFamily extends StatelessWidget {
               _MeasuredControl(
                 label: '44',
                 child: CatchIconAction.icon(
-                  icon: CatchIcons.tuneRounded,
+                  icon: CatchIcons.filters,
                   onPressed: _noop,
                 ),
               ),
@@ -442,17 +439,14 @@ class _CompactControlFamily extends StatelessWidget {
             spacing: CatchSpacing.s5,
             runSpacing: CatchSpacing.s4,
             children: [
+              CatchIconAction.icon(icon: CatchIcons.filters, onPressed: _noop),
               CatchIconAction.icon(
-                icon: CatchIcons.tuneRounded,
-                onPressed: _noop,
-              ),
-              CatchIconAction.icon(
-                icon: CatchIcons.tuneRounded,
+                icon: CatchIcons.filters,
                 variant: CatchIconActionVariant.float,
                 onPressed: _noop,
               ),
               CatchIconAction.icon(
-                icon: CatchIcons.tuneRounded,
+                icon: CatchIcons.filters,
                 variant: CatchIconActionVariant.plain,
                 onPressed: _noop,
               ),
@@ -463,7 +457,7 @@ class _CompactControlFamily extends StatelessWidget {
           title: 'Counted icon action',
           note: 'The canonical icon action owns its typed count badge.',
           child: CatchIconAction.counted(
-            icon: CatchIcons.tuneRounded,
+            icon: CatchIcons.filters,
             count: 3,
             variant: CatchIconActionVariant.plain,
             tooltip: '3 active filters',
@@ -533,9 +527,9 @@ class _ProgressCueFamily extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      (label: 'Hold', icon: CatchIcons.panToolAltOutlined),
-      (label: 'Watch', icon: CatchIcons.visibilityOutlined),
-      (label: 'Move', icon: CatchIcons.boltRounded),
+      (label: 'Hold', icon: CatchIcons.tap),
+      (label: 'Watch', icon: CatchIcons.show),
+      (label: 'Move', icon: CatchIcons.instant),
     ];
     return _FamilySection(
       id: 'progress-cues · P1–P3',

@@ -30,8 +30,8 @@ enum EventSuccessRevealAssignmentKind {
   };
 
   IconData get icon => switch (this) {
-    EventSuccessRevealAssignmentKind.microPods => CatchIcons.groups2Outlined,
-    EventSuccessRevealAssignmentKind.rotations => CatchIcons.syncAltRounded,
-    EventSuccessRevealAssignmentKind.standings => CatchIcons.insightsOutlined,
+    EventSuccessRevealAssignmentKind.microPods => CatchIcons.people,
+    EventSuccessRevealAssignmentKind.rotations => CatchIcons.swap,
+    EventSuccessRevealAssignmentKind.standings => CatchIcons.insights,
   };
 }

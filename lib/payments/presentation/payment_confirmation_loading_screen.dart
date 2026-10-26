@@ -14,7 +14,9 @@ class PaymentConfirmationLoadingScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(child: CatchSkeleton.circle(size: CatchIcon.forceUpdate)),
+            Center(
+              child: CatchSkeleton.circle(size: CatchIconSize.forceUpdate),
+            ),
             gapH24,
             Center(
               child: CatchSkeleton.text(
@@ -54,7 +56,7 @@ class PaymentConfirmationLoadingScreen extends StatelessWidget {
               ],
             ),
             gapH20,
-            CatchSkeleton.card(height: CatchLayout.buttonLgHeight),
+            CatchSkeleton.card(height: CatchButtonTokens.largeHeight),
           ],
         ),
       ),

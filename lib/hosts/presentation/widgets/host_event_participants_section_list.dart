@@ -256,7 +256,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
                       'Disclosure-only QR presentation; no editable value is '
                       'submitted or persisted.',
                   body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
-                  icon: CatchIcons.qrCode2Rounded,
+                  icon: CatchIcons.qrCode,
                   child: HostEventCheckInQrSection(event: viewModel.event),
                 ),
               ],
@@ -370,21 +370,21 @@ class HostParticipationLifecycleSection extends StatelessWidget {
                         tooltip: context
                             .l10n
                             .hostsHostEventAttendancePanelLabelExport,
-                        icon: CatchIcons.iosShareRounded,
+                        icon: CatchIcons.share,
                         items: [
                           CatchActionMenuItem(
                             value: _HostReportExportAction.ops,
                             label: context
                                 .l10n
                                 .hostsHostEventAttendancePanelLabelOpsCsv,
-                            icon: CatchIcons.tableRowsOutlined,
+                            icon: CatchIcons.list,
                           ),
                           CatchActionMenuItem(
                             value: _HostReportExportAction.revenue,
                             label: context
                                 .l10n
                                 .hostsHostEventAttendancePanelLabelRevenueCsv,
-                            icon: CatchIcons.paymentsOutlined,
+                            icon: CatchIcons.payment,
                           ),
                         ],
                         onSelected: (action) {
@@ -402,7 +402,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
             ],
             if (!hasParticipants)
               CatchEmptyState(
-                icon: CatchIcons.groupsOutlined,
+                icon: CatchIcons.people,
                 title: rosterState.emptyTitle,
                 message: rosterState.emptyMessage,
                 variant: CatchEmptyStateVariant.inline,
@@ -449,7 +449,7 @@ class HostParticipationLifecycleSection extends StatelessWidget {
                       .l10n
                       .hostsHostEventAttendancePanelTitleEventReport,
                   body: reportSummary.summary(context.l10n),
-                  icon: CatchIcons.receiptLongOutlined,
+                  icon: CatchIcons.receipt,
                 ),
               ),
               if (mutationState.reportExportError != null) ...[

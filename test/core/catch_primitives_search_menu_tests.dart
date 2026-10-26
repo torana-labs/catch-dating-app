@@ -25,7 +25,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
     );
 
     expect(find.byIcon(CatchIcons.search), findsOneWidget);
-    expect(find.byIcon(CatchIcons.clearCircle), findsOneWidget);
+    expect(find.byIcon(CatchIcons.clear), findsOneWidget);
     expect(
       tester.widget<TextField>(find.byType(TextField)).controller!.text,
       'tempo',
@@ -46,7 +46,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
     await tester.pump();
     expect(submitted, 'asha');
 
-    await tester.tap(find.byIcon(CatchIcons.clearCircle));
+    await tester.tap(find.byIcon(CatchIcons.clear));
     await tester.pump();
     expect(query, isEmpty);
     expect(
@@ -73,17 +73,17 @@ void _registerCatchPrimitivesSearchMenuTests() {
     );
 
     expect(find.byIcon(CatchIcons.close), findsNothing);
-    expect(find.byIcon(CatchIcons.clearCircle), findsNothing);
+    expect(find.byIcon(CatchIcons.clear), findsNothing);
 
     await tester.enterText(find.byType(TextField), 'waiver');
     await tester.pump();
-    expect(find.byIcon(CatchIcons.clearCircle), findsOneWidget);
+    expect(find.byIcon(CatchIcons.clear), findsOneWidget);
 
-    await tester.tap(find.byIcon(CatchIcons.clearCircle));
+    await tester.tap(find.byIcon(CatchIcons.clear));
     await tester.pump();
     expect(query, isEmpty);
     expect(find.byIcon(CatchIcons.close), findsNothing);
-    expect(find.byIcon(CatchIcons.clearCircle), findsNothing);
+    expect(find.byIcon(CatchIcons.clear), findsNothing);
   });
 
   testWidgets(
@@ -172,9 +172,9 @@ void _registerCatchPrimitivesSearchMenuTests() {
 
       await tester.pump(CatchMotion.base);
       expect(find.byType(TextField), findsOneWidget);
-      expect(find.byIcon(CatchIcons.clearCircle), findsOneWidget);
+      expect(find.byIcon(CatchIcons.clear), findsOneWidget);
 
-      await tester.tap(find.byIcon(CatchIcons.clearCircle));
+      await tester.tap(find.byIcon(CatchIcons.clear));
       await tester.pump();
       expect(query, isEmpty);
       expect(closed, isFalse);
@@ -200,14 +200,14 @@ void _registerCatchPrimitivesSearchMenuTests() {
               value: 'owner',
               label: 'Owner club',
               sublabel: 'OWNER',
-              icon: CatchIcons.hostBadge,
+              icon: CatchIcons.host,
               selected: true,
               variant: CatchMenuItemVariant.choice,
             ),
             CatchMenuItem(
               value: 'delete',
               label: 'Delete club',
-              icon: CatchIcons.deleteOutline,
+              icon: CatchIcons.delete,
               danger: true,
             ),
           ],
@@ -446,12 +446,12 @@ void _registerCatchPrimitivesSearchMenuTests() {
             CatchActionMenuItem(
               value: 'active',
               label: 'Open active club',
-              icon: CatchIcons.hostBadge,
+              icon: CatchIcons.host,
             ),
             CatchActionMenuItem(
               value: 'remove',
               label: 'Remove host',
-              icon: CatchIcons.deleteOutline,
+              icon: CatchIcons.delete,
               isDestructive: true,
             ),
           ],

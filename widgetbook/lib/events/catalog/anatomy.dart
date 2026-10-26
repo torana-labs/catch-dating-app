@@ -85,7 +85,7 @@ Widget eventDetailTicketStubCellStates(BuildContext context) {
                     label: 'When',
                     value: 'Wed, Jun 24',
                     detail: '6:30 AM-8:15 AM',
-                    icon: CatchIcons.calendarAdd,
+                    icon: CatchIcons.addToCalendar,
                   ),
                   showDivider: false,
                 ),
@@ -96,7 +96,7 @@ Widget eventDetailTicketStubCellStates(BuildContext context) {
                     label: 'Where',
                     value: 'Carter Road Jetty',
                     detail: 'Bandra West',
-                    icon: CatchIcons.locationOnOutlined,
+                    icon: CatchIcons.location,
                   ),
                   showDivider: true,
                 ),
@@ -116,11 +116,7 @@ Widget eventDetailTicketStubCellStates(BuildContext context) {
 )
 Widget eventDetailHairlineListStates(BuildContext context) {
   final activity = ActivityPalette.resolve(context, ActivityKind.socialRun);
-  final icons = [
-    CatchIcons.calendarTodayOutlined,
-    CatchIcons.groupOutlined,
-    CatchIcons.receiptLongOutlined,
-  ];
+  final icons = [CatchIcons.date, CatchIcons.people, CatchIcons.receipt];
   final titles = ['Arrival', 'Group rhythm', 'Cancellation'];
   final bodies = [
     'Host check-in starts ten minutes before the run.',

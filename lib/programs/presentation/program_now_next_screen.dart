@@ -114,7 +114,7 @@ class ProgramNowNextScreen extends ConsumerWidget {
       if (functions.isEmpty)
         CatchSectionListItem(
           child: CatchEmptyState(
-            icon: CatchIcons.eventOutlined,
+            icon: CatchIcons.event,
             title: context.l10n.programsNowNextEmptyTitle,
             message: context.l10n.programsNowNextEmptyMessage,
           ),
@@ -162,7 +162,7 @@ class ProgramNowNextScreen extends ConsumerWidget {
       subtitle: subtitle,
       child: functions.isEmpty
           ? CatchEmptyState(
-              icon: CatchIcons.eventOutlined,
+              icon: CatchIcons.event,
               message: context.l10n.programsNowNextBucketEmpty,
               variant: CatchEmptyStateVariant.inline,
             )
@@ -194,15 +194,13 @@ class ProgramFunctionNowNextRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CatchFieldRow.standard(
-    leading: Icon(
-      live ? CatchIcons.playCircleOutlineRounded : CatchIcons.scheduleOutlined,
-    ),
+    leading: Icon(live ? CatchIcons.play : CatchIcons.time),
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchText(fn.name, variant: CatchTextVariant.sectionTitle),
         CatchMetaRow(
-          icon: CatchIcons.clock,
+          icon: CatchIcons.time,
           label:
               '${AppTimeFormatters.time(fn.startsAt)} – '
               '${AppTimeFormatters.time(fn.endsAt)}'
@@ -228,7 +226,7 @@ class ProgramFunctionNowNextRow extends StatelessWidget {
         ),
       ],
     ),
-    trailing: Icon(CatchIcons.chevronRightRounded),
+    trailing: Icon(CatchIcons.disclosure),
     onTap: () => context.pushNamed(
       Routes.hostWorkDoorScreen.name,
       pathParameters: {'programId': programId, 'functionId': fn.functionId},

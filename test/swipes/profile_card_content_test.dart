@@ -29,7 +29,7 @@ void main() {
       final content = ProfileCardContent.fromProfile(profile, l10n: _l10n);
 
       final hasDistance = content.attributes.any(
-        (a) => a.icon == CatchIcons.nearMeOutlined,
+        (a) => a.icon == CatchIcons.nearMe,
       );
       expect(hasDistance, isFalse);
     });

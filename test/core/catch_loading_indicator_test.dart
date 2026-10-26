@@ -17,7 +17,7 @@ void main() {
         ),
       ),
     );
-    final glyph = tester.widget<Icon>(find.byIcon(CatchIcons.fieldSpinner));
+    final glyph = tester.widget<Icon>(find.byIcon(CatchIcons.loading));
     expect(glyph.size, CatchFieldTokens.actionSpinnerExtent);
     expect(glyph.color, Colors.blue);
     expect(

@@ -25,7 +25,7 @@ void main() {
                 onActivate: () => rowTaps += 1,
                 secondaryAction: CatchFieldSecondaryAction.command(
                   label: 'Message Jordan Ellis',
-                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  icon: CatchIcons.chat,
                   onActivate: () => messageTaps += 1,
                 ),
                 content: CatchPersonLayout(
@@ -38,7 +38,7 @@ void main() {
                     CatchRowBadge(
                       label: 'Owner verified',
                       tone: CatchBadgeTone.success,
-                      icon: CatchIcons.sealCheck,
+                      icon: CatchIcons.verified,
                     ),
                   ],
                   supportingText: 'HOSTING SINCE MAY 2026 · VIJAY NAGAR',
@@ -55,11 +55,11 @@ void main() {
       expect(avatar.colors?.accent, colors.accent);
       expect(avatar.colors?.deep, colors.deep);
       expect(avatar.colors?.soft, colors.soft);
-      expect(find.byIcon(CatchIcons.sealCheck), findsOneWidget);
-      expect(find.byIcon(CatchIcons.chatBubbleOutlineRounded), findsOneWidget);
-      expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.verified), findsOneWidget);
+      expect(find.byIcon(CatchIcons.chat), findsOneWidget);
+      expect(find.byIcon(CatchIcons.disclosure), findsOneWidget);
 
-      await tester.tap(find.byIcon(CatchIcons.chatBubbleOutlineRounded));
+      await tester.tap(find.byIcon(CatchIcons.chat));
       await tester.pump();
 
       expect(messageTaps, 1);
@@ -111,7 +111,7 @@ void main() {
               body: CatchField.read(
                 secondaryAction: CatchFieldSecondaryAction.command(
                   label: 'Écrire à Mira',
-                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  icon: CatchIcons.chat,
                   onActivate: () {},
                 ),
                 content: CatchPersonLayout(
@@ -121,7 +121,7 @@ void main() {
                     CatchRowBadge(
                       label: 'Owner verified',
                       tone: CatchBadgeTone.success,
-                      icon: CatchIcons.sealCheck,
+                      icon: CatchIcons.verified,
                     ),
                   ],
                 ),
@@ -131,7 +131,7 @@ void main() {
         );
         final avatar = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
         expect(avatar.colors, same(colors));
-        final mark = tester.widget<Icon>(find.byIcon(CatchIcons.sealCheck));
+        final mark = tester.widget<Icon>(find.byIcon(CatchIcons.verified));
         expect(
           mark.color,
           CatchTokens.of(tester.element(find.byType(CatchAvatar))).positiveText,
@@ -164,8 +164,8 @@ void main() {
       ),
     );
 
-    expect(find.byIcon(CatchIcons.chatBubbleOutlineRounded), findsNothing);
-    expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
-    expect(find.byIcon(CatchIcons.sealCheck), findsNothing);
+    expect(find.byIcon(CatchIcons.chat), findsNothing);
+    expect(find.byIcon(CatchIcons.disclosure), findsNothing);
+    expect(find.byIcon(CatchIcons.verified), findsNothing);
   });
 }

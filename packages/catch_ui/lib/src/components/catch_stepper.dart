@@ -81,7 +81,7 @@ class CatchStepper extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           CatchStepperRepeatButton(
-            icon: CatchIcons.removeRounded,
+            icon: CatchIcons.remove,
             semanticLabel: decreaseSemanticLabel,
             enabled: decrease != null,
             onStep: () => decrease?.call(),
@@ -101,7 +101,7 @@ class CatchStepper extends StatelessWidget {
           ),
           SizedBox(width: CatchStepperRepeatButton.layoutGap),
           CatchStepperRepeatButton(
-            icon: CatchIcons.addRounded,
+            icon: CatchIcons.add,
             semanticLabel: increaseSemanticLabel,
             enabled: increase != null,
             onStep: () => increase?.call(),

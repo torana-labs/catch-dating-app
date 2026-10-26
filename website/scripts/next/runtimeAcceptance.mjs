@@ -5,6 +5,9 @@ import {initializeApp} from "firebase-admin/app";
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {chromium} from "playwright";
 import {organizerFixture} from "./organizerFixture.mjs";
+import {sharedCachePage} from "./deployedSmoke.mjs";
+import {PUBLIC_PAGE_CACHE_CONTROL} from "../../src/app/next/publicPageCache.ts";
+import {organiserDirectoryCopy} from "../../src/content/organiserDirectory.ts";
 
 // Writes are hard-bound to the task's isolated emulator; never a live project.
 if (process.env.FIRESTORE_EMULATOR_HOST !== "127.0.0.1:8765") throw new Error("Isolated emulator required");
@@ -34,7 +37,11 @@ async function check(path, status, needle) {
   const text = await response.text();
   assert.equal(response.status, status, path);
   if (needle) assert(text.includes(needle), `${path} missing ${needle}`);
-  if (status === 200 && path !== "/robots.txt" && !path.startsWith("/.well-known/")) assert.match(response.headers.get("cache-control"), /no-store/);
+  if (status === 200 && path !== "/robots.txt" && !path.startsWith("/.well-known/")) {
+    if (sharedCachePage(new URL(path, origin).pathname)) assert.equal(response.headers.get("cache-control"), PUBLIC_PAGE_CACHE_CONTROL, path);
+    else assert.match(response.headers.get("cache-control"), /no-store/, path);
+  } else assert.doesNotMatch(response.headers.get("cache-control") ?? "", /s-maxage/, path);
+  assert.equal(response.headers.get("x-catch-public-page"), null, `${path} leaked the cache mark`);
   results.push({path, status});
   return {response, text};
 }
@@ -109,7 +116,7 @@ try {
   await page.setViewportSize({width: 390, height: 844});
   await page.screenshot({path: "/tmp/catch-nextjs-organizer-mobile.png"});
   await page.goto(origin + "/organizers/");
-  const field = page.getByPlaceholder("Search clubs, venues, hosts…");
+  const field = page.getByPlaceholder(organiserDirectoryCopy.placeholder);
   await field.fill("no-matching-organizer-proof");
   await page.locator('a[href="/organizers/next-proof/"]').first().waitFor({state: "hidden"});
   assert(new URL(page.url()).searchParams.get("q")?.includes("no-matching"));
@@ -124,7 +131,8 @@ try {
   const close = dialog.getByRole("button", {name: "Close", exact: true});
   assert(await close.evaluate(node => node === document.activeElement));
   await page.keyboard.press("Shift+Tab");
-  assert(await dialog.getByRole("link", {name: "Apply for a pilot", exact: true}).evaluate(node => node === document.activeElement));
+  // The trap wraps backwards from Close to the dialog's last link.
+  assert(await dialog.getByRole("link").last().evaluate(node => node === document.activeElement));
   await page.keyboard.press("Tab");
   assert(await close.evaluate(node => node === document.activeElement));
   await page.keyboard.press("Escape");
