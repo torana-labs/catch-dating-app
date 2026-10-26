@@ -18,6 +18,7 @@ function responder(base, change = () => {}) {
     if (path === "/robots.txt") body = live ? "User-agent: *\nAllow: /" : "User-agent: *\nDisallow: /";
     if (path === "/sitemap.xml") body = "<url><loc>https://catchdates.com/</loc></url>";
     if (path === "/.well-known/apple-app-site-association") body = JSON.stringify({applinks: {}});
+    if (path.startsWith("/f/")) body = '<title>Organizer form | Catch</title><link rel="canonical" href="https://catchdates.com/f/">';
     const result = {body, status, headers}; change(path, result);
     return new Response(result.body, {status: result.status, headers: result.headers});
   };
@@ -52,6 +53,16 @@ test("deployed acceptance rejects stale builds, bad status, indexing leaks and b
   ]) await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, change)}));
   await assert.rejects(verifyDeployedWebsite("https://unrelated.example", sourceSha));
   await assert.rejects(verifyDeployedWebsite("https://catchdates.com", sourceSha, {fetchImpl: responder("https://catchdates.com", (path, result) => {result.headers["x-robots-tag"] = "noindex";})}));
+});
+
+test("the preview proves private shell metadata; promotion and live stay release-neutral", async () => {
+  const candidate = preview.replace("next-release", "next-candidate");
+  const bare = (path, result) => {if (path.startsWith("/f/")) result.body = "<title>Catch</title>";};
+  await assert.rejects(verifyDeployedWebsite(candidate, sourceSha, {fetchImpl: responder(candidate, bare)}), /route-family title/u);
+  await assert.rejects(verifyDeployedWebsite(candidate, sourceSha, {fetchImpl: responder(candidate,
+    (path, result) => {if (path.startsWith("/f/")) result.body = "<title>Organizer form | Catch</title>";})}), /canonical/u);
+  await verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, bare)});
+  await verifyDeployedWebsite("https://catchdates.com", sourceSha, {fetchImpl: responder("https://catchdates.com", bare)});
 });
 
 test("promotion checks the preview's release, which main may have moved past", () => {

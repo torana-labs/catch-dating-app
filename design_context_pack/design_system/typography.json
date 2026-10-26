@@ -27,8 +27,8 @@
     "color": "Base UI is paper and ink; chroma is reserved for activity meaning."
   },
   "registry": {
-    "publicStaticTextStyleMethods": 49,
-    "covered": 47,
+    "publicStaticTextStyleMethods": 50,
+    "covered": 48,
     "excluded": 2
   },
   "excluded": {
@@ -583,6 +583,49 @@
             "light": "#16140F",
             "dark": "#F4F0E8"
           }
+        }
+      }
+    },
+    "avatarMonogram": {
+      "role": "data",
+      "casePolicy": "uppercase-initials",
+      "parametric": true,
+      "samples": {
+        "12": {
+          "role": "data",
+          "family": "Roboto",
+          "size": 12.0,
+          "weight": 600,
+          "lineHeight": 1.0,
+          "tracking": 0.0,
+          "fontStyle": "normal",
+          "defaultColor": {
+            "light": "#141114",
+            "dark": "#141114"
+          }
+        },
+        "30": {
+          "role": "data",
+          "family": "Archivo",
+          "size": 30.0,
+          "weight": 760,
+          "lineHeight": 1.0,
+          "tracking": -0.6,
+          "fontStyle": "normal",
+          "defaultColor": {
+            "light": "#141114",
+            "dark": "#141114"
+          },
+          "fontVariations": [
+            {
+              "axis": "wght",
+              "value": 760.0
+            },
+            {
+              "axis": "wdth",
+              "value": 78.0
+            }
+          ]
         }
       }
     },

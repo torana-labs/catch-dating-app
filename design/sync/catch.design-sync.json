@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-10-25",
+  "updated": "2026-10-26",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "0afa4a6dc9ed381fcbea97ced2b41cc2ce780fc29b62def788932d0693ebbf6b",
+  "sourceDigest": "adf54c1fd15f43cc9289640959c66e5c789bf88e11bf77b4ffaca01c602b6778",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "0afa4a6dc9ed381fcbea97ced2b41cc2ce780fc29b62def788932d0693ebbf6b",
-    "contractDigest": "0afa4a6dc9ed381fcbea97ced2b41cc2ce780fc29b62def788932d0693ebbf6b"
+    "digest": "adf54c1fd15f43cc9289640959c66e5c789bf88e11bf77b4ffaca01c602b6778",
+    "contractDigest": "adf54c1fd15f43cc9289640959c66e5c789bf88e11bf77b4ffaca01c602b6778"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "588e8374176e7de5e21e02c5c1fad6450713aa5dec53b8b2d4ce0abe2e086c34",
+    "handoffRequestDigest": "837ea8ec2d0519e0eb39e98459ce85b1d0ec0a94d8e5bd6db56f2816e5ba2814",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,7 +461,7 @@
     "claudeAllowed": 70,
     "reactImplementationStates": {
       "headless-control": 8,
-      "styled": 7
+      "styled": 8
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -2247,9 +2247,9 @@
       "conceptId": "catch.person_avatar",
       "dartSymbol": "CatchAvatar",
       "dartFile": "packages/catch_ui/lib/src/components/catch_avatar.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchAvatar",
+      "reactFile": "packages/web-ui/src/components/CatchAvatar.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Avatar",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2265,8 +2265,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 11,
-      "figmaExpectedPropertyDigest": "28a42e9b4d8a370319f42f0b3c87ecca07849083ca80b270b6231c62a35dbab3",
+      "figmaExpectedPropertyCount": 12,
+      "figmaExpectedPropertyDigest": "e21f5ae62f779793c98b347ce9cbc8dd917d362ad3126e1c24aa794cd40762cc",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2274,7 +2274,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Avatar",
       "claudeAllowed": true,
-      "contractDigest": "28b94621dd3bda25d10215c8f688b3354c202d0d5b03b9c8f75de06945d464ab"
+      "contractDigest": "fe48ecc16b4a046a3f8a70fba3ecd293b900af5088f9c1844387e94d27e2315a"
     },
     {
       "contractId": "catch.event_card",
