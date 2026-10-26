@@ -50,7 +50,8 @@ describe("Event page sections", () => {
     }
     expect(screen.queryByText(/going/)).toBeNull();
     // The poster repeats the page's own words, so only the title heading names the event.
-    expect(screen.queryByRole("img")).toBeNull();
+    expect(screen.queryByRole("img", {name: "Photo for Half-marathon training: 15K"})).toBeNull();
+    expect(screen.getByRole("img", {name: "Verified organiser"})).toBeTruthy();
     expect(screen.getByRole("heading", {level: 1}).textContent).toBe("Half-marathon training: 15K");
     // The poster and the When fact both carry the date.
     expect(screen.getAllByText("Sun 22 Nov")).toHaveLength(2);

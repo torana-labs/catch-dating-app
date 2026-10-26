@@ -8,6 +8,7 @@ import {
   CatchGrid,
   CatchGroundCard,
   CatchHeroImage,
+  CatchIcon,
   CatchPreviewCard,
   CatchReviewItem,
   CatchSectionList,
@@ -26,10 +27,13 @@ export function EventPageHeader({view, onShare}: {view: EventPageView; onShare: 
       mainAxisAlignment="spaceBetween" size="related">
       <CatchButton href={view.organizer.path} label={view.organizer.name} onPressed={() => undefined}
         recipe="command" semanticsLabel={copy.back(view.organizer.name)} leading={
-          <CatchAvatar ground={view.accent} initials={view.organizer.initials} name={view.organizer.name}
-            recipe="monogram" size={34} />
+          <CatchGap crossAxisAlignment="center" direction="horizontal" size="inline">
+            <CatchIcon icon="back" />
+            <CatchAvatar ground={view.accent} initials={view.organizer.initials} name={view.organizer.name}
+              recipe="monogram" size={34} />
+          </CatchGap>
         } />
-      <CatchButton label={copy.share} onPressed={onShare} size="md" variant="secondary" />
+      <CatchButton label={copy.share} leading={<CatchIcon icon="share" />} onPressed={onShare} size="md" variant="secondary" />
     </CatchGap>
   );
 }
@@ -80,10 +84,10 @@ function EventIntro({view}: {view: EventPageView}) {
       <CatchGap size="related">
         <CatchText as="span" color={view.accent} variant="supportingStrong">{view.kindLabel}</CatchText>
         <CatchText as="h1" id="event-title" variant="displayXl">{view.title}</CatchText>
-        <CatchGap crossAxisAlignment="baseline" direction="horizontal" size="inline" wrap>
+        <CatchGap crossAxisAlignment="center" direction="horizontal" size="inline" wrap>
           <CatchText as="span" variant="bodyM">{copy.hostedBy}</CatchText>
           <CatchButton href={host.path} label={host.name} onPressed={() => undefined} recipe="text" tone="neutral" />
-          {host.verified ? <CatchText as="span" color={view.accent} variant="supportingStrong">{copy.verified}</CatchText> : null}
+          {host.verified ? <CatchIcon icon="verified" semanticLabel={copy.verified} tone="primary" /> : null}
           {host.rating ? <CatchText as="span" color="ink2" variant="bodyM">{host.rating}</CatchText> : null}
         </CatchGap>
       </CatchGap>
@@ -130,7 +134,7 @@ function EventWhere({where, mapImageUrl, onMapsClick}: {
   return (
     <Section id="event-where" title={copy.where.title} aside={
       <CatchButton href={where.mapsHref} label={copy.where.openMaps} newTab onPressed={onMapsClick}
-        recipe="command" trailing="↗" />
+        recipe="command" trailing={<CatchIcon icon="openExternal" />} />
     }>
       {where.map && mapImageUrl ? (
         <MapPreview coordinate={where.map} fallbackLabel={where.map.alt} framed imageUrl={mapImageUrl} />
@@ -241,7 +245,7 @@ export function EventBookingCard({view, catchEntry, externalAction, onExternalCl
         {!booking.open ? <CatchText color="ink2" variant="bodyM">{copy.booking.closed}</CatchText> :
           booking.kind === "catch" ? catchEntry : externalAction(
             <CatchButton fullWidth href={booking.url} label={copy.booking.externalAction(booking.label)} newTab
-              onPressed={onExternalClick} trailing="↗" />,
+              onPressed={onExternalClick} trailing={<CatchIcon icon="openExternal" />} />,
             copy.booking.externalNote(booking.label),
           )}
       </CatchGap>
