@@ -57,6 +57,8 @@ describe("CatchSheet parity", () => {
     expect(header).toContain("branded ? gapH2 : gapH6");
     expect(sheet).toContain("CatchButton.sheet(\n            label: _filterCloseLabel,");
     expect(sheetTs).toContain('recipe="sheet" role="dismiss"');
+    expect(sheet).toContain("CatchBadge.functional(label: badge!, tone: badgeTone)");
+    expect(sheetTs).toContain('<CatchBadge label={badge} recipe="functional" tone={badgeTone} />');
   });
 });
 

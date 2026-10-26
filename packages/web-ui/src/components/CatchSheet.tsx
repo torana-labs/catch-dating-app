@@ -1,13 +1,12 @@
 "use client";
 
 import {type ReactNode, useEffect, useId, useRef} from "react";
+import {CatchBadge, type CatchBadgeTone} from "./CatchBadge";
 import {CatchButton} from "./CatchButton";
 import {CatchText} from "./CatchText";
 import styles from "./CatchSheet.module.css";
 
 export type CatchSheetMode = "content" | "scrollable";
-/** Flutter `CatchBadgeTone`, for the header's functional badge. */
-export type CatchBadgeTone = "neutral" | "brand" | "success" | "warning" | "danger" | "gold" | "affinity";
 
 interface CatchSheetBase {
   open: boolean;
@@ -78,7 +77,7 @@ export function CatchSheet(props: CatchSheetProps) {
     if (!open && element.open) element.close();
   }, [open]);
 
-  const right = badge ? <span className={styles.badge} data-tone={badgeTone}>{badge}</span> : trailing;
+  const right = badge ? <CatchBadge label={badge} recipe="functional" tone={badgeTone} /> : trailing;
   const hasHeader = Boolean(title) || glyph != null || right != null;
   return (
     <dialog

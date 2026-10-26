@@ -98,27 +98,6 @@
   flex: none;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  height: 24px;
-  padding: 0 var(--catch-space-s2);
-  border-radius: var(--catch-radius-xs);
-  background: var(--catch-theme-raised);
-  color: var(--catch-theme-ink2);
-  font-family: var(--catch-font-mono), ui-monospace, monospace;
-  font-size: var(--catch-typography-web-status-size);
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.badge[data-tone="brand"] { color: var(--catch-theme-primary); }
-.badge[data-tone="success"] { color: var(--catch-theme-positive-text); }
-.badge[data-tone="warning"],
-.badge[data-tone="gold"] { color: var(--catch-theme-attention-text); }
-.badge[data-tone="danger"] { color: var(--catch-theme-danger); }
-
 .body { min-width: 0; }
 
 .footer { margin-top: var(--catch-space-s4); }

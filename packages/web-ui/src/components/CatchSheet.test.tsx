@@ -40,7 +40,8 @@ describe("CatchSheet", () => {
 
   it("shows a badge in place of the trailing slot and drops the grabber on request", () => {
     const {container} = render(<CatchSheet badge="New" badgeTone="brand" grabber={false} label="Pace groups" onClose={vi.fn()} open>Body</CatchSheet>);
-    expect(screen.getByText("New").dataset.tone).toBe("brand");
+    expect(screen.getByText("New").closest("[data-recipe]")!.getAttribute("data-recipe")).toBe("functional");
+    expect(screen.getByText("New").closest("[data-recipe]")!.getAttribute("data-tone")).toBe("brand");
     expect(container.querySelector("dialog")!.getAttribute("aria-label")).toBe("Pace groups");
     expect(container.querySelectorAll("dialog [aria-hidden]")).toHaveLength(0);
   });
