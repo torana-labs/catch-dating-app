@@ -23,7 +23,7 @@ void main() {
       CatchTextStyles.displayXs(titleContext).fontSize,
     );
     expect(title.style?.fontStyle, isNot(FontStyle.italic));
-    expect(find.byIcon(CatchIcons.forwardArrow), findsOneWidget);
+    expect(find.byIcon(CatchIcons.forward), findsOneWidget);
 
     await pumpTestApp(
       tester,
@@ -35,7 +35,7 @@ void main() {
       ),
     );
 
-    expect(find.byIcon(CatchIcons.forwardArrow), findsNothing);
+    expect(find.byIcon(CatchIcons.forward), findsNothing);
   });
 
   testWidgets('renders every approved recipe', (tester) async {

@@ -360,7 +360,7 @@ void main() {
           expect(
             find.descendant(
               of: chip(label),
-              matching: find.byIcon(CatchIcons.checkRounded),
+              matching: find.byIcon(CatchIcons.check),
             ),
             findsOneWidget,
           );

@@ -17,7 +17,7 @@ Widget profileInlinePromptEntryEditorStates(BuildContext context) {
   final prompt = widgetbookProfileViewer.profilePrompts.first;
   Widget promptEditor({required bool expanded}) {
     return ProfileInlinePromptEntryEditor(
-      icon: CatchIcons.formatQuoteRounded,
+      icon: CatchIcons.quote,
       label: profilePromptDefinition(prompt.promptId).title,
       currentAnswer: prompt.answer,
       currentPromptId: prompt.promptId,

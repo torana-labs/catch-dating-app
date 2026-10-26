@@ -165,7 +165,7 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
                   message: context.l10n.programsSnapshotBanner(
                     time: AppTimeFormatters.time(result.snapshotAt!),
                   ),
-                  icon: CatchIcons.wifiOffRounded,
+                  icon: CatchIcons.offline,
                   tone: CatchBannerTone.warning,
                 ),
               ),
@@ -257,7 +257,7 @@ class ProgramDispatchGroupTile extends StatelessWidget {
           gapH8,
           CatchMetaRow(icon: CatchIcons.hotel, label: group.destinationLabel),
           CatchMetaRow(
-            icon: CatchIcons.group,
+            icon: CatchIcons.people,
             label: context.l10n.programsDispatchGroupMeta(
               passengers: group.passengers,
               luggage: group.luggageUnits,
@@ -266,7 +266,7 @@ class ProgramDispatchGroupTile extends StatelessWidget {
           ),
           if (group.dispatchBy != null)
             CatchMetaRow(
-              icon: CatchIcons.clock,
+              icon: CatchIcons.time,
               label: group.waitOverdue
                   ? context.l10n.programsDispatchWaitOverdue(
                       time: AppTimeFormatters.time(group.dispatchBy!),
@@ -522,7 +522,7 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
               message: appErrorMessage(_error!, l10n: context.l10n),
             ),
           CatchMetaRow(
-            icon: CatchIcons.group,
+            icon: CatchIcons.people,
             label: context.l10n.programsDispatchGroupMeta(
               passengers: _passengers,
               luggage: _luggageUnits,
@@ -597,7 +597,7 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
                   .toList(growable: false);
               if (active.isEmpty) {
                 return CatchMetaRow(
-                  icon: CatchIcons.businessOutlined,
+                  icon: CatchIcons.business,
                   label: context.l10n.programsDispatchNoVendors,
                 );
               }
@@ -617,7 +617,7 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
             },
             loading: CatchLoadingIndicator.new,
             error: (_, _) => CatchMetaRow(
-              icon: CatchIcons.warningAmberRounded,
+              icon: CatchIcons.warning,
               label: context.l10n.programsDispatchVendorsUnavailable,
             ),
           ),
@@ -685,7 +685,7 @@ List<CatchSectionListItem> _planSections(
             children: [
               for (final item in plan.unassigned)
                 CatchFieldRow.standard(
-                  leading: Icon(CatchIcons.warningAmberRounded),
+                  leading: Icon(CatchIcons.warning),
                   body: CatchText(
                     _unassignedReasonText(context, item.reason),
                     variant: CatchTextVariant.bodyM,

@@ -51,23 +51,23 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
           ),
       details: [
         CelebrationDetail(
-          icon: CatchIcons.calendarMonthOutlined,
+          icon: CatchIcons.date,
           label: context.l10n.eventsEventJoinedCelebrationScreenLabelWhen,
           value: '${event.longDateLabel} · ${event.timeRangeLabel}',
         ),
         CelebrationDetail(
-          icon: CatchIcons.locationOnOutlined,
+          icon: CatchIcons.location,
           label: context.l10n.eventsEventJoinedCelebrationScreenLabelWhere,
           value: event.locationName,
         ),
         CelebrationDetail(
-          icon: CatchIcons.directionsRunRounded,
+          icon: CatchIcons.activity,
           label: context.l10n.eventsEventJoinedCelebrationScreenLabelEvent,
           value: event.activitySummaryLabel,
         ),
         if (paymentData != null) ...[
           CelebrationDetail(
-            icon: CatchIcons.paymentsOutlined,
+            icon: CatchIcons.payment,
             label: context.l10n.eventsEventJoinedCelebrationScreenLabelPaid,
             value: EventFormatters.priceInPaise(
               paymentData.amountInPaise,
@@ -75,7 +75,7 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
             ),
           ),
           CelebrationDetail(
-            icon: CatchIcons.receiptLongOutlined,
+            icon: CatchIcons.receipt,
             label:
                 context.l10n.eventsEventJoinedCelebrationScreenLabelPaymentId,
             value: paymentData.paymentId,
@@ -89,7 +89,7 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
         key: viewEventKey,
         label: context.l10n.eventsEventJoinedCelebrationScreenLabelViewEvent,
         onPressed: onViewEvent,
-        icon: Icon(CatchIcons.directionsRunRounded),
+        icon: Icon(CatchIcons.activity),
       ),
       secondaryAction: CelebrationAction(
         key: backHomeKey,

@@ -246,7 +246,7 @@ class ReviewsPreviewSection extends StatelessWidget {
 
         if (reviews.isEmpty)
           CatchEmptyState(
-            icon: CatchIcons.rateReviewOutlined,
+            icon: CatchIcons.feedback,
             title: emptyPresentation == ReviewsEmptyPresentation.inline
                 ? null
                 : context.l10n.reviewsReviewsSectionTitleNoReviewsYet,
@@ -364,7 +364,7 @@ class ReviewCard extends StatelessWidget {
                     key: ReviewKeys.editReviewButton(review.id),
                     onPressed: onEdit!,
                     child: Icon(
-                      CatchIcons.editOutlined,
+                      CatchIcons.edit,
                       size: CatchIconSize.xs,
                       color: t.primary,
                     ),
@@ -381,7 +381,7 @@ class ReviewCard extends StatelessWidget {
                     key: ReviewKeys.respondToReviewButton(review.id),
                     onPressed: onRespond!,
                     child: Icon(
-                      CatchIcons.rateReviewOutlined,
+                      CatchIcons.feedback,
                       size: CatchIconSize.xs,
                       color: t.primary,
                     ),

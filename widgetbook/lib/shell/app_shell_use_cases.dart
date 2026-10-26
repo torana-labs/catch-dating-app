@@ -180,27 +180,27 @@ Widget appShellNavigationRailButtonState(BuildContext context) {
 final _hostNavigationPreviewItems = <CatchTabBarItem<int>>[
   CatchTabBarItem(
     id: 0,
-    icon: CatchIcons.tabEvents,
-    activeIcon: CatchIcons.tabEventsFilled,
+    icon: CatchIcons.ticket,
+    activeIcon: CatchIcons.ticket,
     label: 'Events',
   ),
   CatchTabBarItem(
     id: 1,
-    icon: CatchIcons.tabCustomers,
-    activeIcon: CatchIcons.tabCustomersFilled,
+    icon: CatchIcons.people,
+    activeIcon: CatchIcons.people,
     label: 'Customers',
   ),
   CatchTabBarItem(
     id: 2,
-    icon: CatchIcons.tabChats,
-    activeIcon: CatchIcons.tabChatsFilled,
+    icon: CatchIcons.chat,
+    activeIcon: CatchIcons.chat,
     label: 'Inbox',
     badgeCount: 7,
   ),
   CatchTabBarItem(
     id: 3,
-    icon: CatchIcons.tabOrganizer,
-    activeIcon: CatchIcons.tabOrganizerFilled,
+    icon: CatchIcons.organizer,
+    activeIcon: CatchIcons.organizer,
     label: 'Organizer',
   ),
 ];

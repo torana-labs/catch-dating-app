@@ -185,7 +185,7 @@ class _HostPrivateEventSetupInventorySectionState
                 CatchField.read(
                   copy: copy,
                   title: l10n.hostsPrivateEventInventoryLoading,
-                  icon: CatchIcons.scheduleOutlined,
+                  icon: CatchIcons.time,
                 ),
               if (_loaded && _events.isEmpty)
                 CatchField.read(
@@ -193,7 +193,7 @@ class _HostPrivateEventSetupInventorySectionState
                   title: _scope == PrivateEventSetupScope.upcoming
                       ? l10n.hostsPrivateEventInventoryEmpty
                       : l10n.hostsPrivateEventInventoryHistoryEmpty,
-                  icon: CatchIcons.eventAvailableOutlined,
+                  icon: CatchIcons.eventConfirmed,
                 ),
               for (final event in _events)
                 CatchField.action(
@@ -201,7 +201,7 @@ class _HostPrivateEventSetupInventorySectionState
                   title: event.name,
                   emphasis: CatchFieldEmphasis.title,
                   body: _summary(context, event),
-                  icon: CatchIcons.eventAvailableOutlined,
+                  icon: CatchIcons.eventConfirmed,
                   onTap: _opening
                       ? null
                       : () => unawaited(_open(event.eventId)),
@@ -221,7 +221,7 @@ class _HostPrivateEventSetupInventorySectionState
                     l10n: l10n,
                     context: AppErrorContext.event,
                   ),
-                  icon: CatchIcons.errorOutlineRounded,
+                  icon: CatchIcons.error,
                 ),
                 CatchField.action(
                   copy: copy,

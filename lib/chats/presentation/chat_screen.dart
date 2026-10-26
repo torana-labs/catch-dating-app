@@ -223,12 +223,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ChatThreadAction.report => CatchActionMenuItem(
         value: ChatThreadAction.report,
         label: context.l10n.chatsChatScreenLabelReport,
-        icon: CatchIcons.flagOutlined,
+        icon: CatchIcons.flag,
       ),
       ChatThreadAction.block => CatchActionMenuItem(
         value: ChatThreadAction.block,
         label: context.l10n.chatsChatScreenLabelBlock,
-        icon: CatchIcons.blockRounded,
+        icon: CatchIcons.block,
         isDestructive: true,
       ),
     };
@@ -377,7 +377,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         l10n: context.l10n,
                         context: AppErrorContext.chat,
                       ),
-                      icon: CatchIcons.chatBubbleOutlineRounded,
+                      icon: CatchIcons.chat,
                       onRetry: () =>
                           _retryController.run(routeError.retryIntent),
                       retryLabel: context

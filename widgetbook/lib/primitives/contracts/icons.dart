@@ -29,15 +29,12 @@ Widget catchIconTileContractStates(BuildContext context) {
     children: [
       WidgetbookContractStateCard(
         label: 'default',
-        child: CatchIconTile(
-          icon: CatchIcons.eventOutlined,
-          iconColor: t.primary,
-        ),
+        child: CatchIconTile(icon: CatchIcons.event, iconColor: t.primary),
       ),
       WidgetbookContractStateCard(
         label: 'tinted',
         child: CatchIconTile(
-          icon: CatchIcons.lockOutlineRounded,
+          icon: CatchIcons.locked,
           iconColor: t.danger,
           backgroundColor: t.primarySoft,
         ),
@@ -45,7 +42,7 @@ Widget catchIconTileContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'compact',
         child: CatchIconTile(
-          icon: CatchIcons.sparkle,
+          icon: CatchIcons.spark,
           iconColor: t.ink,
           size: 32,
           iconSize: 16,
@@ -58,7 +55,7 @@ Widget catchIconTileContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'custom-icon',
-        child: CatchIconTile.error(icon: CatchIcons.infoOutlineRounded),
+        child: CatchIconTile.error(icon: CatchIcons.info),
       ),
       const WidgetbookContractStateCard(
         label: 'compact-error',
@@ -69,11 +66,11 @@ Widget catchIconTileContractStates(BuildContext context) {
         child: WidgetbookContractWrap(
           children: [
             CatchIconTile.empty(
-              icon: CatchIcons.eventOutlined,
+              icon: CatchIcons.event,
               variant: CatchIconTileVariant.plain,
             ),
             CatchIconTile.empty(
-              icon: CatchIcons.group,
+              icon: CatchIcons.people,
               variant: CatchIconTileVariant.bubble,
             ),
             CatchIconTile.empty(

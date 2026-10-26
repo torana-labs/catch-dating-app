@@ -163,7 +163,7 @@ ProfileView profileViewFromCardContent(
 List<ProfileFact> _detailsFacts(ProfileCardContent content) {
   return [
     if (content.relationshipGoal case final goal?)
-      ProfileFact(icon: CatchIcons.favoriteBorderRounded, text: goal.label),
+      ProfileFact(icon: CatchIcons.like, text: goal.label),
     for (final fact in content.attributes)
       ProfileFact(icon: fact.icon, text: fact.text),
   ];

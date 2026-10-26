@@ -179,7 +179,7 @@ class CatchDock extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        CatchIcons.sparkle,
+                        CatchIcons.spark,
                         size: CatchIconSize.xs,
                         color: action.catchLineAccent ?? t.ink2,
                       ),

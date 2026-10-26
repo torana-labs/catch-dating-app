@@ -49,7 +49,7 @@ void main() {
           width: 160,
           child: CatchBadge.onDarkStatus(
             label: 'Preview only',
-            icon: CatchIcons.visibilityOutlined,
+            icon: CatchIcons.show,
           ),
         ),
         textScale: 2,
@@ -97,19 +97,13 @@ void main() {
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchCountBadge(
-              count: 0,
-              child: Icon(CatchIcons.notificationsOutlined),
-            ),
+            CatchCountBadge(count: 0, child: Icon(CatchIcons.notifications)),
             CatchCountBadge(
               key: wrapperKey,
               count: 99,
-              child: Icon(CatchIcons.notificationsOutlined),
+              child: Icon(CatchIcons.notifications),
             ),
-            CatchCountBadge(
-              count: 100,
-              child: Icon(CatchIcons.notificationsOutlined),
-            ),
+            CatchCountBadge(count: 100, child: Icon(CatchIcons.notifications)),
             const CatchCountBadge.label(count: 7),
             const CatchCountBadge.label(key: zeroLabelKey, count: 0),
           ],

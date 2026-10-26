@@ -290,7 +290,7 @@ class _ProfilePhotoEditorScreenState
               states: <WidgetState>{
                 if (!(!_saving && !_deleting)) WidgetState.disabled,
               },
-              icon: CatchIcons.autoAwesomeOutlined,
+              icon: CatchIcons.magic,
             ),
             gapH20,
             if (uploadMutation.hasError) ...[
@@ -324,7 +324,7 @@ class _ProfilePhotoEditorScreenState
                         .l10n
                         .imageUploadsProfilePhotoEditorScreenLabelChangePhoto,
               onPressed: _saving || _deleting ? null : _replaceImage,
-              leading: Icon(CatchIcons.photoLibraryOutlined),
+              leading: Icon(CatchIcons.photos),
               variant: CatchButtonVariant.secondary,
               fullWidth: true,
             ),
@@ -342,7 +342,7 @@ class _ProfilePhotoEditorScreenState
                 status: (_deleting)
                     ? CatchButtonStatus.loading
                     : CatchButtonStatus.idle,
-                leading: Icon(CatchIcons.deleteOutlineRounded),
+                leading: Icon(CatchIcons.delete),
                 variant: CatchButtonVariant.danger,
                 fullWidth: true,
                 semanticsLabel: canDelete
@@ -440,9 +440,7 @@ class ProfilePhotoEditorPreview extends StatelessWidget {
       duration: Duration.zero,
       radius: CatchRadius.none,
       backgroundColor: t.primarySoft,
-      child: Center(
-        child: Icon(CatchIcons.addPhotoAlternateOutlined, color: t.primary),
-      ),
+      child: Center(child: Icon(CatchIcons.addPhoto, color: t.primary)),
     );
   }
 }

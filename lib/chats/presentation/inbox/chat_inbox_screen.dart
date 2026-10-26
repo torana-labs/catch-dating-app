@@ -97,7 +97,7 @@ class _ChatsListScreenState extends ConsumerState<ChatsListScreen>
               onPressed: () => ref
                   .read(eventChatDirectoryControllerProvider.notifier)
                   .refresh(),
-              icon: CatchIcons.refreshRounded,
+              icon: CatchIcons.refresh,
             ),
         ],
       ),

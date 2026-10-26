@@ -12,23 +12,23 @@ class EventSuccessControlRoomSyncBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final (icon, label) = switch (state) {
       EventSuccessControlRoomSyncState.synced => (
-        CatchIcons.checkCircleOutlineRounded,
+        CatchIcons.success,
         context.l10n.eventSuccessControlRoomSynced,
       ),
       EventSuccessControlRoomSyncState.syncing => (
-        CatchIcons.syncRounded,
+        CatchIcons.sync,
         context.l10n.eventSuccessControlRoomSyncing,
       ),
       EventSuccessControlRoomSyncState.failed => (
-        CatchIcons.errorOutlineRounded,
+        CatchIcons.error,
         context.l10n.eventSuccessControlRoomSaveFailed,
       ),
       EventSuccessControlRoomSyncState.offline => (
-        CatchIcons.wifiOffRounded,
+        CatchIcons.offline,
         context.l10n.eventSuccessControlRoomOffline,
       ),
       EventSuccessControlRoomSyncState.conflict => (
-        CatchIcons.errorOutlineRounded,
+        CatchIcons.error,
         context.l10n.eventSuccessControlRoomNeedsReview,
       ),
     };

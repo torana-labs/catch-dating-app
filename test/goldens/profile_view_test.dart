@@ -145,11 +145,11 @@ ProfileView _profileViewFromPersona(PublicProfile profile) {
         title: 'Details',
         facts: <ProfileFact>[
           if (profile.occupation case final occupation?)
-            ProfileFact(icon: CatchIcons.workOutlineRounded, text: occupation),
+            ProfileFact(icon: CatchIcons.work, text: occupation),
           if (profile.height case final height?)
-            ProfileFact(icon: CatchIcons.straightenRounded, text: '$height cm'),
+            ProfileFact(icon: CatchIcons.measure, text: '$height cm'),
           if (profile.company case final company?)
-            ProfileFact(icon: CatchIcons.businessOutlined, text: company),
+            ProfileFact(icon: CatchIcons.business, text: company),
         ],
         reaction: _target(
           'details',
@@ -274,16 +274,16 @@ ProfileView _denseLongProfileView() {
         title: 'Details',
         facts: <ProfileFact>[
           ProfileFact(
-            icon: CatchIcons.workOutlineRounded,
+            icon: CatchIcons.work,
             text: 'Urban planner focused on walkable neighborhoods',
           ),
           ProfileFact(
-            icon: CatchIcons.businessOutlined,
+            icon: CatchIcons.business,
             text: 'Designs safer street pilots with community groups',
           ),
-          ProfileFact(icon: CatchIcons.straightenRounded, text: '168 cm'),
+          ProfileFact(icon: CatchIcons.measure, text: '168 cm'),
           ProfileFact(
-            icon: CatchIcons.schoolOutlined,
+            icon: CatchIcons.education,
             text: 'Masters in urban design',
           ),
         ],
@@ -333,11 +333,8 @@ ProfileView _missingPhotoProfileView() {
       ProfileFactsSectionData(
         title: 'Details',
         facts: <ProfileFact>[
-          ProfileFact(
-            icon: CatchIcons.workOutlineRounded,
-            text: 'Product lead',
-          ),
-          ProfileFact(icon: CatchIcons.straightenRounded, text: '162 cm'),
+          ProfileFact(icon: CatchIcons.work, text: 'Product lead'),
+          ProfileFact(icon: CatchIcons.measure, text: '162 cm'),
         ],
       ),
     ],

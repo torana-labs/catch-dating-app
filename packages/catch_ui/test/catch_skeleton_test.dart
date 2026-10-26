@@ -52,7 +52,7 @@ void main() {
             body: CatchSection.loadingRows(
               layouts: [
                 CatchRecordLayout.placeholder(
-                  icon: CatchIcons.eventOutlined,
+                  icon: CatchIcons.event,
                   hasMetadata: true,
                   factCount: 1,
                   hasDescription: true,

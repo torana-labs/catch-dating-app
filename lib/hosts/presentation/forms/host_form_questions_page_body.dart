@@ -122,7 +122,7 @@ class HostFormQuestionSectionList extends StatelessWidget {
             CatchField.add(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormAddSection,
-              icon: CatchIcons.addRounded,
+              icon: CatchIcons.add,
               onTap: notifier.addSection,
             ),
           ],
@@ -147,7 +147,7 @@ class HostFormSettingsMenu extends StatelessWidget {
         copy: catchFieldCopy(context.l10n),
         key: const ValueKey('host-form-settings-entry'),
         title: context.l10n.hostFormSettings,
-        icon: CatchIcons.settingsOutlined,
+        icon: CatchIcons.settings,
         emphasis: CatchFieldEmphasis.title,
         onTap: () => openHostFormSettings(
           context,
@@ -158,7 +158,7 @@ class HostFormSettingsMenu extends StatelessWidget {
       CatchField.nav(
         copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostAudienceQuestionPreview,
-        icon: CatchIcons.visibilityOutlined,
+        icon: CatchIcons.show,
         emphasis: CatchFieldEmphasis.title,
         onTap: () => context.pushNamed(
           Routes.hostFormPreviewScreen.name,
@@ -238,25 +238,25 @@ class HostFormSectionAccordion extends StatelessWidget {
         CatchActionMenuItem(
           value: _SectionAction.edit,
           label: context.l10n.hostFormEditSection,
-          icon: CatchIcons.editOutlined,
+          icon: CatchIcons.edit,
         ),
         if (sectionIndex > 0)
           CatchActionMenuItem(
             value: _SectionAction.moveUp,
             label: context.l10n.hostFormMoveSectionUp,
-            icon: CatchIcons.arrowUpwardRounded,
+            icon: CatchIcons.moveUp,
           ),
         if (sectionIndex < sectionCount - 1)
           CatchActionMenuItem(
             value: _SectionAction.moveDown,
             label: context.l10n.hostFormMoveSectionDown,
-            icon: CatchIcons.arrowDownwardRounded,
+            icon: CatchIcons.moveDown,
           ),
         if (sectionCount > 1)
           CatchActionMenuItem(
             value: _SectionAction.remove,
             label: context.l10n.hostFormRemoveSection,
-            icon: CatchIcons.deleteOutlineRounded,
+            icon: CatchIcons.delete,
             isDestructive: true,
           ),
       ],
@@ -355,7 +355,7 @@ class HostFormQuestionRowList extends StatelessWidget {
                                 'form-question-${question.questionId}-drag',
                               ),
                               dimension: CatchSpacing.s11,
-                              child: Icon(CatchIcons.dragIndicatorRounded),
+                              child: Icon(CatchIcons.dragHandle),
                             ),
                           ),
                         )
@@ -401,7 +401,7 @@ class HostFormQuestionRowList extends StatelessWidget {
           copy: catchFieldCopy(context.l10n),
           key: ValueKey('form-section-${section.sectionId}-add-question'),
           title: context.l10n.hostFormAddQuestion,
-          icon: CatchIcons.addRounded,
+          icon: CatchIcons.add,
           onTap: () => showHostFormQuestionTypePicker(
             context,
             onSelected: (kind) => notifier.addQuestion(sectionIndex, kind),

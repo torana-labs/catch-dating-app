@@ -88,7 +88,7 @@ enum _ChatsEmptyStateIconRole {
   hostInquiry;
 
   IconData get icon => switch (this) {
-    _ChatsEmptyStateIconRole.catchWindow => CatchIcons.favoriteRounded,
-    _ChatsEmptyStateIconRole.hostInquiry => CatchIcons.chatBubbleOutlineRounded,
+    _ChatsEmptyStateIconRole.catchWindow => CatchIcons.like,
+    _ChatsEmptyStateIconRole.hostInquiry => CatchIcons.chat,
   };
 }

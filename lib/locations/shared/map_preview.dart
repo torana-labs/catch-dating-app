@@ -47,11 +47,7 @@ class MapPreview extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  CatchIcons.mapOutlined,
-                  color: t.ink3,
-                  size: CatchIconSize.lg,
-                ),
+                Icon(CatchIcons.map, color: t.ink3, size: CatchIconSize.lg),
                 if (fallbackLabel.trim().isNotEmpty) ...[
                   gapH6,
                   CatchText(

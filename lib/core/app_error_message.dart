@@ -296,38 +296,38 @@ String _contextTitle(AppLocalizations l10n, AppErrorContext context) {
 }
 
 IconData _iconFor(Object error, AppException? appException) {
-  if (_isNetworkError(error, appException)) return CatchIcons.wifiOffRounded;
-  if (_isAuthError(error, appException)) return CatchIcons.lockOutlineRounded;
-  if (_isPermissionError(error, appException)) return CatchIcons.blockRounded;
-  if (_isNotFoundError(error, appException)) return CatchIcons.searchOffRounded;
-  if (appException is ValidationException) return CatchIcons.editNoteRounded;
+  if (_isNetworkError(error, appException)) return CatchIcons.offline;
+  if (_isAuthError(error, appException)) return CatchIcons.locked;
+  if (_isPermissionError(error, appException)) return CatchIcons.block;
+  if (_isNotFoundError(error, appException)) return CatchIcons.noResults;
+  if (appException is ValidationException) return CatchIcons.note;
   if (appException is PaymentCancelledException ||
       appException is PaymentFailedException ||
       appException is PaymentVerificationFailedException ||
       appException is PaidBookingUnsupportedException) {
-    return CatchIcons.creditCardOffRounded;
+    return CatchIcons.paymentUnavailable;
   }
   if (appException is EventBookingFailedException) {
-    return CatchIcons.directionsRunRounded;
+    return CatchIcons.activity;
   }
   if (appException is StorageException) {
-    return CatchIcons.cloudUploadOutlined;
+    return CatchIcons.upload;
   }
   if (appException is ExternalActionException) {
-    return CatchIcons.openInNewRounded;
+    return CatchIcons.openExternal;
   }
   if (appException is BackendOperationException) {
     final backendContext = appException.context;
     return switch (backendContext?.service) {
-      BackendService.auth => CatchIcons.lockOutlineRounded,
-      BackendService.storage => CatchIcons.cloudUploadOutlined,
-      BackendService.messaging => CatchIcons.notificationsOffOutlined,
-      BackendService.payments => CatchIcons.creditCardOffRounded,
-      BackendService.external => CatchIcons.openInNewRounded,
-      _ => CatchIcons.errorOutlineRounded,
+      BackendService.auth => CatchIcons.locked,
+      BackendService.storage => CatchIcons.upload,
+      BackendService.messaging => CatchIcons.notificationsOff,
+      BackendService.payments => CatchIcons.paymentUnavailable,
+      BackendService.external => CatchIcons.openExternal,
+      _ => CatchIcons.error,
     };
   }
-  return CatchIcons.errorOutlineRounded;
+  return CatchIcons.error;
 }
 
 String _retryLabelFor(

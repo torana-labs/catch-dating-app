@@ -94,7 +94,7 @@ class CompanionPaperNavigationRow extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 onPressed: canPop ? () => _popCompanion(context) : null,
                 child: Icon(
-                  CatchIcons.arrowBackRounded,
+                  CatchIcons.back,
                   size: CatchIconSize.md,
                   color: canPop ? t.ink3 : t.line2,
                 ),
@@ -462,7 +462,7 @@ class CompanionExpectationSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           StageSectionHeader(
-            icon: CatchIcons.eventAvailableRounded,
+            icon: CatchIcons.eventConfirmed,
             label: context
                 .l10n
                 .eventSuccessEventSuccessCompanionSharedLabelWhatToExpect,
@@ -519,11 +519,7 @@ class CompanionPrivacySection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            CatchIcons.lockOutlineRounded,
-            size: CatchIconSize.sm,
-            color: t.ink2,
-          ),
+          Icon(CatchIcons.locked, size: CatchIconSize.sm, color: t.ink2),
           gapW8,
           Expanded(
             child: CatchText(
@@ -555,7 +551,7 @@ class CompanionSelfCheckInSection extends StatelessWidget {
     return CatchButton(
       label:
           context.l10n.eventSuccessEventSuccessCompanionSharedLabelIMHereCheck,
-      leading: Icon(CatchIcons.locationOnOutlined),
+      leading: Icon(CatchIcons.location),
       status: (actionState.isCheckingIn)
           ? CatchButtonStatus.loading
           : CatchButtonStatus.idle,

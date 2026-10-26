@@ -67,7 +67,7 @@ class HostTodayEventSection extends StatelessWidget {
               supporting: taskCountIsComplete
                   ? context.l10n.hostTodayTaskSummary
                   : context.l10n.hostTodayTaskCoverageIncomplete,
-              icon: CatchIcons.factCheckOutlined,
+              icon: CatchIcons.review,
               accent: activity,
             ),
             gapH20,
@@ -79,7 +79,7 @@ class HostTodayEventSection extends StatelessWidget {
               supporting: context.l10n.hostTodayCheckedIn(
                 count: event.attendedCount,
               ),
-              icon: CatchIcons.groupsOutlined,
+              icon: CatchIcons.people,
               accent: activity,
             ),
           ],
@@ -103,7 +103,7 @@ class HostTodayEventSection extends StatelessWidget {
           CatchButton(
             key: const ValueKey<String>('host-today-rehearse-event'),
             label: context.l10n.hostTodayRehearseThisEvent,
-            leading: Icon(CatchIcons.scienceOutlined, size: CatchIconSize.sm),
+            leading: Icon(CatchIcons.labs, size: CatchIconSize.sm),
             fullWidth: true,
             mode: CatchButtonMode.rounded,
             variant: CatchButtonVariant.secondary,

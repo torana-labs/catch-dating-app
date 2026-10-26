@@ -26,7 +26,7 @@ Widget profileInlineRangeEditorStates(BuildContext context) {
         child: WidgetbookProfileSectionFrame(
           height: WidgetbookPreviewLayout.stateViewportHeight,
           child: ProfileInlineRangeEditor(
-            icon: CatchIcons.directionsRunOutlined,
+            icon: CatchIcons.activity,
             title: 'Pace',
             minimumContract: CatchContractConstraints
                 .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,

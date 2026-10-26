@@ -167,7 +167,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
         subtitle: club.name,
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          icon: CatchIcons.arrowBackIosNewRounded,
+          icon: CatchIcons.back,
           onPressed: _leaveTeam,
         ),
         navigation: const CatchTopBarNavigation(
@@ -357,7 +357,7 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
         onRetry: onRetry,
       ),
       HostTeamProfileMissing() => CatchEmptyState(
-        icon: CatchIcons.personOutlineRounded,
+        icon: CatchIcons.person,
         title: context.l10n.hostsHostClubTeamScreenVisiblecopyCreateHostProfile,
         message: context.l10n.hostsHostClubTeamScreenVisiblecopyAddAHostBio,
       ),
@@ -445,7 +445,7 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
                 valueText: club.isOwnedBy(profile.uid)
                     ? context.l10n.clubsClubHostRoleOwner
                     : context.l10n.clubsClubHostRoleHost,
-                icon: CatchIcons.groupOutlined,
+                icon: CatchIcons.people,
               ),
           ],
         ),
@@ -501,7 +501,7 @@ class HostTeamProfileSection extends StatelessWidget {
                 : context
                       .l10n
                       .hostsHostClubTeamScreenVisiblecopyCreateHostProfile,
-            icon: CatchIcons.businessOutlined,
+            icon: CatchIcons.business,
             actions: creatingProfile
                 ? const SizedBox.square(
                     dimension: CatchIconSize.md,
@@ -589,7 +589,7 @@ class _HostTeamProfileListState extends State<HostTeamProfileList> {
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostClubTeamScreenTitleDisplayName,
             valueText: profile.displayName,
-            icon: CatchIcons.personOutlineRounded,
+            icon: CatchIcons.person,
           ),
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
@@ -597,13 +597,13 @@ class _HostTeamProfileListState extends State<HostTeamProfileList> {
             valueText: profile.roleTitle?.trim().isNotEmpty == true
                 ? profile.roleTitle!.trim()
                 : context.l10n.hostsHostClubTeamScreenVisiblecopyAddRoleTitle,
-            icon: CatchIcons.cardMembershipOutlined,
+            icon: CatchIcons.membership,
           ),
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostClubTeamScreenTitleStatus,
             valueText: hostProfileStatusLabel(profile.status, context.l10n),
-            icon: CatchIcons.checkCircleOutlineRounded,
+            icon: CatchIcons.success,
           ),
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
@@ -611,7 +611,7 @@ class _HostTeamProfileListState extends State<HostTeamProfileList> {
             valueText: profile.bio?.trim().isNotEmpty == true
                 ? profile.bio!.trim()
                 : context.l10n.hostsHostClubTeamScreenVisiblecopyAddAHostBio,
-            icon: CatchIcons.chatBubbleOutlineRounded,
+            icon: CatchIcons.chat,
             valueMaxLines: 3,
           ),
         ],
@@ -644,7 +644,7 @@ class _HostTeamProfileListState extends State<HostTeamProfileList> {
             if (!(!widget.savingProfile && widget.onSaveProfile != null))
               WidgetState.disabled,
           },
-          icon: CatchIcons.personOutlineRounded,
+          icon: CatchIcons.person,
           textInputAction: TextInputAction.done,
           textCapitalization: TextCapitalization.words,
           error: _displayNameError,
@@ -675,7 +675,7 @@ class _HostTeamProfileListState extends State<HostTeamProfileList> {
             if (!(!widget.savingProfile && widget.onSaveProfile != null))
               WidgetState.disabled,
           },
-          icon: CatchIcons.cardMembershipOutlined,
+          icon: CatchIcons.membership,
           textInputAction: TextInputAction.done,
           textCapitalization: TextCapitalization.words,
         ),
@@ -683,7 +683,7 @@ class _HostTeamProfileListState extends State<HostTeamProfileList> {
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubTeamScreenTitleStatus,
           valueText: hostProfileStatusLabel(profile.status, context.l10n),
-          icon: CatchIcons.checkCircleOutlineRounded,
+          icon: CatchIcons.success,
         ),
         CatchField.inputActions(
           copy: catchFieldCopy(context.l10n),
@@ -703,7 +703,7 @@ class _HostTeamProfileListState extends State<HostTeamProfileList> {
             if (!(!widget.savingProfile && widget.onSaveProfile != null))
               WidgetState.disabled,
           },
-          icon: CatchIcons.chatBubbleOutlineRounded,
+          icon: CatchIcons.chat,
           minLines: 2,
           maxLines: 4,
           textInputAction: TextInputAction.newline,

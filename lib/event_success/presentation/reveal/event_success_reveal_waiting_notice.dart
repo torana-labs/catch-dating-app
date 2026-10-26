@@ -23,7 +23,7 @@ class EventSuccessRevealWaitingNotice extends StatelessWidget {
       padding: CatchInsets.contentDense,
       child: Row(
         children: [
-          Icon(CatchIcons.lockClockRounded, color: t.primary),
+          Icon(CatchIcons.lockedUntil, color: t.primary),
           gapW10,
           Expanded(
             child: Column(

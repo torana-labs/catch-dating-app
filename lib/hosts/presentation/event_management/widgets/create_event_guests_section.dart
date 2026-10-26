@@ -152,7 +152,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
             valueText: widget.rosterFileName == null
                 ? context.l10n.hostsCreateEventRosterChoose
                 : context.l10n.hostsCreateEventRosterReplace,
-            icon: CatchIcons.cloudUploadOutlined,
+            icon: CatchIcons.upload,
             onTap: widget.onPickRoster,
           ),
           CatchField<EventRuntimeWalkInPolicy>.choices(
@@ -172,7 +172,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
                 ? CatchFieldMode.controlledExpanded
                 : CatchFieldMode.controlledCollapsed,
             onOpenChanged: (open) => _setOpen(_walkInPolicyField, open),
-            icon: CatchIcons.peopleOutline,
+            icon: CatchIcons.people,
           ),
         ],
       ),
@@ -217,7 +217,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
                   ? CatchFieldMode.controlledExpanded
                   : CatchFieldMode.controlledCollapsed,
               onOpenChanged: (open) => _setOpen(_externalProviderField, open),
-              icon: CatchIcons.linkOutlined,
+              icon: CatchIcons.link,
             ),
             CatchField.input(
               copy: catchFieldCopy(context.l10n),
@@ -229,7 +229,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               labelMode: CatchFieldLabelTextMode.optional,
               inputHint:
                   context.l10n.hostsEventDetailsStepExternalEventUrlPlaceholder,
-              icon: CatchIcons.linkRounded,
+              icon: CatchIcons.link,
               keyboardType: TextInputType.url,
               textInputAction: TextInputAction.next,
               onValidate: (value) {
@@ -256,7 +256,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               labelMode: CatchFieldLabelTextMode.optional,
               inputHint:
                   context.l10n.hostsEventDetailsStepExternalEventIdPlaceholder,
-              icon: CatchIcons.confirmationNumberOutlined,
+              icon: CatchIcons.ticket,
               textInputAction: TextInputAction.next,
             ),
           ],

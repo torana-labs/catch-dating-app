@@ -42,7 +42,7 @@ class EventSuccessHostHelpSection extends StatelessWidget {
                 : context
                       .l10n
                       .eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThef44110,
-            icon: CatchIcons.volunteerActivismOutlined,
+            icon: CatchIcons.support,
           ),
         for (final request in activeRequests)
           CatchField.read(

@@ -52,7 +52,7 @@ void main() {
           await mount(
             tester,
             CatchEmptyState(
-              icon: CatchIcons.insightsOutlined,
+              icon: CatchIcons.insights,
               title: 'Waiting for attendee feedback',
               message:
                   'The report appears once attendees share feedback. There is no signal to summarize yet.',
@@ -134,7 +134,7 @@ void main() {
                 message:
                     'Only your Host team can access this organizer. You can still run events and check people in.',
                 meta: const Text('Catch app: hidden'),
-                icon: CatchIcons.groups3Outlined,
+                icon: CatchIcons.people,
                 actionLabel: 'Review visibility',
                 actionEmphasis: emphasis,
                 onAction: () => calls++,
@@ -176,7 +176,7 @@ void main() {
     await mount(
       tester,
       CatchEmptyState(
-        icon: CatchIcons.insightsOutlined,
+        icon: CatchIcons.insights,
         message: 'No reviews yet.',
         variant: CatchEmptyStateVariant.inline,
         padding: EdgeInsets.zero,

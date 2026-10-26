@@ -118,7 +118,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
                 message: context
                     .l10n
                     .hostsHostEventManageRouteScreenMessageYouCanManageOnly,
-                icon: CatchIcons.blockRounded,
+                icon: CatchIcons.block,
                 actions: const [CatchErrorBackButton()],
               ),
             ),

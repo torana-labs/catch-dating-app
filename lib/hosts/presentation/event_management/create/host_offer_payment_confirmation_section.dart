@@ -18,31 +18,31 @@ class HostOfferPaymentConfirmationSection extends StatelessWidget {
       HostOfferPaymentMode.free => (
         l10n.hostOfferPaymentConfirmFreeTitle,
         l10n.hostOfferPaymentConfirmFreeBody,
-        CatchIcons.confirmationNumberOutlined,
+        CatchIcons.ticket,
         CatchNoticeTone.success,
       ),
       HostOfferPaymentMode.catchCheckout => (
         l10n.hostOfferPaymentConfirmAutoTitle,
         l10n.hostOfferPaymentConfirmAutoBody,
-        CatchIcons.verifiedUserOutlined,
+        CatchIcons.verified,
         CatchNoticeTone.success,
       ),
       HostOfferPaymentMode.reusablePage => (
         l10n.hostOfferPaymentConfirmManualTitle,
         l10n.hostOfferPaymentConfirmPageBody,
-        CatchIcons.assignmentTurnedInOutlined,
+        CatchIcons.taskDone,
         CatchNoticeTone.warning,
       ),
       HostOfferPaymentMode.personalRequest => (
         l10n.hostOfferPaymentConfirmManualTitle,
         l10n.hostOfferPaymentConfirmRequestBody,
-        CatchIcons.assignmentTurnedInOutlined,
+        CatchIcons.taskDone,
         CatchNoticeTone.warning,
       ),
       _ => (
         l10n.hostOfferPaymentConfirmManualTitle,
         l10n.hostOfferPaymentConfirmManualBody,
-        CatchIcons.assignmentTurnedInOutlined,
+        CatchIcons.taskDone,
         CatchNoticeTone.warning,
       ),
     };

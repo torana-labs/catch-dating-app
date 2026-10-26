@@ -180,7 +180,7 @@ void _registerProfileEditingPromptsTests() {
       expect(
         find.descendant(
           of: _profileInfoTile('Display name'),
-          matching: find.byIcon(CatchIcons.expandMoreRounded),
+          matching: find.byIcon(CatchIcons.expand),
         ),
         findsOneWidget,
       );
@@ -188,14 +188,14 @@ void _registerProfileEditingPromptsTests() {
         expect(
           find.descendant(
             of: _profileInfoTile(label),
-            matching: find.byIcon(CatchIcons.chevronRightRounded),
+            matching: find.byIcon(CatchIcons.disclosure),
           ),
           findsNothing,
         );
         expect(
           find.descendant(
             of: _profileInfoTile(label),
-            matching: find.byIcon(CatchIcons.expandMoreRounded),
+            matching: find.byIcon(CatchIcons.expand),
           ),
           findsNothing,
         );
@@ -214,7 +214,7 @@ void _registerProfileEditingPromptsTests() {
       expect(
         find.descendant(
           of: _profileInfoTile('Instagram'),
-          matching: find.byIcon(CatchIcons.clearCircle),
+          matching: find.byIcon(CatchIcons.clear),
         ),
         findsNothing,
       );
@@ -360,7 +360,7 @@ void _registerProfileEditingPromptsTests() {
       _profileWidgetHarness(
         StatefulBuilder(
           builder: (context, setState) => ProfileMultiEnumRow<Language>(
-            icon: CatchIcons.languageOutlined,
+            icon: CatchIcons.web,
             label: 'Languages',
             contract: CatchContractConstraints.updateUserProfilePatchLanguages,
             contractValue: (value) => value.name,
@@ -406,7 +406,7 @@ void _registerProfileEditingPromptsTests() {
           builder: (context, setState) {
             rebuild = setState;
             return ProfileMultiEnumRow<Language>(
-              icon: CatchIcons.languageOutlined,
+              icon: CatchIcons.web,
               label: 'Languages',
               contract:
                   CatchContractConstraints.updateUserProfilePatchLanguages,

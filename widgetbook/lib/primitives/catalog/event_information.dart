@@ -265,7 +265,7 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
                 onActivate: widgetbookNoop,
                 secondaryAction: CatchFieldSecondaryAction.command(
                   label: 'Message host',
-                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  icon: CatchIcons.chat,
                   onActivate: widgetbookNoop,
                 ),
                 content: CatchPersonLayout(
@@ -349,7 +349,7 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
               label: 'Cancel booking',
               onPressed: widgetbookNoop,
               leadingContent: EventDockStatusText(
-                icon: CatchIcons.checkCircleRounded,
+                icon: CatchIcons.success,
                 label: "You're in!",
               ),
             ),
@@ -360,7 +360,7 @@ Widget eventDetailBookingDockCatalogStates(BuildContext context) {
               label: 'You attended this event',
               onPressed: null,
               leadingContent: EventDockStatusText(
-                icon: CatchIcons.directionsRunRounded,
+                icon: CatchIcons.activity,
                 label: 'Completed',
               ),
             ),

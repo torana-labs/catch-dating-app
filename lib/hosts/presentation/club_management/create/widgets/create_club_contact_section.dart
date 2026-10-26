@@ -39,7 +39,7 @@ class CreateClubContactSection extends StatelessWidget {
               CatchContractConstraints.createClubCallablePayloadInstagramHandle,
           controller: instagramController,
           labelMode: CatchFieldLabelTextMode.optional,
-          icon: CatchIcons.alternateEmailRounded,
+          icon: CatchIcons.handle,
           inputHint:
               context.l10n.hostsCreateClubContactFieldsPlaceholderYourclub,
           keyboardType: TextInputType.text,
@@ -52,7 +52,7 @@ class CreateClubContactSection extends StatelessWidget {
               CatchContractConstraints.createClubCallablePayloadPhoneNumber,
           controller: phoneController,
           labelMode: CatchFieldLabelTextMode.optional,
-          icon: CatchIcons.callOutlined,
+          icon: CatchIcons.phone,
           inputHint: '98765 43210',
           keyboardType: TextInputType.phone,
           textInputAction: TextInputAction.next,
@@ -67,7 +67,7 @@ class CreateClubContactSection extends StatelessWidget {
           contract: CatchContractConstraints.createClubCallablePayloadEmail,
           controller: emailController,
           labelMode: CatchFieldLabelTextMode.optional,
-          icon: CatchIcons.emailOutlined,
+          icon: CatchIcons.email,
           inputHint: context
               .l10n
               .hostsCreateClubContactFieldsPlaceholderHelloYourclubCom,

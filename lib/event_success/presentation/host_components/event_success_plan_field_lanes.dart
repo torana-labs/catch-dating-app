@@ -35,7 +35,7 @@ class EventSuccessPlanFieldLanes extends StatelessWidget {
               ? (ready ? CatchBadgeTone.success : CatchBadgeTone.warning)
               : CatchBadgeTone.warning,
         ),
-        icon: CatchIcons.ruleFolderOutlined,
+        icon: CatchIcons.rules,
       ),
     );
   }

@@ -715,7 +715,7 @@ void _registerProfileShellLayoutTests() {
               width: 180,
               child: CatchField.nav(
                 copy: catchFieldCopy(AppLocalizationsEn()),
-                icon: CatchIcons.emailOutlined,
+                icon: CatchIcons.email,
                 title: 'Email',
                 body: 'averylongemailaddress@examplecatchdatingapp.com',
               ),

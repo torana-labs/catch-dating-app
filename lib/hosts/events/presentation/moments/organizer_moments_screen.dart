@@ -88,7 +88,7 @@ class _OrganizerMomentsScreenState
             layouts: List.generate(
               4,
               (_) => CatchRecordLayout.placeholder(
-                icon: CatchIcons.autoAwesomeOutlined,
+                icon: CatchIcons.magic,
                 hasMetadata: true,
                 hasDescription: true,
               ),
@@ -103,7 +103,7 @@ class _OrganizerMomentsScreenState
           builder: (context, state) {
             if (state.moments.isEmpty) {
               return CatchEmptyState(
-                icon: CatchIcons.autoAwesomeOutlined,
+                icon: CatchIcons.magic,
                 title: l.hostMomentsEmptyTitle,
                 message: l.hostMomentsEmptyBody,
               );
@@ -118,7 +118,7 @@ class _OrganizerMomentsScreenState
                     secondaryAction: _momentMenu(context, state, moment),
                     content: CatchRecordLayout(
                       title: moment.name,
-                      icon: CatchIcons.autoAwesomeOutlined,
+                      icon: CatchIcons.magic,
                       metadata: _momentMetadata(context, moment),
                       description: _momentSummary(context, moment),
                     ),
@@ -145,28 +145,28 @@ class _OrganizerMomentsScreenState
           CatchActionMenuItem(
             value: _MomentMenuAction.arm,
             label: l.hostMomentArm,
-            icon: CatchIcons.playArrowRounded,
+            icon: CatchIcons.play,
             enabled: !mutating,
           ),
         if (moment.canPause)
           CatchActionMenuItem(
             value: _MomentMenuAction.pause,
             label: l.hostMomentPause,
-            icon: CatchIcons.pauseCircleOutlineRounded,
+            icon: CatchIcons.pause,
             enabled: !mutating,
           ),
         if (moment.canResume)
           CatchActionMenuItem(
             value: _MomentMenuAction.resume,
             label: l.hostMomentResume,
-            icon: CatchIcons.playArrowRounded,
+            icon: CatchIcons.play,
             enabled: !mutating,
           ),
         if (moment.canRun)
           CatchActionMenuItem(
             value: _MomentMenuAction.run,
             label: l.hostMomentRun,
-            icon: CatchIcons.sendRounded,
+            icon: CatchIcons.send,
             enabled: !mutating,
           ),
         if (moment.canRevise)

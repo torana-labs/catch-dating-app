@@ -310,7 +310,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostEventRehearsalEntryTitle,
               body: context.l10n.hostEventRehearsalEntryBody,
-              icon: CatchIcons.scienceOutlined,
+              icon: CatchIcons.labs,
               emphasis: CatchFieldEmphasis.title,
               onTap: () => context.pushNamed(
                 Routes.hostEventRehearsalStartScreen.name,
@@ -411,7 +411,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                   'Disclosure-only public runtime URL and QR; no editable '
                   'value is submitted or persisted.',
               body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
-              icon: CatchIcons.qrCode2Rounded,
+              icon: CatchIcons.qrCode,
               child: HostEventCheckInQrSection(event: event),
             ),
           ],
@@ -474,13 +474,13 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
         subtitle: screenState.eventTitle,
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          icon: CatchIcons.arrowBackIosNewRounded,
+          icon: CatchIcons.back,
           onPressed: onBackToSuccess,
         ),
         actions: [
           CatchIconAction.toolbar(
             tooltip: context.l10n.eventChatTitle,
-            icon: CatchIcons.chatBubbleOutlineRounded,
+            icon: CatchIcons.chat,
             onPressed: () => context.pushNamed(
               Routes.eventChatScreen.name,
               pathParameters: {'eventId': event.id},
@@ -489,7 +489,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           ),
           CatchTopBarPrimaryButton(
             label: context.l10n.hostsHostEventRosterDrawerTitle,
-            icon: CatchIcons.groupsRounded,
+            icon: CatchIcons.people,
             onPressed: () => _openRoster(),
           ),
         ],

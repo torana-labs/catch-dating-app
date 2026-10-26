@@ -243,7 +243,7 @@ class ProgramDoorPageBody extends StatelessWidget {
                 message: context.l10n.programsSnapshotBanner(
                   time: AppTimeFormatters.time(snapshotAt!),
                 ),
-                icon: CatchIcons.wifiOffRounded,
+                icon: CatchIcons.offline,
                 tone: CatchBannerTone.warning,
               ),
             ),
@@ -297,7 +297,7 @@ class ProgramDoorPageBody extends StatelessWidget {
                 message: fn.status == ProgramFunctionStatus.cancelled
                     ? context.l10n.programsDoorCancelledBanner
                     : context.l10n.programsDoorClosedBanner,
-                icon: CatchIcons.lockOutline,
+                icon: CatchIcons.locked,
                 tone: CatchBannerTone.warning,
               ),
             ),
@@ -311,7 +311,7 @@ class ProgramDoorPageBody extends StatelessWidget {
                 children: [
                   if (view.guests.isEmpty && pendingWalkIns.isEmpty)
                     CatchEmptyState(
-                      icon: CatchIcons.howToRegOutlined,
+                      icon: CatchIcons.checkIn,
                       message: context.l10n.programsDoorRosterEmpty,
                       variant: CatchEmptyStateVariant.inline,
                     )
@@ -327,7 +327,7 @@ class ProgramDoorPageBody extends StatelessWidget {
                       ),
                     for (final entry in pendingWalkIns)
                       CatchFieldRow.standard(
-                        leading: Icon(CatchIcons.personAddAlt1Outlined),
+                        leading: Icon(CatchIcons.addPerson),
                         body: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -347,7 +347,7 @@ class ProgramDoorPageBody extends StatelessWidget {
                                       ProgramOperationOutboxStatus.needsReview
                                   ? CatchBadgeTone.danger
                                   : CatchBadgeTone.warning,
-                              icon: CatchIcons.wifiOffRounded,
+                              icon: CatchIcons.offline,
                             ),
                           ],
                         ),
@@ -391,7 +391,7 @@ class ProgramDoorPageBody extends StatelessWidget {
             CatchSectionListItem(
               child: CatchButton(
                 label: context.l10n.programsDoorWalkInSubmit,
-                leading: Icon(CatchIcons.personAddAlt1Outlined),
+                leading: Icon(CatchIcons.addPerson),
                 onPressed: operationsBusy ? null : onSubmitWalkIn,
               ),
             ),
@@ -413,7 +413,7 @@ class ProgramDoorPageBody extends StatelessWidget {
                               variant: CatchTextVariant.bodyM,
                             ),
                             CatchMetaRow(
-                              icon: CatchIcons.clock,
+                              icon: CatchIcons.time,
                               label: AppTimeFormatters.time(entry.occurredAt),
                             ),
                           ],
@@ -439,11 +439,11 @@ class ProgramDoorPageBody extends StatelessWidget {
   }
 
   IconData _journalIcon(ProgramDoorAction action) => switch (action) {
-    ProgramDoorAction.checkIn => CatchIcons.howToRegOutlined,
-    ProgramDoorAction.undoCheckIn => CatchIcons.undoRounded,
-    ProgramDoorAction.markNoShow => CatchIcons.warningAmberRounded,
-    ProgramDoorAction.walkInCreate => CatchIcons.personAddAlt1Outlined,
-    ProgramDoorAction.partySizeAdjust => CatchIcons.group,
+    ProgramDoorAction.checkIn => CatchIcons.checkIn,
+    ProgramDoorAction.undoCheckIn => CatchIcons.undo,
+    ProgramDoorAction.markNoShow => CatchIcons.warning,
+    ProgramDoorAction.walkInCreate => CatchIcons.addPerson,
+    ProgramDoorAction.partySizeAdjust => CatchIcons.people,
   };
 
   String _journalLine(BuildContext context, ProgramDoorJournalEntry entry) {
@@ -482,16 +482,16 @@ class ProgramDoorGuestRow extends StatelessWidget {
     return CatchFieldRow.standard(
       leading: Icon(
         guest.isCheckedIn
-            ? CatchIcons.howToRegOutlined
+            ? CatchIcons.checkIn
             : guest.attendanceStatus == ProgramFunctionAttendanceStatus.noShow
-            ? CatchIcons.warningAmberRounded
-            : CatchIcons.circle,
+            ? CatchIcons.warning
+            : CatchIcons.unselected,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchText(guest.displayName, variant: CatchTextVariant.sectionTitle),
-          CatchMetaRow(icon: CatchIcons.group, label: _meta(context)),
+          CatchMetaRow(icon: CatchIcons.people, label: _meta(context)),
           gapH4,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -513,7 +513,7 @@ class ProgramDoorGuestRow extends StatelessWidget {
                   tone: queuedStatus == ProgramOperationOutboxStatus.needsReview
                       ? CatchBadgeTone.danger
                       : CatchBadgeTone.warning,
-                  icon: CatchIcons.wifiOffRounded,
+                  icon: CatchIcons.offline,
                 ),
             ],
           ),

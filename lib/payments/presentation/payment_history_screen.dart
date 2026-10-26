@@ -45,7 +45,7 @@ class PaymentHistoryScreen extends ConsumerWidget {
             if (uid == null) {
               return Center(
                 child: CatchEmptyState(
-                  icon: CatchIcons.lockOutlineRounded,
+                  icon: CatchIcons.locked,
                   title: context
                       .l10n
                       .paymentsPaymentHistoryScreenTitleSignInRequired,
@@ -109,7 +109,7 @@ class PaymentHistoryList extends StatelessWidget {
     if (paymentHistory.isEmpty) {
       return Center(
         child: CatchEmptyState(
-          icon: CatchIcons.receiptLongOutlined,
+          icon: CatchIcons.receipt,
           title: context.l10n.paymentsPaymentHistoryScreenTitleNoPaymentsYet,
           message: context
               .l10n
@@ -412,7 +412,7 @@ class PaymentReceiptSheet extends StatelessWidget {
                           .l10n
                           .paymentsPaymentHistoryScreenLabelGetHelpWithThis,
                       onPressed: onHelp,
-                      leading: Icon(CatchIcons.helpOutlineRounded),
+                      leading: Icon(CatchIcons.help),
                       variant: CatchButtonVariant.secondary,
                       foregroundColor: t.warning,
                       borderColor: t.warning.withValues(

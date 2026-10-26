@@ -62,7 +62,7 @@ class CatchIconTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final glyph = Icon(
-      icon ?? CatchIcons.errorOutlineRounded,
+      icon ?? CatchIcons.error,
       color:
           iconColor ??
           switch (variant) {

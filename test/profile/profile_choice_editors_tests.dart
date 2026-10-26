@@ -380,7 +380,7 @@ void _registerProfileChoiceEditorsTests() {
     await tester.pumpWidget(
       _profileWidgetHarness(
         ProfileSingleEnumRow<EducationLevel>(
-          icon: CatchIcons.schoolOutlined,
+          icon: CatchIcons.education,
           label: 'Education',
           contract: CatchContractConstraints.updateUserProfilePatchEducation,
           contractValue: (value) => value.name,
@@ -411,7 +411,7 @@ void _registerProfileChoiceEditorsTests() {
     await tester.pumpWidget(
       _profileWidgetHarness(
         ProfileMultiEnumRow<Language>(
-          icon: CatchIcons.languageOutlined,
+          icon: CatchIcons.web,
           label: 'Languages',
           contract: CatchContractConstraints.updateUserProfilePatchLanguages,
           contractValue: (value) => value.name,
@@ -600,7 +600,7 @@ void _registerProfileChoiceEditorsTests() {
     expect(
       find.descendant(
         of: _catchChip(Language.english.label),
-        matching: find.byIcon(CatchIcons.checkRounded),
+        matching: find.byIcon(CatchIcons.check),
       ),
       findsOneWidget,
     );

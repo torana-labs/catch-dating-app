@@ -32,7 +32,7 @@ class HostAudienceHeader extends StatelessWidget {
             CatchActionMenuItem(
               value: HostAudienceMenuAction.automations,
               label: context.l10n.hostFormAutomationsTitle,
-              icon: CatchIcons.autoAwesomeOutlined,
+              icon: CatchIcons.magic,
             ),
           ],
           onSelected: (action) {

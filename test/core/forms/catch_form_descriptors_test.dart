@@ -24,14 +24,14 @@ void main() {
           rows: [
             CatchFormReadRow<_Patch>(
               id: 'identity',
-              icon: CatchIcons.personOutlined,
+              icon: CatchIcons.person,
               label: 'Identity',
               body: 'Verified',
             ),
             CatchFormSingleChoiceRow<_Patch, _Option>(
               itemLabel: (value) => value.label,
               id: 'city',
-              icon: CatchIcons.locationOnOutlined,
+              icon: CatchIcons.location,
               label: 'City',
               values: _Option.values,
               value: _Option.mumbai,
@@ -39,7 +39,7 @@ void main() {
             ),
             CatchFormCustomRow<_Patch>(
               id: 'custom',
-              icon: CatchIcons.tuneRounded,
+              icon: CatchIcons.filters,
               label: 'Custom',
               build: (context, scope) => CatchField.control(
                 copy: catchFieldCopy(AppLocalizationsEn()),
@@ -95,7 +95,7 @@ void main() {
     final text = CatchFormTextRow<_Patch>(
       validationCopy: catchFormValidationCopy(AppLocalizationsEn()),
       id: 'name',
-      icon: CatchIcons.personOutlined,
+      icon: CatchIcons.person,
       label: 'Name',
       currentValue: 'Before',
       patchForValue: (value) => _Patch(value as String),
@@ -103,7 +103,7 @@ void main() {
     final multi = CatchFormMultiChoiceRow<_Patch, _Option>(
       itemLabel: (value) => value.label,
       id: 'cities',
-      icon: CatchIcons.locationOnOutlined,
+      icon: CatchIcons.location,
       label: 'Cities',
       values: _Option.values,
       selected: const [_Option.mumbai],
@@ -112,7 +112,7 @@ void main() {
     );
     final range = CatchFormRangeRow<_Patch>(
       id: 'range',
-      icon: CatchIcons.tuneRounded,
+      icon: CatchIcons.filters,
       label: 'Range',
       value: '1 - 2',
       currentMin: 1,
@@ -140,7 +140,7 @@ void main() {
             CatchFormTextRow<_Patch>(
               validationCopy: catchFormValidationCopy(AppLocalizationsEn()),
               id: 'name',
-              icon: CatchIcons.personOutlined,
+              icon: CatchIcons.person,
               label: 'Name',
               currentValue: 'Before',
               patchForValue: (value) => _Patch(value as String),
@@ -187,7 +187,7 @@ void main() {
             CatchFormTextRow<_Patch>(
               validationCopy: catchFormValidationCopy(AppLocalizationsEn()),
               id: 'name',
-              icon: CatchIcons.personOutlined,
+              icon: CatchIcons.person,
               label: 'Name',
               currentValue: 'Before',
               patchForValue: (value) => _Patch(value as String),

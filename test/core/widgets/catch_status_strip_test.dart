@@ -269,7 +269,7 @@ void main() {
                   id: 'offline',
                   label: 'Offline',
                   message: 'Reconnect to refresh.',
-                  icon: CatchIcons.cloudOffRounded,
+                  icon: CatchIcons.offline,
                   color: CatchTokens.of(context).warning,
                 ),
             ],
@@ -328,7 +328,7 @@ Widget _app({
               id: 'offline',
               label: "You're offline",
               message: 'Some content may be out of date.',
-              icon: CatchIcons.cloudOffRounded,
+              icon: CatchIcons.offline,
               color: t.warning,
             ),
         ];
@@ -337,7 +337,7 @@ Widget _app({
             id: 'rehearsal',
             label: 'Rehearsal',
             message: 'Synthetic guests',
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             color: t.danger,
             actions: [
               CatchBannerAction(

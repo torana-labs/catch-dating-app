@@ -20,7 +20,7 @@ class EventSuccessReadinessField extends StatelessWidget {
         title: context.l10n.eventSuccessEventSuccessHostSetupTitleBeforeLaunch,
         body: issues.join('\n'),
         bodyMaxLines: math.max(3, issues.length * 2),
-        icon: CatchIcons.errorOutlineRounded,
+        icon: CatchIcons.error,
         iconColor: t.warning,
       ),
     );

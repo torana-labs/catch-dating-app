@@ -54,10 +54,10 @@ class EventRehearsalChoiceTile extends StatelessWidget {
             ExcludeSemantics(
               child: Icon(
                 expanded == null
-                    ? CatchIcons.arrowForwardRounded
+                    ? CatchIcons.forward
                     : expanded!
-                    ? CatchIcons.expandLessRounded
-                    : CatchIcons.expandMoreRounded,
+                    ? CatchIcons.collapse
+                    : CatchIcons.expand,
                 size: CatchIconSize.md,
                 color: CatchTokens.of(context).ink2,
               ),

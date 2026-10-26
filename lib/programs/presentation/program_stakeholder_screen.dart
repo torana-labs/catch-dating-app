@@ -114,7 +114,7 @@ class ProgramStakeholderScreen extends ConsumerWidget {
                 subtitle: context.l10n.programsStakeholderFunctionsSubtitle,
                 child: counts.functions.isEmpty
                     ? CatchEmptyState(
-                        icon: CatchIcons.eventOutlined,
+                        icon: CatchIcons.event,
                         message: context.l10n.programsStakeholderFunctionsEmpty,
                         variant: CatchEmptyStateVariant.inline,
                       )
@@ -191,7 +191,7 @@ class ProgramFunctionCountsRow extends StatelessWidget {
           ),
           gapH8,
           CatchMetaRow(
-            icon: CatchIcons.group,
+            icon: CatchIcons.people,
             label: context.l10n.programsStakeholderFunctionRsvp(
               invited: counts.invitedCount,
               attending: counts.rsvpAttending,
@@ -201,7 +201,7 @@ class ProgramFunctionCountsRow extends StatelessWidget {
             ),
           ),
           CatchMetaRow(
-            icon: CatchIcons.howToRegOutlined,
+            icon: CatchIcons.checkIn,
             label: context.l10n.programsStakeholderFunctionDoor(
               expected: counts.expectedHeads,
               checkedIn: counts.checkedInHeads,

@@ -13,7 +13,7 @@ class EventSuccessCountdownNoticeRowList extends StatelessWidget {
     return Column(
       children: [
         EventSuccessCountdownNotice(
-          icon: CatchIcons.visibilityOffOutlined,
+          icon: CatchIcons.hide,
           title: context
               .l10n
               .eventSuccessEventSuccessLiveRevealWidgetsTitleNoNamesShownYet,
@@ -23,7 +23,7 @@ class EventSuccessCountdownNoticeRowList extends StatelessWidget {
         ),
         gapH8,
         EventSuccessCountdownNotice(
-          icon: CatchIcons.tipsAndUpdatesOutlined,
+          icon: CatchIcons.tip,
           title: context
               .l10n
               .eventSuccessEventSuccessLiveRevealWidgetsTitleClueIsLive,

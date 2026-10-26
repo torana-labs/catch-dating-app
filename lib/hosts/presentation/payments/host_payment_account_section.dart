@@ -54,20 +54,20 @@ class HostPaymentAccountSection extends StatelessWidget {
           copy: catchFieldCopy(context.l10n),
           title: presentation.title,
           body: presentation.body,
-          icon: CatchIcons.paymentsOutlined,
+          icon: CatchIcons.payment,
         ),
         if (account != null) ...[
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostPaymentAccountCardTitleCountry,
             valueText: _countryLabel(account.country),
-            icon: CatchIcons.locationOnOutlined,
+            icon: CatchIcons.location,
           ),
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostPaymentAccountCardTitleDefaultCurrency,
             valueText: account.defaultCurrency.toUpperCase(),
-            icon: CatchIcons.paymentsOutlined,
+            icon: CatchIcons.payment,
           ),
         ],
         if (actionErrorMessage != null)
@@ -75,7 +75,7 @@ class HostPaymentAccountSection extends StatelessWidget {
             copy: catchFieldCopy(context.l10n),
             title: presentation.title,
             body: actionErrorMessage!,
-            icon: CatchIcons.errorOutlineRounded,
+            icon: CatchIcons.error,
             tone: CatchFieldTone.danger,
           ),
         for (final provider in providers) ...[
@@ -88,7 +88,7 @@ class HostPaymentAccountSection extends StatelessWidget {
               recommended: provider == recommendedProvider,
               account: accountFor(provider),
             ),
-            icon: CatchIcons.openInNewRounded,
+            icon: CatchIcons.openExternal,
             status: onboardingPending
                 ? CatchFieldStatus.saving
                 : CatchFieldStatus.idle,
@@ -107,7 +107,7 @@ class HostPaymentAccountSection extends StatelessWidget {
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostsHostPaymentAccountCardLabelRefresh,
               body: _providerTitle(context.l10n, provider),
-              icon: CatchIcons.refreshRounded,
+              icon: CatchIcons.refresh,
               status: refreshPending
                   ? CatchFieldStatus.saving
                   : CatchFieldStatus.idle,

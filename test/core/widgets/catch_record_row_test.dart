@@ -37,7 +37,7 @@ void main() {
                             ],
                             description:
                                 'A complete message or source explanation belongs here, including its last sentence.',
-                            icon: CatchIcons.descriptionOutlined,
+                            icon: CatchIcons.document,
                           ),
                         ),
                         CatchFieldSupportRow(
@@ -92,13 +92,13 @@ void main() {
             content: CatchRecordLayout(
               title: 'WhatsApp permission',
               description: 'No participant permission is recorded.',
-              icon: CatchIcons.verifiedUserOutlined,
+              icon: CatchIcons.verified,
             ),
           ),
         ),
       ),
     );
-    expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
+    expect(find.byIcon(CatchIcons.disclosure), findsNothing);
     expect(
       find.byWidgetPredicate(
         (w) => w is Semantics && w.properties.button == true,

@@ -143,7 +143,7 @@ void _registerExploreMapTests() {
     expect(find.text('This week'), findsNothing);
     expect(find.text('Any'), findsOneWidget);
     expect(find.byKey(const ValueKey('explore-filter-button')), findsOneWidget);
-    expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.filters), findsOneWidget);
     expect(find.text('Filters'), findsNothing);
     expect(
       find.byWidgetPredicate(
@@ -304,7 +304,7 @@ void _registerExploreMapTests() {
     expect(find.text('Weekend'), findsNothing);
     expect(find.text('This week'), findsNothing);
     expect(find.text('Any'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.tuneRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.filters), findsOneWidget);
     expect(find.text('Filters'), findsNothing);
     expect(find.text('1'), findsOneWidget);
     expect(
@@ -313,7 +313,7 @@ void _registerExploreMapTests() {
     );
     expect(find.text('Rated 4.5+'), findsOneWidget);
 
-    final iconCenter = tester.getCenter(find.byIcon(CatchIcons.tuneRounded));
+    final iconCenter = tester.getCenter(find.byIcon(CatchIcons.filters));
     final badgeCenter = tester.getCenter(find.text('1'));
     expect(badgeCenter.dx, greaterThan(iconCenter.dx));
     expect(badgeCenter.dy, lessThan(iconCenter.dy));

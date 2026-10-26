@@ -140,7 +140,7 @@ class HostFormSectionField extends StatelessWidget {
       CatchField.add(
         copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormAddQuestion,
-        icon: CatchIcons.addRounded,
+        icon: CatchIcons.add,
         onTap: () => showHostFormQuestionTypePicker(
           context,
           onSelected: (kind) => notifier.addQuestion(sectionIndex, kind),
@@ -149,7 +149,7 @@ class HostFormSectionField extends StatelessWidget {
       CatchField.action(
         copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormMoveSectionUp,
-        icon: CatchIcons.arrowUpwardRounded,
+        icon: CatchIcons.moveUp,
         onTap: sectionIndex == 0
             ? null
             : () => notifier.moveSection(sectionIndex, -1),
@@ -157,7 +157,7 @@ class HostFormSectionField extends StatelessWidget {
       CatchField.action(
         copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormMoveSectionDown,
-        icon: CatchIcons.arrowDownwardRounded,
+        icon: CatchIcons.moveDown,
         onTap: sectionIndex == sectionCount - 1
             ? null
             : () => notifier.moveSection(sectionIndex, 1),
@@ -165,7 +165,7 @@ class HostFormSectionField extends StatelessWidget {
       CatchField.action(
         copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostFormRemoveSection,
-        icon: CatchIcons.deleteOutlineRounded,
+        icon: CatchIcons.delete,
         tone: CatchFieldTone.danger,
         onTap: sectionCount <= 1
             ? null

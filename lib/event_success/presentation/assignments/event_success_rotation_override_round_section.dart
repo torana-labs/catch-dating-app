@@ -49,7 +49,7 @@ class EventSuccessRotationOverrideRoundSection extends StatelessWidget {
                 label: context
                     .l10n
                     .eventSuccessEventSuccessHostOverridesLabelAddPair,
-                leading: Icon(CatchIcons.addRounded),
+                leading: Icon(CatchIcons.add),
                 size: CatchButtonSize.md,
                 variant: CatchButtonVariant.secondary,
                 onPressed: onAddPair,
@@ -158,7 +158,7 @@ class EventSuccessRotationPairFieldLanes extends StatelessWidget {
               .eventSuccessEventSuccessHostOverridesTooltipRemovePair,
           onPressed: onRemove,
           child: Icon(
-            CatchIcons.deleteOutlineRounded,
+            CatchIcons.delete,
             color: CatchTokens.of(context).danger,
             size: CatchIconSize.md,
           ),

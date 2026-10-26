@@ -159,7 +159,7 @@ Widget catchPolaroidContractStates(BuildContext context) {
           media: ColoredBox(
             color: t.primarySoft,
             child: Icon(
-              CatchIcons.personRounded,
+              CatchIcons.person,
               size: CatchSpacing.s16,
               color: t.primary,
             ),
@@ -175,7 +175,7 @@ Widget catchPolaroidContractStates(BuildContext context) {
           media: ColoredBox(
             color: t.raised,
             child: Icon(
-              CatchIcons.personRounded,
+              CatchIcons.person,
               size: CatchSpacing.s16,
               color: t.ink3,
             ),

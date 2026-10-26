@@ -254,7 +254,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             title: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextStructureIsLockedOnce,
-            icon: CatchIcons.lockOutlineRounded,
+            icon: CatchIcons.locked,
           ),
       ],
     );

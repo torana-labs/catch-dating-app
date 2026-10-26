@@ -299,7 +299,7 @@ class _InlineEditorVariantsState extends State<_InlineEditorVariants> {
         const ProfileInlineLanguageMultiChoiceEntryEditor(),
         gapH12,
         ProfileInlineRangeEditor(
-          icon: CatchIcons.directionsRunOutlined,
+          icon: CatchIcons.activity,
           title: 'Pace',
           minimumContract: CatchContractConstraints
               .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,

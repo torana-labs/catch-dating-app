@@ -138,7 +138,7 @@ void main() {
     onActivate: onActivate,
     content: CatchRecordLayout(
       title: id,
-      icon: CatchIcons.eventOutlined,
+      icon: CatchIcons.event,
       facts: const ['Sunday · Saket Garden', '2 attended'],
     ),
   );
@@ -352,13 +352,13 @@ void main() {
           CatchField.navigate(
             content: CatchRecordLayout(
               title: 'One event',
-              icon: CatchIcons.eventOutlined,
+              icon: CatchIcons.event,
             ),
             onActivate: () => opened++,
             states: {if (disabled) WidgetState.disabled},
             secondaryAction: CatchFieldSecondaryAction.command(
               label: 'Event details',
-              icon: CatchIcons.infoOutlineRounded,
+              icon: CatchIcons.info,
               onActivate: () => details++,
             ),
           ),
@@ -541,10 +541,7 @@ void main() {
       host(
         CatchSection.loadingRows(
           layouts: [
-            CatchRecordLayout.placeholder(
-              icon: CatchIcons.eventOutlined,
-              factCount: 2,
-            ),
+            CatchRecordLayout.placeholder(icon: CatchIcons.event, factCount: 2),
           ],
         ),
       ),

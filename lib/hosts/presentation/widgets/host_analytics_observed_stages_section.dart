@@ -67,7 +67,7 @@ class HostAnalyticsObservedStagesSection extends StatelessWidget {
                   value: HostCountFormatters.compact(
                     (cards[item.$1]?.value ?? 0).round(),
                   ),
-                  icon: CatchIcons.insightsOutlined,
+                  icon: CatchIcons.insights,
                   caption: cards[item.$1]?.caption,
                   partialBadgeLabel:
                       context.l10n.hostsHostAnalyticsLabelPartial,

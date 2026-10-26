@@ -409,13 +409,13 @@ class CatchSection extends StatelessWidget {
                           CatchButton.command(
                             key: sortKey,
                             label: sortLabel,
-                            trailing: Icon(CatchIcons.expandMoreRounded),
+                            trailing: Icon(CatchIcons.expand),
                             onPressed: onSort,
                           ),
                         CatchButton.command(
                           key: filtersKey,
                           label: filtersLabel,
-                          leading: Icon(CatchIcons.tuneRounded),
+                          leading: Icon(CatchIcons.filters),
                           onPressed: onFilters,
                         ),
                       ],

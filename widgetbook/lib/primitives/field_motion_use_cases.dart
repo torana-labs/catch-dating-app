@@ -358,7 +358,7 @@ class _StatusSnapshot extends StatelessWidget {
               color: t.ink3,
             ),
             CatchFieldStatus.saved => Icon(
-              CatchIcons.checkCircleFilled,
+              CatchIcons.success,
               color: t.success,
             ),
           },

@@ -63,7 +63,7 @@ Widget workspacePaneScaffold(BuildContext context) =>
                         actions: [
                           CatchTopBarPrimaryButton(
                             label: 'Create event',
-                            icon: CatchIcons.addRounded,
+                            icon: CatchIcons.add,
                             onPressed: () {},
                           ),
                         ],

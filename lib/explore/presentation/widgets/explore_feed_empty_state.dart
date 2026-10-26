@@ -52,7 +52,7 @@ class ExploreFeedEmptyState extends StatelessWidget {
       child: Padding(
         padding: CatchInsets.pageHeaderBody,
         child: CatchEmptyState(
-          icon: CatchIcons.eventAvailable,
+          icon: CatchIcons.eventConfirmed,
           title: state.title,
           message: state.message,
           actions: [

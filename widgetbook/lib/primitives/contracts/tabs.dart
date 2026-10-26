@@ -73,21 +73,13 @@ Widget catchPageTabBarContractStates(BuildContext context) {
             onChanged: widgetbookIgnoreString,
             variant: CatchChoiceInputVariant.operational,
             options: [
-              CatchOption(
-                value: 'now',
-                label: 'Now',
-                icon: CatchIcons.scheduleRounded,
-              ),
+              CatchOption(value: 'now', label: 'Now', icon: CatchIcons.time),
               CatchOption(
                 value: 'guests',
                 label: 'Guests',
-                icon: CatchIcons.groupsOutlined,
+                icon: CatchIcons.people,
               ),
-              CatchOption(
-                value: 'room',
-                label: 'Room',
-                icon: CatchIcons.gridViewRounded,
-              ),
+              CatchOption(value: 'room', label: 'Room', icon: CatchIcons.grid),
             ],
           ),
         ),
@@ -287,8 +279,8 @@ Widget catchTabDockContractStates(BuildContext context) {
               ...widgetbookContractTabItems,
               CatchTabBarItem<String>(
                 id: 'organizer',
-                icon: CatchIcons.personOutlined,
-                activeIcon: CatchIcons.personRounded,
+                icon: CatchIcons.person,
+                activeIcon: CatchIcons.person,
                 label: 'Organizer',
                 onLongPress: widgetbookNoop,
                 semanticHint: 'Hold to switch organizer',
@@ -352,8 +344,8 @@ Widget catchPageDotsContractStates(BuildContext context) {
 final _contractFourTabBarItems = [
   CatchTabBarItem<String>(
     id: 'home',
-    icon: CatchIcons.homeOutlined,
-    activeIcon: CatchIcons.homeRounded,
+    icon: CatchIcons.home,
+    activeIcon: CatchIcons.home,
     label: 'Home',
   ),
   ...widgetbookContractTabItems,

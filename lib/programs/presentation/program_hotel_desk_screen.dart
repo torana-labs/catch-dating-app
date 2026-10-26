@@ -115,12 +115,12 @@ class _ProgramHotelDeskScreenState
     return [
       CatchSectionListItem(
         child: CatchFieldRow.standard(
-          leading: Icon(CatchIcons.keyOutlined),
+          leading: Icon(CatchIcons.key),
           body: CatchText(
             context.l10n.programsHotelRoomsOpen,
             variant: CatchTextVariant.sectionTitle,
           ),
-          trailing: Icon(CatchIcons.chevronRightRounded),
+          trailing: Icon(CatchIcons.disclosure),
           onTap: () => context.pushNamed(
             Routes.hostWorkHotelRoomsScreen.name,
             pathParameters: {
@@ -209,7 +209,7 @@ class _ProgramHotelDeskScreenState
           subtitle: context.l10n.programsHotelExpectedSubtitle,
           child: inbound.expectedLegs.isEmpty
               ? CatchEmptyState(
-                  icon: CatchIcons.flightLanding,
+                  icon: CatchIcons.arrivals,
                   message: context.l10n.programsHotelExpectedEmpty,
                   variant: CatchEmptyStateVariant.inline,
                 )
@@ -217,7 +217,7 @@ class _ProgramHotelDeskScreenState
                   children: [
                     for (final leg in inbound.expectedLegs)
                       CatchFieldRow.standard(
-                        leading: Icon(CatchIcons.flightLanding),
+                        leading: Icon(CatchIcons.arrivals),
                         body: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -226,7 +226,7 @@ class _ProgramHotelDeskScreenState
                               variant: CatchTextVariant.sectionTitle,
                             ),
                             CatchMetaRow(
-                              icon: CatchIcons.group,
+                              icon: CatchIcons.people,
                               label: leg.curbAt != null
                                   ? context.l10n.programsHotelExpectedMeta(
                                       passengers: leg.passengers,
@@ -321,7 +321,7 @@ class _ProgramHotelInboundTripTileState
           ),
           gapH8,
           CatchMetaRow(
-            icon: CatchIcons.group,
+            icon: CatchIcons.people,
             label: context.l10n.programsHotelTripMeta(
               passengers: trip.passengerCount,
               names: trip.guestNames.join(', '),
@@ -333,7 +333,7 @@ class _ProgramHotelInboundTripTileState
               variant: CatchTextVariant.bodyS,
             ),
           CatchMetaRow(
-            icon: CatchIcons.clock,
+            icon: CatchIcons.time,
             label: context.l10n.programsHotelTripTiming(
               departed: AppTimeFormatters.time(trip.departedAt),
               eta: trip.estimatedArriveAt != null
@@ -342,10 +342,7 @@ class _ProgramHotelInboundTripTileState
             ),
           ),
           if (trip.vendorName != null)
-            CatchMetaRow(
-              icon: CatchIcons.businessOutlined,
-              label: trip.vendorName!,
-            ),
+            CatchMetaRow(icon: CatchIcons.business, label: trip.vendorName!),
           if (_error != null) ...[
             gapH8,
             CatchBanner.error(
@@ -356,7 +353,7 @@ class _ProgramHotelInboundTripTileState
             gapH12,
             CatchButton(
               label: context.l10n.programsHotelMarkArrived,
-              leading: Icon(CatchIcons.flagBanner),
+              leading: Icon(CatchIcons.meetingPoint),
               fullWidth: true,
               status: _busy
                   ? CatchButtonStatus.loading

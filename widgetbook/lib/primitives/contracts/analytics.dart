@@ -65,7 +65,7 @@ Widget catchAnalyticsMetricContractStates(BuildContext context) =>
             label: status.name,
             child: CatchDataQualityMetricTile(
               data: CatchMetricData(
-                icon: CatchIcons.confirmationNumberOutlined,
+                icon: CatchIcons.ticket,
                 value: status == CatchMetricDataStatus.missing ? '--' : '126',
                 label: 'Bookings',
                 caption: status == CatchMetricDataStatus.ready
@@ -213,7 +213,7 @@ Widget catchMetricStripContractStates(BuildContext context) {
             metrics: [
               for (final status in CatchMetricDataStatus.values)
                 CatchMetricData(
-                  icon: CatchIcons.group,
+                  icon: CatchIcons.people,
                   value: '24',
                   label: 'Guests',
                   status: status,
@@ -232,7 +232,7 @@ Widget catchMetricStripContractStates(BuildContext context) {
           child: CatchMetricSection.dataQuality(
             metrics: [
               CatchMetricData(
-                icon: CatchIcons.group,
+                icon: CatchIcons.people,
                 value: '24',
                 label: 'Guests',
                 partialBadgeLabel: 'Partial',
@@ -287,7 +287,7 @@ Widget catchMetricStripCellContractStates(BuildContext context) {
         child: CatchMetricTile(
           value: '24',
           label: 'Guests',
-          icon: CatchIcons.group,
+          icon: CatchIcons.people,
         ),
       ),
       const WidgetbookContractStateCard(

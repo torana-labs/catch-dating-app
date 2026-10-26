@@ -107,7 +107,7 @@ void main() {
                 label: 'Goa',
                 semanticLabel: 'Choose city Goa',
                 tooltip: 'Choose city',
-                icon: CatchIcons.locationOnOutlined,
+                icon: CatchIcons.location,
                 onPressed: noop,
               ),
             ),
@@ -181,7 +181,7 @@ void main() {
             ),
             actions: [
               CatchIconAction.toolbar(
-                icon: CatchIcons.savedOutlined,
+                icon: CatchIcons.bookmark,
                 tooltip: 'Saved',
                 onPressed: noop,
               ),
@@ -237,7 +237,7 @@ void main() {
                     label: 'Mumbai',
                     semanticLabel: 'Choose Mumbai',
                     tooltip: 'Choose city',
-                    icon: CatchIcons.locationOnOutlined,
+                    icon: CatchIcons.location,
                     onPressed: activate,
                   )
                 : CatchToolbarButton.action(

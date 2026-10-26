@@ -18,7 +18,7 @@ void _registerInputSelectionTests() {
             values: defaultCityOptions,
             itemLabelBuilder: (city) => city.label,
             value: selected,
-            leading: Icon(CatchIcons.locationOnOutlined),
+            leading: Icon(CatchIcons.location),
             onValidate: (value) =>
                 value == null ? 'Please select a city' : null,
             onChanged: (value) => selected = value,
@@ -27,12 +27,10 @@ void _registerInputSelectionTests() {
       ),
     );
 
-    final iconRect = tester.getRect(find.byIcon(CatchIcons.locationOnOutlined));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.location));
     final titleRect = tester.getRect(find.text('City'));
     final valueRect = tester.getRect(find.text('Select city'));
-    final chevronRect = tester.getRect(
-      find.byIcon(CatchIcons.expandMoreRounded),
-    );
+    final chevronRect = tester.getRect(find.byIcon(CatchIcons.expand));
 
     expect(iconRect.right, lessThan(titleRect.left));
     expect((titleRect.left - valueRect.left).abs(), lessThanOrEqualTo(1));
@@ -44,11 +42,9 @@ void _registerInputSelectionTests() {
 
     final label = tester.widget<Text>(find.text('City'));
     final value = tester.widget<Text>(find.text('Select city'));
-    final chevron = tester.widget<Icon>(
-      find.byIcon(CatchIcons.expandMoreRounded),
-    );
+    final chevron = tester.widget<Icon>(find.byIcon(CatchIcons.expand));
     final iconTheme = IconTheme.of(
-      tester.element(find.byIcon(CatchIcons.locationOnOutlined)),
+      tester.element(find.byIcon(CatchIcons.location)),
     );
 
     expect(label.style?.color, CatchTokens.editorialLight.danger);
@@ -57,14 +53,14 @@ void _registerInputSelectionTests() {
     expect(chevron.size, CatchFieldTokens.disclosureGlyphExtent);
     final rotation = tester.widget<AnimatedRotation>(
       find.ancestor(
-        of: find.byIcon(CatchIcons.expandMoreRounded),
+        of: find.byIcon(CatchIcons.expand),
         matching: find.byType(AnimatedRotation),
       ),
     );
     expect(rotation.duration, CatchMotion.base);
     expect(iconTheme.color, CatchTokens.editorialLight.ink2);
 
-    await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
+    await tester.tap(find.byIcon(CatchIcons.expand));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Mumbai').hitTestable());
     await pumpFeatureUi(tester);
@@ -291,7 +287,7 @@ void _registerInputSelectionTests() {
             values: defaultCityOptions,
             value: selected,
             itemLabelBuilder: (city) => city.label,
-            leading: Icon(CatchIcons.locationOnOutlined),
+            leading: Icon(CatchIcons.location),
             showLabel: false,
             onChanged: (value) => selected = value,
           ),
@@ -299,7 +295,7 @@ void _registerInputSelectionTests() {
       ),
     );
 
-    await tester.tap(find.byIcon(CatchIcons.expandMoreRounded));
+    await tester.tap(find.byIcon(CatchIcons.expand));
     await pumpFeatureUi(tester);
 
     // Select renders through the shared CatchMenu panel, not raw Material

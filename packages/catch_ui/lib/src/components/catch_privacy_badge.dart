@@ -54,15 +54,15 @@ class _PrivacyBadgeData {
     return switch (variant) {
       CatchPrivacyBadgeVariant.privateToYou => _PrivacyBadgeData(
         label: copy.privateToYouLabel,
-        icon: CatchIcons.lockOutlineRounded,
+        icon: CatchIcons.locked,
       ),
       CatchPrivacyBadgeVariant.hostCanSee => _PrivacyBadgeData(
         label: copy.hostCanSeeLabel,
-        icon: CatchIcons.visibilityOutlined,
+        icon: CatchIcons.show,
       ),
       CatchPrivacyBadgeVariant.catchPrivate => _PrivacyBadgeData(
         label: copy.catchPrivateLabel,
-        icon: CatchIcons.shieldOutlined,
+        icon: CatchIcons.safety,
       ),
     };
   }

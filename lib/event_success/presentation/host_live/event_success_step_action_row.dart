@@ -51,7 +51,7 @@ class EventSuccessStepActionRow extends StatelessWidget {
               .l10n
               .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton,
         ),
-        icon: CatchIcons.arrowBackRounded,
+        icon: CatchIcons.back,
         onPressed: onPrevious,
         tooltip: context.l10n.eventSuccessEventSuccessHostLiveLabelPrevious,
       ),

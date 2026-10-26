@@ -561,7 +561,7 @@ void main() {
 
         expect(find.text('Your event is live.'), findsOneWidget);
         expect(find.text('EVENT CREATED'), findsOneWidget);
-        expect(find.byIcon(CatchIcons.celebration), findsOneWidget);
+        expect(find.byIcon(CatchIcons.celebrate), findsOneWidget);
         expect(
           find.textContaining('is now listed on Stride Social'),
           findsOneWidget,

@@ -18,7 +18,7 @@ class HostClubPaymentsScreen extends StatelessWidget {
                 copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsHostClubEditTabLabelPayments,
                 valueText: context.l10n.hostsHostClubsScaffoldVisiblecopyOwner,
-                icon: CatchIcons.lockOutlineRounded,
+                icon: CatchIcons.locked,
               ),
             ),
     );

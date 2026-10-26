@@ -71,7 +71,7 @@ class DraftCard extends StatelessWidget {
         body:
             bodyOverride ??
             context.l10n.hostDraftSavedAt(time: _formatRelative(draft.savedAt)),
-        icon: CatchIcons.descriptionOutlined,
+        icon: CatchIcons.document,
         iconColor: t.ink3,
         onTap: isDeleting ? null : onSelect,
         showChevron: false,
@@ -85,7 +85,7 @@ class DraftCard extends StatelessWidget {
             child: isDeleting
                 ? const HostInlineIconSkeleton()
                 : Icon(
-                    CatchIcons.deleteOutlineRounded,
+                    CatchIcons.delete,
                     size: CatchIconSize.control,
                     color: t.ink2,
                   ),

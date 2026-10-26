@@ -411,19 +411,19 @@ Widget catchFieldRepeatButtonContractStates(BuildContext context) {
         child: WidgetbookContractWrap(
           children: [
             CatchStepperRepeatButton(
-              icon: CatchIcons.removeRounded,
+              icon: CatchIcons.remove,
               semanticLabel: 'Decrease',
               enabled: true,
               onStep: widgetbookNoop,
             ),
             CatchStepperRepeatButton(
-              icon: CatchIcons.addRounded,
+              icon: CatchIcons.add,
               semanticLabel: 'Increase',
               enabled: true,
               onStep: widgetbookNoop,
             ),
             CatchStepperRepeatButton(
-              icon: CatchIcons.addRounded,
+              icon: CatchIcons.add,
               semanticLabel: 'Increase disabled',
               enabled: false,
               onStep: widgetbookNoop,
@@ -434,7 +434,7 @@ Widget catchFieldRepeatButtonContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'keyboard-focused · use Tab',
         child: CatchStepperRepeatButton(
-          icon: CatchIcons.addRounded,
+          icon: CatchIcons.add,
           semanticLabel: 'Increase from keyboard',
           enabled: true,
           onStep: widgetbookNoop,
@@ -476,7 +476,7 @@ Widget catchFieldRowContractStates(BuildContext context) {
         label: 'with-leading',
         child: WidgetbookContractFieldWidth(
           child: CatchFieldRow.standard(
-            leading: Icon(CatchIcons.hosted, color: t.ink2),
+            leading: Icon(CatchIcons.host, color: t.ink2),
             body: Text('Leading icon row', style: textStyle),
           ),
         ),

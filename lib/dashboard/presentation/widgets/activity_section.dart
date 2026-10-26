@@ -20,7 +20,7 @@ class ActivitySignedOutEmptyState extends StatelessWidget {
     return Padding(
       padding: CatchInsets.contentRelaxed,
       child: CatchEmptyState(
-        icon: CatchIcons.notificationsNoneRounded,
+        icon: CatchIcons.notifications,
         title: context.l10n.dashboardActivitySectionTitleNoActivityYet,
         message: context.l10n.dashboardActivitySectionMessageSignInAndBook,
       ),
@@ -119,7 +119,7 @@ class ActivitySection extends ConsumerWidget {
             sectionState is NotificationsSignedOut) ...[
           if (showEmptyState)
             CatchEmptyState(
-              icon: CatchIcons.notificationsNoneRounded,
+              icon: CatchIcons.notifications,
               title: context.l10n.dashboardActivitySectionTitleNoNewActivity,
               message: context
                   .l10n
@@ -330,67 +330,67 @@ class _NotificationVisual {
 
     return switch (type) {
       ActivityNotificationType.message => visual(
-        icon: CatchIcons.chatBubbleOutlineRounded,
+        icon: CatchIcons.chat,
         accent: t.ink2,
       ),
       ActivityNotificationType.match => visual(
-        icon: CatchIcons.favoriteRounded,
+        icon: CatchIcons.like,
         accent: t.primary,
       ),
       ActivityNotificationType.eventReminder => visual(
-        icon: CatchIcons.notificationsNoneRounded,
+        icon: CatchIcons.notifications,
         accent: t.primary,
       ),
       ActivityNotificationType.eventSignup => visual(
-        icon: CatchIcons.checkCircleOutlineRounded,
+        icon: CatchIcons.success,
         accent: t.success,
       ),
       ActivityNotificationType.waitlistPromotion => visual(
-        icon: CatchIcons.scheduleRounded,
+        icon: CatchIcons.time,
         accent: t.warning,
       ),
       ActivityNotificationType.waitlistOffer => visual(
-        icon: CatchIcons.scheduleRounded,
+        icon: CatchIcons.time,
         accent: t.warning,
       ),
       ActivityNotificationType.waitlistOfferExpiring => visual(
-        icon: CatchIcons.scheduleRounded,
+        icon: CatchIcons.time,
         accent: t.warning,
       ),
       ActivityNotificationType.waitlistOfferExpired => visual(
-        icon: CatchIcons.eventBusyRounded,
+        icon: CatchIcons.eventUnavailable,
         accent: t.ink3,
       ),
       ActivityNotificationType.eventCancelled => visual(
-        icon: CatchIcons.eventBusyRounded,
+        icon: CatchIcons.eventUnavailable,
         accent: t.danger,
       ),
       ActivityNotificationType.eventUpdated => visual(
-        icon: CatchIcons.updateRounded,
+        icon: CatchIcons.history,
         accent: t.ink2,
       ),
       ActivityNotificationType.clubUpdate => visual(
-        icon: CatchIcons.groupsRounded,
+        icon: CatchIcons.people,
         accent: t.ink2,
       ),
       ActivityNotificationType.organizerUpdate => visual(
-        icon: CatchIcons.groupsRounded,
+        icon: CatchIcons.people,
         accent: t.ink2,
       ),
       ActivityNotificationType.crossPathsInvitation => visual(
-        icon: CatchIcons.favoriteOutline,
+        icon: CatchIcons.like,
         accent: t.primary,
       ),
       ActivityNotificationType.crossPathsInvitationAccepted => visual(
-        icon: CatchIcons.chatBubbleOutlineRounded,
+        icon: CatchIcons.chat,
         accent: t.success,
       ),
       ActivityNotificationType.crossPathsInvitationDeclined => visual(
-        icon: CatchIcons.favoriteOutline,
+        icon: CatchIcons.like,
         accent: t.ink3,
       ),
       ActivityNotificationType.crossPathsPlanCancelled => visual(
-        icon: CatchIcons.eventBusyRounded,
+        icon: CatchIcons.eventUnavailable,
         accent: t.danger,
       ),
     };

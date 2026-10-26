@@ -24,13 +24,13 @@ enum CatchIconActionEmphasis { adaptive, filled, outline }
 ///
 /// Usage:
 /// ```dart
-/// CatchIconAction(onPressed: () {}, child: Icon(CatchIcons.notificationsOutlined))
+/// CatchIconAction(onPressed: () {}, child: Icon(CatchIcons.notifications))
 ///
 /// // Floating photo/map chrome.
 /// CatchIconAction(variant: CatchIconActionVariant.float, child: Icon(CatchIcons.close))
 ///
 /// // Solid custom variant.
-/// CatchIconAction(backgroundColor: t.ink, child: Icon(CatchIcons.tune, color: t.surface))
+/// CatchIconAction(backgroundColor: t.ink, child: Icon(CatchIcons.filters, color: t.surface))
 /// ```
 class CatchIconAction extends StatefulWidget {
   const CatchIconAction({

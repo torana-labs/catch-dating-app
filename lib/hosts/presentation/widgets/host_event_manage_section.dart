@@ -47,7 +47,7 @@ class HostCapacitySection extends StatelessWidget {
       children: [
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
-          icon: CatchIcons.groupsRounded,
+          icon: CatchIcons.people,
           title: context.l10n.hostsHostEventManageScreenLabelBooked,
           body: context.l10n.hostsHostEventManageScreenDetailOpenOpen(
             open: open,
@@ -58,7 +58,7 @@ class HostCapacitySection extends StatelessWidget {
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
-          icon: CatchIcons.waitlisted,
+          icon: CatchIcons.pending,
           title: context.l10n.hostsHostEventManageScreenLabelWaitlist,
           body: waitlisted == 1
               ? context.l10n.hostsHostEventManageScreenDetail1ToReview
@@ -72,13 +72,13 @@ class HostCapacitySection extends StatelessWidget {
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
-          icon: CatchIcons.paymentsOutlined,
+          icon: CatchIcons.payment,
           title: context.l10n.hostsHostEventManageScreenLabelRevenueEst,
           valueText: revenueLabel,
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
-          icon: CatchIcons.receiptLongOutlined,
+          icon: CatchIcons.receipt,
           title: context.l10n.hostsHostEventManageScreenLabelRefundPolicy,
           valueText: refundPolicy,
         ),
@@ -99,11 +99,7 @@ class HostFullCapacityBanner extends StatelessWidget {
       radius: CatchRadius.md,
       child: Row(
         children: [
-          Icon(
-            CatchIcons.lockRounded,
-            color: t.surface,
-            size: CatchIconSize.md,
-          ),
+          Icon(CatchIcons.locked, color: t.surface, size: CatchIconSize.md),
           gapW10,
           Expanded(
             child: Text(
@@ -312,7 +308,7 @@ class HostPublicRegistrationField extends StatelessWidget {
         body: enabled
             ? context.l10n.hostsHostPublicRegistrationSubtitleEnabled
             : context.l10n.hostsHostPublicRegistrationSubtitleDisabled,
-        icon: CatchIcons.languageOutlined,
+        icon: CatchIcons.web,
         contractExemption:
             'Disclosure and mutation surface for server-owned public event '
             'registration; the field itself does not persist a scalar value.',
@@ -403,25 +399,25 @@ class HostEventSummarySection extends StatelessWidget {
       children: [
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
-          icon: CatchIcons.groupsRounded,
+          icon: CatchIcons.people,
           title: context.l10n.hostsHostEventManageScreenLabelClub,
           body: club.name,
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
-          icon: CatchIcons.locationOnOutlined,
+          icon: CatchIcons.location,
           title: context.l10n.hostsHostEventManageScreenLabelMeet,
           body: event.locationName,
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
-          icon: CatchIcons.routeRounded,
+          icon: CatchIcons.route,
           title: context.l10n.hostsHostEventManageScreenLabelEvent,
           body: event.activitySummaryLabel,
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
-          icon: CatchIcons.paymentsOutlined,
+          icon: CatchIcons.payment,
           title: context.l10n.hostsHostEventManageScreenLabelPrice,
           body: price,
         ),

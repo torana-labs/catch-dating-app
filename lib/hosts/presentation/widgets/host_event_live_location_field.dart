@@ -83,7 +83,7 @@ class _HostEventLiveLocationFieldState
         key: const ValueKey<String>('host_event_live_location_toggle'),
         title: context.l10n.hostEventLiveLocationTitle,
         body: context.l10n.hostEventLiveLocationBody,
-        icon: CatchIcons.locationOnOutlined,
+        icon: CatchIcons.location,
         value: _sharing,
         status: _pending ? CatchFieldStatus.saving : CatchFieldStatus.idle,
         helperText: helperText,

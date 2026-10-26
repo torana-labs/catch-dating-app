@@ -83,7 +83,7 @@ void main() {
           const PermissionException('Access denied.'),
           onRetry: () => retries++,
           retryLabel: 'Recharger',
-          icon: CatchIcons.refreshRounded,
+          icon: CatchIcons.refresh,
           secondaryAction: CatchErrorBackButton(
             label: 'Retour',
             onPressed: () => exits++,
@@ -95,7 +95,7 @@ void main() {
         final body = tester.widget<CatchErrorState>(
           find.byType(CatchErrorState),
         );
-        expect(body.icon, CatchIcons.refreshRounded);
+        expect(body.icon, CatchIcons.refresh);
         await tester.tap(find.text('Recharger'));
         await tester.tap(find.text('Retour'));
         expect(retries, 1);

@@ -22,7 +22,7 @@ class EventSuccessPodSummaryRow extends StatelessWidget {
                   key: entry.key,
                   value: entry.value,
                 ),
-            icon: CatchIcons.groupOutlined,
+            icon: CatchIcons.people,
           ),
       ],
     );

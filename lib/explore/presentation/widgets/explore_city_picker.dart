@@ -151,7 +151,7 @@ class ExploreCityPickerSheet extends StatelessWidget {
       child: CatchSheet(
         title: context.l10n.exploreExploreCityPickerTextCity,
         trailing: Icon(
-          CatchIcons.locationOnOutlined,
+          CatchIcons.location,
           size: CatchIconSize.md,
           color: t.ink3,
         ),
@@ -220,7 +220,7 @@ class CityOptionTile extends StatelessWidget {
               ),
               if (selected)
                 Icon(
-                  CatchIcons.checkRounded,
+                  CatchIcons.check,
                   size: CatchIconSize.md,
                   color: t.primary,
                 ),

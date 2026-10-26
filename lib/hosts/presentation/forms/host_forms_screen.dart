@@ -337,7 +337,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen> {
               : CatchTopBarPrimaryButton(
                   key: const ValueKey('host-responses-import'),
                   label: context.l10n.hostApplicationsImport,
-                  icon: CatchIcons.downloadRounded,
+                  icon: CatchIcons.download,
                   onPressed: _importing
                       ? null
                       : () => _pickApplicationImport(request),
@@ -689,7 +689,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
           loadingBuilder: (_) => CatchSection.sliverLoadingRows(
             itemCount: 6,
             layoutBuilder: (_, _) => CatchRecordLayout.placeholder(
-              icon: CatchIcons.descriptionOutlined,
+              icon: CatchIcons.document,
               hasMetadata: true,
               factCount: 1,
             ),
@@ -707,7 +707,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                   query == null && statuses.isEmpty && purposes.isEmpty;
               return SliverToBoxAdapter(
                 child: CatchEmptyState(
-                  icon: CatchIcons.descriptionOutlined,
+                  icon: CatchIcons.document,
                   title: unfiltered
                       ? context.l10n.hostFormsEmptyTitle
                       : context.l10n.hostFormsNoMatchesTitle,
@@ -742,7 +742,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                       key: ValueKey('host-form-${form.formId}'),
                       content: CatchRecordLayout(
                         title: form.title,
-                        icon: CatchIcons.descriptionOutlined,
+                        icon: CatchIcons.document,
                         metadata:
                             '${hostFormPurposeLabel(context, form.purpose)} · ${form.lastResponseAt == null ? context.l10n.hostAudienceFormEdited(time: AppTimeFormatters.compactRelativeTime(form.updatedAt)) : context.l10n.hostAudienceFormLastResponse(time: AppTimeFormatters.compactRelativeTime(form.lastResponseAt!))}',
                         facts: [

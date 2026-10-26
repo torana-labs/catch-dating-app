@@ -32,7 +32,7 @@ Widget dashboardHeaderContentReview(BuildContext context) {
             title: 'Three plans ready',
             actions: [
               CatchIconAction.counted(
-                icon: CatchIcons.notificationsRounded,
+                icon: CatchIcons.notifications,
                 count: 3,
                 size: CatchIconAction.navSize,
                 tooltip: 'Notifications',
@@ -60,7 +60,7 @@ Widget dashboardCountedNotificationActionReviewStates(BuildContext context) {
         label: 'no unread',
         child: WidgetbookDashboardPrimitiveFrame(
           child: CatchIconAction.counted(
-            icon: CatchIcons.notificationsNoneRounded,
+            icon: CatchIcons.notifications,
             count: 0,
             size: CatchIconAction.navSize,
             tooltip: 'Notifications',
@@ -72,7 +72,7 @@ Widget dashboardCountedNotificationActionReviewStates(BuildContext context) {
         label: 'unread count',
         child: WidgetbookDashboardPrimitiveFrame(
           child: CatchIconAction.counted(
-            icon: CatchIcons.notificationsRounded,
+            icon: CatchIcons.notifications,
             count: 3,
             size: CatchIconAction.navSize,
             tooltip: 'Notifications',
@@ -84,7 +84,7 @@ Widget dashboardCountedNotificationActionReviewStates(BuildContext context) {
         label: 'overflow badge',
         child: WidgetbookDashboardPrimitiveFrame(
           child: CatchIconAction.counted(
-            icon: CatchIcons.notificationsRounded,
+            icon: CatchIcons.notifications,
             count: 124,
             size: CatchIconAction.navSize,
             tooltip: 'Notifications',

@@ -51,7 +51,7 @@ class CatchesPassButton extends StatelessWidget {
                     ),
                   )
                 : Icon(
-                    CatchIcons.closeRounded,
+                    CatchIcons.close,
                     color: passColor,
                     size: CatchIconSize.passButton,
                   ),

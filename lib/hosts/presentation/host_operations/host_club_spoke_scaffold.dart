@@ -257,7 +257,7 @@ class HostClubReadOnlyDefaultsSection extends StatelessWidget {
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsPrivateEventCity,
           body: club.location,
-          icon: CatchIcons.locationOnOutlined,
+          icon: CatchIcons.location,
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
@@ -265,13 +265,13 @@ class HostClubReadOnlyDefaultsSection extends StatelessWidget {
           body:
               club.hostDefaults.timezone ??
               context.l10n.hostsEventDefaultsChooseEachEvent,
-          icon: CatchIcons.languageOutlined,
+          icon: CatchIcons.web,
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleDefaultActivity,
           valueText: club.hostDefaults.primaryActivityKind.label,
-          icon: CatchIcons.eventOutlined,
+          icon: CatchIcons.event,
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
@@ -284,7 +284,7 @@ class HostClubReadOnlyDefaultsSection extends StatelessWidget {
             policy.admissionPreset,
             context.l10n,
           ),
-          icon: CatchIcons.eventSeatOutlined,
+          icon: CatchIcons.seat,
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
@@ -293,14 +293,14 @@ class HostClubReadOnlyDefaultsSection extends StatelessWidget {
             minAge: policy.minAge,
             maxAge: policy.maxAge,
           ),
-          icon: CatchIcons.cakeOutlined,
+          icon: CatchIcons.birthday,
         ),
         CatchField.read(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleCancellationPolicy,
           body: policy.cancellationPolicy.attendeeSummary,
           valueText: policy.cancellationPolicy.title,
-          icon: CatchIcons.eventBusyOutlined,
+          icon: CatchIcons.eventUnavailable,
         ),
       ],
     );

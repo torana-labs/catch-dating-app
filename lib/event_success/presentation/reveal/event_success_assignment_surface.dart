@@ -32,7 +32,7 @@ class EventSuccessAssignmentSurface extends StatelessWidget {
           CatchBadge(
             label: title,
             tone: CatchBadgeTone.success,
-            icon: CatchIcons.autoAwesomeRounded,
+            icon: CatchIcons.magic,
           ),
           gapH10,
           child,

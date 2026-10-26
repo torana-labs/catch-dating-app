@@ -121,7 +121,7 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(find.text('171 cm'), findsOneWidget);
 
     final disabledIncrease = tester.widget<CatchStepperRepeatButton>(
-      find.widgetWithIcon(CatchStepperRepeatButton, CatchIcons.addRounded),
+      find.widgetWithIcon(CatchStepperRepeatButton, CatchIcons.add),
     );
     expect(disabledIncrease.enabled, isFalse);
 
@@ -206,13 +206,13 @@ void _registerCatchPrimitivesCompositionTests() {
     );
     expect(foregroundDecoration.border?.top.color, restingBorder.color);
     expect(foregroundDecoration.border?.top.width, restingBorder.width);
-    expect(find.byIcon(CatchIcons.closeRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.close), findsOneWidget);
 
     await tester.tap(find.text('Easy'));
     await tester.pump();
     expect(removals, 1);
 
-    await tester.tap(find.byIcon(CatchIcons.closeRounded));
+    await tester.tap(find.byIcon(CatchIcons.close));
     await tester.pump();
     expect(removals, 2);
   });
@@ -308,7 +308,7 @@ void _registerCatchPrimitivesCompositionTests() {
           ],
           trailing: SizedBox.square(
             dimension: CatchLayout.iconButtonNavSize,
-            child: Icon(CatchIcons.tuneRounded),
+            child: Icon(CatchIcons.filters),
           ),
         ),
       ),
@@ -316,7 +316,7 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pump();
 
     final labelCenter = tester.getCenter(find.text('All'));
-    final iconCenter = tester.getCenter(find.byIcon(CatchIcons.tuneRounded));
+    final iconCenter = tester.getCenter(find.byIcon(CatchIcons.filters));
 
     expect((labelCenter.dy - iconCenter.dy).abs(), lessThan(8));
   });
@@ -326,21 +326,9 @@ void _registerCatchPrimitivesCompositionTests() {
     (tester) async {
       var selected = 'now';
       final options = [
-        CatchOption(
-          value: 'now',
-          label: 'Now',
-          icon: CatchIcons.scheduleRounded,
-        ),
-        CatchOption(
-          value: 'guests',
-          label: 'Guests',
-          icon: CatchIcons.groupsOutlined,
-        ),
-        CatchOption(
-          value: 'room',
-          label: 'Room',
-          icon: CatchIcons.gridViewRounded,
-        ),
+        CatchOption(value: 'now', label: 'Now', icon: CatchIcons.time),
+        CatchOption(value: 'guests', label: 'Guests', icon: CatchIcons.people),
+        CatchOption(value: 'room', label: 'Room', icon: CatchIcons.grid),
       ];
 
       await tester.pumpWidget(
@@ -353,7 +341,7 @@ void _registerCatchPrimitivesCompositionTests() {
           ),
         ),
       );
-      expect(find.byIcon(CatchIcons.gridViewRounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.grid), findsOneWidget);
       await tester.tap(find.text('Room'));
       expect(selected, 'room');
 
@@ -372,7 +360,7 @@ void _registerCatchPrimitivesCompositionTests() {
       expect(find.text('Now'), findsOneWidget);
       expect(find.text('Guests'), findsOneWidget);
       expect(find.text('Room'), findsOneWidget);
-      expect(find.byIcon(CatchIcons.gridViewRounded), findsNothing);
+      expect(find.byIcon(CatchIcons.grid), findsNothing);
       expect(tester.takeException(), isNull);
     },
   );
@@ -505,7 +493,7 @@ void _registerCatchPrimitivesCompositionTests() {
       expect(
         find.descendant(
           of: selectedChip,
-          matching: find.byIcon(CatchIcons.checkRounded),
+          matching: find.byIcon(CatchIcons.check),
         ),
         findsOneWidget,
       );
@@ -513,11 +501,11 @@ void _registerCatchPrimitivesCompositionTests() {
       expect(
         find.descendant(
           of: unselectedChip,
-          matching: find.byIcon(CatchIcons.checkRounded),
+          matching: find.byIcon(CatchIcons.check),
         ),
         findsNothing,
       );
-      expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.check), findsOneWidget);
     },
   );
 
@@ -562,13 +550,13 @@ void _registerCatchPrimitivesCompositionTests() {
             CatchBadge(
               label: 'reward',
               tone: CatchBadgeTone.gold,
-              icon: CatchIcons.rated,
+              icon: CatchIcons.rating,
             ),
             CatchBadge(
               label: 'checked in',
               size: CatchBadgeSize.action,
               accentColor: Colors.deepPurple,
-              icon: CatchIcons.checkRounded,
+              icon: CatchIcons.check,
             ),
           ],
         ),
@@ -584,7 +572,7 @@ void _registerCatchPrimitivesCompositionTests() {
       tester.getSize(find.widgetWithText(CatchBadge, 'checked in')).height,
       33,
     );
-    expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.check), findsOneWidget);
   });
 
   testWidgets('CatchChip.activity renders soft and solid activity registers', (
@@ -732,7 +720,7 @@ void _registerCatchPrimitivesCompositionTests() {
     );
 
     expect(find.text('AS'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(2));
+    expect(find.byIcon(CatchIcons.person), findsNWidgets(2));
     expect(find.byType(CatchAvatar), findsNWidgets(4));
     expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
     expect(find.text('+1'), findsOneWidget);
@@ -752,7 +740,7 @@ void _registerCatchPrimitivesCompositionTests() {
     );
 
     expect(find.text('SOCIAL RUN · 6:30 AM'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.pin), findsOneWidget);
+    expect(find.byIcon(CatchIcons.location), findsOneWidget);
   });
 
   testWidgets('CatchDistanceOverlay renders tappable map radius label', (
@@ -804,6 +792,6 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pump();
 
     expect(find.byType(CatchImageFallbackSurface), findsOneWidget);
-    expect(find.byIcon(CatchIcons.imageOutlined), findsOneWidget);
+    expect(find.byIcon(CatchIcons.photo), findsOneWidget);
   });
 }

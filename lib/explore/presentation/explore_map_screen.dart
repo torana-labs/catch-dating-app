@@ -175,9 +175,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
               child: CatchEmptyState(
                 surface: true,
                 variant: CatchEmptyStateVariant.inline,
-                icon: emptyHasDistance
-                    ? CatchIcons.nearMeOutlined
-                    : CatchIcons.tune,
+                icon: emptyHasDistance ? CatchIcons.nearMe : CatchIcons.filters,
                 title: emptyHasDistance
                     ? context.l10n
                           .exploreExploreMapScreenTitleNoEventsWithinDistance(
@@ -275,7 +273,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                   bottom: CatchSpacing.s5,
                 ),
                 child: CatchButton.floating(
-                  icon: CatchIcons.nearMeOutlined,
+                  icon: CatchIcons.nearMe,
                   label: distanceControlLabel,
                   value: hasDeviceLocation ? distanceControlValue : null,
                   semanticsLabel: distanceControlSemantics,
@@ -303,7 +301,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                     catchTransitionHaptic();
                     if (context.canPop()) context.pop();
                   },
-                  child: Icon(CatchIcons.backArrow),
+                  child: Icon(CatchIcons.back),
                 ),
               ),
             ),
