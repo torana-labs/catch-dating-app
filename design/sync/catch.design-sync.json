@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "beb304d7bb5ac1bf40264cf89439deb32a103586fc94c2e841d5dc74932c3860",
+  "sourceDigest": "acc7da3b46170b0d384a4016666ba3dcbc7e52a5ee6e1d98ca89c2de7aab97d9",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "beb304d7bb5ac1bf40264cf89439deb32a103586fc94c2e841d5dc74932c3860",
-    "contractDigest": "beb304d7bb5ac1bf40264cf89439deb32a103586fc94c2e841d5dc74932c3860"
+    "digest": "acc7da3b46170b0d384a4016666ba3dcbc7e52a5ee6e1d98ca89c2de7aab97d9",
+    "contractDigest": "acc7da3b46170b0d384a4016666ba3dcbc7e52a5ee6e1d98ca89c2de7aab97d9"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "121dca91de5a63305c17c5b1fc91992af2f6de51a7abb8e2d847552d5d5414a5",
+    "handoffRequestDigest": "96111579339f187e828aa3623822868341425deb42ea24943058f4d4cc3a7fb9",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,7 +461,7 @@
     "claudeAllowed": 71,
     "reactImplementationStates": {
       "headless-control": 6,
-      "styled": 20
+      "styled": 22
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -1162,9 +1162,9 @@
       "conceptId": "catch.sheet",
       "dartSymbol": "CatchSheet",
       "dartFile": "packages/catch_ui/lib/src/components/catch_sheet.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchSheet",
+      "reactFile": "packages/web-ui/src/components/CatchSheet.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Sheet",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1189,7 +1189,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "dbaf84d72bc4c0fe856777eec302aa4712128364b87b4f77cb200f6c13c80ccd"
+      "contractDigest": "d08bee3a62de45e0153e8d3904392912f640b4baa3ea973688d45bb905383f39"
     },
     {
       "contractId": "catch.icon",
@@ -2562,9 +2562,9 @@
       "conceptId": "catch.bottom_action",
       "dartSymbol": "CatchDock",
       "dartFile": "packages/catch_ui/lib/src/components/catch_dock.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchDock",
+      "reactFile": "packages/web-ui/src/components/CatchDock.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/DockSurface",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2589,7 +2589,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "DockSurface",
       "claudeAllowed": true,
-      "contractDigest": "85fb763cf7e1282dc1a06a75a80693006901854559f1cb0b1b5e5994f357e591"
+      "contractDigest": "1562606d55c3623cb32954500d1d39231086a313542139ea5cb75894b64bc251"
     },
     {
       "contractId": "catch.map_preview",

@@ -1,6 +1,6 @@
 "use client";
 
-import {type ReactNode, useEffect, useId, useRef} from "react";
+import {type CSSProperties, type ReactNode, useEffect, useId, useRef} from "react";
 import {CatchBadge, type CatchBadgeTone} from "./CatchBadge";
 import {CatchButton} from "./CatchButton";
 import {CatchText} from "./CatchText";
@@ -32,6 +32,8 @@ export interface CatchSheetDefaultProps extends CatchSheetBase {
   /** Flutter's keyboard inset handling; the browser resizes the viewport itself. */
   keyboardSafe?: boolean;
   mode?: CatchSheetMode;
+  /** Flutter's legacy padding: replaces the sheet's content padding. */
+  padding?: CSSProperties["padding"];
 }
 
 /** `CatchSheet.standard`: bounded to 90% of the viewport with one scroll owner. */
@@ -68,6 +70,7 @@ export function CatchSheet(props: CatchSheetProps) {
     ? <CatchButton label={props.closeLabel} onPressed={onClose} recipe="sheet" role="dismiss" />
     : props.footer;
   const pinned = props.recipe === "filter" || (props.recipe === "standard" && Boolean(props.pinFooter));
+  const padding = props.recipe === undefined || props.recipe === "default" ? props.padding : undefined;
   const scrollable = bounded || (props.recipe === undefined || props.recipe === "default" ? props.mode === "scrollable" : false);
 
   useEffect(() => {
@@ -103,7 +106,7 @@ export function CatchSheet(props: CatchSheetProps) {
       ref={dialog}
     >
       <div className={styles.surface}>
-        <div className={styles.scroll}>
+        <div className={styles.scroll} style={padding === undefined ? undefined : {padding}}>
           {grabber ? <span aria-hidden="true" className={styles.grabber} /> : null}
           {hasHeader ? (
             <div className={styles.header} data-branded={glyph != null || undefined}>

@@ -38,6 +38,11 @@ describe("CatchSheet", () => {
     expect(onClose).toHaveBeenCalledOnce();
   });
 
+  it("takes the caller's content padding on the default recipe", () => {
+    const {container} = render(<CatchSheet label="Notes" onClose={vi.fn()} open padding="8px 12px">Body</CatchSheet>);
+    expect((container.querySelector("dialog > div > div") as HTMLElement).style.padding).toBe("8px 12px");
+  });
+
   it("shows a badge in place of the trailing slot and drops the grabber on request", () => {
     const {container} = render(<CatchSheet badge="New" badgeTone="brand" grabber={false} label="Pace groups" onClose={vi.fn()} open>Body</CatchSheet>);
     expect(screen.getByText("New").closest("[data-recipe]")!.getAttribute("data-recipe")).toBe("functional");

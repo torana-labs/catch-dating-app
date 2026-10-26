@@ -3621,6 +3621,32 @@
       "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon."
     },
     {
+      "id": "shared_sticky_aside",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "shared/layout",
+      "source": "packages/web-ui/src/components/CatchStickyAside.tsx",
+      "exportName": "CatchStickyAside",
+      "css": [
+        "packages/web-ui/src/components/CatchStickyAside.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchStickyAside.stories.tsx",
+        "exportName": "EventBooking",
+        "states": [
+          "sticky",
+          "docked",
+          "sheet-open",
+          "phone-size",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-248). The event page's booking card: a sticky aside beside the content on desktop, and on phones a docked bar (CatchDock) whose action opens the same card in a CatchSheet. It switches on the page's container width (catch-page below 840px), not the viewport. Search aliases: StickySidebar, BookingAside, StickyCard, BookingPanel, MobileBookingBar."
+    },
+    {
       "id": "shared_fact_tile",
       "kind": "supporting-component",
       "routeIds": [
