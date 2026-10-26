@@ -33,6 +33,8 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
       'count',
       'veiled-run',
       'veiled-dinner',
+      'monogram',
+      'monogram-display',
     ],
     children: [
       const WidgetbookContractStateCard(
@@ -131,6 +133,25 @@ Widget catchPersonAvatarContractStates(BuildContext context) {
           ).avatarColors,
           borderWidth: CatchStroke.avatarRing,
           borderColor: t.surface,
+        ),
+      ),
+      const WidgetbookContractStateCard(
+        label: 'monogram',
+        child: CatchAvatar.monogram(
+          size: 36,
+          name: 'Riya S.',
+          ground: CatchGround.pink,
+        ),
+      ),
+      const WidgetbookContractStateCard(
+        label: 'monogram-display',
+        child: CatchAvatar.monogram(
+          size: 88,
+          name: 'Carter Road Runners',
+          initials: 'CR',
+          ground: CatchGround.coral,
+          borderWidth: 4,
+          borderColor: CatchTokens.editorialWhite,
         ),
       ),
     ],

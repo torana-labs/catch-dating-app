@@ -18,6 +18,7 @@ export 'src/primitives/catch_stroke.dart';
 export 'src/semantic/catch_border.dart';
 export 'src/semantic/catch_elevation.dart';
 export 'src/semantic/catch_gaps.dart';
+export 'src/semantic/catch_ground.dart';
 export 'src/semantic/catch_insets.dart';
 export 'src/semantic/catch_layout.dart';
 export 'src/semantic/catch_lodging_layout.dart';

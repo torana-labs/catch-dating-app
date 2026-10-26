@@ -1,0 +1,134 @@
+/*
+ * Flutter CatchAvatar, CatchAvatarViewport and CatchAvatarInitialsSurface:
+ * initials at 0.34 of the size (activity 0.32, counts 0.30), the activity
+ * pigment at 150 degrees with a 13px print and a 16% inner rule, a 20% dim,
+ * the obscuring 3.5px blur at 1.16 scale under a 16% scrim, a 9px online dot,
+ * square corners at radius md, and the ring as padding in its colour.
+ */
+.avatar {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  box-sizing: border-box;
+  width: var(--catch-avatar-size);
+  height: var(--catch-avatar-size);
+  padding: var(--catch-avatar-ring);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-avatar-ring-color, transparent);
+}
+
+.avatar:has(.viewport[data-variant="square"]) { border-radius: var(--catch-radius-md); }
+
+.viewport {
+  position: relative;
+  display: flex;
+  width: var(--catch-avatar-inner);
+  height: var(--catch-avatar-inner);
+  overflow: hidden;
+  border-radius: var(--catch-radius-pill);
+}
+
+.viewport[data-variant="square"] { border-radius: var(--catch-radius-md); }
+
+.viewport > * {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+  font-size: calc(var(--catch-avatar-inner) * 0.34);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.viewport[data-obscured] > * {
+  filter: blur(3.5px);
+  transform: scale(1.16);
+}
+
+.viewport[data-obscured]::after {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--catch-palette-ink) 16%, transparent);
+  content: "";
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.person {
+  background: color-mix(in srgb, var(--catch-theme-primary-soft),
+    var(--catch-theme-ink2) calc(var(--catch-avatar-tone) * 7%));
+  color: var(--catch-theme-ink2);
+}
+
+.activity {
+  position: relative;
+  box-sizing: border-box;
+  border: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-palette-white) 16%, transparent);
+  background:
+    repeating-linear-gradient(-45deg, transparent 0 11px,
+      color-mix(in srgb, var(--catch-palette-white) 8%, transparent) 11px 13px),
+    linear-gradient(285deg, var(--catch-avatar-accent), var(--catch-avatar-deep));
+  color: var(--catch-palette-white);
+  font-size: calc(var(--catch-avatar-inner) * 0.32);
+}
+
+.activity[data-dim]::after {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--catch-palette-ink) 20%, transparent);
+  content: "";
+}
+
+.count {
+  background: var(--catch-theme-raised);
+  color: var(--catch-theme-ink2);
+  font-size: calc(var(--catch-avatar-inner) * 0.3);
+  font-weight: 800;
+}
+
+.veiled {
+  background: var(--catch-avatar-soft);
+  color: var(--catch-avatar-deep);
+}
+
+.veiled > svg {
+  width: calc(var(--catch-avatar-inner) * 0.38);
+  height: calc(var(--catch-avatar-inner) * 0.38);
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  opacity: 0.75;
+}
+
+.monogram {
+  composes: ground from "./grounds.module.css";
+}
+
+.monogram[data-display] {
+  font-family: var(--catch-font-voice), sans-serif;
+  font-stretch: 78%;
+  font-variation-settings: "wdth" 78;
+  font-weight: 760;
+  letter-spacing: -0.02em;
+}
+
+.status {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  box-sizing: border-box;
+  width: 9px;
+  height: 9px;
+  border: var(--catch-stroke-underline) solid var(--catch-theme-surface);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-success);
+}

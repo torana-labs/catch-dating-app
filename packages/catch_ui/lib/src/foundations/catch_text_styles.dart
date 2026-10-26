@@ -262,6 +262,23 @@ abstract final class CatchTextStyles {
     color: color ?? CatchTokens.of(context).ink,
   );
 
+  /// Initials on a palette-ground monogram. From 24px up they take the
+  /// display voice (D19), as an organiser's mark does; smaller initials keep
+  /// the avatar initials role.
+  static TextStyle avatarMonogram(
+    BuildContext context, {
+    required double size,
+    required Color color,
+  }) => size >= _displayMinimumSize
+      ? CatchFonts.voice(
+          fontSize: size,
+          fontWeight: _displayWeight,
+          height: 1,
+          letterSpacing: size * -0.02,
+          color: color,
+        )
+      : avatarInitials(context, size: size, color: color);
+
   /// OTP digit boxes (`.t-code`).
   static TextStyle otpDigit(BuildContext context, {Color? color}) => _mono(
     context,
@@ -506,6 +523,9 @@ abstract final class CatchTextStyles {
       style.copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
 
   static const FontWeight _displayWeight = FontWeight(760);
+
+  /// D19: Archivo is only for headlines of 24px and up.
+  static const double _displayMinimumSize = 24;
 
   static Color _ink(BuildContext context) => CatchTokens.of(context).ink;
 
