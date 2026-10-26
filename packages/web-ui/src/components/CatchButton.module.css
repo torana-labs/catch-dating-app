@@ -92,13 +92,22 @@
   --catch-button-border: transparent;
 }
 
-[data-catch-theme="dark"] .button { --catch-button-line: var(--catch-theme-ink3); }
+/*
+ * Flutter's control border role (CatchBorder._controlColor): ink3 pulled 10%
+ * toward ink on light, where plain ink3 misses 3:1, and plain ink3 on dark. A
+ * light band nested in a dark one takes the light line again.
+ */
+:where([data-catch-theme="dark"]) .button { --catch-button-line: var(--catch-theme-ink3); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .button {
+  --catch-button-line: color-mix(in srgb, var(--catch-theme-ink3) 90%, var(--catch-theme-ink));
+}
 
 /*
  * The dark theme's danger red is lighter, and white on it is 3.6:1; its ink
  * clears AA. (Flutter still pairs white with it: a gap to close there.)
  */
 [data-catch-theme="dark"] .button[data-variant="danger"] { --catch-button-fg: var(--catch-theme-primary-ink); }
+[data-catch-theme="dark"] [data-catch-theme="light"] .button[data-variant="danger"] { --catch-button-fg: var(--catch-palette-white); }
 
 .button[data-full-width] {
   display: flex;
