@@ -15,15 +15,19 @@ const layout = read("../../../catch_tokens/lib/src/semantic/catch_layout.dart");
 const opacity = read("../../../catch_tokens/lib/src/semantic/catch_opacity.dart");
 const motion = read("../../../catch_tokens/lib/src/semantic/catch_motion.dart");
 const icon = read("../../../catch_tokens/lib/src/primitives/catch_icon_size.dart");
+const tokensCss = read("../../../web-config/generated/catch-tokens.css");
 const loadingCss = read("./CatchLoadingIndicator.module.css");
 const skeletonCss = read("./CatchSkeleton.module.css");
 const emptyCss = read("./CatchEmptyState.module.css");
 const emptyTs = read("./CatchEmptyState.tsx");
 
+// Sizes are pixel literals in CSS; Flutter names them by spacing step.
+const spacing = (step: string) => Number(tokensCss.match(new RegExp(`--catch-space-${step}:\\s*([\\d.]+)px`))?.[1]);
+
 describe("CatchLoadingIndicator parity", () => {
   it("keeps the dots' size, gap and alphas and the inline glyph's extent and period", () => {
     expect(loading).toContain("dimension: CatchSpacing.micro6");
-    expect(loadingCss).toContain("width: var(--catch-space-micro6);");
+    expect(loadingCss).toContain(`width: ${spacing("micro6")}px;`);
     expect(loading).toContain("left: index == 0 ? 0 : CatchSpacing.s1");
     expect(loadingCss).toContain('.indicator[data-recipe="dots"] { gap: var(--catch-space-s1); }');
     const alphas = opacity.match(/loadingDotAlphas = <double>\[([^\]]+)\]/)?.[1].split(",").map((value) => Math.round(Number(value) * 100)) ?? [];
@@ -45,7 +49,7 @@ describe("CatchSkeleton parity", () => {
     expect(layout).toContain("skeletonTextHeight = CatchIconSize.sm");
     expect(skeletonCss).toContain(`height: ${Number(icon.match(/static const double sm = ([\d.]+);/)?.[1])}px;`);
     expect(layout).toContain("skeletonCircleExtent = CatchSpacing.s12");
-    expect(skeletonCss).toContain("width: var(--catch-space-s12);");
+    expect(skeletonCss).toContain(`width: ${spacing("s12")}px;`);
     expect(skeleton).toContain("widthFactor: i == lines - 1 ? 0.6 : 1.0");
     expect(skeletonCss).toContain(".block > :last-child { width: 60%; }");
     expect(skeleton).toContain("bottom: i < lines - 1 ? CatchSpacing.s2 : CatchSpacing.s0");

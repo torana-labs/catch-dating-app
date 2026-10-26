@@ -40,7 +40,7 @@
 
 .caret {
   width: 2px;
-  height: var(--catch-space-s6);
+  height: 24px;
   background: var(--catch-theme-ink);
   animation: catch-code-caret 1s steps(1) infinite;
 }

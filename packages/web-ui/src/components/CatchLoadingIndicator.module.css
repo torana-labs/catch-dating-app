@@ -58,8 +58,8 @@
 .indicator[data-recipe="dots"] { gap: var(--catch-space-s1); }
 
 .dot {
-  width: var(--catch-space-micro6);
-  height: var(--catch-space-micro6);
+  width: 6px;
+  height: 6px;
   border-radius: var(--catch-radius-pill);
   background: color-mix(in srgb, var(--catch-loading-color) 40%, transparent);
 }
