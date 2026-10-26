@@ -85,6 +85,9 @@
     "declaration-property-value-allowed-list": {
       "count": 13
     },
+    "declaration-property-value-disallowed-list": {
+      "count": 5
+    },
     "media-feature-name-value-allowed-list": {
       "count": 5
     }
