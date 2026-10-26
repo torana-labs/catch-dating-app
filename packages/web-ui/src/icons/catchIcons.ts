@@ -2,8 +2,8 @@ import {
   catchActivityIconNames,
   catchIconStrokeWidth,
   type CatchActivityKind,
-} from "./catchIconGlyphs.generated";
-import {catchIconNodes, type CatchIconNodeName} from "./catchIconNodes.generated";
+} from "./catchIconGlyphs";
+import {catchIconNodes, type CatchIconNodeName} from "./catchIconNodes";
 
 /** The icon role that draws an event activity kind. */
 export function activityIconName(kind: CatchActivityKind) {

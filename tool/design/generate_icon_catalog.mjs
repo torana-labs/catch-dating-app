@@ -28,8 +28,8 @@ export const inputs = {
 
 export const outputs = {
   dart: "packages/catch_ui/lib/src/foundations/catch_icons.g.dart",
-  glyphs: "packages/web-ui/src/icons/catchIconGlyphs.generated.ts",
-  nodes: "packages/web-ui/src/icons/catchIconNodes.generated.ts",
+  glyphs: "packages/web-ui/src/icons/catchIconGlyphs.ts",
+  nodes: "packages/web-ui/src/icons/catchIconNodes.ts",
 };
 
 // Groups whose glyphs are also drawn outside React (link-preview SVG,

@@ -2,7 +2,7 @@ import {
   catchIconGlyphs,
   catchIconStrokeWidth,
   type CatchIconName,
-} from "../icons/catchIconGlyphs.generated";
+} from "../icons/catchIconGlyphs";
 import styles from "./CatchIcon.module.css";
 
 /**

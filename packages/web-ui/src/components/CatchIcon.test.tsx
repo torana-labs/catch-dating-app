@@ -1,6 +1,6 @@
 import {render} from "@testing-library/react";
 import {describe, expect, it} from "vitest";
-import {catchIconStrokeWidth} from "../icons/catchIconGlyphs.generated";
+import {catchIconStrokeWidth} from "../icons/catchIconGlyphs";
 import {activityIconName, catchIconSvgMarkup} from "../icons/catchIcons";
 import {CatchIcon} from "./CatchIcon";
 
