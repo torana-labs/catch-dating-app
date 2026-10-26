@@ -47,7 +47,45 @@ void main() {
   });
 
   testWidgets(
-    'Consumer payment repository sees native checkout under bootstrap root',
+    'nested-only native checkout leaves the payment repository unsupported',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      final rootContainer = createCatchAppContainer(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('test-account')),
+          firebaseFunctionsProvider.overrideWithValue(_FakeFirebaseFunctions()),
+        ],
+      );
+      addTearDown(rootContainer.dispose);
+      RazorpayCheckoutFactory? observedFactory;
+      PaymentRepository? observedRepository;
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: rootContainer,
+          child: ProviderScope(
+            overrides: consumerPlatformOverrides(),
+            child: Consumer(
+              builder: (context, ref, child) {
+                observedFactory = ref.watch(razorpayCheckoutFactoryProvider);
+                observedRepository = ref.watch(paymentRepositoryProvider);
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(observedFactory, isNotNull);
+      expect(rootContainer.read(razorpayCheckoutFactoryProvider), isNull);
+      expect(observedRepository!.supportsPaidBookings, isFalse);
+      debugDefaultTargetPlatformOverride = null;
+    },
+  );
+
+  testWidgets(
+    'root-bound native checkout reaches payment repository through child scope',
     (tester) async {
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       addTearDown(() => debugDefaultTargetPlatformOverride = null);
@@ -65,12 +103,14 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: rootContainer,
-          child: Consumer(
-            builder: (context, ref, child) {
-              observedFactory = ref.watch(razorpayCheckoutFactoryProvider);
-              observedRepository = ref.watch(paymentRepositoryProvider);
-              return const SizedBox.shrink();
-            },
+          child: ProviderScope(
+            child: Consumer(
+              builder: (context, ref, child) {
+                observedFactory = ref.watch(razorpayCheckoutFactoryProvider);
+                observedRepository = ref.watch(paymentRepositoryProvider);
+                return const SizedBox.shrink();
+              },
+            ),
           ),
         ),
       );
