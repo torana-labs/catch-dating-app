@@ -3679,7 +3679,8 @@
       "id": "shared_ground_card",
       "kind": "supporting-component",
       "routeIds": [
-        "organizer_listing_canonical"
+        "organizer_listing_canonical",
+        "event_detail_canonical"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchGroundCard.tsx",
@@ -3943,35 +3944,6 @@
         ]
       },
       "notes": "Website T4 under D18 (CAT-252). An event without a photo, set in type on a ground: the kicker and date on the top line, a displayXxl title and the place at the foot, in CatchHeroImage's framed geometry (16:10 at radius lg, 4:3 below 840px). It repeats the page's own words, so it is hidden from screen readers. Nearest concepts: catch.detail_media (CatchHeroImage, whose fallback is a branded gradient without words) and catch.organizer_poster (CatchPoster, organiser material with media). Search aliases: EventPoster, PosterCover, TypePoster, NoPhotoCover."
-    },
-    {
-      "id": "shared_ground_card",
-      "kind": "supporting-component",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "event_detail_canonical"
-      ],
-      "owner": "shared/parts",
-      "source": "packages/web-ui/src/components/CatchGroundCard.tsx",
-      "exportName": "CatchGroundCard",
-      "css": [
-        "packages/web-ui/src/components/CatchGroundCard.module.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "packages/web-ui/src/components/CatchGroundCard.stories.tsx",
-        "exportName": "Grounds",
-        "states": [
-          "grounds",
-          "compact",
-          "spacious",
-          "dark-ground",
-          "share-card",
-          "board-reference",
-          "outlined"
-        ]
-      },
-      "notes": "Website T4 under D18 (CAT-251, outlined in CAT-252). A rounded block on one Website v2 ground that holds whatever the page arranges in it with CatchGap; library text inside takes the ground's inks and the ink ground resolves through the dark theme. Outlined draws the boards' hairline for a white card on a white page. Nearest concept: catch.surface (CatchSurface, whose tones are theme surfaces, not grounds). Search aliases: Card, Panel, GroundPanel, Callout."
     },
     {
       "id": "shared_qr_code",
