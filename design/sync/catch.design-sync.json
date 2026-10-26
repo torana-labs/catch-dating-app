@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "58d635ab2f497b66a12abfae92d5929fa11109c7a31a46c964d3b4328ed7a93b",
+  "sourceDigest": "9d6d94b4a46b5b5c4b7bea52b19af1d89b08fd91ca8a1abdaf4dfbd0dc20982d",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "58d635ab2f497b66a12abfae92d5929fa11109c7a31a46c964d3b4328ed7a93b",
-    "contractDigest": "58d635ab2f497b66a12abfae92d5929fa11109c7a31a46c964d3b4328ed7a93b"
+    "digest": "9d6d94b4a46b5b5c4b7bea52b19af1d89b08fd91ca8a1abdaf4dfbd0dc20982d",
+    "contractDigest": "9d6d94b4a46b5b5c4b7bea52b19af1d89b08fd91ca8a1abdaf4dfbd0dc20982d"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "6a8c0b928fa3ab799dde0d8138a2ab9777c1500d46fc97d4fe836d90d28e4b6c",
+    "handoffRequestDigest": "fd9a43a80e790a2b8d0a81ceadf1f275942c859806633f9c8970bbe0fac4796f",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -460,8 +460,8 @@
     },
     "claudeAllowed": 71,
     "reactImplementationStates": {
-      "headless-control": 7,
-      "styled": 18
+      "headless-control": 6,
+      "styled": 19
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -552,9 +552,9 @@
       "conceptId": "catch.button",
       "dartSymbol": "CatchButton",
       "dartFile": "packages/catch_ui/lib/src/components/catch_button.dart",
-      "reactSymbol": "ButtonControl",
-      "reactFile": "packages/web-ui/src/primitives.tsx",
-      "reactApi": "headless-control",
+      "reactSymbol": "CatchButton",
+      "reactFile": "packages/web-ui/src/components/CatchButton.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Button",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",

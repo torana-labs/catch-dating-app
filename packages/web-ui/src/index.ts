@@ -61,6 +61,8 @@ export type {
 } from "./components/CatchCodeInput";
 export {CatchDateTile} from "./components/CatchDateTile";
 export type {CatchDateTileProps} from "./components/CatchDateTile";
+export {ButtonControl} from "./components/ButtonControl";
+export type {ButtonControlProps} from "./components/ButtonControl";
 export {CatchBadge} from "./components/CatchBadge";
 export type {
   CatchBadgeEmphasis,
@@ -195,7 +197,6 @@ export type {
   CatchTextVariant,
 } from "./components/CatchText";
 export {
-  ButtonControl,
   CheckboxControl,
   DataTableControl,
   EmptyStateControl,
@@ -206,7 +207,6 @@ export {
   classNames,
 } from "./primitives";
 export type {
-  ButtonControlProps,
   CheckboxControlProps,
   DataTableControlProps,
   EmptyStateAnnouncement,

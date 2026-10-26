@@ -28,6 +28,14 @@ function Share() {
   );
 }
 
+function Pin() {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+      <path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12zM12 11.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5" />
+    </svg>
+  );
+}
+
 function Outward() {
   return (
     <svg aria-hidden="true" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
@@ -55,6 +63,7 @@ function Matrix() {
         <CatchButton label="Remind me" onPressed={null} variant="secondary" />
         <CatchButton label="Booking" onPressed={noop} status="loading" />
         <CatchButton isInteractive={false} label="Booked" onPressed={noop} variant="secondary" />
+        <CatchButton label="Rounded" mode="rounded" onPressed={noop} variant="secondary" />
       </CatchGap>
       <CatchButton fullWidth label="Book 1 place · ₹299" onPressed={noop} size="lg" />
     </CatchGap>
@@ -71,13 +80,21 @@ function Recipes() {
       <CatchGap direction="horizontal" size="related" wrap>
         <CatchButton label="Sunday Social Run, 6:30 AM, Carter Road jetty" onPressed={noop} recipe="selection" tooltip="Sunday Social Run, 6:30 AM, Carter Road jetty" />
         <CatchButton label="Share" leading={<Share />} onPressed={noop} recipe="command" />
-        <CatchButton count={3} label="Filters" onPressed={noop} recipe="floating" value="Run clubs" />
+      </CatchGap>
+      <CatchGap direction="horizontal" size="related" wrap>
+        <CatchButton label="Map" onPressed={noop} recipe="floating" />
+        <CatchButton icon={<Pin />} label="Map" onPressed={noop} recipe="floating" />
+        <CatchButton label="Type" onPressed={noop} recipe="floating" value="Run clubs" />
+        <CatchButton count={3} label="Filters" onPressed={noop} recipe="floating" />
+        <CatchButton icon={<Pin />} label="Map" onPressed={noop} recipe="floating" semanticsLabel="Show Sunday runs on a map" />
       </CatchGap>
       <CatchGap direction="horizontal" size="related" wrap>
         <CatchButton label="Primary text" onPressed={noop} recipe="text" />
         <CatchButton label="Neutral text" onPressed={noop} recipe="text" tone="neutral" />
         <CatchButton label="Delete" onPressed={noop} recipe="text" tone="danger" />
         <CatchButton label="Disabled text" onPressed={null} recipe="text" />
+        <CatchButton foregroundColor="var(--catch-theme-positive-text)" label="Custom colour" onPressed={noop} recipe="text" />
+        <CatchButton label="Custom padding" onPressed={noop} padding="var(--catch-space-s2) var(--catch-space-s4)" recipe="text" />
       </CatchGap>
     </CatchGap>
   );
@@ -85,8 +102,12 @@ function Recipes() {
 
 /**
  * catch.button on the web, drawn to D20: every variant at each size; leading
- * and trailing glyphs, a link, an accent, disabled, loading and static; then
- * the sheet, selection, command, floating and text recipes. Light and dark.
+ * and trailing glyphs, a link, an accent, disabled, loading, static and
+ * rounded; then the sheet, selection, command, floating (label, icon, value,
+ * count, semantic label) and text (tones, disabled, custom colour and
+ * padding) recipes. Light and dark. Pressed, hovered and focused are pointer
+ * and keyboard states (Interaction); large text and reduced motion follow the
+ * reader's settings.
  */
 export const Contract: Story = {
   render: () => (

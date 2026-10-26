@@ -5,7 +5,6 @@
   "gates": {
     "library.t1_web": [
       "catch.banner",
-      "catch.button",
       "catch.chip",
       "catch.chip.field",
       "catch.confirm_dialog",
@@ -31,7 +30,6 @@
       "catch.ticket"
     ],
     "library.headless_controls": [
-      "catch.button",
       "catch.chip",
       "catch.chip.field",
       "catch.empty_state",
