@@ -8445,7 +8445,7 @@
       "command": "node tool/design/generate_icon_catalog.mjs --check",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Validates the shared icon-role catalog against the vendored Flutter font, locked React family version and activity kinds, and verifies generated CatchIcons.",
+      "description": "Validates the shared icon-role catalog against the vendored Flutter font, locked React family version and activity kinds, and verifies the generated Flutter CatchIcons and @catch/web-ui role maps.",
       "checks": [
         "node --check tool/design/generate_icon_catalog.mjs",
         "node --test tool/design/generate_icon_catalog.test.mjs",
@@ -8458,7 +8458,8 @@
         "design/tokens/catch.icons.legacy_flutter.json",
         "contracts/shared/event_common.schema.json",
         "package-lock.json",
-        "website/package.json",
+        "packages/web-ui/package.json",
+        "packages/web-ui/src/icons/**",
         "packages/catch_ui/assets/fonts/**",
         "packages/catch_ui/lib/src/foundations/catch_icons.dart",
         "packages/catch_ui/lib/src/foundations/catch_icons.g.dart"
