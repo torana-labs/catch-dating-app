@@ -439,8 +439,12 @@ enter previews.
 ## Rate limiting
 
 All callable functions that accept user input are rate-limited via
-`checkRateLimit()` from `src/shared/rateLimit.ts`. Limits are defined in
-`RATE_LIMITS` (per-action config) and enforced via Firestore transactions.
+`checkRateLimit()` from `src/shared/rateLimit.ts`. Each callable passes its
+own `{maxRequests, windowMs}` limit where it calls `checkRateLimit()`; the
+limit is required. Never add per-action limits to `rateLimit.ts`: nearly
+every Function imports it, so editing it redeploys them all. Its frozen
+`LEGACY_RATE_LIMITS` table may only shrink. Limits are enforced via
+Firestore transactions.
 Counter documents are written to `rateLimits/{uid}_{action}_{windowKey}`.
 A TTL policy on `expiresAt` auto-deletes counters after their window expires.
 
@@ -593,6 +597,11 @@ already have Firestore on `127.0.0.1:8080` and Storage on `127.0.0.1:9199`.
 A direct `npm run test:rules` from this directory only works when those
 emulators are already running; `connect ECONNREFUSED` means the emulator
 workflow is missing, not necessarily that the rules changed incorrectly.
+
+`test:rules` runs every file listed in `test/emulator-tests.json`. Add a new
+emulator-dependent test to that list, not to `package.json`: the backend
+deploy selector treats runtime `package.json` fields as a change to every
+Function.
 
 ## Commands
 

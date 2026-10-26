@@ -44,7 +44,7 @@ import {
 } from
   "../shared/organizerCommunicationPreferences";
 import {requireOrganizerManager} from "../shared/organizerManagerAuthority";
-import {checkRateLimit} from "../shared/rateLimit";
+import {checkRateLimit, RateLimitConfig} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {eventInviteToken, inviteLinkTokenHash} from "../events/inviteLinks";
 import {organizerWhatsappCampaignRoute} from
@@ -157,7 +157,9 @@ export async function upsertOrganizerCampaignHandler(
     "A WhatsApp template value contains language that cannot be delivered.",
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertOrganizerCampaign");
+  await deps.checkRateLimit(db, actorUid, "upsertOrganizerCampaign", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,
@@ -364,6 +366,7 @@ export async function previewOrganizerCampaignHandler(
   const {data, db} = await authorizeAction(
     request,
     "previewOrganizerCampaign",
+    {maxRequests: 30, windowMs: 60 * 1000},
     deps,
   );
   const context = await campaignContext(
@@ -417,7 +420,9 @@ export async function approveOrganizerCampaignHandler(
     normalizePayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "approveOrganizerCampaign");
+  await deps.checkRateLimit(db, actorUid, "approveOrganizerCampaign", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,
@@ -671,6 +676,7 @@ export async function cancelOrganizerCampaignHandler(
   const {data, db} = await authorizeAction(
     request,
     "cancelOrganizerCampaign",
+    {maxRequests: 30, windowMs: 60 * 1000},
     deps,
   );
   const ref = db.collection("organizerCampaigns").doc(data.campaignId);
@@ -716,6 +722,7 @@ export async function getOrganizerCampaignReportHandler(
   const {data, db} = await authorizeAction(
     request,
     "getOrganizerCampaignReport",
+    {maxRequests: 30, windowMs: 60 * 1000},
     deps,
   );
   return campaignResponse(
@@ -733,6 +740,7 @@ export async function getOrganizerCampaignReportHandler(
 async function authorizeAction(
   request: CallableRequest<unknown>,
   operation: string,
+  limit: RateLimitConfig,
   deps: CampaignDeps,
 ): Promise<{
   actorUid: string;
@@ -746,7 +754,7 @@ async function authorizeAction(
     normalizePayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, operation);
+  await deps.checkRateLimit(db, actorUid, operation, limit);
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,

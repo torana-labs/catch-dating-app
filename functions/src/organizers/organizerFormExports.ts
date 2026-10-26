@@ -72,7 +72,9 @@ export async function requestOrganizerFormExportHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "requestOrganizerFormExport");
+  await deps.checkRateLimit(db, actorUid, "requestOrganizerFormExport", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   if (data.fromMillis !== null && data.toMillis !== null &&
       data.fromMillis > data.toMillis) {

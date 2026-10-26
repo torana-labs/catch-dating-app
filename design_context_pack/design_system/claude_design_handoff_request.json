@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "81f3378a337e7b60ded0c4a893df9547d60f57675041e01f3ff76bdd7f48d87a",
+  "sourceDigest": "0c217a07409712016eee5c2877ed1e76474e09d1475951f6009a1538499a2d73",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",
@@ -39,7 +39,7 @@
         "optional-field"
       ],
       "supportedStatesDigest": "f960ec7c1065e6409902ec0b6d4e05ee2e73d57630ccaa2f69c6f5c30d27e6f7",
-      "propsDigest": "031b3fb62c09f7c24201d029cda386738c772ccbbf1eba722065c71e49f842f3",
+      "propsDigest": "e260f91334ed7f928f9372e53809c84f0145fe02be31bea6d404c14350a012de",
       "tokens": [
         "layout.statusHorizontalPadding",
         "layout.statusVerticalPadding",

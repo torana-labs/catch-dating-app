@@ -162,7 +162,9 @@ export async function issueProgramHouseholdRsvpLinkHandler(
     validateCallableWithAjv<IssueProgramHouseholdRsvpLinkCallablePayload>(
       request, validateIssueProgramHouseholdRsvpLinkCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "issueProgramHouseholdRsvpLink");
+  await deps.checkRateLimit(db, actorUid, "issueProgramHouseholdRsvpLink", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
@@ -262,7 +264,8 @@ export async function getProgramHouseholdRsvpViewHandler(
   const identity = verifyTokenOrThrow(data.token, deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, `household:${identity.householdId}`,
-    "getProgramHouseholdRsvpView");
+    "getProgramHouseholdRsvpView",
+    {maxRequests: 120, windowMs: 60 * 1000});
   const bundle = await loadHouseholdBundle(
     db, identity.programId, identity.householdId);
   const {household, guests, rowsByGuest, functions} = bundle;
@@ -372,7 +375,8 @@ export async function submitProgramHouseholdRsvpHandler(
   const identity = verifyTokenOrThrow(data.token, deps);
   const db = deps.firestore();
   await deps.checkRateLimit(db, `household:${identity.householdId}`,
-    "submitProgramHouseholdRsvp");
+    "submitProgramHouseholdRsvp",
+    {maxRequests: 60, windowMs: 60 * 1000});
   const householdRef = db.collection("programHouseholds")
     .doc(identity.householdId);
   // Generated response type gains travelLegAppliedCount on regen.

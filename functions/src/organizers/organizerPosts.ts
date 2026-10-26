@@ -38,11 +38,7 @@ interface CreateOrganizerPostDeps {
   now: () => Date;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   dispatchDelivery?: (
     postId: string
   ) => Promise<CreateOrganizerPostCallableResponse | null>;
@@ -100,7 +96,9 @@ export async function createOrganizerPostHandler(
     );
   }
 
-  await deps.checkRateLimit?.(db, authorUid, "createOrganizerPost");
+  await deps.checkRateLimit?.(db, authorUid, "createOrganizerPost", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const postsRef = organizerRef.collection("posts");
   const postRef = postsRef.doc(postId);

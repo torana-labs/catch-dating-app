@@ -70,11 +70,7 @@ export interface AdminGetAccessApplicationDetailsResponse {
 interface AccessApplicationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: AccessApplicationDeps = {
@@ -99,7 +95,8 @@ export async function adminGetAccessApplicationDetailsHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminGetAccessApplicationDetails"
+    "adminGetAccessApplicationDetails",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   const snapshot = await db.collection("accessApplications")
     .doc(payload.applicationUid)
@@ -140,7 +137,8 @@ export async function adminDecideAccessApplicationHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminDecideAccessApplication"
+    "adminDecideAccessApplication",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const applicationPath = `accessApplications/${payload.applicationUid}`;
   const applicationRef = db

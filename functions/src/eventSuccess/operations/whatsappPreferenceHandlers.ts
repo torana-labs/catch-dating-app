@@ -38,7 +38,9 @@ export async function getEventWhatsappPreferenceHandler(
   const input = validateCallableWithAjv(request,
     validateGetEventWhatsappPreferenceCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actor.uid, "getEventWhatsappPreference");
+  await deps.checkRateLimit(db, actor.uid, "getEventWhatsappPreference", {
+    maxRequests: 60, windowMs: 60_000,
+  });
   const result = await new WhatsappPreferenceStore(db, deps.now)
     .get(actor, input);
   if (!validateEventWhatsappPreferenceCallableResponse(result)) {
@@ -54,7 +56,9 @@ export async function setEventWhatsappPreferenceHandler(
   const input = validateCallableWithAjv(request,
     validateSetEventWhatsappPreferenceCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actor.uid, "setEventWhatsappPreference");
+  await deps.checkRateLimit(db, actor.uid, "setEventWhatsappPreference", {
+    maxRequests: 20, windowMs: 60_000,
+  });
   const result = await new WhatsappPreferenceStore(db, deps.now)
     .set(actor, input);
   if (!validateEventWhatsappPreferenceCallableResponse(result)) {

@@ -86,7 +86,8 @@ export async function getParticipantOrganizerApplicationFormHandler(
   await deps.checkRateLimit(
     db,
     uid,
-    "getParticipantOrganizerApplicationForm"
+    "getParticipantOrganizerApplicationForm",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   const {form, version} = await requireActiveParticipantForm({
     db,
@@ -153,7 +154,8 @@ export async function submitParticipantOrganizerApplicationHandler(
   await deps.checkRateLimit(
     db,
     uid,
-    "submitParticipantOrganizerApplication"
+    "submitParticipantOrganizerApplication",
+    {maxRequests: 10, windowMs: 60 * 60 * 1000}
   );
   const {form, version} = await requireActiveParticipantForm({
     db,
@@ -362,7 +364,8 @@ export async function revokeParticipantOrganizerDataGrantHandler(
   await deps.checkRateLimit(
     db,
     uid,
-    "revokeParticipantOrganizerDataGrant"
+    "revokeParticipantOrganizerDataGrant",
+    {maxRequests: 10, windowMs: 60 * 60 * 1000}
   );
   const grantRef = db.collection("participantOrganizerDataGrants")
     .doc(participantOrganizerGrantId(data.applicationId));

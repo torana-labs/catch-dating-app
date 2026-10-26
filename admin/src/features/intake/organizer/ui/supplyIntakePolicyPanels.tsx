@@ -1,4 +1,4 @@
-import {CatchField, CatchText} from "@catch/web-ui";
+import {CatchBadge, type CatchBadgeTone, CatchField, CatchText} from "@catch/web-ui";
 import {useState} from "react";
 import {
   AdminButton,
@@ -8,7 +8,6 @@ import {
   AdminToolbar,
   Panel,
   StateRow,
-  StatusChip,
 } from "../../../../shared/ui/AdminPrimitives";
 import type {SupplyIntakePolicy} from "../api/supplyIntakePolicyRepository";
 import type {SupplyIntakePolicyController} from "../controllers/useSupplyIntakePolicyController";
@@ -22,11 +21,11 @@ const checklistItems: Array<[string, string]> = [
   ["behaviorStillDisabledAcknowledged", "Nothing turns on until that change ships"],
 ];
 
-function stateOf(policy: SupplyIntakePolicy): [string, string] {
+function stateOf(policy: SupplyIntakePolicy): [string, CatchBadgeTone] {
   if (policy.enabled && policy.configCitesDecision) return ["On", "success"];
-  if (policy.decision?.decisionStatus === "accepted") return ["Accepted, not switched on yet", "ready"];
+  if (policy.decision?.decisionStatus === "accepted") return ["Accepted, not switched on yet", "success"];
   if (policy.decision?.decisionStatus === "held") return ["On hold", "warning"];
-  if (policy.decision?.decisionStatus === "rejected") return ["Rejected", "muted"];
+  if (policy.decision?.decisionStatus === "rejected") return ["Rejected", "neutral"];
   return ["Off, waiting for a decision", "warning"];
 }
 
@@ -50,7 +49,7 @@ function SupplyIntakePolicies({controller}: {controller: SupplyIntakePolicyContr
       const [label, tone] = stateOf(policy);
       return <AdminIntakeSection key={policy.gapId}>
         <StateRow label={policy.label} value={<>
-          <StatusChip tone={tone}>{label}</StatusChip>{" "}
+          <CatchBadge recipe="status" tone={tone} label={label} />{" "}
           <AdminButton onClick={() => setOpen(policy.gapId)}>Decide</AdminButton>
         </>} />
         <CatchText as="p" variant="supporting">{policy.enables}</CatchText>

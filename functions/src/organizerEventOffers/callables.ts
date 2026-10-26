@@ -6,7 +6,7 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {checkRateLimit} from "../shared/rateLimit";
+import {checkRateLimit, RateLimitConfig} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {validatePreviewEventOffersCallablePayload} from
   "../shared/generated/validators/previewEventOffersInput";
@@ -80,13 +80,14 @@ const defaultDeps: OfferCallableDependencies = {
 async function execute<T>(params: {
   uid: string;
   action: string;
+  limit: RateLimitConfig;
   deps: OfferCallableDependencies;
   run: (repository: OfferRepository) => Promise<T>;
   validate: (value: unknown) => boolean;
 }): Promise<T> {
-  const {uid, action, deps, run, validate} = params;
+  const {uid, action, limit, deps, run, validate} = params;
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, action);
+  await deps.checkRateLimit(db, uid, action, limit);
   try {
     const result = await run(deps.repository(db));
     if (!validate(result)) {
@@ -112,6 +113,7 @@ export async function previewEventOffersHandler(
   const input = validateCallableWithAjv(request,
     validatePreviewEventOffersCallablePayload);
   return execute({uid, action: "previewEventOffers", deps,
+    limit: {maxRequests: 20, windowMs: 60 * 1000},
     run: (repository) => preview({repository, actor: {uid}, input}),
     validate: validateEventOfferPreviewCallableResponse});
 }
@@ -123,6 +125,7 @@ export async function commitEventOffersHandler(
   const input = validateCallableWithAjv(request,
     validateCommitEventOffersCallablePayload);
   return execute({uid, action: "commitEventOffers", deps,
+    limit: {maxRequests: 10, windowMs: 60 * 1000},
     run: (repository) => commit({repository, actor: {uid}, input}),
     validate: validateEventOfferCommitCallableResponse});
 }
@@ -134,6 +137,7 @@ export async function mutateEventOfferHandler(
   const input = validateCallableWithAjv(request,
     validateMutateEventOfferCallablePayload);
   return execute({uid, action: "mutateEventOffer", deps,
+    limit: {maxRequests: 30, windowMs: 60 * 1000},
     run: (repository) => mutate({repository, actor: {uid}, ...input}),
     validate: validateEventOfferMutationCallableResponse});
 }
@@ -145,6 +149,7 @@ export async function getEventOfferHandler(
   const input = validateCallableWithAjv(request,
     validateGetEventOfferCallablePayload);
   return execute({uid, action: "getEventOffer", deps,
+    limit: {maxRequests: 60, windowMs: 60 * 1000},
     run: (repository) => detail({repository, actor: {uid}, ...input}),
     validate: validateEventOfferDetailCallableResponse});
 }
@@ -156,6 +161,7 @@ export async function listEventOffersHandler(
   const input = validateCallableWithAjv(request,
     validateListEventOffersCallablePayload);
   return execute({uid, action: "listEventOffers", deps,
+    limit: {maxRequests: 30, windowMs: 60 * 1000},
     run: (repository) => list({repository, actor: {uid}, ...input}),
     validate: validateEventOfferListCallableResponse});
 }
@@ -179,6 +185,7 @@ export async function prepareEventOfferHandoffHandler(
   const input = validateCallableWithAjv(request,
     validatePrepareEventOfferHandoffCallablePayload);
   return execute({uid, action: "prepareEventOfferHandoff", deps,
+    limit: {maxRequests: 30, windowMs: 60 * 1000},
     run: (repository) => prepareHandoff({repository, actor: {uid}, ...input,
       issueInvitation: deps.issueInvitation}),
     validate: validateEventOfferHandoffCallableResponse});
@@ -194,6 +201,7 @@ export async function getEventOfferConfigurationHandler(
   const input = validateCallableWithAjv(request,
     validateGetEventOfferConfigurationCallablePayload);
   return execute({uid, action: "getEventOfferConfiguration", deps,
+    limit: {maxRequests: 60, windowMs: 60 * 1000},
     run: (repository) => configuration({repository, actor: {uid}, ...input}),
     validate: validateEventOfferConfigurationCallableResponse});
 }
@@ -208,7 +216,9 @@ export async function configureEventOfferPreferencesHandler(
   const command = validateCallableWithAjv(request,
     validateConfigureEventOfferPreferencesCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "configureEventOfferPreferences");
+  await deps.checkRateLimit(db, actorUid, "configureEventOfferPreferences", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const result = await configurePreferences({actorUid, command, deps: {
     db,
     serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
@@ -229,7 +239,9 @@ export async function previewEventOfferPreferencesHandler(
   const command = validateCallableWithAjv(request,
     validateConfigureEventOfferPreferencesCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "previewEventOfferPreferences");
+  await deps.checkRateLimit(db, actorUid, "previewEventOfferPreferences", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const result = await configurePreferences({actorUid, command,
     previewOnly: true, deps: {db,
       serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp()}});

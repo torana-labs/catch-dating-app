@@ -35,7 +35,9 @@ export async function listEventChatsHandler(request: CallableRequest<unknown>,
     throw new HttpsError("permission-denied", "Refresh your event chats.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, uid, "listEventChats");
+  await deps.rateLimit(db, uid, "listEventChats", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await db.runTransaction((tx) => readEventChatAccount(db, tx, uid));
   let sourceIndex = data.cursor ? sources.indexOf(data.cursor.source) : 0;
   let after = data.cursor?.after ?? null;

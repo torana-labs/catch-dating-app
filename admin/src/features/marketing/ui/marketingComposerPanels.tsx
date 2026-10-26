@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {
   CheckCircle2,
   Download,
@@ -19,7 +19,6 @@ import {
   CheckboxField,
   EmptyState,
   SelectableCardButton,
-  StatusChip,
   AdminCommandRow,
   AdminCommandStack,
   AdminEyebrow,
@@ -49,7 +48,6 @@ import {
   AdminMarketingStepChip,
   AdminMarketingStepLayout,
   AdminMarketingStepStrip,
-  AdminTag,
   DecisionFooter,
   TagList,
 } from "../../../shared/ui/AdminPrimitives";
@@ -312,8 +310,8 @@ function MarketingPostCard({
       <strong>{marketingPreviewPanels.draftTitle(draft)}</strong>
       <span>{draft.cityId} / {draft.weekStart}</span>
       <div>
-        <StatusChip>{draft.reviewState}</StatusChip>
-        <StatusChip tone="muted">{countLabel}</StatusChip>
+        <CatchBadge label={draft.reviewState} />
+        <CatchBadge label={countLabel} />
       </div>
       <small>{marketingPreviewPanels.nextActionForDraft(draft)}</small>
     </SelectableCardButton>
@@ -374,7 +372,7 @@ function MarketingDraftComposer({
 
   return (
     <AdminMarketingComposer>
-      <AdminMarketingComposerHeader status={<StatusChip>{draft.reviewState}</StatusChip>}>
+      <AdminMarketingComposerHeader status={<CatchBadge label={draft.reviewState} />}>
         <AdminMarketingComposerBackButton onClick={onBack}>
           Back to posts
         </AdminMarketingComposerBackButton>
@@ -548,7 +546,7 @@ function MarketingFeaturePickStep({
             meta={(
               <AdminMarketingSlideEditorTopline>
                 <AdminEyebrow>Frame {index + 1}</AdminEyebrow>
-                <StatusChip tone="muted">{slide.role}</StatusChip>
+                <CatchBadge label={slide.role} />
               </AdminMarketingSlideEditorTopline>
             )}
           >
@@ -603,9 +601,7 @@ function MarketingCopyStep({
                   {String(index + 1).padStart(2, "0")} / {slide.role}
                 </AdminEyebrow>
                 {slide.eventCandidateId ? (
-                  <StatusChip tone="muted">
-                    {slide.eventCandidateId}
-                  </StatusChip>
+                  <CatchBadge label={slide.eventCandidateId} />
                 ) : null}
               </AdminMarketingSlideEditorTopline>
               <CatchField
@@ -641,9 +637,7 @@ function MarketingCopyStep({
         />
         <TagList>
           {draft.ctas.map((cta) => (
-            <AdminTag key={cta.id} tone="muted">
-              CTA / {cta.label}
-            </AdminTag>
+            <CatchBadge key={cta.id} label={`CTA / ${cta.label}`} />
           ))}
         </TagList>
       </AdminPanel>

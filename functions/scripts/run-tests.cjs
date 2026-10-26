@@ -8,6 +8,9 @@ const path = require("node:path");
 const {spawnSync} = require("node:child_process");
 
 const functionsRoot = path.resolve(__dirname, "..");
+// The strict emulator list is test data, not a package script: a package.json
+// edit counts as a runtime change and redeploys every Function.
+const strictTestList = "test/emulator-tests.json";
 
 function discoverTestFiles(root = functionsRoot) {
   return fs.globSync(["lib/**/*.test.js", "test/**/*.test.cjs", "scripts/**/*.test.cjs"], {cwd: root})
@@ -16,9 +19,18 @@ function discoverTestFiles(root = functionsRoot) {
     .sort();
 }
 
+function listedStrictTests(root = functionsRoot) {
+  const listed = JSON.parse(fs.readFileSync(path.join(root, strictTestList), "utf8"));
+  if (!Array.isArray(listed) || !listed.every((file) => typeof file === "string")) {
+    throw new Error(`${strictTestList} must be an array of test paths.`);
+  }
+  return listed;
+}
+
 async function run(argv = process.argv.slice(2)) {
   if (argv[0] === "--require-emulators") {
-    return runStrictFiles(argv.slice(1));
+    const files = argv.slice(1);
+    return runStrictFiles(files.length ? files : listedStrictTests());
   }
   const testFiles = discoverTestFiles();
   if (argv.includes("--list")) {
@@ -153,4 +165,5 @@ function writeEvidence(evidence, status) {
   return status;
 }
 
-module.exports = {discoverTestFiles, narrowToSelection, runStrictFiles, shardFiles};
+module.exports = {discoverTestFiles, listedStrictTests, narrowToSelection, runStrictFiles, shardFiles,
+  strictTestList};

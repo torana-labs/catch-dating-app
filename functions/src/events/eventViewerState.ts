@@ -31,7 +31,9 @@ export async function getEventViewerStateHandler(
   const payload = validateCallableWithAjv(request,
     validateGetEventViewerStateCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventViewerState");
+  await deps.rateLimit(db, uid, "getEventViewerState", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const phoneE164 = request.auth?.token.phone_number;
   if (payload.surface === "guest" && typeof phoneE164 !== "string") {
     throw new HttpsError("unauthenticated", "Verify your phone to continue.");

@@ -27,6 +27,10 @@ import {requireAdminRole} from "./adminAuth";
 import {organizerDraftOperationId} from "./organizerDraftIdentity";
 
 const intakeOperationsRoles = ["admin", "adminOwner", "support"] as const;
+/** Paging two full exception inventories must fit in one window. */
+export const listIntakeOperationsRateLimit = {
+  maxRequests: 120, windowMs: 60 * 1000,
+};
 const supplyIntakeWorkflowId = "supply-intake";
 const supplyIntakeStages = new Set([
   "incoming",
@@ -42,11 +46,7 @@ interface IntakeOperationsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   repository?: IntakeOperationsReadRepository;
   now?: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   loadOrganizerDraftLinks?: (
     db: FirebaseFirestore.Firestore,
     workItems: OperationWorkItem[]
@@ -117,7 +117,8 @@ export async function adminListIntakeOperationsHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminListIntakeOperations"
+    "adminListIntakeOperations",
+    listIntakeOperationsRateLimit
   );
 
   const repository = deps.repository ??

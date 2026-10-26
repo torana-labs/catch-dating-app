@@ -178,7 +178,9 @@ export async function sendEventBroadcastHandler(
   }
   if (claim.isNewLogicalRequest) {
     try {
-      await deps.checkRateLimit(db, actorUid, "sendEventBroadcast");
+      await deps.checkRateLimit(db, actorUid, "sendEventBroadcast", {
+        maxRequests: 3, windowMs: 60 * 60 * 1000,
+      });
     } catch (error) {
       await deleteNewRateLimitedClaim({db, claim});
       throw error;

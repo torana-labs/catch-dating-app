@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
@@ -57,7 +57,6 @@ import {
   AdminStatGrid,
   AdminStatusGrid,
   AdminTableRow,
-  AdminTag,
   AdminTagList,
   AdminTagRow,
   AdminToolbar,
@@ -77,12 +76,10 @@ import {
   PageHeader,
   QualityList,
   QualityRow,
-  RiskBadge,
   SearchField,
   SegmentedControl,
   SelectableCardButton,
   StatusBanner,
-  StatusChip,
   TableActionButton,
   TagList,
 } from "../shared/ui/AdminPrimitives";
@@ -284,25 +281,6 @@ export const StatusBannerStory: Story = {
       <StatusBanner icon={<FileWarning aria-hidden="true" />} tone="error">
         Missing canonical source URL. Add evidence before approving.
       </StatusBanner>
-    </AdminWorkspace>
-  ),
-};
-
-export const StatusChipStory: Story = {
-  name: "Status chip",
-  parameters: {
-    catchComponent: {
-      id: "shared_status_chip",
-      states: ["neutral", "success", "warning"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminCard>
-        <StatusChip tone="neutral">Queued</StatusChip>
-        <StatusChip tone="success">Ready</StatusChip>
-        <StatusChip tone="warning">Needs changes</StatusChip>
-      </AdminCard>
     </AdminWorkspace>
   ),
 };
@@ -1221,7 +1199,7 @@ export const AdminStateRowStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminStateRow label="Canonical route" value="/organizers/afterfly/" />
-      <AdminStateRow label="Risk" value={<RiskBadge tone="low">Low</RiskBadge>} />
+      <AdminStateRow label="Risk" value={<CatchBadge recipe="status" tone="success" label="Low" />} />
     </AdminWorkspace>
   ),
 };
@@ -1269,24 +1247,6 @@ export const AdminCardListStory: Story = {
   ),
 };
 
-export const AdminTagStory: Story = {
-  name: "Admin tag",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_tag",
-      states: ["neutral", "ready", "blocked", "link"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminTag>Neutral</AdminTag>
-      <AdminTag tone="success">Ready</AdminTag>
-      <AdminTag tone="warning">Blocked</AdminTag>
-      <AdminTag href="#tag">Linked</AdminTag>
-    </AdminWorkspace>
-  ),
-};
-
 export const AdminTagListStory: Story = {
   name: "Admin tag list",
   parameters: {
@@ -1298,9 +1258,9 @@ export const AdminTagListStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminTagList>
-        <AdminTag>evidence</AdminTag>
-        <AdminTag>claim handoff</AdminTag>
-        <AdminTag tone="success">ready</AdminTag>
+        <CatchBadge label="evidence" />
+        <CatchBadge label="claim handoff" />
+        <CatchBadge recipe="status" tone="success" label="ready" />
       </AdminTagList>
     </AdminWorkspace>
   ),
@@ -1317,11 +1277,11 @@ export const AdminTagRowStory: Story = {
   render: () => (
     <AdminWorkspace>
       <AdminTagRow>
-        <AdminTag>organizer</AdminTag>
-        <AdminTag>profile</AdminTag>
+        <CatchBadge label="organizer" />
+        <CatchBadge label="profile" />
       </AdminTagRow>
       <AdminTagRow as="span">
-        <AdminTag>inline</AdminTag>
+        <CatchBadge label="inline" />
       </AdminTagRow>
     </AdminWorkspace>
   ),
@@ -1338,8 +1298,8 @@ export const TagListStory: Story = {
   render: () => (
     <AdminWorkspace>
       <TagList>
-        <StatusChip>queued</StatusChip>
-        <StatusChip tone="success">ready</StatusChip>
+        <CatchBadge label="queued" />
+        <CatchBadge recipe="status" tone="success" label="ready" />
       </TagList>
     </AdminWorkspace>
   ),
@@ -1449,24 +1409,6 @@ export const TableActionButtonStory: Story = {
   render: () => (
     <AdminWorkspace>
       <TableActionButton>View detail</TableActionButton>
-    </AdminWorkspace>
-  ),
-};
-
-export const RiskBadgeStory: Story = {
-  name: "Risk badge",
-  parameters: {
-    catchComponent: {
-      id: "shared_risk_badge",
-      states: ["low", "medium", "high", "watch"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <RiskBadge tone="low">Low</RiskBadge>
-      <RiskBadge tone="medium">Medium</RiskBadge>
-      <RiskBadge tone="high">High</RiskBadge>
-      <RiskBadge tone="watch">Watch</RiskBadge>
     </AdminWorkspace>
   ),
 };

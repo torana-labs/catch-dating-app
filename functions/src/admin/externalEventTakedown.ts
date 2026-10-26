@@ -26,11 +26,7 @@ interface ExternalEventTakedownDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now?: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ExternalEventTakedownDeps = {
@@ -77,7 +73,8 @@ export async function adminTakedownExternalEventHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminTakedownExternalEvent"
+    "adminTakedownExternalEvent",
+    {maxRequests: 10, windowMs: 60 * 1000}
   );
   const targetPath = `externalEvents/${data.eventId}`;
   const eventRef = db.collection("externalEvents").doc(data.eventId);

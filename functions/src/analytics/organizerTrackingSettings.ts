@@ -75,7 +75,9 @@ export async function getOrganizerTrackingSettingsHandler(
   const {organizerId} = validateCallableWithAjv(request,
     validateGetOrganizerTrackingSettingsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerTrackingSettings");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerTrackingSettings", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (transaction) => {
     await requireOrganizerManager({db, organizerId, actorUid, transaction});
     const stored = await transaction.get(db.collection(
@@ -95,7 +97,9 @@ export async function setOrganizerTrackingSettingsHandler(
   const command = validateCallableWithAjv(request,
     validateSetOrganizerTrackingSettingsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "setOrganizerTrackingSettings");
+  await deps.checkRateLimit(db, actorUid, "setOrganizerTrackingSettings", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (transaction) => {
     await requireOrganizerManager({db, organizerId: command.organizerId,
       actorUid, transaction});

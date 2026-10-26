@@ -1,4 +1,4 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {useEffect, useMemo, useState} from "react";
 import {
   ArrowLeft,
@@ -22,7 +22,6 @@ import {
   AdminLinkButton,
   AdminSecondaryDisclosure,
   AdminTableRow,
-  AdminTag,
   AdminToolbar,
   AdminWorkbenchNote,
   CheckboxField,
@@ -34,7 +33,6 @@ import {
   SearchField,
   SegmentedControl,
   StateRow,
-  StatusChip,
   TableActionButton,
   AdminCommandRow,
   AdminCommandStack,
@@ -225,9 +223,7 @@ function EventSupplyReadinessPanel({
               <AdminSecondaryDisclosure summary="Diagnostics and operator commands">
                 <AdminTagList>
                   {importPlan.guardrails.slice(0, 10).map((guardrail) => (
-                    <AdminTag key={guardrail} tone="muted">
-                      {guardrail.replaceAll("_", " ")}
-                    </AdminTag>
+                    <CatchBadge key={guardrail} label={guardrail.replaceAll("_", " ")} />
                   ))}
                 </AdminTagList>
                 <AdminCommandStack>
@@ -339,9 +335,7 @@ function EventReadinessDetail({
           <AdminEyebrow>{row.targetPath}</AdminEyebrow>
           <CatchText as="h3" variant="sectionTitle">{row.title}</CatchText>
         </div>
-        <StatusChip tone={row.publishReady ? "ready" : ""}>
-          {row.publishReady ? "ready" : "blocked"}
-        </StatusChip>
+        <CatchBadge recipe="status" tone={row.publishReady ? "success" : "neutral"} label={row.publishReady ? "ready" : "blocked"} />
       </AdminSearchCandidateHeader>
       <AdminIntakeStateGrid>
         <StateRow label="Source action" value={row.sourceActionId} />
@@ -531,10 +525,8 @@ function EventImportReadinessTable({
               </td>
               <td>
                 <AdminTagRow>
-                  <AdminTag tone={row.status === "write_ready" ? "muted" : "neutral"}>
-                    {row.status.replaceAll("_", " ")}
-                  </AdminTag>
-                  <AdminTag tone="muted">{row.platform}</AdminTag>
+                  <CatchBadge label={row.status.replaceAll("_", " ")} />
+                  <CatchBadge label={row.platform} />
                 </AdminTagRow>
               </td>
               <td>

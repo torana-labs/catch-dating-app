@@ -30,7 +30,7 @@ type ListRow = ListResponse["rows"][number];
 type EventRow = ListRow["events"][number];
 
 interface ListingEventImportDeps extends ListingEventPublicationDeps {
-  checkRateLimit?: (db: FirebaseFirestore.Firestore, uid: string, action: string) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ListingEventImportDeps = {
@@ -52,7 +52,12 @@ export async function adminListListingEventImportsHandler(
   const data = validateCallableWithAjv<AdminListListingEventImportsCallablePayload>(request,
     validateAdminListListingEventImportsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminListListingEventImports");
+  await deps.checkRateLimit?.(
+    db,
+    adminContext.uid,
+    "adminListListingEventImports",
+    {maxRequests: 60, windowMs: 60 * 1000}
+  );
   const runtime = await packagedEventPublication();
   const policy = await runtime.loadEventPublicationPolicy();
   const requests = db.collection(supplyIntakeCollections.requests);
@@ -202,7 +207,12 @@ export async function adminPublishListingEventsHandler(
     resolutions.set(eventWorkItemId, [...resolutions.get(eventWorkItemId) ?? [], resolution]);
   }
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminPublishListingEvents");
+  await deps.checkRateLimit?.(
+    db,
+    adminContext.uid,
+    "adminPublishListingEvents",
+    {maxRequests: 10, windowMs: 60 * 1000}
+  );
   const {organizerId, results} = await publishListingEvents({
     intakeRequestId: data.intakeRequestId,
     eventWorkItemIds: data.eventWorkItemIds,

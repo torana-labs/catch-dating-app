@@ -19,7 +19,9 @@ export async function getEventAssistanceAccountabilityHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventAssistanceAccountability");
+  await deps.rateLimit(db, uid, "getEventAssistanceAccountability", {
+    maxRequests: 60, windowMs: 60_000,
+  });
   return deps.store(db).get(uid, request.data);
 }
 
@@ -28,7 +30,9 @@ export async function resolveEventAssistanceAccountabilityHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "resolveEventAssistanceAccountability");
+  await deps.rateLimit(db, uid, "resolveEventAssistanceAccountability", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).resolve(uid, request.data);
 }
 

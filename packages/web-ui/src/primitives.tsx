@@ -26,12 +26,6 @@ export function CheckboxControl(props: CheckboxControlProps) {
   return <input type="checkbox" {...props} />;
 }
 
-export interface BadgeControlProps extends HTMLAttributes<HTMLSpanElement> {}
-
-export function BadgeControl(props: BadgeControlProps) {
-  return <span {...props} />;
-}
-
 export type EmptyStateAnnouncement = "assertive" | "off" | "polite";
 
 export interface EmptyStateControlProps

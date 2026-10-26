@@ -89,7 +89,8 @@ export async function listOrganizerContactMergeCandidatesHandler(
   await deps.checkRateLimit(
     db,
     actorUid,
-    "listOrganizerContactMergeCandidates"
+    "listOrganizerContactMergeCandidates",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
 
@@ -180,7 +181,8 @@ export async function reviewOrganizerContactMergeCandidateHandler(
   await deps.checkRateLimit(
     db,
     actorUid,
-    "reviewOrganizerContactMergeCandidate"
+    "reviewOrganizerContactMergeCandidate",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   await assertActiveContacts(db, data.organizerId, contactIds);

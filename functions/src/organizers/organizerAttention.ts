@@ -99,7 +99,9 @@ export async function listOrganizerAttentionItemsHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerAttentionItems");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerAttentionItems", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await deps.requireManager({
     db,
     organizerId: data.organizerId,

@@ -41,13 +41,14 @@ for (const item of registry.stories ?? []) {
   if (!fs.existsSync(absolutePath)) errors.push(`registered story file is missing: ${item.file}`);
 }
 
+// The website Storybook loads both roots (website/.storybook/main.ts), so a
+// web-ui story's todo is website debt too.
 const actual = new Set();
-const storiesRoot = path.join(repoRoot, "website/src/stories");
-for (const name of fs.readdirSync(storiesRoot)) {
-  if (!name.endsWith(".stories.tsx")) continue;
-  const relativePath = `website/src/stories/${name}`;
-  const source = fs.readFileSync(path.join(storiesRoot, name), "utf8");
-  for (const key of todoExports(source, relativePath)) actual.add(key);
+for (const storiesRoot of ["website/src", "packages/web-ui/src"]) {
+  for (const relativePath of storyFiles(storiesRoot)) {
+    const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+    for (const key of todoExports(source, relativePath)) actual.add(key);
+  }
 }
 
 for (const key of actual) {
@@ -65,6 +66,13 @@ if (errors.length > 0) {
 console.log(
   `Storybook accessibility debt check passed: ${actual.size} exact todo story contract(s).`
 );
+
+function storyFiles(relativeDir) {
+  return fs.readdirSync(path.join(repoRoot, relativeDir), {recursive: true})
+    .filter((name) => name.endsWith(".stories.tsx"))
+    .map((name) => path.posix.join(relativeDir, name.split(path.sep).join("/")))
+    .sort();
+}
 
 function todoExports(source, relativePath) {
   const matches = [...source.matchAll(/^export\s+const\s+([A-Za-z0-9_]+)\b/gmu)];

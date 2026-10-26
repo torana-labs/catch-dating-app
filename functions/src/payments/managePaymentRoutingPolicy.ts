@@ -40,7 +40,9 @@ export async function managePaymentRoutingPolicyHandler(
     throw new HttpsError("invalid-argument", "Invalid payment policy action.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, actor.uid, "managePaymentRoutingPolicy");
+  await deps.rateLimit(db, actor.uid, "managePaymentRoutingPolicy", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const policyId = data.organizerId === null ? "app" :
     organizerPaymentPolicyId(data.organizerId);
   const ref = db.collection("paymentRoutingPolicies").doc(policyId);

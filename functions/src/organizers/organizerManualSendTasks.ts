@@ -99,7 +99,9 @@ export async function prepareOrganizerManualSendTaskHandler(
     normalizeManualTaskPayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "prepareOrganizerManualSendTask");
+  await deps.checkRateLimit(db, actorUid, "prepareOrganizerManualSendTask", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const now = deps.now();
   const taskId = organizerManualSendTaskId(
@@ -235,7 +237,9 @@ export async function listOrganizerManualSendTasksHandler(
     normalizeManualTaskPayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerManualSendTasks");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerManualSendTasks", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const activeOnly = data.activeOnly ?? true;
   const limit = data.limit ?? 25;
@@ -303,7 +307,9 @@ export async function openOrganizerManualSendTaskHandler(
     normalizeManualTaskPayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "openOrganizerManualSendTask");
+  await deps.checkRateLimit(db, actorUid, "openOrganizerManualSendTask", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const now = deps.now();
   const taskRef = db.collection("organizerManualSendTasks").doc(data.taskId);
@@ -355,6 +361,7 @@ export async function validateOrganizerManualSendTaskLaunchHandler(
     db,
     actorUid,
     "validateOrganizerManualSendTaskLaunch",
+    {maxRequests: 30, windowMs: 60 * 1000},
   );
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const now = deps.now();
@@ -384,7 +391,9 @@ export async function markOrganizerManualSendTaskHandler(
     normalizeManualTaskPayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "markOrganizerManualSendTask");
+  await deps.checkRateLimit(db, actorUid, "markOrganizerManualSendTask", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const now = deps.now();
   const taskRef = db.collection("organizerManualSendTasks").doc(data.taskId);
@@ -425,7 +434,9 @@ export async function replanOrganizerManualSendTasksHandler(
     normalizeManualTaskPayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "replanOrganizerManualSendTasks");
+  await deps.checkRateLimit(db, actorUid, "replanOrganizerManualSendTasks", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const taskSnapshots = await db.getAll(...data.taskIds.map((taskId) =>
     db.collection("organizerManualSendTasks").doc(taskId),

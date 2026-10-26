@@ -30,11 +30,7 @@ const entitlementCollection = "organizerEntitlements";
 interface OrganizerEntitlementReadDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => number;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: OrganizerEntitlementReadDeps = {
@@ -66,7 +62,9 @@ export async function getOrganizerEntitlementHandler(
     normalizePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "getOrganizerEntitlement");
+  await deps.checkRateLimit?.(db, uid, "getOrganizerEntitlement", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const adminRoles = adminRolesFromToken(
     request.auth?.token as Record<string, unknown> | undefined);
   if (!adminRoles.includes("finance") && !adminRoles.includes("adminOwner")) {

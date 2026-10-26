@@ -47,11 +47,7 @@ interface EventSuccessLiveControlDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 interface LivePlanDocument {
@@ -343,7 +339,9 @@ export async function controlEventSuccessLiveHandler(
       validateEventSuccessLiveActionCallablePayload
     );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "controlEventSuccessLive");
+  await deps.checkRateLimit?.(db, uid, "controlEventSuccessLive", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const event = await requireEventManager(db, payload.eventId, uid);
   let accountability: EventSuccessAccountability = "none";
   let unresolvedCount = 0;
@@ -426,7 +424,8 @@ export async function publishEventSuccessRotationRoundHandler(
   await deps.checkRateLimit?.(
     db,
     uid,
-    "publishEventSuccessRotationRound"
+    "publishEventSuccessRotationRound",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const event = await requireEventManager(db, payload.eventId, uid);
   const planRef = db.collection("eventSuccessPlans").doc(payload.eventId);

@@ -6,7 +6,7 @@ import type {Firestore} from "firebase-admin/firestore";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
-import {checkRateLimit} from "../shared/rateLimit";
+import {checkRateLimit, RateLimitConfig} from "../shared/rateLimit";
 import {
   eventOrganizerRef,
   isEventOrganizerManager,
@@ -540,7 +540,8 @@ async function upsertHandler(
     request, validateUpsertOrganizerMomentCallablePayload);
   const deps = fullDeps();
   await checkRateLimit(
-    deps.firestore(), actorUid, "upsertOrganizerMoment");
+    deps.firestore(), actorUid, "upsertOrganizerMoment",
+    {maxRequests: 60, windowMs: 60 * 1000});
   const result = await upsertOrganizerMomentHandler(deps, {
     actorUid,
     payload: data as unknown as Record<string, unknown>,
@@ -555,12 +556,13 @@ async function actionHandler(
     params: {actorUid: string; scope: MomentScope; momentId: string},
   ) => Promise<{moment: MomentDefinition}>,
   actionName: string,
+  limit: RateLimitConfig,
 ): Promise<OrganizerMomentCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<OrganizerMomentActionCallablePayload>(
     request, validateOrganizerMomentActionCallablePayload);
   const deps = fullDeps();
-  await checkRateLimit(deps.firestore(), actorUid, actionName);
+  await checkRateLimit(deps.firestore(), actorUid, actionName, limit);
   const result = await apply(deps, {
     actorUid,
     scope: scopeFromWire(data.scope),
@@ -576,7 +578,9 @@ async function runHandler(
   const data = validateCallableWithAjv<RunOrganizerMomentCallablePayload>(
     request, validateRunOrganizerMomentCallablePayload);
   const deps = fullDeps();
-  await checkRateLimit(deps.firestore(), actorUid, "runOrganizerMoment");
+  await checkRateLimit(deps.firestore(), actorUid, "runOrganizerMoment", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   return runOrganizerMomentHandler(deps, buildMomentRunnerDeps(), {
     actorUid,
     scope: scopeFromWire(data.scope),
@@ -592,7 +596,9 @@ async function listHandler(
   const data = validateCallableWithAjv<ListOrganizerMomentsCallablePayload>(
     request, validateListOrganizerMomentsCallablePayload);
   const deps = fullDeps();
-  await checkRateLimit(deps.firestore(), actorUid, "listOrganizerMoments");
+  await checkRateLimit(deps.firestore(), actorUid, "listOrganizerMoments", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const result = await listOrganizerMomentsHandler(deps, {
     actorUid,
     scope: scopeFromWire(data.scope),
@@ -607,17 +613,17 @@ export const upsertOrganizerMoment = onCall(
 export const armOrganizerMoment = onCall(
   appCheckCallableOptionsWithLimits(momentCallableLimits),
   (request) => actionHandler(request, armOrganizerMomentHandler,
-    "armOrganizerMoment")
+    "armOrganizerMoment", {maxRequests: 60, windowMs: 60 * 1000})
 );
 export const pauseOrganizerMoment = onCall(
   appCheckCallableOptionsWithLimits(momentCallableLimits),
   (request) => actionHandler(request, pauseOrganizerMomentHandler,
-    "pauseOrganizerMoment")
+    "pauseOrganizerMoment", {maxRequests: 60, windowMs: 60 * 1000})
 );
 export const resumeOrganizerMoment = onCall(
   appCheckCallableOptionsWithLimits(momentCallableLimits),
   (request) => actionHandler(request, resumeOrganizerMomentHandler,
-    "resumeOrganizerMoment")
+    "resumeOrganizerMoment", {maxRequests: 60, windowMs: 60 * 1000})
 );
 export const runOrganizerMoment = onCall(
   appCheckCallableOptionsWithLimits(momentCallableLimits),

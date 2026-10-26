@@ -26,7 +26,9 @@ export async function listEventWhatsappPreferencesHandler(
   const input = validateCallableWithAjv(request,
     validateListEventWhatsappPreferencesCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "listEventWhatsappPreferences");
+  await deps.checkRateLimit(db, uid, "listEventWhatsappPreferences", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const output = await new WhatsappPreferenceOptionsStore(db, deps.now)
     .list(uid, input);
   if (!validateListEventWhatsappPreferencesCallableResponse(output)) {

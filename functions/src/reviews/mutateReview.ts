@@ -87,11 +87,7 @@ function reviewModerationStatus(
 interface ReviewMutationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp?: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   checkIpRateLimit?: (
     ip: string,
     maxRequests?: number,
@@ -120,7 +116,9 @@ export async function createEventReviewHandler(
     normalizeCreateEventReviewPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, reviewerUserId, "createEventReview");
+  await deps.checkRateLimit?.(db, reviewerUserId, "createEventReview", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const reviewId = eventReviewId(data.eventId, reviewerUserId);
   const reviewRef = db.collection("reviews").doc(reviewId);
@@ -218,7 +216,9 @@ async function createPublicOrganizerReviewFromData(
   const reviewerUserId = request.auth?.uid ?? null;
 
   if (reviewerUserId) {
-    await deps.checkRateLimit?.(db, reviewerUserId, rateLimitAction);
+    await deps.checkRateLimit?.(db, reviewerUserId, rateLimitAction, {
+      maxRequests: 5, windowMs: 60 * 60 * 1000,
+    });
   } else {
     const ip = requesterIp(request);
     const allowed = deps.checkIpRateLimit?.(
@@ -328,7 +328,9 @@ export async function updateEventReviewHandler(
     normalizeUpdateEventReviewPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, reviewerUserId, "updateEventReview");
+  await deps.checkRateLimit?.(db, reviewerUserId, "updateEventReview", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const reviewRef = db.collection("reviews").doc(data.reviewId);
   await db.runTransaction(async (tx) => {
@@ -356,7 +358,9 @@ export async function deleteEventReviewHandler(
     normalizeSingleIdPayload("reviewId")
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, reviewerUserId, "deleteEventReview");
+  await deps.checkRateLimit?.(db, reviewerUserId, "deleteEventReview", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const reviewRef = db.collection("reviews").doc(data.reviewId);
   await db.runTransaction(async (tx) => {
@@ -387,7 +391,9 @@ export async function setReviewResponseHandler(
     );
   }
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, hostUserId, "setReviewResponse");
+  await deps.checkRateLimit?.(db, hostUserId, "setReviewResponse", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const reviewRef = db.collection("reviews").doc(data.reviewId);
   const userRef = db.collection("users").doc(hostUserId);

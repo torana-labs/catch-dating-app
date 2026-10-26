@@ -87,7 +87,6 @@
   margin-top: var(--catch-space-s6);
 }
 
-.listing-badge-row span,
 .listing-format-row span {
   padding: 9px var(--catch-space-micro10);
   border: var(--catch-stroke-hairline) solid var(--website-line);
@@ -340,29 +339,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--catch-space-s2);
-}
-
-.review-signal-badge {
-  width: fit-content;
-  padding: 7px var(--catch-space-micro10);
-  border: var(--catch-stroke-hairline) solid var(--website-line);
-  border-radius: var(--catch-radius-pill);
-  color: var(--website-copy-muted);
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: 0;
-}
-
-.review-signal-badge.is-verified {
-  border-color: color-mix(in srgb, var(--catch-activity-social-run-accent) 44%, transparent);
-  color: var(--website-copy);
-  background: color-mix(in srgb, var(--catch-activity-social-run-accent) 8%, transparent);
-}
-
-.review-signal-badge.is-unverified {
-  border-color: color-mix(in srgb, var(--website-activity-dinner) 44%, transparent);
-  color: var(--website-copy);
-  background: color-mix(in srgb, var(--website-activity-dinner) 10%, transparent);
 }
 
 .review-signal-card p {

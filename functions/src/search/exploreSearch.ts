@@ -28,11 +28,7 @@ interface ExploreSearchDeps {
   firestore: () => FirebaseFirestore.Firestore;
   fetchImpl: FetchImpl;
   now: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ExploreSearchDeps = {
@@ -70,7 +66,9 @@ export async function exploreSearchHandler(
     validateExploreSearchCallablePayload,
     normalizeExploreSearchPayload
   );
-  await deps.checkRateLimit?.(deps.firestore(), uid, "exploreSearch");
+  await deps.checkRateLimit?.(deps.firestore(), uid, "exploreSearch", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   return searchExploreWithAlgolia(payload, deps);
 }

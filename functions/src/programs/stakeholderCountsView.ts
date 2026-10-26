@@ -79,7 +79,9 @@ export async function getProgramStakeholderCountsHandler(
   const data = validateCallableWithAjv<ProgramIdCallablePayload>(
     request, validateProgramIdCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramStakeholderCounts");
+  await deps.checkRateLimit(db, actorUid, "getProgramStakeholderCounts", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });

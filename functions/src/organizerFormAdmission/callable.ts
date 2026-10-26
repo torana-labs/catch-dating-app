@@ -32,7 +32,9 @@ export async function commitOrganizerFormAdmissionHandler(
   const payload = validateCallableWithAjv(request,
     validateCommitOrganizerFormAdmissionCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "commitOrganizerFormAdmission");
+  await deps.checkRateLimit(db, actorUid, "commitOrganizerFormAdmission", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   try {
     const result = await deps.commit({db, actorUid, payload});
     if (!validateCommitOrganizerFormAdmissionCallableResponse(result)) {

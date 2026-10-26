@@ -11,10 +11,11 @@ void main() {
     WidgetTester tester,
     Widget button, {
     bool disableAnimations = false,
+    ThemeData? theme,
   }) {
     return tester.pumpWidget(
       MaterialApp(
-        theme: CatchTheme.light,
+        theme: theme ?? CatchTheme.light,
         home: Scaffold(
           body: MediaQuery(
             data: MediaQueryData(disableAnimations: disableAnimations),
@@ -84,6 +85,37 @@ void main() {
       (decoration.border! as Border).top.color,
       CatchBorder.resolve(tokens, CatchBorderRole.control).color,
     );
+  });
+
+  testWidgets('danger labels stay legible in both themes', (tester) async {
+    Color? labelColor() => tester
+        .widget<RichText>(
+          find.descendant(
+            of: find.byType(CatchButton),
+            matching: find.byType(RichText),
+          ),
+        )
+        .text
+        .style
+        ?.color;
+    final expected = {
+      CatchTheme.light: CatchTokens.editorialWhite,
+      CatchTheme.dark: CatchTokens.dark.primaryInk,
+    };
+    for (final entry in expected.entries) {
+      await pump(
+        tester,
+        CatchButton(
+          label: 'Delete',
+          onPressed: () {},
+          variant: CatchButtonVariant.danger,
+        ),
+        theme: entry.key,
+      );
+      // MaterialApp animates a theme change; read the settled label.
+      await tester.pumpAndSettle();
+      expect(labelColor(), entry.value);
+    }
   });
 
   testWidgets('keyboard focus draws a ring outside without resizing', (

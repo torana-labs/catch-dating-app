@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "81f3378a337e7b60ded0c4a893df9547d60f57675041e01f3ff76bdd7f48d87a",
+  "sourceDigest": "0c217a07409712016eee5c2877ed1e76474e09d1475951f6009a1538499a2d73",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "81f3378a337e7b60ded0c4a893df9547d60f57675041e01f3ff76bdd7f48d87a",
-    "contractDigest": "81f3378a337e7b60ded0c4a893df9547d60f57675041e01f3ff76bdd7f48d87a"
+    "digest": "0c217a07409712016eee5c2877ed1e76474e09d1475951f6009a1538499a2d73",
+    "contractDigest": "0c217a07409712016eee5c2877ed1e76474e09d1475951f6009a1538499a2d73"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "211ade5a3673769782cb468da74ed8dcbd6280edfc1ef16e93a24a35d6fd7468",
+    "handoffRequestDigest": "e7174cbc3593af4b5c32d7d7a0551efa9eb360865333db8780960f7b7c5d5c7c",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -460,8 +460,8 @@
     },
     "claudeAllowed": 70,
     "reactImplementationStates": {
-      "headless-control": 8,
-      "styled": 16
+      "headless-control": 7,
+      "styled": 17
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -494,9 +494,9 @@
       "conceptId": "catch.badge",
       "dartSymbol": "CatchBadge",
       "dartFile": "packages/catch_ui/lib/src/components/catch_badge.dart",
-      "reactSymbol": "BadgeControl",
-      "reactFile": "packages/web-ui/src/primitives.tsx",
-      "reactApi": "headless-control",
+      "reactSymbol": "CatchBadge",
+      "reactFile": "packages/web-ui/src/components/CatchBadge.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Badge",
       "figmaPropertyProjectionMode": "explicit",
       "figmaReviewStatePolicy": "evidence",
@@ -544,7 +544,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Badge",
       "claudeAllowed": true,
-      "contractDigest": "e5f9cfda4a9c38884e36d119d2d6a37736de06bee59a4dff45012b95a3c9e500"
+      "contractDigest": "1a0852ddb84c7c55679ada3779a6f37b8a12d504054089fdac9fad5081f83597"
     },
     {
       "contractId": "catch.button",

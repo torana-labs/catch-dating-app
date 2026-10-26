@@ -101,7 +101,9 @@ export async function getProgramHotelRoomsHandler(
       request, validateGetProgramHotelRoomsCallablePayload,
       normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramHotelRooms");
+  await deps.checkRateLimit(db, actorUid, "getProgramHotelRooms", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
@@ -224,7 +226,9 @@ export async function upsertProgramStayHandler(
   const data = validateCallableWithAjv<UpsertProgramStayCallablePayload>(
     request, validateUpsertProgramStayCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertProgramStay");
+  await deps.checkRateLimit(db, actorUid, "upsertProgramStay", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const ref = data.stayId ?
     db.collection("programStays").doc(data.stayId) :
     db.collection("programStays").doc();
@@ -452,7 +456,9 @@ export async function upsertProgramRoomBlockHandler(
   const data = validateCallableWithAjv<UpsertProgramRoomBlockCallablePayload>(
     request, validateUpsertProgramRoomBlockCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertProgramRoomBlock");
+  await deps.checkRateLimit(db, actorUid, "upsertProgramRoomBlock", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const ref = data.roomBlockId ?
     db.collection("programRoomBlocks").doc(data.roomBlockId) :
     db.collection("programRoomBlocks").doc();

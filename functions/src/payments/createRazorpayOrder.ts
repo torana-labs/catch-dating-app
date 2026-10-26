@@ -286,7 +286,8 @@ export const createRazorpayOrder = onCall(
       await checkRateLimit(
         admin.firestore(),
         request.auth.uid,
-        "createRazorpayOrder"
+        "createRazorpayOrder",
+        {maxRequests: 10, windowMs: 60 * 1000}
       );
     }
     return createRazorpayOrderHandler(request);

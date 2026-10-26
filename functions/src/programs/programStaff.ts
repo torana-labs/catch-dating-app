@@ -110,7 +110,9 @@ export async function getProgramWorkAccessHandler(
   const data = validateCallableWithAjv<ProgramIdCallablePayload>(
     request, validateProgramIdCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramWorkAccess");
+  await deps.checkRateLimit(db, actorUid, "getProgramWorkAccess", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
@@ -260,7 +262,9 @@ export async function listProgramStaffHandler(
   const data = validateCallableWithAjv<ListProgramStaffCallablePayload>(
     request, validateListProgramStaffCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listProgramStaff");
+  await deps.checkRateLimit(db, actorUid, "listProgramStaff", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (tx) => {
     const access = await requireProgramManager(db, data.programId, actorUid,
       tx, deps.now());
@@ -276,7 +280,9 @@ export async function grantProgramStaffHandler(
   const data = validateCallableWithAjv<GrantProgramStaffCallablePayload>(
     request, validateGrantProgramStaffCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "grantProgramStaff");
+  await deps.checkRateLimit(db, actorUid, "grantProgramStaff", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const initial = await requireProgramManager(db, data.programId, actorUid,
     undefined, deps.now());
   const {program} = initial;
@@ -389,7 +395,9 @@ export async function revokeProgramStaffHandler(
   const data = validateCallableWithAjv<RevokeProgramStaffCallablePayload>(
     request, validateRevokeProgramStaffCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "revokeProgramStaff");
+  await deps.checkRateLimit(db, actorUid, "revokeProgramStaff", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const {program: programForRevoke} =
     await requireProgramManager(db, data.programId, actorUid,
       undefined, deps.now());

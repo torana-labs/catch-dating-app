@@ -85,11 +85,7 @@ interface PromotionPush {
 
 interface CancelEventSignUpDeps {
   firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit: typeof checkRateLimit;
   nowMillis: () => number;
   loadCurrentAuthPhone: (uid: string) => Promise<string | null>;
   processRefund: (db: FirebaseFirestore.Firestore, paymentId: string) =>
@@ -146,7 +142,9 @@ export async function cancelEventSignUpHandler(
   );
 
   const db = deps.firestore();
-  await deps.checkRateLimit(db, userId, "cancelEventSignUp");
+  await deps.checkRateLimit(db, userId, "cancelEventSignUp", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
 
   const refundPreflight = await cancellationRefundPreflight({db, userId,
     eventId, authorizeRazorpayRefund: deps.authorizeRazorpayRefund});

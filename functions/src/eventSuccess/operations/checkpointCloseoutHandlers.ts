@@ -19,7 +19,9 @@ export async function setEventAssistanceCheckpointCloseoutHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "setEventAssistanceCheckpointCloseout");
+  await deps.rateLimit(db, uid, "setEventAssistanceCheckpointCloseout", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).set(uid, request.data);
 }
 export const setEventAssistanceCheckpointCloseout = onCall(

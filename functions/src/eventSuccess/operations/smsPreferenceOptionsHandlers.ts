@@ -26,7 +26,9 @@ export async function listEventSmsPreferencesHandler(
   const input = validateCallableWithAjv(request,
     validateListEventSmsPreferencesCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "listEventSmsPreferences");
+  await deps.checkRateLimit(db, uid, "listEventSmsPreferences", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const output = await new SmsPreferenceOptionsStore(db, deps.now)
     .list(uid, input);
   if (!validateListEventSmsPreferencesCallableResponse(output)) {

@@ -36,11 +36,7 @@ import {organizerSupplyCapabilitiesFor} from
 interface CreateOrganizerDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   reserveCanonicalRoute?: typeof reserveOrganizerCanonicalRoute;
 }
 
@@ -71,7 +67,9 @@ export async function createOrganizerHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, ownerUid, "createOrganizer");
+  await deps.checkRateLimit?.(db, ownerUid, "createOrganizer", {
+    maxRequests: 3, windowMs: 60 * 60 * 1000,
+  });
   const organizerRef = data.organizerId ?
     db.collection("organizers").doc(requireFirestoreAutoId(data.organizerId)) :
     db.collection("organizers").doc();

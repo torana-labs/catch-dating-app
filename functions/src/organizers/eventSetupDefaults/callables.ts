@@ -33,7 +33,9 @@ export async function getOrganizerEventSetupDefaultsHandler(
   const {organizerId} = validateCallableWithAjv(request,
     validateGetOrganizerEventSetupDefaultsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerEventSetupDefaults");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerEventSetupDefaults", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const result = await getManagerEventSetupDefaults({actorUid, organizerId,
     deps: eventSetupDefaultsDependencies(db)});
   if (!validateOrganizerEventSetupDefaultsCallableResponse(result)) {
@@ -50,7 +52,9 @@ export async function updateOrganizerEventSetupDefaultsHandler(
   const command = validateCallableWithAjv(request,
     validateUpdateOrganizerEventSetupDefaultsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "updateOrganizerEventSetupDefaults");
+  await deps.checkRateLimit(db, actorUid, "updateOrganizerEventSetupDefaults", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const result = await updateManagerEventSetupDefaults({actorUid, command,
     deps: eventSetupDefaultsDependencies(db)});
   if (!validateUpdateOrganizerEventSetupDefaultsCallableResponse(result)) {

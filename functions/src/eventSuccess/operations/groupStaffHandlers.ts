@@ -3,7 +3,7 @@ import {getFirestore} from "firebase-admin/firestore";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../../shared/auth";
 import {appCheckCallableOptions} from "../../shared/callableOptions";
-import {checkRateLimit} from "../../shared/rateLimit";
+import {checkRateLimit, RateLimitConfig} from "../../shared/rateLimit";
 import {eventStaffDisplayName, resolveStaffAuthUser} from
   "../../events/eventStaff";
 import {normalizeRosterPhone} from "../../events/eventAttendees";
@@ -27,11 +27,11 @@ const defaults: Dependencies = {db: getFirestore, rateLimit: checkRateLimit,
   store: (db) => new EventGroupStaffStore(db)};
 
 async function prepare(request: CallableRequest<unknown>, action: string,
-  deps: Dependencies,
+  limit: RateLimitConfig, deps: Dependencies,
   input: Pick<Data, "context" | "groupId" | "phoneNumber">) {
   const actor = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, actor, action);
+  await deps.rateLimit(db, actor, action, limit);
   const scope = {context: input.context, groupId: input.groupId};
   const store = deps.store(db);
   await store.authorizeManager(actor, scope);
@@ -59,7 +59,8 @@ export async function getEventAssistanceGroupStaffHandler(
     throw new HttpsError("invalid-argument", "Invalid group staff scope.");
   }
   const {actor, store, scope, target} = await prepare(request,
-    "getEventAssistanceGroupStaff", deps, request.data);
+    "getEventAssistanceGroupStaff", {maxRequests: 60, windowMs: 60_000},
+    deps, request.data);
   return store.get(actor, target, scope);
 }
 
@@ -71,7 +72,8 @@ export async function setEventAssistanceGroupStaffHandler(
     throw new HttpsError("invalid-argument", "Invalid group duty change.");
   }
   const {actor, store, target} = await prepare(request,
-    "setEventAssistanceGroupStaff", deps, request.data);
+    "setEventAssistanceGroupStaff", {maxRequests: 30, windowMs: 60_000},
+    deps, request.data);
   return store.set(actor, target, request.data);
 }
 

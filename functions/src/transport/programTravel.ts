@@ -39,7 +39,9 @@ export async function upsertProgramTravelLegHandler(
   const data = validateCallableWithAjv<UpsertProgramTravelLegCallablePayload>(
     request, validateUpsertProgramTravelLegCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertProgramTravelLeg");
+  await deps.checkRateLimit(db, actorUid, "upsertProgramTravelLeg", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const ref = data.legId ?
     db.collection("programTravelLegs").doc(data.legId) :
     db.collection("programTravelLegs").doc();

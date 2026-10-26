@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -29,7 +29,6 @@ import {
   AdminRoadmapList,
   AdminRoadmapListItem,
   AdminTableRow,
-  AdminTag,
   AdminToolbar,
   AdminWorkbenchNote,
   DataTable,
@@ -101,7 +100,7 @@ export function AccessReviewWorkspace({
         </AdminButton>
         <PageHeader
           actions={controller.selected ? (
-            <AdminTag tone="muted">{controller.selected.status}</AdminTag>
+            <CatchBadge label={controller.selected.status} />
           ) : null}
           title={controller.selected?.title ?? controller.selectedApplicationUid}
         />
@@ -232,7 +231,7 @@ function AccessTable({
               </AdminRowTitle>
             </td>
             <td>{row.detail}</td>
-            <td><AdminTag tone="muted">{row.status}</AdminTag></td>
+            <td><CatchBadge label={row.status} /></td>
             <td>{formatDateTime(row.createdAt)}</td>
             <td>
               <TableActionButton onClick={() => onSelect(row)}>
@@ -307,7 +306,7 @@ function TagList({values}: {values: string[]}) {
   return (
     <AdminTagRow as="span">
       {values.map((value) => (
-        <AdminTag key={value} tone="muted">{formatLabel(value)}</AdminTag>
+        <CatchBadge key={value} label={formatLabel(value)} />
       ))}
     </AdminTagRow>
   );

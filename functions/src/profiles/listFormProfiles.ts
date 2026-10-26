@@ -27,7 +27,9 @@ export async function listParticipantFormProfilesHandler(
   const data = validateCallableWithAjv(request,
     validateListParticipantFormProfilesCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "listParticipantFormProfiles");
+  await deps.rateLimit(db, uid, "listParticipantFormProfiles", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   if ((await db.collection("deletedUsers").doc(uid).get()).exists) {
     throw new HttpsError("not-found", "Your form profiles are unavailable.");
   }

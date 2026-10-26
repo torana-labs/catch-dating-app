@@ -261,7 +261,12 @@ export async function manageProgramLodgingHandler(
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<ManageProgramLodgingCallablePayload>(
     request, validateManageProgramLodgingCallablePayload);
-  await deps.checkRateLimit(deps.firestore(), actorUid, "manageProgramLodging");
+  await deps.checkRateLimit(
+    deps.firestore(),
+    actorUid,
+    "manageProgramLodging",
+    {maxRequests: 30, windowMs: 60 * 1000}
+  );
   const store = new ProgramLodgingStore(deps, canonicalLodgingSource(deps));
   let result: unknown;
   try {

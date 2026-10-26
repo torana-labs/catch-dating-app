@@ -36,7 +36,9 @@ export async function getEventAssistanceSmsPreferenceHandler(
   const input = validateCallableWithAjv(request,
     validateGetEventAssistanceSmsPreferenceCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actor.uid, "getEventAssistanceSmsPreference");
+  await deps.checkRateLimit(db, actor.uid, "getEventAssistanceSmsPreference", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const result = await new SmsPreferenceStore(db, deps.now, input.senderId)
     .get(actor, input);
   if (!validateEventAssistanceSmsPreferenceCallableResponse(result)) {
@@ -52,7 +54,9 @@ export async function setEventAssistanceSmsPreferenceHandler(
   const input = validateCallableWithAjv(request,
     validateSetEventAssistanceSmsPreferenceCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actor.uid, "setEventAssistanceSmsPreference");
+  await deps.checkRateLimit(db, actor.uid, "setEventAssistanceSmsPreference", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const result = await new SmsPreferenceStore(db, deps.now, input.senderId)
     .set(actor, input);
   if (!validateEventAssistanceSmsPreferenceCallableResponse(result)) {

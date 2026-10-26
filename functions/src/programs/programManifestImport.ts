@@ -129,7 +129,9 @@ export async function importProgramManifestHandler(
       })};
     });
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "importProgramManifest");
+  await deps.checkRateLimit(db, actorUid, "importProgramManifest", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const requestHash = hashRequest({
     programId: data.programId, mode: data.mode, rows: data.rows,
   });

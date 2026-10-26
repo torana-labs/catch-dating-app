@@ -63,6 +63,14 @@ export type {
 } from "./components/CatchCodeInput";
 export {CatchDateTile} from "./components/CatchDateTile";
 export type {CatchDateTileProps} from "./components/CatchDateTile";
+export {CatchBadge} from "./components/CatchBadge";
+export type {
+  CatchBadgeEmphasis,
+  CatchBadgeProps,
+  CatchBadgeRecipe,
+  CatchBadgeSize,
+  CatchBadgeTone,
+} from "./components/CatchBadge";
 export {CatchEmptyState} from "./components/CatchEmptyState";
 export type {CatchEmptyStateAnnouncement, CatchEmptyStateProps, CatchEmptyStateVariant} from "./components/CatchEmptyState";
 export {CatchErrorState} from "./components/CatchErrorState";
@@ -180,7 +188,6 @@ export type {
   CatchTextVariant,
 } from "./components/CatchText";
 export {
-  BadgeControl,
   ButtonControl,
   CheckboxControl,
   DataTableControl,
@@ -192,7 +199,6 @@ export {
   classNames,
 } from "./primitives";
 export type {
-  BadgeControlProps,
   ButtonControlProps,
   CheckboxControlProps,
   DataTableControlProps,
