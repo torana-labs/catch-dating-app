@@ -21,10 +21,10 @@ describe("CatchGroundCard", () => {
     expect(screen.getByText("Next up").dataset).toMatchObject({ground: "ink", catchTheme: "dark", padding: "compact"});
   });
 
-  it("draws its outline only when asked, for a white card on a white page", () => {
+  it("outlines a card only when asked, such as a white card on a white page", () => {
     const {rerender} = render(<CatchGroundCard ground="white">Organiser</CatchGroundCard>);
     expect(screen.getByText("Organiser").dataset.outlined).toBeUndefined();
     rerender(<CatchGroundCard ground="white" outlined>Organiser</CatchGroundCard>);
-    expect(screen.getByText("Organiser").dataset.outlined).toBe("true");
+    expect(screen.getByText("Organiser").dataset).toMatchObject({ground: "white", outlined: "true"});
   });
 });

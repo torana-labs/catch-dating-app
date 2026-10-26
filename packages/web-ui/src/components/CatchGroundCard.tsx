@@ -13,7 +13,7 @@ export interface CatchGroundCardProps
   children: ReactNode;
   /** Defaults to paper. */
   ground?: Ground;
-  /** A hairline in the ground's ink, for a card on a page of the same ground. */
+  /** Outlines the card in its ground's ink at 12%, as the boards draw white cards on a white page. */
   outlined?: boolean;
   /** Defaults to regular. */
   padding?: CatchGroundCardPadding;

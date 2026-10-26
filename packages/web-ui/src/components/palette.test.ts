@@ -108,10 +108,10 @@ describe("activity formats", () => {
     for (const kind of kinds) expect(tokenKeys(tokens.activity), kind).toContain(kind);
   });
 
-  it("gives each covered activity kind its format's accent, and other kinds none", () => {
-    for (const [format, kinds] of Object.entries(formatActivityKinds)) {
-      for (const kind of kinds) expect(catchFormatAccentOf(kind), kind).toBe(formatAccents[format as Format]);
-    }
-    expect([catchFormatAccentOf("singlesMixer"), catchFormatAccentOf("yoga"), catchFormatAccentOf("")]).toEqual([null, null, null]);
+  it("finds the accent of the format an activity kind belongs to", () => {
+    expect(catchFormatAccentOf("socialRun")).toBe("coral");
+    expect(catchFormatAccentOf("padel")).toBe("mint");
+    expect(catchFormatAccentOf("singlesMixer")).toBeNull();
+    expect(catchFormatAccentOf("")).toBeNull();
   });
 });

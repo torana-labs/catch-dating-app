@@ -1,7 +1,6 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {ReferenceComparison} from "../stories/referenceScreens";
 import {StoryPage} from "../stories/websiteV2Story";
-import {CatchAvatar} from "./CatchAvatar";
 import {CatchBand} from "./CatchBand";
 import {CatchButton} from "./CatchButton";
 import {CatchGap} from "./CatchGap";
@@ -25,7 +24,7 @@ const storyRoutes = ["organizer_listing_canonical"];
 
 /** Every ground at the regular padding, and the compact and spacious paddings. */
 export const Grounds: Story = {
-  parameters: {catchComponent: {id: "shared_ground_card", routeIds: storyRoutes, states: ["grounds", "compact", "spacious", "dark-ground"]}},
+  parameters: {catchComponent: {id: "shared_ground_card", routeIds: storyRoutes, states: ["grounds", "compact", "spacious", "dark-ground", "outlined"]}},
   render: () => (
     <StoryPage>
       <CatchBand aria-label="Grounds" pb="compact" pt="compact">
@@ -40,6 +39,9 @@ export const Grounds: Story = {
               </CatchGroundCard>
             ))}
           </CatchGrid>
+          <CatchGroundCard ground="white" outlined>
+            <CatchText variant="bodyM">An outlined white card, for a white page.</CatchText>
+          </CatchGroundCard>
           <CatchGroundCard ground="indigo" padding="spacious">
             <CatchGrid columns={2} compactColumns={1}>
               <CatchGroundCard ground="white" padding="compact"><CatchText variant="bodyM">A compact card inside a spacious one.</CatchText></CatchGroundCard>
@@ -105,31 +107,6 @@ export const Reference: Story = {
       label="Claim pitch"
       phone={{capture: "organizer/generated/390", height: 710, width: 358, x: 16, y: 1185}}
       render={pitch}
-    />
-  ),
-};
-
-/** Outlined on white: the event page's organiser card, composed from library parts (CAT-252). */
-export const Outlined: Story = {
-  parameters: {catchComponent: {id: "shared_ground_card", routeIds: ["event_detail_canonical"], states: ["outlined"]}},
-  render: () => (
-    <ReferenceComparison
-      desktop={{capture: "event/catch_bare/1280", height: 108, width: 654, x: 99, y: 1170}}
-      label="Organiser card"
-      render={() => (
-        <CatchGroundCard ground="white" outlined>
-          <CatchGap crossAxisAlignment="center" direction="horizontal" mainAxisAlignment="spaceBetween" size="formField" wrap>
-            <CatchGap crossAxisAlignment="center" direction="horizontal" size="formField">
-              <CatchAvatar ground="coral" initials="CR" name="Carter Road Runners" recipe="monogram" size={64} />
-              <CatchGap size="headerTitleToSubtitle">
-                <CatchText variant="sectionTitle">Carter Road Runners</CatchText>
-                <CatchText color="ink2" variant="bodyM">Social runs in Bandra since 2024 · 2,140 followers</CatchText>
-              </CatchGap>
-            </CatchGap>
-            <CatchButton href="#" label="See their page" onPressed={() => undefined} size="md" variant="secondary" />
-          </CatchGap>
-        </CatchGroundCard>
-      )}
     />
   ),
 };
