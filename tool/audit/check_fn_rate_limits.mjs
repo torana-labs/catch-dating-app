@@ -5,6 +5,11 @@ import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
 const RATE_LIMIT_MODULE = "functions/src/shared/rateLimit.ts";
+const LEGACY_TABLE = "LEGACY_RATE_LIMITS";
+// The only actions whose callers may omit their limit, because their module
+// is held by another task's claim. Shrink only: delete each entry with its
+// row, and the table and legacy overload with the last one.
+export const FROZEN_LEGACY_ACTIONS = new Set(["dispatchOrganizerCampaign"]);
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -16,15 +21,29 @@ if (isCliEntrypoint) runCli();
 // per-action table in the mechanism module puts every new callable's limit in
 // a file nearly every Function imports, so the backend deploy selector
 // redeploys them all. An optional limit would let a call silently skip it.
+// The module's frozen legacy table and its overload are the one exception.
 export function scanFunctionRateLimits({root}) {
   const sourceRoot = path.join(root, "functions/src");
   const files = collectTypeScriptFiles(sourceRoot);
   const actions = new Map();
   const findings = [];
+  const sources = files.map((file) => ({
+    source: fs.readFileSync(file, "utf8"),
+    relativePath: normalizePath(path.relative(root, file)),
+  }));
+  const mechanism = sources.find((entry) => entry.relativePath === RATE_LIMIT_MODULE);
+  const legacy = mechanism ? findLegacyActions(mechanism.source) : {actions: new Set(), offset: 0};
+  for (const action of legacy.actions) {
+    if (FROZEN_LEGACY_ACTIONS.has(action)) continue;
+    findings.push({
+      rule: "legacyRateLimitGrew",
+      action,
+      locations: [{path: RATE_LIMIT_MODULE, line: lineForOffset(mechanism.source, legacy.offset)}],
+      reason: `${LEGACY_TABLE} is frozen; pass this action's limit at its checkRateLimit call`,
+    });
+  }
 
-  for (const file of files) {
-    const source = fs.readFileSync(file, "utf8");
-    const relativePath = normalizePath(path.relative(root, file));
+  for (const {source, relativePath} of sources) {
     if (relativePath === RATE_LIMIT_MODULE) {
       for (const table of findLimitTables(source)) {
         findings.push({
@@ -34,6 +53,7 @@ export function scanFunctionRateLimits({root}) {
           reason: "per-action limits belong at their checkRateLimit calls, not in the shared module",
         });
       }
+      continue;
     }
     for (const optional of findOptionalLimits(source)) {
       findings.push({
@@ -47,7 +67,7 @@ export function scanFunctionRateLimits({root}) {
       if (!actions.has(action.value)) actions.set(action.value, []);
       const location = {path: relativePath, line: lineForOffset(source, action.offset)};
       actions.get(action.value).push(location);
-      if (!action.hasLimit) {
+      if (!action.hasLimit && !legacy.actions.has(action.value)) {
         findings.push({
           rule: "missingRateLimit",
           action: action.value,
@@ -65,11 +85,25 @@ export function scanFunctionRateLimits({root}) {
   };
 }
 
-// A Record keyed by action, or any object of {maxRequests, windowMs} rows.
+// The keys of the frozen legacy table, if the mechanism module still has one.
+export function findLegacyActions(source) {
+  const match = new RegExp(`(?:const|let|var)\\s+${LEGACY_TABLE}\\b[^=]*=\\s*\\{`, "u").exec(source);
+  if (!match) return {actions: new Set(), offset: 0};
+  const openBrace = match.index + match[0].length - 1;
+  const closeBrace = findMatchingBrace(source, openBrace);
+  const body = closeBrace == null ? "" : source.slice(openBrace + 1, closeBrace);
+  const actions = [...body.matchAll(/(?:^|[,{]|\n)\s*["']?([A-Za-z_$][\w$:.-]*)["']?\s*:\s*\{/gu)]
+    .map((entry) => entry[1]);
+  return {actions: new Set(actions), offset: match.index};
+}
+
+// A Record keyed by action, or any other object of {maxRequests, windowMs}
+// rows. The frozen legacy table is checked by findLegacyActions instead.
 export function findLimitTables(source) {
   const tables = [];
   const pattern = /(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*(?::\s*Record<\s*string\s*,\s*RateLimitConfig\s*>)?\s*=\s*\{/gu;
   for (const match of source.matchAll(pattern)) {
+    if (match[1] === LEGACY_TABLE) continue;
     const openBrace = source.indexOf("{", match.index + match[0].length - 1);
     const closeBrace = findMatchingBrace(source, openBrace);
     const body = closeBrace == null ? "" : source.slice(openBrace + 1, closeBrace);

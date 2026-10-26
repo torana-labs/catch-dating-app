@@ -438,15 +438,15 @@ test("uses an explicit low-volume admin mutation rate limit", async () => {
     callableRequest(payload()),
     {
       ...h.deps,
-      checkRateLimit: async (_db, _uid, action, limit) => {
-        checked.push({action, limit});
+      checkRateLimit: async (...args: unknown[]) => {
+        checked.push(args.slice(2));
       },
     }
   );
-  assert.deepEqual(checked, [{
-    action: "adminCreateOrganizerDraftFromCandidate",
-    limit: {maxRequests: 10, windowMs: 60 * 1000},
-  }]);
+  assert.deepEqual(checked, [[
+    "adminCreateOrganizerDraftFromCandidate",
+    {maxRequests: 10, windowMs: 60 * 1000},
+  ]]);
 });
 
 test("exact retry reuses the organizer without duplicate audit", async () => {

@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {
+  FROZEN_LEGACY_ACTIONS,
   extractCheckRateLimitActions,
   findLimitTables,
   scanFunctionRateLimits,
@@ -74,6 +75,41 @@ test("scanFunctionRateLimits flags a per-action table in the shared mechanism mo
   }
   assert.deepEqual(findLimitTables(
     "const fallback = {maxRequests: 30, windowMs: 60 * 1000};"), []);
+});
+
+test("the frozen legacy table may shrink but never grow", () => {
+  const legacy = (rows) => `${mechanism}
+    const LEGACY_RATE_LIMITS = {
+      ${rows}
+    } as const satisfies Record<string, RateLimitConfig>;
+    export function checkRateLimit(db, uid, action, ownLimit?: RateLimitConfig) {}
+  `;
+  const dispatcher = 'await deps.checkRateLimit(db, actorUid, "dispatchOrganizerCampaign");';
+  const frozen = createFixture({
+    "functions/src/shared/rateLimit.ts": legacy(
+      "dispatchOrganizerCampaign: {maxRequests: 3, windowMs: 60 * 60 * 1000},"),
+    "functions/src/organizers/dispatcher.ts": dispatcher,
+  });
+  assert.deepEqual(scanFunctionRateLimits({root: frozen}).findings, []);
+
+  const grown = createFixture({
+    "functions/src/shared/rateLimit.ts": legacy(`
+      dispatchOrganizerCampaign: {maxRequests: 3, windowMs: 60 * 60 * 1000},
+      "newCallable": {maxRequests: 10, windowMs: 60 * 1000},`),
+    "functions/src/organizers/dispatcher.ts": dispatcher,
+    "functions/src/organizers/newCallable.ts": 'await checkRateLimit(db, uid, "newCallable");',
+  });
+  assert.deepEqual(scanFunctionRateLimits({root: grown}).findings.map((finding) =>
+    [finding.rule, finding.action]), [["legacyRateLimitGrew", "newCallable"]]);
+
+  const removed = createFixture({
+    "functions/src/shared/rateLimit.ts": mechanism,
+    "functions/src/organizers/dispatcher.ts": dispatcher,
+  });
+  assert.deepEqual(scanFunctionRateLimits({root: removed}).findings.map((finding) =>
+    [finding.rule, finding.action]), [["missingRateLimit", "dispatchOrganizerCampaign"]]);
+  assert.deepEqual([...FROZEN_LEGACY_ACTIONS], ["dispatchOrganizerCampaign"],
+    "The frozen set may only shrink.");
 });
 
 test("scanFunctionRateLimits flags optional limits that let a call skip its limit", () => {

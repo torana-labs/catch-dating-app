@@ -59,6 +59,20 @@ export interface RateLimitConfig {
   windowMs: number;
 }
 
+// ── Frozen legacy limits ───────────────────────────────────────────────────
+
+/**
+ * Limits for callers whose own module cannot be edited yet. Frozen: rows may
+ * only be removed, never added (audit:fn-rate-limits enforces this).
+ */
+const LEGACY_RATE_LIMITS = {
+  // Remove once the cat106 claim releases organizerCampaignDispatcher.ts and
+  // its call passes this limit itself.
+  dispatchOrganizerCampaign: {maxRequests: 3, windowMs: 60 * 60 * 1000},
+} as const satisfies Record<string, RateLimitConfig>;
+
+type LegacyRateLimitAction = keyof typeof LEGACY_RATE_LIMITS;
+
 // ── Implementation ─────────────────────────────────────────────────────────
 
 /**
@@ -74,12 +88,40 @@ export interface RateLimitConfig {
  * @param {RateLimitConfig} limit The caller's own limit for [action].
  * @throws {HttpsError} `resource-exhausted` when limit exceeded.
  */
-export async function checkRateLimit(
+export function checkRateLimit(
   db: FirebaseFirestore.Firestore,
   uid: string,
   action: string,
   limit: RateLimitConfig
+): Promise<void>;
+/**
+ * Legacy form for the frozen LEGACY_RATE_LIMITS actions only.
+ * @deprecated Pass the action's own limit.
+ */
+export function checkRateLimit(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  action: LegacyRateLimitAction
+): Promise<void>;
+/**
+ * Implementation shared by both forms.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {string} uid Authenticated user ID.
+ * @param {string} action Action name, the counter key.
+ * @param {RateLimitConfig=} ownLimit The caller's limit, absent only for a
+ *     legacy action.
+ */
+export async function checkRateLimit(
+  db: FirebaseFirestore.Firestore,
+  uid: string,
+  action: string,
+  ownLimit?: RateLimitConfig
 ): Promise<void> {
+  const limit: RateLimitConfig | undefined = ownLimit ??
+    (LEGACY_RATE_LIMITS as Record<string, RateLimitConfig>)[action];
+  if (limit === undefined) {
+    throw new Error(`checkRateLimit: ${action} needs its own limit.`);
+  }
   const windowKey = Math.floor(Date.now() / limit.windowMs);
   const docId = `${uid}_${action}_${windowKey}`;
 

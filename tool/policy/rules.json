@@ -2517,7 +2517,7 @@
       "applies_to": [
         "functions/src/**"
       ],
-      "instruction": "Declare each callable's limit where it calls checkRateLimit, inline or as a constant in a module only that callable family imports. The limit parameter is required, so no call falls back to a loose default. Never add a per-action limit table to functions/src/shared/rateLimit.ts: nearly every Function imports it, so editing it makes the backend deploy select every Function. demoOps and other privileged fan-out callables must declare dedicated limits.",
+      "instruction": "Declare each callable's limit where it calls checkRateLimit, inline or as a constant in a module only that callable family imports. The limit parameter is required, so no call falls back to a loose default. Never add a per-action limit table to functions/src/shared/rateLimit.ts: nearly every Function imports it, so editing it makes the backend deploy select every Function. Its frozen LEGACY_RATE_LIMITS table covers only callers whose module another task's claim holds; it may only shrink. demoOps and other privileged fan-out callables must declare dedicated limits.",
       "sunset_when": [
         "checkRateLimit requires an explicit limit",
         "No per-action limit table returns to the shared module for three passes"
