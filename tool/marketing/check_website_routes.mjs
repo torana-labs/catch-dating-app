@@ -163,6 +163,8 @@ function validateRoutes(routes, storyDeclarations) {
     "terms",
     "help",
     "account_deletion",
+    "refunds",
+    "contact",
     "not_found",
     "organizer_listing_canonical",
     "organizer_listing_legacy",
@@ -302,6 +304,8 @@ function validatePageKey(route) {
     "terms",
     "help",
     "account_deletion",
+    "refunds",
+    "contact",
     "not_found",
   ]);
   if (!allowedPageKeys.has(route.pageKey)) {
@@ -331,6 +335,8 @@ function validatePageKey(route) {
     terms: "pathname.startsWith(\"/terms\")",
     help: "pathname.startsWith(\"/help\")",
     account_deletion: "pathname.startsWith(\"/delete-account\")",
+    refunds: "pathname.startsWith(\"/refunds\")",
+    contact: "pathname.startsWith(\"/contact\")",
     host: '["/host", "/host/", "/host/apply", "/host/apply/"].includes(pathname)',
     event_runtime: "pathname.startsWith(\"/join/\")",
     sales_demo: "pathname.startsWith(\"/demo/\")",
@@ -941,6 +947,8 @@ export const OrganizerSearch = {
         "terms",
         "help",
         "account_deletion",
+        "refunds",
+        "contact",
         "not_found",
       ].map((key) => [
         key,

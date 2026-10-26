@@ -62,7 +62,7 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
       assert.ok((await get(`/events/${encodeURIComponent(event.id)}/`)).text.includes("<h1"));
     }
   }
-  for (const path of ["/privacy/", "/terms/", "/help/", "/delete-account/", "/host/apply/"]) assert.ok((await get(path)).text.includes("<h1"));
+  for (const path of ["/privacy/", "/terms/", "/help/", "/delete-account/", "/refunds/", "/contact/", "/host/apply/"]) assert.ok((await get(path)).text.includes("<h1"));
   await get("/not-a-real-next-release-route/", 404);
   await get("/events/not-a-real-next-release-event/", 404);
   const privatePage = await get("/f/next-release-private-marker/");

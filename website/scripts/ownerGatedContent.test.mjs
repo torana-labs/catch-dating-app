@@ -14,14 +14,14 @@ const publishedLegalContent = JSON.parse(fs.readFileSync(
 test("confirmed legal, help, and contact contracts are publication-ready", () => {
   assert.deepEqual(
     Object.values(publishedLegalContent.pages).map((page) => page.path).sort(),
-    ["/delete-account/", "/help/", "/privacy/", "/terms/"]
+    ["/contact/", "/delete-account/", "/help/", "/privacy/", "/refunds/", "/terms/"]
   );
   assert.equal(publishedLegalContent.operator.name, "Torana");
   assert.equal(publishedLegalContent.operator.supportEmail, "suvrat.garg@gmail.com");
   assert.equal(ownerGatedSiteDestinations.contactHref, "mailto:suvrat.garg@gmail.com");
   assert.deepEqual(
     siteFooterLegalLinks.map((link) => link.href).sort(),
-    ["/help/", "/privacy/", "/terms/"]
+    ["/contact/", "/help/", "/privacy/", "/refunds/", "/terms/"]
   );
 
   const publishedPaths = new Set(Object.values(publishedLegalContent.pages).map((page) => page.path));
@@ -48,7 +48,7 @@ test("confirmed legal, help, and contact contracts are publication-ready", () =>
     path.join(websiteRoot, "src/app/routeRegistry.ts"),
     "utf8"
   );
-  for (const route of ["privacy", "terms", "help", "account_deletion"]) {
+  for (const route of ["privacy", "terms", "help", "account_deletion", "refunds", "contact"]) {
     assert.match(routeRegistry, new RegExp(`id: "${route}"`));
   }
 });
@@ -76,4 +76,44 @@ test("account deletion resource meets the store web-deletion requirement", () =>
     .map((link) => link.href);
   assert.ok(linksTo(pages.help).includes("/delete-account/"), "Help must link the deletion page");
   assert.ok(linksTo(pages.privacy).includes("/delete-account/"), "Privacy must link the deletion page");
+});
+
+const pageCopy = (page) => page.sections
+  .flatMap((section) => [section.heading, ...section.paragraphs, ...(section.bullets ?? [])])
+  .join("\n");
+const linksTo = (page) => page.sections.flatMap((section) => section.links ?? []).map((link) => link.href);
+
+test("refund policy states the cash deadlines checkout enforces", () => {
+  const {pages} = publishedLegalContent;
+  const refunds = pages.refunds;
+  assert.equal(refunds.path, "/refunds/");
+  const copy = pageCopy(refunds);
+  // eventPolicy.ts cancellationWindow: full cash refund at or before start minus 6, 24 or 72 hours.
+  assert.match(copy, /Flexible: full refund if you cancel at least 6 hours before the event starts/u);
+  assert.match(copy, /Standard: full refund if you cancel at least 24 hours before the event starts/u);
+  assert.match(copy, /Strict: full refund if you cancel at least 72 hours before the event starts/u);
+  assert.match(copy, /Events use Standard unless/u, "Standard is the default policy");
+  assert.match(copy, /after your refund deadline, no refund is due/u);
+  // Cash-only checkout: no credit remedy is promised.
+  assert.doesNotMatch(copy, /credit/iu);
+  assert.match(copy, /organiser cancels the event, everyone who paid gets a full refund/u);
+  assert.match(copy, /Joining a waitlist is free/u);
+  assert.match(copy, /organiser is the seller/u);
+  assert.match(copy, /payment method you used/u);
+  assert.ok(linksTo(refunds).includes("/contact/"), "Refunds must link the contact page");
+  assert.ok(linksTo(pages.terms).includes("/refunds/"), "Terms must link the refund policy");
+  assert.doesNotMatch(pageCopy(pages.terms), /If Catch later offers payment|Paid-event functionality is not part/u);
+  assert.doesNotMatch(pageCopy(pages.help), /Paid events are not part/u);
+});
+
+test("contact page publishes the operator, address, email and phone", () => {
+  const {operator, pages} = publishedLegalContent;
+  const copy = pageCopy(pages.contact);
+  assert.equal(pages.contact.path, "/contact/");
+  assert.match(copy, new RegExp(`operated by ${operator.name}`, "u"));
+  assert.ok(copy.includes(operator.formalAddress), "the postal address must match the operator record");
+  assert.ok(copy.includes(operator.supportEmail));
+  assert.match(copy, /\+91 98931 91829/u);
+  assert.match(copy, /WhatsApp/u);
+  assert.ok(copy.includes(operator.grievanceOfficer), "the grievance officer must be named");
 });
