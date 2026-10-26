@@ -10,6 +10,7 @@ const read = (relative: string) => fs.readFileSync(fileURLToPath(new URL(relativ
 const button = read("../../../catch_ui/lib/src/components/catch_button.dart");
 const tokens = read("../../../catch_tokens/lib/src/components/catch_button_tokens.dart");
 const css = read("./CatchButton.module.css");
+const border = read("../../../catch_tokens/lib/src/semantic/catch_border.dart");
 const tokensCss = read("../../../web-config/generated/catch-tokens.css");
 const ts = read("./CatchButton.tsx");
 
@@ -56,5 +57,15 @@ describe("CatchButton parity", () => {
     expect(css).toContain(`opacity: ${tokenNumber("disabledOpacity")};`);
     expect(tokens).toContain("focusRingOffset = CatchSpacing.micro2");
     expect(css).toContain("outline-offset: var(--catch-space-micro2);");
+  });
+
+  it("draws the outline in Flutter's control border role on light and dark", () => {
+    const control = border.match(/static Color _controlColor\(CatchTokens tokens\) \{([\s\S]*?)\n  \}/)?.[1] ?? "";
+    expect(control).toContain("if (isDark) return tokens.ink3;");
+    expect(control).toContain("return Color.lerp(tokens.ink3, tokens.ink, 0.10)!;");
+    const light = "--catch-button-line: color-mix(in srgb, var(--catch-theme-ink3) 90%, var(--catch-theme-ink));";
+    expect(css).toContain(light);
+    expect(css).toContain(':where([data-catch-theme="dark"]) .button { --catch-button-line: var(--catch-theme-ink3); }');
+    expect(css).toMatch(/:where\(\[data-catch-theme="dark"\] \[data-catch-theme="light"\]\) \.button \{\s*--catch-button-line: color-mix\(in srgb, var\(--catch-theme-ink3\) 90%, var\(--catch-theme-ink\)\);/);
   });
 });
