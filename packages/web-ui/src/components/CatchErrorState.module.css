@@ -1,0 +1,46 @@
+/*
+ * Flutter CatchErrorState: the error medallion (64px with a 30px glyph, or
+ * 48 and 24 when compact), then 16px (12px compact) to a titleL (sectionTitle
+ * compact) title, 8px to a bodyLead ink2 message, and 16px (12px) to the
+ * actions, which wrap centred 12px by 8px. Full screen centres the content in
+ * at most 420px inside 20px; inline pads 20px and compact 16px.
+ */
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  margin-inline: auto;
+  padding: var(--catch-space-s5);
+  text-align: center;
+}
+
+.error[data-mode="fullScreen"] {
+  box-sizing: content-box;
+  max-width: 420px;
+}
+.error[data-mode="compact"] { padding: var(--catch-space-s4); }
+
+.medallion { display: flex; }
+
+.error[data-mode="compact"] .medallion > [data-recipe="error"] {
+  --catch-icon-tile-box: 48px;
+  --catch-icon-tile-glyph: 24px;
+}
+
+.medallion + * { margin-top: var(--catch-space-s4); }
+.error[data-mode="compact"] .medallion + * { margin-top: var(--catch-space-s3); }
+
+.error > p {
+  margin: var(--catch-space-s2) 0 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--catch-space-s2) var(--catch-space-s3);
+  margin-top: var(--catch-space-s4);
+}
+
+.error[data-mode="compact"] .actions { margin-top: var(--catch-space-s3); }

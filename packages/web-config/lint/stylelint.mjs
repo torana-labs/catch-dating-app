@@ -65,4 +65,22 @@ export const rawValueRules = {
   },
 };
 
+/**
+ * The spacing scale is for gaps and padding. A width, height or radius that
+ * borrows a spacing step moves whenever spacing is retuned, so sizes take a
+ * layout or interaction role (or, in @catch/web-ui component modules, the
+ * literal geometry) and radii take a --catch-radius-* token. A component
+ * variable named for a size or radius counts as one; gap and padding
+ * variables keep the spacing scale.
+ */
+const spacingToken = "/var\\(--catch-space-/";
+
+export const sizeSpacingRules = {
+  "declaration-property-value-disallowed-list": {
+    "/^(min-|max-)?(width|height|inline-size|block-size)$/": [spacingToken],
+    "/radius$/": [spacingToken],
+    "/^--.*-(height|width|size|extent|radius|inset-size)$/": [spacingToken],
+  },
+};
+
 export const tokenRules = {...rawColorRules, ...rawValueRules};

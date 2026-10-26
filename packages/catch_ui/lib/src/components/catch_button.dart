@@ -759,6 +759,9 @@ class _ButtonPalette {
     );
   }
 
+  static bool _isDarkTheme(CatchTokens t) =>
+      ThemeData.estimateBrightnessForColor(t.bg) == Brightness.dark;
+
   static _ButtonPalette from(CatchButtonVariant variant, CatchTokens t) {
     return switch (variant) {
       CatchButtonVariant.primary => _ButtonPalette(
@@ -778,7 +781,9 @@ class _ButtonPalette {
       ),
       CatchButtonVariant.danger => _ButtonPalette(
         background: t.danger,
-        foreground: CatchTokens.editorialWhite,
+        // White on the dark theme's lighter danger red is 3.6:1, under the
+        // 4.5:1 text floor; dark ink clears it. The web twin matches.
+        foreground: _isDarkTheme(t) ? t.primaryInk : CatchTokens.editorialWhite,
         border: Colors.transparent,
       ),
       CatchButtonVariant.light => _ButtonPalette(

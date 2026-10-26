@@ -85,7 +85,14 @@ Widget catchIndexRowContractStates(BuildContext context) {
   return WidgetbookContractFrame(
     title: 'CatchIndexRow',
     contractId: 'catch.index_row',
-    states: const ['default', 'selected', 'leading', 'trailing', 'disabled'],
+    states: const [
+      'default',
+      'selected',
+      'leading',
+      'trailing',
+      'stacked',
+      'disabled',
+    ],
     children: [
       WidgetbookContractStateCard(
         label: 'default',
@@ -98,6 +105,26 @@ Widget catchIndexRowContractStates(BuildContext context) {
           selected: true,
           leading: CatchStatusIndicator(color: t.accent),
           trailing: const Text('12'),
+          onTap: widgetbookNoop,
+        ),
+      ),
+      WidgetbookContractStateCard(
+        label: 'stacked with subtitle and footer',
+        child: CatchIndexRow(
+          title: 'Sunday Long Run',
+          subtitle: '6:30 am · Carter Road jetty',
+          leading: const CatchAvatar.monogram(
+            size: 56,
+            ground: CatchGround.pink,
+            initials: '1',
+            variant: CatchAvatarVariant.square,
+          ),
+          footer: CatchText(
+            '₹500 · 12 spots left',
+            variant: CatchTextVariant.supportingStrong,
+            color: t.ink,
+          ),
+          trailing: Icon(CatchIcons.forward, size: CatchIconSize.sm),
           onTap: widgetbookNoop,
         ),
       ),

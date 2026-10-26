@@ -741,7 +741,7 @@
             "explicit-submit"
           ]
         },
-        "notes": "Shared safe button type and loading semantics used by both surface adapters; styling, density, icons, and labels remain surface-owned."
+        "notes": "Shared safe button type and loading semantics used by both surface adapters; styling, density, icons, and labels remain surface-owned. CatchButton (packages/web-ui/src/components/CatchButton.tsx) is the prepared D20 styled twin with every recipe, and the library's own parts (CatchNotice, CatchErrorState) render it. This record moves to it when the Admin and website ButtonControl adapters migrate (the D20 web rollout)."
       },
       "design": {
         "figma": {
@@ -1575,7 +1575,7 @@
             "surface-content-adapter"
           ]
         },
-        "notes": "Shared empty-state root owns opt-in status announcements and content wrapping while surface adapters own anatomy styling and variants."
+        "notes": "Shared empty-state root owns opt-in status announcements and content wrapping while surface adapters own anatomy styling and variants. CatchEmptyState (packages/web-ui/src/components/CatchEmptyState.tsx) is the prepared styled twin with every contract state; this record moves to it when the Admin and website EmptyStateControl adapters migrate."
       },
       "design": {
         "figma": {
@@ -1825,6 +1825,29 @@
         "constructors": [
           "CatchErrorState"
         ]
+      },
+      "react": {
+        "symbol": "CatchErrorState",
+        "file": "packages/web-ui/src/components/CatchErrorState.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchErrorState.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "full-screen",
+            "inline",
+            "compact",
+            "from-error",
+            "with-retry",
+            "secondary-action",
+            "scaffold",
+            "sliver",
+            "icon",
+            "dark"
+          ]
+        },
+        "notes": "mode is \"fullScreen\" | \"inline\" | \"compact\". The retry is a D20 CatchButton with a leading refresh glyph, md when compact and lg otherwise; actions follow it. Scaffold and sliver are Flutter placements; on the web the page places the full-screen or inline state."
       },
       "design": {
         "figma": {
@@ -2513,6 +2536,33 @@
         "constructors": [
           "CatchNotice"
         ]
+      },
+      "react": {
+        "symbol": "CatchNotice",
+        "file": "packages/web-ui/src/components/CatchNotice.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "CatchNoticeRegion"
+        ],
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchNotice.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "status",
+            "success",
+            "warning",
+            "danger",
+            "event",
+            "with-action",
+            "dismissible",
+            "arrival-tap-to-open",
+            "arrival-swipe-to-dismiss",
+            "arrival-reduced-motion",
+            "dark"
+          ]
+        },
+        "notes": "CatchNoticeData is a plain object with icon as a node and accentColor as a CSS colour. The action is a D20 md secondary CatchButton and the dismiss control a 48px plain icon button. An arrival notice (onOpen) is one button that dismisses and opens; Escape dismisses it, standing in for the app's swipe. CatchNoticeRegion is the app-level overlay: one polite live region fixed above the bottom edge and safe area; the host owns timing, dedupe and priority."
       },
       "design": {
         "figma": {
@@ -5829,6 +5879,27 @@
           "CatchSkeleton.content"
         ]
       },
+      "react": {
+        "symbol": "CatchSkeleton",
+        "file": "packages/web-ui/src/components/CatchSkeleton.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchSkeleton.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "card",
+            "box",
+            "text",
+            "text-block",
+            "circle",
+            "custom",
+            "derived-content",
+            "dark"
+          ]
+        },
+        "notes": "Each named constructor is shape=\"...\" on the one component, and CatchSkeleton.content is shape=\"content\". Skeletonizer's derived paint is approximated in CSS: inside content, text and media keep their boxes and take the shimmer while the subtree is inert and hidden from assistive technology."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5986,6 +6057,27 @@
           "CatchLoadingIndicator.dots",
           "CatchLoadingIndicator.inline"
         ]
+      },
+      "react": {
+        "symbol": "CatchLoadingIndicator",
+        "file": "packages/web-ui/src/components/CatchLoadingIndicator.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchLoadingIndicator.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "small",
+            "tinted",
+            "dots-primary",
+            "dots-light",
+            "inline-status",
+            "inline-commit",
+            "dark"
+          ]
+        },
+        "notes": "CatchLoadingIndicator.dots and .inline are recipe=\"dots\" | \"inline\" on the one component; color is a CSS colour. label is web-only: with one the indicator is a named progressbar, without one it is decorative beside the caller's own loading copy. Reduced motion holds the circular and inline recipes still."
       },
       "design": {
         "figma": {
@@ -6653,10 +6745,11 @@
             "recolored",
             "clamped",
             "aligned",
-            "heading-element"
+            "heading-element",
+            "accent-labels"
           ]
         },
-        "notes": "React takes the text as children so inline links and emphasis stay inside the role, an as prop for the semantic element, and color as a theme role name."
+        "notes": "React takes the text as children so inline links and emphasis stay inside the role, an as prop for the semantic element, and color as a theme role name or a palette accent. An accent (CatchTextAccent) is the deep shade under a light theme and the accent under a dark one; with supportingStrong it is the Website v2 coloured sentence-case label, which Flutter draws by passing the palette colour."
       },
       "design": {
         "figma": {
@@ -6718,7 +6811,7 @@
             "required": false,
             "dartType": "Color?",
             "tsType": "CatchTextColor",
-            "notes": "Overrides the role's default color; React names the theme role (ink2, danger)."
+            "notes": "Overrides the role's default color; React names the theme role (ink2, danger) or a palette accent (coral, mint). An accent draws its deep shade on light and the accent itself on dark, which is the coloured sentence-case label recipe with supportingStrong."
           },
           {
             "name": "maxLines",
@@ -10460,6 +10553,24 @@
           "CatchStepList"
         ]
       },
+      "react": {
+        "symbol": "CatchStepList",
+        "file": "packages/web-ui/src/components/CatchStepList.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchStepList.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "numbered-trace",
+            "titles-only",
+            "accented",
+            "timed",
+            "dark"
+          ]
+        },
+        "notes": "An ordered list whose rows share one subgrid, so the widest number or marker sets the column as Flutter's measured index does. accent is a CSS colour; the caller picks one that reads on its ground."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -10497,7 +10608,8 @@
           "numbered-trace",
           "titles-only",
           "accented",
-          "long-copy"
+          "long-copy",
+          "timed"
         ],
         "slots": [],
         "tokens": [
@@ -15926,6 +16038,25 @@
           "CatchHeroImage"
         ]
       },
+      "react": {
+        "symbol": "CatchHeroImage",
+        "file": "packages/web-ui/src/components/CatchHeroImage.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchHeroImage.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "photo",
+            "scrim",
+            "no-scrim",
+            "image-error",
+            "fallback-gradient",
+            "dark"
+          ]
+        },
+        "notes": "Fills the caller's box like Flutter's Stack. The photo takes CatchGradedImage's grade as a CSS filter with multiply and screen tint layers, deeper under a dark theme. framed is web-only: the v2 event page's media frame, 16:10 at radius lg and 4:3 below 840px. Without semanticLabel the photo is decorative."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -17443,6 +17574,23 @@
           "MapPreview"
         ]
       },
+      "react": {
+        "symbol": "MapPreview",
+        "file": "packages/web-ui/src/components/MapPreview.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/MapPreview.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "exact-location",
+            "missing-coordinate",
+            "no-map-image",
+            "dark"
+          ]
+        },
+        "notes": "The web draws no map itself: imageUrl is a static map the caller's provider renders with its marker, route and zoom, which stand in for markerHue, path, markers and zoom. Without a coordinate or an image it shows Flutter's fallback, whose label takes ink2 because Flutter's ink3 is under 4.5:1 on bg. framed is web-only: the v2 event page's map card, 5:2 at radius lg."
+      },
       "level": "L5",
       "roleNoun": "Preview"
     },
@@ -17661,6 +17809,27 @@
           "CatchIndexRow"
         ]
       },
+      "react": {
+        "symbol": "CatchIndexRow",
+        "file": "packages/web-ui/src/components/CatchIndexRow.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchIndexRow.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "selected",
+            "leading",
+            "trailing",
+            "stacked",
+            "link",
+            "disabled",
+            "dark"
+          ]
+        },
+        "notes": "onTap makes the row a button and the web-only href makes it a link; with neither it is passive, as Flutter disables it. selected is aria-current. Leading and trailing stay passive inside a link or button row. Keyboard focus adds an inset ring on the web, where the 4% overlay alone is too faint. The footer lays its children in one wrapping line 8px apart."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -17721,6 +17890,28 @@
             "required": false,
             "dartType": "String?",
             "tsType": "string"
+          },
+          {
+            "name": "subtitle",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "footer",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "titleMaxLines",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "dartType": "int",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -17728,12 +17919,17 @@
           "selected",
           "leading",
           "trailing",
+          "stacked",
           "disabled"
         ],
         "slots": [
           {
             "name": "leading",
             "kind": "optional-leading-widget"
+          },
+          {
+            "name": "footer",
+            "kind": "optional-footer-widget"
           },
           {
             "name": "trailing",
@@ -17749,6 +17945,7 @@
         ],
         "dartRoles": [
           "CatchTextStyles.titleL",
+          "CatchTextStyles.supporting",
           "CatchLayout.eventTypeIndexRowHeight"
         ],
         "goldens": [],

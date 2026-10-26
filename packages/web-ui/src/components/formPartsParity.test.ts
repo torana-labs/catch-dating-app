@@ -22,9 +22,11 @@ const dartMs = (name: string) => Number(fieldTokens.match(new RegExp(`${name} = 
 describe("CatchStepper parity", () => {
   it("draws Flutter's target, circle, gap and value width", () => {
     expect(dartSpacing(fieldTokens, "stepperHitExtent")).toBe("s11");
-    expect(stepperCss).toContain("width: var(--catch-space-s11)");
+    // The 44px hit target is the platform's minimum interactive extent.
+    expect(spacingCss).toContain(`--catch-interaction-ios-minimum-extent: ${spacing("s11")}px;`);
+    expect(stepperCss).toContain("width: var(--catch-interaction-ios-minimum-extent)");
     expect(dartSpacing(fieldTokens, "stepperVisualExtent")).toBe("s8");
-    expect(stepperCss).toContain("width: var(--catch-space-s8)");
+    expect(stepperCss).toContain(`width: ${spacing("s8")}px`);
     // layoutGap = stepperGap - (hit - visual) / 2.
     const gap = spacing(dartSpacing(fieldTokens, "stepperGap")!) - (spacing("s11") - spacing("s8")) / 2;
     expect(gap).toBe(spacing("micro10"));
@@ -46,11 +48,11 @@ describe("CatchStepper parity", () => {
 describe("CatchCodeInput parity", () => {
   it("draws Flutter's cell height, gap, caret and digit size", () => {
     expect(dartSpacing(layoutTokens, "otpDigitHeight")).toBe("s16");
-    expect(codeCss).toContain("--catch-code-height: var(--catch-space-s16)");
+    expect(codeCss).toContain(`--catch-code-height: ${spacing("s16")}px`);
     expect(dartSpacing(layoutTokens, "otpDigitGap")).toBe("micro10");
     expect(codeCss).toContain("--catch-code-gap: var(--catch-space-micro10)");
     expect(dartSpacing(layoutTokens, "otpCaretHeight")).toBe("s6");
-    expect(codeCss).toContain("height: var(--catch-space-s6)");
+    expect(codeCss).toContain(`height: ${spacing("s6")}px`);
     expect(codeCss).toContain(`width: ${dartNumber(layoutTokens, "otpCaretWidth")}px`);
     const digit = textStyles.match(/static TextStyle otpDigit[\s\S]*?size: (\d+),\s*weight: FontWeight\.w(\d+)/);
     expect(codeCss).toContain(`font-size: ${digit?.[1]}px`);

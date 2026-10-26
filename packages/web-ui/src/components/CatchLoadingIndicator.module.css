@@ -1,0 +1,85 @@
+/*
+ * Flutter CatchLoadingIndicator. Circular: Material's 36px indeterminate
+ * indicator with a 2px stroke in the theme primary, its arc growing and
+ * shrinking as it turns. Dots: three 6px dots 4px apart at 40%, 60% and 80%
+ * of the colour, with no motion. Inline: the loader-circle glyph at 16px, one
+ * turn every 800ms. Reduced motion holds every recipe still.
+ */
+.indicator {
+  --catch-loading-color: currentColor;
+  --catch-loading-stroke: var(--catch-stroke-progress-indicator);
+  --catch-loading-size: 16px;
+
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--catch-loading-color);
+}
+
+.indicator[data-recipe="circular"] {
+  --catch-loading-color: var(--catch-theme-primary);
+
+  width: 36px;
+  height: 36px;
+}
+
+.glyph {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+}
+
+.indicator[data-recipe="circular"] .glyph {
+  animation: catch-loading-turn 1.4s linear infinite;
+}
+
+.indicator[data-recipe="circular"] circle {
+  /* The glyph's 24 units draw at 36px, so this keeps the stroke's px width. */
+  stroke-width: calc(var(--catch-loading-stroke) * 24 / 36);
+  stroke-dasharray: 1 63;
+  stroke-dashoffset: 0;
+  animation: catch-loading-arc 1.4s ease-in-out infinite;
+}
+
+.indicator[data-recipe="inline"] {
+  width: var(--catch-loading-size);
+  height: var(--catch-loading-size);
+}
+
+.indicator[data-recipe="inline"] .glyph {
+  stroke-width: 2;
+  stroke-linejoin: round;
+  animation: catch-loading-turn 800ms linear infinite;
+}
+
+.indicator[data-recipe="dots"] { gap: var(--catch-space-s1); }
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--catch-radius-pill);
+  background: color-mix(in srgb, var(--catch-loading-color) 40%, transparent);
+}
+
+.dot:nth-child(2) { background: color-mix(in srgb, var(--catch-loading-color) 60%, transparent); }
+.dot:nth-child(3) { background: color-mix(in srgb, var(--catch-loading-color) 80%, transparent); }
+
+@keyframes catch-loading-turn {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes catch-loading-arc {
+  0% { stroke-dasharray: 1 63; stroke-dashoffset: 0; }
+  50% { stroke-dasharray: 47 63; stroke-dashoffset: -16; }
+  100% { stroke-dasharray: 47 63; stroke-dashoffset: -62; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indicator .glyph,
+  .indicator[data-recipe="circular"] circle { animation: none; }
+
+  .indicator[data-recipe="circular"] circle { stroke-dasharray: 47 63; }
+}
