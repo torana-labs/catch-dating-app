@@ -23,6 +23,7 @@ export type {
 } from "./components/CatchBand";
 /** A Website v2 ground (CAT-245); Flutter's `CatchGround` names the same nine. */
 export type {Ground as CatchGround} from "./components/palette";
+export {catchActivityAccent} from "./components/palette";
 export {CatchButton} from "./components/CatchButton";
 export type {
   CatchButtonCommandProps,
@@ -48,6 +49,8 @@ export {ClubPlaceholderCover} from "./components/ClubPlaceholderCover";
 export type {ClubPlaceholderCoverProps} from "./components/ClubPlaceholderCover";
 export {EventBackdropImage} from "./components/EventBackdropImage";
 export type {EventBackdropImageProps} from "./components/EventBackdropImage";
+export {CatchEventPoster} from "./components/CatchEventPoster";
+export type {CatchEventPosterProps} from "./components/CatchEventPoster";
 export {EventThumbnail} from "./components/EventThumbnail";
 export type {EventThumbnailProps} from "./components/EventThumbnail";
 export {MapPreview} from "./components/MapPreview";
@@ -94,6 +97,8 @@ export type {
   CatchGridElement,
   CatchGridProps,
 } from "./components/CatchGrid";
+export {CatchGroundCard} from "./components/CatchGroundCard";
+export type {CatchGroundCardElement, CatchGroundCardPadding, CatchGroundCardProps} from "./components/CatchGroundCard";
 export {CatchHeroImage} from "./components/CatchHeroImage";
 export type {CatchHeroImageProps} from "./components/CatchHeroImage";
 export {CatchIndexRow} from "./components/CatchIndexRow";

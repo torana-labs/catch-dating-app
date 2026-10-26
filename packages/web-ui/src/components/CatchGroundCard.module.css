@@ -1,0 +1,25 @@
+/*
+ * Website v2 card (CAT-252): a ground at radius lg, padded 20px (regular) or
+ * 28px (roomy), 16px or 20px below 840px. Outlined, it draws an emphasis-width
+ * line of the ground's ink at 12%, as the boards' white cards do.
+ */
+.card {
+  composes: ground from "./grounds.module.css";
+
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  padding: var(--catch-space-s5);
+  border-radius: var(--catch-radius-lg);
+}
+
+.card[data-padding="roomy"] { padding: var(--catch-space-s7); }
+
+.card[data-outlined] {
+  border: var(--catch-stroke-emphasis) solid color-mix(in srgb, var(--catch-on-ground-ink) 12%, transparent);
+}
+
+@container catch-page (width < 840px) {
+  .card { padding: var(--catch-space-s4); }
+  .card[data-padding="roomy"] { padding: var(--catch-space-s5); }
+}
