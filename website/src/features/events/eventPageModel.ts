@@ -1,7 +1,7 @@
 import {catchFormatAccentOf, type CatchGround, type CatchTextAccent} from "@catch/web-ui";
-import type {EventPublicPageDocument} from "../../../../functions/src/shared/generated/eventPublicPageDocument";
 import {eventPageCopy as copy} from "../../content/events";
 import {activityForKind} from "../organizers/publicDiscovery";
+import type {EventPublicPageDocument} from "../organizers/types";
 
 /**
  * What one event page renders: the eventPublicPage read model without its

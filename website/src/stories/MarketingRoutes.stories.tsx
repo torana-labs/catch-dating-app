@@ -506,7 +506,7 @@ export const EventDetailCatch: Story = {
         "web-otp-registration",
         "external-source",
         "event-reviews",
-        "desktop-invitation",
+        "no-optional-fields",
         "mobile-sticky-action",
       ],
     },

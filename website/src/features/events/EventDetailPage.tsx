@@ -3,7 +3,7 @@ import {useEffect, useMemo, useRef, useState, type ReactNode} from "react";
 import {eventPageCopy as copy, guestEventCopy} from "../../content/events";
 import {recordEventInviteLinkOpen} from "../../firebase";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
-import {PublicSiteFooter} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader} from "../../shared/site";
 import {EventGuestActions} from "../../shared/ui/primitives/eventDetail";
 import {observeOrganizerPageView, trackOrganizerAnalytics} from "../organizers/analytics";
 import {observeOrganizerProviders, trackOrganizerProviderOutboundClick} from "../organizers/observeOrganizerProviders";
@@ -56,7 +56,8 @@ export function EventDetailPage({page, listing}: {page: EventPageData; listing: 
 
   return (
     <>
-      <CatchBand as="header" pb="none" pt="compact">
+      <PublicSiteHeader />
+      <CatchBand as="div" pb="none" pt="compact">
         <EventPageHeader onShare={() => void share()} view={view} />
       </CatchBand>
       <CatchBand as="main" id="event-detail" pt="compact">

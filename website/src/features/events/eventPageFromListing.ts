@@ -1,3 +1,4 @@
+import {eventPageCopy as copy} from "../../content/events";
 import {organizerPolicyForListing} from "../organizers/organizerPolicy";
 import type {HostListing} from "../organizers/types";
 import {buildListingReviewSummary} from "../reviews/reviewModel";
@@ -27,7 +28,7 @@ export function eventPageFromListing(listing: HostListing, eventId: string): Eve
     const mixer = rest.activityKind === "singlesMixer";
     const event: CatchItem["event"] = {
       ...rest,
-      ...(mixer ? {activityKind: "openActivity", ...(rest.title === "Singles mixer" ? {title: "Hosted event"} : {})} : {}),
+      ...(mixer ? {activityKind: "openActivity", ...(rest.title === "Singles mixer" ? {title: copy.hostedEvent} : {})} : {}),
       ...(labels.length ? {admissionLabels: labels} : {}),
       ...(experience.length ? {catchExperienceActivities: experience} : {}),
     };

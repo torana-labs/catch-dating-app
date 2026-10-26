@@ -589,8 +589,7 @@
         "website/src/styles/site-shell.css",
         "website/src/styles/event-detail.css",
         "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/consumer-event.css"
+        "website/src/styles/consumer-home.css"
       ],
       "storybook": {
         "status": "ready",
@@ -601,11 +600,11 @@
           "web-otp-registration",
           "external-source",
           "event-reviews",
-          "desktop-invitation",
+          "no-optional-fields",
           "mobile-sticky-action"
         ]
       },
-      "notes": "Generated event route with a responsive ticket and organizer/action rail that becomes an app-aligned single-column stack on mobile. Explicitly published Catch events can register an event-scoped phone-OTP identity without Consumer onboarding; profile-dependent Catch events hand off to the app and external events hand off to the official source."
+      "notes": "Event route rendered from its eventPublicPage read model (CAT-252) and composed only of @catch/web-ui parts: media (photo, or a poster in the activity accent), title and host, the when/where/price facts, description, hosted moments, the plan for the day, where (map once a static map provider exists, otherwise text and Open in Google Maps), good to know, going and spots left, the organiser card, organiser reviews and more from the organiser. Every optional section closes when its field is absent, so an imported event with only title, time, place, price and description still reads as complete. Catch events keep the existing phone-verified guest entry in the booking card and its docked phone bar; imported events send a recorded booking click to their source. Booking moves into the sticky aside in the next slice."
     },
     {
       "id": "event_detail_public_registration",
@@ -621,9 +620,7 @@
         "website/src/styles/responsive.css"
       ],
       "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/EventDetailSections.stories.tsx",
-        "exportName": "EventDetailHeroWebOtp",
+        "status": "planned",
         "states": [
           "details",
           "otp-code",
@@ -634,142 +631,113 @@
       "notes": "Event-scoped phone verification and registration form. It creates or links only an operational attendee row, privately seeds name and verified phone for optional later onboarding, never requires or synthesizes a Consumer profile, and collects independent unchecked organizer WhatsApp/SMS permissions without granting Catch advertising permission."
     },
     {
-      "id": "shared_event_detail_shells",
+      "id": "shared_event_booking_controls",
       "kind": "supporting-component",
       "routeIds": [
         "event_detail_canonical"
       ],
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/eventDetail.tsx",
-      "exportName": "EventDetailHeroLayout",
+      "exportName": "EventGuestActions",
       "css": [
         "website/src/styles/event-detail.css",
         "website/src/styles/responsive.css"
       ],
       "storybook": {
         "status": "ready",
-        "story": "website/src/stories/EventDetailSections.stories.tsx",
-        "exportName": "EventDetailShells",
+        "story": "website/src/stories/GuestEventEntry.stories.tsx",
+        "exportName": "Invitation",
         "states": [
           "catch-native",
-          "web-otp-registration",
+          "guest-states",
+          "mobile-sticky-action"
+        ]
+      },
+      "notes": "The guest entry's booking controls: the action with its status and a docked phone bar, the accessible dialog, and the registration form, consents and privacy note. They stay until booking moves into the sticky aside (CAT-252 slice 2); the event page itself is drawn by @catch/web-ui. Guest state and transaction controllers stay feature-owned."
+    },
+    {
+      "id": "event_page_header",
+      "kind": "section",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events/sections",
+      "source": "website/src/features/events/sections/EventPageSections.tsx",
+      "exportName": "EventPageHeader",
+      "css": [
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventPage.stories.tsx",
+        "exportName": "AllFields",
+        "states": [
+          "organiser-link",
+          "share"
+        ]
+      },
+      "notes": "The organiser's monogram and name linking back to their page, and the share action. Library parts only."
+    },
+    {
+      "id": "event_page_sections",
+      "kind": "section",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events/sections",
+      "source": "website/src/features/events/sections/EventPageSections.tsx",
+      "exportName": "EventPageMain",
+      "css": [
+        "packages/web-ui/src/components/CatchHeroImage.module.css",
+        "packages/web-ui/src/components/CatchEventPoster.module.css",
+        "packages/web-ui/src/components/CatchFactTile.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchStepList.module.css",
+        "packages/web-ui/src/components/MapPreview.module.css",
+        "packages/web-ui/src/components/CatchReviewItem.module.css",
+        "packages/web-ui/src/components/CatchPreviewCard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventPage.stories.tsx",
+        "exportName": "OptionalFields",
+        "states": [
+          "catch-native",
           "external-source",
-          "fact-grid",
-          "provenance",
-          "event-media",
-          "organizer-panel",
-          "optional-event-content"
+          "optional-fields",
+          "photo-or-poster",
+          "event-reviews",
+          "more-events"
         ]
       },
-      "notes": "Shared invitation hero, the uncropped event poster or its activity cover (EventThumbnail), host byline, optional itinerary and facts, responsive guest action placements, accessible dialog, and existing registration controls. Guest state and transaction controllers stay feature-owned."
+      "notes": "Every event section from the eventPublicPage read model, each present only when the event has it; the story toggles all ten optional fields as the WebEventV2 board does. Hosted moments carry no dating wording, and reviews are labelled as the organiser's. Library parts only."
     },
     {
-      "id": "event_detail_hero_section",
+      "id": "event_booking_card",
       "kind": "section",
       "routeIds": [
         "event_detail_canonical"
       ],
       "owner": "features/events/sections",
-      "source": "website/src/features/events/sections/EventDetailSections.tsx",
-      "exportName": "EventDetailHeroSection",
+      "source": "website/src/features/events/sections/EventPageSections.tsx",
+      "exportName": "EventBookingCard",
       "css": [
-        "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/consumer-event.css"
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "website/src/styles/event-detail.css"
       ],
       "storybook": {
         "status": "ready",
-        "story": "website/src/stories/EventDetailSections.stories.tsx",
-        "exportName": "EventDetailHero",
+        "story": "website/src/stories/EventPage.stories.tsx",
+        "exportName": "BookingCard",
         "states": [
           "catch-native",
-          "web-otp-registration",
           "external-source",
-          "desktop-invitation",
-          "mobile-sticky-action",
-          "optional-event-content"
+          "closed"
         ]
       },
-      "notes": "Poster-led invitation with event identity, compact host byline and essential facts. One guest controller supplies desktop and mobile actions; external events retain their official-source handoff."
-    },
-    {
-      "id": "event_detail_facts_section",
-      "kind": "section",
-      "routeIds": [
-        "event_detail_canonical"
-      ],
-      "owner": "features/events/sections",
-      "source": "website/src/features/events/sections/EventDetailSections.tsx",
-      "exportName": "EventDetailFactsSection",
-      "css": [
-        "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/consumer-event.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/EventDetailSections.stories.tsx",
-        "exportName": "EventDetailFacts",
-        "states": [
-          "complete",
-          "missing-optional-details"
-        ]
-      },
-      "notes": "Optional event description, structured itinerary with timezone-aware stops, requirements and accessibility; compact organizer context. Absent values produce no empty sections."
-    },
-    {
-      "id": "event_detail_reviews_section",
-      "kind": "section",
-      "routeIds": [
-        "event_detail_canonical"
-      ],
-      "owner": "features/events/sections",
-      "source": "website/src/features/events/sections/EventDetailSections.tsx",
-      "exportName": "EventDetailReviewsSection",
-      "css": [
-        "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/consumer-event.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/EventDetailSections.stories.tsx",
-        "exportName": "EventDetailReviews",
-        "states": [
-          "verified-event-reviews",
-          "empty"
-        ]
-      },
-      "notes": "Renders only published review records whose eventId matches the event route; organizer-level reviews remain on the organizer profile."
-    },
-    {
-      "id": "event_detail_provenance_section",
-      "kind": "section",
-      "routeIds": [
-        "event_detail_canonical"
-      ],
-      "owner": "features/events/sections",
-      "source": "website/src/features/events/sections/EventDetailSections.tsx",
-      "exportName": "EventDetailProvenanceSection",
-      "css": [
-        "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/consumer-event.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/EventDetailSections.stories.tsx",
-        "exportName": "EventDetailProvenance",
-        "states": [
-          "catch-native",
-          "external-source"
-        ]
-      },
-      "notes": "Separates organizer verification from Catch-native versus source-attributed event supply and surfaces source freshness."
+      "notes": "The price, the time and where to book: the guest entry for a Catch event, the source link for an imported one, and a closed note after the event."
     },
     {
       "id": "listing_sections_assembly",
@@ -3706,6 +3674,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFactTile.tsx",
       "exportName": "CatchFactTile",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "A labelled fact tile on a ground that sets its label, value and note in CatchText roles; it owns a tile's layout, not a text role.",
       "css": [
         "packages/web-ui/src/components/CatchFactTile.module.css"
       ],
@@ -3818,6 +3790,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchReviewItem.tsx",
       "exportName": "CatchReviewItem",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "One review with stars, verification and a reply, set in CatchText roles; it owns the review's anatomy, not a text role.",
       "css": [
         "packages/web-ui/src/components/CatchReviewItem.module.css"
       ],
@@ -3932,6 +3908,10 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchPreviewCard.tsx",
       "exportName": "CatchPreviewCard",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "A linked event card on a ground that sets its label, title and meta in CatchText roles; it owns a card's layout and link, not a text role.",
       "css": [
         "packages/web-ui/src/components/CatchPreviewCard.module.css"
       ],
@@ -3947,6 +3927,64 @@
         ]
       },
       "notes": "Website T4 under D18 (CAT-249). One link on a ground: a status-role label, a displayXs title and a meta line held to the foot, at least 150px tall (sized to its copy below 840px). The event page uses it for \"More from\" the organiser. Nearest concepts: catch.event_card (EventCard, the app ticket with an activity backdrop and clock) and catch.organizer_poster (CatchPoster); the v2 card has no media, so it is neither. Search aliases: EventCard, EventTile, MoreCard, TeaserCard, SummaryCard, LinkCard."
+    },
+    {
+      "id": "shared_event_poster",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchEventPoster.tsx",
+      "exportName": "CatchEventPoster",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "A no-photo event poster on a ground that sets its kicker, date, title and place in CatchText roles; it owns the framed media, not a text role.",
+      "css": [
+        "packages/web-ui/src/components/CatchEventPoster.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchEventPoster.stories.tsx",
+        "exportName": "Grounds",
+        "states": [
+          "grounds",
+          "long-title",
+          "phone-size",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-252). An event without a photo, set in type on a ground: the kicker and date on the top line, a displayXxl title and the place at the foot, in CatchHeroImage's framed geometry (16:10 at radius lg, 4:3 below 840px). It repeats the page's own words, so it is hidden from screen readers. Nearest concepts: catch.detail_media (CatchHeroImage, whose fallback is a branded gradient without words) and catch.organizer_poster (CatchPoster, organiser material with media). Search aliases: EventPoster, PosterCover, TypePoster, NoPhotoCover."
+    },
+    {
+      "id": "shared_ground_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "event_detail_canonical"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchGroundCard.tsx",
+      "exportName": "CatchGroundCard",
+      "css": [
+        "packages/web-ui/src/components/CatchGroundCard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchGroundCard.stories.tsx",
+        "exportName": "Grounds",
+        "states": [
+          "grounds",
+          "compact",
+          "spacious",
+          "dark-ground",
+          "share-card",
+          "board-reference",
+          "outlined"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-251, outlined in CAT-252). A rounded block on one Website v2 ground that holds whatever the page arranges in it with CatchGap; library text inside takes the ground's inks and the ink ground resolves through the dark theme. Outlined draws the boards' hairline for a white card on a white page. Nearest concept: catch.surface (CatchSurface, whose tones are theme surfaces, not grounds). Search aliases: Card, Panel, GroundPanel, Callout."
     },
     {
       "id": "shared_qr_code",

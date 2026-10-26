@@ -38,7 +38,10 @@ function invitationState(action?: string, extra = {}) {
     catchEntry={<GuestEventEntryView eventId={demoEventId} controller={value} invitation={invitation} />}
     externalAction={(button) => button} onExternalClick={noop} view={view} />} railSide="end" ratio="narrowRail" start={null} /></CatchBand>;
 }
-export const Invitation: Story = {render: () => invitationState()};
+export const Invitation: Story = {parameters: {
+  catchComponent: {id: "shared_event_booking_controls", routeIds: ["event_detail_canonical"],
+    states: ["catch-native", "guest-states", "mobile-sticky-action"]}},
+render: () => invitationState()};
 export const ApprovalRequired: Story = {render: () => invitationState("apply", {publicFormId: "preview-form"})};
 export const ApprovalPending: Story = {render: () => invitationState("applicationPending")};
 export const ApprovedAwaitingOffer: Story = {render: () => invitationState("awaitingOffer")};

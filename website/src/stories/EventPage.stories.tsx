@@ -1,5 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {CatchBand, CatchButton, CatchSplit} from "@catch/web-ui";
+import {CatchBand, CatchButton, CatchGrid, CatchSplit} from "@catch/web-ui";
 import {expect, within} from "storybook/test";
 import {buildEventPageView, type EventPageData} from "../features/events/eventPageModel";
 import {EventBookingCard, EventPageHeader, EventPageMain} from "../features/events/sections/EventPageSections";
@@ -95,5 +95,33 @@ export const LumaImport: Story = {
 /** The full event, kept still for the visual baseline. */
 export const AllFields: Story = {
   name: "All optional fields",
+  parameters: {catchComponent: {id: "event_page_header", routeIds: ["event_detail_canonical"], states: ["organiser-link", "share"]}},
   render: () => <EventPageStory page={fullEventPage} />,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("link", {name: "Back to Salt Air Run Club"})).toHaveAttribute("href", "/organizers/mumbai/salt-air-run-club/");
+    await expect(canvas.getByRole("button", {name: "Share"})).toBeVisible();
+  },
+};
+
+/** Where to book: a Catch event, an imported event and an event that has ended. */
+export const BookingCard: Story = {
+  name: "Booking card",
+  parameters: {catchComponent: {id: "event_booking_card", routeIds: ["event_detail_canonical"], states: ["catch-native", "external-source", "closed"]}},
+  render: () => (
+    <CatchBand as="main" pt="compact">
+      <CatchGrid columns={3} compactColumns={1}>
+        {[[fullEventPage, eventPageFixtureNow], [importedEventPage, eventPageFixtureNow],
+          [fullEventPage, Date.parse("2026-11-23T00:00:00.000Z")]].map(([page, now], index) => (
+          <EventBookingCard catchEntry={bookStandIn} externalAction={(button) => button} key={index}
+            onExternalClick={() => undefined} view={buildEventPageView(page as EventPageData, now as number)} />
+        ))}
+      </CatchGrid>
+    </CatchBand>
+  ),
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("link", {name: /Get tickets on Luma/})).toHaveAttribute("target", "_blank");
+    await expect(canvas.getByText("Booking is closed for this event.")).toBeVisible();
+  },
 };

@@ -224,6 +224,8 @@ export const approvalNotificationCopy = {
  */
 export const eventPageCopy = {
   back: (organizer: string) => `Back to ${organizer}`,
+  /** Replaces the old default title of a mixer, as the read model does (CAT-247). */
+  hostedEvent: "Hosted event",
   share: "Share",
   shareCopied: "Link copied",
   shareFailed: "Couldn’t copy the link. Copy it from the address bar.",

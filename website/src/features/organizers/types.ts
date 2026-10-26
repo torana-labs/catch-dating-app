@@ -1,4 +1,6 @@
 import type {WebsiteHostListingProjection} from "../../../../functions/src/shared/generated/websiteHostListingProjection";
+/** One public event page's read model (eventPublicPage/{eventId}); the event page renders it (CAT-252). */
+export type {EventPublicPageDocument} from "../../../../functions/src/shared/generated/eventPublicPageDocument";
 
 export type HostListing = WebsiteHostListingProjection;
 export type HostListingReview = HostListing["reviews"][number];

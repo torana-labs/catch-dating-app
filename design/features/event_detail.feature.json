@@ -510,7 +510,7 @@
         "id": "event_detail_canonical"
       },
       "actionScope": {
-        "included": "Public Event Detail entry into the authenticated web guest journey, server-resolved admission and booking paths, official external registration sources, and the canonical organizer page. Optional event content and verified event-specific reviews render only when present.",
+        "included": "Public Event Detail rendered from the eventPublicPage read model: entry into the authenticated web guest journey, server-resolved admission and booking paths, official external registration sources recorded as booking clicks, and the canonical organizer page. Every optional section and the organiser's reviews render only when present.",
         "excluded": [
           "Admission, capacity, eligibility and payment authority remain in the existing server-backed guest controllers and repositories. The page composes their sign-in, application, checkout and live-event entry states; organizer claiming belongs to the organizer page, and chat and review submission remain separate flows.",
           "Static path generation, canonical metadata, Event JSON-LD, sitemap inclusion, and missing-event fallback remain owned by the route and postbuild contracts."
@@ -519,14 +519,21 @@
       "bindings": {
         "previewSources": [
           "website/src/stories/MarketingRoutes.stories.tsx",
-          "website/src/stories/EventDetailSections.stories.tsx"
+          "website/src/stories/EventPage.stories.tsx",
+          "website/src/stories/GuestEventEntry.stories.tsx"
         ],
         "actionOwners": [
           {
-            "id": "event_detail_hero",
+            "id": "event_booking_card",
             "language": "typescript",
-            "file": "website/src/features/events/sections/EventDetailSections.tsx",
-            "symbol": "EventDetailHeroSection"
+            "file": "website/src/features/events/sections/EventPageSections.tsx",
+            "symbol": "EventBookingCard"
+          },
+          {
+            "id": "event_page_main",
+            "language": "typescript",
+            "file": "website/src/features/events/sections/EventPageSections.tsx",
+            "symbol": "EventPageMain"
           },
           {
             "id": "event_registration",
@@ -538,11 +545,10 @@
         "componentContracts": [
           "route_event_detail",
           "event_detail_public_registration",
-          "shared_event_detail_shells",
-          "event_detail_hero_section",
-          "event_detail_facts_section",
-          "event_detail_reviews_section",
-          "event_detail_provenance_section"
+          "shared_event_booking_controls",
+          "event_page_header",
+          "event_page_sections",
+          "event_booking_card"
         ],
         "dataContracts": [
           "contracts/callables/register_public_event_payload.schema.json",
@@ -551,50 +557,55 @@
           "contracts/firestore/onboarding_drafts.schema.json",
           "contracts/firestore/organizer_communication_preferences.schema.json",
           "contracts/public/website_host_listing_projection.schema.json",
+          "contracts/firestore/event_public_pages.schema.json",
           "contracts/callables/get_event_viewer_state_payload.schema.json",
           "contracts/callable_responses/get_event_viewer_state_response.schema.json"
         ],
         "previewEvidence": {
           "catch-native": [
             "route_event_detail/EventDetailCatch",
-            "event_detail_hero_section/EventDetailHero"
+            "event_page_sections/OptionalFields"
           ],
           "web-otp-registration": [
             "route_event_detail/EventDetailCatch",
-            "event_detail_public_registration/EventDetailHeroWebOtp"
+            "shared_event_booking_controls/Invitation"
           ],
           "external-source": [
             "route_event_detail/EventDetailCatch",
-            "event_detail_hero_section/EventDetailHero"
+            "event_booking_card/BookingCard"
           ],
           "event-reviews": [
             "route_event_detail/EventDetailCatch",
-            "event_detail_reviews_section/EventDetailReviews"
+            "event_page_sections/OptionalFields"
           ]
         },
         "testEvidence": {
           "catch-native": [
             "website/src/features/events/eventDetailModel.test.ts",
-            "website/src/features/events/sections/EventDetailSections.test.tsx",
+            "website/src/features/events/eventPageModel.test.tsx",
+            "website/src/features/events/sections/EventPageSections.test.tsx",
             "website/scripts/postbuild.test.mjs",
             "website/src/features/events/GuestEventEntry.test.tsx",
             "website/src/features/events/useGuestEventController.test.tsx"
           ],
           "web-otp-registration": [
             "website/src/features/events/eventDetailModel.test.ts",
-            "website/src/features/events/sections/EventDetailSections.test.tsx",
+            "website/src/features/events/eventPageModel.test.tsx",
+            "website/src/features/events/sections/EventPageSections.test.tsx",
             "website/scripts/postbuild.test.mjs",
             "website/src/features/events/GuestEventEntry.test.tsx",
             "website/src/features/events/useGuestEventController.test.tsx"
           ],
           "external-source": [
             "website/src/features/events/eventDetailModel.test.ts",
-            "website/src/features/events/sections/EventDetailSections.test.tsx",
+            "website/src/features/events/eventPageModel.test.tsx",
+            "website/src/features/events/sections/EventPageSections.test.tsx",
             "website/scripts/postbuild.test.mjs"
           ],
           "event-reviews": [
             "website/src/features/events/eventDetailModel.test.ts",
-            "website/src/features/events/sections/EventDetailSections.test.tsx"
+            "website/src/features/events/eventPageModel.test.tsx",
+            "website/src/features/events/sections/EventPageSections.test.tsx"
           ],
           "missing-event": [
             "website/src/features/events/eventDetailModel.test.ts",
@@ -660,8 +671,8 @@
         },
         {
           "id": "open_web_guest_journey",
-          "owner": "event_detail_hero",
-          "codeValue": "guestEntry",
+          "owner": "event_booking_card",
+          "codeValue": "catchEntry",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -677,8 +688,8 @@
         },
         {
           "id": "open_official_registration_source",
-          "owner": "event_detail_hero",
-          "codeValue": "sourceHref",
+          "owner": "event_booking_card",
+          "codeValue": "url",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -691,11 +702,11 @@
               "id": "event.web_official_source_opened"
             }
           ],
-          "description": "Opens the supplied official source for an external event in a separate browser context."
+          "description": "Opens the supplied official source for an external event in a separate browser context, recorded as the organiser's booking click."
         },
         {
           "id": "open_event_organizer",
-          "owner": "event_detail_hero",
+          "owner": "event_page_main",
           "codeValue": "path",
           "cardinality": "unbounded",
           "scopeKeys": [
