@@ -1,0 +1,70 @@
+/*
+ * Flutter CatchStepList: a number or marker column at least 30px wide that
+ * every row shares, a 20px rail with an 11px ring node 3px down and a 2px
+ * line2 trace to the next row, then the copy 10px further on. Rows sit 20px
+ * apart; the body is 3px under the title and the tag 6px under the body.
+ */
+.list {
+  --catch-step-accent: var(--catch-theme-primary);
+
+  display: grid;
+  grid-template-columns: minmax(30px, max-content) 20px minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+}
+
+.index {
+  padding-top: var(--catch-stroke-hairline);
+  color: var(--catch-step-accent);
+  font-family: var(--catch-font-mono), ui-monospace, monospace;
+  font-size: var(--catch-typography-web-context-size);
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rail::before {
+  box-sizing: border-box;
+  width: 11px;
+  height: 11px;
+  margin-top: var(--catch-space-micro3);
+  border: var(--catch-stroke-avatar-ring) solid var(--catch-step-accent);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-bg);
+  content: "";
+}
+
+.step:not(:last-child) .rail::after {
+  flex: 1;
+  width: var(--catch-stroke-underline);
+  background: var(--catch-theme-line2);
+  content: "";
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro3);
+  min-width: 0;
+  margin-inline-start: var(--catch-space-micro10);
+}
+
+.step:not(:last-child) .copy { padding-bottom: var(--catch-space-s5); }
+
+.tag {
+  margin-top: calc(var(--catch-space-micro6) - var(--catch-space-micro3));
+  color: var(--catch-step-accent);
+}

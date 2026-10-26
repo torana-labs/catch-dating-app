@@ -9993,6 +9993,24 @@
           "CatchStepList"
         ]
       },
+      "react": {
+        "symbol": "CatchStepList",
+        "file": "packages/web-ui/src/components/CatchStepList.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchStepList.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "numbered-trace",
+            "titles-only",
+            "accented",
+            "timed",
+            "dark"
+          ]
+        },
+        "notes": "An ordered list whose rows share one subgrid, so the widest number or marker sets the column as Flutter's measured index does. accent is a CSS colour; the caller picks one that reads on its ground."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -10030,7 +10048,8 @@
           "numbered-trace",
           "titles-only",
           "accented",
-          "long-copy"
+          "long-copy",
+          "timed"
         ],
         "slots": [],
         "tokens": [
@@ -16866,6 +16885,23 @@
         "constructors": [
           "MapPreview"
         ]
+      },
+      "react": {
+        "symbol": "MapPreview",
+        "file": "packages/web-ui/src/components/MapPreview.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/MapPreview.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "exact-location",
+            "missing-coordinate",
+            "no-map-image",
+            "dark"
+          ]
+        },
+        "notes": "The web draws no map itself: imageUrl is a static map the caller's provider renders with its marker, route and zoom, which stand in for markerHue, path, markers and zoom. Without a coordinate or an image it shows Flutter's fallback, whose label takes ink2 because Flutter's ink3 is under 4.5:1 on bg. framed is web-only: the v2 event page's map card, 5:2 at radius lg."
       },
       "level": "L5",
       "roleNoun": "Preview"
