@@ -1,0 +1,258 @@
+/*
+ * Flutter CatchButton (catch_button.dart, CatchButtonTokens) drawn to D20:
+ * 4px corners; lg 48px with s5 sides, md 40px with s4, both with the control
+ * role at 600, and sm 32px with s3 and the context role at 600; a label-colour overlay of
+ * 8% (filled) or 5% (outline and quiet) on hover and 14% on press; a 0.97 press
+ * scale; a 2px ring 2px outside the button; 40% opacity when disabled. On a
+ * phone every size keeps the 44px touch target.
+ */
+.button {
+  --catch-button-height: 48px;
+  --catch-button-pad: var(--catch-space-s5);
+  --catch-button-gap: var(--catch-space-micro6);
+  --catch-button-overlay: 0.08;
+  --catch-button-line: color-mix(in srgb, var(--catch-theme-ink3) 90%, var(--catch-theme-ink));
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: var(--catch-interaction-ios-minimum-extent);
+  min-height: var(--catch-button-height);
+  margin: 0;
+  padding: var(--catch-space-s2) var(--catch-button-pad);
+  border: var(--catch-stroke-hairline) solid var(--catch-button-border);
+  border-radius: var(--catch-radius-xs);
+  background: var(--catch-button-bg);
+  color: var(--catch-button-fg);
+  font-family: var(--catch-font-function), system-ui, sans-serif;
+  font-size: var(--catch-typography-web-control-size);
+  font-weight: 600;
+  line-height: var(--catch-typography-web-control-line-height);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform var(--catch-motion-fast) var(--catch-motion-standard-curve),
+    border-color var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.button::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--catch-button-fg);
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+  transition: opacity var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.button[data-size="md"] {
+  --catch-button-height: 40px;
+  --catch-button-pad: var(--catch-space-s4);
+}
+
+.button[data-size="sm"] {
+  --catch-button-height: 32px;
+  --catch-button-pad: var(--catch-space-s3);
+  font-size: var(--catch-typography-web-context-size);
+  line-height: var(--catch-typography-web-context-line-height);
+}
+
+.button[data-variant="primary"] {
+  --catch-button-bg: var(--catch-theme-primary);
+  --catch-button-fg: var(--catch-theme-primary-ink);
+  --catch-button-border: transparent;
+}
+
+.button[data-variant="secondary"] {
+  --catch-button-bg: transparent;
+  --catch-button-fg: var(--catch-theme-ink);
+  --catch-button-border: var(--catch-button-line);
+  --catch-button-overlay: 0.05;
+}
+
+.button[data-variant="quiet"] {
+  --catch-button-bg: transparent;
+  --catch-button-fg: var(--catch-theme-ink);
+  --catch-button-border: transparent;
+  --catch-button-overlay: 0.05;
+}
+
+.button[data-variant="danger"] {
+  --catch-button-bg: var(--catch-theme-danger);
+  --catch-button-fg: var(--catch-palette-white);
+  --catch-button-border: transparent;
+}
+
+.button[data-variant="light"] {
+  --catch-button-bg: var(--catch-palette-white);
+  --catch-button-fg: var(--catch-color-light-ink);
+  --catch-button-border: transparent;
+}
+
+[data-catch-theme="dark"] .button { --catch-button-line: var(--catch-theme-ink3); }
+
+/*
+ * The dark theme's danger red is lighter, and white on it is 3.6:1; its ink
+ * clears AA. (Flutter still pairs white with it: a gap to close there.)
+ */
+[data-catch-theme="dark"] .button[data-variant="danger"] { --catch-button-fg: var(--catch-theme-primary-ink); }
+
+.button[data-full-width] {
+  display: flex;
+  width: 100%;
+}
+
+.content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--catch-button-gap);
+  min-width: 0;
+}
+
+.label { min-width: 0; }
+
+.glyph {
+  display: inline-flex;
+  flex: none;
+}
+
+.glyph > svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Hover and press tint in the label colour, so feedback reads on every fill. */
+.button:not(:disabled):not([aria-disabled="true"]):not([data-static]):hover::after { opacity: var(--catch-button-overlay); }
+.button:not(:disabled):not([aria-disabled="true"]):not([data-static]):active::after { opacity: 0.14; }
+.button:not(:disabled):not([aria-disabled="true"]):not([data-static]):active { transform: scale(0.97); }
+
+.button[data-variant="secondary"]:not(:disabled):not([aria-disabled="true"]):not([data-static]):hover {
+  --catch-button-border: var(--catch-theme-ink);
+}
+
+.button:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.button:disabled,
+.button[aria-disabled="true"]:not([data-loading]) {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.button[data-static] { cursor: default; }
+
+/* Loading: three dots replace the label at the same width. */
+.button[data-loading] { cursor: progress; }
+.button[data-loading] .content { visibility: hidden; }
+
+.dots {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--catch-space-s1);
+}
+
+.dots > span {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-button-fg);
+}
+
+.dots > span:nth-child(1) { opacity: 0.4; }
+.dots > span:nth-child(2) { opacity: 0.6; }
+.dots > span:nth-child(3) { opacity: 0.8; }
+
+/* Selection: one bounded line with a tooltip for the full value. */
+.button[data-recipe="selection"] .label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Command: an unboxed toolbar action with natural-height text. */
+.button[data-recipe="command"] {
+  --catch-button-bg: transparent;
+  --catch-button-fg: var(--catch-theme-ink);
+  --catch-button-border: transparent;
+  --catch-button-overlay: 0.05;
+  --catch-button-gap: var(--catch-space-s2);
+  min-height: var(--catch-interaction-ios-minimum-extent);
+  padding: var(--catch-space-s2) 0;
+  font-weight: 400;
+}
+
+.button[data-recipe="command"] .glyph > svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Text: an inline or dialog action in the tone's colour. */
+.button[data-recipe="text"] {
+  --catch-button-bg: transparent;
+  --catch-button-border: transparent;
+  --catch-button-overlay: 0.05;
+  min-width: var(--catch-interaction-ios-minimum-extent);
+  min-height: var(--catch-interaction-ios-minimum-extent);
+  padding: 0 var(--catch-space-s2);
+  font-size: var(--catch-typography-web-secondary-size);
+  font-weight: 700;
+  line-height: var(--catch-typography-web-secondary-line-height);
+}
+
+.button[data-recipe="text"][data-tone="primary"] { --catch-button-fg: var(--catch-theme-primary); }
+.button[data-recipe="text"][data-tone="neutral"] { --catch-button-fg: var(--catch-theme-ink2); }
+.button[data-recipe="text"][data-tone="danger"] { --catch-button-fg: var(--catch-theme-danger); }
+
+.button[data-recipe="text"]:disabled {
+  background: var(--catch-button-disabled-bg, transparent);
+  color: var(--catch-button-disabled-fg, var(--catch-theme-ink3));
+  opacity: 1;
+}
+
+/* Floating: a raised pill with value text and a count. */
+.button[data-recipe="floating"] {
+  --catch-button-bg: color-mix(in srgb, var(--catch-theme-surface) 92%, transparent);
+  --catch-button-fg: var(--catch-theme-ink);
+  --catch-button-border: var(--catch-button-line);
+  --catch-button-overlay: 0.05;
+  --catch-button-gap: var(--catch-space-s2);
+  min-height: var(--catch-interaction-ios-minimum-extent);
+  padding: 0 var(--catch-space-s4);
+  border-radius: var(--catch-radius-pill);
+  box-shadow: var(--catch-elevation-raised);
+  font-weight: 400;
+}
+
+.dot { color: var(--catch-theme-ink3); }
+
+.count {
+  position: absolute;
+  top: calc(-1 * var(--catch-space-s1));
+  right: calc(-1 * var(--catch-space-s1));
+  min-width: 18px;
+  height: 18px;
+  box-sizing: border-box;
+  padding: 0 var(--catch-space-s1);
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-theme-primary);
+  color: var(--catch-theme-primary-ink);
+  font-size: var(--catch-typography-web-status-size);
+  font-weight: 600;
+  line-height: var(--catch-space-micro18);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .button::after { transition: none; }
+  .button:not(:disabled):not([aria-disabled="true"]):not([data-static]):active { transform: none; }
+}

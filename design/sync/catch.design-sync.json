@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "8c6b7ef6d5eee54f6fb5ef12190e40a3c5a701c8ea5542611ff3d2d9354fd6d0",
+  "sourceDigest": "81f3378a337e7b60ded0c4a893df9547d60f57675041e01f3ff76bdd7f48d87a",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "8c6b7ef6d5eee54f6fb5ef12190e40a3c5a701c8ea5542611ff3d2d9354fd6d0",
-    "contractDigest": "8c6b7ef6d5eee54f6fb5ef12190e40a3c5a701c8ea5542611ff3d2d9354fd6d0"
+    "digest": "81f3378a337e7b60ded0c4a893df9547d60f57675041e01f3ff76bdd7f48d87a",
+    "contractDigest": "81f3378a337e7b60ded0c4a893df9547d60f57675041e01f3ff76bdd7f48d87a"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "50eed4dc3986b63cf3e8861a9cf96b76933014eba45ece1a37afcb60d454ef2e",
+    "handoffRequestDigest": "211ade5a3673769782cb468da74ed8dcbd6280edfc1ef16e93a24a35d6fd7468",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,7 +461,7 @@
     "claudeAllowed": 70,
     "reactImplementationStates": {
       "headless-control": 8,
-      "styled": 14
+      "styled": 16
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -657,9 +657,9 @@
       "conceptId": "catch.error_state",
       "dartSymbol": "CatchErrorState",
       "dartFile": "packages/catch_ui/lib/src/components/catch_error_state.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchErrorState",
+      "reactFile": "packages/web-ui/src/components/CatchErrorState.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Recovery State",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -727,9 +727,9 @@
       "conceptId": "catch.notice",
       "dartSymbol": "CatchNotice",
       "dartFile": "packages/catch_ui/lib/src/components/catch_notice.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchNotice",
+      "reactFile": "packages/web-ui/src/components/CatchNotice.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Notice",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
