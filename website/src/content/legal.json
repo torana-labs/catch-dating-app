@@ -22,6 +22,7 @@
       "eyebrow": "Legal",
       "title": "Privacy policy",
       "summary": "How Catch collects, uses, shares, protects, and responds to requests about personal data.",
+      "effectiveDate": "26 October 2026",
       "sections": [
         {
           "heading": "Who operates Catch",
@@ -37,6 +38,8 @@
           "bullets": [
             "Account and profile information, including name, contact details, age confirmation, city, photos, prompts, preferences, reviews, messages, support requests, reports, and claim requests.",
             "Event and interaction information, including registrations, waitlists, attendance, check-in, private catches, mutual matches, blocks, reports, host actions, saved organizers, and aggregate event outcomes.",
+            "Payment information for paid bookings, including the amount, currency, payment and refund status, and the order, payment, and refund references from Razorpay. Card, UPI, and bank details are entered in Razorpay's checkout; Catch does not see or store them.",
+            "Organiser payment connections. When an organiser connects Razorpay, we store their Razorpay account ID and keep their access credentials encrypted in a separate secrets store. They are used only to run that organiser's checkouts, refunds, and payment updates.",
             "Cross Paths information, including your private global and per-event visibility choices, the event connected to a suggestion or invitation, invitation responses, and safety or eligibility state needed to prevent an unsafe or ineligible introduction.",
             "Website and host-lead information, including name, email, city, role, organization, public website or social link, application answers, consent choice, and campaign attribution attached to a submission.",
             "Device and reliability information, including app version, operating system, browser, diagnostic events, crash information, security signals, and approximate location. Precise location is used only where a feature needs it and device permission allows it.",
@@ -61,6 +64,7 @@
           "heading": "Sharing, cookies, and external services",
           "paragraphs": [
             "We may share data with service providers supporting hosting, databases, authentication, storage, analytics, crash reporting, communications, moderation, maps, search, and security; with an organizer when you request an organizer-operated service; when required by law or needed to protect people; during a business reorganization; or at your direction. We do not sell personal data for money.",
+            "Razorpay processes payments for paid bookings. For a paid booking, we send Razorpay the order amount and a booking reference, and the organiser who sells the ticket receives your booking, the amount you paid, and the details they need to run the event and handle refunds. The payment details you enter in Razorpay's checkout go to Razorpay under its own privacy policy.",
             "External event and ticket links lead to third parties whose policies apply. Non-essential website analytics and marketing tags load only after you accept them. Essential storage may support security, consent, saved organizers, forms, and site operation."
           ]
         },
@@ -68,6 +72,7 @@
           "heading": "Retention and security",
           "paragraphs": [
             "We retain data only as long as reasonably needed for the purposes above, legal requirements, safety, dispute handling, fraud prevention, and backup recovery. Public-source listings may remain while accurate and relevant, subject to correction and takedown requests. Account deletion starts the product deletion workflow, but limited records may remain where law, safety, fraud prevention, or dispute resolution requires it.",
+            "Payment records are kept as long as needed for refunds, disputes, and legal, tax, and accounting obligations. An organiser's Razorpay connection is kept while it is connected and, after they disconnect, for as long as it is needed to finish refunds and disputes for existing bookings.",
             "We use access controls, encryption in transit, environment separation, service authentication, audit records, and monitoring intended to protect data. No system is perfectly secure; contact us promptly if you believe your account or data has been compromised."
           ],
           "links": [
@@ -104,6 +109,7 @@
       "eyebrow": "Legal",
       "title": "Terms of use",
       "summary": "The rules for using Catch, its organizer directory, event pages, accounts, and related services.",
+      "effectiveDate": "26 October 2026",
       "sections": [
         {
           "heading": "Agreement and eligibility",
@@ -142,7 +148,24 @@
         {
           "heading": "Payments and external services",
           "paragraphs": [
-            "Paid-event functionality is not part of this website pilot. If Catch later offers payment or ticketing, the checkout will identify the seller, price, fees, refund terms, and additional terms before purchase. External services are controlled by third parties, and their terms, privacy, payment, refund, and availability rules apply."
+            "Paid tickets for events on Catch are sold by the event's organiser. Your payment goes directly to the organiser's own Razorpay account through a checkout powered by Razorpay. Catch provides the booking software and does not hold your payment. Before you pay, the checkout shows the seller, the price, any fees, and the event's cancellation and refund policy.",
+            "Razorpay's terms and privacy policy apply to the payment itself. Cancellations and refunds follow the Refund and cancellation policy.",
+            "External services are controlled by third parties, and their terms, privacy, payment, refund, and availability rules apply."
+          ],
+          "links": [
+            {
+              "href": "/refunds/",
+              "label": "Refund and cancellation policy"
+            }
+          ]
+        },
+        {
+          "heading": "For organisers",
+          "paragraphs": [
+            "If you sell paid tickets through Catch, you are the seller and merchant of record. You are responsible for running the event as described, honouring the cancellation policy you choose, taxes and any GST invoices owed to guests, and chargebacks and payment disputes.",
+            "To take payments, you connect your own Razorpay account to Catch through Razorpay's OAuth. This authorises Catch to create orders for your events, read payment and refund status, set up payment webhooks on your account, and issue refunds under the event's cancellation policy and when an event is cancelled. Your agreement with Razorpay governs your Razorpay account.",
+            "You can disconnect Razorpay at any time. Disconnecting stops new checkouts. Catch may still use the connection to finish refunds and disputes for bookings already paid.",
+            "Any fee for Catch's organiser tools is agreed with you separately and billed separately. It is never deducted from guest payments."
           ]
         },
         {
@@ -179,6 +202,7 @@
       "eyebrow": "Support",
       "title": "Help and safety",
       "summary": "Request Catch or Catch Host account deletion, or get privacy, listing, event, safety, and website help.",
+      "effectiveDate": "26 October 2026",
       "sections": [
         {
           "heading": "Delete your Catch or Catch Host account",
@@ -221,7 +245,13 @@
         {
           "heading": "Event and registration problems",
           "paragraphs": [
-            "Check whether the page labels the event as a Catch event or an external event. For an external event, contact its organizer or ticket provider about entry, schedule, cancellation, payment, or refunds. Send Catch the page URL if a date, venue, registration link, price, or organizer fact appears wrong. Paid events are not part of the current Catch website pilot."
+            "Check whether the page labels the event as a Catch event or an external event. For an external event, contact its organizer or ticket provider about entry, schedule, cancellation, payment, or refunds. Send Catch the page URL if a date, venue, registration link, price, or organizer fact appears wrong. For a paid ticket bought through Catch checkout, the Refund and cancellation policy explains when you can cancel and how refunds are paid."
+          ],
+          "links": [
+            {
+              "href": "/refunds/",
+              "label": "Refund and cancellation policy"
+            }
           ]
         },
         {
@@ -234,6 +264,12 @@
           "heading": "Operator and grievance contact",
           "paragraphs": [
             "Operator: Torana. Grievance officer: Suvrat Garg, Founder. Email: suvrat.garg@gmail.com. Address: 65, Manish Puri, Indore, Madhya Pradesh, India 452018."
+          ],
+          "links": [
+            {
+              "href": "/contact/",
+              "label": "Contact us"
+            }
           ]
         }
       ]
@@ -315,6 +351,139 @@
               "href": "/help/",
               "label": "Help and safety"
             }
+          ]
+        }
+      ]
+    },
+    "refunds": {
+      "path": "/refunds/",
+      "eyebrow": "Legal",
+      "title": "Refund and cancellation policy",
+      "summary": "When you can cancel a paid ticket for an event on Catch, how much is refunded, and how refunds reach you.",
+      "effectiveDate": "26 October 2026",
+      "sections": [
+        {
+          "heading": "Who sells your ticket",
+          "paragraphs": [
+            "When you buy a ticket for a paid event on Catch, the event's organiser is the seller. Your payment goes directly to the organiser's Razorpay account. Catch, operated by Torana, provides the booking page and checkout software and does not hold your payment. Before you pay, the checkout shows the seller, the price, any fees, and the cancellation policy for that event.",
+            "This policy covers tickets bought through Catch checkout. If an event page sends you to an organiser's own website or another ticketing service, that seller's refund terms apply instead."
+          ]
+        },
+        {
+          "heading": "Cancellation policies",
+          "paragraphs": [
+            "Every paid event uses one of three policies. The event page and checkout name the policy and show your exact refund deadline as a date and time."
+          ],
+          "bullets": [
+            "Flexible: full refund if you cancel at least 6 hours before the event starts.",
+            "Standard: full refund if you cancel at least 24 hours before the event starts. Events use Standard unless the organiser chooses another policy.",
+            "Strict: full refund if you cancel at least 72 hours before the event starts."
+          ]
+        },
+        {
+          "heading": "Full refund or no refund",
+          "paragraphs": [
+            "A full refund is the whole amount you paid. If you cancel after your refund deadline, no refund is due, but you can still cancel to release your place until the event starts."
+          ]
+        },
+        {
+          "heading": "How to cancel",
+          "paragraphs": [
+            "Cancel from your booking page. Before you confirm, it shows whether you will get a refund and how much. Cancelling releases your place and cannot be undone. Online cancellation closes when the event starts.",
+            "If something goes wrong while you are cancelling, contact us straight away at suvrat.garg@gmail.com with the event name and the phone number or email you booked with."
+          ]
+        },
+        {
+          "heading": "If the organiser cancels",
+          "paragraphs": [
+            "If the organiser cancels the event, everyone who paid gets a full refund. This includes guests who had already cancelled after their refund deadline."
+          ]
+        },
+        {
+          "heading": "Waitlists",
+          "paragraphs": [
+            "Joining a waitlist is free. You pay only if a place opens and you choose to book it. That booking then follows the event's cancellation policy."
+          ]
+        },
+        {
+          "heading": "How refunds are paid",
+          "paragraphs": [
+            "Refunds are paid from the organiser's Razorpay account, issued through Catch, back to the payment method you used. We cannot send a refund to a different account or pay it in cash.",
+            "A refund normally reaches your account within 5 to 7 business days. Some banks and card issuers take longer to show it."
+          ]
+        },
+        {
+          "heading": "Questions and disputes",
+          "paragraphs": [
+            "If your refund has not arrived after 7 business days, or you think the wrong amount was refunded, email suvrat.garg@gmail.com with the event name, the phone number or email you booked with, and the date you paid. You can also contact the event's organiser."
+          ],
+          "links": [
+            {
+              "href": "/contact/",
+              "label": "Contact us"
+            }
+          ]
+        }
+      ]
+    },
+    "contact": {
+      "path": "/contact/",
+      "eyebrow": "Support",
+      "title": "Contact us",
+      "summary": "How to reach Torana, the operator of Catch, by email, phone, WhatsApp, or post.",
+      "effectiveDate": "26 October 2026",
+      "sections": [
+        {
+          "heading": "Who operates Catch",
+          "paragraphs": [
+            "Catch is operated by Torana, a sole proprietorship based in Indore, Madhya Pradesh, India."
+          ]
+        },
+        {
+          "heading": "Email",
+          "paragraphs": [
+            "Email us at suvrat.garg@gmail.com. It is the best way to reach us about bookings, refunds, accounts, privacy, listings, and legal notices."
+          ]
+        },
+        {
+          "heading": "Phone and WhatsApp",
+          "paragraphs": [
+            "Call or WhatsApp +91 98931 91829. If we miss your call, send a message and we will get back to you."
+          ]
+        },
+        {
+          "heading": "Postal address",
+          "paragraphs": [
+            "Torana, 65, Manish Puri, Indore, Madhya Pradesh, India 452018."
+          ]
+        },
+        {
+          "heading": "What to include",
+          "paragraphs": [
+            "Tell us the page link or event name, the phone number or email on your account or booking, what happened, and what you need. Do not send passwords, one-time codes, card details, or government ID numbers.",
+            "We aim to acknowledge and route requests promptly. Privacy grievances are targeted within 90 days and consumer-service complaints within one month where applicable."
+          ]
+        },
+        {
+          "heading": "Payments and refunds",
+          "paragraphs": [
+            "For a paid ticket bought through Catch checkout, the Refund and cancellation policy explains when you can cancel and how refunds are paid. For an event booked on another website, contact its organiser or ticket provider."
+          ],
+          "links": [
+            {
+              "href": "/refunds/",
+              "label": "Refund and cancellation policy"
+            },
+            {
+              "href": "/help/",
+              "label": "Help and safety"
+            }
+          ]
+        },
+        {
+          "heading": "Grievance officer",
+          "paragraphs": [
+            "Suvrat Garg, Founder. Email: suvrat.garg@gmail.com. Address: 65, Manish Puri, Indore, Madhya Pradesh, India 452018."
           ]
         }
       ]

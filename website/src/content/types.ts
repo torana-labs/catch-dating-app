@@ -52,7 +52,7 @@ export interface EventMetaCopy {
 export interface WebsiteMetaCopy {
   readonly routes: Readonly<
     Record<
-      "sales_demo" | "home" | "visitor_discovery" | "host" | "host_apply" |  "event_runtime" | "event_rehearsal" | "event_assistance" | "event_offer" | "event_booking" | "event_invite" | "household_rsvp" | "public_form" | "organizers" | "claim" | "privacy" | "terms" | "help" | "account_deletion" | "not_found",
+      "sales_demo" | "home" | "visitor_discovery" | "host" | "host_apply" |  "event_runtime" | "event_rehearsal" | "event_assistance" | "event_offer" | "event_booking" | "event_invite" | "household_rsvp" | "public_form" | "organizers" | "claim" | "privacy" | "terms" | "help" | "account_deletion" | "refunds" | "contact" | "not_found",
       StaticPageMetaCopy
     >
   >;
@@ -60,8 +60,8 @@ export interface WebsiteMetaCopy {
   readonly event: EventMetaCopy;
 }
 
-export type PublishedLegalPath = "/help/" | "/privacy/" | "/terms/" | "/delete-account/";
-export type PublishedLegalPageKey = "help" | "privacy" | "terms" | "account_deletion";
+export type PublishedLegalPath = "/help/" | "/privacy/" | "/terms/" | "/delete-account/" | "/refunds/" | "/contact/";
+export type PublishedLegalPageKey = "help" | "privacy" | "terms" | "account_deletion" | "refunds" | "contact";
 
 export interface PublishedLegalSection {
   readonly heading: string;
@@ -80,6 +80,8 @@ export interface PublishedLegalPage {
   readonly eyebrow: string;
   readonly title: string;
   readonly summary: string;
+  /** Overrides the shared effective date when only this document changed. */
+  readonly effectiveDate?: string;
   readonly sections: readonly PublishedLegalSection[];
 }
 
