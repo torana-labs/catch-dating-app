@@ -10,6 +10,19 @@ import {productionProbeContracts} from "../probeProduction.mjs";
 export function sharedCachePage(path) {
   return path === "/" || /^\/(?:explore|organizers|events)\/(?:[^?#]*)$/u.test(path);
 }
+/**
+ * How long a shared cache such as the Hosting CDN may keep a response. `public`
+ * alone does not let it: Next sends `public, max-age=0, must-revalidate` for
+ * the live robots file, which is stale on arrival.
+ */
+export function sharedCacheSeconds(cache) {
+  const directives = cache.toLowerCase().split(",").map(part => part.trim());
+  if (directives.some(part => part === "private" || part === "no-store")) return 0;
+  const seconds = name => Number(directives.find(part => part.startsWith(`${name}=`))?.slice(name.length + 1) ?? NaN);
+  const shared = seconds("s-maxage");
+  if (Number.isFinite(shared)) return shared;
+  return directives.includes("public") && Number.isFinite(seconds("max-age")) ? seconds("max-age") : 0;
+}
 export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch} = {}) {
   assert.match(base ?? "", /^https:\/\/(?:catchdates\.com|catch-dating-app-64e51--next-(?:candidate|release)-[a-z0-9-]+\.web\.app)$/u);
   assert.match(sourceSha ?? "", /^[a-f0-9]{40}$/u);
@@ -22,7 +35,7 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
     // Older releases send no-store there, so promotion stays release-neutral.
     // Static association files are Hosting's, not the runtime's, policy.
     const cache = response.headers.get("cache-control") ?? "";
-    if (source && /public|s-maxage/u.test(cache)) {
+    if (source && sharedCacheSeconds(cache) > 0) {
       assert.equal(cache, PUBLIC_PAGE_CACHE_CONTROL, `${path} shared cache policy`);
       assert.ok(status === 200 && sharedCachePage(path), `${path} must not enter a shared cache`);
     }
