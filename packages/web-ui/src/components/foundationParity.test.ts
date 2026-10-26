@@ -181,7 +181,8 @@ describe("CatchTextStyles parity", () => {
   }
 
   // The six display steps (D19) set Archivo from one step table rather than a
-  // platform profile; the web pins each interim literal to that table.
+  // platform profile; the web reads typography.brand.display* tokens, and these
+  // tests pin each generated token to that table.
   const displaySteps: Record<string, {size: number; height: number; tracking: number}> =
     Object.fromEntries(
       [...textStylesDart.matchAll(/^  (x*[sml])\(([\d.]+), ([\d.]+), (-?[\d.]+)\)[,;]$/gm)]
@@ -234,12 +235,21 @@ describe("CatchTextStyles parity", () => {
     for (const variant of variants) {
       const rule = cssRule(textCss, `.text[data-variant="${variant}"]`);
       if (variant.startsWith("display")) {
-        const step = displaySteps[variant.slice("display".length).toLowerCase()];
+        const stepName = variant.slice("display".length).toLowerCase();
+        const step = displaySteps[stepName];
         expect(step, `missing Flutter display step for ${variant}`).toBeDefined();
-        expect(declaration(rule, "--catch-text-size"), variant).toBe(`${step.size}px`);
-        expect(Number(declaration(rule, "--catch-text-line-height")), variant).toBe(step.height);
-        expect(declaration(rule, "--catch-text-tracking"), variant).toBe(`${step.tracking}em`);
-        expect(declaration(rule, "--catch-text-weight"), variant).toBe(displayWeight);
+        const token = `--catch-typography-brand-display-${stepName}`;
+        for (const [property, value] of [
+          ["size", `${step.size}px`],
+          ["line-height", `${step.height}`],
+          ["weight", displayWeight],
+          ["tracking", `${step.tracking}em`],
+        ]) {
+          expect(declaration(rule, `--catch-text-${property}`), variant)
+            .toBe(`var(${token}-${property})`);
+          expect(generatedTokensCss, `${variant} ${property}`)
+            .toContain(`${token}-${property}: ${value};`);
+        }
         expect(declaration(rule, "--catch-text-role-color"), variant)
           .toBe("var(--catch-theme-ink)");
         continue;

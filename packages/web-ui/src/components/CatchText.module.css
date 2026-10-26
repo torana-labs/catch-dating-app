@@ -21,9 +21,9 @@
 
 /*
  * Display steps (blueprint D19): Archivo at its single 78% width, weight 760,
- * six sizes on a 1.25 ratio. The values are interim literals until the token
- * promotion moves them into catch.tokens.json; foundationParity.test.ts pins
- * each one to the Flutter step table in catch_text_styles.dart.
+ * six sizes on a 1.25 ratio, read from typography.brand.display* in
+ * catch.tokens.json. foundationParity.test.ts pins each token to the Flutter
+ * step table in catch_text_styles.dart.
  */
 .text[data-variant^="display"] {
   font-family: var(--catch-font-voice), sans-serif;
@@ -32,50 +32,50 @@
 }
 
 .text[data-variant="displayXs"] {
-  --catch-text-size: 24px;
-  --catch-text-line-height: 1.1;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.02em;
+  --catch-text-size: var(--catch-typography-brand-display-xs-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-xs-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-xs-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-xs-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="displayS"] {
-  --catch-text-size: 30px;
-  --catch-text-line-height: 1.05;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.025em;
+  --catch-text-size: var(--catch-typography-brand-display-s-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-s-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-s-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-s-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="displayM"] {
-  --catch-text-size: 38px;
-  --catch-text-line-height: 1.05;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.03em;
+  --catch-text-size: var(--catch-typography-brand-display-m-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-m-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-m-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-m-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="displayL"] {
-  --catch-text-size: 48px;
-  --catch-text-line-height: 1;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.035em;
+  --catch-text-size: var(--catch-typography-brand-display-l-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-l-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-l-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-l-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="displayXl"] {
-  --catch-text-size: 60px;
-  --catch-text-line-height: 1;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.04em;
+  --catch-text-size: var(--catch-typography-brand-display-xl-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-xl-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-xl-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-xl-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="displayXxl"] {
-  --catch-text-size: 72px;
-  --catch-text-line-height: 1;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.04em;
+  --catch-text-size: var(--catch-typography-brand-display-xxl-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-xxl-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-xxl-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-xxl-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 

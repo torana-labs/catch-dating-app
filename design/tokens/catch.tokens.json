@@ -2440,6 +2440,18 @@
         "hex": "#FFFFFF"
       }
     },
+    "black": {
+      "$description": "Absolute black for editorial scrims and on-photo fills (Flutter CatchTokens.editorialBlack).",
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0,
+          0,
+          0
+        ],
+        "hex": "#000000"
+      }
+    },
     "nightSurface": {
       "$description": "Raised surface on the ink ground.",
       "$value": {
@@ -2986,6 +2998,13 @@
     "s16": {
       "$value": {
         "value": 64,
+        "unit": "px"
+      }
+    },
+    "s28": {
+      "$description": "Website v2 section rhythm (112px), the spacious band padding.",
+      "$value": {
+        "value": 112,
         "unit": "px"
       }
     },
@@ -4497,8 +4516,8 @@
     },
     "brand": {
       "$description": "Platform-free brand text roles: Archivo voice and IBM Plex Mono data. Names match CatchTextStyles in Flutter and CatchText variants on the web. lineHeight is a unitless multiplier.",
-      "display": {
-        "$description": "Biggest brand moment: onboarding, celebration, live countdowns.",
+      "displayXs": {
+        "$description": "D19 display step. Smallest step; replaces headlineS and the small club and event display sizes. Archivo at 78% width and weight 760; tracking is in em.",
         "family": {
           "$type": "fontFamily",
           "$value": "{font.family.voice}"
@@ -4506,36 +4525,7 @@
         "size": {
           "$type": "dimension",
           "$value": {
-            "value": 44,
-            "unit": "px"
-          }
-        },
-        "lineHeight": {
-          "$type": "number",
-          "$value": 0.98
-        },
-        "weight": {
-          "$type": "number",
-          "$value": 600
-        },
-        "tracking": {
-          "$type": "dimension",
-          "$value": {
-            "value": 0,
-            "unit": "px"
-          }
-        }
-      },
-      "headlineS": {
-        "$description": "Smaller brand headline, a step under the profile headline.",
-        "family": {
-          "$type": "fontFamily",
-          "$value": "{font.family.voice}"
-        },
-        "size": {
-          "$type": "dimension",
-          "$value": {
-            "value": 26,
+            "value": 24,
             "unit": "px"
           }
         },
@@ -4545,13 +4535,158 @@
         },
         "weight": {
           "$type": "number",
-          "$value": 600
+          "$value": 760
         },
         "tracking": {
           "$type": "dimension",
           "$value": {
-            "value": 0,
+            "value": -0.02,
+            "unit": "em"
+          }
+        }
+      },
+      "displayS": {
+        "$description": "D19 display step. Replaces the large club and event display size. Archivo at 78% width and weight 760; tracking is in em.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 30,
             "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.05
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.025,
+            "unit": "em"
+          }
+        }
+      },
+      "displayM": {
+        "$description": "D19 display step. Replaces the extra-large club and event display size, eventTitle and the welcome reel. Archivo at 78% width and weight 760; tracking is in em.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 38,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1.05
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.03,
+            "unit": "em"
+          }
+        }
+      },
+      "displayL": {
+        "$description": "D19 display step. Replaces the old display role: onboarding, celebration, live countdowns. Archivo at 78% width and weight 760; tracking is in em.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.035,
+            "unit": "em"
+          }
+        }
+      },
+      "displayXl": {
+        "$description": "D19 display step. Second-largest step, for hero moments. Archivo at 78% width and weight 760; tracking is in em.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 60,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.04,
+            "unit": "em"
+          }
+        }
+      },
+      "displayXxl": {
+        "$description": "D19 display step. Largest step, for hero moments. Archivo at 78% width and weight 760; tracking is in em.",
+        "family": {
+          "$type": "fontFamily",
+          "$value": "{font.family.voice}"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 72,
+            "unit": "px"
+          }
+        },
+        "lineHeight": {
+          "$type": "number",
+          "$value": 1
+        },
+        "weight": {
+          "$type": "number",
+          "$value": 760
+        },
+        "tracking": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.04,
+            "unit": "em"
           }
         }
       },

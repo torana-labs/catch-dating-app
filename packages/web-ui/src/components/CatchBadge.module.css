@@ -14,8 +14,8 @@
   --catch-badge-on-dark-border-alpha: 0.18;
   --catch-badge-overlay-pressed-alpha: 0.08;
   --catch-badge-dark-pill-fill-alpha: 0.68;
-  --catch-badge-editorial-white: #fff;
-  --catch-badge-editorial-black: #000;
+  --catch-badge-editorial-white: var(--catch-palette-white);
+  --catch-badge-editorial-black: var(--catch-palette-black);
   --catch-badge-action-height: 33px;
   --catch-badge-action-icon-size: 15px;
   --catch-badge-icon-sm: 14px;
