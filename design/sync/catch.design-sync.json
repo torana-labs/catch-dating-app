@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "3e91b317d730cda8e8c928a6c20405c5ef28493db5454813f02d8f9d3a219953",
+  "sourceDigest": "8c6b7ef6d5eee54f6fb5ef12190e40a3c5a701c8ea5542611ff3d2d9354fd6d0",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "3e91b317d730cda8e8c928a6c20405c5ef28493db5454813f02d8f9d3a219953",
-    "contractDigest": "3e91b317d730cda8e8c928a6c20405c5ef28493db5454813f02d8f9d3a219953"
+    "digest": "8c6b7ef6d5eee54f6fb5ef12190e40a3c5a701c8ea5542611ff3d2d9354fd6d0",
+    "contractDigest": "8c6b7ef6d5eee54f6fb5ef12190e40a3c5a701c8ea5542611ff3d2d9354fd6d0"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "0d5f8d35e853e1ec48e293805964586120a5735303dd03cfd8297c29db1d321a",
+    "handoffRequestDigest": "50eed4dc3986b63cf3e8861a9cf96b76933014eba45ece1a37afcb60d454ef2e",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,7 +461,7 @@
     "claudeAllowed": 70,
     "reactImplementationStates": {
       "headless-control": 8,
-      "styled": 12
+      "styled": 14
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -882,9 +882,9 @@
       "conceptId": "catch.skeleton",
       "dartSymbol": "CatchSkeleton",
       "dartFile": "packages/catch_ui/lib/src/patterns/catch_skeleton.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchSkeleton",
+      "reactFile": "packages/web-ui/src/components/CatchSkeleton.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Skeleton",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -917,9 +917,9 @@
       "conceptId": "catch.loading_indicator",
       "dartSymbol": "CatchLoadingIndicator",
       "dartFile": "packages/catch_ui/lib/src/primitives/catch_loading_indicator.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchLoadingIndicator",
+      "reactFile": "packages/web-ui/src/components/CatchLoadingIndicator.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/LoadingIndicator",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1084,7 +1084,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Text",
       "claudeAllowed": true,
-      "contractDigest": "fe5911f7763e2fcedfd8a3060603be0a8b6693d9e14cd58260d45bb7b6a7ef7e"
+      "contractDigest": "55dff94bd4d375b3f7dfac47ccd444a0555d3cb11f13ecbf2960e3e3fa96bc94"
     },
     {
       "contractId": "catch.mini_bar_chart",

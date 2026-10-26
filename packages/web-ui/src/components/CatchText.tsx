@@ -38,6 +38,13 @@ export type CatchTextColor =
   | "attentionText"
   | "inherit";
 
+/**
+ * Website v2 palette accents for coloured sentence-case labels: each draws its
+ * deep shade under a light theme and the accent itself under a dark one, so a
+ * label clears AA on white, paper and ink.
+ */
+export type CatchTextAccent = "coral" | "pink" | "yellow" | "mint" | "indigo" | "magenta";
+
 export type CatchTextAlign = "start" | "center" | "end";
 
 export type CatchTextElement =
@@ -63,8 +70,8 @@ export interface CatchTextProps
   /** The semantic element. Choose headings by document outline, not size. */
   as?: CatchTextElement;
   children: ReactNode;
-  /** Overrides the role's default color with another theme role. */
-  color?: CatchTextColor;
+  /** Overrides the role's default color with another theme role, or a palette accent. */
+  color?: CatchTextColor | CatchTextAccent;
   /** Clamps the text to this many lines with an ellipsis. */
   maxLines?: number;
   textAlign?: CatchTextAlign;
