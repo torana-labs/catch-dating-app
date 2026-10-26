@@ -218,15 +218,40 @@ a{color:#141114}a:hover{color:#5A5450}
               <div role="radiogroup" aria-label="Verification method" style="display: flex; flex-direction: column; gap: 8px">
                 <sc-for list="{{claimMethods}}" as="cm" hint-placeholder-count="2"><button type="button" role="radio" aria-checked="{{cm.on}}" onClick="{{cm.pick}}" style="{{cm.style}}"><span style="font-size: 15px; font-weight: 700">{{cm.title}}</span><span style="font-size: 13px; color: #5A5450">{{cm.sub}}</span></button></sc-for>
               </div>
-              <button type="button" class="btn" onClick="{{claimSend}}" style="background: #141114; color: #FFFFFF; align-self: flex-start">Send my code</button>
+              <button type="button" class="btn" onClick="{{claimSend}}" style="background: #141114; color: #FFFFFF; align-self: flex-start">{{claimSendLabel}}</button>
             </div>
           </sc-if>
-          <sc-if value="{{claimAtCode}}" hint-placeholder-val="{{false}}">
-            <div style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
-              <label for="claim-code" style="font-size: 16px; font-weight: 700">{{claimSentTo}}</label>
-              <input id="claim-code" class="finput" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit code" value="{{claimCode}}" onInput="{{setClaimCode}}" aria-describedby="claim-err">
-              <span id="claim-err" class="ferr" aria-live="polite">{{claimErr}}</span>
-              <button type="button" class="btn" onClick="{{claimConfirm}}" style="background: #141114; color: #FFFFFF; align-self: flex-start">Claim the page</button>
+          <sc-if value="{{claimAtCodeIg}}" hint-placeholder-val="{{false}}">
+            <div style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+              <span style="font-size: 16px; font-weight: 700">Send this code to @catch on Instagram</span>
+              <span class="dsp" aria-label="Code 4 8 2 1 7 3" style="font-size: 38px; letter-spacing: 0.08em">482 173</span>
+              <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 15px; line-height: 22px">
+                <li>Open Instagram as <b>@carterroadrunners</b>.</li>
+                <li>Send the code to <b>@catch</b> in a direct message.</li>
+                <li>Come back here. This page moves on by itself when your message arrives.</li>
+              </ol>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <button type="button" class="btn" onClick="{{openIgDm}}" style="background: #141114; color: #FFFFFF">Open Instagram</button>
+                <button type="button" class="btn" onClick="{{copyClaimCode}}" style="background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)">{{claimCopyLabel}}</button>
+              </div>
+              <span role="status" aria-live="polite" style="font-size: 13px; line-height: 19px; color: #5A5450">Waiting for your message. The code works for 30 minutes, and only from @carterroadrunners.</span>
+              <button type="button" onClick="{{claimDmArrived}}" style="align-self: flex-start; background: none; border: 0; padding: 0; font: inherit; font-size: 14px; color: #141114; text-decoration: underline; cursor: pointer">I’ve sent it</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{claimAtCodeLuma}}" hint-placeholder-val="{{false}}">
+            <div style="background: #FFFFFF; border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+              <span style="font-size: 16px; font-weight: 700">Add this code to your Luma calendar</span>
+              <span class="dsp" style="font-size: 30px; letter-spacing: 0.02em">catch-482173</span>
+              <ol style="margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; font-size: 15px; line-height: 22px">
+                <li>Open your calendar’s settings on Luma.</li>
+                <li>Paste the code anywhere in the calendar description, then save.</li>
+                <li>Come back and check. You can remove the code once your page is yours.</li>
+              </ol>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                <button type="button" class="btn" onClick="{{claimLumaCheck}}" style="background: #141114; color: #FFFFFF">Check my Luma page</button>
+                <button type="button" class="btn" onClick="{{copyClaimCode}}" style="background: #FFFFFF; color: #141114; border: 1.5px solid rgba(20,17,20,0.25)">{{claimCopyLabel}}</button>
+              </div>
+              <span role="status" aria-live="polite" style="font-size: 13px; line-height: 19px; color: #5A5450">We read your public calendar at lu.ma/carterroadrunners. The code works for 30 minutes.</span>
             </div>
           </sc-if>
           <sc-if value="{{claimAtDone}}" hint-placeholder-val="{{false}}">
@@ -347,7 +372,7 @@ class Component extends DCLogic {
     super(props);
     this.state = { view: "guest", followStep: "idle", following: false, phone: "", code: "", followErr: "",
       shareOpen: false, copied: false, reviewOpen: false, rStars: 0, revText: "", revName: "", revErr: "", reviewDone: false, myReview: null,
-      claimStep: 0, claimMethod: "ig", claimCode: "", claimErr: "", replyOpen: "", replyText: "", replies: {}, toast: "" };
+      claimStep: 0, claimMethod: "ig", claimCode: "", claimErr: "", claimCopied: false, replyOpen: "", replyText: "", replies: {}, toast: "" };
   }
   componentWillUnmount() {
     clearTimeout(this.toastTimer);
@@ -363,7 +388,7 @@ class Component extends DCLogic {
   pickView(view) {
     this.setState({ view, followStep: "idle", following: false, phone: "", code: "", followErr: "", shareOpen: false, copied: false,
       reviewOpen: false, rStars: 0, revText: "", revName: "", revErr: "", reviewDone: false, myReview: null,
-      claimStep: 0, claimCode: "", claimErr: "", replyOpen: "", replyText: "", toast: "" });
+      claimStep: 0, claimCode: "", claimErr: "", claimCopied: false, replyOpen: "", replyText: "", toast: "" });
   }
   orgData(generated) {
     if (generated) return {
@@ -524,7 +549,7 @@ class Component extends DCLogic {
     const dist = distRaw.map(([n, count]) => ({ n, count, pct: maxD ? Math.round((count / maxD) * 100) : 0 }));
     const starBtns = [1, 2, 3, 4, 5].map((n) => ({ n, on: n <= s.rStars, label: n + (n === 1 ? " star" : " stars"),
       bg: n <= s.rStars ? "#F07A55" : "#FFFFFF", fill: n <= s.rStars ? "#141114" : "#BDB3A7", pick: () => this.setState({ rStars: n, revErr: "" }) }));
-    const claimMethods = [["ig", "A code by Instagram DM", "Sent to @carterroadrunners from @catch"], ["luma", "A code by email", "Sent to the address on your Luma calendar"]]
+    const claimMethods = [["ig", "Message us on Instagram", "Send a code we show you from @carterroadrunners to @catch"], ["luma", "Add a code to your Luma calendar", "Paste a code we show you into your calendar description"]]
       .map(([key, title, sub]) => ({ key, title, sub, on: s.claimMethod === key,
         style: "display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 14px; border-radius: 14px; cursor: pointer; font: inherit; text-align: left; color: #141114; " +
           (s.claimMethod === key ? "border: 2px solid #141114; background: #F6F0E8" : "border: 1.5px solid rgba(20,17,20,0.2); background: #FFFFFF"),
@@ -555,11 +580,17 @@ class Component extends DCLogic {
       insights: [{ label: "Visits", value: "3,412", delta: "+18% on September" }, { label: "Link clicks", value: "1,086", delta: "32% of visits" },
         { label: "Booking clicks", value: "318", delta: "+24% on September" }, { label: "New followers", value: "148", delta: "+9% on September" }],
       sources: [{ label: "Instagram bio", pct: 71, tone: "#F08AA0" }, { label: "WhatsApp", pct: 14, tone: "#5CCB9F" }, { label: "Direct", pct: 9, tone: "#8C9BF2" }, { label: "Other", pct: 6, tone: "#F5C451" }],
-      claimAtStart: s.claimStep === 0, claimAtMethod: s.claimStep === 1, claimAtCode: s.claimStep === 2, claimAtDone: s.claimStep === 3,
-      claimStart: () => this.setState({ claimStep: 1 }), claimSend: () => this.setState({ claimStep: 2, claimCode: "", claimErr: "" }),
-      claimSentTo: s.claimMethod === "ig" ? "Enter the code we sent to @carterroadrunners on Instagram" : "Enter the code we emailed to your Luma address",
-      claimCode: s.claimCode, claimErr: s.claimErr, setClaimCode: (e) => this.setState({ claimCode: e.target.value, claimErr: "" }),
-      claimConfirm: () => { if (!/^\d{6}$/.test(s.claimCode.trim())) { this.setState({ claimErr: "Enter the 6-digit code" }); return; } this.setState({ claimStep: 3, claimErr: "" }); },
+      claimAtStart: s.claimStep === 0, claimAtMethod: s.claimStep === 1, claimAtDone: s.claimStep === 3,
+      claimAtCodeIg: s.claimStep === 2 && s.claimMethod === "ig", claimAtCodeLuma: s.claimStep === 2 && s.claimMethod !== "ig",
+      claimStart: () => this.setState({ claimStep: 1 }), claimSend: () => this.setState({ claimStep: 2, claimCode: "", claimErr: "", claimCopied: false }),
+      claimSendLabel: "Show my code",
+      // Luma shows no public contact email, so the organiser proves control by editing their own calendar.
+      claimLumaCheck: () => this.setState({ claimStep: 3, claimErr: "" }),
+      // Instagram only lets a business reply to someone who messaged it first, so the organiser sends the code.
+      openIgDm: () => this.showToast("Opens a message to @catch on Instagram"),
+      claimCopyLabel: s.claimCopied ? "Copied" : "Copy code",
+      copyClaimCode: () => { try { if (navigator.clipboard) navigator.clipboard.writeText(s.claimMethod === "ig" ? "482173" : "catch-482173").catch(() => undefined); } catch (err) { /* Copy is best effort. */ } this.setState({ claimCopied: true }); },
+      claimDmArrived: () => this.setState({ claimStep: 3, claimErr: "" }),
       goOwner: () => this.pickView("owner"),
       reviewOpen: s.reviewOpen, openReview: () => this.setState({ reviewOpen: !s.reviewOpen }),
       reviewDone: s.reviewDone, reviewNotDone: !s.reviewDone, revText: s.revText, revName: s.revName, revErr: s.revErr,

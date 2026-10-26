@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.16.1
+version: 2.17.0
 updated: 2026-10-26
 owner: recursive_audit_loop
 status: active
@@ -1369,6 +1369,45 @@ WABA/number, credentials, templates, consent/suppression ledger, webhook/thread
 authority, retention policy and support owner. Enabling organizer WhatsApp must
 not make the Catch route active. Personal `wa.me` handoff requires no backend
 provider activation and generates no Catch delivery receipt.
+
+### Instagram claim verification activation
+
+Organisers prove a claim by sending a code from the listing's Instagram
+account to Catch's Instagram account. The method stays hidden until the owner
+completes these steps for an environment:
+
+1. Create three secrets in that project's Secret Manager. They must exist,
+   even as placeholders, before any deploy that includes
+   `instagramClaimWebhook`, because readiness blocks deploys without them:
+   - `CATCH_INSTAGRAM_APP_SECRET`: the app secret that signs webhooks. For
+     Instagram Login, that is the Instagram app secret shown under API setup
+     with Instagram login.
+   - `CATCH_INSTAGRAM_ACCESS_TOKEN`: a long-lived Instagram user token for
+     Catch's account, with `instagram_business_basic` and
+     `instagram_business_manage_messages`.
+   - `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: a random string of at least 32
+     characters.
+2. Set these GitHub environment variables, then deploy:
+   - `CATCH_INSTAGRAM_ACCOUNT_ID`: the professional account id.
+   - `CATCH_INSTAGRAM_HANDLE`: the username, without @.
+   - `CATCH_INSTAGRAM_GRAPH_VERSION`: optional; the default is `v26.0`.
+3. In the Meta app dashboard, under API setup with Instagram login:
+   - Configure webhooks with the callback URL
+     `https://asia-south1-<project>.cloudfunctions.net/instagramClaimWebhook`
+     and the same verify token.
+   - Subscribe the `messages` field.
+   - Turn on the webhook subscription for Catch's account.
+   A Meta app has one callback URL, so only one environment receives these
+   messages at a time.
+4. On Catch's Instagram account, turn on Allow access to messages under
+   Message controls, Connected tools.
+5. Send a test message from an account with a role on the app. Check that the
+   webhook answers it, then set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` and
+   deploy again.
+
+Until App Review grants Advanced Access, only accounts with a role on the
+Meta app can message through the API. With the method switched off, the
+webhook still answers the handshake and acknowledges signed deliveries.
 
 ### Protected Catch WhatsApp operator CLI
 
