@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
@@ -33,6 +34,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_list.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
@@ -45,8 +47,6 @@ import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart' as event_test;
 import '../test_pump_helpers.dart';
 import 'inbox/host_inbox_test_fixtures.dart' as inbox_fixture;
-import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 
 part 'host_inbox_sends_tests.dart';
 
