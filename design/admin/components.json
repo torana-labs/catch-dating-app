@@ -2061,6 +2061,10 @@
           "custom-size"
         ]
       },
+      "comparedWith": [
+        "catch.icon"
+      ],
+      "comparisonReason": "Animated loading indicator that spins a glyph; it renders the loading icon role rather than implementing the icon contract.",
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
