@@ -1,5 +1,7 @@
 import type {WebsiteHostListingProjection} from "../../../../functions/src/shared/generated/websiteHostListingProjection";
 
+export type {OrganizerPublicPageDocument} from "../../../../functions/src/shared/generated/organizerPublicPageDocument";
+
 export type HostListing = WebsiteHostListingProjection;
 export type HostListingReview = HostListing["reviews"][number];
 export type HostListingCatchEvent = NonNullable<HostListing["catchEvents"]>[number];
