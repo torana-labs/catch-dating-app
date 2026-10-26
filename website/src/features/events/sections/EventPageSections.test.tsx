@@ -37,7 +37,8 @@ describe("Event page sections", () => {
       expect(screen.getByRole("heading", {name})).toBeTruthy();
     }
     expect(within(screen.getByRole("list")).getAllByRole("listitem")).toHaveLength(4);
-    expect(screen.getByText("Booked on Catch · Nov 2026")).toBeTruthy();
+    expect(screen.getAllByText("Booked on Catch")).toHaveLength(2);
+    expect(screen.getByText("Nov 2026")).toBeTruthy();
     expect(screen.getByRole("link", {name: "See their page"}).getAttribute("href")).toBe("/organizers/mumbai/salt-air-run-club/");
     expect(screen.getByRole("link", {name: /Sunset Run & Social/}).getAttribute("href")).toBe("/events/salt-air-sunset-run-social/");
   });
@@ -71,7 +72,7 @@ describe("Event page sections", () => {
     expect(screen.getByText("Social run · imported from Luma")).toBeTruthy();
     expect(screen.getByText("The exact meeting point is on the Luma page.")).toBeTruthy();
     expect(screen.getByText("About Salt Air Run Club, from their page")).toBeTruthy();
-    expect(screen.getAllByText(/^Unverified · /)).toHaveLength(2);
+    expect(screen.getAllByText("Unverified")).toHaveLength(2);
     expect(screen.queryByText(/Booked on Catch/)).toBeNull();
     expect(screen.queryByRole("link", {name: /claim/iu})).toBeNull();
   });

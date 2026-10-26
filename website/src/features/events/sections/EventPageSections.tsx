@@ -1,5 +1,6 @@
 import {
   CatchAvatar,
+  CatchBadge,
   CatchButton,
   CatchEventPoster,
   CatchFactTile,
@@ -193,9 +194,10 @@ function EventReviews({reviews}: {reviews: NonNullable<EventPageView["reviews"]>
       aside={<CatchText as="span" color="ink2" variant="bodyM">{reviews.note}</CatchText>}>
       <CatchGrid columns={2} compactColumns={1} gap="related">
         {reviews.items.map((review) => (
-          <CatchReviewItem body={review.body} key={review.id} name={review.name} rating={review.rating}
+          <CatchReviewItem body={review.body} key={review.id} meta={review.meta} name={review.name} rating={review.rating}
             ratingLabel={review.ratingLabel} variant="card"
-            meta={[review.verified ? copy.reviews.verified : copy.reviews.unverified, review.meta].filter(Boolean).join(" · ")} />
+            badge={<CatchBadge label={review.verified ? copy.reviews.verified : copy.reviews.unverified} recipe="status"
+              tone={review.verified ? "success" : "neutral"} />} />
         ))}
       </CatchGrid>
     </Section>
