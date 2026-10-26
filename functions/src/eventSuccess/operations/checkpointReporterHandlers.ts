@@ -19,7 +19,9 @@ export async function reassignEventAssistanceCheckpointReporterHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "reassignEventAssistanceCheckpointReporter");
+  await deps.rateLimit(db, uid, "reassignEventAssistanceCheckpointReporter", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).reassign(uid, request.data);
 }
 export const reassignEventAssistanceCheckpointReporter = onCall(

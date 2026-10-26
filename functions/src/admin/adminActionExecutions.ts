@@ -76,11 +76,7 @@ interface AdminActionExecutionDeps {
   firestore: () => FirebaseFirestore.Firestore;
   repository?: AdminActionExecutionRepository;
   now: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: AdminActionExecutionDeps = {
@@ -105,7 +101,8 @@ export async function adminRecordActionExecutionHandler(
   await deps.checkRateLimit?.(
     db,
     context.uid,
-    "adminRecordActionExecution"
+    "adminRecordActionExecution",
+    {maxRequests: 120, windowMs: 60 * 1000}
   );
   const repository = deps.repository ??
     new FirestoreAdminActionExecutionRepository(db);
@@ -128,7 +125,8 @@ export async function adminListActionExecutionsHandler(
   await deps.checkRateLimit?.(
     db,
     context.uid,
-    "adminListActionExecutions"
+    "adminListActionExecutions",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   const repository = deps.repository ??
     new FirestoreAdminActionExecutionRepository(db);

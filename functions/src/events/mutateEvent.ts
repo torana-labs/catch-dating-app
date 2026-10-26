@@ -122,11 +122,7 @@ interface EventMutationDeps {
   nowTimestamp?: () => FirebaseFirestore.Timestamp;
   serverTimestamp?: () => FirebaseFirestore.FieldValue;
   sendNotification?: typeof sendFcmNotification;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   refreshOrganizerNextEvent?: (
     organizerId: string,
     deps?: {
@@ -252,7 +248,9 @@ export async function createEventHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, hostUserId, "createEvent");
+  await deps.checkRateLimit?.(db, hostUserId, "createEvent", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const organizerId = data.organizerId ?? data.clubId;
 
   const eventRef = data.eventId ?
@@ -446,7 +444,9 @@ export async function updateEventHandler(
     normalizeUpdateEventPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, hostUserId, "updateEvent");
+  await deps.checkRateLimit?.(db, hostUserId, "updateEvent", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   if ("mediaRecovery" in data) {
     return updateEventMediaRecovery({
@@ -674,7 +674,9 @@ export async function cancelEventHandler(
     normalizeCancelEventPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, hostUserId, "cancelEvent");
+  await deps.checkRateLimit?.(db, hostUserId, "cancelEvent", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
 
   const eventRef = db.collection("events").doc(data.eventId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
@@ -789,7 +791,9 @@ export async function deleteEventHandler(
     normalizeEventIdPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, hostUserId, "deleteEvent");
+  await deps.checkRateLimit?.(db, hostUserId, "deleteEvent", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
 
   const eventRef = db.collection("events").doc(data.eventId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);

@@ -28,11 +28,7 @@ const decisionCollection = "organizerIntakeReviewDecisions";
 interface OrganizerIntakeDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: OrganizerIntakeDeps = {
@@ -79,7 +75,8 @@ export async function adminDecideOrganizerIntakeHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminDecideOrganizerIntake"
+    "adminDecideOrganizerIntake",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const decisionRef = db.collection(decisionCollection).doc(data.entityId);
   const organizerRef = db.collection("organizers").doc(data.entityId);

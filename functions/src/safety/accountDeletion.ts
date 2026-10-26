@@ -20,11 +20,7 @@ interface AccountDeletionDeps {
   firestore: () => FirebaseFirestore.Firestore;
   storageBucket: () => StorageBucket;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: AccountDeletionDeps = {
@@ -47,7 +43,9 @@ export async function requestAccountDeletionHandler(
 ): Promise<{deleted: boolean}> {
   const uid = requireAuth(request);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "requestAccountDeletion");
+  await deps.checkRateLimit?.(db, uid, "requestAccountDeletion", {
+    maxRequests: 3, windowMs: 60 * 60 * 1000,
+  });
 
   const deletedUserRef = db.collection("deletedUsers").doc(uid);
   const now = deps.serverTimestamp();

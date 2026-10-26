@@ -81,11 +81,7 @@ interface EventMessagingBudgetApplicationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now: () => number;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: EventMessagingBudgetApplicationDeps = {
@@ -131,7 +127,8 @@ export async function adminApplyEventMessagingBudgetHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminApplyEventMessagingBudget"
+    "adminApplyEventMessagingBudget",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const requestHash = operationContentHash([adminContext.uid, data]);
   const receiptId = eventMessagingBudgetApplicationReceiptId(

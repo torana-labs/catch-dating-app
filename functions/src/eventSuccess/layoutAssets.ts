@@ -83,7 +83,9 @@ export async function upsertEventSuccessLayoutHandler(
     UpsertEventSuccessLayoutCallablePayload
   >(request, validateUpsertEventSuccessLayoutCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "upsertEventSuccessLayout");
+  await deps.checkRateLimit?.(db, uid, "upsertEventSuccessLayout", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   await requireOrganizerLayoutManager(db, payload.organizerId, uid);
   const label = payload.label.trim();
   if (label.length === 0) {
@@ -140,7 +142,9 @@ export async function getEventSuccessSpatialLayoutHandler(
     GetEventSuccessSpatialLayoutCallablePayload
   >(request, validateGetEventSuccessSpatialLayoutCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "getEventSuccessSpatialLayout");
+  await deps.checkRateLimit?.(db, uid, "getEventSuccessSpatialLayout", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const {event, plan} = await loadEventAndPlan(db, payload.eventId);
   await requireSpatialReader(db, event, payload.eventId, uid);
   if (
@@ -161,7 +165,9 @@ export async function controlEventSuccessSpatialHandler(
     EventSuccessSpatialActionCallablePayload
   >(request, validateEventSuccessSpatialActionCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, managerUid, "controlEventSuccessSpatial");
+  await deps.checkRateLimit?.(db, managerUid, "controlEventSuccessSpatial", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const {event, plan} = await loadEventAndPlan(db, payload.eventId);
   await requireEventLayoutManager(db, event, managerUid);
   if (

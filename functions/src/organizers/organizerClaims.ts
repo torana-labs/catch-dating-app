@@ -44,11 +44,7 @@ const claimReviewRoles = ["admin", "adminOwner", "support"] as const;
 interface OrganizerClaimDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: OrganizerClaimDeps = {
@@ -75,7 +71,9 @@ export async function requestOrganizerClaimHandler(
     normalizeRequestPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, requesterUid, "requestOrganizerClaim");
+  await deps.checkRateLimit?.(db, requesterUid, "requestOrganizerClaim", {
+    maxRequests: 5, windowMs: 60 * 60 * 1000,
+  });
   const requestId = organizerClaimRequestId(data.organizerId, requesterUid);
   const organizerRef = db.collection("organizers").doc(data.organizerId);
   const requestRef = db.collection("organizerClaimRequests").doc(requestId);
@@ -183,7 +181,8 @@ export async function adminDecideOrganizerClaimHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminDecideOrganizerClaim"
+    "adminDecideOrganizerClaim",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   let response: AdminDecideOrganizerClaimResponse | null = null;
   const transitionId = crypto.randomUUID();

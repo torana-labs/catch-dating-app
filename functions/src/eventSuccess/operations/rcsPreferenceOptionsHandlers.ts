@@ -26,7 +26,9 @@ export async function listEventRcsPreferencesHandler(
   const input = validateCallableWithAjv(request,
     validateListEventRcsPreferencesCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "listEventRcsPreferences");
+  await deps.checkRateLimit(db, uid, "listEventRcsPreferences", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const output = await new RcsPreferenceOptionsStore(db, deps.now)
     .list(uid, input);
   if (!validateListEventRcsPreferencesCallableResponse(output)) {

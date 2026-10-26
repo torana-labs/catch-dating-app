@@ -73,11 +73,7 @@ export interface SuvbotDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   timestampFromDate: (date: Date) => FirebaseFirestore.Timestamp;
   now: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 export interface SuvbotOperationResult {
@@ -219,7 +215,8 @@ export async function requestSuvbotDemoOperationHandler(
   await deps.checkRateLimit?.(
     deps.firestore(),
     uid,
-    "requestSuvbotDemoOperation"
+    "requestSuvbotDemoOperation",
+    {maxRequests: 20, windowMs: 60 * 1000}
   );
   const data = normalizeSuvbotRequest(request.data);
   return runSuvbotDemoOperationForUser({
@@ -244,7 +241,9 @@ export async function listSuvbotDemoActionsHandler(
 ): Promise<{actions: SuvbotActionDescriptor[]; matchId: string}> {
   const uid = requireAuth(request);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "listSuvbotDemoActions");
+  await deps.checkRateLimit?.(db, uid, "listSuvbotDemoActions", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await assertSuvbotAccess(db, uid);
   const {matchId} = await ensureSuvbotThread(db, uid, deps);
   return {actions: suvbotActionCatalog(), matchId};

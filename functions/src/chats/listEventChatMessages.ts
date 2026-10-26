@@ -24,7 +24,9 @@ export async function listEventChatMessagesHandler(
   const data = validateCallableWithAjv(request,
     validateListEventChatMessagesCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "listEventChatMessages");
+  await deps.rateLimit(db, uid, "listEventChatMessages", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (tx) => {
     const access = await requireEventChatMember(db, tx, data.eventId, uid);
     const now = deps.now();

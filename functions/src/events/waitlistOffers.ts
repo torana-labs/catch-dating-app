@@ -132,7 +132,9 @@ export async function createEventWaitlistOffersHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit(db, hostUid, "createEventWaitlistOffers");
+  await deps.checkRateLimit(db, hostUid, "createEventWaitlistOffers", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const nowMillis = deps.nowMillis();
   const now = deps.timestampFromMillis(nowMillis);
@@ -382,7 +384,9 @@ export async function acceptEventWaitlistOfferHandler(
     normalizeEventIdPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "acceptEventWaitlistOffer");
+  await deps.checkRateLimit(db, uid, "acceptEventWaitlistOffer", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
 
   const nowMillis = deps.nowMillis();
   const now = deps.timestampFromMillis(nowMillis);
@@ -544,7 +548,9 @@ export async function declineEventWaitlistOfferHandler(
     normalizeEventIdPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "declineEventWaitlistOffer");
+  await deps.checkRateLimit(db, uid, "declineEventWaitlistOffer", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
 
   const now = deps.timestampFromMillis(deps.nowMillis());
   let declined = false;

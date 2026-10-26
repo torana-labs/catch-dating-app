@@ -81,11 +81,7 @@ interface AdminUserRolesDeps {
   auth: () => AuthLike;
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: AdminUserRolesDeps = {
@@ -108,7 +104,9 @@ export async function adminGetAdminUserRolesHandler(
   const adminContext = requireAdminRole(request, adminUserRoleOwnerRoles);
   const payload = normalizeGetAdminUserRolesPayload(request.data);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetAdminUserRoles");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetAdminUserRoles", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const user = await getAuthUserOrThrow(deps.auth(), payload.targetUid);
   return {
     user: adminUserRoleRecord(user),
@@ -131,7 +129,8 @@ export async function adminListAdminRoleAssignmentsHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminListAdminRoleAssignments"
+    "adminListAdminRoleAssignments",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
 
   let query: FirebaseFirestore.Query =
@@ -167,7 +166,9 @@ export async function adminSetAdminUserRolesHandler(
   );
   const payload = normalizeSetAdminUserRolesPayload(request.data);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminSetAdminUserRoles");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminSetAdminUserRoles", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   if (
     payload.targetUid === adminContext.uid &&
     !payload.roles.includes("adminOwner")

@@ -25,6 +25,8 @@ import {
 } from "./communityMembershipAuthority";
 import {readApprovedCommunityApplication} from
   "./communityApplicationAuthority";
+import {applicationReviewRateLimit} from
+  "../organizers/applicationReviewRateLimit";
 
 interface Dependencies {
   firestore: () => FirebaseFirestore.Firestore;
@@ -56,7 +58,8 @@ export async function decideOrganizerCommunityMembershipHandler(
   }
   const db = deps.firestore();
   // Deliberately share the manager application-review mutation budget.
-  await deps.checkRateLimit(db, actorUid, "reviewOrganizerApplication");
+  await deps.checkRateLimit(db, actorUid, "reviewOrganizerApplication",
+    applicationReviewRateLimit);
   const nowMillis = deps.nowMillis();
   if (!Number.isSafeInteger(nowMillis) || nowMillis <= 0) {
     throw new HttpsError("internal", "Decision clock is unavailable.");

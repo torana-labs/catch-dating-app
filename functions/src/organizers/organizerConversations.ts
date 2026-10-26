@@ -34,12 +34,11 @@ import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 interface OrganizerConversationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
+
+// Both entry points count against one per-caller conversation-start budget.
+const startConversationRateLimit = {maxRequests: 5, windowMs: 60 * 1000};
 
 const defaultDeps: OrganizerConversationDeps = {
   firestore: () => admin.firestore(),
@@ -81,7 +80,8 @@ export async function startOrganizerContactConversationHandler(
     normalizeOrganizerContactConversationPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, actorUid, "startOrganizerConversation");
+  await deps.checkRateLimit?.(db, actorUid, "startOrganizerConversation",
+    startConversationRateLimit);
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,
@@ -128,7 +128,8 @@ async function startOrganizerConversationCore(
 
   const db = deps.firestore();
   if (!options.rateLimitAlreadyChecked) {
-    await deps.checkRateLimit?.(db, callerUid, rateLimitAction);
+    await deps.checkRateLimit?.(db, callerUid, rateLimitAction,
+      startConversationRateLimit);
   }
   const [user1Id, user2Id] = [callerUid, data.hostUid].sort();
   const scopedMatchId = organizerInquiryMatchId({

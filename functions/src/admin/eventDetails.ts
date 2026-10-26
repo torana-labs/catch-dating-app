@@ -55,11 +55,7 @@ interface EventDetailsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now?: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: EventDetailsDeps = {
@@ -189,7 +185,9 @@ export async function adminListEventDetailsHandler(
     normalizeAdminListEventDetailsPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminListEventDetails");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminListEventDetails", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
 
   const limit = clampLimit(data.limit);
   const queryText = normalizeSearchText(data.query);
@@ -262,7 +260,9 @@ export async function adminGetEventDetailsHandler(
     normalizeAdminGetEventDetailsPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetEventDetails");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetEventDetails", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const eventSnap = await db.collection("events").doc(data.eventId).get();
   if (!eventSnap.exists) {
     throw new HttpsError("not-found", "Event not found.");
@@ -332,7 +332,9 @@ export async function adminUpdateEventDetailsHandler(
   }
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateEventDetails");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminUpdateEventDetails", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const eventRef = db.collection("events").doc(data.eventId);
   await db.runTransaction(async (tx) => {
     const eventSnap = await tx.get(eventRef);

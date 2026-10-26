@@ -76,7 +76,9 @@ export async function getEventOperatorAccessHandler(
     normalizeEventPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getEventOperatorAccess");
+  await deps.checkRateLimit(db, actorUid, "getEventOperatorAccess", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const eventSnap = await db.collection("events").doc(data.eventId).get();
   if (!eventSnap.exists) throw new HttpsError("not-found", "Event not found.");
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
@@ -119,7 +121,9 @@ export async function listEventStaffHandler(
     normalizeEventPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listEventStaff");
+  await deps.checkRateLimit(db, actorUid, "listEventStaff", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireEventManager(db, data.eventId, actorUid);
   return eventStaffList(db, data.eventId, deps.now());
 }
@@ -135,7 +139,9 @@ export async function grantEventStaffHandler(
     normalizeGrantPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "grantEventStaff");
+  await deps.checkRateLimit(db, actorUid, "grantEventStaff", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const {event, organizer} = await requireEventManager(
     db, data.eventId, actorUid
   );
@@ -235,7 +241,9 @@ export async function revokeEventStaffHandler(
     normalizeRevokePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "revokeEventStaff");
+  await deps.checkRateLimit(db, actorUid, "revokeEventStaff", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   await requireEventManager(db, data.eventId, actorUid);
   const ref = db.collection("eventStaffGrants").doc(
     eventStaffGrantId(data.eventId, data.uid)

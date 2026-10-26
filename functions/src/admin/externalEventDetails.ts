@@ -19,11 +19,7 @@ type EventListTimeWindow = "upcoming" | "past" | "all";
 interface ExternalEventDetailsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now?: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ExternalEventDetailsDeps = {
@@ -96,7 +92,8 @@ export async function adminListExternalEventDetailsHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminListExternalEventDetails"
+    "adminListExternalEventDetails",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
 
   const limit = clampLimit(data.limit);

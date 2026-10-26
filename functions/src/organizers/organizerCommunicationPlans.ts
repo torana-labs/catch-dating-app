@@ -56,7 +56,8 @@ export async function resolveOrganizerCommunicationPlanHandler(
   await deps.checkRateLimit(
     db,
     actorUid,
-    "resolveOrganizerCommunicationPlan"
+    "resolveOrganizerCommunicationPlan",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   await deps.requireManager({
     db,

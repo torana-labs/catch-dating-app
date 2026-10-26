@@ -76,11 +76,7 @@ type ActiveStatus = "attended" | "signedUp";
 interface EventSuccessPodsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 interface EventSuccessPlanDocument {
@@ -237,7 +233,9 @@ export async function generateEventSuccessPodsHandler(
   );
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "generateEventSuccessPods");
+  await deps.checkRateLimit?.(db, uid, "generateEventSuccessPods", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const eventRef = db.collection("events").doc(eventId);
   const planRef = db.collection("eventSuccessPlans").doc(eventId);
@@ -422,7 +420,9 @@ export async function overrideEventSuccessGroupsHandler(
     );
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "overrideEventSuccessGroups");
+  await deps.checkRateLimit?.(db, uid, "overrideEventSuccessGroups", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const {event, plan} = await loadGroupEventContext(db, payload.eventId, uid);
   const roster = await loadEventSuccessRoster(db, payload.eventId);

@@ -79,7 +79,9 @@ export async function refreshProgramTravelLegHandler(
       validateRefreshProgramTravelLegCallablePayload,
     );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "refreshProgramTravelLeg");
+  await deps.checkRateLimit(db, actorUid, "refreshProgramTravelLeg", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid,
     now: admin.firestore.Timestamp.fromDate(deps.now()),

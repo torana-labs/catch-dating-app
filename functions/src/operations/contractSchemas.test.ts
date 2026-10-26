@@ -4,7 +4,7 @@ import path from "node:path";
 import test from "node:test";
 import Ajv, {AnySchema} from "ajv";
 import addFormats from "ajv-formats";
-import {RATE_LIMITS} from "../shared/rateLimit";
+import {listIntakeOperationsRateLimit} from "../admin/intakeOperations";
 import {MAX_OPERATION_WORK_ITEMS_PER_RUN} from "./models";
 
 const schemaNames = [
@@ -118,7 +118,7 @@ test("two maximum exception inventories fit inside one admin rate " +
   )) as {properties: {workItemLimit: {maximum: number}}};
   const runLimit = runSchema.properties.budgets.properties.maxWorkItems.maximum;
   const pageLimit = callableSchema.properties.workItemLimit.maximum;
-  const requestLimit = RATE_LIMITS.adminListIntakeOperations.maxRequests;
+  const requestLimit = listIntakeOperationsRateLimit.maxRequests;
 
   assert.equal(runLimit, MAX_OPERATION_WORK_ITEMS_PER_RUN);
   assert.ok(

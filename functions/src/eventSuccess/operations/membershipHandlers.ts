@@ -17,7 +17,9 @@ export async function getEventAssistanceMembershipHandler(
 ) {
   const actor = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, actor, "getEventAssistanceMembership");
+  await deps.rateLimit(db, actor, "getEventAssistanceMembership", {
+    maxRequests: 60, windowMs: 60_000,
+  });
   return deps.store(db).get(actor, request.data);
 }
 export async function transferEventAssistanceGroupHandler(
@@ -25,7 +27,9 @@ export async function transferEventAssistanceGroupHandler(
 ) {
   const actor = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, actor, "transferEventAssistanceGroup");
+  await deps.rateLimit(db, actor, "transferEventAssistanceGroup", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).transfer(actor, request.data);
 }
 export const getEventAssistanceMembership = onCall(appCheckCallableOptions,

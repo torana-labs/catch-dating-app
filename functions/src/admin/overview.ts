@@ -62,11 +62,7 @@ interface OverviewDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: OverviewDeps = {
@@ -144,7 +140,9 @@ export async function adminGetOverviewHandler(
   const adminContext = requireAdmin(request);
   validateCallableWithAjv(request, validateAdminGetOverviewCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetOverview");
+  await deps.checkRateLimit?.(db, adminContext.uid, "adminGetOverview", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const now = deps.now();
   const today = startOfUtcDay(now);
   const week = startOfSevenDayWindow(now);

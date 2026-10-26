@@ -30,7 +30,8 @@ export async function getEventRcsWithdrawalHandler(
   await deps.checkRateLimit(db, networkIdentity(request),
     "getEventRcsWithdrawal", {maxRequests: 600, windowMs: 60_000});
   await deps.checkRateLimit(db, credentialIdentity(input),
-    "getEventRcsWithdrawal");
+    "getEventRcsWithdrawal",
+    {maxRequests: 60, windowMs: 60 * 1000});
   const output = await new RcsWithdrawalStore(db, deps.now).get(input);
   if (!validateEventRcsWithdrawalCallableResponse(output)) {
     throw new HttpsError("internal", "RCS preference unavailable.");
@@ -47,7 +48,8 @@ export async function withdrawEventRcsHandler(
   await deps.checkRateLimit(db, networkIdentity(request),
     "withdrawEventRcs", {maxRequests: 120, windowMs: 60_000});
   await deps.checkRateLimit(db, credentialIdentity(input),
-    "withdrawEventRcs");
+    "withdrawEventRcs",
+    {maxRequests: 20, windowMs: 60 * 1000});
   const output = await new RcsWithdrawalStore(db, deps.now)
     .withdraw(input);
   if (!validateEventRcsWithdrawalCallableResponse(output)) {

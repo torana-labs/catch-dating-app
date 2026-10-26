@@ -4,117 +4,104 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 
+const RATE_LIMIT_MODULE = "functions/src/shared/rateLimit.ts";
+
 const isCliEntrypoint =
   process.argv[1] != null &&
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 
 if (isCliEntrypoint) runCli();
 
+// Each callable states its own limit where it calls checkRateLimit. A shared
+// per-action table in the mechanism module puts every new callable's limit in
+// a file nearly every Function imports, so the backend deploy selector
+// redeploys them all. An optional limit would let a call silently skip it.
 export function scanFunctionRateLimits({root}) {
   const sourceRoot = path.join(root, "functions/src");
   const files = collectTypeScriptFiles(sourceRoot);
   const actions = new Map();
-  let rateLimitKeys = new Set();
+  const findings = [];
 
   for (const file of files) {
     const source = fs.readFileSync(file, "utf8");
     const relativePath = normalizePath(path.relative(root, file));
-    if (relativePath.endsWith("functions/src/shared/rateLimit.ts")) {
-      rateLimitKeys = extractRateLimitKeys(source);
+    if (relativePath === RATE_LIMIT_MODULE) {
+      for (const table of findLimitTables(source)) {
+        findings.push({
+          rule: "sharedRateLimitTable",
+          action: table.name,
+          locations: [{path: relativePath, line: lineForOffset(source, table.offset)}],
+          reason: "per-action limits belong at their checkRateLimit calls, not in the shared module",
+        });
+      }
+    }
+    for (const optional of findOptionalLimits(source)) {
+      findings.push({
+        rule: "optionalRateLimit",
+        action: optional.text,
+        locations: [{path: relativePath, line: lineForOffset(source, optional.offset)}],
+        reason: "a rate limit must be required so no call can skip it",
+      });
     }
     for (const action of extractCheckRateLimitActions(source)) {
       if (!actions.has(action.value)) actions.set(action.value, []);
-      actions.get(action.value).push({
-        path: relativePath,
-        line: lineForOffset(source, action.offset),
-      });
+      const location = {path: relativePath, line: lineForOffset(source, action.offset)};
+      actions.get(action.value).push(location);
+      if (!action.hasLimit) {
+        findings.push({
+          rule: "missingRateLimit",
+          action: action.value,
+          locations: [location],
+          reason: "checkRateLimit must pass the action's own limit",
+        });
+      }
     }
-  }
-
-  const findings = [];
-  for (const [action, locations] of [...actions.entries()].sort()) {
-    if (rateLimitKeys.has(action)) continue;
-    findings.push({
-      rule: "missingRateLimitEntry",
-      action,
-      locations,
-      reason: "checkRateLimit action must have an explicit RATE_LIMITS entry",
-    });
   }
 
   return {
     checkedFiles: files.length,
     actions: [...actions.keys()].sort(),
-    rateLimitKeys: [...rateLimitKeys].sort(),
     findings,
   };
 }
 
-export function extractRateLimitKeys(source) {
-  const assignment = /RATE_LIMITS\s*:\s*Record<[^>]+>\s*=\s*\{/u.exec(source);
-  if (!assignment) return new Set();
-  const openBrace = source.indexOf("{", assignment.index);
-  const closeBrace = findMatchingBrace(source, openBrace);
-  if (closeBrace == null) return new Set();
-  const body = source.slice(openBrace + 1, closeBrace);
-  return extractTopLevelObjectKeys(body);
-}
-
-function extractTopLevelObjectKeys(body) {
-  const keys = new Set();
-  let depth = 0;
-  let quote = null;
-  for (let index = 0; index < body.length; index += 1) {
-    const char = body[index];
-    const previous = body[index - 1];
-    if (quote != null) {
-      if (char === quote && previous !== "\\") quote = null;
-      continue;
-    }
-    if (char === "\"" || char === "'" || char === "`") {
-      quote = char;
-      continue;
-    }
-    if (depth === 0) {
-      const key = readObjectKeyAt(body, index);
-      if (key != null) {
-        keys.add(key.name);
-        index = key.end - 1;
-        continue;
-      }
-    }
-    if (char === "{") depth += 1;
-    if (char === "}") depth -= 1;
+// A Record keyed by action, or any object of {maxRequests, windowMs} rows.
+export function findLimitTables(source) {
+  const tables = [];
+  const pattern = /(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*(?::\s*Record<\s*string\s*,\s*RateLimitConfig\s*>)?\s*=\s*\{/gu;
+  for (const match of source.matchAll(pattern)) {
+    const openBrace = source.indexOf("{", match.index + match[0].length - 1);
+    const closeBrace = findMatchingBrace(source, openBrace);
+    const body = closeBrace == null ? "" : source.slice(openBrace + 1, closeBrace);
+    const typed = /Record<\s*string\s*,\s*RateLimitConfig\s*>/u.test(match[0]);
+    const rows = body.match(/\bmaxRequests\s*:/gu)?.length ?? 0;
+    if (typed || rows > 1) tables.push({name: match[1], offset: match.index});
   }
-  return keys;
+  return tables;
 }
 
-function readObjectKeyAt(source, index) {
-  const match = /^\s*,?\s*(?:["']([^"']+)["']|([A-Za-z_$][\w$]*))\s*:/u.exec(
-    source.slice(index),
-  );
-  if (!match) return null;
-  return {
-    name: match[1] ?? match[2],
-    end: index + match[0].length,
-  };
+export function findOptionalLimits(source) {
+  return [...source.matchAll(/[A-Za-z_$][\w$]*\s*\?\s*:\s*RateLimitConfig\b|RateLimitConfig\s*\|\s*undefined/gu)]
+    .map((match) => ({text: match[0], offset: match.index}));
 }
 
 export function extractCheckRateLimitActions(source) {
   const actions = [];
-  const callPattern = /(?:\b\w+\.)?checkRateLimit\s*\(/gu;
+  const callPattern = /(?:\b\w+\.)?checkRateLimit\s*(?:\?\.\s*)?\(/gu;
   for (const match of source.matchAll(callPattern)) {
     const openParen = source.indexOf("(", match.index);
     const closeParen = findMatchingParen(source, openParen);
     if (closeParen == null) continue;
     const callBody = source.slice(openParen + 1, closeParen);
-    const argument = thirdArgument(callBody);
+    const argumentsList = splitArguments(callBody);
+    const argument = argumentsList[2];
     if (!argument) continue;
     const literal = /^\s*(["'])([^"']+)\1\s*$/u.exec(argument.text);
     if (!literal) continue;
     actions.push({
       value: literal[2],
       offset: openParen + 1 + argument.offset + argument.text.indexOf(literal[1]),
+      hasLimit: argumentsList.length > 3 && argumentsList[3].text.trim() !== "",
     });
   }
   return actions;
@@ -122,11 +109,11 @@ export function extractCheckRateLimitActions(source) {
 
 // Only the action argument declares the counter key. Quoted values inside
 // uid builders or explicit limit expressions must never become fake actions.
-function thirdArgument(body) {
+function splitArguments(body) {
+  const parts = [];
   let depth = 0;
   let quote = null;
   let escaped = false;
-  let argumentIndex = 0;
   let start = 0;
   for (let index = 0; index <= body.length; index += 1) {
     const char = body[index];
@@ -143,12 +130,12 @@ function thirdArgument(body) {
     if ("([{".includes(char)) depth += 1;
     if (")]}".includes(char)) depth -= 1;
     if ((char === "," && depth === 0) || index === body.length) {
-      if (argumentIndex === 2) return {text: body.slice(start, index), offset: start};
-      argumentIndex += 1;
+      const text = body.slice(start, index);
+      if (index < body.length || text.trim() !== "") parts.push({text, offset: start});
       start = index + 1;
     }
   }
-  return null;
+  return parts;
 }
 
 function collectTypeScriptFiles(root) {
@@ -240,10 +227,10 @@ function requireValue(argsList, index, flag) {
 
 function printFindings(result) {
   console.error(
-    `Function rate-limit check failed: ${result.findings.length} action(s) lack RATE_LIMITS entries.`,
+    `Function rate-limit check failed: ${result.findings.length} finding(s).`,
   );
   for (const finding of result.findings) {
-    console.error(`- ${finding.action}: ${finding.reason}`);
+    console.error(`- ${finding.rule} ${finding.action}: ${finding.reason}`);
     for (const location of finding.locations) {
       console.error(`  ${location.path}:${location.line}`);
     }
@@ -257,8 +244,9 @@ function runCli() {
   node tool/audit/check_fn_rate_limits.mjs
   node tool/audit/check_fn_rate_limits.mjs --json
 
-Checks every literal checkRateLimit action under functions/src has a matching
-RATE_LIMITS entry in functions/src/shared/rateLimit.ts.`);
+Checks every literal checkRateLimit call under functions/src passes its own
+limit, no limit is optional, and functions/src/shared/rateLimit.ts holds no
+per-action limit table.`);
     return;
   }
 

@@ -60,7 +60,9 @@ export async function upsertOrganizerEventVenueHandler(
     );
   }
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "upsertOrganizerEventVenue");
+  await deps.checkRateLimit?.(db, uid, "upsertOrganizerEventVenue", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
 
   const organizerSnap = await db.collection("organizers")
     .doc(payload.organizerId).get();

@@ -39,7 +39,9 @@ export async function manageEventChatMemberHandler(
     throw new HttpsError("invalid-argument", "Manage another member.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, uid, "manageEventChatMember");
+  await deps.rateLimit(db, uid, "manageEventChatMember", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const receiptRef = db.collection("eventChatAccessReceipts")
     .doc(chatHash(["memberManagement", uid, data.requestId]));
   const payloadHash = chatHash([data.eventId, data.targetUid,

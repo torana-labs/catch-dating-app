@@ -63,11 +63,7 @@ export interface AdminGetClubClaimRequestDetailsResponse {
 interface ClubClaimReviewDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ClubClaimReviewDeps = {
@@ -85,7 +81,8 @@ export async function adminListClubClaimRequestsHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminListClubClaimRequests"
+    "adminListClubClaimRequests",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   const snapshot = await db.collection("organizerClaimRequests")
     .where("status", "==", "pending")
@@ -107,7 +104,8 @@ export async function adminGetClubClaimRequestDetailsHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminGetClubClaimRequestDetails"
+    "adminGetClubClaimRequestDetails",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   const requestRef = db.collection("organizerClaimRequests")
     .doc(payload.requestId);

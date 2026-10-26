@@ -32,11 +32,7 @@ interface UserAnalyticsDeps {
   now: () => Date;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   bigQuerySource: UserAnalyticsBigQuerySource;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 interface AnalyticsRange {
@@ -102,7 +98,9 @@ export async function getUserAnalyticsHandler(
     );
   }
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "getUserAnalytics");
+  await deps.checkRateLimit?.(db, uid, "getUserAnalytics", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   return loadUserAnalytics(uid, payload, deps.now(), deps);
 }
 
@@ -131,7 +129,8 @@ export async function adminGetUserAnalyticsHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminGetUserAnalytics"
+    "adminGetUserAnalytics",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const response = await loadUserAnalytics(
     payload.userId,

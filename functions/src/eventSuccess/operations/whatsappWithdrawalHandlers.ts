@@ -30,7 +30,8 @@ export async function getEventWhatsappWithdrawalHandler(
   await deps.checkRateLimit(db, networkIdentity(request),
     "getEventWhatsappWithdrawal", {maxRequests: 600, windowMs: 60_000});
   await deps.checkRateLimit(db, credentialIdentity(input),
-    "getEventWhatsappWithdrawal");
+    "getEventWhatsappWithdrawal",
+    {maxRequests: 60, windowMs: 60 * 1000});
   const output = await new WhatsappWithdrawalStore(db, deps.now).get(input);
   if (!validateEventWhatsappWithdrawalCallableResponse(output)) {
     throw new HttpsError("internal", "WhatsApp preference unavailable.");
@@ -47,7 +48,8 @@ export async function withdrawEventWhatsappHandler(
   await deps.checkRateLimit(db, networkIdentity(request),
     "withdrawEventWhatsapp", {maxRequests: 120, windowMs: 60_000});
   await deps.checkRateLimit(db, credentialIdentity(input),
-    "withdrawEventWhatsapp");
+    "withdrawEventWhatsapp",
+    {maxRequests: 20, windowMs: 60 * 1000});
   const output = await new WhatsappWithdrawalStore(db, deps.now)
     .withdraw(input);
   if (!validateEventWhatsappWithdrawalCallableResponse(output)) {

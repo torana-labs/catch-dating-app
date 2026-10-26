@@ -61,7 +61,9 @@ export async function listOrganizerCampaignsHandler(
     normalizePayload,
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerCampaigns");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerCampaigns", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,

@@ -133,7 +133,8 @@ export function defaultHostRosterIntakeApplyDeps():
     loadCurrentRows(db, tx, draft);
   return {store, authorize,
     rateLimit: (hostUid) => checkRateLimit(db, hostUid,
-      "manageHostRosterIntake"),
+      "manageHostRosterIntake",
+      {maxRequests: 60, windowMs: 60 * 1000}),
     loadInitialCurrentRows: (draft) => db.runTransaction(async (tx) => {
       await authorize({tx, hostUid: draft.hostUid,
         organizerId: draft.organizerId, eventId: draft.eventId});

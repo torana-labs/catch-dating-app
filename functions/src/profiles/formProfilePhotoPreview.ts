@@ -34,7 +34,9 @@ export async function getParticipantFormPhotoHandler(
   const data = validateCallableWithAjv(request,
     validateGetParticipantFormPhotoCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getParticipantFormPhoto");
+  await deps.rateLimit(db, uid, "getParticipantFormPhoto", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const inspect = async (tx: FirebaseFirestore.Transaction) => {
     const proposal = await readParticipantFormProfileProposal({db, tx, uid,
       responseId: data.responseId});

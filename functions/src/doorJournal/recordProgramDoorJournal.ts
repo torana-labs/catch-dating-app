@@ -87,7 +87,9 @@ export async function recordProgramDoorJournalHandler(
     validateCallableWithAjv<RecordProgramDoorJournalCallablePayload>(
       request, validateRecordProgramDoorJournalCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "recordProgramDoorJournal");
+  await deps.checkRateLimit(db, actorUid, "recordProgramDoorJournal", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
