@@ -89,15 +89,14 @@
 }
 
 /*
- * Spacious is the boards' 112px section rhythm. The spacing scale stops at
- * s16, so it is s16 + s12 until a section-rhythm token exists.
+ * Spacious is the boards' 112px section rhythm, space.s28.
  */
 .inner[data-pt="compact"] { padding-top: var(--catch-space-s8); }
 .inner[data-pt="regular"] { padding-top: var(--catch-space-s16); }
-.inner[data-pt="spacious"] { padding-top: calc(var(--catch-space-s16) + var(--catch-space-s12)); }
+.inner[data-pt="spacious"] { padding-top: var(--catch-space-s28); }
 .inner[data-pb="compact"] { padding-bottom: var(--catch-space-s8); }
 .inner[data-pb="regular"] { padding-bottom: var(--catch-space-s16); }
-.inner[data-pb="spacious"] { padding-bottom: calc(var(--catch-space-s16) + var(--catch-space-s12)); }
+.inner[data-pb="spacious"] { padding-bottom: var(--catch-space-s28); }
 
 @container catch-page (width < 840px) {
   .inner { --catch-band-gutter: var(--catch-space-s5); }

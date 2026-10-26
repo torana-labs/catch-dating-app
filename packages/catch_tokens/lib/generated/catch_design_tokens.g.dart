@@ -81,6 +81,7 @@ abstract final class GeneratedCatchSpacingTokens {
   static const double s11 = 44.0;
   static const double s12 = 48.0;
   static const double s16 = 64.0;
+  static const double s28 = 112.0;
   static const double micro2 = 2.0;
   static const double micro3 = 3.0;
   static const double micro6 = 6.0;
@@ -133,6 +134,7 @@ abstract final class GeneratedCatchPaletteTokens {
   static const Color inkSecondary = Color(0xFF5A5450);
   static const Color paper = Color(0xFFF6F0E8);
   static const Color white = Color(0xFFFFFFFF);
+  static const Color black = Color(0xFF000000);
   static const Color nightSurface = Color(0xFF231E23);
   static const Color nightInk = Color(0xFFF6EFE6);
   static const Color nightSecondary = Color(0xFFBDB3A7);
