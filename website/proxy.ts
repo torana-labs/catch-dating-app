@@ -17,8 +17,9 @@ async function handleRequest(request: NextRequest) {
   const asset = /^\/(_next\/|_legacy\/|assets\/|fonts\/|\.well-known\/)/.test(url.pathname) ||
     ["/favicon.ico", "/form-embed-resize.js", "/organizer-tracking-runtime.js", "/organizer-tracking-runtime.html"].includes(url.pathname);
   const api = url.pathname.startsWith("/api/");
-  // Link-preview cards draw public organiser and event records, so like those pages they render only on Catch hosts.
-  const card = url.pathname.startsWith("/og/");
+  // Link-preview cards and event maps draw public organiser and event records,
+  // so like those pages they render only on Catch hosts.
+  const card = url.pathname.startsWith("/og/") || url.pathname.startsWith("/maps/");
   const hostname = websiteRequestHostname(request.headers, process.env.K_SERVICE);
   const allowedHost = hostname && (isCatchWebsiteHost(hostname) || hostname === process.env.CATCH_PREVIEW_HOST);
   if ((!allowedHost && !asset && !api && !card) || privateFamily) {
