@@ -1,7 +1,8 @@
 /*
  * Website v2 photo tile (CAT-249): 220px tall, 170px below 840px, at radius
  * lg. On a photo the copy is white over CatchHeroImage's scrim; on a ground it
- * takes the ground's inks.
+ * takes the ground's inks. A placeholder (CAT-251) is white inside a dashed
+ * ink outline at 25%.
  */
 .tile {
   composes: ground from "./grounds.module.css";
@@ -36,6 +37,10 @@
   flex-direction: column;
   gap: var(--catch-space-micro2);
   min-width: 0;
+}
+
+.tile[data-placeholder] {
+  border: var(--catch-stroke-emphasis) dashed color-mix(in srgb, var(--catch-palette-ink) 25%, transparent);
 }
 
 @container catch-page (width < 840px) {

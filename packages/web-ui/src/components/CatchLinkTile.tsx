@@ -7,7 +7,7 @@ export interface CatchLinkTileProps {
   /** The pinned tile's ground; defaults to coral. Unpinned tiles sit on paper. */
   accent?: PaletteAccent;
   href: string;
-  /** A 22px glyph in the leading icon tile. */
+  /** A 22px glyph in the leading icon tile; without one the tile has no icon tile. */
   icon?: ReactNode;
   /** Opens the link in a new tab; `newTabLabel` then tells screen readers. */
   newTab?: boolean;
@@ -25,9 +25,9 @@ export interface CatchLinkTileProps {
 }
 
 /**
- * One link in an organiser's link list: icon tile, title, subtitle, an
- * optional stats line, and an outward arrow. A pinned link takes an accent
- * ground.
+ * One link in an organiser's link list: an optional icon tile, title,
+ * subtitle, an optional stats line, and an outward arrow. A pinned link takes
+ * an accent ground.
  */
 export function CatchLinkTile({
   accent = "coral",
@@ -46,13 +46,14 @@ export function CatchLinkTile({
       className={styles.tile}
       data-catch-theme="light"
       data-ground={pinned ? accent : "paper"}
+      data-icon={icon ? "" : undefined}
       data-pinned={pinned || undefined}
       href={href}
       onClick={onClick}
       rel={newTab ? "noopener noreferrer" : undefined}
       target={newTab ? "_blank" : undefined}
     >
-      <span aria-hidden="true" className={styles.icon}>{icon}</span>
+      {icon ? <span aria-hidden="true" className={styles.icon}>{icon}</span> : null}
       {/* The spaces between lines keep the link's accessible name readable. */}
       <span className={styles.copy}>
         <CatchText as="span" variant="sectionTitle">{title}</CatchText>

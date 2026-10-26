@@ -3,6 +3,7 @@ import fs from "node:fs";
 import {fileURLToPath} from "node:url";
 import {describe, expect, it} from "vitest";
 import {
+  catchFormatAccentOf,
   contrastRatio,
   type Format,
   formatAccents,
@@ -105,5 +106,12 @@ describe("activity formats", () => {
     expect(kinds).not.toContain("singlesMixer");
     expect(new Set(kinds).size).toBe(kinds.length);
     for (const kind of kinds) expect(tokenKeys(tokens.activity), kind).toContain(kind);
+  });
+
+  it("finds the accent of the format an activity kind belongs to", () => {
+    expect(catchFormatAccentOf("socialRun")).toBe("coral");
+    expect(catchFormatAccentOf("padel")).toBe("mint");
+    expect(catchFormatAccentOf("singlesMixer")).toBeNull();
+    expect(catchFormatAccentOf("")).toBeNull();
   });
 });

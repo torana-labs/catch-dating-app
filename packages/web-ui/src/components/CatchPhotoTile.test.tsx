@@ -21,4 +21,12 @@ describe("CatchPhotoTile", () => {
     expect(figure.textContent).toBe("64 runs since 2024");
     expect(screen.queryByRole("img")).toBeNull();
   });
+
+  it("marks an empty slot on white and ignores a photo", () => {
+    render(<CatchPhotoTile caption="once the club claims the page" imageUrl="/a.jpg" placeholder title="Photos go here" />);
+    const figure = screen.getByRole("figure");
+    expect(figure.dataset).toMatchObject({ground: "white", placeholder: "true"});
+    expect(figure.dataset.photo).toBeUndefined();
+    expect(screen.queryByRole("img")).toBeNull();
+  });
 });
