@@ -81,28 +81,6 @@ export function SelectControl({
   );
 }
 
-export interface ButtonControlProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "aria-busy"> {
-  loading?: boolean;
-}
-
-export function ButtonControl({
-  disabled,
-  loading = false,
-  type = "button",
-  ...props
-}: ButtonControlProps) {
-  return (
-    <button
-      {...props}
-      aria-busy={loading || undefined}
-      data-loading={loading || undefined}
-      disabled={disabled || loading}
-      type={type}
-    />
-  );
-}
-
 type DataTableAccessibleName =
   | {ariaLabel: string; ariaLabelledBy?: never}
   | {ariaLabel?: never; ariaLabelledBy: string};

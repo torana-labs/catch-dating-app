@@ -610,21 +610,39 @@
         ]
       },
       "react": {
-        "symbol": "ButtonControl",
-        "file": "packages/web-ui/src/primitives.tsx",
-        "api": "headless-control",
+        "symbol": "CatchButton",
+        "file": "packages/web-ui/src/components/CatchButton.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "ButtonControl"
+        ],
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/primitives.stories.tsx",
-          "exportName": "Button",
+          "story": "packages/web-ui/src/components/CatchButton.stories.tsx",
+          "exportName": "Contract",
           "states": [
             "default",
             "disabled",
             "loading",
-            "explicit-submit"
+            "full-width",
+            "with-icon",
+            "rounded",
+            "command",
+            "selection",
+            "floating-label",
+            "floating-label-with-icon",
+            "floating-label-with-value",
+            "floating-with-count",
+            "floating-semantic-label",
+            "text-primary",
+            "text-neutral",
+            "text-danger",
+            "text-disabled",
+            "text-custom-color",
+            "text-custom-padding"
           ]
         },
-        "notes": "Shared safe button type and loading semantics used by both surface adapters; styling, density, icons, and labels remain surface-owned. CatchButton (packages/web-ui/src/components/CatchButton.tsx) is the prepared D20 styled twin with every recipe, and the library's own parts (CatchNotice, CatchErrorState) render it. This record moves to it when the Admin and website ButtonControl adapters migrate (the D20 web rollout)."
+        "notes": "The D20 styled twin with every recipe: 4px corners; sm 32px, md 40px and lg 48px; primary, secondary, quiet, danger and light. Web additions: href draws a link with the button's look, type sets the native button type, and the default recipe takes a trailing glyph. Pressed, hovered and focused are pointer and keyboard states (the Interaction story presses by pointer and keyboard); large text and reduced motion follow the reader's settings, so the Contract story does not list them. ButtonControl, in its own file beside it, is the retiring headless button (a safe default type and busy loading, drawing nothing) under the four surface adapters (website Button and StepRail, Admin AdminButton and AdminIntakeStageRail); it is deleted when the D20 call-site moves to CatchButton land."
       },
       "design": {
         "figma": {
