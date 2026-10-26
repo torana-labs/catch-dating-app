@@ -1,25 +1,33 @@
 /*
- * Website v2 card (CAT-252): a ground at radius lg, padded 20px (regular) or
- * 28px (roomy), 16px or 20px below 840px. Outlined, it draws an emphasis-width
- * line of the ground's ink at 12%, as the boards' white cards do.
+ * Website v2 ground card (CAT-251): radius lg, 20px inside, 12px for a card
+ * inside a card and 28px for a pitch, which steps down to 20px below 840px.
+ * The card stacks what it holds with no gap of its own; the caller arranges
+ * the contents with CatchGap.
  */
 .card {
   composes: ground from "./grounds.module.css";
 
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   min-width: 0;
   margin: 0;
-  padding: var(--catch-space-s5);
   border-radius: var(--catch-radius-lg);
 }
 
-.card[data-padding="roomy"] { padding: var(--catch-space-s7); }
+.card[data-padding="compact"] {
+  padding: var(--catch-space-s3) var(--catch-space-micro14);
+  border-radius: var(--catch-radius-md);
+}
 
+.card[data-padding="regular"] { padding: var(--catch-space-s5); }
+.card[data-padding="spacious"] { padding: var(--catch-space-s7); }
+
+/* Outlined: an emphasis-width line of the ground's ink at 12%, as the boards' white cards draw. */
 .card[data-outlined] {
   border: var(--catch-stroke-emphasis) solid color-mix(in srgb, var(--catch-on-ground-ink) 12%, transparent);
 }
 
 @container catch-page (width < 840px) {
-  .card { padding: var(--catch-space-s4); }
-  .card[data-padding="roomy"] { padding: var(--catch-space-s5); }
+  .card[data-padding="spacious"] { padding: var(--catch-space-s5); }
 }

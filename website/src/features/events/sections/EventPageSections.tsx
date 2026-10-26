@@ -98,7 +98,7 @@ function EventIntro({view}: {view: EventPageView}) {
 
 function EventMoments({moments, accent}: {moments: NonNullable<EventPageView["moments"]>; accent: EventPageView["accent"]}) {
   return (
-    <CatchGroundCard aria-labelledby="event-moments" as="section" ground="ink" padding="roomy">
+    <CatchGroundCard aria-labelledby="event-moments" as="section" ground="ink" padding="spacious">
       <CatchGap size="formField">
         <CatchText as="span" color={accent} variant="supportingStrong">{copy.moments.label}</CatchText>
         <CatchText as="h2" id="event-moments" variant="displayS">{copy.moments.title}</CatchText>
@@ -172,7 +172,7 @@ function EventGoing({going}: {going: NonNullable<EventPageView["going"]>}) {
 
 function EventOrganizer({organizer, accent}: {organizer: EventPageView["organizer"]; accent: EventPageView["accent"]}) {
   return (
-    <CatchGroundCard aria-labelledby="event-organizer" as="section" outlined>
+    <CatchGroundCard aria-labelledby="event-organizer" as="section" ground="white" outlined>
       <CatchGap crossAxisAlignment="center" direction="horizontal" mainAxisAlignment="spaceBetween" size="formField" wrap>
         <CatchGap crossAxisAlignment="center" direction="horizontal" size="formField">
           <CatchAvatar ground={accent} initials={organizer.initials} name={organizer.name} recipe="monogram" size={64} />
@@ -228,7 +228,7 @@ export function EventBookingCard({view, catchEntry, externalAction, onExternalCl
   const {booking, facts} = view;
   const when = [facts.when.value, facts.when.note].filter(Boolean).join(" · ");
   return (
-    <CatchGroundCard aria-labelledby="event-booking" as="aside" outlined>
+    <CatchGroundCard aria-labelledby="event-booking" as="aside" ground="white" outlined>
       <CatchGap size="formField">
         <CatchGap crossAxisAlignment="baseline" direction="horizontal" size="inline" wrap>
           <CatchText as="h2" id="event-booking" variant="displayM">{view.priceLabel}</CatchText>

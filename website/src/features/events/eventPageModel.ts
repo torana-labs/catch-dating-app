@@ -1,4 +1,4 @@
-import {catchActivityAccent, type CatchGround, type CatchTextAccent} from "@catch/web-ui";
+import {catchFormatAccentOf, type CatchGround, type CatchTextAccent} from "@catch/web-ui";
 import type {EventPublicPageDocument} from "../../../../functions/src/shared/generated/eventPublicPageDocument";
 import {eventPageCopy as copy} from "../../content/events";
 import {activityForKind} from "../organizers/publicDiscovery";
@@ -89,7 +89,7 @@ const moreGrounds: readonly CatchGround[] = ["paper", "indigo", "mint"];
 export function buildEventPageView(page: EventPageData, now: number = Date.now()): EventPageView {
   const {item, organizer} = page;
   const event = item.event;
-  const accent = catchActivityAccent(event.activityKind) ?? "indigo";
+  const accent = catchFormatAccentOf(event.activityKind) ?? "indigo";
   const activity = activityForKind(event.activityKind).label;
   const catchEvent = item.source === "catch" ? item.event : null;
   const zone = validZone(event.timezone);

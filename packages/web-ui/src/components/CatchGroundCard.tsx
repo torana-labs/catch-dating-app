@@ -2,8 +2,8 @@ import type {HTMLAttributes, ReactNode} from "react";
 import type {Ground} from "./palette";
 import styles from "./CatchGroundCard.module.css";
 
-/** `regular` pads 20px and `roomy` 28px; each steps down by 4px or 8px below 840px. */
-export type CatchGroundCardPadding = "regular" | "roomy";
+/** Inner space: `compact` for a card inside a card, `spacious` for a pitch. */
+export type CatchGroundCardPadding = "compact" | "regular" | "spacious";
 
 export type CatchGroundCardElement = "div" | "section" | "article" | "aside";
 
@@ -11,7 +11,7 @@ export interface CatchGroundCardProps
   extends Omit<HTMLAttributes<HTMLElement>, "className" | "color" | "style"> {
   as?: CatchGroundCardElement;
   children: ReactNode;
-  /** Defaults to white. */
+  /** Defaults to paper. */
   ground?: Ground;
   /** A hairline in the ground's ink, for a card on a page of the same ground. */
   outlined?: boolean;
@@ -20,14 +20,15 @@ export interface CatchGroundCardProps
 }
 
 /**
- * Website v2 card: one Website v2 ground at radius lg with an optional
- * hairline, holding whatever the page arranges inside it. Library text inside
- * takes the ground's inks, and the ink ground resolves through the dark theme.
+ * A Website v2 card: a rounded block on one ground that holds whatever the
+ * page arranges in it, such as a share panel, a form step or a pitch. Library
+ * text inside takes the ground's inks, and the ink ground resolves components
+ * through the dark theme, as `CatchBand` does for a full-width section.
  */
 export function CatchGroundCard({
   as: Element = "div",
   children,
-  ground = "white",
+  ground = "paper",
   outlined = false,
   padding = "regular",
   ...props
