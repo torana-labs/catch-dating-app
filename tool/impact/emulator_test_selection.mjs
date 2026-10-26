@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import {createRequire} from "node:module";
 import path from "node:path";
 import {parseArgs} from "node:util";
 import {repoRoot} from "../lib/repo_paths.mjs";
 import {cruiseModules, loadDependencyCruiser} from "../lib/dependency_cruiser.mjs";
-import {listedEmulatorTests, selectEmulatorTests} from "../lib/functions_test_selection.mjs";
+import {selectEmulatorTests} from "../lib/functions_test_selection.mjs";
 import {changedPathsSince} from "../harness/lib/git_changes.mjs";
 
 // Prints the strict emulator tests a pull request can affect, for
@@ -39,7 +40,9 @@ try {
 } finally {
   process.chdir(previous);
 }
-const listed = listedEmulatorTests(JSON.parse(fs.readFileSync(path.join(functionsRoot, "package.json"), "utf8")));
+// The Functions test runner owns the strict list and its file format.
+const {listedStrictTests} = createRequire(import.meta.url)(path.join(functionsRoot, "scripts/run-tests.cjs"));
+const listed = listedStrictTests(functionsRoot);
 const selection = selectEmulatorTests({changedPaths, listed, modules, readSource: (file) => {
   try { return fs.readFileSync(path.join(functionsRoot, file), "utf8"); } catch { return ""; }
 }});

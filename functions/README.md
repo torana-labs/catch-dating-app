@@ -594,6 +594,11 @@ A direct `npm run test:rules` from this directory only works when those
 emulators are already running; `connect ECONNREFUSED` means the emulator
 workflow is missing, not necessarily that the rules changed incorrectly.
 
+`test:rules` runs every file listed in `test/emulator-tests.json`. Add a new
+emulator-dependent test to that list, not to `package.json`: the backend
+deploy selector treats runtime `package.json` fields as a change to every
+Function.
+
 ## Commands
 
 Start local development without deploying Functions or using live Firebase:

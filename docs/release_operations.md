@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.16.0
-updated: 2026-10-25
+version: 2.16.1
+updated: 2026-10-26
 owner: recursive_audit_loop
 status: active
 ---
@@ -1268,7 +1268,10 @@ How a run works:
   - A Function that loads modules dynamically redeploys whenever Functions
     source or the Operations files copied into its build change.
   - Dependency, build or backend `firebase.json` changes, or a missing tag,
-    deploy everything.
+    deploy everything. In `functions/package.json` only package fields and the
+    scripts a deploy runs (install and build lifecycle, `firebase.json`
+    predeploy hooks) count; test and tooling scripts deploy nothing. Any
+    `functions/package-lock.json` change deploys everything.
   - Dormant targets stay excluded.
 - The job builds Functions and materializes non-secret parameters from the
   environment's GitHub variables. It deploys new indexes and waits until they
