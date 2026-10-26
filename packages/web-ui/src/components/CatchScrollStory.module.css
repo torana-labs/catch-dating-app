@@ -126,7 +126,7 @@
 
 .segment {
   flex: 1 1 0;
-  height: var(--catch-space-s1);
+  height: 4px;
   border-radius: var(--catch-radius-pill);
   background: color-mix(in srgb, var(--catch-theme-ink) 18%, transparent);
   transition: background-color var(--catch-motion-base) var(--catch-motion-standard-curve);

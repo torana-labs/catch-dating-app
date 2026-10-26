@@ -26,6 +26,19 @@ const known = new Set([
   "--catch-qr-modules",
 ]);
 
+// CatchStoreButton draws as a D20 button, so its heights are the large and
+// medium D20 heights in Flutter's CatchButtonTokens.
+const buttonTokens = read("../../../catch_tokens/lib/src/components/catch_button_tokens.dart");
+const spacingPx = (step: string) => Number(tokens.match(new RegExp(`--catch-space-${step}:\\s*([\\d.]+)px`))?.[1]);
+const buttonHeight = (name: string) => spacingPx(buttonTokens.match(new RegExp(`${name} = CatchSpacing\\.(\\w+);`))?.[1] ?? "");
+
+describe("CatchStoreButton heights", () => {
+  it("are the D20 large and medium button heights", () => {
+    expect(sheets.CatchStoreButton).toContain(`--catch-store-height: ${buttonHeight("largeHeight")}px;`);
+    expect(sheets.CatchStoreButton).toContain(`--catch-store-height: ${buttonHeight("mediumHeight")}px;`);
+  });
+});
+
 describe("Website v2 part tokens", () => {
   for (const [name, css] of Object.entries(sheets)) {
     it(`${name} reads only generated tokens and its own variables, with no literal colour`, () => {
