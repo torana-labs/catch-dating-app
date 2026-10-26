@@ -44,6 +44,9 @@ import 'package:flutter_test/flutter_test.dart';
 import '../clubs/clubs_test_helpers.dart' as club_test;
 import '../events/events_test_helpers.dart' as event_test;
 import '../test_pump_helpers.dart';
+import 'inbox/host_inbox_test_fixtures.dart' as inbox_fixture;
+import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 
 part 'host_inbox_sends_tests.dart';
 
@@ -54,6 +57,76 @@ void main() {
 
   setUp(() => AppConfig.configureEntrypointRole(AppRole.host));
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
+
+  for (final selection in <String?>[null, 'uid:guest', 'catch-a', 'wa-a']) {
+    testWidgets(
+      'program screen contains shared history for selection $selection',
+      (tester) async {
+        final repository = _PendingProgramRepository()
+          ..detail.complete(_programDetail())
+          ..guestPage.complete(_linkedGuestPage());
+        await tester.pumpWidget(
+          _app(
+            event: null,
+            previews: [
+              inbox_fixture.preview('catch-a', 'guest', org: 'club-1'),
+            ],
+            whatsappThreads: [
+              inbox_fixture.wa('wa-a', 'contact', uid: 'guest'),
+            ],
+            participations: const [],
+            now: now,
+            initialScope: const HostInboxScope.program('older-program'),
+            initialThreadId: selection,
+            programRepository: repository,
+          ),
+        );
+        await pumpFeatureUi(tester);
+        expect(find.text('Program conversations unavailable'), findsWidgets);
+        expect(find.text('Catch catch-a'), findsNothing);
+        expect(find.text('WhatsApp wa-a'), findsNothing);
+        expect(find.text('Same name'), findsNothing);
+        expect(find.byType(HostPersonConversationPageBody), findsNothing);
+        expect(find.byType(ChatInput), findsNothing);
+        expect(find.byTooltip('New message'), findsNothing);
+        expect(find.text('GENERAL'), findsNothing);
+      },
+    );
+  }
+
+  testWidgets('account switch with late program completion stays contained', (
+    tester,
+  ) async {
+    final repository = _PendingProgramRepository();
+    final accounts = StreamController<String?>();
+    addTearDown(accounts.close);
+    await tester.pumpWidget(
+      _app(
+        event: null,
+        previews: [inbox_fixture.preview('catch-a', 'guest', org: 'club-1')],
+        whatsappThreads: [inbox_fixture.wa('wa-a', 'contact', uid: 'guest')],
+        participations: const [],
+        now: now,
+        initialScope: const HostInboxScope.program('older-program'),
+        initialThreadId: 'catch-a',
+        accountStream: accounts.stream,
+        programRepository: repository,
+      ),
+    );
+    accounts.add('host-1');
+    await tester.pump();
+    accounts.add('host-2');
+    await tester.pump();
+    repository.detail.complete(_programDetail());
+    repository.guestPage.complete(_linkedGuestPage());
+    await pumpFeatureUi(tester);
+    expect(find.text('Program conversations unavailable'), findsWidgets);
+    expect(find.text('Catch catch-a'), findsNothing);
+    expect(find.text('WhatsApp wa-a'), findsNothing);
+    expect(find.byType(HostPersonConversationPageBody), findsNothing);
+    expect(find.byType(ChatInput), findsNothing);
+    expect(find.text('GENERAL'), findsNothing);
+  });
 
   testWidgets(
     'older program remains scoped with unlinked guests and no composer',
@@ -91,7 +164,7 @@ void main() {
       await pumpFeatureUi(tester);
       expect(find.text('OLDER PROGRAM'), findsOneWidget);
       expect(
-        find.textContaining('no verified messaging contact link'),
+        find.textContaining('We can’t verify which messages belong'),
         findsOneWidget,
       );
       expect(find.byTooltip('New message'), findsNothing);
@@ -571,6 +644,8 @@ Widget _app({
   List<HostManualSendTask> manualSendTasks = const [],
   AsyncValue<HostWhatsappThreadPage>? whatsappThreadsValue,
   ProgramSetupRepository? programRepository,
+  String? initialThreadId,
+  Stream<String?>? accountStream,
   int remainingFollowerQuota = 3,
   double routeWidth = 390,
   double floatingBottomOverlayInset = 0,
@@ -584,6 +659,7 @@ Widget _app({
   );
   final screen = HostInboxScreen(
     initialScope: initialScope,
+    initialThreadId: initialThreadId,
     initialWorkspace: initialWorkspace,
     initialSavedAudienceId: initialSavedAudienceId,
     syncSelectionToRoute: false,
@@ -595,11 +671,14 @@ Widget _app({
   );
   return ProviderScope(
     overrides: [
-      uidProvider.overrideWith((ref) => Stream.value('host-1')),
+      uidProvider.overrideWith(
+        (ref) => accountStream ?? Stream.value('host-1'),
+      ),
       eventRepositoryProvider.overrideWithValue(
         event_test.FakeEventRepository(),
       ),
       hostOperableClubsProvider('host-1').overrideWithValue(AsyncData([club])),
+      hostOperableClubsProvider('host-2').overrideWithValue(AsyncData([club])),
       organizerProgramListProvider(
         club.id,
       ).overrideWithValue(const AsyncData([])),
@@ -679,6 +758,25 @@ Widget _app({
     ),
   );
 }
+
+ProgramGuestListPage _linkedGuestPage() => const ProgramGuestListPage(
+  programId: 'older-program',
+  guests: [
+    ProgramGuestRow(
+      guestId: 'guest',
+      displayName: 'Same name',
+      contactId: 'contact',
+      groupIds: [],
+      invitationStatus: 'sent',
+      rsvpStatus: 'unknown',
+      revision: 1,
+    ),
+  ],
+  households: [],
+  functionGuests: [],
+  groups: [],
+  nextCursor: 'more-guests',
+);
 
 class _PendingProgramRepository extends Fake implements ProgramSetupRepository {
   final detail = Completer<OrganizerProgramDetail>();

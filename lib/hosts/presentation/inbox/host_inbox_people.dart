@@ -82,19 +82,24 @@ HostInboxPeople composeHostInboxPeople({
   String query = '',
   HostInboxProgramAudience? programAudience,
 }) {
+  // Identity links prove who a guest is, not which program a message belongs to.
+  // No current source carries per-message program provenance.
+  if (scope.isProgram) {
+    return const HostInboxPeople(
+      people: [],
+      bookedCount: 0,
+      prospectiveCount: 0,
+      unclassifiedCount: 0,
+    );
+  }
+
   bool catchEligible(ChatThreadPreview thread) {
-    if (scope.isProgram) {
-      return programAudience?.linkedUids.contains(thread.otherUid) ?? false;
-    }
     return scope.isGeneral
         ? thread.eventIds.isEmpty
         : thread.eventIds.contains(scope.eventId);
   }
 
   bool whatsappEligible(HostWhatsappThreadSummary thread) {
-    if (scope.isProgram) {
-      return programAudience?.contactIds.contains(thread.contactId) ?? false;
-    }
     return scope.isGeneral
         ? thread.eventIds.isEmpty
         : thread.eventIds.contains(scope.eventId);
