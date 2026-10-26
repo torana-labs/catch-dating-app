@@ -1,6 +1,6 @@
 ---
 doc_id: web_surface_architecture
-version: 0.41.0
+version: 0.42.0
 updated: 2026-10-26
 owner: web_platform
 status: active
@@ -69,6 +69,17 @@ prelaunch/live store state. That eligibility is compiled into the artifact; a
 runtime environment override cannot promote an unconfigured preview. Local acceptance is restricted to `demo-catch-nextjs` on the
 loopback Firestore emulator. Docker execution itself requires separate evidence;
 a passing local standalone build is not a container/deployment proof.
+
+Event pages draw their meeting point with the Google Maps Static API (CAT-272).
+`/maps/events/<eventId>/map.png` sits beside the link-preview cards: Catch
+hosts only, the point read from the published event route (never from the
+request), and a request signed on the server so the key never reaches a page.
+Its URL is versioned by the point and cached for an hour, and each instance
+keeps a drawn map for a day. The two secrets, `CATCH_WEBSITE_MAPS_STATIC_KEY`
+and `CATCH_WEBSITE_MAPS_SIGNING_SECRET`, live in Secret Manager in the
+runtime project. They are read at run time, and the runtime identity may
+access only these two secrets. Without them, or when a fetch fails, the page
+shows the place and "Open in Google Maps" instead of a map.
 
 The adapter is Firebase Hosting to Cloud Run.
 `website/next-hosting.preview.json` configures the preview service

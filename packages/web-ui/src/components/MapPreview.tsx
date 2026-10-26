@@ -1,3 +1,6 @@
+"use client";
+
+import {useState} from "react";
 import {CatchText} from "./CatchText";
 import styles from "./MapPreview.module.css";
 
@@ -12,7 +15,8 @@ export interface MapPreviewProps {
   fallbackLabel: string;
   /**
    * Web only: a static map of the coordinate, drawn by the caller's map
-   * provider with its marker, route and zoom. Without one the fallback shows.
+   * provider with its marker, route and zoom. Without one, or when it fails
+   * to load, the fallback shows.
    */
   imageUrl?: string;
   /** Web only: frames the map as a page card, 5:2 at radius lg (2:1 below 840px). */
@@ -32,12 +36,15 @@ const mapGlyph = (
  * label takes ink2 here: Flutter's ink3 measures under 4.5:1 on bg.
  */
 export function MapPreview({coordinate, fallbackLabel, imageUrl, framed = false}: MapPreviewProps) {
-  const src = imageUrl?.trim();
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const requested = imageUrl?.trim();
+  // A map that failed to load falls back until the caller passes another.
+  const src = requested === failedSrc ? undefined : requested;
   const label = fallbackLabel.trim();
   return (
     <span className={styles.preview} data-framed={framed || undefined}>
       {coordinate != null && src ? (
-        <img alt={label} className={styles.map} src={src} />
+        <img alt={label} className={styles.map} onError={() => setFailedSrc(src)} src={src} />
       ) : (
         <span className={styles.fallback}>
           {mapGlyph}
