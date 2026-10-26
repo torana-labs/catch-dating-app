@@ -28,7 +28,7 @@ test("extractCheckRateLimitActions reads literal actions and whether each passes
   ]);
 });
 
-test("scanFunctionRateLimits flags checkRateLimit calls missing their limit", () => {
+test("scanFunctionRateLimits flags checkRateLimit actions missing entries", () => {
   const root = createFixture({
     "functions/src/shared/rateLimit.ts": mechanism,
     "functions/src/clubs/createClub.ts": `
@@ -44,7 +44,7 @@ test("scanFunctionRateLimits flags checkRateLimit calls missing their limit", ()
   ]);
 });
 
-test("scanFunctionRateLimits passes when every call passes its own limit", () => {
+test("scanFunctionRateLimits passes when actions have explicit entries", () => {
   const root = createFixture({
     "functions/src/shared/rateLimit.ts": mechanism,
     "functions/src/clubs/createClub.ts": `
