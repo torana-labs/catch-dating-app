@@ -24,10 +24,15 @@ const graphVersion = defineString("CATCH_INSTAGRAM_GRAPH_VERSION",
 
 let emulatorProvider: FakeInstagramProvider | null = null;
 
-/** The emulator never calls Meta: it gets the fake provider. */
+/**
+ * The emulator never calls Meta: it gets the fake provider, whose senders
+ * come from CATCH_INSTAGRAM_FAKE_SENDERS, a JSON map of sender id to
+ * username.
+ */
 export function instagramClaimProvider(): InstagramMessagingProvider {
   if (process.env.FUNCTIONS_EMULATOR === "true") {
-    emulatorProvider ??= new FakeInstagramProvider();
+    emulatorProvider ??= new FakeInstagramProvider(
+      fakeSenders(process.env.CATCH_INSTAGRAM_FAKE_SENDERS));
     return emulatorProvider;
   }
   return new InstagramGraphProvider({
@@ -58,3 +63,15 @@ export const instagramClaimWebhook = onRequest({
   }
   response.type("text/plain").status(result.status).send(result.body);
 });
+
+function fakeSenders(value: string | undefined): Record<string, string> {
+  try {
+    const parsed: unknown = JSON.parse(value ?? "{}");
+    return typeof parsed === "object" && parsed !== null ?
+      Object.fromEntries(Object.entries(parsed).filter(
+        (entry): entry is [string, string] => typeof entry[1] === "string")) :
+      {};
+  } catch {
+    return {};
+  }
+}

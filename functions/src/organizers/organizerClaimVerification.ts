@@ -49,9 +49,10 @@ export const CLAIM_CODE_LIFETIME_MILLIS = 30 * minuteMillis;
 /** Starting again with less than this left issues a fresh code. */
 const CLAIM_CODE_REUSE_MIN_MILLIS = 5 * minuteMillis;
 const MESSAGE_RECEIPT_LIFETIME_MILLIS = 30 * 24 * 60 * minuteMillis;
-const startLimit: RateLimitConfig = {maxRequests: 10, windowMs: 60 * minuteMillis};
+const hourMillis = 60 * minuteMillis;
+const startLimit: RateLimitConfig = {maxRequests: 10, windowMs: hourMillis};
 const optionsLimit: RateLimitConfig = {maxRequests: 30, windowMs: minuteMillis};
-const senderLimit: RateLimitConfig = {maxRequests: 10, windowMs: 60 * minuteMillis};
+const senderLimit: RateLimitConfig = {maxRequests: 10, windowMs: hourMillis};
 
 const collections = {
   attempts: "organizerClaimVerifications",

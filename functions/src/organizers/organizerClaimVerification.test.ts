@@ -18,7 +18,8 @@ import type {InstagramClaimMessageDeps} from "./organizerClaimVerification";
 type Data = Record<string, unknown>;
 
 class Ref {
-  constructor(readonly path: string, private readonly docs: Map<string, Data>) {}
+  constructor(readonly path: string,
+    private readonly docs: Map<string, Data>) {}
   get id() {
     return this.path.split("/").pop()!;
   }
@@ -95,7 +96,7 @@ function fixture(options: {enabled?: boolean} = {}) {
   docs.set(`users/${requesterUid}`, {name: "Asha Rao",
     displayName: "Asha Rao", phoneNumber: "+919800000001",
     profileComplete: false});
-  const provider = new FakeInstagramProvider();
+  const provider = new FakeInstagramProvider(senderUsernames);
   const limited = new Set<string>();
   const clock = {now: startMillis};
   const codes = ["482173", "551209", "730611", "118834"];
@@ -123,10 +124,15 @@ function callable(data: unknown, uid = requesterUid) {
     unknown as CallableRequest<unknown>;
 }
 
-/** The fake provider reads the username from a "fake-<username>" id. */
+const senderIds: Record<string, string> = {
+  [handle]: "9001", someoneelse: "9002",
+};
+const senderUsernames = Object.fromEntries(
+  Object.entries(senderIds).map(([username, id]) => [id, username]));
+
 function message(mid: string, username: string, text: string) {
   return {messageKey: createHash("sha256").update(mid).digest("hex"),
-    senderId: `fake-${username}`, text};
+    senderId: senderIds[username] ?? "9999", text};
 }
 
 async function startCode(deps: InstagramClaimMessageDeps) {
@@ -301,7 +307,7 @@ test("a sender over the limit gets no reply", async () => {
   const {deps, provider, limited} = fixture();
   await startCode(deps);
   limited.add(`instagram_${createHash("sha256")
-    .update(`fake-${handle}`).digest("hex").slice(0, 32)}`);
+    .update(senderIds[handle]).digest("hex").slice(0, 32)}`);
   await processInstagramClaimMessages(
     [message("m1", handle, "482173")], deps);
   assert.equal(provider.replies.length, 0);

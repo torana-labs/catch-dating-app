@@ -106,15 +106,16 @@ export class InstagramGraphProvider implements InstagramMessagingProvider {
 }
 
 /**
- * Emulator stand-in: a sender id "fake-<username>" belongs to that username,
+ * Emulator stand-in: senders are looked up in a fixed id-to-username map,
  * and replies are kept in memory for tests to read.
  */
 export class FakeInstagramProvider implements InstagramMessagingProvider {
   readonly replies: Array<{recipientId: string; text: string}> = [];
 
+  constructor(private readonly usernames: Record<string, string> = {}) {}
+
   async lookupUsername(senderId: string): Promise<string | null> {
-    const match = /^fake-(.+)$/.exec(senderId);
-    return match ? normalizeInstagramUsername(match[1]) : null;
+    return normalizeInstagramUsername(this.usernames[senderId]);
   }
 
   async sendReply(recipientId: string, text: string): Promise<void> {
