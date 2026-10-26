@@ -1,0 +1,52 @@
+/*
+ * Website v2 preview card (CAT-249): at least 150px tall at radius lg with
+ * 16px padding, the label and title 6px apart and the meta line at the foot.
+ * Below 840px it sizes to its copy with 10px between lines. Hover lays the
+ * ground ink over the ground at 8%, as D20 does for a filled control.
+ */
+.card {
+  composes: ground from "./grounds.module.css";
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  box-sizing: border-box;
+  min-height: 150px;
+  padding: var(--catch-space-s4);
+  border-radius: var(--catch-radius-lg);
+  color: var(--catch-on-ground-ink);
+  text-decoration: none;
+}
+
+.card::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--catch-on-ground-ink);
+  opacity: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.card:hover::after { opacity: 0.08; }
+.card:active::after { opacity: 0.14; }
+
+.card:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-palette-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.meta {
+  display: flex;
+  margin-top: auto;
+}
+
+@container catch-page (width < 840px) {
+  .card {
+    gap: var(--catch-space-micro10);
+    min-height: 0;
+  }
+
+  .meta { margin-top: 0; }
+}

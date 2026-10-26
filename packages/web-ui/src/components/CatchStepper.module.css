@@ -13,8 +13,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--catch-space-s11);
-  height: var(--catch-space-s11);
+  width: var(--catch-interaction-ios-minimum-extent);
+  height: var(--catch-interaction-ios-minimum-extent);
   margin: 0;
   padding: 0;
   border: 0;
@@ -32,8 +32,8 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: var(--catch-space-s8);
-  height: var(--catch-space-s8);
+  width: 32px;
+  height: 32px;
   border: var(--catch-stroke-hairline) solid var(--stepper-line);
   border-radius: var(--catch-radius-pill);
   background: var(--catch-theme-surface);

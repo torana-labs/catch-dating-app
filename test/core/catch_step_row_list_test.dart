@@ -93,4 +93,39 @@ void main() {
     expect(finalTitle.top, greaterThan(body.bottom));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('markers replace the numbers and tags take the accent', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CatchTheme.light,
+        home: const Scaffold(
+          body: CatchStepList(
+            accent: Color(0xFF8A2F12),
+            steps: [
+              CatchStepRowData(
+                marker: '5:45',
+                title: 'Meet at the jetty',
+                tag: 'Bag drop and water',
+              ),
+              CatchStepRowData(marker: '10:30', title: 'Breakfast'),
+            ],
+          ),
+        ),
+      ),
+    );
+    expect(find.text('01'), findsNothing);
+    expect(find.text('5:45'), findsOneWidget);
+    final tag = tester.widget<Text>(find.text('Bag drop and water'));
+    expect(tag.style?.color, const Color(0xFF8A2F12));
+    final marker = tester.getRect(find.text('10:30'));
+    final title = tester.getRect(find.text('Breakfast'));
+    expect(marker.right, lessThan(title.left));
+    expect(
+      tester.getRect(find.text('Meet at the jetty')).left,
+      title.left,
+      reason: 'Every row shares the widest marker column.',
+    );
+  });
 }

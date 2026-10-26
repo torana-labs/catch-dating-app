@@ -1,0 +1,43 @@
+/*
+ * Website v2 photo tile (CAT-249): 220px tall, 170px below 840px, at radius
+ * lg. On a photo the copy is white over CatchHeroImage's scrim; on a ground it
+ * takes the ground's inks.
+ */
+.tile {
+  composes: ground from "./grounds.module.css";
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  height: 220px;
+  margin: 0;
+  overflow: hidden;
+  padding: var(--catch-space-micro14);
+  border-radius: var(--catch-radius-lg);
+}
+
+.tile[data-photo] {
+  --catch-theme-ink: var(--catch-palette-white);
+  --catch-theme-ink2: color-mix(in srgb, var(--catch-palette-white) 86%, transparent);
+
+  background: var(--catch-palette-ink);
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+}
+
+.copy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+  min-width: 0;
+}
+
+@container catch-page (width < 840px) {
+  .tile { height: 170px; }
+}
