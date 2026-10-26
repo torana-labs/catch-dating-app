@@ -22,6 +22,7 @@
       "eyebrow": "Legal",
       "title": "Privacy policy",
       "summary": "How Catch collects, uses, shares, protects, and responds to requests about personal data.",
+      "effectiveDate": "26 October 2026",
       "sections": [
         {
           "heading": "Who operates Catch",
@@ -37,6 +38,8 @@
           "bullets": [
             "Account and profile information, including name, contact details, age confirmation, city, photos, prompts, preferences, reviews, messages, support requests, reports, and claim requests.",
             "Event and interaction information, including registrations, waitlists, attendance, check-in, private catches, mutual matches, blocks, reports, host actions, saved organizers, and aggregate event outcomes.",
+            "Payment information for paid bookings, including the amount, currency, payment and refund status, and the order, payment, and refund references from Razorpay. Card, UPI, and bank details are entered in Razorpay's checkout; Catch does not see or store them.",
+            "Organiser payment connections. When an organiser connects Razorpay, we store their Razorpay account ID and keep their access credentials encrypted in a separate secrets store. They are used only to run that organiser's checkouts, refunds, and payment updates.",
             "Cross Paths information, including your private global and per-event visibility choices, the event connected to a suggestion or invitation, invitation responses, and safety or eligibility state needed to prevent an unsafe or ineligible introduction.",
             "Website and host-lead information, including name, email, city, role, organization, public website or social link, application answers, consent choice, and campaign attribution attached to a submission.",
             "Device and reliability information, including app version, operating system, browser, diagnostic events, crash information, security signals, and approximate location. Precise location is used only where a feature needs it and device permission allows it.",
@@ -61,6 +64,7 @@
           "heading": "Sharing, cookies, and external services",
           "paragraphs": [
             "We may share data with service providers supporting hosting, databases, authentication, storage, analytics, crash reporting, communications, moderation, maps, search, and security; with an organizer when you request an organizer-operated service; when required by law or needed to protect people; during a business reorganization; or at your direction. We do not sell personal data for money.",
+            "Razorpay processes payments for paid bookings. For a paid booking, we send Razorpay the order amount and a booking reference, and the organiser who sells the ticket receives your booking, the amount you paid, and the details they need to run the event and handle refunds. The payment details you enter in Razorpay's checkout go to Razorpay under its own privacy policy.",
             "External event and ticket links lead to third parties whose policies apply. Non-essential website analytics and marketing tags load only after you accept them. Essential storage may support security, consent, saved organizers, forms, and site operation."
           ]
         },
@@ -68,6 +72,7 @@
           "heading": "Retention and security",
           "paragraphs": [
             "We retain data only as long as reasonably needed for the purposes above, legal requirements, safety, dispute handling, fraud prevention, and backup recovery. Public-source listings may remain while accurate and relevant, subject to correction and takedown requests. Account deletion starts the product deletion workflow, but limited records may remain where law, safety, fraud prevention, or dispute resolution requires it.",
+            "Payment records are kept as long as needed for refunds, disputes, and legal, tax, and accounting obligations. An organiser's Razorpay connection is kept while it is connected and, after they disconnect, for as long as it is needed to finish refunds and disputes for existing bookings.",
             "We use access controls, encryption in transit, environment separation, service authentication, audit records, and monitoring intended to protect data. No system is perfectly secure; contact us promptly if you believe your account or data has been compromised."
           ],
           "links": [
@@ -143,7 +148,8 @@
         {
           "heading": "Payments and external services",
           "paragraphs": [
-            "Paid tickets for events on Catch are sold by the event's organiser through a checkout powered by Razorpay. Before you pay, the checkout shows the seller, the price, any fees, and the event's cancellation and refund policy. Cancellations and refunds follow the Refund and cancellation policy.",
+            "Paid tickets for events on Catch are sold by the event's organiser. Your payment goes directly to the organiser's own Razorpay account through a checkout powered by Razorpay. Catch provides the booking software and does not hold your payment. Before you pay, the checkout shows the seller, the price, any fees, and the event's cancellation and refund policy.",
+            "Razorpay's terms and privacy policy apply to the payment itself. Cancellations and refunds follow the Refund and cancellation policy.",
             "External services are controlled by third parties, and their terms, privacy, payment, refund, and availability rules apply."
           ],
           "links": [
@@ -151,6 +157,15 @@
               "href": "/refunds/",
               "label": "Refund and cancellation policy"
             }
+          ]
+        },
+        {
+          "heading": "For organisers",
+          "paragraphs": [
+            "If you sell paid tickets through Catch, you are the seller and merchant of record. You are responsible for running the event as described, honouring the cancellation policy you choose, taxes and any GST invoices owed to guests, and chargebacks and payment disputes.",
+            "To take payments, you connect your own Razorpay account to Catch through Razorpay's OAuth. This authorises Catch to create orders for your events, read payment and refund status, set up payment webhooks on your account, and issue refunds under the event's cancellation policy and when an event is cancelled. Your agreement with Razorpay governs your Razorpay account.",
+            "You can disconnect Razorpay at any time. Disconnecting stops new checkouts. Catch may still use the connection to finish refunds and disputes for bookings already paid.",
+            "Any fee for Catch's organiser tools is agreed with you separately and billed separately. It is never deducted from guest payments."
           ]
         },
         {
@@ -350,7 +365,7 @@
         {
           "heading": "Who sells your ticket",
           "paragraphs": [
-            "When you buy a ticket for a paid event on Catch, the event's organiser is the seller. Catch, operated by Torana, provides the booking page and checkout, and Razorpay processes the payment. Before you pay, the checkout shows the seller, the price, any fees, and the cancellation policy for that event.",
+            "When you buy a ticket for a paid event on Catch, the event's organiser is the seller. Your payment goes directly to the organiser's Razorpay account. Catch, operated by Torana, provides the booking page and checkout software and does not hold your payment. Before you pay, the checkout shows the seller, the price, any fees, and the cancellation policy for that event.",
             "This policy covers tickets bought through Catch checkout. If an event page sends you to an organiser's own website or another ticketing service, that seller's refund terms apply instead."
           ]
         },
@@ -393,7 +408,7 @@
         {
           "heading": "How refunds are paid",
           "paragraphs": [
-            "Refunds go back to the payment method you used, through Razorpay. We cannot send a refund to a different account or pay it in cash.",
+            "Refunds are paid from the organiser's Razorpay account, issued through Catch, back to the payment method you used. We cannot send a refund to a different account or pay it in cash.",
             "A refund normally reaches your account within 5 to 7 business days. Some banks and card issuers take longer to show it."
           ]
         },

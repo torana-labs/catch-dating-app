@@ -117,3 +117,32 @@ test("contact page publishes the operator, address, email and phone", () => {
   assert.match(copy, /WhatsApp/u);
   assert.ok(copy.includes(operator.grievanceOfficer), "the grievance officer must be named");
 });
+
+test("payment disclosures match the organiser-account OAuth rail", () => {
+  const {pages} = publishedLegalContent;
+  const terms = pageCopy(pages.terms);
+  // eventPaymentRuntime.ts razorpayOAuth: the organiser's account collects; Catch holds nothing.
+  assert.match(terms, /directly to the organiser's own Razorpay account/u);
+  assert.match(terms, /does not hold your payment/u);
+  assert.ok(pages.terms.sections.some((section) => section.heading === "For organisers"));
+  assert.match(terms, /merchant of record/u);
+  assert.match(terms, /GST invoices/u);
+  assert.match(terms, /chargebacks/u);
+  // razorpayFormProvider.ts: OAuth orders, status reads, webhooks and refunds.
+  assert.match(terms, /create orders[^.]*read payment and refund status[^.]*webhooks[^.]*issue refunds/u);
+  // organizerRazorpayConnection.ts disconnect: stops new checkout, keeps credentials for existing payments.
+  assert.match(terms, /Disconnecting stops new checkouts/u);
+  assert.match(terms, /never deducted from guest payments/u);
+  assert.doesNotMatch(terms, /₹|\bINR\b/u, "organiser pricing stays unpublished");
+
+  const refunds = pageCopy(pages.refunds);
+  assert.match(refunds, /goes directly to the organiser's Razorpay account/u);
+  assert.match(refunds, /paid from the organiser's Razorpay account, issued through Catch/u);
+
+  const privacy = pageCopy(pages.privacy);
+  assert.match(privacy, /Razorpay processes payments/u);
+  assert.match(privacy, /Catch does not see or store them/u);
+  // razorpayCredentialVault.ts: tokens live in Secret Manager, not the main database.
+  assert.match(privacy, /Razorpay account ID and keep their access credentials encrypted in a separate secrets store/u);
+  assert.match(privacy, /Payment records are kept as long as needed for refunds, disputes/u);
+});
