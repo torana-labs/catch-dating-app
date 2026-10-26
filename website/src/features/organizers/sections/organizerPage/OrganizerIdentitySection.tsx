@@ -5,6 +5,7 @@ import {
   CatchGap,
   CatchGrid,
   CatchGroundCard,
+  CatchIcon,
   CatchProfileHeader,
   CatchQrCode,
   CatchText,
@@ -32,6 +33,7 @@ export function OrganizerIdentitySection({controller}: {controller: OrganizerPag
             <CatchButton
               fullWidth
               label={copy.share}
+              leading={<CatchIcon icon="share" size="md" />}
               onPressed={share.toggle}
               variant="secondary"
             />

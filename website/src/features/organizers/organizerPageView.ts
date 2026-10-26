@@ -1,4 +1,4 @@
-import {catchAvatarInitialsOf, catchFormatAccentOf, type CatchGround} from "@catch/web-ui";
+import {catchAvatarInitialsOf, catchFormatAccentOf, type CatchGround, type CatchIconName} from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../content/organizerPage";
 import type {OrganizerPageEvent, OrganizerPageRecord, OrganizerPageReview} from "./organizerPage";
 
@@ -38,6 +38,8 @@ export interface OrganizerLinkView {
   title: string;
   subtitle?: string;
   pinned: boolean;
+  /** The CatchIcon role for where the link goes. */
+  icon: CatchIconName;
   analytics: {eventName: "contactClick" | "outboundClick"; source: string};
 }
 
@@ -279,6 +281,7 @@ function linksOf(record: OrganizerPageRecord, readAt: number): OrganizerLinkView
       subtitle: link.pinned && link.showUntil ?
         copy.pinnedUntil(format(new Date(link.showUntil), defaultZone, {day: "numeric", month: "short"})) : hostOf(link.url),
       pinned: link.pinned,
+      icon: iconFor(link.url),
       analytics: {eventName: "outboundClick", source: "organizer_page"},
     }))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
@@ -294,6 +297,7 @@ function linksOf(record: OrganizerPageRecord, readAt: number): OrganizerLinkView
       title: source.label,
       subtitle: hostOf(href),
       pinned: false,
+      icon: iconFor(href),
       analytics: {eventName: source.type === "socialProfile" ? "contactClick" : "outboundClick", source: `source_${source.type}`},
     }];
   });
@@ -404,6 +408,19 @@ function publicSourceNames(record: OrganizerPageRecord): string[] {
 function eventSourceNames(record: OrganizerPageRecord): string[] {
   return [...new Set([...record.upcomingEvents, ...record.pastMoments]
     .flatMap((item) => item.source === "external" ? [item.booking.label] : []))];
+}
+
+function iconFor(url: string): CatchIconName {
+  if (url.startsWith("mailto:")) return "email";
+  if (url.startsWith("tel:")) return "phone";
+  const host = hostOf(url);
+  if (/whatsapp|wa\.me|telegram|t\.me/u.test(host)) return "chat";
+  if (/instagram/u.test(host)) return "photo";
+  if (/strava/u.test(host)) return "route";
+  if (/youtube|youtu\.be|vimeo/u.test(host)) return "play";
+  if (/luma|lu\.ma|calendar/u.test(host)) return "event";
+  if (/ticket|insider|district|bookmyshow|allevents|meetup/u.test(host)) return "ticket";
+  return "link";
 }
 
 function hostOf(url: string): string {

@@ -1,4 +1,4 @@
-import {CatchGap, CatchLinkTile, CatchPreviewCard} from "@catch/web-ui";
+import {CatchGap, CatchIcon, CatchLinkTile, CatchPreviewCard} from "@catch/web-ui";
 import {organizerPageCopy as copy} from "../../../../content/organizerPage";
 import type {OrganizerPageController} from "../../useOrganizerPageController";
 
@@ -33,6 +33,7 @@ export function OrganizerLinksSection({controller}: {controller: OrganizerPageCo
       {links.map((link) => (
         <CatchLinkTile
           href={link.href}
+          icon={<CatchIcon icon={link.icon} size="row" />}
           key={link.key}
           onClick={() => controller.openLink(link)}
           pinned={link.pinned}

@@ -75,11 +75,11 @@ describe("organizerPageView", () => {
 
   it("shows owner links pinned first and drops one past its date", () => {
     const links = view(claimedOrganizerPage).links;
-    expect(links.map((link) => [link.title, link.pinned])).toEqual([
-      ["Lantern Night · Sat 14 Nov", true],
-      ["Join the WhatsApp community", false],
-      ["Strava club", false],
-      ["Club tees and caps", false],
+    expect(links.map((link) => [link.title, link.pinned, link.icon])).toEqual([
+      ["Lantern Night · Sat 14 Nov", true, "event"],
+      ["Join the WhatsApp community", false, "chat"],
+      ["Strava club", false, "route"],
+      ["Club tees and caps", false, "link"],
     ]);
     expect(links[0].subtitle).toBe("Pinned until 14 Nov");
     const expired = organizerPageView(claimedOrganizerPage, Date.parse("2026-11-20T00:00:00Z")).links;
@@ -88,9 +88,9 @@ describe("organizerPageView", () => {
 
   it("falls back to the public pages a listing came from, never its seeding notes", () => {
     const links = view(generatedOrganizerPage).links;
-    expect(links.map((link) => [link.title, link.subtitle, link.analytics])).toEqual([
-      ["Luma calendar", "luma.com/harbour-line", {eventName: "outboundClick", source: "source_eventPlatform"}],
-      ["Instagram", "instagram.com/harbourlineruns", {eventName: "contactClick", source: "source_socialProfile"}],
+    expect(links.map((link) => [link.title, link.subtitle, link.icon, link.analytics])).toEqual([
+      ["Luma calendar", "luma.com/harbour-line", "event", {eventName: "outboundClick", source: "source_eventPlatform"}],
+      ["Instagram", "instagram.com/harbourlineruns", "photo", {eventName: "contactClick", source: "source_socialProfile"}],
     ]);
   });
 

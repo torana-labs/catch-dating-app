@@ -4,6 +4,7 @@ import {
   CatchGap,
   CatchGrid,
   CatchGroundCard,
+  CatchIcon,
   CatchIndexRow,
   CatchPhotoTile,
   CatchText,
@@ -43,6 +44,7 @@ export function OrganizerEventsSection({controller}: {controller: OrganizerPageC
                     label={row.action}
                     onPressed={null}
                     size="md"
+                    trailing={row.source === "external" ? <CatchIcon icon="openExternal" size="md" /> : undefined}
                     variant={row.actionPrimary ? "primary" : "secondary"}
                   />
                 )}
