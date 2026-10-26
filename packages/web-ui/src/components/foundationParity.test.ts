@@ -27,8 +27,13 @@ const textCss = read("./CatchText.module.css");
 
 const kebab = (name: string) => name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
+// Top-level CSS only: comments and at-rule blocks such as @container removed.
+function topLevel(css: string) {
+  return css.replace(/\/\*[\s\S]*?\*\//g, "").replace(/@[^{}]+\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g, "");
+}
+
 function cssRule(css: string, selector: string) {
-  const rules = [...css.replace(/\/\*[\s\S]*?\*\//g, "").matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+  const rules = [...topLevel(css).matchAll(/([^{}]+)\{([^{}]*)\}/g)]
     .filter((rule) => rule[1].split(",").map((value) => value.trim()).includes(selector));
   expect(rules.length, `missing or duplicate flat CSS rule ${selector}`).toBe(1);
   return `{${rules[0][2]}}`;
@@ -40,7 +45,7 @@ function declaration(rule: string, property: string) {
 }
 
 function selectorValues(css: string, attribute: string) {
-  return [...css.matchAll(new RegExp(`\\[data-${attribute}="([A-Za-z]+)"\\]`, "g"))]
+  return [...topLevel(css).matchAll(new RegExp(`\\[data-${attribute}="([A-Za-z]+)"\\]`, "g"))]
     .map((match) => match[1]);
 }
 
@@ -203,6 +208,25 @@ describe("CatchTextStyles parity", () => {
     expect(declaration(rule, "font-family")).toBe("var(--catch-font-voice), sans-serif");
     expect(declaration(rule, "font-stretch")).toBe(`${width}%`);
     expect(declaration(rule, "font-variation-settings")).toBe(`"wdth" ${width}`);
+  });
+
+  it("steps the two hero sizes down two steps below the medium window size", () => {
+    const medium = generatedTokensCss.match(/--catch-window-size-medium-min-width: (\d+)px;/)?.[1];
+    expect(medium).toBeDefined();
+    const block = textCss.replace(/\/\*[\s\S]*?\*\//g, "")
+      .match(new RegExp(`@container catch-page \\(width < ${medium}px\\) \\{((?:[^{}]*\\{[^{}]*\\})*)[^{}]*\\}`))?.[1];
+    expect(block, `missing @container catch-page (width < ${medium}px)`).toBeDefined();
+    const steps = {displayXxl: "l", displayXl: "m"};
+    const rules = [...block!.matchAll(/\.text\[data-variant="(\w+)"\]\s*\{([^{}]*)\}/g)];
+    expect(rules.map((rule) => rule[1]).sort()).toEqual(Object.keys(steps).sort());
+    for (const [, variant, body] of rules) {
+      const token = `--catch-typography-brand-display-${steps[variant as keyof typeof steps]}`;
+      const rule = `{${body}}`;
+      for (const property of ["size", "line-height", "tracking"]) {
+        expect(declaration(rule, `--catch-text-${property}`), `${variant} ${property}`)
+          .toBe(`var(${token}-${property})`);
+      }
+    }
   });
 
   it("offers exactly the Flutter CatchTextVariant values", () => {

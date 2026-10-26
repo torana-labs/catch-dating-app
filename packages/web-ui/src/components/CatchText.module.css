@@ -79,6 +79,26 @@
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
+/*
+ * Phone step-down (D19): below the medium window size (600px,
+ * --catch-window-size-medium-min-width) the two hero steps drop two steps,
+ * displayXxl to displayL and displayXl to displayM. Flutter has no Xl or Xxl
+ * call site yet and takes the same rule with its first one.
+ */
+@container catch-page (width < 600px) {
+  .text[data-variant="displayXxl"] {
+    --catch-text-size: var(--catch-typography-brand-display-l-size);
+    --catch-text-line-height: var(--catch-typography-brand-display-l-line-height);
+    --catch-text-tracking: var(--catch-typography-brand-display-l-tracking);
+  }
+
+  .text[data-variant="displayXl"] {
+    --catch-text-size: var(--catch-typography-brand-display-m-size);
+    --catch-text-line-height: var(--catch-typography-brand-display-m-line-height);
+    --catch-text-tracking: var(--catch-typography-brand-display-m-tracking);
+  }
+}
+
 .text[data-variant="headline"] {
   --catch-text-size: var(--catch-typography-web-headline-size);
   --catch-text-line-height: var(--catch-typography-web-headline-line-height);
