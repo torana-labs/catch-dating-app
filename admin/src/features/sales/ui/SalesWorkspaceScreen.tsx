@@ -1,10 +1,10 @@
-import {CatchText, CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {renderSalesPartnerOffer} from "./salesPartnerOffer";
 import {useEffect, useMemo, useState} from "react";
 import {ArrowLeft, CalendarDays, ClipboardList, Search} from "lucide-react";
 import {
   AdminButton, AdminDetailScreenStack, AdminDirectoryScreenStack,
-  AdminForm, AdminTableRow, AdminTag, AdminToolbar, DataTable, EmptyState,
+  AdminForm, AdminTableRow, AdminToolbar, DataTable, EmptyState,
   PageHeader, Panel, SearchField, SegmentedControl, selectOptions, StateRow,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
@@ -555,9 +555,9 @@ function HostDetail({controller, currentUserUid, isAdminOwner, assignedStaffOnly
     "overview" : tab;
   return <AdminDetailScreenStack>
     <AdminToolbar>
-      <AdminTag tone="neutral">Research: {labelFor(detail.account.researchStatus)}</AdminTag>
-      <AdminTag tone="neutral">Listing: {labelFor(detail.organizerSummary.appVisibility)}</AdminTag>
-      <AdminTag tone="neutral">Claim: {labelFor(detail.organizerSummary.claimStatus)}</AdminTag>
+      <CatchBadge label={`Research: ${labelFor(detail.account.researchStatus)}`} />
+      <CatchBadge label={`Listing: ${labelFor(detail.organizerSummary.appVisibility)}`} />
+      <CatchBadge label={`Claim: ${labelFor(detail.organizerSummary.claimStatus)}`} />
       {assignedStaffOnly ? null : <AdminButton
         onClick={() => onOpenOrganizer(detail.account.organizerId)}>
         Open organizer record

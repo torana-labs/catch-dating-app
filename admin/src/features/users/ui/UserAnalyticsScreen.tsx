@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {
   BarChart3,
   Clock3,
@@ -33,7 +33,6 @@ import {
   AdminRoadmapListItem,
   AdminRowTitle,
   AdminSecondaryDisclosure,
-  AdminTag,
   AdminTagList,
   AdminToolbar,
   AdminTrendSeries,
@@ -53,8 +52,7 @@ import {
   type UserAnalyticsController,
   type UserLookupContract,
   useUserAnalyticsController,
-} from
-  "../controllers/useUserAnalyticsController";
+} from "../controllers/useUserAnalyticsController";
 
 export function UserAnalyticsScreen({
   handoffRequestId,
@@ -281,7 +279,7 @@ function UserLookupContractPanel({
             <AdminIntakeSectionTitle>Unavailable here</AdminIntakeSectionTitle>
             <AdminTagList>
               {contract.unavailableDomains.map((domain) => (
-                <AdminTag key={domain}>{domain}</AdminTag>
+                <CatchBadge key={domain} label={domain} />
               ))}
             </AdminTagList>
           </AdminIntakeSection>
@@ -289,7 +287,7 @@ function UserLookupContractPanel({
             <AdminIntakeSectionTitle>Blocked actions</AdminIntakeSectionTitle>
             <AdminTagList>
               {contract.blockedActions.map((action) => (
-                <AdminTag key={action}>{action}</AdminTag>
+                <CatchBadge key={action} label={action} />
               ))}
             </AdminTagList>
           </AdminIntakeSection>
@@ -416,9 +414,7 @@ function DataQualityPanel({rows}: {rows: UserAnalyticsDataQuality[]}) {
             label={row.id}
             value={(
               <>
-              <AdminTag tone={row.state === "ok" ? "muted" : "neutral"}>
-                {row.state}
-              </AdminTag>{" "}
+              <CatchBadge label={row.state} />{" "}
               {row.detail}
               </>
             )}

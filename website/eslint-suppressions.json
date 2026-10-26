@@ -267,7 +267,7 @@
   },
   "src/shared/ui/primitives/explore.tsx": {
     "react/forbid-component-props": {
-      "count": 3
+      "count": 2
     },
     "react/forbid-dom-props": {
       "count": 6
@@ -278,13 +278,13 @@
   },
   "src/shared/ui/primitives/feedback.tsx": {
     "react/forbid-component-props": {
-      "count": 4
+      "count": 2
     },
     "react/forbid-dom-props": {
       "count": 10
     },
     "react/forbid-elements": {
-      "count": 20
+      "count": 19
     }
   },
   "src/shared/ui/primitives/forms.tsx": {

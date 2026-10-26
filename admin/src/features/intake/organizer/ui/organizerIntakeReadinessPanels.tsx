@@ -1,11 +1,9 @@
 import {CheckCircle2, Clock3, FileWarning, Lock} from "lucide-react";
 import {
   AdminButton,
-  AdminTag,
   EmptyState,
   QualityRow,
   StateRow,
-  StatusChip,
   AdminCommandRow,
   AdminCommandStack,
   AdminEyebrow,
@@ -38,7 +36,7 @@ import type {
 } from "../../../../shared/types/adminTypes";
 import type * as Intake from "../types/organizerIntakeTypes";
 import {organizerIntakeEvidencePanels} from "./organizerIntakeEvidencePanels";
-import {CatchText} from "@catch/web-ui";
+import {CatchBadge, CatchText} from "@catch/web-ui";
 
 const organizerCurationOperations: OrganizerCurationOperation[] = [
   "surface_decision",
@@ -69,18 +67,10 @@ function OrganizerWorkflowReadinessView({
         <StateRow label="Policy" value={String(readiness.summary.policyNeeded)} />
       </AdminIntakeStateGrid>
       <AdminTagList>
-        <AdminTag tone={readiness.summary.localPromotionPipelineReady ? "neutral" : "muted"}>
-          local pipeline {readiness.summary.localPromotionPipelineReady ? "ready" : "blocked"}
-        </AdminTag>
-        <AdminTag tone={readiness.summary.publicProjectionReady ? "neutral" : "muted"}>
-          public projection {readiness.summary.publicProjectionReady ? "ready" : "waiting"}
-        </AdminTag>
-        <AdminTag tone={readiness.summary.claimSyncReady ? "neutral" : "muted"}>
-          claim sync {readiness.summary.claimSyncReady ? "ready" : "waiting"}
-        </AdminTag>
-        <AdminTag tone={readiness.summary.recurringCrawlEnabled ? "neutral" : "muted"}>
-          crawl {readiness.summary.recurringCrawlEnabled ? "enabled" : "disabled"}
-        </AdminTag>
+        <CatchBadge label={`local pipeline ${readiness.summary.localPromotionPipelineReady ? "ready" : "blocked"}`} />
+        <CatchBadge label={`public projection ${readiness.summary.publicProjectionReady ? "ready" : "waiting"}`} />
+        <CatchBadge label={`claim sync ${readiness.summary.claimSyncReady ? "ready" : "waiting"}`} />
+        <CatchBadge label={`crawl ${readiness.summary.recurringCrawlEnabled ? "enabled" : "disabled"}`} />
       </AdminTagList>
       <AdminIntakeGateList>
         {readiness.gates.map((gate) => (
@@ -135,14 +125,10 @@ function OrganizerOperatorActionQueueView({
       </AdminIntakeStateGrid>
       <AdminTagList>
         {Object.entries(queue.summary.actionsByPriority).map(([priority, count]) => (
-          <AdminTag key={priority} tone="muted">
-            {priority} x{count}
-          </AdminTag>
+          <CatchBadge key={priority} label={`${priority} x${count}`} />
         ))}
         {Object.entries(queue.summary.actionsByType).map(([type, count]) => (
-          <AdminTag key={type} tone="muted">
-            {type.replaceAll("_", " ")} x{count}
-          </AdminTag>
+          <CatchBadge key={type} label={`${type.replaceAll("_", " ")} x${count}`} />
         ))}
       </AdminTagList>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
@@ -159,9 +145,7 @@ function OrganizerOperatorActionQueueView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{action.subjectName}</CatchText>
               </div>
-              <StatusChip tone={action.status === "requires_admin_decision" ? "ready" : ""}>
-                {action.status.replaceAll("_", " ")}
-              </StatusChip>
+              <CatchBadge recipe="status" tone={action.status === "requires_admin_decision" ? "success" : "neutral"} label={action.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -178,23 +162,19 @@ function OrganizerOperatorActionQueueView({
 
             <AdminTagList>
               {action.decisionOptions.map((option) => (
-                <AdminTag key={option}>
-                  {option.replaceAll("_", " ")}
-                </AdminTag>
+                <CatchBadge key={option} label={option.replaceAll("_", " ")} />
               ))}
               {action.requiredAcknowledgements?.manualReportsReviewed ? (
-                <AdminTag tone="muted">manual reports</AdminTag>
+                <CatchBadge label="manual reports" />
               ) : null}
               {(action.requiredInputs ?? []).slice(0, 6).map((input) => (
-                <AdminTag key={input} tone="muted">
-                  {input.replaceAll("_", " ")}
-                </AdminTag>
+                <CatchBadge key={input} label={input.replaceAll("_", " ")} />
               ))}
               {action.impact?.wouldIndex ? (
-                <AdminTag>indexable</AdminTag>
+                <CatchBadge label="indexable" />
               ) : null}
               {action.impact?.wouldCreateClaimTarget ? (
-                <AdminTag>claim target</AdminTag>
+                <CatchBadge label="claim target" />
               ) : null}
             </AdminTagList>
 
@@ -232,14 +212,10 @@ function OrganizerOperationalHealthView({
       </AdminIntakeStateGrid>
       <AdminTagList>
         {Object.entries(health.summary.workstreamsByPriority).map(([priority, count]) => (
-          <AdminTag key={priority} tone="muted">
-            {priority} x{count}
-          </AdminTag>
+          <CatchBadge key={priority} label={`${priority} x${count}`} />
         ))}
         {Object.entries(health.summary.workstreamsByStatus).map(([status, count]) => (
-          <AdminTag key={status} tone="muted">
-            {status.replaceAll("_", " ")} x{count}
-          </AdminTag>
+          <CatchBadge key={status} label={`${status.replaceAll("_", " ")} x${count}`} />
         ))}
       </AdminTagList>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
@@ -256,9 +232,7 @@ function OrganizerOperationalHealthView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{stream.label}</CatchText>
               </div>
-              <StatusChip tone={organizerIntakeEvidencePanels.healthStatusTone(stream.status)}>
-                {stream.status.replaceAll("_", " ")}
-              </StatusChip>
+              <CatchBadge recipe="status" tone={organizerIntakeEvidencePanels.healthStatusTone(stream.status)} label={stream.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -282,9 +256,7 @@ function OrganizerOperationalHealthView({
 
             <AdminTagList>
               {stream.blockers.slice(0, 6).map((blocker) => (
-                <AdminTag key={blocker} tone="muted">
-                  {blocker.replaceAll("_", " ")}
-                </AdminTag>
+                <CatchBadge key={blocker} label={blocker.replaceAll("_", " ")} />
               ))}
             </AdminTagList>
 
@@ -340,19 +312,13 @@ function OrganizerPendingWorkCoverageView({
       </AdminIntakeStateGrid>
       <AdminTagList>
         {coverage.summary.highestPriority ? (
-          <AdminTag>
-            highest {coverage.summary.highestPriority}
-          </AdminTag>
+          <CatchBadge label={`highest ${coverage.summary.highestPriority}`} />
         ) : null}
         {Object.entries(coverage.summary.coverageByStatus).map(([status, count]) => (
-          <AdminTag key={status} tone="muted">
-            {status.replaceAll("_", " ")} x{count}
-          </AdminTag>
+          <CatchBadge key={status} label={`${status.replaceAll("_", " ")} x${count}`} />
         ))}
         {Object.entries(coverage.summary.workstreamsByPriority).map(([priority, count]) => (
-          <AdminTag key={priority} tone="muted">
-            {priority} x{count}
-          </AdminTag>
+          <CatchBadge key={priority} label={`${priority} x${count}`} />
         ))}
       </AdminTagList>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
@@ -369,9 +335,7 @@ function OrganizerPendingWorkCoverageView({
                 </AdminEyebrow>
                 <CatchText as="h3" variant="sectionTitle">{entry.label}</CatchText>
               </div>
-              <StatusChip tone={organizerIntakeEvidencePanels.coverageStatusTone(entry.coverageStatus)}>
-                {entry.coverageStatus.replaceAll("_", " ")}
-              </StatusChip>
+              <CatchBadge recipe="status" tone={organizerIntakeEvidencePanels.coverageStatusTone(entry.coverageStatus)} label={entry.coverageStatus.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
             <AdminIntakeStateGrid>
@@ -401,19 +365,13 @@ function OrganizerPendingWorkCoverageView({
 
             <AdminTagList>
               {entry.pendingRequestIds.slice(0, 6).map((requestId) => (
-                <AdminTag key={requestId}>
-                  {requestId.replaceAll("_", " ")}
-                </AdminTag>
+                <CatchBadge key={requestId} label={requestId.replaceAll("_", " ")} />
               ))}
               {entry.followUpIds.slice(0, 6).map((followUpId) => (
-                <AdminTag key={followUpId} tone="muted">
-                  {followUpId.replaceAll("_", " ")}
-                </AdminTag>
+                <CatchBadge key={followUpId} label={followUpId.replaceAll("_", " ")} />
               ))}
               {entry.blockers.slice(0, 6).map((blocker) => (
-                <AdminTag key={blocker} tone="muted">
-                  {blocker}
-                </AdminTag>
+                <CatchBadge key={blocker} label={blocker} />
               ))}
             </AdminTagList>
 
@@ -465,19 +423,13 @@ function OrganizerPendingInputRequestView({
       </AdminIntakeStateGrid>
       <AdminTagList>
         {request.summary.highestPriority ? (
-          <AdminTag>
-            highest {request.summary.highestPriority}
-          </AdminTag>
+          <CatchBadge label={`highest ${request.summary.highestPriority}`} />
         ) : null}
         {Object.entries(request.summary.requestsByOwner).map(([owner, count]) => (
-          <AdminTag key={owner} tone="muted">
-            {owner.replaceAll("_", " ")} x{count}
-          </AdminTag>
+          <CatchBadge key={owner} label={`${owner.replaceAll("_", " ")} x${count}`} />
         ))}
         {Object.entries(request.summary.requestsByType).map(([type, count]) => (
-          <AdminTag key={type} tone="muted">
-            {type.replaceAll("_", " ")} x{count}
-          </AdminTag>
+          <CatchBadge key={type} label={`${type.replaceAll("_", " ")} x${count}`} />
         ))}
       </AdminTagList>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
@@ -509,9 +461,7 @@ function OrganizerPendingInputRequestView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{input.subjectName}</CatchText>
                 </div>
-                <StatusChip tone={input.priority === "p0" ? "ready" : ""}>
-                  {input.owner.replaceAll("_", " ")}
-                </StatusChip>
+                <CatchBadge recipe="status" tone={input.priority === "p0" ? "success" : "neutral"} label={input.owner.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
               <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
                 <strong>{input.prompt}</strong>
@@ -539,26 +489,20 @@ function OrganizerPendingInputRequestView({
               </AdminIntakeStateGrid>
               <AdminTagList>
                 {input.decisionOptions.map((option) => (
-                  <AdminTag key={option}>
-                    {option.replaceAll("_", " ")}
-                  </AdminTag>
+                  <CatchBadge key={option} label={option.replaceAll("_", " ")} />
                 ))}
                 {input.requiredAcknowledgements?.manualReportsReviewed ? (
-                  <AdminTag tone="muted">manual reports reviewed</AdminTag>
+                  <CatchBadge label="manual reports reviewed" />
                 ) : null}
                 {(input.requiredAcknowledgements?.publicationChecklist ?? [])
                   .slice(0, 8)
                   .map((acknowledgement) => (
-                    <AdminTag key={acknowledgement} tone="muted">
-                      {acknowledgement.replaceAll("_", " ")}
-                    </AdminTag>
+                    <CatchBadge key={acknowledgement} label={acknowledgement.replaceAll("_", " ")} />
                   ))}
                 {(input.currentState?.riskFlags as string[] | undefined)
                   ?.slice(0, 8)
                   .map((flag) => (
-                    <AdminTag key={flag} tone="muted">
-                      {flag.replaceAll("_", " ")}
-                    </AdminTag>
+                    <CatchBadge key={flag} label={flag.replaceAll("_", " ")} />
                   ))}
               </AdminTagList>
               {input.requiredInputs && input.requiredInputs.length > 0 ? (
@@ -667,9 +611,7 @@ function OrganizerPendingInputRequestView({
                     </AdminEyebrow>
                     <CatchText as="h3" variant="sectionTitle">{followUp.label}</CatchText>
                   </div>
-                  <StatusChip tone={organizerIntakeEvidencePanels.healthStatusTone(followUp.status)}>
-                    {followUp.status.replaceAll("_", " ")}
-                  </StatusChip>
+                  <CatchBadge recipe="status" tone={organizerIntakeEvidencePanels.healthStatusTone(followUp.status)} label={followUp.status.replaceAll("_", " ")} />
                 </AdminSearchCandidateHeader>
                 <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
                   <strong>{followUp.nextActions[0] ?? "Review workflow state."}</strong>
@@ -679,9 +621,7 @@ function OrganizerPendingInputRequestView({
                 </QualityRow>
                 <AdminTagList>
                   {followUp.blockers.slice(0, 8).map((blocker) => (
-                    <AdminTag key={blocker} tone="muted">
-                      {blocker.replaceAll("_", " ")}
-                    </AdminTag>
+                    <CatchBadge key={blocker} label={blocker.replaceAll("_", " ")} />
                   ))}
                 </AdminTagList>
                 <AdminCommandStack>
@@ -725,15 +665,9 @@ function OrganizerReviewedDecisionAnswerPacketsView({
         <StateRow label="Invalid" value={String(register.summary.invalid)} />
       </AdminIntakeStateGrid>
       <AdminTagList>
-        <AdminTag tone="muted">
-          root {register.generatedFrom.answerPacketsRoot}
-        </AdminTag>
-        <AdminTag tone="muted">
-          source {register.generatedFrom.generatedAnswerPacket}
-        </AdminTag>
-        <AdminTag>
-          fresh x{register.summary.sourceFresh}
-        </AdminTag>
+        <CatchBadge label={`root ${register.generatedFrom.answerPacketsRoot}`} />
+        <CatchBadge label={`source ${register.generatedFrom.generatedAnswerPacket}`} />
+        <CatchBadge label={`fresh x${register.summary.sourceFresh}`} />
       </AdminTagList>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
         <strong>{register.guardrails[0]}</strong>
@@ -754,9 +688,7 @@ function OrganizerReviewedDecisionAnswerPacketsView({
                   </AdminEyebrow>
                   <CatchText as="h3" variant="sectionTitle">{entry.path}</CatchText>
                 </div>
-                <StatusChip tone={entry.readyToApply ? "ready" : ""}>
-                  {entry.status.replaceAll("_", " ")}
-                </StatusChip>
+                <CatchBadge recipe="status" tone={entry.readyToApply ? "success" : "neutral"} label={entry.status.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
               <AdminIntakeStateGrid>
@@ -792,16 +724,16 @@ function OrganizerReviewedDecisionAnswerPacketsView({
 
               <AdminTagList>
                 {entry.readyToApply ? (
-                  <AdminTag>ready to apply</AdminTag>
+                  <CatchBadge label="ready to apply" />
                 ) : null}
                 {entry.awaitingAnswers ? (
-                  <AdminTag tone="muted">awaiting answers</AdminTag>
+                  <CatchBadge label="awaiting answers" />
                 ) : null}
                 {entry.stale ? (
-                  <AdminTag tone="muted">stale source</AdminTag>
+                  <CatchBadge label="stale source" />
                 ) : null}
                 {entry.invalid ? (
-                  <AdminTag tone="muted">invalid packet</AdminTag>
+                  <CatchBadge label="invalid packet" />
                 ) : null}
               </AdminTagList>
             </AdminSearchCandidateCard>

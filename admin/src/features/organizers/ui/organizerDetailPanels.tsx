@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -46,7 +46,6 @@ import {
   AdminStatusGrid,
   AdminSurfacePreview,
   AdminTableRow,
-  AdminTag,
   AdminToolbar,
   AdminWorkbenchStack,
   AdminWorkbenchNote,
@@ -326,56 +325,18 @@ function OrganizerDirectoryTable({
             </td>
             <td>
               <AdminTagRow>
-                <AdminTag tone="muted">{row.appVisibility ?? "unset"}</AdminTag>
-                <AdminTag tone="muted">{row.claimState ?? "no claim"}</AdminTag>
+                <CatchBadge label={row.appVisibility ?? "unset"} />
+                <CatchBadge label={row.claimState ?? "no claim"} />
               </AdminTagRow>
             </td>
             <td>
               <AdminTagRow>
-                <AdminTag tone={row.routeStatus === "valid" ? "neutral" : "muted"}>
-                  {row.routeStatus}
-                </AdminTag>
-                <AdminTag
-                  tone={
-                    row.routeReservationStatus === "reserved" ?
-                      "neutral" :
-                      "muted"
-                  }
-                >
-                  {row.routeReservationStatus}
-                </AdminTag>
-                <AdminTag
-                  tone={
-                    row.searchIndexStatus === "indexed" ?
-                      "neutral" :
-                      "muted"
-                  }
-                >
-                  {row.searchIndexStatus}
-                </AdminTag>
-                <AdminTag
-                  tone={
-                    row.sourceConfidence === "high" ||
-                    row.sourceConfidence === "ownerVerified" ?
-                      "neutral" :
-                      "muted"
-                  }
-                >
-                  {row.sourceConfidence ?? "source unset"}
-                </AdminTag>
-                <AdminTag
-                  tone={
-                    row.verificationStatus &&
-                    row.verificationStatus !== "unverified" ?
-                      "neutral" :
-                      "muted"
-                  }
-                >
-                  {row.verificationStatus ?? "verification unset"}
-                </AdminTag>
-                <AdminTag tone="muted">
-                  {organizerNeedsPublish(row) ? "needs work" : "ready"}
-                </AdminTag>
+                <CatchBadge label={row.routeStatus} />
+                <CatchBadge label={row.routeReservationStatus} />
+                <CatchBadge label={row.searchIndexStatus} />
+                <CatchBadge label={row.sourceConfidence ?? "source unset"} />
+                <CatchBadge label={row.verificationStatus ?? "verification unset"} />
+                <CatchBadge label={organizerNeedsPublish(row) ? "needs work" : "ready"} />
               </AdminTagRow>
             </td>
             <td>
@@ -1019,7 +980,7 @@ function AppListingPreview({
         {tags.length > 0 && (
           <AdminTagRow>
             {tags.map((tag) => (
-              <AdminTag key={tag} tone="muted">{tag}</AdminTag>
+              <CatchBadge key={tag} label={tag} />
             ))}
           </AdminTagRow>
         )}

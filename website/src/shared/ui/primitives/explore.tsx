@@ -1,4 +1,3 @@
-import {BadgeControl} from "@catch/web-ui";
 import type {ComponentProps} from "react";
 import {Form} from "./forms";
 import {PlainButton} from "./actions";
@@ -9,6 +8,5 @@ export function ExploreToolbar(props: ComponentProps<"div">) {return <div {...pr
 export function ExploreExperience(props: ComponentProps<"details">) {return <details {...props} className="explore-experience" />;}
 export function ExploreResults(props: ComponentProps<"section">) {return <section {...props} className="explore-results" />;}
 export function ExploreResultsHeading(props: ComponentProps<"div">) {return <div {...props} className="explore-results-heading" />;}
-export function ExploreBadge(props: ComponentProps<"span">) {return <BadgeControl {...props} className="explore-badge" />;}
 export function ExploreExperienceFilter(props: ComponentProps<typeof PlainButton>) {return <PlainButton {...props} className="explore-experience-filter" />;}
 export function ExploreFooterInvite(props: ComponentProps<"section">) {return <section {...props} className="explore-footer-invite" />;}

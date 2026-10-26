@@ -5,9 +5,7 @@ import {
   EmptyState,
   LiveStatus,
   ProcessStatusPanel,
-  ReviewSignalBadge,
   RouteLoadingState,
-  StatusBadge,
 } from "../shared/ui/primitives";
 
 const meta = {
@@ -79,44 +77,6 @@ export const RouteLoadingStateStory: Story = {
     },
   },
   render: () => <RouteLoadingState label="Loading organizer route" />,
-};
-
-export const StatusBadgeStory: Story = {
-  name: "Status badges",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "shared_status_badge",
-      routeIds: ["claim", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["verified", "claimed", "unclaimed"],
-    },
-  },
-  render: () => (
-    <BadgeRow>
-      <StatusBadge tone="verified">Verified on Catch</StatusBadge>
-      <StatusBadge tone="claimed">Claimed</StatusBadge>
-      <StatusBadge tone="unclaimed">Claimable</StatusBadge>
-    </BadgeRow>
-  ),
-};
-
-export const ReviewSignalBadgeStory: Story = {
-  name: "Review signal badges",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "shared_review_signal_badge",
-      routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["verified", "unverified", "neutral"],
-    },
-  },
-  render: () => (
-    <BadgeRow>
-      <ReviewSignalBadge tone="verified">Verified attendee</ReviewSignalBadge>
-      <ReviewSignalBadge tone="unverified">Public source</ReviewSignalBadge>
-      <ReviewSignalBadge>Host response</ReviewSignalBadge>
-    </BadgeRow>
-  ),
 };
 
 export const BadgeRowStory: Story = {

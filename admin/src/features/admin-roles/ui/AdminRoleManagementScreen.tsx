@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -20,7 +20,6 @@ import {
   AdminRowTitle,
   AdminSecondaryDisclosure,
   AdminTableRow,
-  AdminTag,
   AdminTagRow,
   AdminToolbar,
   AdminWorkbenchStack,
@@ -33,7 +32,6 @@ import {
   SearchField,
   selectOptions,
   StateRow,
-  StatusChip,
   TableActionButton,
 } from "../../../shared/ui/AdminPrimitives";
 import {
@@ -228,7 +226,7 @@ function AssignmentRegisterPanel({controller}: {controller: AdminRoleManagementC
                   </AdminRowTitle>
                 </td>
                 <td>{roleList(row.roles)}</td>
-                <td><AdminTag tone={row.status === "active" ? "neutral" : "muted"}>{row.status}</AdminTag></td>
+                <td><CatchBadge label={row.status} /></td>
                 <td><TableActionButton onClick={() => controller.selectAssignment(row)}>Review</TableActionButton></td>
               </AdminTableRow>
             ))}
@@ -285,7 +283,7 @@ function RoleIdentityPanel({selectedUser}: {selectedUser: AdminUserRoleRecord}) 
           label="Current roles"
           value={selectedUser.roles.length ? (
             <AdminTagRow as="span">
-              {selectedUser.roles.map((role) => <StatusChip key={role}>{role}</StatusChip>)}
+              {selectedUser.roles.map((role) => <CatchBadge key={role} label={role} />)}
             </AdminTagRow>
           ) : "None"}
         />

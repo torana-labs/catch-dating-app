@@ -1,6 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {
-  BadgeControl,
   ButtonControl,
   CheckboxControl,
   DataTableControl,
@@ -62,7 +61,6 @@ export const DataTable = {
 export const Feedback = {
   render: () => (
     <div style={{display: "grid", gap: 12}}>
-      <BadgeControl>Ready badge</BadgeControl>
       <EmptyStateControl>No results yet.</EmptyStateControl>
       <EmptyStateControl announce="polite" contentElement="span">
         Updated results are empty.

@@ -1,0 +1,308 @@
+/*
+ * Flutter CatchBadge (packages/catch_ui): _BadgeMetrics and _BadgePalette.
+ * The badge root is a span, so its base rule carries two selectors and its
+ * inner spans reset what they inherit: a surface's legacy element rule
+ * (".state-row span") cannot restyle library badges.
+ */
+.badge[data-recipe] {
+  /* Interim values until the token generator carries them (badgeParity.test.ts). */
+  --catch-badge-subtle-fill-alpha: 0.12;
+  --catch-badge-subtle-border-alpha: 0.22;
+  --catch-badge-warning-fill-alpha: 0.14;
+  --catch-badge-danger-fill-alpha: 0.1;
+  --catch-badge-on-dark-fill-alpha: 0.12;
+  --catch-badge-on-dark-border-alpha: 0.18;
+  --catch-badge-overlay-pressed-alpha: 0.08;
+  --catch-badge-dark-pill-fill-alpha: 0.68;
+  --catch-badge-editorial-white: #fff;
+  --catch-badge-editorial-black: #000;
+  --catch-badge-action-height: 33px;
+  --catch-badge-action-icon-size: 15px;
+  --catch-badge-icon-sm: 14px;
+  --catch-badge-icon-micro: 11px;
+  --catch-badge-icon-badge: 12px;
+  --catch-badge-dot: 6px;
+  --catch-badge-md-dot-extent: 7px;
+
+  /* Metrics: size sm, the default constructor's default. */
+  --catch-badge-padding: var(--catch-space-s1) var(--catch-space-micro10);
+  --catch-badge-gap: var(--catch-space-s1);
+  --catch-badge-icon-size: var(--catch-badge-icon-badge);
+  --catch-badge-dot-size: var(--catch-badge-dot);
+  --catch-badge-min-height: 0;
+  --catch-badge-radius: var(--catch-radius-pill);
+  --catch-badge-border-width: var(--catch-stroke-hairline);
+
+  /* Text: statusLabel. */
+  --catch-badge-font: var(--catch-font-function), system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --catch-badge-size: var(--catch-typography-web-status-size);
+  --catch-badge-line-height: var(--catch-typography-web-status-line-height);
+  --catch-badge-weight: var(--catch-typography-web-status-weight);
+  --catch-badge-tracking: var(--catch-typography-web-status-tracking);
+
+  /* Palette: neutral. */
+  --catch-badge-ink: var(--catch-theme-ink2);
+  --catch-badge-fill: var(--catch-theme-raised);
+  --catch-badge-border: var(--catch-theme-line2);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--catch-badge-gap);
+  box-sizing: border-box;
+  max-width: 100%;
+  min-height: var(--catch-badge-min-height);
+  margin: 0;
+  padding: var(--catch-badge-padding);
+  border: 0;
+  border-radius: var(--catch-badge-radius);
+  /* Flutter paints the border inside the box, so it never changes the size. */
+  box-shadow: inset 0 0 0 var(--catch-badge-border-width) var(--catch-badge-border);
+  background: var(--catch-badge-fill);
+  color: var(--catch-badge-ink);
+  font-family: var(--catch-badge-font);
+  font-size: var(--catch-badge-size);
+  font-weight: var(--catch-badge-weight);
+  line-height: var(--catch-badge-line-height);
+  letter-spacing: var(--catch-badge-tracking);
+  text-transform: none;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.badge :is(.label, .icon, .dot) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+}
+
+.badge .label {
+  min-width: 0;
+  background: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badge .icon {
+  display: inline-flex;
+  flex: none;
+  width: var(--catch-badge-icon-size);
+  height: var(--catch-badge-icon-size);
+  background: none;
+}
+
+.badge .icon > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.badge .dot {
+  flex: none;
+  width: var(--catch-badge-dot-size);
+  height: var(--catch-badge-dot-size);
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.badge[data-functional] {
+  text-transform: uppercase;
+}
+
+/* Sizes (default constructor, functional, solid, solidStatus, live). */
+
+.badge[data-size="md"] {
+  --catch-badge-padding: calc(var(--catch-space-micro6) + var(--catch-stroke-hairline))
+    var(--catch-space-s3);
+  --catch-badge-icon-size: var(--catch-badge-icon-sm);
+  --catch-badge-dot-size: var(--catch-badge-md-dot-extent);
+}
+
+.badge[data-size="action"] {
+  --catch-badge-padding: 0 var(--catch-space-micro14);
+  --catch-badge-min-height: var(--catch-badge-action-height);
+  --catch-badge-icon-size: var(--catch-badge-action-icon-size);
+
+  justify-content: center;
+}
+
+/* Text roles by size: labelL for md, buttonSm for action, mono caps when functional. */
+
+.badge[data-size="md"]:not([data-functional]) {
+  --catch-badge-size: var(--catch-typography-web-secondary-size);
+  --catch-badge-line-height: var(--catch-typography-web-secondary-line-height);
+  --catch-badge-weight: 700;
+  --catch-badge-tracking: var(--catch-typography-web-secondary-tracking);
+}
+
+.badge[data-size="action"]:not([data-functional]) {
+  --catch-badge-size: var(--catch-typography-web-control-size);
+  --catch-badge-line-height: var(--catch-typography-web-control-line-height);
+  --catch-badge-weight: 600;
+  --catch-badge-tracking: var(--catch-typography-web-control-tracking);
+}
+
+.badge[data-functional][data-size="sm"] {
+  --catch-badge-font: var(--catch-typography-brand-badge-caps-family), var(--catch-font-mono), monospace;
+  --catch-badge-size: var(--catch-typography-brand-badge-caps-size);
+  --catch-badge-line-height: var(--catch-typography-brand-badge-caps-line-height);
+  --catch-badge-weight: var(--catch-typography-brand-badge-caps-weight);
+  --catch-badge-tracking: var(--catch-typography-brand-badge-caps-tracking);
+}
+
+.badge[data-functional]:is([data-size="md"], [data-size="action"]) {
+  --catch-badge-font: var(--catch-typography-brand-kicker-family), var(--catch-font-mono), monospace;
+  --catch-badge-size: var(--catch-typography-brand-kicker-size);
+  --catch-badge-line-height: var(--catch-typography-brand-kicker-line-height);
+  --catch-badge-weight: var(--catch-typography-brand-kicker-weight);
+  --catch-badge-tracking: var(--catch-typography-brand-kicker-tracking);
+}
+
+/* Tones (default constructor and functional). */
+
+.badge[data-tone="brand"] {
+  --catch-badge-ink: var(--catch-theme-primary);
+  --catch-badge-fill: var(--catch-theme-primary-soft);
+  --catch-badge-border: transparent;
+}
+
+.badge[data-tone="success"] {
+  --catch-badge-ink: var(--catch-theme-success);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+    calc(var(--catch-badge-subtle-fill-alpha) * 100%), transparent);
+  --catch-badge-border: transparent;
+}
+
+.badge[data-tone="warning"] {
+  --catch-badge-ink: var(--catch-theme-warning);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+    calc(var(--catch-badge-warning-fill-alpha) * 100%), transparent);
+  --catch-badge-border: transparent;
+}
+
+.badge[data-tone="danger"] {
+  --catch-badge-ink: var(--catch-theme-danger);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+    calc(var(--catch-badge-danger-fill-alpha) * 100%), transparent);
+  --catch-badge-border: transparent;
+}
+
+.badge[data-tone="affinity"] {
+  --catch-badge-ink: var(--catch-theme-affinity-text);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+    calc(var(--catch-badge-subtle-fill-alpha) * 100%), transparent);
+  --catch-badge-border: transparent;
+}
+
+.badge[data-tone="gold"] {
+  --catch-badge-ink: var(--catch-theme-gold);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+    calc(var(--catch-badge-subtle-fill-alpha) * 100%), transparent);
+  --catch-badge-border: color-mix(in srgb, var(--catch-badge-ink)
+    calc(var(--catch-badge-subtle-border-alpha) * 100%), transparent);
+}
+
+/* Fixed recipes. */
+
+.badge[data-recipe="status"] {
+  --catch-badge-padding: var(--catch-layout-status-vertical-padding)
+    var(--catch-layout-status-horizontal-padding);
+  --catch-badge-icon-size: var(--catch-badge-icon-sm);
+  --catch-badge-radius: var(--catch-radius-sm);
+  --catch-badge-border-width: 0;
+  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+    calc(var(--catch-badge-subtle-fill-alpha) * 100%), transparent);
+
+  white-space: normal;
+}
+
+.badge[data-recipe="status"][data-tone="success"] { --catch-badge-ink: var(--catch-theme-positive-text); }
+.badge[data-recipe="status"][data-tone="warning"] { --catch-badge-ink: var(--catch-theme-attention-text); }
+
+.badge[data-recipe="status"] .label {
+  overflow: visible;
+}
+
+.badge:is([data-recipe="solid"], [data-recipe="solidStatus"]) {
+  --catch-badge-ink: var(--catch-theme-surface);
+  --catch-badge-fill: var(--catch-theme-ink);
+  --catch-badge-border: transparent;
+}
+
+.badge[data-recipe="live"] {
+  --catch-badge-ink: var(--catch-theme-primary-ink);
+  --catch-badge-fill: var(--catch-theme-primary);
+  --catch-badge-border: transparent;
+}
+
+.badge:is([data-recipe="onDark"], [data-recipe="onDarkStatus"]) {
+  --catch-badge-padding: var(--catch-space-s2) var(--catch-space-s3);
+  --catch-badge-ink: var(--catch-badge-editorial-white);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-editorial-white)
+    calc(var(--catch-badge-on-dark-fill-alpha) * 100%), transparent);
+  --catch-badge-border: color-mix(in srgb, var(--catch-badge-editorial-white)
+    calc(var(--catch-badge-on-dark-border-alpha) * 100%), transparent);
+}
+
+.badge[data-recipe="privacy"] {
+  --catch-badge-icon-size: var(--catch-badge-icon-micro);
+  --catch-badge-ink: var(--catch-theme-ink3);
+  --catch-badge-fill: transparent;
+  --catch-badge-border: var(--catch-theme-line2);
+}
+
+/* Functional too, so it outranks the functional size rules. */
+.badge[data-recipe="ticketStatus"][data-functional] {
+  --catch-badge-padding: var(--catch-space-s1) var(--catch-space-s2);
+  --catch-badge-border-width: 0;
+  --catch-badge-ink: var(--catch-badge-pigment, var(--catch-theme-ink2));
+  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-ink)
+    calc(var(--catch-badge-subtle-fill-alpha) * 100%), transparent);
+  --catch-badge-font: var(--catch-typography-brand-mono-label-family), var(--catch-font-mono), monospace;
+  --catch-badge-size: var(--catch-typography-brand-mono-label-size);
+  --catch-badge-line-height: var(--catch-typography-brand-mono-label-line-height);
+  --catch-badge-weight: var(--catch-typography-brand-mono-label-weight);
+  --catch-badge-tracking: var(--catch-typography-brand-mono-label-tracking);
+
+  transition: background-color var(--catch-motion-fast, 150ms) ease, color var(--catch-motion-fast, 150ms) ease;
+}
+
+.badge[data-recipe="ticketStatus"][data-functional][data-emphasis="strong"] {
+  --catch-badge-padding: var(--catch-space-s1) var(--catch-space-s3);
+  --catch-badge-ink: var(--catch-badge-editorial-white);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-badge-editorial-black)
+    calc(var(--catch-badge-dark-pill-fill-alpha) * 100%), transparent);
+}
+
+.badge[data-recipe="optional"] {
+  --catch-badge-padding: var(--catch-space-micro2) var(--catch-space-micro6);
+  --catch-badge-radius: var(--catch-radius-sm);
+  --catch-badge-border-width: 0;
+  --catch-badge-ink: var(--catch-theme-ink3);
+  --catch-badge-fill: var(--catch-theme-raised);
+  --catch-badge-size: var(--catch-typography-web-secondary-size);
+  --catch-badge-line-height: var(--catch-typography-web-secondary-line-height);
+  --catch-badge-weight: 600;
+  --catch-badge-tracking: var(--catch-typography-web-secondary-tracking);
+
+  white-space: normal;
+}
+
+.badge[data-recipe="optional"][data-tone="danger"] {
+  --catch-badge-ink: var(--catch-theme-danger);
+  --catch-badge-fill: color-mix(in srgb, var(--catch-theme-danger)
+    calc(var(--catch-badge-overlay-pressed-alpha) * 100%), transparent);
+}
+
+.badge[data-recipe="optional"] .label {
+  overflow: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge { transition: none; }
+}

@@ -1,7 +1,8 @@
+import {CatchBadge} from "@catch/web-ui";
 import {exploreCopy} from "../../../content/explore";
 import {organiserProfileCopy} from "../../../content/organiserProfile";
 import {publicExperienceActivities} from "../publicExperience";
-import {ExploreBadge} from "../../../shared/ui/primitives/explore";
+
 import {websiteCopy} from "@content/generated";
 import {organizerListingCopy} from "@content/organizer";
 import {trackMarketingEvent} from "../../../analytics";
@@ -53,7 +54,6 @@ export function ListingCatchEventsSection({listing}: {listing: HostListing}) {
     eventActionCardForListing(listing, event)
   );
 
-
   return (
     <ListingSection
       variant="events"
@@ -70,7 +70,7 @@ export function ListingCatchEventsSection({listing}: {listing: HostListing}) {
           <EventActionCard
             event={event}
             badge={publicExperienceActivities(events[index].catchExperienceActivities).length ?
-              <ExploreBadge title={exploreCopy.experienceBody}>{exploreCopy.experienceLabel}</ExploreBadge> : undefined}
+              <CatchBadge tone="brand" label={exploreCopy.experienceLabel} /> : undefined}
             key={event.id}
             onActionClick={trackListingEventActionClick}
           />

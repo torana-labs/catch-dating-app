@@ -1701,61 +1701,6 @@
       "notes": "Labelled choice group over ToggleGroupControl."
     },
     {
-      "id": "shared_status_badge",
-      "kind": "supporting-component",
-      "routeIds": [
-        "claim",
-        "organizer_search",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/feedback.tsx",
-      "css": [
-        "website/src/styles/home.css",
-        "website/src/styles/flows.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/FeedbackPrimitives.stories.tsx",
-        "exportName": "StatusBadgeStory",
-        "states": [
-          "verified",
-          "claimed",
-          "unclaimed"
-        ]
-      },
-      "notes": "Shared website organizer/listing status badge primitive; raw status-badge shells are blocked by web:react-component-governance.",
-      "exportName": "StatusBadge",
-      "componentId": "catch.badge"
-    },
-    {
-      "id": "shared_review_signal_badge",
-      "kind": "supporting-component",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/feedback.tsx",
-      "exportName": "ReviewSignalBadge",
-      "css": [
-        "website/src/styles/organizers.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/FeedbackPrimitives.stories.tsx",
-        "exportName": "ReviewSignalBadgeStory",
-        "states": [
-          "verified",
-          "unverified",
-          "neutral"
-        ]
-      },
-      "notes": "Shared website review-source/verification badge primitive; raw review-signal-badge shells are blocked by web:react-component-governance. Phase 7d: Website adapter of BadgeControl for review signals.",
-      "componentId": "catch.badge"
-    },
-    {
       "id": "shared_badge_row",
       "kind": "supporting-component",
       "routeIds": [
@@ -1766,6 +1711,10 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "BadgeRow",
+      "comparedWith": [
+        "catch.badge"
+      ],
+      "comparisonReason": "Wrapping row that lays out listing badges; each badge is the library CatchBadge.",
       "css": [
         "website/src/styles/organizers.css"
       ],
@@ -3360,31 +3309,6 @@
         ]
       },
       "notes": "Disclosure retains source count, freshness, visibility and ownership without leading the guest experience."
-    },
-    {
-      "id": "shared_catch_experience_badge",
-      "kind": "supporting-component",
-      "routeIds": [
-        "visitor_discovery",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy",
-        "event_detail_canonical"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/explore.tsx",
-      "exportName": "ExploreBadge",
-      "componentId": "catch.badge",
-      "css": [
-        "website/src/styles/explore.css"
-      ],
-      "storybook": {
-        "status": "route-only",
-        "states": [
-          "catch-experience",
-          "ordinary-booking-without-badge"
-        ]
-      },
-      "notes": "Passive BadgeControl adapter for events that actively guide guest participation. Covered in Explore and populated event-detail route previews; ordinary booking-only events omit the badge."
     },
     {
       "id": "shared_app_capture_image",

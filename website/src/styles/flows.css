@@ -506,7 +506,7 @@
     grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .claim-result .status-badge,
+  .claim-result > :last-child,
   .selected-listing-card .see-all-button {
     grid-column: 1 / -1;
   }

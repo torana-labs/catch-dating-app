@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {
   CheckCircle2,
   CircleDollarSign,
@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import {
   AdminButton,
-  AdminTag,
   AdminTagList,
   AdminToolbar,
   AdminWorkbenchStack,
@@ -140,9 +139,9 @@ export function renderMessagingBudgetPanel(controller: MessagingBudgetController
               />
             </QualityList>
             <AdminTagList>
-              <AdminTag tone="neutral">No spending authority</AdminTag>
-              <AdminTag tone="neutral">No dispatch authority</AdminTag>
-              <AdminTag tone="neutral">Revision-fenced</AdminTag>
+              <CatchBadge label="No spending authority" />
+              <CatchBadge label="No dispatch authority" />
+              <CatchBadge label="Revision-fenced" />
             </AdminTagList>
             <AdminToolbar>
               <CatchField

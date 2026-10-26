@@ -74,7 +74,7 @@ for (const [surface, relativePath] of Object.entries(surfaceRegistries)) {
     document.components.push({
       id: "known_bad_adapter",
       source: "website/src/shared/ui/primitives/feedback.tsx",
-      exportName: "StatusBadge",
+      exportName: "BadgeRow",
       componentId: "catch.sheet",
     });
   }
@@ -100,14 +100,13 @@ for (const [surface, relativePath] of Object.entries(surfaceRegistries)) {
 }
 
 // Structural labels and status badges look alike in markup; keep them bound
-// to distinct contracts on every stack.
+// to distinct contracts on every stack. Both surfaces render the library
+// CatchBadge directly, so no surface adapter may claim catch.badge.
 const semanticDistinctions = [
   ["webui", "UiLabel", "catch.typography"],
   ["website", "UiLabel", "catch.typography"],
   ["admin", "AdminEyebrow", "catch.typography"],
-  ["webui", "BadgeControl", "catch.badge"],
-  ["website", "StatusBadge", "catch.badge"],
-  ["admin", "StatusChip", "catch.badge"],
+  ["webui", "CatchBadge", "catch.badge"],
 ];
 for (const [surface, symbol, expected] of semanticDistinctions) {
   const actual = surface === "webui"
@@ -115,6 +114,11 @@ for (const [surface, symbol, expected] of semanticDistinctions) {
     : adapterComponentIds.get(`${surface}:${symbol}`);
   if (actual !== expected) {
     failures.push(`${surface} ${symbol} must implement ${expected}, received '${actual ?? "missing"}'`);
+  }
+}
+for (const [key, componentId] of adapterComponentIds) {
+  if (componentId === "catch.badge") {
+    failures.push(`${key.replace(":", " ")} wraps catch.badge; render the library CatchBadge instead`);
   }
 }
 
