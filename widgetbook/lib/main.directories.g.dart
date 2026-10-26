@@ -433,6 +433,8 @@ import 'package:widgetbook_workspace/primitives/contracts/field_rows.dart'
     as _widgetbook_workspace_primitives_contracts_field_rows;
 import 'package:widgetbook_workspace/primitives/contracts/form_step_list.dart'
     as _widgetbook_workspace_primitives_contracts_form_step_list;
+import 'package:widgetbook_workspace/primitives/contracts/icon.dart'
+    as _widgetbook_workspace_primitives_contracts_icon;
 import 'package:widgetbook_workspace/primitives/contracts/icons.dart'
     as _widgetbook_workspace_primitives_contracts_icons;
 import 'package:widgetbook_workspace/primitives/contracts/images.dart'
@@ -3048,6 +3050,16 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Icon atoms',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchIcon',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_icon
+                    .catchIconContractStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'CatchIconTile',
             useCases: [

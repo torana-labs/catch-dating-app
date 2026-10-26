@@ -7422,6 +7422,184 @@
       }
     },
     {
+      "id": "catch.icon",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Every size, tone and the labelled state render in the generated Widgetbook contract; the icon-family gate and parity tests pin both frameworks to design/tokens/catch.icons.json."
+      },
+      "name": "CatchIcon",
+      "status": "active",
+      "kind": "primitive",
+      "tier": "T1",
+      "aliases": [
+        "Glyph",
+        "IconGlyph",
+        "SvgIcon",
+        "LucideIcon"
+      ],
+      "summary": "One icon role from the catalog, drawn at a CatchIconSize step in a semantic tone; decorative unless it has a label.",
+      "dart": {
+        "symbol": "CatchIcon",
+        "file": "packages/catch_ui/lib/src/primitives/catch_icon.dart",
+        "constructors": [
+          "CatchIcon"
+        ]
+      },
+      "react": {
+        "symbol": "CatchIcon",
+        "file": "packages/web-ui/src/components/CatchIcon.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchIcon.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "sizes",
+            "tones",
+            "labelled"
+          ]
+        },
+        "notes": "Flutter passes CatchIcons.<role> (IconData); React passes the same role name as a string. Both resolve through design/tokens/catch.icons.json."
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Icon",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Icon",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "icon",
+            "type": "object",
+            "required": true,
+            "dartType": "IconData",
+            "tsType": "CatchIconName",
+            "notes": "A role from CatchIcons; positional in Flutter. React names the role."
+          },
+          {
+            "name": "size",
+            "type": "enum",
+            "required": false,
+            "default": "md",
+            "dartType": "double",
+            "tsType": "\"micro\" | \"sm\" | \"xs\" | \"md\" | \"control\" | \"row\" | \"lg\" | \"tile\" | \"emptyState\" | \"hero\"",
+            "values": [
+              "micro",
+              "sm",
+              "xs",
+              "md",
+              "control",
+              "row",
+              "lg",
+              "tile",
+              "emptyState",
+              "hero"
+            ],
+            "notes": "A CatchIconSize step; React names the step."
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "default": "inherit",
+            "dartType": "CatchIconTone",
+            "tsType": "CatchIconTone",
+            "values": [
+              "inherit",
+              "ink",
+              "muted",
+              "primary",
+              "success",
+              "warning",
+              "danger"
+            ]
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Without a label the icon is decorative and hidden from assistive technology."
+          }
+        ],
+        "states": [
+          "sizes",
+          "tones",
+          "labelled"
+        ],
+        "slots": [],
+        "tokens": [
+          "theme.light.color.ink",
+          "theme.light.color.ink2",
+          "theme.light.color.primary",
+          "theme.light.color.success",
+          "theme.light.color.warning",
+          "theme.light.color.danger"
+        ],
+        "dartRoles": [
+          "CatchIcons",
+          "CatchIconSize.md",
+          "CatchIconTone"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Name a role from design/tokens/catch.icons.json; never a glyph of an icon family.",
+          "Components that take an icon slot (IconData in Flutter, ReactNode in React) receive CatchIcons.<role> or <CatchIcon icon=\"<role>\" />."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.icon",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.icon"
+      },
+      "level": "L2",
+      "roleNoun": "Icon",
+      "naming": {
+        "useCase": "",
+        "comparedWith": [
+          "catch.icon_tile",
+          "catch.icon_button"
+        ],
+        "reason": "A bare glyph with no container or command. CatchIconTile draws a container around an icon and CatchIconAction makes a glyph a command; both render CatchIcon roles."
+      }
+    },
+    {
       "id": "catch.icon_button",
       "enforcement": {
         "code": "catch_icon_button_requires_tooltip",

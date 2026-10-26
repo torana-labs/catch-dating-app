@@ -4,9 +4,10 @@
 // design/tokens/catch.icons.json names every role Catch features may use and
 // maps it to one glyph of the active icon family. This tool validates the
 // catalog against the vendored Flutter font and the installed React package,
-// then writes the Flutter `CatchIcons` class. Changing the family means
-// changing the catalog's `family` block and glyph names (and vendoring that
-// family's font); call sites name roles and do not change.
+// then writes the Flutter `CatchIcons` class and the React role maps in
+// `@catch/web-ui`. Changing the family means changing the catalog's `family`
+// block and glyph names (and vendoring that family's font); call sites name
+// roles and do not change.
 import crypto from "node:crypto";
 import fs from "node:fs";
 import {createRequire} from "node:module";
@@ -27,7 +28,13 @@ export const inputs = {
 
 export const outputs = {
   dart: "packages/catch_ui/lib/src/foundations/catch_icons.g.dart",
+  glyphs: "packages/web-ui/src/icons/catchIconGlyphs.generated.ts",
+  nodes: "packages/web-ui/src/icons/catchIconNodes.generated.ts",
 };
+
+// Groups whose glyphs are also drawn outside React (link-preview SVG,
+// server-rendered artwork), so their node data ships with the package.
+const nodeGroups = new Set(["activity", "playbook"]);
 
 // Reserved words cannot name a static member; built-in and contextual
 // identifiers such as `show`, `sync` and `library` can.
@@ -56,8 +63,8 @@ export function activityRoleName(kind) {
  *
  * `family` describes what is installed or vendored: `codepoints` (glyph name
  * to font codepoint), `fontSha256` of the vendored font, `reactVersion` and
- * `lockVersion` of the React package and `reactExports` (the set of exported
- * component names).
+ * `lockVersion` of the React package, `reactExports` (the set of exported
+ * component names) and `iconNode(glyph)` (Lucide node data or null).
  */
 export function buildIconOutputs({catalog, legacy, activityKinds, family, schemaErrors = []}) {
   const errors = [...schemaErrors];
@@ -107,6 +114,9 @@ export function buildIconOutputs({catalog, legacy, activityKinds, family, schema
     } else if (role.activityKind) {
       errors.push(`Role '${name}' is not in the activity group but declares activityKind.`);
     }
+    if (nodeGroups.has(role.group) && !family.iconNode(role.glyph)) {
+      errors.push(`Role '${name}': no icon node data for glyph '${role.glyph}'.`);
+    }
   }
 
   const declaredKinds = roles.filter(([, role]) => role.group === "activity")
@@ -134,6 +144,8 @@ export function buildIconOutputs({catalog, legacy, activityKinds, family, schema
     errors,
     outputs: {
       dart: renderDart(catalog, aliases, family.codepoints),
+      glyphs: renderGlyphs(catalog),
+      nodes: renderNodes(catalog, family.iconNode),
     },
   };
 }
@@ -260,24 +272,88 @@ function renderDart(catalog, aliases, codepoints) {
   ].join("\n")}\n`;
 }
 
+function renderGlyphs(catalog) {
+  const roles = Object.entries(catalog.roles);
+  const imports = [...new Set(roles.map(([, role]) => pascalCase(role.glyph)))].sort();
+  const activity = roles.filter(([, role]) => role.group === "activity");
+  return `${[
+    header(catalog, "//"),
+    `import type {LucideIcon} from "${catalog.family.react.package}";`,
+    "import {",
+    ...imports.map((name) => `  ${name},`),
+    `} from "${catalog.family.react.package}";`,
+    "",
+    "/** Every Catch icon role and the glyph that draws it. */",
+    "export const catchIconGlyphs = {",
+    ...roles.map(([name, role]) => `  ${name}: ${pascalCase(role.glyph)},`),
+    "} as const satisfies Record<string, LucideIcon>;",
+    "",
+    "export type CatchIconName = keyof typeof catchIconGlyphs;",
+    "",
+    "/** The stroke width every role is drawn with, matching the Flutter font. */",
+    `export const catchIconStrokeWidth = ${catalog.family.strokeWidth};`,
+    "",
+    "/** The role that draws each event activity kind. */",
+    "export const catchActivityIconNames = {",
+    ...activity.map(([name, role]) => `  ${role.activityKind}: "${name}",`),
+    "} as const satisfies Record<string, CatchIconName>;",
+    "",
+    "export type CatchActivityKind = keyof typeof catchActivityIconNames;",
+  ].join("\n")}\n`;
+}
+
+function renderNodes(catalog, iconNode) {
+  const roles = Object.entries(catalog.roles).filter(([, role]) => nodeGroups.has(role.group));
+  const entries = roles.map(([name, role]) => {
+    const nodes = iconNode(role.glyph).map(([tag, attrs]) => {
+      const clean = Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== "key"));
+      return `    [${JSON.stringify(tag)}, ${JSON.stringify(clean)}],`;
+    });
+    return [`  ${name}: [`, ...nodes, "  ],"].join("\n");
+  });
+  return `${[
+    header(catalog, "//"),
+    `// SVG node data (24 x 24 box) for the ${[...nodeGroups].join(" and ")} roles, for`,
+    "// artwork drawn outside React, such as link-preview cards.",
+    "",
+    "export type CatchIconNode = readonly [tag: string, attributes: Readonly<Record<string, string>>];",
+    "",
+    "export const catchIconNodes = {",
+    ...entries,
+    "} as const satisfies Record<string, readonly CatchIconNode[]>;",
+    "",
+    "export type CatchIconNodeName = keyof typeof catchIconNodes;",
+  ].join("\n")}\n`;
+}
+
 function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(fromRepo(relativePath), "utf8"));
 }
 
 async function loadFamily(catalog) {
   const {flutter, react} = catalog.family;
-  // The website declares the React icon package; workspaces share one install.
-  const require = createRequire(fromRepo("website/package.json"));
+  // @catch/web-ui declares the React icon package; workspaces share one install.
+  const require = createRequire(fromRepo("packages/web-ui/package.json"));
   const packageJsonPath = require.resolve(`${react.package}/package.json`);
+  const packageRoot = path.dirname(packageJsonPath);
   const reactModule = await import(pathToFileURL(require.resolve(react.package)).href);
   const lock = readJson(inputs.packageLock);
   const fontBytes = fs.readFileSync(fromRepo("packages", flutter.fontPackage, flutter.fontAsset));
+  // Each Lucide icon module exports its node data as `__iconData`.
+  const nodes = new Map();
+  for (const role of Object.values(catalog.roles)) {
+    if (!nodeGroups.has(role.group) || nodes.has(role.glyph)) continue;
+    const modulePath = path.join(packageRoot, "dist/esm/icons", `${role.glyph}.mjs`);
+    const iconModule = fs.existsSync(modulePath) ? await import(pathToFileURL(modulePath).href) : null;
+    nodes.set(role.glyph, iconModule?.__iconData?.node ?? null);
+  }
   return {
     codepoints: readJson(flutter.codepoints),
     fontSha256: crypto.createHash("sha256").update(fontBytes).digest("hex"),
     reactVersion: JSON.parse(fs.readFileSync(packageJsonPath, "utf8")).version,
     lockVersion: lock.packages?.[`node_modules/${react.package}`]?.version ?? null,
     reactExports: new Set(Object.keys(reactModule)),
+    iconNode: (glyph) => nodes.get(glyph) ?? null,
   };
 }
 
@@ -323,6 +399,6 @@ async function runCli(argv) {
   }
   const roleCount = Object.keys(catalog.roles).length;
   console.log(check
-    ? `Icon role catalog is valid: ${roleCount} roles resolve in both frameworks and CatchIcons is current.`
+    ? `Icon role catalog is valid: ${roleCount} roles resolve in both frameworks and both icon layers are current.`
     : `Generated ${Object.values(outputs).map((file) => path.relative(repoRoot, fromRepo(file))).join(", ")}.`);
 }

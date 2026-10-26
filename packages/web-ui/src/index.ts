@@ -55,6 +55,13 @@ export type {
   CatchGridElement,
   CatchGridProps,
 } from "./components/CatchGrid";
+export {CatchIcon, catchIconSizes} from "./components/CatchIcon";
+export type {CatchIconProps, CatchIconSizeName, CatchIconTone} from "./components/CatchIcon";
+export {catchIconGlyphs, catchIconStrokeWidth} from "./icons/catchIconGlyphs.generated";
+export type {CatchActivityKind, CatchIconName} from "./icons/catchIconGlyphs.generated";
+export {catchIconNodes} from "./icons/catchIconNodes.generated";
+export type {CatchIconNode, CatchIconNodeName} from "./icons/catchIconNodes.generated";
+export {activityIconName, catchIconSvgMarkup} from "./icons/catchIcons";
 export {CatchInset} from "./components/CatchInset";
 export type {CatchInsetElement, CatchInsetPadding, CatchInsetProps} from "./components/CatchInset";
 export {CatchLinkTile} from "./components/CatchLinkTile";
