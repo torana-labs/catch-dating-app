@@ -3,6 +3,7 @@ import fs from "node:fs";
 import {describe, expect, it, vi} from "vitest";
 vi.mock("server-only", () => ({}));
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/events/eventDetailModel";
+import {eventPageFromListing} from "../features/events/eventPageFromListing";
 import {
   assembleEventDetailCatalog,
   assembleEventDetailFromSources,
@@ -328,6 +329,8 @@ describe("public page read models", () => {
     const fromSources = await assembleEventDetailFromSources(fakeReader(world).reader, "open-upcoming", now);
     expect(catalog.listings).toEqual(fromSources?.listings.map((listing) =>
       withoutDatingFraming(listing as unknown as Row)));
+    const {builtAt: _builtAt, contentHash: _contentHash, listing: _listing, ...page} = world.eventPublicPage["open-upcoming"];
+    expect(catalog.eventPage).toEqual(page);
     const record = getEventDetailForPath("/events/open-upcoming/", buildPublicEventDetailRecords(catalog.listings, now));
     expect(record?.capacityLimit).toBe(12);
     expect(record?.eventReviews.map((review) => review.id)).toEqual(["review-verified"]);
@@ -347,7 +350,20 @@ describe("public page read models", () => {
     const organizer = await assembleOrganizerDetailCatalog(fakeReader(world).reader, "/organizers/next-proof/", now);
     expect(organizer).toEqual(await assembleOrganizerDetailFromSources(fakeReader(world).reader, "/organizers/next-proof/", now));
     const event = await assembleEventDetailCatalog(fakeReader(world).reader, "open-upcoming", now);
-    expect(event).toEqual(await assembleEventDetailFromSources(fakeReader(world).reader, "open-upcoming", now));
+    const fromSources = await assembleEventDetailFromSources(fakeReader(world).reader, "open-upcoming", now);
+    expect(event).toEqual({...fromSources, eventPage: eventPageFromListing(fromSources!.listings[0], "open-upcoming")});
+  });
+
+  it("arrange an event without a read model as its read model does", async () => {
+    const {world, now} = readModelWorld();
+    const fromPage = (await assembleRouteCatalog(fakeReader(world).reader, "/events/open-upcoming/", now)).eventPage;
+    delete world.eventPublicPage["open-upcoming"];
+    const fallback = (await assembleRouteCatalog(fakeReader(world).reader, "/events/open-upcoming/", now)).eventPage;
+    expect(fallback?.item).toEqual(fromPage?.item);
+    expect(fallback?.capacity).toEqual(fromPage?.capacity);
+    const card = ({name, path, category, city, logo, verified, followerCount}: NonNullable<typeof fromPage>["organizer"]) =>
+      ({name, path, category, city, logo, verified, followerCount});
+    expect(card(fallback!.organizer)).toEqual(card(fromPage!.organizer));
   });
 
   it("withhold a withdrawn organizer whether or not its read model is gone yet", async () => {

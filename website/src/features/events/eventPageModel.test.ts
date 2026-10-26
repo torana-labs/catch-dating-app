@@ -122,6 +122,13 @@ describe("buildEventPageView", () => {
     expect(buildEventPageView(fullEventPage, Date.parse("2026-11-23T00:00:00.000Z")).booking.open).toBe(false);
   });
 
+  it("says how to join an event with admission requirements", () => {
+    const event = {...fullEventPage.item.event, admissionLabels: ["approval", "membership"]} as const;
+    const page = view({...fullEventPage, item: {...fullEventPage.item, event} as EventPageData["item"]});
+    expect(page.goodToKnow.at(-1)).toEqual({key: "joining", label: "How to join", accent: "magenta",
+      body: "The organiser reviews requests before confirming places. This event is for the organiser’s members."});
+  });
+
   it("never shows a rotations moment or a free event's cancellation terms", () => {
     const event = {...fullEventPage.item.event, cancellationPolicy: "notApplicable",
       catchExperienceActivities: ["rotations"]} as const;

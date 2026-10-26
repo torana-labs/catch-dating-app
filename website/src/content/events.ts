@@ -263,6 +263,12 @@ export const eventPageCopy = {
     bring: "What to bring",
     accessibility: "Accessibility",
     cancellation: "Cancellation",
+    joining: "How to join",
+  },
+  joining: {
+    approval: "The organiser reviews requests before confirming places.",
+    invitation: "You need an invitation or access code.",
+    membership: "This event is for the organiser’s members.",
   },
   cancellation: {
     flexible: "Full refund if you cancel at least 6 hours before the start.",

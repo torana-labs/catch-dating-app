@@ -34,6 +34,7 @@ import {
   organizerPageListings,
 } from "./repositories/publicPageRepository";
 import {organizerPath, publicDocumentId} from "./publicReadPolicy";
+import {eventPageFromListing} from "../features/events/eventPageFromListing";
 
 const markets = new Set(activeEventLiveCities.map(city => city.slug));
 export function publicFirestore() {
@@ -94,14 +95,22 @@ export async function assembleOrganizerDetailCatalog(
   })());
 }
 
-/** One event page from its read model, or from its sources until backfilled. */
+/**
+ * One event page from its read model, or from its sources until backfilled.
+ * The listing still feeds route metadata and the organizer analytics.
+ */
 export async function assembleEventDetailCatalog(
   db: PublicReader, eventId: string, readAt: number
 ): Promise<PublicCatalog | null> {
   return withinReadDeadline((async () => {
     const page = await findEventPage(db, eventId);
-    if (page) return {listings: [eventPageListing(page, readAt)], readAt};
-    return assembleEventDetailFromSources(db, eventId, readAt);
+    if (page) {
+      const {builtAt: _builtAt, contentHash: _contentHash, listing: _listing, ...eventPage} = page;
+      return {listings: [eventPageListing(page, readAt)], readAt, eventPage};
+    }
+    const catalog = await assembleEventDetailFromSources(db, eventId, readAt);
+    const eventPage = catalog?.listings[0] ? eventPageFromListing(catalog.listings[0], eventId) : null;
+    return catalog && eventPage ? {...catalog, eventPage} : catalog;
   })());
 }
 

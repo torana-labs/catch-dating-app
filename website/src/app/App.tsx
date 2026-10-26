@@ -35,6 +35,7 @@ import {
   getEventDetailForPath,
   isEventDetailPath,
 } from "../features/events/eventDetailModel";
+import {eventPageFromListing} from "../features/events/eventPageFromListing";
 import {
   getHostListingRouteForPath,
 } from "../features/organizers/routing";
@@ -164,6 +165,7 @@ function CanonicalMarketingRouteShell() {
   const {listings, phase: eventFeedPhase} = usePublicHostListings();
   const events = useMemo(() => buildPublicEventDetailRecords(listings), [listings]);
   const event = getEventDetailForPath(location.pathname, events);
+  const eventPage = useMemo(() => event ? eventPageFromListing(event.listing, event.eventId) : null, [event]);
   const listingRoute = getHostListingRouteForPath(location.pathname, listings);
   const listing = listingRoute?.listing ?? null;
   const fallbackPage = pageKeyForCurrentRoute(
@@ -232,8 +234,8 @@ function CanonicalMarketingRouteShell() {
           />
           <Route
             path={marketingRoutePaths.event_detail}
-            element={event ? (
-              <EventDetailPage event={event} />
+            element={event && eventPage ? (
+              <EventDetailPage listing={event.listing} page={eventPage} />
             ) : eventFeedPhase === "loading" ? (
               <RouteLoadingState />
             ) : (

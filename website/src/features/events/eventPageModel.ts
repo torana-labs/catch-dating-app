@@ -19,7 +19,7 @@ export interface EventPageFact {
 }
 
 export interface EventPageGoodToKnow {
-  key: "included" | "bring" | "accessibility" | "cancellation";
+  key: "included" | "bring" | "accessibility" | "cancellation" | "joining";
   label: string;
   body: string;
   accent?: CatchTextAccent;
@@ -214,12 +214,16 @@ function goodToKnowFor(page: EventPageData): EventPageGoodToKnow[] {
   const event = page.item.event;
   const policy = page.item.source === "catch" ? page.item.event.cancellationPolicy : undefined;
   const included = page.item.source === "catch" ? page.item.event.included?.trim() : undefined;
+  // The read model already drops the balanced label (CAT-247).
+  const joining = page.item.source === "catch" ? (page.item.event.admissionLabels ?? []).flatMap((label) =>
+    label === "balanced" ? [] : [copy.joining[label]]) : [];
   const items: Array<EventPageGoodToKnow | null> = [
     included ? {key: "included", label: copy.goodToKnow.included, body: included, accent: "coral"} : null,
     event.requirements?.trim() ? {key: "bring", label: copy.goodToKnow.bring, body: event.requirements.trim()} : null,
     event.accessibility?.trim() ? {key: "accessibility", label: copy.goodToKnow.accessibility, body: event.accessibility.trim(), accent: "mint"} : null,
     // A free event has no paid cancellation terms to state.
     policy && policy !== "notApplicable" ? {key: "cancellation", label: copy.goodToKnow.cancellation, body: copy.cancellation[policy], accent: "indigo"} : null,
+    joining.length ? {key: "joining", label: copy.goodToKnow.joining, body: joining.join(" "), accent: "magenta"} : null,
   ];
   return items.filter((entry): entry is EventPageGoodToKnow => entry !== null);
 }
