@@ -9,6 +9,7 @@ import {planAffectedToolChecks} from "../../lib/tool_impact.mjs";
 import {
   baselinePath, consolidationDifferences, consolidationSnapshot,
   pageCssBudgets, parseConsolidationBaseline, previousConsolidationBaseline,
+  strandedByRetirementCeiling, strandedDifferences,
 } from "./react_consolidation_ratchet.mjs";
 
 const empty = () => ({
@@ -22,6 +23,15 @@ const empty = () => ({
 });
 const library = "library.t1_web";
 const css = "screens.web_page_css_lines";
+const single = "screens.web_single_use_shared";
+const [[strandedId, strandedTicket], [otherStrandedId, otherStrandedTicket]] =
+  Object.entries(strandedByRetirementCeiling[single]);
+const withStranded = (record, extra = []) => {
+  const document = empty();
+  document.gates[single] = [...Object.keys(record), ...extra].sort();
+  document.strandedByRetirement = {[single]: record};
+  return document;
+};
 const probes = [
   ["a baseline-only edit still selects the registered enforcing check", () => {
     const root = fileURLToPath(new URL("../../../", import.meta.url));
@@ -52,6 +62,28 @@ const probes = [
     assert.match(consolidationDifferences(replaced, before, {freshness: false})[0], /new debt.*catch.badge/u);
     assert.deepEqual(consolidationDifferences(empty(), before, {freshness: false}), []);
     assert.match(consolidationDifferences(empty(), before)[0], /stale allowance/u);
+  }],
+  ["a stranded record holds only the tool's closed list, each name an allowance with its ticket", () => {
+    assert.ok(parseConsolidationBaseline(withStranded({[strandedId]: strandedTicket})));
+    const outside = withStranded({}, ["website/src/shared/ui/primitives/x.tsx::Elsewhere"]);
+    outside.strandedByRetirement[single]["website/src/shared/ui/primitives/x.tsx::Elsewhere"] = "CAT-1";
+    const wrongTicket = withStranded({[strandedId]: "CAT-1"});
+    const notAllowed = withStranded({[strandedId]: strandedTicket}); notAllowed.gates[single] = [];
+    const otherGate = withStranded({}); otherGate.strandedByRetirement = {[library]: {}};
+    for (const document of [outside, wrongTicket, notAllowed, otherGate]) assert.throws(() => parseConsolidationBaseline(document));
+  }],
+  ["recording a stranded name lets it in once, then the record may only shrink", () => {
+    const first = withStranded({[strandedId]: strandedTicket}, ["website/src/shared/ui/a.tsx::Other"]);
+    const findings = strandedDifferences(consolidationDifferences(first, empty(), {freshness: false}), first, empty());
+    assert.deepEqual(findings, [`new debt ${single}: website/src/shared/ui/a.tsx::Other`]);
+    const recorded = withStranded({[strandedId]: strandedTicket});
+    assert.deepEqual(strandedDifferences(consolidationDifferences(recorded, recorded, {freshness: false}), recorded, recorded), []);
+    const grown = withStranded({[strandedId]: strandedTicket, [otherStrandedId]: otherStrandedTicket});
+    assert.deepEqual(strandedDifferences(consolidationDifferences(grown, recorded, {freshness: false}), grown, recorded),
+      [`new debt ${single}: ${otherStrandedId}`, `new stranded name ${single}: ${otherStrandedId}`]);
+    const emptied = withStranded({});
+    assert.deepEqual(strandedDifferences(consolidationDifferences(emptied, recorded, {freshness: false}), emptied, recorded), []);
+    assert.equal(strandedDifferences(consolidationDifferences(recorded, emptied, {freshness: false}), recorded, emptied).length, 2);
   }],
   ["moving debt between CSS files or surfaces cannot spend another file's allowance", () => {
     const before = empty(); before.gates[css] = {"admin/src/a.css": 20};
