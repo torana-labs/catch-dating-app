@@ -80,12 +80,11 @@
 }
 
 /*
- * Phone step-down (D19): below the medium window size (600px,
- * --catch-window-size-medium-min-width) the two hero steps drop two steps,
- * displayXxl to displayL and displayXl to displayM. Flutter has no Xl or Xxl
- * call site yet and takes the same rule with its first one.
+ * Phone step-down (D19): below 640px of page width the two hero steps drop
+ * two steps, displayXxl to displayL and displayXl to displayM. Flutter has no
+ * Xl or Xxl feature call site yet and takes the same rule with its first one.
  */
-@container catch-page (width < 600px) {
+@container catch-page (width < 640px) {
   .text[data-variant="displayXxl"] {
     --catch-text-size: var(--catch-typography-brand-display-l-size);
     --catch-text-line-height: var(--catch-typography-brand-display-l-line-height);

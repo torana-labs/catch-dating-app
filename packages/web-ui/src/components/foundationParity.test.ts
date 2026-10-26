@@ -210,12 +210,12 @@ describe("CatchTextStyles parity", () => {
     expect(declaration(rule, "font-variation-settings")).toBe(`"wdth" ${width}`);
   });
 
-  it("steps the two hero sizes down two steps below the medium window size", () => {
-    const medium = generatedTokensCss.match(/--catch-window-size-medium-min-width: (\d+)px;/)?.[1];
-    expect(medium).toBeDefined();
+  // D19 (blueprint): "Below 640px wide, displayXxl and displayXl render two
+  // steps down."
+  it("steps the two hero sizes down two steps below 640px, as D19 specifies", () => {
     const block = textCss.replace(/\/\*[\s\S]*?\*\//g, "")
-      .match(new RegExp(`@container catch-page \\(width < ${medium}px\\) \\{((?:[^{}]*\\{[^{}]*\\})*)[^{}]*\\}`))?.[1];
-    expect(block, `missing @container catch-page (width < ${medium}px)`).toBeDefined();
+      .match(/@container catch-page \(width < 640px\) \{((?:[^{}]*\{[^{}]*\})*)[^{}]*\}/)?.[1];
+    expect(block, "missing @container catch-page (width < 640px)").toBeDefined();
     const steps = {displayXxl: "l", displayXl: "m"};
     const rules = [...block!.matchAll(/\.text\[data-variant="(\w+)"\]\s*\{([^{}]*)\}/g)];
     expect(rules.map((rule) => rule[1]).sort()).toEqual(Object.keys(steps).sort());
