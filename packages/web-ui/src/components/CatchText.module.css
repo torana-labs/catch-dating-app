@@ -79,6 +79,24 @@
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
+/*
+ * D19: on a page narrower than 640px the two largest steps render two steps
+ * down, displayXxl as displayL and displayXl as displayM.
+ */
+@container catch-page (width < 640px) {
+  .text[data-variant="displayXxl"] {
+    --catch-text-size: 48px;
+    --catch-text-line-height: 1;
+    --catch-text-tracking: -0.035em;
+  }
+
+  .text[data-variant="displayXl"] {
+    --catch-text-size: 38px;
+    --catch-text-line-height: 1.05;
+    --catch-text-tracking: -0.03em;
+  }
+}
+
 .text[data-variant="headline"] {
   --catch-text-size: var(--catch-typography-web-headline-size);
   --catch-text-line-height: var(--catch-typography-web-headline-line-height);
