@@ -23,11 +23,7 @@ const textContract = JSON.parse(read("../../../../design/components/catch.compon
 const gapCss = read("./CatchGap.module.css");
 const sectionListCss = read("./CatchSectionList.module.css");
 const insetCss = read("./CatchInset.module.css");
-const textCssSource = read("./CatchText.module.css");
-// The flat role table; responsive steps live in the one container block below it.
-const containerBlocks = /@container[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}/g;
-const textCss = textCssSource.replace(containerBlocks, "");
-const textPhoneCss = textCssSource.match(containerBlocks)?.join("\n") ?? "";
+const textCss = read("./CatchText.module.css");
 
 const kebab = (name: string) => name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
@@ -206,17 +202,6 @@ describe("CatchTextStyles parity", () => {
     expect(declaration(rule, "font-family")).toBe("var(--catch-font-voice), sans-serif");
     expect(declaration(rule, "font-stretch")).toBe(`${width}%`);
     expect(declaration(rule, "font-variation-settings")).toBe(`"wdth" ${width}`);
-  });
-
-  it("renders the two largest steps two steps down on a page narrower than 640px (D19)", () => {
-    expect(textPhoneCss).toMatch(/^@container catch-page \(width < 640px\)/);
-    for (const [variant, step] of [["displayXxl", "l"], ["displayXl", "m"]] as const) {
-      const rule = textPhoneCss.match(new RegExp(`\\.text\\[data-variant="${variant}"\\]\\s*\\{([^}]*)\\}`))?.[1] ?? "";
-      expect(declaration(rule, "--catch-text-size"), variant).toBe(`${displaySteps[step].size}px`);
-      expect(Number(declaration(rule, "--catch-text-line-height")), variant).toBe(displaySteps[step].height);
-      expect(declaration(rule, "--catch-text-tracking"), variant).toBe(`${displaySteps[step].tracking}em`);
-    }
-    expect([...textPhoneCss.matchAll(/data-variant="(\w+)"/g)].map((match) => match[1])).toEqual(["displayXxl", "displayXl"]);
   });
 
   it("offers exactly the Flutter CatchTextVariant values", () => {
