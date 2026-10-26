@@ -2,7 +2,9 @@
  * Website v2 preview card (CAT-249): at least 150px tall at radius lg with
  * 16px padding, the label and title 6px apart and the meta line at the foot.
  * Below 840px it sizes to its copy with 10px between lines. Hover lays the
- * ground ink over the ground at 8%, as D20 does for a filled control.
+ * ground ink over the ground at 8%, as D20 does for a filled control. The
+ * feature size (CAT-251) sizes to its copy at 22px padding with 10px between
+ * lines, and its foot sets the meta against the action label.
  */
 .card {
   composes: ground from "./grounds.module.css";
@@ -39,8 +41,38 @@
 
 .meta {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
   margin-top: auto;
 }
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s2);
+}
+
+.tag {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 var(--catch-space-micro10);
+  border-radius: var(--catch-radius-pill);
+  background: color-mix(in srgb, var(--catch-on-ground-ink) 12%, transparent);
+  color: var(--catch-on-ground-ink);
+}
+
+.card[data-size="feature"] {
+  gap: var(--catch-space-micro10);
+  min-height: 0;
+  padding: var(--catch-space-micro18) var(--catch-space-s5) var(--catch-space-s5);
+}
+
+.card[data-size="feature"] .meta { padding-top: var(--catch-space-micro6); }
 
 @container catch-page (width < 840px) {
   .card {

@@ -22,4 +22,14 @@ describe("CatchPreviewCard", () => {
     expect(link.dataset.ground).toBe("paper");
     expect(link.textContent).toBe("Sun 2 Nov Sunday Social Run");
   });
+
+  it("adds a tag, a detail line and a button-shaped action while staying one link", () => {
+    render(<CatchPreviewCard action="Book" actionAccent="coral" detail="Sun 2 Nov, 6:30 AM · Lantern Lane jetty" ground="ink" href="/events/run"
+      label="Next up · in 2 days" labelAccent="coral" meta="Free · 31 spots left" size="feature" tag="On Catch" title="Sunday Social Run" />);
+    const link = screen.getByRole("link");
+    expect(link.textContent).toBe("Next up · in 2 days On Catch Sunday Social Run Sun 2 Nov, 6:30 AM · Lantern Lane jetty Free · 31 spots left Book");
+    expect(link.dataset).toMatchObject({catchTheme: "dark", ground: "ink", size: "feature"});
+    expect(screen.queryByRole("button")).toBeNull();
+    expect(screen.getByText("Next up · in 2 days").dataset.color).toBe("coral");
+  });
 });

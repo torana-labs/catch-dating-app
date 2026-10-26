@@ -47,6 +47,21 @@ export const States: Story = {
   ),
 };
 
+/** An empty slot a photo will fill, as a generated organiser page shows before a claim. */
+export const Placeholder: Story = {
+  parameters: {catchComponent: {id: "shared_photo_tile", routeIds: storyRoutes, states: ["placeholder"]}},
+  render: () => (
+    <StoryPage>
+      <CatchBand aria-label="Placeholder" pb="compact" pt="compact">
+        <CatchGrid columns={4} compactColumns={2}>
+          <CatchPhotoTile caption="since March 2025" figure="6" title="events on Luma" />
+          <CatchPhotoTile caption="once the club claims the page" placeholder title="Photos go here" />
+        </CatchGrid>
+      </CatchBand>
+    </StoryPage>
+  ),
+};
+
 /** The organiser page's "What it's like" row. */
 export const Reference: Story = {
   parameters: {catchComponent: {id: "shared_photo_tile", routeIds: storyRoutes, states: ["board-reference"]}},
