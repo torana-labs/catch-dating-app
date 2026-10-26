@@ -269,7 +269,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         const CatchPersonLayout(name: 'Mira Shah'),
         action: CatchFieldSecondaryAction.command(
           label: 'Message Mira',
-          icon: CatchIcons.chatBubbleOutlineRounded,
+          icon: CatchIcons.chat,
           onActivate: () {},
         ),
       ),
@@ -281,7 +281,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
             CatchRowBadge(
               label: 'Owner verified',
               tone: CatchBadgeTone.success,
-              icon: CatchIcons.sealCheck,
+              icon: CatchIcons.verified,
             ),
           ],
         ),

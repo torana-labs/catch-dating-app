@@ -23,7 +23,7 @@ Widget fieldInputSuffixStates(BuildContext context) => WidgetbookCatalogFrame(
         controller: controller,
         variant: CatchFieldVariant.underline,
         showClearButton: true,
-        trailing: Icon(CatchIcons.checkRounded),
+        trailing: Icon(CatchIcons.check),
       ),
     ),
     WidgetbookTextControllerScope(
@@ -45,7 +45,7 @@ Widget fieldInputSuffixStates(BuildContext context) => WidgetbookCatalogFrame(
         contractExemption: 'Catalog-only text-entry suffix fixture.',
         controller: controller,
         variant: CatchFieldVariant.underline,
-        trailing: Icon(CatchIcons.checkRounded),
+        trailing: Icon(CatchIcons.check),
       ),
     ),
     WidgetbookTextControllerScope(

@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_app_media_pipeline
-version: 1.12.0
+version: 1.13.0
 updated: 2026-10-25
 owner: marketing_website
 status: active
@@ -96,6 +96,13 @@ recipe fields are `id`, `kind`, `status`, `device`, `story`, `address` and
 invalidate a render. Provenance records the story id as `captureId`,
 `kind: web-capture` and `platform: ios-safari`, with the same native-font and
 image/input hashes used for validation.
+
+A web capture can't read `website/src/generated/hostListings.json` or
+`hostListings.demo.json`. The production marketing build replaces them with
+its Firestore snapshot before `import_hosted_captures.mjs --check-dist` checks
+each capture's inputs again, so the closure refuses them and names the import
+chain. Stories read the demo world through `stories/fixtures/demoWorld.ts`; its
+listing projection lives in `demoWorldListing.ts`.
 
 When any capture needs rendering and the manifest includes a web capture,
 the Linux plan sets `web_render=true`. A separate Linux job builds Storybook;

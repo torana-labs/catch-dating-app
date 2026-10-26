@@ -248,7 +248,7 @@ class _HostContactMergeCandidateCardState
           gapH8,
           CatchButton(
             label: context.l10n.hostCustomersDifferentPeople,
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             onPressed: _saving ? null : _markDifferentPeople,
           ),
         ],

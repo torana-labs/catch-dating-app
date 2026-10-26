@@ -91,7 +91,7 @@ final class _CatchFieldButtonAction extends CatchFieldSecondaryAction {
     onPressed: loading ? null : onActivate,
     status: loading ? CatchButtonStatus.loading : CatchButtonStatus.idle,
     size: CatchButtonSize.md,
-    variant: CatchButtonVariant.ghost,
+    variant: CatchButtonVariant.quiet,
   );
 }
 

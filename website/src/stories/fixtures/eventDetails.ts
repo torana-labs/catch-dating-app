@@ -3,7 +3,8 @@ import {
   type EventDetailRecord,
 } from "../../features/events/eventDetailModel";
 import type {HostListing, HostListingReview} from "../../features/organizers/types";
-import {demoEventId, demoHost, eventDetailAt, guestsAt, momentMillis, type DemoGuest} from "./demoWorld";
+import {demoEventId, demoHost, guestsAt, momentMillis, type DemoGuest} from "./demoWorld";
+import {eventDetailAt} from "./demoWorldListing";
 import {hostListings} from "./hostListings";
 
 const afterflyListing = withClaimCapability({

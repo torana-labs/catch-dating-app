@@ -38,7 +38,7 @@ void main() {
               rows: [
                 CatchFormRangeRow<(int, int)>(
                   id: 'range',
-                  icon: CatchIcons.tuneRounded,
+                  icon: CatchIcons.filters,
                   label: 'Range',
                   value: '$minimum - $maximum',
                   currentMin: minimum,
@@ -98,7 +98,7 @@ void main() {
                     if (multiple)
                       CatchFormMultiChoiceRow<List<int>, int>(
                         id: 'choice',
-                        icon: CatchIcons.groupsOutlined,
+                        icon: CatchIcons.people,
                         label: 'Choice',
                         values: const [1, 2, 3],
                         selected: selected,
@@ -108,7 +108,7 @@ void main() {
                     else
                       CatchFormSingleChoiceRow<List<int>, int>(
                         id: 'choice',
-                        icon: CatchIcons.groupsOutlined,
+                        icon: CatchIcons.people,
                         label: 'Choice',
                         values: const [1, 2, 3],
                         value: selected.firstOrNull,

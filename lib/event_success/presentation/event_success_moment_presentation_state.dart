@@ -56,7 +56,7 @@ class EventSuccessMomentPresentation {
             ),
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyPreEventDetailsStay,
-        icon: CatchIcons.eventAvailableOutlined,
+        icon: CatchIcons.eventConfirmed,
         badgeTone: CatchBadgeTone.brand,
         choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.liveEntry,
@@ -70,7 +70,7 @@ class EventSuccessMomentPresentation {
             l10n.eventSuccessEventSuccessCompanionScreenStateBodyOneTapTellsThe,
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInOnlyUpdates,
-        icon: CatchIcons.qrCode2Rounded,
+        icon: CatchIcons.qrCode,
         badgeTone: CatchBadgeTone.warning,
         choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.liveEntry,
@@ -85,7 +85,7 @@ class EventSuccessMomentPresentation {
               .eventSuccessEventSuccessCompanionScreenStateBodyFindOnePersonAsk,
           privacyLine: l10n
               .eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisChecksYouIn,
-          icon: CatchIcons.wavingHandOutlined,
+          icon: CatchIcons.wave,
           badgeTone: CatchBadgeTone.brand,
           choreography: choreography,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
@@ -100,7 +100,7 @@ class EventSuccessMomentPresentation {
               .eventSuccessEventSuccessCompanionScreenStateBodyQuickAnswersHelpCatch,
           privacyLine: l10n
               .eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee,
-          icon: CatchIcons.tuneRounded,
+          icon: CatchIcons.filters,
           badgeTone: CatchBadgeTone.brand,
           choreography: choreography,
           effectKind: EventSuccessLiveEffectKind.liveEntry,
@@ -117,7 +117,7 @@ class EventSuccessMomentPresentation {
             l10n.eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsPacing,
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyEveryoneSeesTheSame,
-        icon: CatchIcons.locationOnOutlined,
+        icon: CatchIcons.location,
         badgeTone: CatchBadgeTone.brand,
         choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.stepChange,
@@ -133,7 +133,7 @@ class EventSuccessMomentPresentation {
             l10n.eventSuccessEventSuccessCompanionScreenStateBodyUseItIfThe,
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyPromptsAreSharedGuidance,
-        icon: CatchIcons.chatBubbleOutlineRounded,
+        icon: CatchIcons.chat,
         badgeTone: CatchBadgeTone.brand,
         choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.stepChange,
@@ -149,7 +149,7 @@ class EventSuccessMomentPresentation {
             l10n.eventSuccessEventSuccessCompanionScreenStateBodyTheseAreLightNudges,
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCuesAreSuggestions,
-        icon: CatchIcons.forumOutlined,
+        icon: CatchIcons.conversations,
         badgeTone: CatchBadgeTone.brand,
         choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.stepChange,
@@ -162,7 +162,7 @@ class EventSuccessMomentPresentation {
         body: l10n.eventSuccessEventSuccessCompanionScreenStateBodyUseItAsA,
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyYourOwnAssignment,
-        icon: CatchIcons.groups2Outlined,
+        icon: CatchIcons.people,
         badgeTone: CatchBadgeTone.success,
         choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.stepChange,
@@ -175,7 +175,7 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateBodyTheHostControlsThe,
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourDetailsStayHidden,
-        icon: CatchIcons.boltRounded,
+        icon: CatchIcons.instant,
         badgeTone: CatchBadgeTone.brand,
         choreography: choreography,
         effectKind: _revealHeroEffect(plan),
@@ -191,7 +191,7 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateBodyChooseSomeoneYouWant,
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyTheHostSees,
-        icon: CatchIcons.volunteerActivismOutlined,
+        icon: CatchIcons.support,
         badgeTone: CatchBadgeTone.brand,
         choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.stepChange,
@@ -205,7 +205,7 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts,
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisRecapIsPrivate,
-        icon: CatchIcons.nightlightRound,
+        icon: CatchIcons.night,
         badgeTone: CatchBadgeTone.success,
         choreography: choreography,
         effectKind: EventSuccessLiveEffectKind.guideComplete,
@@ -226,7 +226,7 @@ class EventSuccessMomentPresentation {
             .eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsRunning,
         privacyLine: l10n
             .eventSuccessEventSuccessCompanionScreenStateVisiblecopyCatchOnlyShowsThe,
-        icon: CatchIcons.eventOutlined,
+        icon: CatchIcons.event,
         badgeTone: CatchBadgeTone.neutral,
         choreography: choreography,
         effectKind: attended ? EventSuccessLiveEffectKind.liveEntry : null,

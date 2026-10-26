@@ -608,7 +608,7 @@ void _registerHostOperationsTeamFailuresTests() {
         overrides: _hostClubOverrides(owned: [_hostTeamClub()]),
       );
 
-      await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
+      await tester.tap(find.byIcon(CatchIcons.back));
       await pumpFeatureUi(tester);
 
       expect(find.text('Organizer route'), findsOneWidget);

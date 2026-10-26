@@ -226,9 +226,9 @@ class FoundationTypographyTokens extends StatelessWidget {
               ),
               _TypeSpec(
                 'iconRasterGlyph',
-                String.fromCharCode(CatchIcons.running.codePoint),
+                String.fromCharCode(CatchIcons.activityRunning.codePoint),
                 CatchTextStyles.iconRasterGlyph(
-                  icon: CatchIcons.running,
+                  icon: CatchIcons.activityRunning,
                   size: 28,
                   color: CatchTokens.of(context).ink,
                 ),

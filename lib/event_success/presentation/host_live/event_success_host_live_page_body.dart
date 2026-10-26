@@ -201,9 +201,7 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
         embedded: embedded,
         children: [
           CatchBanner(
-            icon: isPreEvent
-                ? CatchIcons.cloudUploadOutlined
-                : CatchIcons.lockClockRounded,
+            icon: isPreEvent ? CatchIcons.upload : CatchIcons.lockedUntil,
             title: isPreEvent
                 ? context
                       .l10n
@@ -255,7 +253,7 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
         embedded: embedded,
         children: [
           CatchBanner(
-            icon: CatchIcons.ruleFolderOutlined,
+            icon: CatchIcons.rules,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected,
@@ -473,18 +471,18 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
           : spatialLayoutState;
       final roomBody = switch (effectiveSpatialLayoutState.status) {
         EventSuccessSpatialLayoutStatus.notApplicable => CatchBanner(
-          icon: CatchIcons.gridViewRounded,
+          icon: CatchIcons.grid,
           title: context.l10n.eventSuccessRoomWorkspaceWholeGroupTitle,
           message: context.l10n.eventSuccessRoomWorkspaceWholeGroupBody,
         ),
         EventSuccessSpatialLayoutStatus.unconfigured => CatchBanner(
-          icon: CatchIcons.gridViewRounded,
+          icon: CatchIcons.grid,
           tone: CatchBannerTone.warning,
           title: context.l10n.eventSuccessRoomWorkspaceUnconfiguredTitle,
           message: context.l10n.eventSuccessRoomWorkspaceUnconfiguredBody,
         ),
         EventSuccessSpatialLayoutStatus.loading => CatchBanner(
-          icon: CatchIcons.syncRounded,
+          icon: CatchIcons.sync,
           title: context.l10n.eventSuccessRoomWorkspaceLoadingTitle,
           message: context.l10n.eventSuccessRoomWorkspaceLoadingBody,
         ),
@@ -527,7 +525,7 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
             if (spatialAssignments.isEmpty) ...[
               gapH16,
               CatchBanner(
-                icon: CatchIcons.groupsOutlined,
+                icon: CatchIcons.people,
                 title: context.l10n.eventSuccessRoomWorkspaceWaitingTitle,
                 message: context.l10n.eventSuccessRoomWorkspaceWaitingBody,
               ),

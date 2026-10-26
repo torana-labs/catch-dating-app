@@ -130,7 +130,7 @@ class ShareCardHeader extends StatelessWidget {
     return Row(
       children: [
         CatchIconTile(
-          icon: visual?.icon ?? CatchIcons.chatBubbleOutlineRounded,
+          icon: visual?.icon ?? CatchIcons.chat,
           iconColor: accent,
           backgroundColor: t.surface,
           borderColor: accent.withValues(alpha: CatchOpacity.subtleBorder),

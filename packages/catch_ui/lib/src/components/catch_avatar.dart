@@ -32,7 +32,28 @@ class CatchAvatar extends StatelessWidget {
     this.dim = false,
   }) : _count = null,
        countLabelBuilder = null,
-       _veiled = false;
+       _veiled = false,
+       ground = null;
+
+  /// Initials on a palette ground (Website v2): the ground's fill and ink. At
+  /// sizes where the initials reach 24px they take the display voice.
+  const CatchAvatar.monogram({
+    super.key,
+    required this.size,
+    required CatchGround this.ground,
+    this.name = '',
+    this.initials,
+    this.borderWidth = 0,
+    this.borderColor,
+    this.variant = CatchAvatarVariant.circle,
+  }) : _count = null,
+       countLabelBuilder = null,
+       _veiled = false,
+       imageUrl = null,
+       status = CatchAvatarStatus.none,
+       obscured = false,
+       colors = null,
+       dim = false;
 
   /// A count bubble with caller-owned formatting, including localization.
   const CatchAvatar.count({
@@ -51,7 +72,8 @@ class CatchAvatar extends StatelessWidget {
        obscured = false,
        variant = CatchAvatarVariant.circle,
        colors = null,
-       dim = false;
+       dim = false,
+       ground = null;
 
   /// A caller-colored anonymous slot in a hidden roster.
   const CatchAvatar.veiled({
@@ -69,7 +91,8 @@ class CatchAvatar extends StatelessWidget {
        status = CatchAvatarStatus.none,
        obscured = false,
        variant = CatchAvatarVariant.circle,
-       dim = false;
+       dim = false,
+       ground = null;
 
   final double size;
   final String name;
@@ -83,6 +106,9 @@ class CatchAvatar extends StatelessWidget {
   final CatchAvatarColors? colors;
   final bool dim;
   final String Function(int)? countLabelBuilder;
+
+  /// The palette ground of a [CatchAvatar.monogram].
+  final CatchGround? ground;
   final int? _count;
   final bool _veiled;
 
@@ -94,12 +120,30 @@ class CatchAvatar extends StatelessWidget {
     final innerSize = size - borderWidth * 2;
     final Widget content;
     var obscuresContent = false;
-    if (_veiled) {
+    if (ground case final ground?) {
+      final label = initials ?? catchAvatarInitialsOf(name);
+      content = ColoredBox(
+        color: ground.fillColor,
+        child: label.isEmpty
+            ? null
+            : CatchAvatarViewport.label(
+                size: innerSize,
+                child: Text(
+                  label,
+                  style: CatchTextStyles.avatarMonogram(
+                    context,
+                    size: innerSize * CatchLayout.personAvatarInitialsScale,
+                    color: ground.inkColor,
+                  ),
+                ),
+              ),
+      );
+    } else if (_veiled) {
       content = ColoredBox(
         color: colors!.soft,
         child: Center(
           child: Icon(
-            CatchIcons.personOutlined,
+            CatchIcons.person,
             size: innerSize * CatchLayout.avatarVeilGlyphScale,
             color: colors!.deep.withValues(
               alpha: CatchOpacity.avatarFallbackGlyph,

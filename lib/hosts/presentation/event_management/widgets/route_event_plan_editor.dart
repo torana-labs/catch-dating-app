@@ -96,7 +96,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       RouteEventPlan.customWalk)
                 : null,
           ),
-          icon: CatchIcons.routeOutlined,
+          icon: CatchIcons.route,
           iconColor: accent,
         ),
         if (plan != null)
@@ -111,7 +111,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
             ].join(' · '),
             contractExemption:
                 'Disclosure for nested routePlan fields with generated bindings.',
-            icon: CatchIcons.routeOutlined,
+            icon: CatchIcons.route,
             iconColor: accent,
             child: CatchSection.containedFieldRows(
               children: [
@@ -133,7 +133,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_movementField, open),
-                  icon: CatchIcons.syncAltRounded,
+                  icon: CatchIcons.swap,
                   iconColor: accent,
                 ),
                 CatchField<RouteShape>.choices(
@@ -154,7 +154,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_shapeField, open),
-                  icon: CatchIcons.mapOutlined,
+                  icon: CatchIcons.map,
                   iconColor: accent,
                 ),
                 CatchField<RouteGroupStrategy>.choices(
@@ -175,7 +175,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_groupField, open),
-                  icon: CatchIcons.groups2Outlined,
+                  icon: CatchIcons.people,
                   iconColor: accent,
                 ),
                 CatchField<RouteStopCadence>.choices(
@@ -196,7 +196,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_cadenceField, open),
-                  icon: CatchIcons.ruleFolderOutlined,
+                  icon: CatchIcons.rules,
                   iconColor: accent,
                 ),
                 CatchField<RouteStopKind>.choices(
@@ -222,7 +222,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_stopsField, open),
-                  icon: CatchIcons.tableRestaurantOutlined,
+                  icon: CatchIcons.dining,
                   iconColor: accent,
                 ),
                 CatchField<RouteRoleKind>.choices(
@@ -247,7 +247,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_rolesField, open),
-                  icon: CatchIcons.peopleOutline,
+                  icon: CatchIcons.people,
                   iconColor: accent,
                 ),
                 CatchFieldLanes.single(
@@ -294,7 +294,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_paceGroupsField, open),
-                  icon: CatchIcons.speedOutlined,
+                  icon: CatchIcons.pace,
                   iconColor: accent,
                 ),
                 CatchField<RouteLiveTrackingMode>.choices(
@@ -321,7 +321,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       ? CatchFieldMode.controlledExpanded
                       : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_trackingField, open),
-                  icon: CatchIcons.locationOnOutlined,
+                  icon: CatchIcons.location,
                   iconColor: accent,
                 ),
               ],

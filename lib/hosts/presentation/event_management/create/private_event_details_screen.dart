@@ -163,7 +163,7 @@ class PrivateEventDetailsScreen extends ConsumerWidget {
                               copy: copy,
                               title: l10n.hostsPrivateEventDetails,
                               body: l10n.hostsPrivateEventDetailActualHint,
-                              icon: CatchIcons.eventAvailableOutlined,
+                              icon: CatchIcons.eventConfirmed,
                             ),
                             if (state.pending != null) ...[
                               CatchField.read(
@@ -178,7 +178,7 @@ class PrivateEventDetailsScreen extends ConsumerWidget {
                                     : state.reconciliationProgress == null
                                     ? l10n.hostsEventPreferencePendingBody
                                     : l10n.hostsPrivateEventCheckingGuestsBody,
-                                icon: CatchIcons.scheduleOutlined,
+                                icon: CatchIcons.time,
                               ),
                               CatchField.action(
                                 copy: copy,
@@ -210,7 +210,7 @@ class PrivateEventDetailsScreen extends ConsumerWidget {
                                   l10n: l10n,
                                   context: AppErrorContext.event,
                                 ),
-                                icon: CatchIcons.errorOutlineRounded,
+                                icon: CatchIcons.error,
                               ),
                               if (state.pending == null)
                                 CatchField.action(
@@ -236,7 +236,7 @@ class PrivateEventDetailsScreen extends ConsumerWidget {
                                   : l10n.hostsPrivateEventDetailMinutes(
                                       minutes: duration,
                                     ),
-                              icon: CatchIcons.scheduleOutlined,
+                              icon: CatchIcons.time,
                             ),
                             CatchField.input(
                               copy: copy,
@@ -345,7 +345,7 @@ class PrivateEventDetailsScreen extends ConsumerWidget {
                               body:
                                   currentVenue ??
                                   l10n.hostsPrivateEventDetailNotSet,
-                              icon: CatchIcons.locationOnOutlined,
+                              icon: CatchIcons.location,
                             ),
                             CatchField.action(
                               copy: copy,
@@ -353,7 +353,7 @@ class PrivateEventDetailsScreen extends ConsumerWidget {
                               body: details?.meetingLocation == null
                                   ? l10n.hostsPrivateEventDetailLocationNeeded
                                   : l10n.hostsPrivateEventDetailLocationReady,
-                              icon: CatchIcons.locationOnOutlined,
+                              icon: CatchIcons.location,
                               onTap: editable
                                   ? () => unawaited(
                                       _chooseLocation(
@@ -468,7 +468,7 @@ class PrivateEventDetailsScreen extends ConsumerWidget {
                               body:
                                   currentFormat?.label ??
                                   l10n.hostsPrivateEventDetailNotSet,
-                              icon: CatchIcons.eventAvailableOutlined,
+                              icon: CatchIcons.eventConfirmed,
                             ),
                             CatchField<ActivityKind>.control(
                               copy: copy,

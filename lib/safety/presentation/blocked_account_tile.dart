@@ -47,7 +47,7 @@ class BlockedAccountsSection extends StatelessWidget {
           SettingsBlockedAccountsStatus.empty => Padding(
             padding: CatchInsets.content,
             child: CatchEmptyState(
-              icon: CatchIcons.verifiedUserOutlined,
+              icon: CatchIcons.verified,
               title: context.l10n.safetySettingsScreenTitleNoBlockedAccounts,
               message:
                   context.l10n.safetySettingsScreenMessagePeopleYouBlockWill,

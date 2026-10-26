@@ -16,7 +16,7 @@ class CatchErrorBackButton extends StatelessWidget {
       label: label ?? MaterialLocalizations.of(context).backButtonTooltip,
       onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
       variant: CatchButtonVariant.secondary,
-      leading: Icon(CatchIcons.arrowBackIosNewRounded),
+      leading: Icon(CatchIcons.back),
     );
   }
 }

@@ -78,7 +78,7 @@ class ExploreFilterRail extends StatelessWidget
       backgroundColor: backgroundColor ?? t.bg,
       trailing: CatchIconAction.counted(
         key: const ValueKey('explore-filter-button'),
-        icon: CatchIcons.tuneRounded,
+        icon: CatchIcons.filters,
         count: railState.activeCount,
         variant: CatchIconActionVariant.plain,
         tooltip: railState.filterButtonSemanticLabel,

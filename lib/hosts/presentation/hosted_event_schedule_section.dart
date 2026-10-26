@@ -48,7 +48,7 @@ class HostedEventScheduleSection extends StatelessWidget {
             copy: catchFieldCopy(context.l10n),
             title: event.shortDateLabel,
             body: event.timeRangeLabel,
-            icon: CatchIcons.calendarTodayOutlined,
+            icon: CatchIcons.date,
           ),
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
@@ -56,7 +56,7 @@ class HostedEventScheduleSection extends StatelessWidget {
                 .l10n
                 .hostsEditHostedEventScreenTextScheduleChangesAreBlocked,
             bodyMaxLines: 3,
-            icon: CatchIcons.lockOutlineRounded,
+            icon: CatchIcons.locked,
           ),
         ],
       );
@@ -71,7 +71,7 @@ class HostedEventScheduleSection extends StatelessWidget {
           key: CreateEventFormKeys.datePicker,
           title: context.l10n.hostsEditHostedEventScreenTitleEventDate,
           body: state.dateValue,
-          icon: CatchIcons.calendarTodayOutlined,
+          icon: CatchIcons.date,
           onTap: _onPickDate,
         ),
         CatchField.nav(
@@ -79,7 +79,7 @@ class HostedEventScheduleSection extends StatelessWidget {
           key: CreateEventFormKeys.timePicker,
           title: context.l10n.hostsEditHostedEventScreenTitleStartTime,
           body: state.startTimeValue,
-          icon: CatchIcons.scheduleOutlined,
+          icon: CatchIcons.time,
           error: state.errorText,
           onTap: _onPickStartTime,
         ),
@@ -100,7 +100,7 @@ class HostedEventScheduleSection extends StatelessWidget {
           increaseSemanticLabel:
               context.l10n.hostsEditHostedEventScreenBodyIncreaseDuration,
           onChanged: (duration) => _onDurationChanged!(duration.round()),
-          icon: CatchIcons.timerOutlined,
+          icon: CatchIcons.timer,
         ),
       ],
     );

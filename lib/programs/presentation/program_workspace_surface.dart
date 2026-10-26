@@ -154,25 +154,25 @@ class _ProgramFunctionEditDialogState extends State<ProgramFunctionEditDialog> {
           textCapitalization: TextCapitalization.words,
         ),
         CatchFieldRow.standard(
-          leading: Icon(CatchIcons.scheduleOutlined),
+          leading: Icon(CatchIcons.time),
           body: CatchText(
             _startsAt == null
                 ? context.l10n.programsWorkspaceFunctionStarts
                 : AppTimeFormatters.dateTime(_startsAt!),
             variant: CatchTextVariant.bodyM,
           ),
-          trailing: Icon(CatchIcons.chevronRightRounded),
+          trailing: Icon(CatchIcons.disclosure),
           onTap: () => _pickDateTime(isStart: true),
         ),
         CatchFieldRow.standard(
-          leading: Icon(CatchIcons.scheduleOutlined),
+          leading: Icon(CatchIcons.time),
           body: CatchText(
             _endsAt == null
                 ? context.l10n.programsWorkspaceFunctionEnds
                 : AppTimeFormatters.dateTime(_endsAt!),
             variant: CatchTextVariant.bodyM,
           ),
-          trailing: Icon(CatchIcons.chevronRightRounded),
+          trailing: Icon(CatchIcons.disclosure),
           onTap: () => _pickDateTime(isStart: false),
         ),
         CatchChoiceInput<ProgramFunctionStatus>.segmented(
@@ -217,7 +217,7 @@ class ProgramWorkspaceStationTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchFieldRow.standard(
-          leading: Icon(CatchIcons.flightLanding),
+          leading: Icon(CatchIcons.arrivals),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -268,10 +268,7 @@ class ProgramWorkspaceStationTile extends StatelessWidget {
                 children: [
                   CatchButton(
                     label: context.l10n.programsWorkspacePickupEdit,
-                    leading: Icon(
-                      CatchIcons.editOutlined,
-                      size: CatchIconSize.sm,
-                    ),
+                    leading: Icon(CatchIcons.edit, size: CatchIconSize.sm),
                     variant: CatchButtonVariant.secondary,
                     size: CatchButtonSize.md,
                     onPressed: onEdit,
@@ -339,10 +336,7 @@ class ProgramWorkspaceHotelTile extends StatelessWidget {
                 children: [
                   CatchButton(
                     label: context.l10n.programsWorkspaceHotelEdit,
-                    leading: Icon(
-                      CatchIcons.editOutlined,
-                      size: CatchIconSize.sm,
-                    ),
+                    leading: Icon(CatchIcons.edit, size: CatchIconSize.sm),
                     variant: CatchButtonVariant.secondary,
                     size: CatchButtonSize.md,
                     onPressed: onEdit,

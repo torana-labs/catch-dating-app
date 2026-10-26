@@ -63,8 +63,8 @@ class HostCustomerSourcesSection extends StatelessWidget {
                       icon:
                           origin.sourceKind ==
                               HostCustomerOriginSourceKind.hostForm
-                          ? CatchIcons.descriptionOutlined
-                          : CatchIcons.accountTreeOutlined,
+                          ? CatchIcons.document
+                          : CatchIcons.hierarchy,
                     ),
                   ),
             ],

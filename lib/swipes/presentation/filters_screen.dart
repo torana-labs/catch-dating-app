@@ -124,7 +124,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
               ? CatchTopBarEmphasis.divided
               : CatchTopBarEmphasis.plain,
           leading: CatchIconAction.toolbar(
-            icon: CatchIcons.closeRounded,
+            icon: CatchIcons.close,
             tooltip: context.l10n.swipesFiltersScreenTooltipCloseFilters,
             onPressed: saving ? null : () => context.pop(),
           ),
@@ -178,7 +178,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                 return CatchStateViewport(
                   accountForBottomOverlay: false,
                   child: CatchEmptyState(
-                    icon: CatchIcons.personOffOutlined,
+                    icon: CatchIcons.personRemoved,
                     title: context
                         .l10n
                         .userProfileProfileScreenTitleProfileNotAvailable,
@@ -190,7 +190,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                         label: context.l10n.sharedActionTryAgain,
                         onPressed: () =>
                             ref.invalidate(watchUserProfileProvider),
-                        leading: Icon(CatchIcons.refreshRounded),
+                        leading: Icon(CatchIcons.refresh),
                       ),
                     ],
                   ),

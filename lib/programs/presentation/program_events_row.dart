@@ -58,7 +58,7 @@ CatchField programEventsField(
     onActivate: onOpen,
     content: CatchRecordLayout(
       title: program.title,
-      icon: CatchIcons.calendarMonthOutlined,
+      icon: CatchIcons.date,
       metadata: l10n.programsEventRowLabel,
       facts: [
         if (startsAt != null && endsAt != null)
@@ -87,7 +87,7 @@ CatchField programEventsField(
                 CatchActionMenuItem(
                   value: ProgramLifecycleAction.unarchive,
                   label: l10n.programsListUnarchiveAction,
-                  icon: CatchIcons.undoRounded,
+                  icon: CatchIcons.undo,
                   enabled: !pending && program.canUnarchiveAt(now),
                   sublabel: program.anonymizedAt != null
                       ? l10n.programsListAnonymized
@@ -101,7 +101,7 @@ CatchField programEventsField(
                 CatchActionMenuItem(
                   value: ProgramLifecycleAction.archive,
                   label: l10n.programsListArchiveAction,
-                  icon: CatchIcons.archiveOutlined,
+                  icon: CatchIcons.archive,
                   enabled: !pending,
                   sublabel: pending ? l10n.coreCatchFieldLabelSaving : null,
                 ),

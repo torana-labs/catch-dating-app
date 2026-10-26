@@ -96,7 +96,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                               title: name,
                               body:
                                   '${MaterialLocalizations.of(context).formatMediumDate(date)} · ${start.format(context)} · $cityLabel',
-                              icon: CatchIcons.eventAvailableOutlined,
+                              icon: CatchIcons.eventConfirmed,
                             ),
                             CatchField.read(
                               copy: copy,
@@ -108,7 +108,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                               body: publicationState == 'published'
                                   ? context.l10n.hostsPublicationPublishedBody
                                   : context.l10n.hostsPrivateEventPrivateBody,
-                              icon: CatchIcons.lockOutline,
+                              icon: CatchIcons.locked,
                             ),
                           ],
                         ),
@@ -148,7 +148,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                       .hostsPrivateEventPendingRosterBody(
                                         fileName: pendingRosterFileName!,
                                       ),
-                                  icon: CatchIcons.cloudUploadOutlined,
+                                  icon: CatchIcons.upload,
                                 ),
                               if (onReturnToResponses != null)
                                 CatchField.action(
@@ -159,7 +159,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                   body: context
                                       .l10n
                                       .hostsPrivateEventReturnResponsesBody,
-                                  icon: CatchIcons.arrowBackRounded,
+                                  icon: CatchIcons.back,
                                   onTap: onReturnToResponses,
                                 ),
                               CatchField.action(
@@ -172,7 +172,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                     : context
                                           .l10n
                                           .hostsPrivateEventLinkFormBody,
-                                icon: CatchIcons.descriptionOutlined,
+                                icon: CatchIcons.document,
                                 onTap: onLinkForm,
                               ),
                               CatchField.action(
@@ -185,7 +185,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                     : context
                                           .l10n
                                           .hostsPrivateEventEditBasicsBody,
-                                icon: CatchIcons.editNoteRounded,
+                                icon: CatchIcons.note,
                                 onTap: onEditBasics,
                               ),
                               CatchField.action(
@@ -196,7 +196,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                           .l10n
                                           .hostsPrivateEventDetailsUnavailable
                                     : context.l10n.hostsPrivateEventDetailsBody,
-                                icon: CatchIcons.eventAvailableOutlined,
+                                icon: CatchIcons.eventConfirmed,
                                 onTap: onEditDetails,
                               ),
                               CatchField.action(
@@ -210,7 +210,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                     : context
                                           .l10n
                                           .hostsPrivateEventImportGuestsBody,
-                                icon: CatchIcons.cloudUploadOutlined,
+                                icon: CatchIcons.upload,
                                 onTap: onImportGuests,
                               ),
                               CatchField.action(
@@ -225,7 +225,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                     : context
                                           .l10n
                                           .hostsPrivateEventCatchRegistrationBody,
-                                icon: CatchIcons.howToRegOutlined,
+                                icon: CatchIcons.checkIn,
                                 onTap: onSetupRegistration,
                               ),
                               CatchField.action(
@@ -238,7 +238,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                     : context
                                           .l10n
                                           .hostsPrivateEventPaymentsBody,
-                                icon: CatchIcons.paymentsOutlined,
+                                icon: CatchIcons.payment,
                                 onTap: onEditPayments,
                               ),
                               CatchField.action(
@@ -252,7 +252,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                     : context
                                           .l10n
                                           .hostsPrivateEventPublicListingBody,
-                                icon: CatchIcons.languageOutlined,
+                                icon: CatchIcons.web,
                                 onTap: onSetupPublicListing,
                               ),
                               CatchField.action(
@@ -263,7 +263,7 @@ class PrivateEventSetupScreen extends StatelessWidget {
                                           .l10n
                                           .hostsPrivateEventGuideUnavailable
                                     : context.l10n.hostsPrivateEventGuideBody,
-                                icon: CatchIcons.mapOutlined,
+                                icon: CatchIcons.map,
                                 onTap: onSetupGuide,
                               ),
                             ],

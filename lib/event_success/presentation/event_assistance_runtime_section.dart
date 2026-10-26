@@ -198,7 +198,7 @@ class _EventAssistanceRuntimeSectionState
             label: _customizing
                 ? l.eventAssistanceRuntimeHide
                 : l.eventAssistanceRuntimeCustomize,
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             onPressed: () => setState(() => _customizing = !_customizing),
           ),
           if (_customizing)
@@ -262,7 +262,7 @@ class _EventAssistanceRuntimeSectionState
           CatchButton(
             key: const ValueKey('runtime.pause'),
             label: l.eventAssistanceRuntimePause,
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             onPressed: widget.onPause,
           ),
         gapH12,

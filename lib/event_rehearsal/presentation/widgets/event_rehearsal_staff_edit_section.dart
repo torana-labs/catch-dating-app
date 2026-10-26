@@ -241,7 +241,7 @@ class EventRehearsalStaffEditSection extends ConsumerWidget {
                 if (form.canDismiss && !form.canRetry)
                   CatchButton(
                     label: l10n.coreCatchFieldLabelCancel,
-                    variant: CatchButtonVariant.ghost,
+                    variant: CatchButtonVariant.quiet,
                     onPressed: controller.close,
                   ),
               ],

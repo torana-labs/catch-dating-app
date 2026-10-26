@@ -377,7 +377,7 @@ class _HostOfferPaymentSetupPageBodyState
                                 CatchBanner(
                                   title: l10n.hostsEventPreferencePending,
                                   message: l10n.hostsEventPreferencePendingBody,
-                                  icon: CatchIcons.scheduleOutlined,
+                                  icon: CatchIcons.time,
                                   tone: CatchBannerTone.neutral,
                                   actions: [
                                     CatchButton(
@@ -514,7 +514,7 @@ class _HostOfferPaymentSetupPageBodyState
                               id: 'offer-payment-request-links',
                               title: l10n.hostsEventDefaultsPersonalRequest,
                               message: l10n.hostOfferPaymentRequestLinksBody,
-                              icon: CatchIcons.linkOutlined,
+                              icon: CatchIcons.link,
                               duration: null,
                               dismissible: false,
                             ),

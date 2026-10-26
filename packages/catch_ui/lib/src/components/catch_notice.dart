@@ -53,7 +53,7 @@ class CatchNotice extends StatelessWidget {
             tooltip: dismissLabel,
             onPressed: onDismiss,
             child: Icon(
-              CatchIcons.closeRounded,
+              CatchIcons.close,
               color: palette.secondary,
               size: CatchIconSize.md,
             ),

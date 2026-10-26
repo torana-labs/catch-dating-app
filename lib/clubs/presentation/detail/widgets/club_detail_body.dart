@@ -299,7 +299,7 @@ class ClubNextRunBanner extends StatelessWidget {
             ),
             gapW10,
             Icon(
-              CatchIcons.arrowForwardRounded,
+              CatchIcons.forward,
               size: CatchIconSize.sm,
               color: activity.deep,
             ),

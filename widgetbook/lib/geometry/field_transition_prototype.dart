@@ -68,7 +68,7 @@ class _ProductionInteractionTransitionPageState
                       CatchField<String>.choices(
                         copy: catchFieldCopy(context.l10n),
                         title: 'Host',
-                        icon: CatchIcons.hosted,
+                        icon: CatchIcons.host,
                         values: const [
                           'Catch Hosts',
                           'Sunday Social',
@@ -90,7 +90,7 @@ class _ProductionInteractionTransitionPageState
                         copy: catchFieldCopy(context.l10n),
                         title: 'Location',
                         body: 'Carter Road promenade',
-                        icon: CatchIcons.pinOutlined,
+                        icon: CatchIcons.location,
                         onTap: _noop,
                       ),
                     ],
@@ -111,7 +111,7 @@ class _ProductionInteractionTransitionPageState
                       CatchField<String>.choices(
                         copy: catchFieldCopy(context.l10n),
                         title: 'Reminder timing',
-                        icon: CatchIcons.clock,
+                        icon: CatchIcons.time,
                         values: const [
                           'Two hours before',
                           'One day before',
@@ -132,7 +132,7 @@ class _ProductionInteractionTransitionPageState
                         copy: catchFieldCopy(context.l10n),
                         title: 'Delivery',
                         body: 'Push and email',
-                        icon: CatchIcons.notificationsOutlined,
+                        icon: CatchIcons.notifications,
                         onTap: _noop,
                       ),
                     ],

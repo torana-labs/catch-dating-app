@@ -209,7 +209,7 @@ class _EventAssistanceCheckpointRequestSectionState
               label: _choosingReporter
                   ? l10n.eventAssistanceCheckpointReporterCancel
                   : l10n.eventAssistanceCheckpointRequestReassign,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: () => setState(() {
                 _choosingReporter = !_choosingReporter;
                 _reporterId = null;
@@ -384,7 +384,7 @@ class _EventAssistanceCheckpointRequestSectionState
           gapH8,
           CatchButton(
             label: l10n.eventAssistanceCheckpointReload,
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             onPressed: widget.onReload,
           ),
         ],
@@ -392,7 +392,7 @@ class _EventAssistanceCheckpointRequestSectionState
         CatchButton(
           key: const ValueKey('checkpoint.request.done'),
           label: l10n.eventAssistanceVisitDone,
-          variant: CatchButtonVariant.ghost,
+          variant: CatchButtonVariant.quiet,
           status: busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
           onPressed: busy ? null : widget.onDone,
         ),

@@ -418,7 +418,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
 
     Widget savedEventsAction() {
       return CatchIconAction.toolbar(
-        icon: CatchIcons.bookmarkBorderRounded,
+        icon: CatchIcons.bookmark,
         tooltip: context.l10n.exploreExploreScreenTooltipSavedEvents,
         onPressed: () => context.push(Routes.savedEventsScreen.path),
       );

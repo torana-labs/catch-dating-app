@@ -253,7 +253,7 @@ class HostEventToolCard extends StatelessWidget {
         EventActionCardBadge(
           label: item.attendanceState.badgeLabel(context.l10n),
           tone: item.attendanceState.badgeTone,
-          icon: item.canTakeAttendance ? CatchIcons.checklistRounded : null,
+          icon: item.canTakeAttendance ? CatchIcons.checklist : null,
         ),
       ],
       headerAccessory: cardCount > 1
@@ -266,7 +266,7 @@ class HostEventToolCard extends StatelessWidget {
       metaRows: [
         [
           CatchMetaEntry(
-            icon: CatchIcons.accessTimeRounded,
+            icon: CatchIcons.time,
             label: context.l10n
                 .hostsHostEventToolsLabelShortdatelabelTimerangelabel(
                   shortDateLabel: event.shortDateLabel,
@@ -274,15 +274,10 @@ class HostEventToolCard extends StatelessWidget {
                 ),
           ),
         ],
+        [CatchMetaEntry(icon: CatchIcons.location, label: event.locationName)],
         [
           CatchMetaEntry(
-            icon: CatchIcons.locationOnOutlined,
-            label: event.locationName,
-          ),
-        ],
-        [
-          CatchMetaEntry(
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             label: context.l10n
                 .hostsHostEventToolsLabelSignedupcountCapacitylimitBookedWaitlistcount(
                   signedUpCount: event.signedUpCount,
@@ -387,9 +382,9 @@ _HostEventAction _hostEventActionForState(HostEventAttendanceState state) {
 extension on _HostEventAction {
   IconData get icon {
     return switch (this) {
-      _HostEventAction.manage => CatchIcons.tuneRounded,
-      _HostEventAction.takeAttendance => CatchIcons.checklistRounded,
-      _HostEventAction.viewReport => CatchIcons.insightsOutlined,
+      _HostEventAction.manage => CatchIcons.filters,
+      _HostEventAction.takeAttendance => CatchIcons.checklist,
+      _HostEventAction.viewReport => CatchIcons.insights,
     };
   }
 

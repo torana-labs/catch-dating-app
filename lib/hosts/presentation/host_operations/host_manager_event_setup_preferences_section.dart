@@ -53,7 +53,8 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               copy: copy,
               key: ValueKey('manager-event-timezone-${preferences.timezone}'),
               title: l10n.hostsPrivateEventTimezone,
-              contractExemption: 'Manager-only private event timezone suggestion.',
+              contractExemption:
+                  'Manager-only private event timezone suggestion.',
               initialValue: preferences.timezone ?? '',
               inputHint: l10n.hostsPrivateEventTimezoneHint,
               helperText: l10n.hostsEventDefaultsTimezoneHint,
@@ -63,9 +64,11 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                   ? (value) {
                       final trimmed = value.trim();
                       if (trimmed.length > 100) return;
-                      update(preferences.copyWith(
-                        timezone: trimmed.isEmpty ? null : trimmed,
-                      ));
+                      update(
+                        preferences.copyWith(
+                          timezone: trimmed.isEmpty ? null : trimmed,
+                        ),
+                      );
                     }
                   : null,
             ),
@@ -77,7 +80,7 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               body: preferences.usualDurationMinutes == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : minutes(preferences.usualDurationMinutes!),
-              icon: CatchIcons.scheduleOutlined,
+              icon: CatchIcons.time,
               child: CatchChoiceInput<int>(
                 values: durationChoices,
                 itemLabelBuilder: minutes,
@@ -89,9 +92,11 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                 onChanged: editable
                     ? (selection) {
                         if (selection.isNotEmpty) {
-                          update(preferences.copyWith(
-                            usualDurationMinutes: selection.single,
-                          ));
+                          update(
+                            preferences.copyWith(
+                              usualDurationMinutes: selection.single,
+                            ),
+                          );
                         }
                       }
                     : null,
@@ -103,9 +108,9 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                 title: l10n.hostsEventDefaultsClearDuration,
                 body: l10n.hostsEventDefaultsChooseEachEvent,
                 onTap: editable
-                    ? () => update(preferences.copyWith(
-                        usualDurationMinutes: null,
-                      ))
+                    ? () => update(
+                        preferences.copyWith(usualDurationMinutes: null),
+                      )
                     : null,
               ),
             CatchField.read(
@@ -114,7 +119,7 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               body: preferences.preferredVenueId == null
                   ? l10n.hostsEventDefaultsVenueUnavailable
                   : venueLabel ?? l10n.hostsEventDefaultsVenueSaved,
-              icon: CatchIcons.locationOnOutlined,
+              icon: CatchIcons.location,
             ),
             if (preferences.preferredVenueId != null)
               CatchField.action(
@@ -138,7 +143,7 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               body: preferences.offerValidityMinutes == null
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : minutes(preferences.offerValidityMinutes!),
-              icon: CatchIcons.scheduleOutlined,
+              icon: CatchIcons.time,
               child: CatchChoiceInput<int>(
                 values: validityChoices,
                 itemLabelBuilder: minutes,
@@ -150,9 +155,11 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                 onChanged: editable
                     ? (selection) {
                         if (selection.isNotEmpty) {
-                          update(preferences.copyWith(
-                            offerValidityMinutes: selection.single,
-                          ));
+                          update(
+                            preferences.copyWith(
+                              offerValidityMinutes: selection.single,
+                            ),
+                          );
                         }
                       }
                     : null,
@@ -164,14 +171,16 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                 title: l10n.hostsEventDefaultsClearValidity,
                 body: l10n.hostsEventDefaultsChooseEachEvent,
                 onTap: editable
-                    ? () => update(preferences.copyWith(
-                        offerValidityMinutes: null,
-                      ))
+                    ? () => update(
+                        preferences.copyWith(offerValidityMinutes: null),
+                      )
                     : null,
               ),
             CatchField.input(
               copy: copy,
-              key: ValueKey('manager-offer-template-${preferences.offerMessageTemplate}'),
+              key: ValueKey(
+                'manager-offer-template-${preferences.offerMessageTemplate}',
+              ),
               title: l10n.hostsEventDefaultsMessageTemplate,
               contractExemption: 'Manager-only offer handoff text.',
               initialValue: preferences.offerMessageTemplate ?? '',
@@ -186,9 +195,13 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                   ? (value) {
                       final trimmed = value.trim();
                       if (trimmed.length > 1000) return;
-                      update(preferences.copyWith(
-                        offerMessageTemplate: trimmed.isEmpty ? null : trimmed,
-                      ));
+                      update(
+                        preferences.copyWith(
+                          offerMessageTemplate: trimmed.isEmpty
+                              ? null
+                              : trimmed,
+                        ),
+                      );
                     }
                   : null,
             ),
@@ -206,7 +219,7 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                   ? l10n.hostsEventDefaultsChooseEachEvent
                   : collectionLabel(preferences.collectionPreference!),
               helperText: l10n.hostsEventDefaultsCollectionSuggestionHint,
-              icon: CatchIcons.paymentsOutlined,
+              icon: CatchIcons.payment,
               child: CatchChoiceInput<EventCollectionPreference>(
                 values: EventCollectionPreference.values,
                 itemLabelBuilder: collectionLabel,
@@ -218,9 +231,11 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                 onChanged: editable
                     ? (selection) {
                         if (selection.isNotEmpty) {
-                          update(preferences.copyWith(
-                            collectionPreference: selection.single,
-                          ));
+                          update(
+                            preferences.copyWith(
+                              collectionPreference: selection.single,
+                            ),
+                          );
                         }
                       }
                     : null,
@@ -232,9 +247,9 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                 title: l10n.hostsEventDefaultsClearCollection,
                 body: l10n.hostsEventDefaultsChooseEachEvent,
                 onTap: editable
-                    ? () => update(preferences.copyWith(
-                        collectionPreference: null,
-                      ))
+                    ? () => update(
+                        preferences.copyWith(collectionPreference: null),
+                      )
                     : null,
               ),
             CatchField.input(
@@ -247,7 +262,9 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
               inputMode: inputMode,
               maxLength: 3,
               textCapitalization: TextCapitalization.characters,
-              onValidate: (value) => value == null || value.trim().isEmpty ||
+              onValidate: (value) =>
+                  value == null ||
+                      value.trim().isEmpty ||
                       RegExp(r'^[A-Z]{3}$').hasMatch(value.trim().toUpperCase())
                   ? null
                   : l10n.hostsEventDefaultsInvalidCurrency,
@@ -258,15 +275,19 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                           !RegExp(r'^[A-Z]{3}$').hasMatch(normalized)) {
                         return;
                       }
-                      update(preferences.copyWith(
-                        currency: normalized.isEmpty ? null : normalized,
-                      ));
+                      update(
+                        preferences.copyWith(
+                          currency: normalized.isEmpty ? null : normalized,
+                        ),
+                      );
                     }
                   : null,
             ),
             CatchField.input(
               copy: copy,
-              key: ValueKey('manager-payment-instructions-${preferences.paymentInstructions}'),
+              key: ValueKey(
+                'manager-payment-instructions-${preferences.paymentInstructions}',
+              ),
               title: l10n.hostsEventDefaultsPaymentInstructions,
               contractExemption: 'Manager-only external payment instructions.',
               initialValue: preferences.paymentInstructions ?? '',
@@ -281,17 +302,22 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                   ? (value) {
                       final trimmed = value.trim();
                       if (trimmed.length > 1000) return;
-                      update(preferences.copyWith(
-                        paymentInstructions: trimmed.isEmpty ? null : trimmed,
-                      ));
+                      update(
+                        preferences.copyWith(
+                          paymentInstructions: trimmed.isEmpty ? null : trimmed,
+                        ),
+                      );
                     }
                   : null,
             ),
             CatchField.input(
               copy: copy,
-              key: ValueKey('manager-reusable-page-${preferences.reusablePaymentPage?.url}'),
+              key: ValueKey(
+                'manager-reusable-page-${preferences.reusablePaymentPage?.url}',
+              ),
               title: l10n.hostsEventDefaultsReusablePaymentPage,
-              contractExemption: 'Only a reusable public organizer payment page.',
+              contractExemption:
+                  'Only a reusable public organizer payment page.',
               initialValue: preferences.reusablePaymentPage?.url ?? '',
               inputHint: l10n.hostsEventDefaultsReusablePageHint,
               helperText: l10n.hostsEventDefaultsReusablePagePrivacyNote,
@@ -313,7 +339,8 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                       }
                       if (!isCanonicalPublicPaymentPageUrl(trimmed)) return;
                       if (trimmed == preferences.reusablePaymentPage?.url &&
-                          preferences.reusablePaymentPage?.reusableForEvents == true) {
+                          preferences.reusablePaymentPage?.reusableForEvents ==
+                              true) {
                         return;
                       }
                       // Do not send a clear while confirmation is pending:
@@ -335,12 +362,14 @@ class HostManagerEventSetupPreferencesSection extends StatelessWidget {
                         barrierDismissible: false,
                       );
                       if (!context.mounted || confirmed != true) return;
-                      update(preferences.copyWith(
-                        reusablePaymentPage: ReusableOrganizerPaymentPage(
-                          trimmed,
-                          reusableForEvents: true,
+                      update(
+                        preferences.copyWith(
+                          reusablePaymentPage: ReusableOrganizerPaymentPage(
+                            trimmed,
+                            reusableForEvents: true,
+                          ),
                         ),
-                      ));
+                      );
                     }
                   : null,
             ),

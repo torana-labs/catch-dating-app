@@ -91,7 +91,7 @@ class EventChatDirectoryRowList extends StatelessWidget {
                       ? l.eventChatsJoined
                       : l.eventChatsReady,
                   emphasis: CatchFieldEmphasis.title,
-                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  icon: CatchIcons.chat,
                   titleMaxLines: 3,
                   bodyMaxLines: 3,
                   onTap: () => onSelected(room.eventId),

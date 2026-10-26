@@ -1,5 +1,18 @@
 export {CatchAppCaptureImage} from "./components/CatchAppCaptureImage";
 export type {CatchAppCaptureImageProps} from "./components/CatchAppCaptureImage";
+export {CatchAvatar, catchAvatarInitialsOf} from "./components/CatchAvatar";
+export type {
+  CatchAvatarColors,
+  CatchAvatarCountProps,
+  CatchAvatarDefaultProps,
+  CatchAvatarMonogramProps,
+  CatchAvatarProps,
+  CatchAvatarStatus,
+  CatchAvatarVariant,
+  CatchAvatarVeiledProps,
+} from "./components/CatchAvatar";
+export {CatchAvatarRow} from "./components/CatchAvatarRow";
+export type {CatchAvatarRowProps, CatchPersonAvatarItem} from "./components/CatchAvatarRow";
 export {CatchBand} from "./components/CatchBand";
 export type {
   CatchBandElement,
@@ -8,6 +21,8 @@ export type {
   CatchBandSpacing,
   CatchBandWidth,
 } from "./components/CatchBand";
+/** A Website v2 ground (CAT-245); Flutter's `CatchGround` names the same nine. */
+export type {Ground as CatchGround} from "./components/palette";
 export {CatchCheckboxInput} from "./components/CatchCheckboxInput";
 export type {CatchCheckboxInputProps} from "./components/CatchCheckboxInput";
 export * from "./artwork";

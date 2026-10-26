@@ -40,7 +40,7 @@ class ClubContactSection extends StatelessWidget {
             onTap: onContactSelected != null
                 ? () => unawaited(onContactSelected!(action))
                 : null,
-            actions: Icon(CatchIcons.arrowUpRight, size: CatchIconSize.sm),
+            actions: Icon(CatchIcons.goTo, size: CatchIconSize.sm),
           ),
       ],
     );
@@ -49,8 +49,8 @@ class ClubContactSection extends StatelessWidget {
 
 IconData _contactActionIcon(ClubContactActionKind kind) {
   return switch (kind) {
-    ClubContactActionKind.instagram => CatchIcons.alternateEmailRounded,
-    ClubContactActionKind.phone => CatchIcons.callOutlined,
-    ClubContactActionKind.email => CatchIcons.emailOutlined,
+    ClubContactActionKind.instagram => CatchIcons.handle,
+    ClubContactActionKind.phone => CatchIcons.phone,
+    ClubContactActionKind.email => CatchIcons.email,
   };
 }

@@ -92,7 +92,7 @@ class ClubBasicsStep extends StatelessWidget {
                       .createClubCallablePayloadOrganizerType,
                   contractValueBuilder: (value) => value.name,
                   body: _organizerTypeLabel(context, selectedOrganizerType),
-                  icon: CatchIcons.groups3Outlined,
+                  icon: CatchIcons.people,
                   values: OrganizerType.values,
                   itemLabelBuilder: (type) =>
                       _organizerTypeLabel(context, type),
@@ -114,7 +114,7 @@ class ClubBasicsStep extends StatelessWidget {
                   contract:
                       CatchContractConstraints.createClubCallablePayloadName,
                   controller: nameController,
-                  icon: CatchIcons.groupOutlined,
+                  icon: CatchIcons.people,
                   states: <WidgetState>{
                     if (!detailsEnabled) WidgetState.disabled,
                   },
@@ -147,7 +147,7 @@ class ClubBasicsStep extends StatelessWidget {
                           .createClubCallablePayloadLocation,
                       contractValueBuilder: (city) => city.effectiveMarketId,
                       body: selectedCity?.label,
-                      icon: CatchIcons.locationCityOutlined,
+                      icon: CatchIcons.city,
                       values: defaultCityOptions
                           .where((city) => city.hostCreatable)
                           .toList(growable: false),
@@ -178,7 +178,7 @@ class ClubBasicsStep extends StatelessWidget {
                   contract:
                       CatchContractConstraints.createClubCallablePayloadArea,
                   controller: areaController,
-                  icon: CatchIcons.locationOnOutlined,
+                  icon: CatchIcons.location,
                   states: <WidgetState>{
                     if (!detailsEnabled) WidgetState.disabled,
                   },

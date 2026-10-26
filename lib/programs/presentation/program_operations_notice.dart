@@ -218,7 +218,7 @@ class ProgramArrivalsOutboxBanner extends StatelessWidget {
     return CatchBanner(
       title: context.l10n.programsArrivalsOutboxTitle,
       message: message,
-      icon: CatchIcons.wifiOffRounded,
+      icon: CatchIcons.offline,
       tone: review > 0 ? CatchBannerTone.danger : CatchBannerTone.warning,
       actions: [
         CatchButton(

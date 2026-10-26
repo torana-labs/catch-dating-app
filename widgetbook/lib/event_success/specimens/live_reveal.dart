@@ -76,9 +76,9 @@ Widget eventSuccessStrictCountdownBeatRail(BuildContext context) =>
       children: [
         EventSuccessCountdownStepper(
           items: [
-            (label: 'Hold', icon: CatchIcons.panToolAltOutlined),
-            (label: 'Watch', icon: CatchIcons.visibilityOutlined),
-            (label: 'Move', icon: CatchIcons.boltRounded),
+            (label: 'Hold', icon: CatchIcons.tap),
+            (label: 'Watch', icon: CatchIcons.show),
+            (label: 'Move', icon: CatchIcons.instant),
           ],
           currentIndex: 1,
         ),
@@ -97,7 +97,7 @@ Widget eventSuccessStrictCountdownCuePill(BuildContext context) =>
       catalogId: 'Event Success reveal',
       children: [
         EventSuccessCountdownNotice(
-          icon: CatchIcons.visibilityOffOutlined,
+          icon: CatchIcons.hide,
           title: 'No names shown yet',
           body: 'Partner details stay locked.',
         ),

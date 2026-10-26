@@ -166,7 +166,7 @@ class EventDetailBody extends StatelessWidget {
                 body: context.l10n.eventsEventDetailBodyBodyYourSpotIsBooked,
                 actionLabel:
                     context.l10n.eventsEventDetailBodyActionlabelInviteAFriend,
-                actionIcon: CatchIcons.sendRounded,
+                actionIcon: CatchIcons.send,
                 onAction: onShare,
                 surfaceStyle: style,
                 borderColor: style.isDark
@@ -303,11 +303,11 @@ class EventCompanionCard extends StatelessWidget {
         mode: CatchErrorStateMode.compact,
       ),
       EventDetailCompanionStatus.available => EventDetailCalloutCard(
-        leadingIcon: CatchIcons.autoAwesomeOutlined,
+        leadingIcon: CatchIcons.magic,
         title: context.l10n.eventsEventDetailBodyTitleEventCompanion,
         body: context.l10n.eventsEventDetailBodyBodyCheckInSeeYour,
         actionLabel: context.l10n.eventsEventDetailBodyActionlabelOpenCompanion,
-        actionIcon: CatchIcons.phoneIphoneRounded,
+        actionIcon: CatchIcons.mobile,
         onAction: (_) => onOpen(),
         surfaceStyle: surfaceStyle,
       ),
@@ -391,7 +391,7 @@ class EventDetailHostsSection extends StatelessWidget {
                     CatchRowBadge(
                       label: context.l10n.organizersAuthorityBadgeOwnerVerified,
                       tone: CatchBadgeTone.success,
-                      icon: CatchIcons.sealCheck,
+                      icon: CatchIcons.verified,
                     ),
                 ],
               ),
@@ -399,7 +399,7 @@ class EventDetailHostsSection extends StatelessWidget {
                   ? CatchFieldSecondaryAction.command(
                       label:
                           context.l10n.eventsEventDetailBodyTooltipMessageHost,
-                      icon: CatchIcons.chatBubbleOutlineRounded,
+                      icon: CatchIcons.chat,
                       onActivate: () => onMessageHost(clubId, hostUid),
                     )
                   : null,

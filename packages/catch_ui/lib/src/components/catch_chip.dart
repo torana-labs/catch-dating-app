@@ -301,7 +301,7 @@ class _CatchChipState extends State<CatchChip> {
                 widget._mode == CatchChipMode.multiple &&
                 widget._selected
             ? Icon(
-                CatchIcons.checkRounded,
+                CatchIcons.check,
                 size: CatchFieldTokens.chipSelectedGlyphExtent,
               )
             : widget.leading;
@@ -332,11 +332,7 @@ class _CatchChipState extends State<CatchChip> {
     }
 
     final trailing = widget._variant == _CatchChipVariant.removable
-        ? Icon(
-            CatchIcons.closeRounded,
-            color: foreground,
-            size: CatchIconSize.sm,
-          )
+        ? Icon(CatchIcons.close, color: foreground, size: CatchIconSize.sm)
         : null;
     final iconSize = widget._variant == _CatchChipVariant.activity
         ? CatchLayout.activityChipIconSize

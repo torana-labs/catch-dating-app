@@ -785,7 +785,7 @@
             "values": [
               "primary",
               "secondary",
-              "ghost",
+              "quiet",
               "danger",
               "light"
             ]
@@ -15049,8 +15049,41 @@
         "constructors": [
           "CatchAvatar",
           "CatchAvatar.count",
-          "CatchAvatar.veiled"
+          "CatchAvatar.veiled",
+          "CatchAvatar.monogram"
         ]
+      },
+      "react": {
+        "symbol": "CatchAvatar",
+        "file": "packages/web-ui/src/components/CatchAvatar.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "CatchAvatarRow"
+        ],
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchAvatar.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "photo",
+            "fallback-initials",
+            "activity-context",
+            "activity-dim",
+            "ring",
+            "status-dot",
+            "obscured",
+            "square",
+            "count",
+            "veiled-run",
+            "veiled-dinner",
+            "monogram",
+            "monogram-display",
+            "row",
+            "row-veiled",
+            "dark"
+          ]
+        },
+        "notes": "CatchAvatar.count, .veiled and .monogram are recipe=\"count\" | \"veiled\" | \"monogram\" on the one component; CatchAvatarRow is the stack member. Avatars render aria-hidden: the name beside them carries the identity, as in the board rows and review items. A photo that fails to load falls back to initials, as Flutter's errorBuilder does."
       },
       "design": {
         "figma": {
@@ -15177,6 +15210,25 @@
             "dartType": "int",
             "tsType": "number",
             "notes": "Only available through CatchAvatar.count."
+          },
+          {
+            "name": "ground",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchGround",
+            "tsType": "CatchGround",
+            "values": [
+              "white",
+              "paper",
+              "ink",
+              "coral",
+              "pink",
+              "yellow",
+              "mint",
+              "indigo",
+              "magenta"
+            ],
+            "notes": "Required by CatchAvatar.monogram: initials on a palette ground (CAT-245), in its fill and ink; initials of 24px and up take the display voice (D19)."
           }
         ],
         "states": [
@@ -15190,7 +15242,9 @@
           "square",
           "count",
           "veiled-run",
-          "veiled-dinner"
+          "veiled-dinner",
+          "monogram",
+          "monogram-display"
         ],
         "slots": [],
         "tokens": [

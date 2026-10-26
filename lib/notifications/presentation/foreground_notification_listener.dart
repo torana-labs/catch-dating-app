@@ -93,9 +93,7 @@ class _ForegroundNotificationListenerState
                       ? l10n.notificationArrivalMatchTitle
                       : l10n.notificationArrivalMessageTitle),
               message: event.body,
-              icon: isMatch
-                  ? CatchIcons.favoriteRounded
-                  : CatchIcons.chatCircle,
+              icon: isMatch ? CatchIcons.like : CatchIcons.chat,
               tone: isMatch ? CatchNoticeTone.event : CatchNoticeTone.status,
               person: event.actorName == null
                   ? null

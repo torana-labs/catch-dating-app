@@ -42,7 +42,7 @@ Future<MapMarkerBitmap> _buildEventMapPinBitmap({
   final flagVerticalPadding = CatchSpacing.s1;
   final flagGap = CatchSpacing.micro2;
   final maxFlagWidth = CatchLayout.activityMapPinFlagMaxWidth;
-  final iconData = CatchIcons.pin;
+  final iconData = CatchIcons.location;
 
   TextPainter? flagPainter;
   double flagWidth = 0;

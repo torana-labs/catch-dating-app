@@ -113,7 +113,7 @@ class _EventSuccessQuestionnaireConfigEditorState
                     .join(' · '),
                 titleMaxLines: 3,
                 bodyMaxLines: 4,
-                icon: CatchIcons.helpOutlineRounded,
+                icon: CatchIcons.help,
               ),
         ],
       ),
@@ -285,7 +285,7 @@ class _CustomQuestionnaireSectionState
                   title: context
                       .l10n
                       .eventSuccessEventSuccessQuestionnaireConfigEditorMessageRemoveQuestion,
-                  icon: CatchIcons.deleteOutlineRounded,
+                  icon: CatchIcons.delete,
                   tone: CatchFieldTone.danger,
                   onTap: widget.enabled
                       ? () {
@@ -307,7 +307,7 @@ class _CustomQuestionnaireSectionState
             title: context
                 .l10n
                 .eventSuccessEventSuccessQuestionnaireConfigEditorLabelAddQuestion,
-            icon: CatchIcons.addRounded,
+            icon: CatchIcons.add,
             onTap: widget.enabled && questions.length < 8
                 ? () => widget.onChanged(
                     widget.value.copyWith(
@@ -324,7 +324,7 @@ class _CustomQuestionnaireSectionState
             title: context
                 .l10n
                 .eventSuccessEventSuccessQuestionnaireConfigEditorLabelReset,
-            icon: CatchIcons.refreshRounded,
+            icon: CatchIcons.refresh,
             onTap: widget.enabled
                 ? () {
                     _accordion.collapse();

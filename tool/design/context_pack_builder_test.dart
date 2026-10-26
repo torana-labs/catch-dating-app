@@ -938,6 +938,24 @@ final _styleRegistry = <_StyleEntry>[
       '24': (context) => CatchTextStyles.avatarInitials(context, size: 24),
     },
   ),
+  _StyleEntry(
+    name: 'avatarMonogram',
+    role: 'data',
+    parametric: true,
+    casePolicy: 'uppercase-initials',
+    samples: {
+      '12': (context) => CatchTextStyles.avatarMonogram(
+        context,
+        size: 12,
+        color: CatchGround.pink.inkColor,
+      ),
+      '30': (context) => CatchTextStyles.avatarMonogram(
+        context,
+        size: 30,
+        color: CatchGround.coral.inkColor,
+      ),
+    },
+  ),
   _StyleEntry.single(
     'otpDigit',
     'data',

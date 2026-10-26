@@ -95,7 +95,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+    await tester.tap(find.byIcon(CatchIcons.more));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Report'));
     await pumpFeatureUi(tester);
@@ -117,7 +117,7 @@ void main() {
       );
       await pumpFeatureUi(tester);
 
-      await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+      await tester.tap(find.byIcon(CatchIcons.more));
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Report'));
       await pumpFeatureUi(tester);
@@ -145,7 +145,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+    await tester.tap(find.byIcon(CatchIcons.more));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Report'));
     await pumpFeatureUi(tester);
@@ -176,7 +176,7 @@ void main() {
       );
       await pumpFeatureUi(tester);
 
-      await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+      await tester.tap(find.byIcon(CatchIcons.more));
       await pumpFeatureUi(tester);
       await tester.tap(
         find.ancestor(of: find.text('Block'), matching: find.byType(InkWell)),
@@ -207,7 +207,7 @@ void main() {
       );
       await pumpFeatureUi(tester);
 
-      await tester.tap(find.byIcon(CatchIcons.moreHorizRounded));
+      await tester.tap(find.byIcon(CatchIcons.more));
       await pumpFeatureUi(tester);
       await tester.tap(
         find.ancestor(of: find.text('Block'), matching: find.byType(InkWell)),

@@ -153,7 +153,7 @@ class _EventRehearsalRuntimeSectionState
           label: _advanced
               ? l.eventAssistanceRuntimeHide
               : l.eventAssistanceRuntimeCustomize,
-          variant: CatchButtonVariant.ghost,
+          variant: CatchButtonVariant.quiet,
           onPressed: () => setState(() => _advanced = !_advanced),
         ),
         if (_advanced || !_editable) ...[
@@ -226,7 +226,7 @@ class _EventRehearsalRuntimeSectionState
           CatchButton(
             key: const ValueKey('practice.pause'),
             label: l.eventAssistanceRuntimePause,
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             onPressed: widget.onPause,
           ),
         gapH12,

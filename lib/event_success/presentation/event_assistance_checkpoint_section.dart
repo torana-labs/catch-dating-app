@@ -281,7 +281,7 @@ class _EventAssistanceCheckpointSectionState
           gapH8,
           CatchButton(
             label: l10n.eventAssistanceCheckpointReload,
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             onPressed: widget.onReload,
           ),
         ],
@@ -302,7 +302,7 @@ class _EventAssistanceCheckpointSectionState
         gapH8,
         CatchButton(
           label: l10n.eventAssistanceVisitDone,
-          variant: CatchButtonVariant.ghost,
+          variant: CatchButtonVariant.quiet,
           status: busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
           onPressed: busy ? null : widget.onDone,
         ),

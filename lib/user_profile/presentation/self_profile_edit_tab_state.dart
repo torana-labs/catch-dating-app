@@ -274,7 +274,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
     CatchFormTextRow<UpdateUserProfilePatch>(
       validationCopy: catchFormValidationCopy(l10n),
       id: 'displayName',
-      icon: CatchIcons.personOutlined,
+      icon: CatchIcons.person,
       label: l10n.userProfileSelfProfileEditTabStateLabelDisplayName,
       currentValue: user.publicDisplayName,
       currentFieldValue: user.displayName.trim().isEmpty
@@ -291,7 +291,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
     if (user.dateOfBirth case final birthday?)
       CatchFormReadRow<UpdateUserProfilePatch>(
         id: 'dateOfBirth',
-        icon: CatchIcons.cakeOutlined,
+        icon: CatchIcons.birthday,
         label: l10n.userProfileSelfProfileEditTabStateLabelDateOfBirth,
         body: l10n
             .userProfileSelfProfileEditTabStateBodyPadleftPadleft2YearAgeon(
@@ -304,7 +304,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
     if (user.gender case final gender?)
       CatchFormReadRow<UpdateUserProfilePatch>(
         id: 'gender',
-        icon: CatchIcons.wcOutlined,
+        icon: CatchIcons.genders,
         label: l10n.userProfileSelfProfileEditTabStateLabelGender,
         body: gender.label,
       ),
@@ -312,14 +312,14 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
     // re-verification before Firestore can safely change.
     CatchFormReadRow<UpdateUserProfilePatch>(
       id: 'phoneNumber',
-      icon: CatchIcons.phoneOutlined,
+      icon: CatchIcons.phone,
       label: l10n.userProfileSelfProfileEditTabStateLabelPhone,
       body: user.phoneNumber,
     ),
     CatchFormTextRow<UpdateUserProfilePatch>(
       validationCopy: catchFormValidationCopy(l10n),
       id: 'email',
-      icon: CatchIcons.emailOutlined,
+      icon: CatchIcons.email,
       label: l10n.userProfileSelfProfileEditTabStateLabelEmail,
       currentValue: user.email,
       fieldName: l10n.userProfileSelfProfileEditTabStateVisiblecopyEmaile69bb2,
@@ -333,7 +333,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
     CatchFormTextRow<UpdateUserProfilePatch>(
       validationCopy: catchFormValidationCopy(l10n),
       id: 'instagramHandle',
-      icon: CatchIcons.alternateEmailOutlined,
+      icon: CatchIcons.handle,
       label: l10n.userProfileSelfProfileEditTabStateLabelInstagram,
       currentValue: user.instagramHandle ?? '',
       currentFieldValue: user.instagramHandle,
@@ -354,7 +354,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
     ),
     CatchFormCustomRow<UpdateUserProfilePatch>(
       id: 'height',
-      icon: CatchIcons.heightOutlined,
+      icon: CatchIcons.height,
       label: l10n.userProfileSelfProfileEditTabStateLabelHeight,
       contract: CatchContractConstraints.updateUserProfilePatchHeight,
       build: (context, scope) {
@@ -365,7 +365,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _basicRows({
             : l10n.userProfileSelfProfileEditTabStateVisiblecopyHeight;
         return ProfileInlineHeightEditor(
           key: const ValueKey('inline-height-editor'),
-          icon: CatchIcons.heightOutlined,
+          icon: CatchIcons.height,
           label: l10n.userProfileSelfProfileEditTabStateLabelHeight,
           value: value,
           currentValue: user.height,
@@ -391,7 +391,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
     CatchFormSingleChoiceRow<UpdateUserProfilePatch, CityOption>(
       itemLabel: (value) => value.label,
       id: 'city',
-      icon: CatchIcons.locationOnOutlined,
+      icon: CatchIcons.location,
       label: l10n.userProfileSelfProfileEditTabStateLabelCity,
       values: defaultCityOptions
           .where((city) => city.profileSelectable)
@@ -405,7 +405,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
     CatchFormTextRow<UpdateUserProfilePatch>(
       validationCopy: catchFormValidationCopy(l10n),
       id: 'occupation',
-      icon: CatchIcons.workOutline,
+      icon: CatchIcons.work,
       label: l10n.userProfileSelfProfileEditTabStateLabelJobTitle,
       currentValue: user.occupation ?? '',
       currentFieldValue: user.occupation,
@@ -421,7 +421,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
     CatchFormTextRow<UpdateUserProfilePatch>(
       validationCopy: catchFormValidationCopy(l10n),
       id: 'company',
-      icon: CatchIcons.businessOutlined,
+      icon: CatchIcons.business,
       label: l10n.userProfileSelfProfileEditTabStateLabelCompany,
       currentValue: user.company ?? '',
       currentFieldValue: user.company,
@@ -438,7 +438,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
     CatchFormSingleChoiceRow<UpdateUserProfilePatch, EducationLevel>(
       itemLabel: (value) => value.label,
       id: 'education',
-      icon: CatchIcons.schoolOutlined,
+      icon: CatchIcons.education,
       label: l10n.userProfileSelfProfileEditTabStateLabelEducation,
       values: EducationLevel.values,
       value: user.education,
@@ -450,7 +450,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
     CatchFormSingleChoiceRow<UpdateUserProfilePatch, Religion>(
       itemLabel: (value) => value.label,
       id: 'religion',
-      icon: CatchIcons.volunteerActivismOutlined,
+      icon: CatchIcons.support,
       label: l10n.userProfileSelfProfileEditTabStateLabelReligion,
       values: Religion.values,
       value: user.religion,
@@ -463,7 +463,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
     CatchFormMultiChoiceRow<UpdateUserProfilePatch, Language>(
       itemLabel: (value) => value.label,
       id: 'languages',
-      icon: CatchIcons.languageOutlined,
+      icon: CatchIcons.web,
       label: l10n.userProfileSelfProfileEditTabStateLabelLanguages,
       values: Language.values,
       selected: user.languages,
@@ -475,7 +475,7 @@ List<CatchFormRowDescriptor<UpdateUserProfilePatch>> _aboutRows({
     CatchFormSingleChoiceRow<UpdateUserProfilePatch, RelationshipGoal>(
       itemLabel: (value) => value.label,
       id: 'relationshipGoal',
-      icon: CatchIcons.favoriteOutline,
+      icon: CatchIcons.like,
       label: l10n.userProfileSelfProfileEditTabStateLabelLookingFor,
       values: RelationshipGoal.values,
       value: user.relationshipGoal,
@@ -496,7 +496,7 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
   return [
     SelfProfileRangeFieldRowDescriptor(
       id: 'pace-range',
-      icon: CatchIcons.speedOutlined,
+      icon: CatchIcons.pace,
       label: l10n.userProfileSelfProfileEditTabStateLabelPaceRange,
       value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
       currentMin: user.paceMinSecsPerKm,
@@ -517,7 +517,7 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
     ),
     SelfProfileMultiChoiceFieldRowDescriptor<PreferredDistance>(
       id: 'preferredDistances',
-      icon: CatchIcons.straightenOutlined,
+      icon: CatchIcons.measure,
       label: l10n.userProfileSelfProfileEditTabStateLabelPreferredDistances,
       values: PreferredDistance.values,
       selected: user.preferredDistances,
@@ -531,7 +531,7 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
     ),
     SelfProfileMultiChoiceFieldRowDescriptor<RunReason>(
       id: 'runningReasons',
-      icon: CatchIcons.directionsRunOutlined,
+      icon: CatchIcons.activity,
       label: l10n.userProfileSelfProfileEditTabStateLabelWhyIEvent,
       values: RunReason.values,
       selected: user.runningReasons,
@@ -545,7 +545,7 @@ List<SelfProfileFieldRowDescriptor> _runningRows({
     ),
     SelfProfileMultiChoiceFieldRowDescriptor<PreferredRunTime>(
       id: 'preferredRunTimes',
-      icon: CatchIcons.wbTwilightOutlined,
+      icon: CatchIcons.twilight,
       label: l10n.userProfileSelfProfileEditTabStateLabelFavoriteEventTimes,
       values: PreferredRunTime.values,
       selected: user.preferredRunTimes,
@@ -568,7 +568,7 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
   return [
     SelfProfileSingleChoiceFieldRowDescriptor<DrinkingHabit>(
       id: 'drinking',
-      icon: CatchIcons.localBarOutlined,
+      icon: CatchIcons.drinks,
       label: l10n.userProfileSelfProfileEditTabStateLabelDrinking,
       values: DrinkingHabit.values,
       value: user.drinking,
@@ -579,7 +579,7 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<SmokingHabit>(
       id: 'smoking',
-      icon: CatchIcons.smokeFreeOutlined,
+      icon: CatchIcons.smokeFree,
       label: l10n.userProfileSelfProfileEditTabStateLabelSmoking,
       values: SmokingHabit.values,
       value: user.smoking,
@@ -590,7 +590,7 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<WorkoutFrequency>(
       id: 'workout',
-      icon: CatchIcons.fitnessCenterOutlined,
+      icon: CatchIcons.fitness,
       label: l10n.userProfileSelfProfileEditTabStateLabelWorkout,
       values: WorkoutFrequency.values,
       value: user.workout,
@@ -601,7 +601,7 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<DietaryPreference>(
       id: 'diet',
-      icon: CatchIcons.restaurantOutlined,
+      icon: CatchIcons.dining,
       label: l10n.userProfileSelfProfileEditTabStateLabelDiet,
       values: DietaryPreference.values,
       value: user.diet,
@@ -612,7 +612,7 @@ List<SelfProfileFieldRowDescriptor> _lifestyleRows({
     ),
     SelfProfileSingleChoiceFieldRowDescriptor<ChildrenStatus>(
       id: 'children',
-      icon: CatchIcons.childCareOutlined,
+      icon: CatchIcons.kids,
       label: l10n.userProfileSelfProfileEditTabStateLabelChildren,
       values: ChildrenStatus.values,
       value: user.children,

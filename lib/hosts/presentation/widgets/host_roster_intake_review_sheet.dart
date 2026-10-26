@@ -209,7 +209,7 @@ class _HostRosterIntakeReviewSheetState
                   onPressed: _pending
                       ? null
                       : () => Navigator.of(context).pop(),
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                 ),
               ),
             ],
@@ -223,7 +223,7 @@ class _HostRosterIntakeReviewSheetState
                     count: _review.excludedRowIds.length,
                   ),
                   onPressed: _pending ? null : _restoreExcluded,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                 ),
               ),
             ],

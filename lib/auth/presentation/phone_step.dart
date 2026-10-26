@@ -207,7 +207,7 @@ class _PhoneStepState extends ConsumerState<PhoneStep> {
         footer: CatchButton(
           key: AuthFormKeys.sendCode,
           label: l10n.authSendCodeAction,
-          leading: Icon(CatchIcons.arrowForwardRounded),
+          leading: Icon(CatchIcons.forward),
           onPressed: _submit,
           status: (viewState.sendButtonLoading)
               ? CatchButtonStatus.loading
@@ -362,7 +362,7 @@ class PhoneCountryCodePicker extends StatelessWidget {
           borderSide: BorderSide(color: t.primary),
         ),
       ),
-      closeIcon: Icon(CatchIcons.closeRounded, color: t.ink2),
+      closeIcon: Icon(CatchIcons.close, color: t.ink2),
       padding: CatchInsets.inlineHorizontal,
       margin: CatchInsets.countryCodeFlagMargin,
       flagWidth: CatchSpacing.s6,
@@ -391,7 +391,7 @@ class PhoneCountryCodePicker extends StatelessWidget {
                     ),
                     gapW4,
                     Icon(
-                      CatchIcons.expandMoreRounded,
+                      CatchIcons.expand,
                       size: CatchIconSize.sm,
                       color: t.ink3,
                     ),

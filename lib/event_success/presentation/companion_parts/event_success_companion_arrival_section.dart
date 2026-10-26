@@ -156,7 +156,7 @@ class CompanionActionsEmptyState extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(CatchIcons.eventOutlined, color: t.primary),
+          Icon(CatchIcons.event, color: t.primary),
           gapW12,
           Expanded(
             child: Column(

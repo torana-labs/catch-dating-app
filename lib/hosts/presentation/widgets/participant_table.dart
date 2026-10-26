@@ -184,7 +184,7 @@ class ParticipantRowAction extends StatelessWidget {
           children: [
             if (onProfile != null) ...[
               ParticipantDecisionButton(
-                icon: CatchIcons.eye,
+                icon: CatchIcons.show,
                 color: t.ink2,
                 onTap: onProfile,
                 label: context.l10n.hostsCatchRosterBoardLabelOpenProfile,
@@ -304,7 +304,7 @@ class ParticipantTable extends StatelessWidget {
           return CatchEmptyState(
             surface: true,
             variant: CatchEmptyStateVariant.inline,
-            icon: CatchIcons.group,
+            icon: CatchIcons.people,
             title: emptyTitle,
             message: emptyMessage,
             padding: CatchInsets.content,
@@ -350,7 +350,11 @@ class ParticipantTable extends StatelessWidget {
             ? (context) => Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(CatchIcons.group, size: CatchIconSize.md, color: t.ink3),
+                  Icon(
+                    CatchIcons.people,
+                    size: CatchIconSize.md,
+                    color: t.ink3,
+                  ),
                   const SizedBox(width: CatchSpacing.micro10),
                   Expanded(
                     child: Column(

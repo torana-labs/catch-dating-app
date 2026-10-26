@@ -59,7 +59,7 @@ class HostCustomerReachSection extends StatelessWidget {
                 key: const ValueKey('host-customer-message-plan-loading'),
                 content: CatchRecordLayout(
                   title: l10n.hostCustomersMessageOptionsLoading,
-                  icon: CatchIcons.tabChats,
+                  icon: CatchIcons.chat,
                 ),
               )
             else if (communicationPlanFailed || recipient == null) ...[
@@ -73,7 +73,7 @@ class HostCustomerReachSection extends StatelessWidget {
                 content: CatchRecordLayout(
                   title: l10n.hostCustomersMessageOptionsUnavailable,
                   metadata: l10n.hostCustomersMessageOptionsRetry,
-                  icon: CatchIcons.tabChats,
+                  icon: CatchIcons.chat,
                   color: t.warning,
                 ),
               ),
@@ -93,7 +93,7 @@ class HostCustomerReachSection extends StatelessWidget {
                 content: CatchRecordLayout(
                   title: _recommendedMessageTitle(context, recommendedRoute),
                   metadata: _recommendedMessageBody(context, recommendedRoute),
-                  icon: CatchIcons.tabChats,
+                  icon: CatchIcons.chat,
                 ),
               ),
             ] else
@@ -102,7 +102,7 @@ class HostCustomerReachSection extends StatelessWidget {
                 content: CatchRecordLayout(
                   title: l10n.hostCustomersMessageOptionsUnavailable,
                   metadata: _unavailableMessageBody(context, recipient),
-                  icon: CatchIcons.tabChats,
+                  icon: CatchIcons.chat,
                 ),
               ),
             CatchField.read(
@@ -113,7 +113,7 @@ class HostCustomerReachSection extends StatelessWidget {
                   context,
                   customer.whatsappPermission,
                 ),
-                icon: CatchIcons.verifiedUserOutlined,
+                icon: CatchIcons.verified,
                 color: switch (customer.whatsappPermission.evidenceStatus) {
                   HostCustomerPermissionEvidenceStatus.unavailable => t.ink2,
                   HostCustomerPermissionEvidenceStatus.incomplete => t.warning,
@@ -588,7 +588,7 @@ CatchField hostCustomerTimelineField(
                 answerCount: entry.answeredQuestionCount,
               )
             : context.l10n.hostFormResponsesWithdrawn,
-        icon: CatchIcons.tabForms,
+        icon: CatchIcons.forms,
         color: t.primary,
       ),
     ),
@@ -600,7 +600,7 @@ CatchField hostCustomerTimelineField(
         metadata: context.l10n.hostCustomersTimelineEventStatus(
           status: entry.checkedIn ? 'checkedIn' : entry.status,
         ),
-        icon: CatchIcons.eventAvailable,
+        icon: CatchIcons.eventConfirmed,
         color: entry.checkedIn ? t.success : t.ink2,
       ),
     ),
@@ -613,7 +613,7 @@ CatchField hostCustomerTimelineField(
         metadata: context.l10n.hostCustomersTimelineSendStatus(
           status: entry.status,
         ),
-        icon: CatchIcons.sendRounded,
+        icon: CatchIcons.send,
         color: entry.status == 'failed' ? t.danger : t.ink2,
       ),
     ),
@@ -630,7 +630,7 @@ CatchField hostCustomerTimelineField(
             ? context.l10n.hostCustomersTimelineCatchMessage
             : context.l10n.hostCustomersTimelineManagedWhatsapp,
         description: entry.bodyPreview,
-        icon: CatchIcons.tabChats,
+        icon: CatchIcons.chat,
         color: t.primary,
       ),
     ),
@@ -644,7 +644,7 @@ CatchField hostCustomerTimelineField(
           outcome: entry.outcome.name,
         ),
         description: entry.notePreview,
-        icon: CatchIcons.callOutlined,
+        icon: CatchIcons.phone,
         color: t.ink2,
       ),
     ),

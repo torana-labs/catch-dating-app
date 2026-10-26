@@ -34,7 +34,7 @@ Widget catchRosterRowContractStates(BuildContext context) {
           tone: CatchBadgeTone.success,
           action: ParticipantButtonAction(
             label: 'View',
-            icon: CatchIcons.eye,
+            icon: CatchIcons.show,
             onPressed: widgetbookNoop,
           ),
         ),
@@ -140,7 +140,7 @@ Widget catchRosterTableContractStates(BuildContext context) {
               tone: CatchBadgeTone.success,
               action: ParticipantButtonAction(
                 label: 'Open',
-                icon: CatchIcons.eye,
+                icon: CatchIcons.show,
                 onPressed: widgetbookNoop,
               ),
             ),

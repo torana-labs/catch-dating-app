@@ -124,12 +124,12 @@ List<_PaperExpectationItem> _paperExpectationItems({
   if (eventEnded) {
     return [
       _PaperExpectationItem(
-        icon: CatchIcons.favoriteBorderRounded,
+        icon: CatchIcons.like,
         label:
             l10n.eventSuccessEventSuccessCompanionSharedLabelPostEventFollowUp,
       ),
       _PaperExpectationItem(
-        icon: CatchIcons.chatBubbleOutlineRounded,
+        icon: CatchIcons.chat,
         label: l10n
             .eventSuccessEventSuccessCompanionSharedLabelConversationStartersStayPrivate,
       ),
@@ -137,9 +137,7 @@ List<_PaperExpectationItem> _paperExpectationItems({
   }
   return [
     _PaperExpectationItem(
-      icon: showSelfCheckIn
-          ? CatchIcons.locationOnOutlined
-          : CatchIcons.groups2Outlined,
+      icon: showSelfCheckIn ? CatchIcons.location : CatchIcons.people,
       label: showSelfCheckIn
           ? l10n.eventSuccessEventSuccessCompanionSharedLabelCheckInWhenYou(
               locationName: event.locationName,
@@ -148,25 +146,25 @@ List<_PaperExpectationItem> _paperExpectationItems({
     ),
     if (plan.hasModule(EventSuccessModuleCatalog.guidedRotations.id))
       _PaperExpectationItem(
-        icon: CatchIcons.syncAltRounded,
+        icon: CatchIcons.swap,
         label: l10n
             .eventSuccessEventSuccessCompanionSharedLabelTimedPartnerRotationsAs,
       )
     else
       _PaperExpectationItem(
-        icon: CatchIcons.forumOutlined,
+        icon: CatchIcons.conversations,
         label: l10n
             .eventSuccessEventSuccessCompanionSharedLabelConversationCuesAppearWhen,
       ),
     if (plan.hasModule(EventSuccessModuleCatalog.liveReveal.id))
       _PaperExpectationItem(
-        icon: CatchIcons.boltRounded,
+        icon: CatchIcons.instant,
         label: l10n
             .eventSuccessEventSuccessCompanionSharedLabelOneSynchronizedRevealEvery,
       )
     else
       _PaperExpectationItem(
-        icon: CatchIcons.lockOutlineRounded,
+        icon: CatchIcons.locked,
         label: l10n
             .eventSuccessEventSuccessCompanionSharedLabelYourGuideStaysPrivate,
       ),
@@ -706,7 +704,7 @@ class _CompanionOthersInRoomTextState extends State<CompanionOthersInRoomText>
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  CatchIcons.groups3Outlined,
+                  CatchIcons.people,
                   size: CatchIconSize.xs,
                   color: t.primary,
                 ),

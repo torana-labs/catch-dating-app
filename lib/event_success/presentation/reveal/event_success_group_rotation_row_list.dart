@@ -26,7 +26,7 @@ class EventSuccessGroupRotationRowList extends StatelessWidget {
         label: context
             .l10n
             .eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingGroupMembers,
-        icon: CatchIcons.hourglassEmptyRounded,
+        icon: CatchIcons.pending,
       );
     }
     return EventSuccessAssignmentSurface(
@@ -91,10 +91,7 @@ class EventSuccessGroupRotationRow extends StatelessWidget {
                       ? CatchBadgeTone.success
                       : CatchBadgeTone.neutral,
                 ),
-                CatchBadge(
-                  label: slot.unitLabel,
-                  icon: CatchIcons.tableRestaurantOutlined,
-                ),
+                CatchBadge(label: slot.unitLabel, icon: CatchIcons.dining),
               ],
             ),
             gapH8,
@@ -115,19 +112,16 @@ class EventSuccessGroupRotationRow extends StatelessWidget {
                       .eventSuccessEventSuccessLiveRevealWidgetsLabelValue1People(
                         value1: slot.peerUids.length + 1,
                       ),
-                  icon: CatchIcons.groupOutlined,
+                  icon: CatchIcons.people,
                 ),
                 for (final name in peerNames)
-                  CatchBadge(
-                    label: name,
-                    icon: CatchIcons.personOutlineRounded,
-                  ),
+                  CatchBadge(label: name, icon: CatchIcons.person),
                 if (peerNames.isEmpty)
                   CatchBadge(
                     label: context
                         .l10n
                         .eventSuccessEventSuccessLiveRevealWidgetsLabelNamesLoading,
-                    icon: CatchIcons.hourglassEmptyRounded,
+                    icon: CatchIcons.pending,
                   ),
               ],
             ),

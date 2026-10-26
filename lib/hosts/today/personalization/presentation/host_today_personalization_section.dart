@@ -61,8 +61,8 @@ class HostTodayPersonalizationSection extends StatelessWidget {
                 content: CatchRecordLayout(
                   title: _milestoneTitle(l10n, step.milestone),
                   icon: step.progress == HostTodayMilestoneProgress.complete
-                      ? CatchIcons.checkCircle
-                      : CatchIcons.circle,
+                      ? CatchIcons.success
+                      : CatchIcons.unselected,
                   metadata: !step.enabled
                       ? l10n.hostTodayMilestoneOwnerOnly
                       : switch (step.progress) {

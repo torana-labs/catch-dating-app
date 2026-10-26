@@ -262,11 +262,7 @@ class MoreActivityTypesRow extends StatelessWidget {
           ),
       title: label,
       titleStyle: CatchTextStyles.kicker(context, color: t.ink3),
-      trailing: Icon(
-        CatchIcons.forwardArrow,
-        size: CatchIconSize.sm,
-        color: t.ink3,
-      ),
+      trailing: Icon(CatchIcons.forward, size: CatchIconSize.sm, color: t.ink3),
       onTap: onTap,
     );
   }

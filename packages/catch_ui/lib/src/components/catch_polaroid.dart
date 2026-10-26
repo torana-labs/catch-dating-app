@@ -90,11 +90,7 @@ class CatchPolaroid extends StatelessWidget {
               ),
               if (showArrow) ...[
                 gapW10,
-                Icon(
-                  CatchIcons.forwardArrow,
-                  size: CatchIconSize.sm,
-                  color: t.ink2,
-                ),
+                Icon(CatchIcons.forward, size: CatchIconSize.sm, color: t.ink2),
               ],
             ],
           ),

@@ -16,7 +16,7 @@ Widget buttonGeometryMatrix(BuildContext context) {
     title: 'Buttons',
     contractIds: const ['catch.button', 'catch.icon_button'],
     principles: const [
-      'Hierarchy changes color and border treatment, not the pill silhouette.',
+      'Hierarchy changes color and border treatment, not the 4px silhouette.',
       'Size changes preserve optical centering and minimum target intent.',
       'Loading and disabled states do not reflow the surrounding composition.',
     ],
@@ -36,8 +36,8 @@ Widget buttonGeometryMatrix(BuildContext context) {
               onPressed: widgetbookNoop,
             ),
             CatchButton(
-              label: 'Ghost',
-              variant: CatchButtonVariant.ghost,
+              label: 'Quiet',
+              variant: CatchButtonVariant.quiet,
               onPressed: widgetbookNoop,
             ),
             CatchButton(

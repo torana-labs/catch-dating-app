@@ -73,7 +73,7 @@ class PhotoSlotTile extends StatelessWidget {
             backgroundColor: t.raised,
             child: Center(
               child: Icon(
-                CatchIcons.brokenImageOutlined,
+                CatchIcons.imageError,
                 size: CatchIconSize.tile,
                 color: t.ink2,
               ),
@@ -85,16 +85,12 @@ class PhotoSlotTile extends StatelessWidget {
       content = PhotoPlaceholderImage(index: index);
     } else if (isActive) {
       content = Center(
-        child: Icon(
-          CatchIcons.addRounded,
-          size: CatchIconSize.hero,
-          color: t.ink3,
-        ),
+        child: Icon(CatchIcons.add, size: CatchIconSize.hero, color: t.ink3),
       );
     } else {
       content = Center(
         child: Icon(
-          CatchIcons.addRounded,
+          CatchIcons.add,
           size: CatchIconSize.hero,
           color: t.ink3.withValues(alpha: CatchOpacity.disabledControl),
         ),
@@ -155,7 +151,7 @@ class PhotoSlotTile extends StatelessWidget {
                   bottom: CatchSpacing.micro6,
                   right: CatchSpacing.micro6,
                   child: CatchIconTile(
-                    icon: CatchIcons.editOutlined,
+                    icon: CatchIcons.edit,
                     iconColor: t.ink,
                     backgroundColor: t.surface.withValues(
                       alpha: CatchOpacity.photoSlotEditChrome,
@@ -217,7 +213,7 @@ class PhotoSlotTile extends StatelessWidget {
                       ),
                       onPressed: onDelete,
                       child: Icon(
-                        CatchIcons.closeRounded,
+                        CatchIcons.close,
                         size: CatchIconSize.sm,
                         color: t.ink,
                       ),

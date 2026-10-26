@@ -105,7 +105,7 @@ class _HostWhatsappSetupSectionState
                       ),
                       CatchButton(
                         label: context.l10n.hostsHostAudienceDisconnect,
-                        variant: CatchButtonVariant.ghost,
+                        variant: CatchButtonVariant.quiet,
                         size: CatchButtonSize.md,
                         onPressed: _busy
                             ? null

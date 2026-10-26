@@ -625,7 +625,7 @@ void _registerExploreScreenFiltersTests() {
       expect(
         find.descendant(
           of: find.byType(ExploreCityPicker),
-          matching: find.byIcon(CatchIcons.locationOnOutlined),
+          matching: find.byIcon(CatchIcons.location),
         ),
         findsOneWidget,
       );

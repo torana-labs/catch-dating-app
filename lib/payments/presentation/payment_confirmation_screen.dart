@@ -429,7 +429,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
                   .l10n
                   .paymentsPaymentConfirmationScreenLabelBackToEvent,
               onPressed: onBackToEvent,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               leading: Icon(CatchIcons.eventOutlined),
               fullWidth: true,
             ),

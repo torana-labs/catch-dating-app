@@ -74,7 +74,7 @@ class EventSuccessCountdownStepper extends StatelessWidget {
                   children: [
                     Icon(
                       entry.$2.state == EventSuccessProgressStatus.complete
-                          ? CatchIcons.checkCircleRounded
+                          ? CatchIcons.success
                           : entry.$2.item.icon,
                       size: CatchIconSize.sm,
                       color: switch (entry.$2.state) {

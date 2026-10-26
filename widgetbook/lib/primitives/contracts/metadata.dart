@@ -35,15 +35,12 @@ Widget catchMetaRowContractStates(BuildContext context) {
     children: [
       WidgetbookContractStateCard(
         label: 'default',
-        child: CatchMetaRow(
-          icon: CatchIcons.locationOnRounded,
-          label: '2.4 km away',
-        ),
+        child: CatchMetaRow(icon: CatchIcons.location, label: '2.4 km away'),
       ),
       WidgetbookContractStateCard(
         label: 'semantic-icon',
         child: CatchMetaRow(
-          icon: CatchIcons.directionsRunRounded,
+          icon: CatchIcons.activity,
           label: 'Social run',
           color: t.success,
         ),
@@ -51,7 +48,7 @@ Widget catchMetaRowContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'semantic-label',
         child: CatchMetaRow(
-          icon: CatchIcons.infoOutlineRounded,
+          icon: CatchIcons.info,
           label: 'Host confirmation required',
           color: t.warning,
           labelColor: t.warning,
@@ -60,7 +57,7 @@ Widget catchMetaRowContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'truncated',
         child: CatchMetaRow(
-          icon: CatchIcons.locationOnRounded,
+          icon: CatchIcons.location,
           label:
               'A deliberately long venue description that demonstrates the single-line truncation contract in the review surface',
         ),
@@ -216,7 +213,7 @@ Widget catchBadgeContractStates(BuildContext context) {
               CatchBadge.onDark(label: 'Starts in 2 hours'),
               CatchBadge.onDarkStatus(
                 label: 'Preview only',
-                icon: CatchIcons.visibilityOutlined,
+                icon: CatchIcons.show,
               ),
             ],
           ),
@@ -226,7 +223,7 @@ Widget catchBadgeContractStates(BuildContext context) {
         label: 'privacy',
         child: CatchBadge.privacy(
           label: 'Private to you',
-          icon: CatchIcons.lockOutline,
+          icon: CatchIcons.locked,
         ),
       ),
       WidgetbookContractStateCard(
@@ -236,7 +233,7 @@ Widget catchBadgeContractStates(BuildContext context) {
           child: CatchBadge(
             label: 'Very long review pending label',
             tone: CatchBadgeTone.warning,
-            icon: CatchIcons.infoOutlineRounded,
+            icon: CatchIcons.info,
             borderColor: t.warning,
           ),
         ),
@@ -307,30 +304,24 @@ Widget catchCountBadgeContractStates(BuildContext context) {
       ),
       WidgetbookContractStateCard(
         label: 'hidden',
-        child: CatchCountBadge(
-          count: 0,
-          child: Icon(CatchIcons.chatBubbleOutlineRounded),
-        ),
+        child: CatchCountBadge(count: 0, child: Icon(CatchIcons.chat)),
       ),
       WidgetbookContractStateCard(
         label: 'count',
-        child: CatchCountBadge(
-          count: 7,
-          child: Icon(CatchIcons.chatBubbleOutlineRounded),
-        ),
+        child: CatchCountBadge(count: 7, child: Icon(CatchIcons.chat)),
       ),
       WidgetbookContractStateCard(
         label: '99-boundary',
         child: CatchCountBadge(
           count: 99,
-          child: Icon(CatchIcons.notificationsOutlined),
+          child: Icon(CatchIcons.notifications),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'overflow-count',
         child: CatchCountBadge(
           count: 104,
-          child: Icon(CatchIcons.notificationsOutlined),
+          child: Icon(CatchIcons.notifications),
         ),
       ),
       const WidgetbookContractStateCard(
@@ -516,7 +507,7 @@ Widget catchCountPillContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'label-with-icon',
         child: CatchButton.floating(
-          icon: CatchIcons.tuneRounded,
+          icon: CatchIcons.filters,
           label: 'Filters',
           onPressed: widgetbookNoop,
         ),
@@ -533,7 +524,7 @@ Widget catchCountPillContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'with-count',
         child: CatchButton.floating(
-          icon: CatchIcons.tuneRounded,
+          icon: CatchIcons.filters,
           label: 'Filters',
           count: 3,
           onPressed: widgetbookNoop,
@@ -544,7 +535,7 @@ Widget catchCountPillContractStates(BuildContext context) {
         description:
             'Use keyboard traversal to inspect the semantic focus ring.',
         child: CatchButton.floating(
-          icon: CatchIcons.tuneRounded,
+          icon: CatchIcons.filters,
           label: 'Keyboard focus target',
           onPressed: widgetbookNoop,
         ),
@@ -552,7 +543,7 @@ Widget catchCountPillContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'semantic-label',
         child: CatchButton.floating(
-          icon: CatchIcons.listRounded,
+          icon: CatchIcons.list,
           label: 'List',
           semanticsLabel: 'Show list view',
           onPressed: widgetbookNoop,
@@ -563,7 +554,7 @@ Widget catchCountPillContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.compactControlWidth,
           child: CatchButton.floating(
-            icon: CatchIcons.tuneRounded,
+            icon: CatchIcons.filters,
             label: 'Very specific active filters',
             count: 12,
             onPressed: widgetbookNoop,

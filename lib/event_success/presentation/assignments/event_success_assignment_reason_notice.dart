@@ -24,11 +24,7 @@ class EventSuccessAssignmentReasonNotice extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(
-              CatchIcons.infoOutlineRounded,
-              size: CatchIconSize.xs,
-              color: t.ink2,
-            ),
+            Icon(CatchIcons.info, size: CatchIconSize.xs, color: t.ink2),
             gapW6,
             CatchText(
               context

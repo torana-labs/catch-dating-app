@@ -89,7 +89,7 @@ Widget catchTopBarContractStates(BuildContext context) {
             title: 'Chats',
             actions: [
               CatchIconAction.toolbar(
-                icon: CatchIcons.moreHorizRounded,
+                icon: CatchIcons.more,
                 tooltip: 'More',
                 onPressed: widgetbookNoop,
               ),
@@ -152,12 +152,12 @@ Widget catchTopBarContractStates(BuildContext context) {
                   CatchActionMenuItem(
                     value: 'report',
                     label: 'Report',
-                    icon: CatchIcons.flagOutlined,
+                    icon: CatchIcons.flag,
                   ),
                   CatchActionMenuItem(
                     value: 'block',
                     label: 'Block',
-                    icon: CatchIcons.blockRounded,
+                    icon: CatchIcons.block,
                     isDestructive: true,
                   ),
                 ],
@@ -202,7 +202,7 @@ Widget catchTopBarContractStates(BuildContext context) {
               subtitle: 'Keep your shared plans in view.',
               actions: [
                 CatchIconAction.toolbar(
-                  icon: CatchIcons.moreHorizRounded,
+                  icon: CatchIcons.more,
                   tooltip: 'More actions',
                   onPressed: widgetbookNoop,
                 ),
@@ -266,27 +266,27 @@ Widget catchMenuContractStates(BuildContext context) {
               value: 'share',
               label: 'Share card',
               sublabel: 'Send the event link',
-              icon: CatchIcons.iosShareRounded,
+              icon: CatchIcons.share,
             ),
             CatchMenuItem(
               value: 'going',
               label: 'Going',
               selected: true,
               variant: CatchMenuItemVariant.choice,
-              icon: CatchIcons.checkCircle,
+              icon: CatchIcons.success,
               startsSection: true,
             ),
             CatchMenuItem(
               value: 'host-only',
               label: 'Host controls',
               enabled: false,
-              icon: CatchIcons.lockOutlineRounded,
+              icon: CatchIcons.locked,
             ),
             CatchMenuItem(
               value: 'remove',
               label: 'Remove from event',
               danger: true,
-              icon: CatchIcons.deleteOutline,
+              icon: CatchIcons.delete,
             ),
           ],
         ),
@@ -300,18 +300,18 @@ Widget catchMenuContractStates(BuildContext context) {
             CatchActionMenuItem(
               value: 'share',
               label: 'Share',
-              icon: CatchIcons.iosShareRounded,
+              icon: CatchIcons.share,
             ),
             CatchActionMenuItem(
               value: 'report',
               label: 'Report',
               sublabel: 'Send to safety',
-              icon: CatchIcons.flagOutlined,
+              icon: CatchIcons.flag,
             ),
             CatchActionMenuItem(
               value: 'block',
               label: 'Block',
-              icon: CatchIcons.blockRounded,
+              icon: CatchIcons.block,
               isDestructive: true,
             ),
           ],

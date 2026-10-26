@@ -181,7 +181,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
         status: (state.isCompleting)
             ? CatchButtonStatus.loading
             : CatchButtonStatus.idle,
-        leading: Icon(CatchIcons.checkRounded),
+        leading: Icon(CatchIcons.check),
         fullWidth: true,
       ),
       children: [
@@ -206,7 +206,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                     minPace: state.minPaceLabel,
                     maxPace: state.maxPaceLabel,
                   ),
-                  icon: CatchIcons.directionsRunRounded,
+                  icon: CatchIcons.activity,
                   disclosureMode: CatchFieldMode.localExpanded,
                   child: Column(
                     children: [

@@ -61,14 +61,14 @@ Widget _catchFormDescriptorPreview(BuildContext context) {
             rows: [
               CatchFormReadRow<_WidgetbookFormPatch>(
                 id: 'identity',
-                icon: CatchIcons.personOutlined,
+                icon: CatchIcons.person,
                 label: 'Identity',
                 body: 'Verified',
               ),
               CatchFormTextRow<_WidgetbookFormPatch>(
                 validationCopy: catchFormValidationCopy(context.l10n),
                 id: 'name',
-                icon: CatchIcons.personOutlined,
+                icon: CatchIcons.person,
                 label: 'Name',
                 currentValue: 'Aarav',
                 patchForValue: (value) => _WidgetbookFormPatch('name', value),
@@ -79,7 +79,7 @@ Widget _catchFormDescriptorPreview(BuildContext context) {
               >(
                 itemLabel: (value) => value.label,
                 id: 'city',
-                icon: CatchIcons.locationOnOutlined,
+                icon: CatchIcons.location,
                 label: 'City',
                 values: _WidgetbookFormOption.values,
                 value: _WidgetbookFormOption.mumbai,
@@ -91,7 +91,7 @@ Widget _catchFormDescriptorPreview(BuildContext context) {
               >(
                 itemLabel: (value) => value.label,
                 id: 'communities',
-                icon: CatchIcons.groupsOutlined,
+                icon: CatchIcons.people,
                 label: 'Communities',
                 values: _WidgetbookFormOption.values,
                 selected: const [_WidgetbookFormOption.mumbai],
@@ -100,7 +100,7 @@ Widget _catchFormDescriptorPreview(BuildContext context) {
               ),
               CatchFormRangeRow<_WidgetbookFormPatch>(
                 id: 'pace',
-                icon: CatchIcons.directionsRunOutlined,
+                icon: CatchIcons.activity,
                 label: 'Pace',
                 value: '5:00 - 6:00 min/km',
                 currentMin: 300,

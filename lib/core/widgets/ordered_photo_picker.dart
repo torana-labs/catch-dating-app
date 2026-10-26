@@ -147,7 +147,7 @@ class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
             label: context.l10n.coreOrderedPhotoPickerActionManageAll(
               count: photos.length,
             ),
-            leading: Icon(CatchIcons.photoLibraryOutlined),
+            leading: Icon(CatchIcons.photos),
             onPressed: () => _openManager(context, photos),
             variant: CatchButtonVariant.secondary,
             fullWidth: true,
@@ -299,10 +299,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
                               widget.onAddPhotosInManager != null)
                       ? _addPhotos
                       : null,
-                  leading: Icon(
-                    CatchIcons.addPhotoAlternateOutlined,
-                    size: CatchIconSize.sm,
-                  ),
+                  leading: Icon(CatchIcons.addPhoto, size: CatchIconSize.sm),
                 ),
               ],
             ),
@@ -373,7 +370,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
                                         label: context
                                             .l10n
                                             .coreOrderedPhotoPickerActionRetry,
-                                        icon: CatchIcons.refreshRounded,
+                                        icon: CatchIcons.refresh,
                                       ),
                                     if (index != 0 && _canReorder)
                                       CatchActionMenuItem(
@@ -381,7 +378,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
                                         label: context
                                             .l10n
                                             .coreOrderedPhotoPickerActionSetAsCover,
-                                        icon: CatchIcons.starOutlineRounded,
+                                        icon: CatchIcons.rating,
                                       ),
                                     if (index > 0 && _canReorder)
                                       CatchActionMenuItem(
@@ -389,7 +386,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
                                         label: context
                                             .l10n
                                             .coreOrderedPhotoPickerActionMoveEarlier,
-                                        icon: CatchIcons.arrowBackRounded,
+                                        icon: CatchIcons.back,
                                       ),
                                     if (index < _photos.length - 1 &&
                                         _canReorder)
@@ -398,7 +395,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
                                         label: context
                                             .l10n
                                             .coreOrderedPhotoPickerActionMoveLater,
-                                        icon: CatchIcons.arrowForwardRounded,
+                                        icon: CatchIcons.forward,
                                       ),
                                     if (widget.onRemovePhoto != null)
                                       CatchActionMenuItem(
@@ -406,7 +403,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
                                         label: context
                                             .l10n
                                             .coreOrderedPhotoPickerActionRemove,
-                                        icon: CatchIcons.deleteOutline,
+                                        icon: CatchIcons.delete,
                                         isDestructive: true,
                                       ),
                                   ];
@@ -531,7 +528,7 @@ class OrderedPhotoTile extends StatelessWidget {
                     backgroundColor: t.raised,
                     child: Center(
                       child: Icon(
-                        CatchIcons.brokenImageOutlined,
+                        CatchIcons.imageError,
                         size: CatchIconSize.tile,
                         color: t.ink2,
                       ),
@@ -556,7 +553,7 @@ class OrderedPhotoTile extends StatelessWidget {
                       ),
                       onPressed: onRemove,
                       child: Icon(
-                        CatchIcons.closeRounded,
+                        CatchIcons.close,
                         size: CatchIconSize.sm,
                         color: t.ink,
                       ),
@@ -602,7 +599,7 @@ class OrderedPhotoTile extends StatelessWidget {
                   bottom: CatchSpacing.s1,
                   right: CatchSpacing.s1,
                   child: CatchIconTile(
-                    icon: CatchIcons.dragIndicatorRounded,
+                    icon: CatchIcons.dragHandle,
                     iconColor: t.ink,
                     backgroundColor: t.surface.withValues(
                       alpha: CatchOpacity.imageEditControlFill,
@@ -741,7 +738,7 @@ class OrderedPhotoAddTile extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      CatchIcons.addPhotoAlternateOutlined,
+                      CatchIcons.addPhoto,
                       size: CatchIconSize.hero,
                       color: t.ink2,
                     ),

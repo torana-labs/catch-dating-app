@@ -22,18 +22,18 @@ class EventSuccessLiveWorkspaceTabBar extends StatelessWidget {
         CatchOption(
           value: EventSuccessLiveWorkspace.now,
           label: context.l10n.eventSuccessLiveWorkspaceNow,
-          icon: CatchIcons.scheduleRounded,
+          icon: CatchIcons.time,
         ),
         CatchOption(
           value: EventSuccessLiveWorkspace.guests,
           label: context.l10n.eventSuccessLiveWorkspaceGuests,
-          icon: CatchIcons.groupsOutlined,
+          icon: CatchIcons.people,
           semanticLabel: guestsSemanticLabel,
         ),
         CatchOption(
           value: EventSuccessLiveWorkspace.room,
           label: context.l10n.eventSuccessLiveWorkspaceRoom,
-          icon: CatchIcons.gridViewRounded,
+          icon: CatchIcons.grid,
         ),
       ],
       selected: selected,

@@ -87,7 +87,7 @@ void main() {
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Availability window',
             valueText: 'Weeknights after work',
-            icon: CatchIcons.schedule,
+            icon: CatchIcons.time,
           ),
         ),
       ),
@@ -225,8 +225,7 @@ void main() {
         ),
       );
 
-      Rect chevronRect() =>
-          tester.getRect(find.byIcon(CatchIcons.expandMoreRounded));
+      Rect chevronRect() => tester.getRect(find.byIcon(CatchIcons.expand));
       Rect valueRect() => tester.getRect(find.text('Christian'));
 
       double chevronCenterFromFieldTop() =>
@@ -386,7 +385,7 @@ void main() {
       ),
     );
 
-    expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.disclosure), findsOneWidget);
   });
 
   testWidgets('CatchField optional add choice is one primary line at rest', (
@@ -428,7 +427,7 @@ void main() {
       _wrap(
         CatchField.nav(
           copy: catchFieldCopy(AppLocalizationsEn()),
-          icon: CatchIcons.personOutlined,
+          icon: CatchIcons.person,
           title: 'Display name',
           body: 'Shown on your profile and event rosters',
           actions: const Text('Edit'),
@@ -437,14 +436,14 @@ void main() {
       ),
     );
 
-    expect(find.byIcon(CatchIcons.personOutlined), findsOneWidget);
+    expect(find.byIcon(CatchIcons.person), findsOneWidget);
     expect(find.text('Display name'), findsOneWidget);
     expect(
       find.text('Shown on your profile and event rosters'),
       findsOneWidget,
     );
     expect(find.text('Edit'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.disclosure), findsOneWidget);
 
     await tester.tap(find.byType(CatchField));
     await tester.pump();
@@ -493,8 +492,8 @@ void main() {
       ),
     );
 
-    final icon = tester.widget<Icon>(find.byIcon(CatchIcons.fieldWarning));
-    final iconRect = tester.getRect(find.byIcon(CatchIcons.fieldWarning));
+    final icon = tester.widget<Icon>(find.byIcon(CatchIcons.error));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.error));
     final errorFinder = find.text('Invite code is unavailable.');
     final error = tester.widget<Text>(errorFinder);
     final errorRect = tester.getRect(errorFinder);
@@ -528,7 +527,7 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Availability window',
               valueText: 'Weeknights after work and weekend mornings',
-              icon: CatchIcons.schedule,
+              icon: CatchIcons.time,
               onTap: () {},
             ),
           ),
@@ -561,7 +560,7 @@ void main() {
             child: CatchField.nav(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Open profile',
-              icon: CatchIcons.schedule,
+              icon: CatchIcons.time,
               onTap: () {},
             ),
           ),
@@ -571,11 +570,11 @@ void main() {
 
     final titleCenter = tester.getCenter(find.text('Open profile'));
     expect(
-      tester.getCenter(find.byIcon(CatchIcons.schedule)).dx,
+      tester.getCenter(find.byIcon(CatchIcons.time)).dx,
       greaterThan(titleCenter.dx),
     );
     expect(
-      tester.getCenter(find.byIcon(CatchIcons.chevronRightRounded)).dx,
+      tester.getCenter(find.byIcon(CatchIcons.disclosure)).dx,
       lessThan(titleCenter.dx),
     );
   });
@@ -614,7 +613,7 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.disclosure), findsOneWidget);
       expect(find.byIcon(CatchIcons.add), findsNWidgets(2));
 
       await tester.tap(find.text('Open profile'));

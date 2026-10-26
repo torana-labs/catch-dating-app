@@ -652,7 +652,7 @@ class EventChatPageBody extends StatelessWidget {
                     if (index == state.messages.length) {
                       return CatchButton(
                         label: l.eventChatEarlier,
-                        variant: CatchButtonVariant.ghost,
+                        variant: CatchButtonVariant.quiet,
                         onPressed: state.busy ? null : onLoadEarlier,
                       );
                     }

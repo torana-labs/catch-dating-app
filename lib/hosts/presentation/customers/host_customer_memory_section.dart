@@ -41,7 +41,7 @@ class HostCustomerMemoryPreview extends StatelessWidget {
               (customer.notesCoverage == HostCustomerHistoryCoverage.unavailable
                   ? context.l10n.hostCustomersNotesUnavailableBody
                   : context.l10n.hostCustomersNoNotes),
-          icon: CatchIcons.editNoteOutlined,
+          icon: CatchIcons.note,
         ),
       ),
     ],
@@ -307,7 +307,7 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
                   CatchChip.selectable(
                     key: ValueKey('host-customer-tag-choice-${tag.tagId}'),
                     label: tag.label,
-                    leading: Icon(CatchIcons.editNoteOutlined),
+                    leading: Icon(CatchIcons.note),
                     selected: _selectedIds.contains(tag.tagId),
                     enabled:
                         _selectedIds.contains(tag.tagId) ||

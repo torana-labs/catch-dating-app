@@ -78,7 +78,7 @@ void main() {
 
       expect(find.byType(CupertinoDatePicker), findsOneWidget);
       expect(find.text('Start time'), findsOneWidget);
-      expect(find.byIcon(CatchIcons.keyboardOutlined), findsNothing);
+      expect(find.byIcon(CatchIcons.keyboard), findsNothing);
 
       await tester.tap(find.text('Done'));
       await pumpFeatureUi(tester);

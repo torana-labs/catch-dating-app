@@ -64,7 +64,7 @@ void main() {
                                 actions: [
                                   CatchTopBarPrimaryButton(
                                     label: 'Create event',
-                                    icon: CatchIcons.addRounded,
+                                    icon: CatchIcons.add,
                                     onPressed: () {},
                                   ),
                                 ],

@@ -36,7 +36,7 @@ Widget catchDockUtilityCatalogStates(BuildContext context) {
                   gapW12,
                   CatchIconAction(
                     onPressed: widgetbookNoop,
-                    child: Icon(CatchIcons.sendRounded),
+                    child: Icon(CatchIcons.send),
                   ),
                 ],
               ),

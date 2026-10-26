@@ -526,7 +526,7 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
                   label: context
                       .l10n
                       .eventSuccessEventSuccessCompanionLiveCardsLabelCheckIn,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   status: (busy)
                       ? CatchButtonStatus.loading
                       : CatchButtonStatus.idle,

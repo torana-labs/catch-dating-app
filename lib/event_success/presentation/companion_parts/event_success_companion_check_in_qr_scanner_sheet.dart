@@ -27,7 +27,7 @@ class _EventCheckInQrScannerSheetState
           children: [
             Row(
               children: [
-                Icon(CatchIcons.qrCodeScannerRounded, color: t.primary),
+                Icon(CatchIcons.scanQr, color: t.primary),
                 gapW10,
                 Expanded(
                   child: CatchText(
@@ -44,7 +44,7 @@ class _EventCheckInQrScannerSheetState
                   child: CatchIconAction(
                     onPressed: () => Navigator.of(context).maybePop(),
                     child: Icon(
-                      CatchIcons.closeRounded,
+                      CatchIcons.close,
                       size: CatchIconSize.md,
                       color: t.ink2,
                     ),

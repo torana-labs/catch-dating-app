@@ -11,20 +11,20 @@ void widgetbookIgnoreString(String value) {}
 final widgetbookContractTabItems = [
   CatchTabBarItem<String>(
     id: 'explore',
-    icon: CatchIcons.homeOutlined,
-    activeIcon: CatchIcons.homeRounded,
+    icon: CatchIcons.home,
+    activeIcon: CatchIcons.home,
     label: 'Explore',
   ),
   CatchTabBarItem<String>(
     id: 'clubs',
-    icon: CatchIcons.groupsOutlined,
-    activeIcon: CatchIcons.groupsRounded,
+    icon: CatchIcons.people,
+    activeIcon: CatchIcons.people,
     label: 'Clubs',
   ),
   CatchTabBarItem<String>(
     id: 'matches',
-    icon: CatchIcons.chatBubbleOutlineRounded,
-    activeIcon: CatchIcons.chatBubbleRounded,
+    icon: CatchIcons.chat,
+    activeIcon: CatchIcons.chat,
     label: 'Chats',
     badgeCount: 3,
   ),

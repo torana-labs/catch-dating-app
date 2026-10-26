@@ -93,7 +93,7 @@ class HostPrivateEventBasicsSection extends StatelessWidget {
                 key: const ValueKey('private-event-city'),
                 title: context.l10n.hostsPrivateEventCity,
                 body: city?.label ?? savedCityLabel ?? organizerLocation,
-                icon: CatchIcons.locationOnOutlined,
+                icon: CatchIcons.location,
               )
             else
               CatchField<CityOption>.control(
@@ -117,7 +117,7 @@ class HostPrivateEventBasicsSection extends StatelessWidget {
                     cityAccordion.collapse();
                   }
                 },
-                icon: CatchIcons.locationOnOutlined,
+                icon: CatchIcons.location,
                 error:
                     showErrors &&
                         city == null &&
@@ -150,7 +150,7 @@ class HostPrivateEventBasicsSection extends StatelessWidget {
               body: date == null
                   ? context.l10n.hostsWhenStepPlaceholderSelectADate
                   : MaterialLocalizations.of(context).formatMediumDate(date),
-              icon: CatchIcons.calendarTodayOutlined,
+              icon: CatchIcons.date,
               error: showErrors && date == null
                   ? context.l10n.hostsWhenStepVisiblecopyPleaseSelectADate
                   : null,
@@ -163,7 +163,7 @@ class HostPrivateEventBasicsSection extends StatelessWidget {
               body: start == null
                   ? context.l10n.hostsWhenStepPlaceholderSelectStartTime
                   : start.format(context),
-              icon: CatchIcons.scheduleOutlined,
+              icon: CatchIcons.time,
               error: showErrors && start == null
                   ? context.l10n.hostsWhenStepVisiblecopyRequired
                   : null,
@@ -203,7 +203,7 @@ class HostPrivateEventBasicsSection extends StatelessWidget {
               copy: fieldCopy,
               title: context.l10n.hostsPrivateEventMoreBasics,
               body: context.l10n.hostsPrivateEventMoreBasicsBody,
-              icon: CatchIcons.tuneRounded,
+              icon: CatchIcons.filters,
               onTap: onToggleMoreBasics,
             ),
             if (moreBasicsOpen)

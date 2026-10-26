@@ -33,7 +33,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
         child: Padding(
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             title: context.l10n.exploreExploreScreenTitleNoClubsInCitylabel(
               cityLabel: state.cityLabel,
             ),
@@ -41,7 +41,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
             actions: [
               CatchButton(
                 label: context.l10n.exploreExploreScreenLabelChangeCity,
-                leading: Icon(CatchIcons.locationOnOutlined),
+                leading: Icon(CatchIcons.location),
                 onPressed: onChangeCity,
               ),
             ],
@@ -52,7 +52,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
         child: Padding(
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
             message: context.l10n.exploreExploreScreenMessageClearTheSearchOr,
             actions: [?action],
@@ -63,7 +63,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
         child: Padding(
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
             message: context
                 .l10n
@@ -76,7 +76,7 @@ class ExploreScreenEmptyState extends StatelessWidget {
         child: Padding(
           padding: CatchInsets.contentRelaxed,
           child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
+            icon: CatchIcons.people,
             title: context.l10n.exploreExploreScreenTitleNoClubsMatchThese,
             message: context.l10n.exploreExploreScreenMessageClearOneOrMore,
             actions: [?action],

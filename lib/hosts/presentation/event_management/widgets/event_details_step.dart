@@ -146,7 +146,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     controller: widget.nameController,
                     inputHint:
                         context.l10n.hostsEventDetailsStepPlaceholderEventName,
-                    icon: CatchIcons.eventAvailableOutlined,
+                    icon: CatchIcons.eventConfirmed,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     onValidate: (value) {
@@ -195,7 +195,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       inputHint: context
                           .l10n
                           .hostsEventDetailsStepPlaceholderSalsaNight,
-                      icon: CatchIcons.eventAvailableOutlined,
+                      icon: CatchIcons.eventConfirmed,
                       textCapitalization: TextCapitalization.words,
                       textInputAction: TextInputAction.next,
                       onValidate: (value) {
@@ -237,7 +237,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                           : CatchFieldMode.controlledCollapsed,
                       onOpenChanged: (open) =>
                           _setOpen(_interactionField, open),
-                      icon: CatchIcons.tuneRounded,
+                      icon: CatchIcons.filters,
                       iconColor: activity.accent,
                     ),
                   ],
@@ -250,7 +250,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                           .createEventCallablePayloadDistanceKm,
                       controller: widget.distanceController,
                       inputHint: '10',
-                      icon: CatchIcons.straightenOutlined,
+                      icon: CatchIcons.measure,
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
@@ -316,7 +316,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                               ? CatchFieldMode.controlledExpanded
                               : CatchFieldMode.controlledCollapsed,
                           onOpenChanged: (open) => _setOpen(_paceField, open),
-                          icon: CatchIcons.speedOutlined,
+                          icon: CatchIcons.pace,
                           iconColor: activity.accent,
                           error: field.errorText,
                         ),
@@ -336,7 +336,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       valueText: _showPresentation
                           ? context.l10n.hostsCreateEventHideDetails
                           : context.l10n.hostsCreateEventShowDetails,
-                      icon: CatchIcons.addPhotoAlternateOutlined,
+                      icon: CatchIcons.addPhoto,
                       onTap: () => setState(
                         () => _showPresentation = !_showPresentation,
                       ),
@@ -354,7 +354,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       inputHint: context
                           .l10n
                           .hostsEventDetailsStepPlaceholderWhatShouldAttendeesExpect,
-                      icon: CatchIcons.editNoteOutlined,
+                      icon: CatchIcons.note,
                       maxLines: 4,
                       textCapitalization: TextCapitalization.sentences,
                       textInputAction: TextInputAction.newline,
@@ -386,7 +386,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       valueText: _showItinerary
                           ? context.l10n.hostsCreateEventHideDetails
                           : context.l10n.hostsCreateEventShowDetails,
-                      icon: CatchIcons.routeOutlined,
+                      icon: CatchIcons.route,
                       onTap: () =>
                           setState(() => _showItinerary = !_showItinerary),
                     ),

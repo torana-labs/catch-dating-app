@@ -54,13 +54,13 @@ void main() {
                 size: CatchFieldLabelTextSize.lg,
               ),
               _TestPickerTile(
-                icon: CatchIcons.calendarTodayOutlined,
+                icon: CatchIcons.date,
                 value: null,
                 placeholder: 'Select a date',
                 onTap: () => pickerTapped = true,
               ),
               _TestPickerTile(
-                icon: CatchIcons.scheduleOutlined,
+                icon: CatchIcons.time,
                 value: '23/04/2026',
                 placeholder: 'Unused',
                 onTap: () {},
@@ -243,7 +243,7 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.disclosure), findsOneWidget);
       final preview = tester.widget<MapPreview>(find.byType(MapPreview));
       expect(preview.coordinate, const LocationCoordinate(22.7196, 75.8577));
       expect(preview.path, const [
@@ -280,7 +280,7 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
+      expect(find.byIcon(CatchIcons.disclosure), findsOneWidget);
 
       await tester.tap(find.text('Race Course Road main gate'));
       await tester.pump();
@@ -655,7 +655,7 @@ void main() {
                 label: 'Next',
                 onPressed: () => footerTapped = true,
                 fullWidth: true,
-                leading: Icon(CatchIcons.arrowForwardRounded),
+                leading: Icon(CatchIcons.forward),
               ),
               const CatchButton(
                 label: 'Schedule event',
@@ -901,7 +901,7 @@ void main() {
               metaRows: [
                 [
                   CatchMetaEntry(
-                    icon: CatchIcons.clock,
+                    icon: CatchIcons.time,
                     label: event.timeRangeLabel,
                   ),
                 ],
@@ -909,7 +909,7 @@ void main() {
               actions: [
                 EventActionCardAction(
                   label: 'View event',
-                  icon: CatchIcons.forwardArrow,
+                  icon: CatchIcons.forward,
                   onPressed: () => actionTapped = true,
                 ),
               ],
@@ -1090,11 +1090,7 @@ class _TestPickerTile extends StatelessWidget {
                   : CatchTextStyles.bodyLead(context, color: t.ink3),
             ),
           ),
-          Icon(
-            CatchIcons.chevronRightRounded,
-            size: CatchIconSize.md,
-            color: t.ink3,
-          ),
+          Icon(CatchIcons.disclosure, size: CatchIconSize.md, color: t.ink3),
         ],
       ),
     );

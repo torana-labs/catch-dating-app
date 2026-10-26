@@ -89,7 +89,7 @@ class HostTodayAttentionData {
         title: l10n.hostTodayAttentionLiveTitle,
         body: l10n.hostTodayAttentionLiveBody(eventName: eventName),
         primaryActionLabel: l10n.hostTodayAttentionOpenLive,
-        icon: CatchIcons.eventLive,
+        icon: CatchIcons.live,
       ),
       HostAttentionKind.eventAssistanceCaseReview => HostTodayAttentionData(
         item: item,
@@ -99,7 +99,7 @@ class HostTodayAttentionData {
           eventName: eventName,
         ),
         primaryActionLabel: l10n.eventAssistanceHelpReview,
-        icon: CatchIcons.helpOutlineRounded,
+        icon: CatchIcons.help,
       ),
       HostAttentionKind.eventAssistanceDeliveryReview => HostTodayAttentionData(
         item: item,
@@ -109,7 +109,7 @@ class HostTodayAttentionData {
           eventName: eventName,
         ),
         primaryActionLabel: l10n.eventAssistanceDeliveryReview,
-        icon: CatchIcons.sendRounded,
+        icon: CatchIcons.send,
       ),
       HostAttentionKind.eventWaitlistReview => HostTodayAttentionData(
         item: item,
@@ -119,7 +119,7 @@ class HostTodayAttentionData {
           eventName: eventName,
         ),
         primaryActionLabel: l10n.hostsHostHomeScreenStateVisiblecopyReview,
-        icon: CatchIcons.personSearchOutlined,
+        icon: CatchIcons.findPerson,
       ),
       HostAttentionKind.eventJoinRequestReview => HostTodayAttentionData(
         item: item,
@@ -129,7 +129,7 @@ class HostTodayAttentionData {
           eventName: eventName,
         ),
         primaryActionLabel: l10n.hostTodayAttentionReview,
-        icon: CatchIcons.howToRegOutlined,
+        icon: CatchIcons.checkIn,
       ),
       HostAttentionKind.applicationReview => HostTodayAttentionData(
         item: item,
@@ -138,21 +138,21 @@ class HostTodayAttentionData {
           subjectLabel: subjectLabel,
         ),
         primaryActionLabel: l10n.hostTodayAttentionReview,
-        icon: CatchIcons.factCheckOutlined,
+        icon: CatchIcons.review,
       ),
       HostAttentionKind.providerSyncFailure => HostTodayAttentionData(
         item: item,
         title: l10n.hostTodayAttentionProviderTitle,
         body: l10n.hostTodayAttentionProviderBody(eventName: eventName),
         primaryActionLabel: l10n.hostTodayAttentionReview,
-        icon: CatchIcons.syncAltRounded,
+        icon: CatchIcons.swap,
       ),
       HostAttentionKind.formAutomationFailure => HostTodayAttentionData(
         item: item,
         title: l10n.hostTodayAttentionAutomationTitle,
         body: l10n.hostTodayAttentionAutomationBody(subjectLabel: subjectLabel),
         primaryActionLabel: l10n.hostTodayAttentionFix,
-        icon: CatchIcons.ruleOutlined,
+        icon: CatchIcons.rules,
       ),
       HostAttentionKind.payoutSetup => HostTodayAttentionData(
         item: item,
@@ -162,14 +162,14 @@ class HostTodayAttentionData {
           provider: item.context.provider ?? subjectLabel,
         ),
         primaryActionLabel: l10n.hostTodayAttentionSetUpPayouts,
-        icon: CatchIcons.paymentsOutlined,
+        icon: CatchIcons.payment,
       ),
       HostAttentionKind.attendanceSync => HostTodayAttentionData(
         item: item,
         title: l10n.hostTodayAttentionAttendanceTitle,
         body: l10n.hostTodayAttentionAttendanceBody(eventName: eventName),
         primaryActionLabel: l10n.hostTodayAttentionReviewAttendance,
-        icon: CatchIcons.factCheckOutlined,
+        icon: CatchIcons.review,
       ),
       HostAttentionKind.eventOfferPaymentFollowUp => HostTodayAttentionData(
         item: item,
@@ -179,7 +179,7 @@ class HostTodayAttentionData {
           eventName: eventName,
         ),
         primaryActionLabel: l10n.hostTodayAttentionOfferPaymentOpen,
-        icon: CatchIcons.pendingActionsOutlined,
+        icon: CatchIcons.pending,
       ),
       HostAttentionKind.momentStaffAttention ||
       HostAttentionKind.dressRehearsal ||
@@ -193,7 +193,7 @@ class HostTodayAttentionData {
         title: l10n.hostTodayAttentionGenericTitle,
         body: l10n.hostTodayAttentionGenericBody,
         primaryActionLabel: l10n.hostTodayAttentionOpen,
-        icon: CatchIcons.infoOutlineRounded,
+        icon: CatchIcons.info,
       ),
     };
   }

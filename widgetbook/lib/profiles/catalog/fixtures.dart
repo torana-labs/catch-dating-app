@@ -26,7 +26,7 @@ class ProfileInlineRelationshipGoalChoiceEntryEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProfileInlineSingleChoiceEntryEditor<RelationshipGoal>(
-      icon: CatchIcons.favoriteOutline,
+      icon: CatchIcons.like,
       label: 'Looking for',
       contract: CatchContractConstraints.updateUserProfilePatchRelationshipGoal,
       contractValue: (value) => value.name,
@@ -48,7 +48,7 @@ class ProfileInlineLanguageMultiChoiceEntryEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ProfileInlineMultiChoiceEntryEditor<Language>(
-      icon: CatchIcons.languageOutlined,
+      icon: CatchIcons.web,
       label: 'Languages',
       contract: CatchContractConstraints.updateUserProfilePatchLanguages,
       contractValue: (value) => value.name,

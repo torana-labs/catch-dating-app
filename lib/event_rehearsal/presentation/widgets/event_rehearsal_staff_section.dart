@@ -117,7 +117,7 @@ class EventRehearsalStaffSection extends ConsumerWidget {
                             if (staff.canAssign)
                               CatchButton(
                                 label: l10n.hostEventRehearsalStaffEdit,
-                                variant: CatchButtonVariant.ghost,
+                                variant: CatchButtonVariant.quiet,
                                 size: CatchButtonSize.md,
                                 onPressed: () => open(
                                   review,
@@ -128,7 +128,7 @@ class EventRehearsalStaffSection extends ConsumerWidget {
                             if (groupId != null)
                               CatchButton(
                                 label: l10n.hostEventRehearsalStaffRemove,
-                                variant: CatchButtonVariant.ghost,
+                                variant: CatchButtonVariant.quiet,
                                 size: CatchButtonSize.md,
                                 onPressed: () => open(
                                   review,

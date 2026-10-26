@@ -33,7 +33,7 @@ CatchFormTextRow<String?> _row(
   bool nullOnClear = true,
 }) => CatchFormTextRow(
   id: id,
-  icon: CatchIcons.personOutlined,
+  icon: CatchIcons.person,
   label: id,
   currentValue: value,
   currentFieldValue: value,

@@ -76,11 +76,7 @@ class _CatchLoadingIndicatorState extends State<CatchLoadingIndicator>
       return RotationTransition(
         key: const ValueKey('catch-field-spinner'),
         turns: _rotation!,
-        child: Icon(
-          CatchIcons.fieldSpinner,
-          size: widget.size,
-          color: widget.color,
-        ),
+        child: Icon(CatchIcons.loading, size: widget.size, color: widget.color),
       );
     }
     if (widget.variant == CatchLoadingIndicatorVariant.dots) {

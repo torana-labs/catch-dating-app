@@ -40,7 +40,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
             if (uid == null || uid.isEmpty) {
               return Center(
                 child: CatchEmptyState(
-                  icon: CatchIcons.phoneAndroidRounded,
+                  icon: CatchIcons.mobile,
                   title: context
                       .l10n
                       .launchAccessLaunchAccessApplicationScreenTitleVerifyYourPhone,
@@ -65,8 +65,8 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
                   return Center(
                     child: CatchEmptyState(
                       icon: application.status.unlocksProfileCreation
-                          ? CatchIcons.checkCircleOutlineRounded
-                          : CatchIcons.hourglassTopRounded,
+                          ? CatchIcons.success
+                          : CatchIcons.pending,
                       title: application.status.label,
                       message: application.status.unlocksProfileCreation
                           ? context
@@ -278,7 +278,7 @@ class _LaunchAccessApplicationFormState
               hintText: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenHinttextSelectCity,
-              leading: Icon(CatchIcons.locationCityOutlined),
+              leading: Icon(CatchIcons.city),
               onValidate: (_) => draft.city.trim().isEmpty
                   ? context.l10n.launchAccessValidationChooseCity
                   : null,
@@ -383,7 +383,7 @@ class _LaunchAccessApplicationFormState
               labelMode: CatchFieldLabelTextMode.optional,
               controller: _inviteCodeController,
               textCapitalization: TextCapitalization.characters,
-              leading: Icon(CatchIcons.confirmationNumberOutlined),
+              leading: Icon(CatchIcons.ticket),
               onChanged: (value) {
                 LaunchAccessController.submitMutation.reset(ref);
                 ref

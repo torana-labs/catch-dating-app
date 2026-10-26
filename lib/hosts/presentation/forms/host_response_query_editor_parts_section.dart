@@ -98,7 +98,7 @@ class HostResponseGroupSection extends StatelessWidget {
               if (path.isNotEmpty)
                 CatchButton(
                   label: copy.remove,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   onPressed: () => onReplace(path, null),
                 ),
             ],
@@ -179,7 +179,7 @@ class HostResponseConditionSection extends StatelessWidget {
             gapW8,
             CatchButton(
               label: copy.remove,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: () => onReplace(path, null),
             ),
           ],

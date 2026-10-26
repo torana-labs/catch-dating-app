@@ -65,7 +65,7 @@ class _EventAssistanceMovementSectionState
             gapH8,
             CatchButton(
               label: l10n.eventAssistanceHistoryTitle,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: selected == null
                   ? null
                   : () => widget.onCheckpointHistory!(selected.id),

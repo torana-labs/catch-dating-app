@@ -147,7 +147,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           selection: null,
           detailBuilder: (_) => const SizedBox.shrink(),
           unselected: CatchEmptyState(
-            icon: CatchIcons.personSearchOutlined,
+            icon: CatchIcons.findPerson,
             title: context.l10n.hostCustomersSelectCustomerTitle,
           ),
           index: HostAudienceStateScaffold(
@@ -196,7 +196,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
           selection: null,
           detailBuilder: (_) => const SizedBox.shrink(),
           unselected: CatchEmptyState(
-            icon: CatchIcons.personSearchOutlined,
+            icon: CatchIcons.findPerson,
             title: context.l10n.hostCustomersSelectCustomerTitle,
           ),
           index: HostAudienceNoOrganizerEmptyState(selected: _view),
@@ -325,7 +325,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
                         'host-customers-add-customer',
                       ),
                       label: context.l10n.hostCustomersAdd,
-                      icon: CatchIcons.personAddAlt1Rounded,
+                      icon: CatchIcons.addPerson,
                       onPressed: () => _addCustomer(selectedClub, request),
                     )
                   : CatchTopBarPrimaryButton(
@@ -545,9 +545,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen> {
             index: indexPane,
             selection: peopleView ? _selectedContactId : null,
             unselected: CatchEmptyState(
-              icon: peopleView
-                  ? CatchIcons.personSearchOutlined
-                  : CatchIcons.groupsOutlined,
+              icon: peopleView ? CatchIcons.findPerson : CatchIcons.people,
               title: peopleView
                   ? context.l10n.hostCustomersSelectCustomerTitle
                   : context.l10n.coreCatchFieldVisiblecopySelect,

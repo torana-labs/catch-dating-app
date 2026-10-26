@@ -198,10 +198,7 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
                     label: table == null
                         ? context.l10n.programsImportPickFile
                         : table.fileName,
-                    leading: Icon(
-                      CatchIcons.cloudUploadOutlined,
-                      size: CatchIconSize.md,
-                    ),
+                    leading: Icon(CatchIcons.upload, size: CatchIconSize.md),
                     variant: CatchButtonVariant.secondary,
                     onPressed: _pending ? null : _pickFile,
                   ),
@@ -262,7 +259,7 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
                     CatchButton(
                       label: context.l10n.programsImportPreview,
                       leading: Icon(
-                        CatchIcons.checklistRounded,
+                        CatchIcons.checklist,
                         size: CatchIconSize.md,
                       ),
                       variant: CatchButtonVariant.secondary,
@@ -279,10 +276,7 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
                       const SizedBox(height: CatchSpacing.s3),
                       CatchButton(
                         label: context.l10n.programsImportCommit,
-                        leading: Icon(
-                          CatchIcons.checkRounded,
-                          size: CatchIconSize.md,
-                        ),
+                        leading: Icon(CatchIcons.check, size: CatchIconSize.md),
                         onPressed: _pending ? null : () => _run('commit'),
                       ),
                     ],
@@ -297,7 +291,7 @@ class _ProgramImportScreenState extends ConsumerState<ProgramImportScreen> {
           if (table == null)
             CatchSectionListItem(
               child: CatchEmptyState(
-                icon: CatchIcons.cloudUploadOutlined,
+                icon: CatchIcons.upload,
                 title: context.l10n.programsImportEmptyTitle,
                 message: context.l10n.programsImportEmptyMessage,
               ),

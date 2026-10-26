@@ -225,7 +225,7 @@ class _HostFormTargetSectionState extends ConsumerState<HostFormTargetSection> {
                 copy: catchFieldCopy(context.l10n),
                 key: const ValueKey('host-form-target-choose-event'),
                 title: context.l10n.hostFormTargetSelectEvent,
-                icon: CatchIcons.eventAvailableOutlined,
+                icon: CatchIcons.eventConfirmed,
                 onTap: () => _chooseKind(HostFormTargetKind.event),
               ),
             if (_showEventChoices && targets != null) ...[
@@ -244,7 +244,7 @@ class _HostFormTargetSectionState extends ConsumerState<HostFormTargetSection> {
                 CatchField.nav(
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.sharedActionTryAgain,
-                  icon: CatchIcons.refreshRounded,
+                  icon: CatchIcons.refresh,
                   onTap: () => targets.canLoadMore
                       ? targets.loadMore()
                       : targets.refresh(),
@@ -266,14 +266,14 @@ class _HostFormTargetSectionState extends ConsumerState<HostFormTargetSection> {
                       ? event.name!
                       : context.l10n.hostEventOfferUntitledEvent,
                   body: AppTimeFormatters.dateTime(event.startTime.toLocal()),
-                  icon: CatchIcons.eventAvailableOutlined,
+                  icon: CatchIcons.eventConfirmed,
                   onTap: () => _chooseEvent(event),
                 ),
               if (targets.canLoadMore && !targets.hasLoadFailure)
                 CatchField.nav(
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostEventOfferLoadMoreEvents,
-                  icon: CatchIcons.addRounded,
+                  icon: CatchIcons.add,
                   onTap: targets.loadMore,
                 ),
             ],

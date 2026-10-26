@@ -80,7 +80,7 @@ class EventAssistanceSweepSection extends StatelessWidget {
                     actions: CatchButton(
                       label: l10n.eventAssistanceVisitReview,
                       size: CatchButtonSize.md,
-                      variant: CatchButtonVariant.ghost,
+                      variant: CatchButtonVariant.quiet,
                       onPressed: onReview == null
                           ? null
                           : () => onReview!(guest.id),

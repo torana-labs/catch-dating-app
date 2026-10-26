@@ -92,7 +92,7 @@ class EventSuccessControlRoomStageSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
-                      CatchIcons.phoneIphoneRounded,
+                      CatchIcons.mobile,
                       size: CatchIconSize.md,
                       color: dark.ink2,
                     ),

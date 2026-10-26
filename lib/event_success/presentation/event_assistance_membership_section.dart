@@ -285,7 +285,7 @@ class _EventAssistanceMembershipSectionState
           gapH8,
           CatchButton(
             label: l10n.eventAssistanceGroupChooseAgain,
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             onPressed: () => setState(_clear),
           ),
         ] else ...[
@@ -382,7 +382,7 @@ class _EventAssistanceMembershipSectionState
         gapH12,
         CatchButton(
           label: l10n.eventAssistanceVisitDone,
-          variant: CatchButtonVariant.ghost,
+          variant: CatchButtonVariant.quiet,
           status: busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
           onPressed: busy ? null : widget.onDone,
         ),

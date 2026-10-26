@@ -138,7 +138,7 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
                           Expanded(
                             child: CatchButton(
                               label: context.l10n.hostsRoutePathBuilderClear,
-                              variant: CatchButtonVariant.ghost,
+                              variant: CatchButtonVariant.quiet,
                               onPressed: coordinates.isEmpty
                                   ? null
                                   : () => setState(_path.clear),

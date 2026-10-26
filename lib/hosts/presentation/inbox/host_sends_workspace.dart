@@ -120,7 +120,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
           title: CatchTopBar.route(
             title: context.l10n.hostMessagingWorkspaceSends,
             leading: CatchIconAction.toolbar(
-              icon: CatchIcons.arrowBackIosNewRounded,
+              icon: CatchIcons.back,
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
               onPressed: _busy ? null : _showHistory,
             ),
@@ -128,7 +128,7 @@ class _HostSendsPageBodySliverState extends ConsumerState<HostSendsPageBody> {
           body: ListView(padding: CatchInsets.pageBody, children: [content]),
         ),
         unselected: CatchEmptyState(
-          icon: CatchIcons.chevronRightRounded,
+          icon: CatchIcons.disclosure,
           title: context.l10n.coreCatchFieldVisiblecopySelect,
         ),
         onBack: _busy ? null : _showHistory,
@@ -497,7 +497,7 @@ class _HostSendsHistoryPage extends StatelessWidget {
 CatchRecordLayout _hostSendLayout(BuildContext context, HostSendSummary send) =>
     switch (send) {
       HostCampaignSendSummary campaign => CatchRecordLayout(
-        icon: CatchIcons.tabChats,
+        icon: CatchIcons.chat,
         title: campaign.name,
         metadata: [
           context.l10n.hostSendsWhatsappBusinessChannel,
@@ -507,7 +507,7 @@ CatchRecordLayout _hostSendLayout(BuildContext context, HostSendSummary send) =>
         description: campaign.status,
       ),
       HostAnnouncementSendSummary announcement => CatchRecordLayout(
-        icon: CatchIcons.tabChats,
+        icon: CatchIcons.chat,
         title: announcement.eventName,
         metadata: [
           context.l10n.hostSendsCatchAnnouncementChannel,
@@ -519,7 +519,7 @@ CatchRecordLayout _hostSendLayout(BuildContext context, HostSendSummary send) =>
             : announcement.audience,
       ),
       HostFollowerUpdateSendSummary update => CatchRecordLayout(
-        icon: CatchIcons.tabChats,
+        icon: CatchIcons.chat,
         title: context.l10n.hostSendsFollowerUpdateChannel,
         metadata: [
           context.l10n.hostSendsFollowersAudience,

@@ -211,7 +211,7 @@ class _PhoneImportGuestSectionState extends State<PhoneImportGuestSection> {
               : context.l10n.phoneImportRemoveNamedGuest(
                   name: entry.displayName,
                 ),
-          variant: CatchButtonVariant.ghost,
+          variant: CatchButtonVariant.quiet,
           onPressed: widget.busy ? null : widget.onRemove,
         ),
       ],

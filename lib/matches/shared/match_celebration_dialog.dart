@@ -39,7 +39,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
       message: context.l10n.matchesMatchCelebrationDialogMessageYouAndNameBoth(
         name: name,
       ),
-      icon: CatchIcons.favoriteRounded,
+      icon: CatchIcons.like,
       visual: CatchAvatar(
         size: 108,
         name: name,
@@ -49,7 +49,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
       ),
       details: [
         CelebrationDetail(
-          icon: CatchIcons.favoriteBorderRounded,
+          icon: CatchIcons.like,
           label: context.l10n.matchesMatchCelebrationDialogLabelMatch,
           value: context.l10n.matchesCelebrationLikedBack(name: name),
         ),
@@ -60,7 +60,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
       primaryAction: CelebrationAction(
         label: context.l10n.matchesMatchCelebrationDialogLabelSendAMessage,
         onPressed: onSendMessage,
-        icon: Icon(CatchIcons.sendRounded),
+        icon: Icon(CatchIcons.send),
       ),
       secondaryAction: CelebrationAction(
         label: context.l10n.matchesMatchCelebrationDialogLabelKeepCatching,

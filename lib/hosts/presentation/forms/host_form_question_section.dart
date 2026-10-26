@@ -324,7 +324,7 @@ class HostFormQuestionSection extends StatelessWidget {
               Expanded(
                 child: CatchButton(
                   label: context.l10n.hostFormMoveUp,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   onPressed: questionIndex == 0
                       ? null
                       : () => notifier.moveQuestion(
@@ -338,7 +338,7 @@ class HostFormQuestionSection extends StatelessWidget {
               Expanded(
                 child: CatchButton(
                   label: context.l10n.hostFormMoveDown,
-                  variant: CatchButtonVariant.ghost,
+                  variant: CatchButtonVariant.quiet,
                   onPressed: questionIndex == questionCount - 1
                       ? null
                       : () => notifier.moveQuestion(

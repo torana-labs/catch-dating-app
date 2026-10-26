@@ -107,7 +107,7 @@ class CompanionScaffold extends StatelessWidget {
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           onPressed: canPop ? () => _popCompanion(context) : null,
-          icon: CatchIcons.arrowBackIosNewRounded,
+          icon: CatchIcons.back,
         ),
       ),
       body: body,

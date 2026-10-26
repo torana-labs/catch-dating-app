@@ -58,7 +58,7 @@ class CatchFieldSupportRow extends StatelessWidget {
             children: [
               ExcludeSemantics(
                 child: Icon(
-                  CatchIcons.fieldWarning,
+                  CatchIcons.error,
                   size: CatchFieldTokens.errorGlyphExtent,
                   color: color,
                 ),

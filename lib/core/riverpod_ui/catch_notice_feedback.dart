@@ -25,9 +25,7 @@ void showCatchNotice(
         CatchNoticeData(
           id: 'feedback.${_feedbackSequence++}',
           title: message,
-          icon: tone == CatchNoticeTone.success
-              ? CatchIcons.checkCircleRounded
-              : null,
+          icon: tone == CatchNoticeTone.success ? CatchIcons.success : null,
           tone: tone,
           actionLabel: actionLabel,
           onAction: onAction,

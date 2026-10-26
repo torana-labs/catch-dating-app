@@ -12,7 +12,7 @@ class HostSendsBackButton extends StatelessWidget {
     alignment: Alignment.centerLeft,
     child: CatchButton(
       label: context.l10n.hostMessagingWorkspaceSends,
-      variant: CatchButtonVariant.ghost,
+      variant: CatchButtonVariant.quiet,
       onPressed: onPressed,
     ),
   );

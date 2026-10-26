@@ -105,7 +105,7 @@ class HostedEventPolicySection extends StatelessWidget {
                 .l10n
                 .hostsEditHostedEventScreenTextCapacityPricingAdmissionAnd,
             bodyMaxLines: 3,
-            icon: CatchIcons.lockOutlineRounded,
+            icon: CatchIcons.locked,
           ),
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
@@ -114,7 +114,7 @@ class HostedEventPolicySection extends StatelessWidget {
                 .hostsEditHostedEventScreenVisiblecopyCapacitylimit(
                   capacityLimit: readOnlyEvent.capacityLimit,
                 ),
-            icon: CatchIcons.peopleOutline,
+            icon: CatchIcons.people,
           ),
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
@@ -125,7 +125,7 @@ class HostedEventPolicySection extends StatelessWidget {
                     readOnlyEvent.priceInPaise,
                     currencyCode: readOnlyEvent.currency,
                   ),
-            icon: CatchIcons.paymentsOutlined,
+            icon: CatchIcons.payment,
           ),
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
@@ -133,13 +133,13 @@ class HostedEventPolicySection extends StatelessWidget {
             valueText: HostEventEditPolicyFieldState.admissionPresetForPolicy(
               policy,
             ).title(context.l10n),
-            icon: CatchIcons.howToRegOutlined,
+            icon: CatchIcons.checkIn,
           ),
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsEditHostedEventScreenLabelCancellation,
             valueText: policy.cancellationPolicy.title,
-            icon: CatchIcons.ruleOutlined,
+            icon: CatchIcons.rules,
           ),
           if (policy.usesCrossPathsPairInventory)
             CatchField.read(
@@ -147,7 +147,7 @@ class HostedEventPolicySection extends StatelessWidget {
               title: context.l10n.hostsEventPolicyStepTitleCrossPathsPairs,
               valueText:
                   '${policy.admissionPolicy.crossPathsPairInventory.reservedPairCapacity}',
-              icon: CatchIcons.peopleOutline,
+              icon: CatchIcons.people,
             ),
         ],
       );
@@ -189,7 +189,7 @@ class HostedEventPolicySection extends StatelessWidget {
               .updateEventCallablePayloadFieldsCapacityLimit,
           controller: capacityController,
           inputHint: '20',
-          icon: CatchIcons.peopleOutline,
+          icon: CatchIcons.people,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           textInputAction: TextInputAction.next,
@@ -206,7 +206,7 @@ class HostedEventPolicySection extends StatelessWidget {
               .updateEventCallablePayloadFieldsPriceInPaise,
           controller: priceController,
           inputHint: '0',
-          icon: CatchIcons.paymentsOutlined,
+          icon: CatchIcons.payment,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           inputFormatters: [
             FilteringTextInputFormatter.allow(
@@ -237,7 +237,7 @@ class HostedEventPolicySection extends StatelessWidget {
           itemDescriptionBuilder: (preset) => preset.description(context.l10n),
           selected: state.admissionPreset,
           onChanged: onAdmissionPresetChanged,
-          icon: CatchIcons.howToRegOutlined,
+          icon: CatchIcons.checkIn,
         ),
         if (state.showInviteCode)
           CatchField.input(
@@ -254,7 +254,7 @@ class HostedEventPolicySection extends StatelessWidget {
                       .l10n
                       .hostsEditHostedEventScreenTextLoadingCurrentInviteCode
                 : null,
-            icon: CatchIcons.lockOutlineRounded,
+            icon: CatchIcons.locked,
             textInputAction: TextInputAction.next,
             inputFormatters: [
               FilteringTextInputFormatter.allow(
@@ -292,7 +292,7 @@ class HostedEventPolicySection extends StatelessWidget {
                       .updateEventCallablePayloadFieldsConstraintsMaxMen,
                   labelMode: CatchFieldLabelTextMode.optional,
                   controller: maxMenController,
-                  icon: CatchIcons.maleOutlined,
+                  icon: CatchIcons.male,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -309,7 +309,7 @@ class HostedEventPolicySection extends StatelessWidget {
                       .updateEventCallablePayloadFieldsConstraintsMaxWomen,
                   labelMode: CatchFieldLabelTextMode.optional,
                   controller: maxWomenController,
-                  icon: CatchIcons.femaleOutlined,
+                  icon: CatchIcons.female,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -326,7 +326,7 @@ class HostedEventPolicySection extends StatelessWidget {
             body:
                 context.l10n.hostsEditHostedEventScreenTextRequestsAppearInHost,
             bodyMaxLines: 3,
-            icon: CatchIcons.howToRegOutlined,
+            icon: CatchIcons.checkIn,
           ),
         if (state.showDynamicPricingToggle) ...[
           CatchField.toggle(
@@ -354,7 +354,7 @@ class HostedEventPolicySection extends StatelessWidget {
                       .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsStepAdjustmentInPaise,
                   controller: dynamicPricingStepController,
                   inputHint: '250',
-                  icon: CatchIcons.trendingUpRounded,
+                  icon: CatchIcons.trend,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -372,7 +372,7 @@ class HostedEventPolicySection extends StatelessWidget {
                       .updateEventCallablePayloadFieldsEventPolicyPricingDemandPricingRulesItemsMaxAdjustmentInPaise,
                   controller: dynamicPricingMaxController,
                   inputHint: '1500',
-                  icon: CatchIcons.priceChangeOutlined,
+                  icon: CatchIcons.pricing,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -418,7 +418,7 @@ class HostedEventPolicySection extends StatelessWidget {
                     ? state.cancellationPolicyId
                     : EventCancellationPolicyId.standard,
                 onChanged: onCancellationPolicyChanged,
-                icon: CatchIcons.ruleOutlined,
+                icon: CatchIcons.rules,
               ),
             );
           },

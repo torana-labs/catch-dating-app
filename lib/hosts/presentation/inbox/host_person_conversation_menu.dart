@@ -50,12 +50,12 @@ class _HostPersonConversationMenuState
       CatchActionMenuItem(
         value: _PersonAction.report,
         label: context.l10n.chatsChatScreenLabelReport,
-        icon: CatchIcons.flagOutlined,
+        icon: CatchIcons.flag,
       ),
       CatchActionMenuItem(
         value: _PersonAction.block,
         label: context.l10n.chatsChatScreenLabelBlock,
-        icon: CatchIcons.blockRounded,
+        icon: CatchIcons.block,
         isDestructive: true,
       ),
     ],

@@ -131,7 +131,7 @@ class HostOfferPaymentReviewSheet extends StatelessWidget {
               id: 'offer-payment-review-note',
               title: l10n.hostOfferPaymentReviewBody,
               message: l10n.hostsEventPreferencePublishedHint,
-              icon: CatchIcons.infoOutlineRounded,
+              icon: CatchIcons.info,
               duration: null,
               dismissible: false,
             ),

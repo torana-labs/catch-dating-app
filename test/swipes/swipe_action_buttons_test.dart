@@ -46,7 +46,7 @@ void main() {
               const CatchesPassButton(onPressed: null, isPending: true),
               ProfileReactionButton(
                 tooltip: 'Like profile',
-                icon: CatchIcons.favoriteBorderRounded,
+                icon: CatchIcons.like,
                 onPressed: null,
                 style: ProfileReactionActionVariant.surface,
                 isPending: true,
