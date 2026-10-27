@@ -81,7 +81,9 @@ export async function getProgramHotelInboundHandler(
       request, validateGetProgramHotelInboundCallablePayload,
       normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramHotelInbound");
+  await deps.checkRateLimit(db, actorUid, "getProgramHotelInbound", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
@@ -236,7 +238,9 @@ export async function listProgramTripsHandler(
   const data = validateCallableWithAjv<ListProgramTripsCallablePayload>(
     request, validateListProgramTripsCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listProgramTrips");
+  await deps.checkRateLimit(db, actorUid, "listProgramTrips", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });

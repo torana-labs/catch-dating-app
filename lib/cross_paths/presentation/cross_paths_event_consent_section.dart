@@ -31,7 +31,7 @@ class CrossPathsEventConsentSection extends StatelessWidget {
               .l10n
               .crossPathsEventConsentSectionTitleMeetPeopleAtThisEvent,
           body: context.l10n.crossPathsEventConsentSectionBodyConsentDisclosure,
-          icon: CatchIcons.favoriteBorderRounded,
+          icon: CatchIcons.like,
           value: state.enabled,
           status: state.pending
               ? CatchFieldStatus.saving

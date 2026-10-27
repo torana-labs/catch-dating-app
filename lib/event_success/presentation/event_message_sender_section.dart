@@ -35,7 +35,7 @@ class EventMessageSenderSection extends ConsumerWidget {
         summary = l.eventMessagesUnavailable;
         child = CatchButton(
           label: l.eventMessagesRefresh,
-          variant: CatchButtonVariant.ghost,
+          variant: CatchButtonVariant.quiet,
           onPressed: () => run(owner.refresh),
         );
       case EventSenderPreferenceFailure(:final error):
@@ -102,7 +102,7 @@ class EventMessageSenderSection extends ConsumerWidget {
             if (senderNavigation.canLoadMore)
               CatchButton(
                 label: l.eventMessagesMorePermissions,
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 onPressed: state.canNavigate
                     ? () => runEventMessageAction(
                         context,

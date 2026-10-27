@@ -125,14 +125,14 @@ class _EventAssistanceCheckpointVisitsSectionState
             children: [
               CatchButton(
                 label: l10n.eventAssistanceDeparturePreviousPeople,
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 onPressed: page == 0
                     ? null
                     : () => setState(() => _page = page - 1),
               ),
               CatchButton(
                 label: l10n.eventAssistanceDepartureNextPeople,
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 onPressed: (page + 1) * 12 >= matches.length
                     ? null
                     : () => setState(() => _page = page + 1),

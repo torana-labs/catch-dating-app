@@ -94,8 +94,8 @@ class CompanionPaperNavigationRow extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 onPressed: canPop ? () => _popCompanion(context) : null,
                 child: Icon(
-                  CatchIcons.arrowBackRounded,
-                  size: CatchIcon.md,
+                  CatchIcons.back,
+                  size: CatchIconSize.md,
                   color: canPop ? t.ink3 : t.line2,
                 ),
               ),
@@ -462,7 +462,7 @@ class CompanionExpectationSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           StageSectionHeader(
-            icon: CatchIcons.eventAvailableRounded,
+            icon: CatchIcons.eventConfirmed,
             label: context
                 .l10n
                 .eventSuccessEventSuccessCompanionSharedLabelWhatToExpect,
@@ -493,7 +493,7 @@ class CompanionExpectationRow extends StatelessWidget {
       children: [
         Padding(
           padding: CatchInsets.inlineIconTopTight,
-          child: Icon(item.icon, size: CatchIcon.sm, color: t.ink3),
+          child: Icon(item.icon, size: CatchIconSize.sm, color: t.ink3),
         ),
         gapW12,
         Expanded(
@@ -519,11 +519,7 @@ class CompanionPrivacySection extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            CatchIcons.lockOutlineRounded,
-            size: CatchIcon.sm,
-            color: t.ink2,
-          ),
+          Icon(CatchIcons.locked, size: CatchIconSize.sm, color: t.ink2),
           gapW8,
           Expanded(
             child: CatchText(
@@ -555,7 +551,7 @@ class CompanionSelfCheckInSection extends StatelessWidget {
     return CatchButton(
       label:
           context.l10n.eventSuccessEventSuccessCompanionSharedLabelIMHereCheck,
-      leading: Icon(CatchIcons.locationOnOutlined),
+      leading: Icon(CatchIcons.location),
       status: (actionState.isCheckingIn)
           ? CatchButtonStatus.loading
           : CatchButtonStatus.idle,
@@ -563,7 +559,6 @@ class CompanionSelfCheckInSection extends StatelessWidget {
           ? null
           : () => unawaited(_scanAndCheckIn(context)),
       fullWidth: true,
-      size: CatchButtonSize.lg,
     );
   }
 

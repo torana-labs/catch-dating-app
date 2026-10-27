@@ -87,7 +87,7 @@ const _localDesignConstantWords = <String>{
 const _tokenPrefixes = <String>{
   'CatchFormWorkspaceTokens',
   'CatchWelcomeTokens',
-  'CatchIcon',
+  'CatchIconSize',
   'CatchLayout',
   'CatchGaps',
   'CatchInsets',
@@ -293,7 +293,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const noRawIconSize = LintCode(
     'catch_no_raw_icon_size',
-    'Use CatchIcon size tokens or a primitive-owned semantic icon size instead of a raw icon size.',
+    'Use CatchIconSize size tokens or a primitive-owned semantic icon size instead of a raw icon size.',
     severity: DiagnosticSeverity.INFO,
   );
 

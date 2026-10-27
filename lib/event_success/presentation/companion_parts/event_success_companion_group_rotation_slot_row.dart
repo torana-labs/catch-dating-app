@@ -42,10 +42,7 @@ class GroupRotationSlotRow extends StatelessWidget {
                       ? CatchBadgeTone.success
                       : CatchBadgeTone.neutral,
                 ),
-                CatchBadge(
-                  label: slot.unitLabel,
-                  icon: CatchIcons.tableRestaurantOutlined,
-                ),
+                CatchBadge(label: slot.unitLabel, icon: CatchIcons.dining),
               ],
             ),
             gapH8,
@@ -60,13 +57,10 @@ class GroupRotationSlotRow extends StatelessWidget {
                       .eventSuccessEventSuccessCompanionLiveCardsLabelValue1People(
                         value1: slot.peerUids.length + 1,
                       ),
-                  icon: CatchIcons.groupOutlined,
+                  icon: CatchIcons.people,
                 ),
                 for (final name in peerNames)
-                  CatchBadge(
-                    label: name,
-                    icon: CatchIcons.personOutlineRounded,
-                  ),
+                  CatchBadge(label: name, icon: CatchIcons.person),
               ],
             ),
           ],

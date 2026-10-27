@@ -3,13 +3,12 @@ import worldJson from "../../../../tool/demo/demo_seed/scenarios/host-marketing-
 import {eventStateAt as validatorEventStateAt} from "../../../../tool/demo/lib/demo_world.mjs";
 import {
   demoEventId,
-  eventDetailAt,
   eventStateAt,
   guestsAt,
-  organizerListingAt,
   viewerGuest,
   type DemoMoment,
 } from "./demoWorld";
+import {eventDetailAt, organizerListingAt} from "./demoWorldListing";
 
 describe("demo world reader", () => {
   it("derives guest state with the validator's rule at every moment", () => {

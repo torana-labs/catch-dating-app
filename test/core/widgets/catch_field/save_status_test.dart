@@ -44,7 +44,7 @@ void main() {
 
       await pumpStatus(CatchFieldStatus.saved);
       expect(
-        tester.getCenter(find.byIcon(CatchIcons.checkCircleFilled)).dy,
+        tester.getCenter(find.byIcon(CatchIcons.success)).dy,
         closeTo(tester.getCenter(find.text('Christian')).dy, 0.1),
       );
     },
@@ -77,7 +77,7 @@ void main() {
     expect(find.byKey(const ValueKey('catch-field-saved')), findsOneWidget);
     expect(
       tester.widget<Icon>(find.byKey(const ValueKey('catch-field-saved'))).icon,
-      CatchIcons.checkCircleFilled,
+      CatchIcons.success,
     );
 
     await pumpField(status: CatchFieldStatus.saving);
@@ -112,9 +112,9 @@ void main() {
       ),
       findsNothing,
     );
-    expect(find.byIcon(CatchIcons.expandMoreRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.expand), findsOneWidget);
     expect(
-      tester.widget<Icon>(find.byIcon(CatchIcons.fieldSpinner)).size,
+      tester.widget<Icon>(find.byIcon(CatchIcons.loading)).size,
       CatchFieldTokens.actionSpinnerExtent,
     );
     final spinnerRotation = tester.widget<RotationTransition>(
@@ -136,7 +136,7 @@ void main() {
     final doneSpinnerRect = tester.getRect(
       find.descendant(
         of: find.byKey(const ValueKey('catch-field-done')),
-        matching: find.byIcon(CatchIcons.fieldSpinner),
+        matching: find.byIcon(CatchIcons.loading),
       ),
     );
     final savingLabelRect = tester.getRect(find.text('Saving…'));
@@ -530,7 +530,7 @@ void main() {
     );
 
     expect(find.text('Could not save'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.fieldWarning), findsOneWidget);
+    expect(find.byIcon(CatchIcons.error), findsOneWidget);
     expect(find.byKey(const ValueKey('catch-field-saved')), findsNothing);
     expect(
       tester.widget<Text>(find.text('Club name')).style?.color,

@@ -36,7 +36,9 @@ export async function listOrganizerFormPaymentsHandler(
   const data = validateCallableWithAjv<Payload>(request,
     validateListOrganizerFormPaymentsCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "listOrganizerFormPayments");
+  await deps.rateLimit(db, uid, "listOrganizerFormPayments", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await deps.requireManager({db, organizerId: data.organizerId, actorUid: uid});
   const formSnap = await db.collection("organizerForms").doc(data.formId).get();
   if (!formSnap.exists || requireDoc<Form>(formSnap,

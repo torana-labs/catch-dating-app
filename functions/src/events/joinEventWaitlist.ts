@@ -82,7 +82,9 @@ export async function joinEventWaitlistHandler(
     );
 
   const db = deps.firestore();
-  await deps.checkRateLimit(db, userId, "joinEventWaitlist");
+  await deps.checkRateLimit(db, userId, "joinEventWaitlist", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const inviteAttribution = await deps.resolveInviteAttribution({
     db,
     eventId,
@@ -260,7 +262,9 @@ export async function leaveEventWaitlistHandler(
   );
 
   const db = deps.firestore();
-  await deps.checkRateLimit(db, userId, "leaveEventWaitlist");
+  await deps.checkRateLimit(db, userId, "leaveEventWaitlist", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
 
   const eventRef = db.collection("events").doc(eventId);
   const participationRef = db

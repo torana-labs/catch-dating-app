@@ -303,7 +303,7 @@ Widget catchDockSurfaceContractStates(BuildContext context) {
                 Expanded(
                   child: CatchButton(
                     label: 'Save Draft',
-                    variant: CatchButtonVariant.ghost,
+                    variant: CatchButtonVariant.quiet,
                     size: CatchButtonSize.lg,
                     onPressed: widgetbookNoop,
                   ),

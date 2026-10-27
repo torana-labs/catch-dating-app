@@ -90,8 +90,8 @@ final class _CatchFieldButtonAction extends CatchFieldSecondaryAction {
     label: label,
     onPressed: loading ? null : onActivate,
     status: loading ? CatchButtonStatus.loading : CatchButtonStatus.idle,
-    size: CatchButtonSize.sm,
-    variant: CatchButtonVariant.ghost,
+    size: CatchButtonSize.md,
+    variant: CatchButtonVariant.quiet,
   );
 }
 
@@ -134,7 +134,7 @@ final class _CatchFieldSelectionAction<T> extends CatchFieldSecondaryAction {
           : null,
       status: loading ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       variant: CatchButtonVariant.secondary,
-      size: CatchButtonSize.sm,
+      size: CatchButtonSize.md,
     ),
   );
 }

@@ -185,7 +185,7 @@ class EventMessagePreferenceSection extends StatelessWidget {
             gapH8,
             CatchButton(
               label: l.eventMessagesRefresh,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: onRefresh,
             ),
           ],

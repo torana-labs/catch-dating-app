@@ -57,7 +57,7 @@ class WhenStep extends StatelessWidget {
                   body: dateController.text.isEmpty
                       ? context.l10n.hostsWhenStepPlaceholderSelectADate
                       : dateController.text,
-                  icon: CatchIcons.calendarTodayOutlined,
+                  icon: CatchIcons.date,
                   error: field.errorText,
                   onTap: onPickDate,
                 ),
@@ -75,7 +75,7 @@ class WhenStep extends StatelessWidget {
                   body: startTimeController.text.isEmpty
                       ? context.l10n.hostsWhenStepPlaceholderSelectStartTime
                       : startTimeController.text,
-                  icon: CatchIcons.scheduleOutlined,
+                  icon: CatchIcons.time,
                   error: field.errorText ?? scheduleErrorText,
                   onTap: onPickTime,
                 ),
@@ -103,7 +103,7 @@ class WhenStep extends StatelessWidget {
                   onIncreaseDuration?.call();
                 }
               },
-              icon: CatchIcons.timerOutlined,
+              icon: CatchIcons.timer,
             ),
           ],
         ),

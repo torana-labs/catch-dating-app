@@ -32,7 +32,9 @@ export const placesAutocomplete = onCall(
       validatePlacesAutocompleteCallablePayload,
       normalizePlacesAutocompletePayload
     );
-    await checkRateLimit(admin.firestore(), userId, "placesAutocomplete");
+    await checkRateLimit(admin.firestore(), userId, "placesAutocomplete", {
+      maxRequests: 60, windowMs: 60 * 1000,
+    });
 
     return {
       predictions: await autocompletePlaces(payload),
@@ -49,7 +51,9 @@ export const placeDetails = onCall(
       validatePlaceDetailsCallablePayload,
       normalizePlaceDetailsPayload
     );
-    await checkRateLimit(admin.firestore(), userId, "placeDetails");
+    await checkRateLimit(admin.firestore(), userId, "placeDetails", {
+      maxRequests: 30, windowMs: 60 * 1000,
+    });
 
     return {
       place: await getPlaceDetails(payload),

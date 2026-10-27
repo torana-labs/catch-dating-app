@@ -48,7 +48,9 @@ export async function promoteFormCommunicationIntentHandler(
     throw new HttpsError("failed-precondition", "Verify this phone first.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, uid, "promoteFormCommunicationIntent");
+  await deps.rateLimit(db, uid, "promoteFormCommunicationIntent", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   return db.runTransaction(async (tx) => {
     const [responseSnap, intentSnap, deleted] = await Promise.all([
       tx.get(db.collection("organizerFormResponses").doc(data.responseId)),

@@ -1,0 +1,33 @@
+/*
+ * Website v2 ground card (CAT-251): radius lg, 20px inside, 12px for a card
+ * inside a card and 28px for a pitch, which steps down to 20px below 840px.
+ * The card stacks what it holds with no gap of its own; the caller arranges
+ * the contents with CatchGap. An outlined card draws the emphasis stroke in
+ * its ground's ink at 12%.
+ */
+.card {
+  composes: ground from "./grounds.module.css";
+
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  border-radius: var(--catch-radius-lg);
+}
+
+.card[data-outlined] {
+  border: var(--catch-stroke-emphasis) solid color-mix(in srgb, var(--catch-on-ground-ink) 12%, transparent);
+}
+
+.card[data-padding="compact"] {
+  padding: var(--catch-space-s3) var(--catch-space-micro14);
+  border-radius: var(--catch-radius-md);
+}
+
+.card[data-padding="regular"] { padding: var(--catch-space-s5); }
+.card[data-padding="spacious"] { padding: var(--catch-space-s7); }
+
+@container catch-page (width < 840px) {
+  .card[data-padding="spacious"] { padding: var(--catch-space-s5); }
+}

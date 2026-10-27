@@ -99,11 +99,7 @@ type ActiveStatus = "attended" | "signedUp";
 interface EventSuccessRotationsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   nowMillis?: () => number;
   environment?: NodeJS.ProcessEnv;
 }
@@ -272,7 +268,9 @@ export async function generateEventSuccessRotationsHandler(
     );
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "generateEventSuccessRotations");
+  await deps.checkRateLimit?.(db, uid, "generateEventSuccessRotations", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   return prepareEventSuccessRotationDraft({
     eventId: payload.eventId,
@@ -452,7 +450,9 @@ export async function overrideEventSuccessRotationsHandler(
     );
 
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "overrideEventSuccessRotations");
+  await deps.checkRateLimit?.(db, uid, "overrideEventSuccessRotations", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
 
   const {event, plan, rotationIntervalMinutes} =
     await loadRotationEventContext(db, payload.eventId, uid);

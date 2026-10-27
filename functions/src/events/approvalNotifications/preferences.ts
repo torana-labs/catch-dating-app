@@ -49,7 +49,9 @@ export async function manageEventApprovalNotificationsHandler(
   );
   if (data.expectedUid !== uid) throw denied();
   const db = deps.db();
-  await deps.rateLimit(db, uid, "manageEventApprovalNotifications");
+  await deps.rateLimit(db, uid, "manageEventApprovalNotifications", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const identity = await deps.identity(uid);
   if (!identity || identity.disabled || identity.uid !== uid) {
     throw denied();

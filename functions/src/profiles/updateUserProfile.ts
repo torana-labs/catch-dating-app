@@ -20,11 +20,7 @@ import type {
 interface UpdateUserProfileDeps {
   firestore: () => FirebaseFirestore.Firestore;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   deleteStoragePaths?: (paths: string[]) => Promise<void>;
 }
 
@@ -69,7 +65,9 @@ export async function updateUserProfileHandler(
   // outside the caller's own users/{uid}/ prefix must never be accepted.
   assertProfilePhotoStoragePathsOwned(uid, fields.profilePhotos);
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "updateUserProfile");
+  await deps.checkRateLimit?.(db, uid, "updateUserProfile", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
 
   const userRef = db.collection("users").doc(uid);
   const deletedUserRef = db.collection("deletedUsers").doc(uid);

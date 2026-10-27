@@ -209,7 +209,6 @@ test("caller triggers cover the exact build dependency closure", () => {
   const host = caller("host");
   for (const dependency of [
     "firebase/prod/host/**",
-    "packages/phosphor_flutter/**",
     "tool/app_targets.json",
     "tool/platform/resolve_app_target.mjs",
     "tool/use_firebase_environment.sh",

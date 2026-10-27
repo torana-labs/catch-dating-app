@@ -158,11 +158,7 @@ interface SafetyTriageDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: SafetyTriageDeps = {
@@ -189,7 +185,8 @@ export async function adminGetSafetyTriageDetailsHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminGetSafetyTriageDetails"
+    "adminGetSafetyTriageDetails",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
 
   const snapshot = await db.collection(target.collection).doc(target.docId)
@@ -239,7 +236,8 @@ export async function adminDecideSafetyTriageItemHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminDecideSafetyTriageItem"
+    "adminDecideSafetyTriageItem",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
 
   const docRef = db.collection(target.collection).doc(target.docId);
@@ -305,7 +303,8 @@ export async function adminAssignSafetyTriageItemHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminAssignSafetyTriageItem"
+    "adminAssignSafetyTriageItem",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
 
   const docRef = db.collection(target.collection).doc(target.docId);

@@ -66,7 +66,7 @@ class _HostFormTemplatesScreenState
                       layouts: List.generate(
                         7,
                         (_) => CatchRecordLayout.placeholder(
-                          icon: CatchIcons.descriptionOutlined,
+                          icon: CatchIcons.document,
                           hasMetadata: true,
                           hasDescription: true,
                         ),
@@ -104,8 +104,8 @@ class _HostFormTemplatesScreenState
                                       count: template.questionCount,
                                     ),
                               icon: template.templateId == 'blank_form'
-                                  ? CatchIcons.addRounded
-                                  : CatchIcons.descriptionOutlined,
+                                  ? CatchIcons.add
+                                  : CatchIcons.document,
                             ),
                           ),
                       ],

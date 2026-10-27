@@ -111,7 +111,7 @@ void _registerHostOperationsCustomersTests() {
           matching: find.byType(CatchButton),
         ),
       );
-      expect(createButton.size, CatchButtonSize.md);
+      expect(createButton.size, CatchButtonSize.lg);
     }
   });
 
@@ -144,10 +144,7 @@ void _registerHostOperationsCustomersTests() {
       findsNothing,
     );
     expect(
-      find.descendant(
-        of: row,
-        matching: find.byIcon(CatchIcons.chevronRightRounded),
-      ),
+      find.descendant(of: row, matching: find.byIcon(CatchIcons.disclosure)),
       findsOne,
     );
 
@@ -303,10 +300,7 @@ void _registerHostOperationsCustomersTests() {
     expect(warning.label, 'Needs review');
     expect(warning.tone, CatchBadgeTone.warning);
     expect(
-      find.descendant(
-        of: row,
-        matching: find.byIcon(CatchIcons.chevronRightRounded),
-      ),
+      find.descendant(of: row, matching: find.byIcon(CatchIcons.disclosure)),
       findsOne,
     );
   });

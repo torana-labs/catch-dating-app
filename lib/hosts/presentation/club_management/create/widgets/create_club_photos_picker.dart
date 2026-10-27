@@ -233,10 +233,8 @@ class ClubProfileImageTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              interactive
-                  ? CatchIcons.addPhotoAlternateOutlined
-                  : CatchIcons.imageOutlined,
-              size: CatchIcon.hero,
+              interactive ? CatchIcons.addPhoto : CatchIcons.photo,
+              size: CatchIconSize.hero,
               color: t.ink2,
             ),
             if (interactive &&

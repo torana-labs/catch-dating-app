@@ -20,7 +20,7 @@ class EventSuccessFunnelSection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.personAddAlt1Rounded,
+            icon: CatchIcons.addPerson,
             value: eventSuccessReportPercent(funnel.demandConversionRate),
             label: context
                 .l10n
@@ -33,7 +33,7 @@ class EventSuccessFunnelSection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.checkCircleOutlineRounded,
+            icon: CatchIcons.success,
             value: eventSuccessReportPercent(funnel.requestApprovalRate),
             label: context
                 .l10n
@@ -42,7 +42,7 @@ class EventSuccessFunnelSection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.hourglassEmptyRounded,
+            icon: CatchIcons.pending,
             value: eventSuccessReportPercent(
               funnel.waitlistOfferAcceptanceRate,
             ),
@@ -57,7 +57,7 @@ class EventSuccessFunnelSection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.paymentsOutlined,
+            icon: CatchIcons.payment,
             value: eventSuccessReportPercent(funnel.paymentCompletionRate),
             label: context
                 .l10n
@@ -70,7 +70,7 @@ class EventSuccessFunnelSection extends StatelessWidget {
           CatchMetricData(
             partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
             missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
-            icon: CatchIcons.chatBubbleOutlineRounded,
+            icon: CatchIcons.chat,
             value: eventSuccessReportPercent(funnel.repeatAttendeeRate),
             label: context
                 .l10n

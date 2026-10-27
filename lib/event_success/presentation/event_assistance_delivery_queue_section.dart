@@ -87,7 +87,7 @@ class EventAssistanceDeliveryQueueSection extends StatelessWidget {
               ),
             CatchButton(
               label: l10n.eventAssistanceDeliveryReload,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: onReload,
             ),
           ],

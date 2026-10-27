@@ -1,0 +1,62 @@
+/*
+ * Flutter CatchEmptyState. Stacked: centred, the icon tile 12px above the
+ * title, the message 6px under the title (12px under the icon without one),
+ * actions 16px below, wrapping 12px by 8px. Inline: start-aligned, an 18px
+ * ink3 icon 8px before the title, the message 8px under it. 24px side padding;
+ * the surface recipe adds a separator boundary.
+ */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding-inline: var(--catch-space-s6);
+  text-align: center;
+}
+
+.empty[data-variant="inline"] {
+  align-items: stretch;
+  text-align: start;
+}
+
+.empty[data-surface] {
+  border: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+  border-radius: var(--catch-radius-md);
+  background: var(--catch-theme-surface);
+}
+
+.empty > p { margin: 0; }
+
+.empty[data-variant="stacked"] > * + .title,
+.empty[data-variant="stacked"] > :not(.title) + p { margin-top: var(--catch-space-s3); }
+.empty[data-variant="stacked"] > .title + p { margin-top: var(--catch-space-micro6); }
+.empty[data-variant="inline"] > .title + p { margin-top: var(--catch-space-s2); }
+
+.title {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--catch-space-s2);
+}
+
+.inlineIcon {
+  display: inline-flex;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--catch-theme-ink3);
+}
+
+.inlineIcon > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--catch-space-s2) var(--catch-space-s3);
+  margin-top: var(--catch-space-s4);
+}
+
+.empty[data-variant="inline"] .actions { justify-content: flex-start; }

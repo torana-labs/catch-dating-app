@@ -32,9 +32,9 @@ class ClubPhotoRail extends StatelessWidget {
                       child: CatchNetworkImage(
                         photos[index].thumbnailOrUrl,
                         errorBuilder: (_, _, _) => Icon(
-                          CatchIcons.groupsOutlined,
+                          CatchIcons.people,
                           color: t.ink2,
-                          size: CatchIcon.lg,
+                          size: CatchIconSize.lg,
                         ),
                       ),
                     ),

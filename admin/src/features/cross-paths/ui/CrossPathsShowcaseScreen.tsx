@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, CatchField} from "@catch/web-ui";
 import {useState} from "react";
 import {
   ChevronRight,
@@ -13,7 +13,6 @@ import {
   AdminButton,
   AdminEditorGrid,
   AdminProfilePhotoGrid,
-  AdminTag,
   AdminTagList,
   AdminToolbar,
   AdminWorkbenchNote,
@@ -253,11 +252,11 @@ function CandidateReviewPanel({
         </AdminWorkbenchStack>
         <AdminWorkbenchStack compact>
           <AdminTagList>
-            <AdminTag>{candidate.automaticStatus}</AdminTag>
-            <AdminTag>{candidate.photoUrls.length} displayable photos</AdminTag>
-            <AdminTag>{candidate.promptAnswers.length} prompts</AdminTag>
+            <CatchBadge label={candidate.automaticStatus} />
+            <CatchBadge label={`${candidate.photoUrls.length} displayable photos`} />
+            <CatchBadge label={`${candidate.promptAnswers.length} prompts`} />
             {candidate.effectiveReasonCodes.map((reason) => (
-              <AdminTag key={reason}>{reasonLabel(reason)}</AdminTag>
+              <CatchBadge key={reason} label={reasonLabel(reason)} />
             ))}
           </AdminTagList>
           {candidate.promptAnswers.map((prompt) => (

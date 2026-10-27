@@ -102,7 +102,7 @@ Widget eventDetailCalloutCardStates(BuildContext context) {
               body:
                   'Your spot is booked. Invite a friend who would make this event better.',
               actionLabel: 'Invite a friend',
-              actionIcon: CatchIcons.sendRounded,
+              actionIcon: CatchIcons.send,
               onAction: widgetbookEventsNoopContext,
               surfaceStyle: EventDetailSurfaceStyle.light(
                 CatchTokens.of(context),
@@ -127,7 +127,7 @@ Widget eventDetailCalloutCardStates(BuildContext context) {
               body:
                   'Your spot is booked. Invite a friend who would make this event better.',
               actionLabel: 'Invite a friend',
-              actionIcon: CatchIcons.sendRounded,
+              actionIcon: CatchIcons.send,
               onAction: widgetbookEventsNoopContext,
               surfaceStyle: EventDetailSurfaceStyle.dark(
                 CatchTokens.of(context),
@@ -142,12 +142,12 @@ Widget eventDetailCalloutCardStates(BuildContext context) {
           child: Padding(
             padding: CatchInsets.content,
             child: EventDetailCalloutCard(
-              leadingIcon: CatchIcons.autoAwesomeOutlined,
+              leadingIcon: CatchIcons.magic,
               title: 'Event companion',
               body:
                   'Check in, see your social prompt, and handle private follow-up after the event.',
               actionLabel: 'Open companion',
-              actionIcon: CatchIcons.phoneIphoneRounded,
+              actionIcon: CatchIcons.mobile,
               onAction: widgetbookEventsNoopContext,
               surfaceStyle: EventDetailSurfaceStyle.light(
                 CatchTokens.of(context),
@@ -162,12 +162,12 @@ Widget eventDetailCalloutCardStates(BuildContext context) {
           child: Padding(
             padding: CatchInsets.content,
             child: EventDetailCalloutCard(
-              leadingIcon: CatchIcons.autoAwesomeOutlined,
+              leadingIcon: CatchIcons.magic,
               title: 'Event companion',
               body:
                   'Check in, see your social prompt, and handle private follow-up after the event.',
               actionLabel: 'Open companion',
-              actionIcon: CatchIcons.phoneIphoneRounded,
+              actionIcon: CatchIcons.mobile,
               onAction: widgetbookEventsNoopContext,
               surfaceStyle: EventDetailSurfaceStyle.dark(
                 CatchTokens.of(context),

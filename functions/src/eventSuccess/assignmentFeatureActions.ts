@@ -75,7 +75,9 @@ export async function listEventAssignmentFeatureChoicesHandler(
   const data = validateCallableWithAjv<ChoicesInput>(request,
     validateListEventAssignmentFeatureChoicesCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "listEventAssignmentFeatureChoices");
+  await deps.rateLimit(db, uid, "listEventAssignmentFeatureChoices", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const consentSnap = await db.collection("eventAssignmentFeatureConsents")
     .where("eventId", "==", data.eventId)
     .where("uid", "==", uid).limit(1001).get();
@@ -208,7 +210,9 @@ export async function previewEventAssignmentFeaturesHandler(
   const rules = validateAssignmentFeatureRules(data.rules as
     AssignmentFeatureRule[]);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "previewEventAssignmentFeatures");
+  await deps.rateLimit(db, uid, "previewEventAssignmentFeatures", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const [eventSnap, planSnap] = await Promise.all([
     db.collection("events").doc(data.eventId).get(),
     db.collection("eventSuccessPlans").doc(data.eventId).get(),
@@ -318,7 +322,9 @@ export async function configureEventAssignmentFeaturesHandler(
   const rules = validateAssignmentFeatureRules(data.rules as
     AssignmentFeatureRule[]);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "configureEventAssignmentFeatures");
+  await deps.rateLimit(db, uid, "configureEventAssignmentFeatures", {
+    maxRequests: 20, windowMs: 60 * 60 * 1000,
+  });
   const eventRef = db.collection("events").doc(data.eventId);
   const planRef = db.collection("eventSuccessPlans").doc(data.eventId);
   const digest = hash(JSON.stringify(rules));
@@ -385,7 +391,9 @@ export async function setEventAssignmentFeatureConsentHandler(
     throw new HttpsError("failed-precondition", "Verify this phone first.");
   }
   const db = deps.db();
-  await deps.rateLimit(db, uid, "setEventAssignmentFeatureConsent");
+  await deps.rateLimit(db, uid, "setEventAssignmentFeatureConsent", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   if (data.decision === "grant" &&
       !await loadEventSuccessRosterParticipant(db, data.eventId, uid)) {
     throw unavailable();

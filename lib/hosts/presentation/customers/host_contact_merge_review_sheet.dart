@@ -225,7 +225,7 @@ class _HostContactMergeCandidateCardState
                   label: context.l10n.hostCustomersMergeKeep(
                     name: contact.displayName,
                   ),
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   variant: _survivorContactId == contact.contactId
                       ? CatchButtonVariant.primary
                       : CatchButtonVariant.secondary,
@@ -248,7 +248,7 @@ class _HostContactMergeCandidateCardState
           gapH8,
           CatchButton(
             label: context.l10n.hostCustomersDifferentPeople,
-            variant: CatchButtonVariant.ghost,
+            variant: CatchButtonVariant.quiet,
             onPressed: _saving ? null : _markDifferentPeople,
           ),
         ],

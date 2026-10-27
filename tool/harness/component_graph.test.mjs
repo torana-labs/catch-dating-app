@@ -31,6 +31,16 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+// test:rules runs functions/test/emulator-tests.json through the strict driver.
+function strictEmulatorTests() {
+  const packageJson = JSON.parse(fs.readFileSync(
+    new URL("../../functions/package.json", import.meta.url), "utf8"));
+  assert.equal(packageJson.scripts["test:rules"],
+    "npm run build && node scripts/run-tests.cjs --require-emulators");
+  return JSON.parse(fs.readFileSync(
+    new URL("../../functions/test/emulator-tests.json", import.meta.url), "utf8"));
+}
+
 function adminPendingInputs() {
   const inputs = new Set([
     "admin/src/app/App.tsx",
@@ -262,17 +272,14 @@ test("organizer authority routing preserves unrelated and mixed source lanes", (
 });
 
 test("rules emulator command executes the organizer authority regression", () => {
-  const packageJson = JSON.parse(fs.readFileSync(
-    new URL("../../functions/package.json", import.meta.url), "utf8"));
-  const script = packageJson.scripts["test:rules"];
+  const listed = strictEmulatorTests();
   const compiledTest = "lib/profiles/syncPublicProfileEmulator.test.js";
-  const assertIncluded = (command) => {
-    assert.match(command, /^npm run build && node scripts\/run-tests\.cjs --require-emulators /u);
-    assert.equal(command.split(/\s+/u).filter((part) => part === compiledTest).length,
+  const assertIncluded = (tests) => {
+    assert.equal(tests.filter((part) => part === compiledTest).length,
       1, "test:rules must run the organizer authority emulator regression exactly once");
   };
-  assertIncluded(script);
-  assert.throws(() => assertIncluded(script.replace(compiledTest, "")),
+  assertIncluded(listed);
+  assert.throws(() => assertIncluded(listed.filter((part) => part !== compiledTest)),
     /must run the organizer authority emulator regression/u);
   assert.ok(fs.existsSync(new URL(
     "../../functions/src/profiles/syncPublicProfileEmulator.test.ts", import.meta.url)));
@@ -1043,13 +1050,10 @@ test("backend integration conservatively covers runtime and mixed lanes", () => 
 });
 
 test("rules command executes both form conversion and attendee regressions", () => {
-  const packageJson = JSON.parse(fs.readFileSync(
-    new URL("../../functions/package.json", import.meta.url), "utf8"));
-  const command = packageJson.scripts["test:rules"];
-  assert.match(command, /^npm run build && node scripts\/run-tests\.cjs --require-emulators /u);
+  const listed = strictEmulatorTests();
   for (const compiled of ["lib/organizers/organizerFormConversions.test.js",
     "lib/events/eventAttendees.test.js"]) {
-    assert.equal(command.split(/\s+/u).filter((part) => part === compiled).length,
+    assert.equal(listed.filter((part) => part === compiled).length,
       1, `${compiled} must run exactly once in test:rules`);
   }
   const workflow = fs.readFileSync(new URL(
@@ -1399,7 +1403,7 @@ test("capture provenance inputs add lightweight freshness without changing sourc
     "packages/catch_tokens/pubspec.yaml", "packages/catch_tokens/lib/example.dart",
     "packages/catch_ui/lib/example.dart", "packages/catch_ui/assets/example.png",
     "packages/catch_ui_lints/pubspec.yaml", "packages/catch_ui_lints/lib/example.dart",
-    "packages/phosphor_flutter/lib/example.dart", "packages/example/pubspec.yaml",
+    "packages/example/pubspec.yaml",
     "packages/example/lib/example.dart", "packages/example/assets/example.png",
     "tool/ui_capture/run_captures.mjs", "tool/lib/repo_paths.mjs",
     "tool/demo/demo_seed/scenarios/host-demo.json",

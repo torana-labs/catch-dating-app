@@ -77,6 +77,17 @@ function TextRoles() {
 }
 
 /** catch.text: every role in both themes, then the per-instance overrides. */
+/** Coloured sentence-case labels: supportingStrong in each palette accent. */
+function AccentLabels() {
+  return (
+    <CatchGap direction="horizontal" size="section" wrap>
+      {(["coral", "pink", "yellow", "mint", "indigo", "magenta"] as const).map((accent) => (
+        <CatchText as="span" color={accent} key={accent} variant="supportingStrong">{`Coming on your own? (${accent})`}</CatchText>
+      ))}
+    </CatchGap>
+  );
+}
+
 export const Text: Story = {
   render: () => (
     <>
@@ -88,6 +99,7 @@ export const Text: Story = {
             <CatchText color="danger" variant="supporting">Danger color</CatchText>
             <CatchText color="positiveText" variant="supporting">Positive color</CatchText>
             <CatchText color="attentionText" variant="supporting">Attention color</CatchText>
+            <AccentLabels />
             <CatchText textAlign="center" variant="bodyM">Centred text</CatchText>
             <CatchText maxLines={2} variant="bodyL">
               Two-line clamp. A long description of the evening wraps onto more lines than
@@ -99,7 +111,10 @@ export const Text: Story = {
       </CatchPageBody>
       <div data-catch-theme="dark" style={{background: "var(--catch-theme-bg)"}}>
         <CatchPageBody>
-          <TextRoles />
+          <CatchGap size="majorSection">
+            <TextRoles />
+            <AccentLabels />
+          </CatchGap>
         </CatchPageBody>
       </div>
     </>

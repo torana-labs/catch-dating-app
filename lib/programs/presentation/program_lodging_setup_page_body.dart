@@ -124,7 +124,7 @@ class _ProgramLodgingSetupPageBodyState
                 ),
               CatchButton(
                 label: l10n.programsLodgingRemove,
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 onPressed: _guest == null
                     ? null
                     : () => _change(() => _draft.withoutDemand(_guest!)),
@@ -281,7 +281,7 @@ class _ProgramLodgingSetupPageBodyState
               ),
               CatchButton(
                 label: l10n.programsLodgingRemove,
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 onPressed: _party == null
                     ? null
                     : () => _change(() => _draft.withoutParty(_party!)),
@@ -488,7 +488,7 @@ class _ProgramLodgingSetupPageBodyState
               ),
               CatchButton(
                 label: l10n.programsLodgingRemove,
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 onPressed: _unit == null
                     ? null
                     : () => _change(() => _draft.withoutInventory(_unit!)),

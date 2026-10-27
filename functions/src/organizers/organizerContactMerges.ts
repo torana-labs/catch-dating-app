@@ -62,7 +62,9 @@ export async function mergeOrganizerContactsHandler(
     throw new HttpsError("invalid-argument", "A contact cannot merge itself.");
   }
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "mergeOrganizerContacts");
+  await deps.checkRateLimit(db, actorUid, "mergeOrganizerContacts", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const receiptId = mergeReceiptId(data.organizerId, "merge",
     data.idempotencyKey);
   const receiptRef = db.collection("organizerContactMergeReceipts")
@@ -230,7 +232,9 @@ export async function unmergeOrganizerContactsHandler(
     request, validateUnmergeOrganizerContactsCallablePayload,
     normalizeUnmergePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "unmergeOrganizerContacts");
+  await deps.checkRateLimit(db, actorUid, "unmergeOrganizerContacts", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const mergeReceiptRef = db.collection("organizerContactMergeReceipts")
     .doc(data.mergeReceiptId);
   const reversalId = mergeReversalReceiptId(data.organizerId,

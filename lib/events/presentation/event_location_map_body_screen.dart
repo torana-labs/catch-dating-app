@@ -75,9 +75,9 @@ class EventLocationMapScreen extends StatelessWidget {
                           radius: CatchRadius.none,
                           backgroundColor: t.primarySoft,
                           child: Icon(
-                            CatchIcons.locationOnOutlined,
+                            CatchIcons.location,
                             color: t.primary,
-                            size: CatchIcon.row,
+                            size: CatchIconSize.row,
                           ),
                         ),
                       ),
@@ -121,8 +121,8 @@ class EventLocationMapScreen extends StatelessWidget {
                         .l10n
                         .eventsEventLocationMapBodyScreenLabelGetDirections,
                     leading: Icon(
-                      CatchIcons.directionsOutlined,
-                      size: CatchIcon.md,
+                      CatchIcons.directions,
+                      size: CatchIconSize.md,
                     ),
                     fullWidth: true,
                     status: (directionsPending)

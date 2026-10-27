@@ -256,8 +256,8 @@ class CatchPosterHeader extends StatelessWidget {
               if (showArrow) ...[
                 gapW8,
                 Icon(
-                  CatchIcons.forwardArrow,
-                  size: CatchIcon.sm,
+                  CatchIcons.forward,
+                  size: CatchIconSize.sm,
                   color: colors.ink2,
                 ),
               ],

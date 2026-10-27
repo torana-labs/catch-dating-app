@@ -523,7 +523,7 @@ class ProfilePromptRow extends StatelessWidget {
     final text = slot.displayText;
     return ProfileInlinePromptEntryEditor(
       key: ValueKey('inline-${slot.fieldName}-entry-editor'),
-      icon: CatchIcons.formatQuoteRounded,
+      icon: CatchIcons.quote,
       label: slot.definition.title,
       currentAnswer: text,
       currentPromptId: slot.currentPromptId,

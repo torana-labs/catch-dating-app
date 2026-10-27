@@ -63,7 +63,7 @@ class CatchNoticeData {
   final int priority;
   final bool dismissible;
 
-  IconData get icon => _icon ?? CatchIcons.infoOutlineRounded;
+  IconData get icon => _icon ?? CatchIcons.info;
 
   bool get isPersistent => duration == null;
 }

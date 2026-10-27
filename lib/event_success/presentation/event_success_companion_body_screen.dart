@@ -170,7 +170,7 @@ class _EventSuccessCompanionScreenState
             plan.publishedRotationRoundIndex) {
       addMomentContent(
         CatchBanner(
-          icon: CatchIcons.scheduleRounded,
+          icon: CatchIcons.time,
           title: context
               .l10n
               .eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival,

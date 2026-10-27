@@ -335,34 +335,6 @@ h3 {
   color: var(--website-copy-meta);
 }
 
-.status-badge {
-  display: inline-flex;
-  width: fit-content;
-  align-items: center;
-  gap: var(--catch-space-micro6);
-  padding: var(--catch-space-micro6) var(--catch-space-micro10);
-  border: var(--catch-stroke-hairline) solid var(--website-line-strong);
-  border-radius: var(--catch-radius-pill);
-  color: var(--website-text-muted);
-  font-family: var(--catch-font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.status-badge.is-verified {
-  border-color: var(--website-text);
-  background: var(--website-text);
-  color: var(--website-bg);
-}
-
-.status-badge.is-unclaimed {
-  border-style: dashed;
-  color: var(--website-copy-meta);
-}
-
 /* ------------------------------------------------------------ member loop */
 
 .loop-list {

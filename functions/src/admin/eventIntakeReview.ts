@@ -22,11 +22,7 @@ const decisionCollection = "eventIntakeReviewDecisions";
 interface EventIntakeReviewDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: EventIntakeReviewDeps = {
@@ -77,7 +73,8 @@ export async function adminRecordEventIntakeReviewDecisionHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminRecordEventIntakeReviewDecision"
+    "adminRecordEventIntakeReviewDecision",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const decisionId = decisionIdForEventIntakeTarget(
     data.targetType,

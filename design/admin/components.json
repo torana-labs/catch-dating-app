@@ -1814,7 +1814,11 @@
           "organizers"
         ]
       },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
+      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx.",
+      "comparedWith": [
+        "catch.badge"
+      ],
+      "comparisonReason": "Publication boundary panel that composes CatchBadge status labels with its own copy and actions; the badge contract owns the labels, not the panel."
     },
     {
       "id": "shared_admin_intake_review_workbench",
@@ -2061,6 +2065,10 @@
           "custom-size"
         ]
       },
+      "comparedWith": [
+        "catch.icon"
+      ],
+      "comparisonReason": "Animated loading indicator that spins a glyph; it renders the loading icon role rather than implementing the icon contract.",
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx."
     },
     {
@@ -4451,29 +4459,6 @@
       "componentId": "catch.table"
     },
     {
-      "id": "shared_admin_tag",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
-      "exportName": "AdminTag",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "AdminTagStory",
-        "states": [
-          "neutral",
-          "ready",
-          "blocked",
-          "link"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Compared with catch.chip (2026-10-17 name match): it labels muted metadata and status values (status, priority, flags, counts) with status tones, which is CatchBadge; CatchChip covers interest tags, choices and removable values. It does not render BadgeControl yet.",
-      "componentId": "catch.badge"
-    },
-    {
       "id": "shared_admin_tag_list",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -4961,29 +4946,6 @@
       "comparisonReason": "Toned status row with icon and arbitrary content; meta rows are untoned factual entries and index rows navigate."
     },
     {
-      "id": "shared_risk_badge",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/data.tsx",
-      "exportName": "RiskBadge",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "RiskBadgeStory",
-        "states": [
-          "low",
-          "medium",
-          "high",
-          "watch"
-        ]
-      },
-      "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Toned risk label: a status recipe of catch.badge.",
-      "componentId": "catch.badge"
-    },
-    {
       "id": "shared_search_field",
       "kind": "shared-primitive",
       "owner": "shared/ui",
@@ -5087,28 +5049,6 @@
       },
       "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx. Phase 7d: Error or success band with icon and role alert or status: CatchBanner (2026-10-17 name match, confirmed).",
       "componentId": "catch.banner"
-    },
-    {
-      "id": "shared_status_chip",
-      "kind": "shared-primitive",
-      "owner": "shared/ui",
-      "source": "admin/src/shared/ui/AdminPrimitives/cards.tsx",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminPrimitives.stories.tsx",
-        "exportName": "StatusChipStory",
-        "states": [
-          "neutral",
-          "success",
-          "warning"
-        ]
-      },
-      "notes": "Shared admin UI primitive with Storybook preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
-      "exportName": "StatusChip",
-      "componentId": "catch.badge"
     },
     {
       "id": "shared_table_action_button",

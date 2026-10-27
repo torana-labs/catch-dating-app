@@ -398,11 +398,11 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => EventDetailCalloutCard(
-                leadingIcon: CatchIcons.autoAwesomeOutlined,
+                leadingIcon: CatchIcons.magic,
                 title: 'Event companion',
                 body: 'Use the companion after the event.',
                 actionLabel: 'Open companion',
-                actionIcon: CatchIcons.phoneIphoneRounded,
+                actionIcon: CatchIcons.mobile,
                 onAction: (context) {
                   actionContext = context;
                 },

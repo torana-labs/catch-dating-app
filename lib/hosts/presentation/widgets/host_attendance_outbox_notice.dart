@@ -39,7 +39,7 @@ class HostAttendanceOutboxNotice extends StatelessWidget {
           if (needsReview)
             CatchButton(
               label: context.l10n.hostsOperationalRosterOutboxDiscard,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: onDiscardConflicts,
             ),
         ],

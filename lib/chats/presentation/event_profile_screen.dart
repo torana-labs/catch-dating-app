@@ -123,7 +123,7 @@ class _EventProfileScreenState extends ConsumerState<EventProfileScreen>
             actions: [
               CatchIconAction.toolbar(
                 tooltip: context.l10n.eventChatRefresh,
-                icon: CatchIcons.refreshRounded,
+                icon: CatchIcons.refresh,
                 onPressed: !active || busy
                     ? null
                     : () => unawaited(

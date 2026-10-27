@@ -5,7 +5,9 @@ vi.mock("server-only", () => ({}));
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/events/eventDetailModel";
 import {
   assembleEventDetailCatalog,
+  assembleEventDetailFromSources,
   assembleOrganizerDetailCatalog,
+  assembleOrganizerDetailFromSources,
   assemblePublicCatalog,
   assembleRouteCatalog,
 } from "./publicCatalog";
@@ -143,7 +145,7 @@ describe("per-route reads", () => {
 
   it("read one organizer's events, never a whole events collection", async () => {
     const {reader, reads} = fakeReader(catalogWorld());
-    const detail = await assembleOrganizerDetailCatalog(reader, "/organizers/alpha/", readAt);
+    const detail = await assembleOrganizerDetailFromSources(reader, "/organizers/alpha/", readAt);
     expect(detail?.route).toMatchObject({isLegacyPath: false});
     expect(detail?.catalog.listings.map((listing) => listing.id)).toEqual(["alpha", "delta", "gamma"]);
     for (const read of reads.filter((entry) => entry.collection !== "organizers")) {
@@ -165,7 +167,7 @@ describe("per-route reads", () => {
 
   it("read an event page with document gets, not catalog queries", async () => {
     const {reader, reads} = fakeReader(catalogWorld());
-    const detail = await assembleEventDetailCatalog(reader, "beta-dinner", readAt);
+    const detail = await assembleEventDetailFromSources(reader, "beta-dinner", readAt);
     expect(detail?.listings.map((listing) => [listing.id, listing.catchEvents?.map((event) => event.id)]))
       .toEqual([["beta", ["beta-dinner"]]]);
     expect(reads.filter((entry) => entry.doc === undefined)).toEqual([
@@ -218,7 +220,9 @@ describe("route catalog", () => {
     const catalog = await assembleRouteCatalog(reader, "/events/beta-dinner/", readAt);
     expect(catalog.listings.map((listing) => [listing.id, listing.catchEvents?.map((event) => event.id)]))
       .toEqual([["beta", ["beta-dinner"]]]);
+    // Without a read model the page is assembled from its sources.
     expect(reads.filter((read) => read.doc !== undefined).map((read) => [read.collection, read.doc])).toEqual([
+      ["eventPublicPage", "beta-dinner"],
       ["events", "beta-dinner"], ["externalEvents", "beta-dinner"], ["organizers", "beta"],
     ]);
   });
@@ -229,6 +233,142 @@ describe("route catalog", () => {
   ])("renders %s as not found from at most the detail reads", async (path) => {
     const {reader, reads} = fakeReader(catalogWorld());
     expect(await assembleRouteCatalog(reader, path, readAt)).toEqual({listings: [], readAt});
-    expect(reads.some((read) => read.doc === undefined && read.filters.length < 2)).toBe(false);
+    // Read-model lookups are one equality on a page path; source reads stay narrow.
+    expect(reads.some((read) => read.doc === undefined && read.filters.length < 2 &&
+      read.collection !== "organizerPublicPage")).toBe(false);
+  });
+});
+
+/** Admin SDK timestamps keep `_seconds` and `_nanoseconds` and add `toMillis`. */
+class FixtureTimestamp {
+  constructor(readonly _seconds: number, readonly _nanoseconds: number) {}
+  toMillis() {return this._seconds * 1000 + Math.floor(this._nanoseconds / 1e6);}
+}
+function hydrate(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(hydrate);
+  if (!value || typeof value !== "object") return value;
+  const row = value as Row;
+  const keys = Object.keys(row).sort();
+  if (keys.length === 2 && keys[0] === "_nanoseconds" && keys[1] === "_seconds") {
+    return new FixtureTimestamp(Number(row._seconds), Number(row._nanoseconds));
+  }
+  return Object.fromEntries(Object.entries(row).map(([key, item]) => [key, hydrate(item)]));
+}
+
+/**
+ * The read-model fixtures are built by Functions (functions/src/publicPages)
+ * from the first parity case, so a world holding both the read models and
+ * their sources can compare the two routes.
+ */
+function readModelWorld(): {world: World; now: number} {
+  const fixtures = new URL("../../../contracts/fixtures/", import.meta.url);
+  const read = (name: string) => JSON.parse(fs.readFileSync(new URL(name, fixtures), "utf8"));
+  const inputs = read("public_pages/parity_inputs.json");
+  const parity = inputs.cases[0];
+  const rows = (docs: Array<{id: string; data: Row}>) =>
+    Object.fromEntries(docs.map((doc) => [doc.id, hydrate(doc.data) as Row]));
+  const eventPage = read("valid/event_public_page_doc.json");
+  return {now: inputs.now, world: {
+    organizers: {[parity.organizer.id]: hydrate(parity.organizer.data) as Row},
+    events: rows(parity.catchEvents),
+    externalEvents: rows(parity.externalEvents),
+    reviews: rows(parity.reviews),
+    organizerPublicPage: {[parity.organizer.id]: read("valid/organizer_public_page_doc.json")},
+    eventPublicPage: {[eventPage.eventId]: eventPage},
+  }};
+}
+
+/** The read models drop dating framing (CAT-247); the source route still shows it. */
+function withoutDatingFraming(listing: Row): Row {
+  const events = (listing.catchEvents as Row[]).map((event) => {
+    const next: Row = {...event};
+    if (next.activityKind === "singlesMixer") {
+      next.activityKind = "openActivity";
+      if (next.title === "Singles mixer") next.title = "Hosted event";
+    }
+    const labels = ((next.admissionLabels ?? []) as string[]).filter((label) => label !== "balanced");
+    if (labels.length) next.admissionLabels = labels; else delete next.admissionLabels;
+    const experience = ((next.catchExperienceActivities ?? []) as string[]).filter((item) => item !== "rotations");
+    if (experience.length) next.catchExperienceActivities = experience; else delete next.catchExperienceActivities;
+    return next;
+  });
+  return {...listing, catchEvents: events};
+}
+
+describe("public page read models", () => {
+  it("serve an organizer page from one document", async () => {
+    const {world, now} = readModelWorld();
+    const {reader, reads} = fakeReader(world);
+    const catalog = await assembleRouteCatalog(reader, "/organizers/next-proof/", now);
+    expect(reads).toEqual([{collection: "organizerPublicPage",
+      filters: [{field: "path", operator: "==", value: "/organizers/next-proof/"}]}]);
+    expect(catalog.listings.map((listing) => listing.id)).toEqual(["next-proof"]);
+    const [listing] = catalog.listings;
+    expect(listing.catchEvents?.map((event) => event.id)).toEqual(
+      ["legacy-club-only", "mixer-restricted", "open-upcoming", "paid-past"]);
+    expect(listing.externalEvents?.map((event) => event.id)).toEqual(["ext-public"]);
+    expect(listing.reviews.map((review) => review.id)).toEqual(
+      ["review-verified", "review-public", "review-anonymous"]);
+  });
+
+  it("render the organizer page today's source route renders, without dating framing", async () => {
+    const {world, now} = readModelWorld();
+    const fromPage = await assembleOrganizerDetailCatalog(fakeReader(world).reader, "/organizers/next-proof/", now);
+    const fromSources = await assembleOrganizerDetailFromSources(fakeReader(world).reader, "/organizers/next-proof/", now);
+    expect(fromPage?.route.isLegacyPath).toBe(false);
+    expect(fromPage?.catalog.listings).toEqual(fromSources?.catalog.listings.map((listing) =>
+      withoutDatingFraming(listing as unknown as Row)));
+  });
+
+  it("serve an event page from one document and match the source route", async () => {
+    const {world, now} = readModelWorld();
+    const {reader, reads} = fakeReader(world);
+    const catalog = await assembleRouteCatalog(reader, "/events/open-upcoming/", now);
+    expect(reads).toEqual([{collection: "eventPublicPage", filters: [], doc: "open-upcoming"}]);
+    const fromSources = await assembleEventDetailFromSources(fakeReader(world).reader, "open-upcoming", now);
+    expect(catalog.listings).toEqual(fromSources?.listings.map((listing) =>
+      withoutDatingFraming(listing as unknown as Row)));
+    const record = getEventDetailForPath("/events/open-upcoming/", buildPublicEventDetailRecords(catalog.listings, now));
+    expect(record?.capacityLimit).toBe(12);
+    expect(record?.eventReviews.map((review) => review.id)).toEqual(["review-verified"]);
+  });
+
+  it("read an event that ended after its page was built as past", async () => {
+    const {world} = readModelWorld();
+    const later = Date.parse("2026-06-01T00:00:00Z");
+    const catalog = await assembleRouteCatalog(fakeReader(world).reader, "/events/open-upcoming/", later);
+    expect(catalog.listings[0].catchEvents?.[0].timeline).toBe("past");
+  });
+
+  it("assemble pages from sources while a read model is missing or invalid", async () => {
+    const {world, now} = readModelWorld();
+    world.organizerPublicPage["next-proof"].schemaVersion = 2;
+    delete world.eventPublicPage["open-upcoming"];
+    const organizer = await assembleOrganizerDetailCatalog(fakeReader(world).reader, "/organizers/next-proof/", now);
+    expect(organizer).toEqual(await assembleOrganizerDetailFromSources(fakeReader(world).reader, "/organizers/next-proof/", now));
+    const event = await assembleEventDetailCatalog(fakeReader(world).reader, "open-upcoming", now);
+    expect(event).toEqual(await assembleEventDetailFromSources(fakeReader(world).reader, "open-upcoming", now));
+  });
+
+  it("withhold a withdrawn organizer whether or not its read model is gone yet", async () => {
+    const {world, now} = readModelWorld();
+    delete world.organizerPublicPage["next-proof"];
+    delete world.eventPublicPage["open-upcoming"];
+    (world.organizers["next-proof"].claim as Row).state = "suppressed";
+    expect(await assembleRouteCatalog(fakeReader(world).reader, "/organizers/next-proof/", now))
+      .toEqual({listings: [], readAt: now});
+    expect(await assembleRouteCatalog(fakeReader(world).reader, "/events/open-upcoming/", now))
+      .toEqual({listings: [], readAt: now});
+  });
+
+  it("resolve a legacy alias and withhold an ambiguous read-model path", async () => {
+    const {world, now} = readModelWorld();
+    const page = world.organizerPublicPage["next-proof"];
+    page.legacyPaths = ["/organizers/indore/next-proof/"];
+    const legacy = await assembleOrganizerDetailCatalog(fakeReader(world).reader, "/organizers/indore/next-proof/", now);
+    expect(legacy?.route).toMatchObject({isLegacyPath: true, listing: {id: "next-proof"}});
+    world.organizerPublicPage.copy = {...page, organizerId: "copy"};
+    delete world.organizers["next-proof"];
+    expect(await assembleOrganizerDetailCatalog(fakeReader(world).reader, "/organizers/next-proof/", now)).toBeNull();
   });
 });

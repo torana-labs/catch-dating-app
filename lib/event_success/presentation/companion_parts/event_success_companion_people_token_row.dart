@@ -20,18 +20,12 @@ class PeopleTokenRow extends StatelessWidget {
       spacing: CatchSpacing.s2,
       runSpacing: CatchSpacing.s2,
       children: [
-        CatchBadge(label: countLabel, icon: CatchIcons.groupOutlined),
+        CatchBadge(label: countLabel, icon: CatchIcons.people),
         if (loading)
-          CatchBadge(
-            label: loadingLabel,
-            icon: CatchIcons.hourglassEmptyRounded,
-          )
+          CatchBadge(label: loadingLabel, icon: CatchIcons.pending)
         else
           for (final profile in profiles)
-            CatchBadge(
-              label: profile.name,
-              icon: CatchIcons.personOutlineRounded,
-            ),
+            CatchBadge(label: profile.name, icon: CatchIcons.person),
       ],
     );
   }

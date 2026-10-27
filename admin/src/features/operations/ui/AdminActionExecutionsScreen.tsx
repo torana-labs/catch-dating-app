@@ -1,4 +1,4 @@
-import {CatchField} from "@catch/web-ui";
+import {CatchBadge, type CatchBadgeTone, CatchField} from "@catch/web-ui";
 import {
   Bot,
   Clock3,
@@ -24,7 +24,6 @@ import {
   Panel,
   SearchField,
   selectOptions,
-  StatusChip,
 } from "../../../shared/ui/AdminPrimitives";
 import {
   type AdminActionExecutionsController,
@@ -186,9 +185,7 @@ function ActionExecutionTable({
                 </AdminRowTitle>
               </td>
               <td>
-                <StatusChip tone={statusTone(row.status)}>
-                  {statusLabel(row.status)}
-                </StatusChip>
+                <CatchBadge recipe="status" tone={statusTone(row.status)} label={statusLabel(row.status)} />
                 <AdminRowTitle compact>
                   <span>{durationLabel(row)}</span>
                   {row.errorMessage ? (
@@ -211,7 +208,7 @@ function ActionExecutionTable({
   );
 }
 
-function statusTone(status: AdminActionExecutionRecord["status"]): string {
+function statusTone(status: AdminActionExecutionRecord["status"]): CatchBadgeTone {
   if (status === "succeeded") return "success";
   if (status === "failed") return "danger";
   return "warning";

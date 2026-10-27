@@ -204,7 +204,7 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
       actions: [
         CatchButton(
           label: 'Create club',
-          leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+          leading: Icon(CatchIcons.add, size: CatchIconSize.md),
           onPressed: () {},
         ),
       ],

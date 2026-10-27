@@ -113,8 +113,8 @@ class SuvbotDock extends StatelessWidget {
                               ? null
                               : () => unawaited(onAction(helpAction)),
                           child: Icon(
-                            CatchIcons.helpOutlineRounded,
-                            size: CatchIcon.md,
+                            CatchIcons.help,
+                            size: CatchIconSize.md,
                             color: pending ? t.ink3 : t.ink2,
                           ),
                         ),
@@ -133,7 +133,7 @@ class SuvbotDock extends StatelessWidget {
                             ? null
                             : () => unawaited(onAction(checkAction)),
                         variant: CatchButtonVariant.secondary,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         fullWidth: true,
                         status: (pending)
                             ? CatchButtonStatus.loading
@@ -156,7 +156,7 @@ class SuvbotDock extends StatelessWidget {
                             ? null
                             : () => unawaited(onAction(refreshAction)),
                         variant: CatchButtonVariant.danger,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         fullWidth: true,
                         status: (pending)
                             ? CatchButtonStatus.loading
@@ -189,7 +189,7 @@ class SuvbotDock extends StatelessWidget {
                               ? null
                               : () => unawaited(onAction(action)),
                           variant: CatchButtonVariant.secondary,
-                          size: CatchButtonSize.sm,
+                          size: CatchButtonSize.md,
                           fullWidth: true,
                           leading: Icon(_iconFor(action.icon)),
                           foregroundColor: t.ink,
@@ -217,7 +217,7 @@ class SuvbotDock extends StatelessWidget {
                                 onTextAction: onTextAction,
                               ),
                         variant: CatchButtonVariant.secondary,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         fullWidth: true,
                         status: (pending)
                             ? CatchButtonStatus.loading
@@ -243,12 +243,12 @@ class SuvbotDock extends StatelessWidget {
                                 onAction: onAction,
                               ),
                         variant: CatchButtonVariant.danger,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         fullWidth: true,
                         status: (pending)
                             ? CatchButtonStatus.loading
                             : CatchButtonStatus.idle,
-                        leading: Icon(CatchIcons.cleaningServicesRounded),
+                        leading: Icon(CatchIcons.cleanup),
                         foregroundColor: colors.error,
                         backgroundColor: colors.errorContainer.withValues(
                           alpha: CatchOpacity.suvbotDestructiveFill,
@@ -271,9 +271,9 @@ class SuvbotDock extends StatelessWidget {
             label: context.l10n.chatsSuvbotActionBarLabelReloadControls,
             onPressed: onRetry,
             variant: CatchButtonVariant.secondary,
-            size: CatchButtonSize.sm,
+            size: CatchButtonSize.md,
             fullWidth: true,
-            leading: Icon(CatchIcons.syncRounded),
+            leading: Icon(CatchIcons.sync),
             foregroundColor: t.ink,
             backgroundColor: t.surface,
             borderColor: t.line,
@@ -359,7 +359,7 @@ class SuvbotResetActionRow extends StatelessWidget {
               child: Icon(
                 _iconFor(action.icon),
                 color: tone,
-                size: CatchIcon.row,
+                size: CatchIconSize.row,
               ),
             ),
             gapW12,
@@ -384,9 +384,9 @@ class SuvbotResetActionRow extends StatelessWidget {
             ),
             gapW12,
             Icon(
-              CatchIcons.chevronRightRounded,
+              CatchIcons.disclosure,
               color: action.destructive ? t.danger : t.ink3,
-              size: CatchIcon.sm,
+              size: CatchIconSize.sm,
             ),
           ],
         ),
@@ -479,7 +479,7 @@ class _MatchTesterSheetState extends State<MatchTesterSheet> {
           const SizedBox(height: CatchSpacing.s3),
           CatchButton(
             onPressed: widget.pending ? null : _submit,
-            leading: Icon(CatchIcons.personAddAlt1Rounded),
+            leading: Icon(CatchIcons.addPerson),
             label: context.l10n.chatsSuvbotActionBarLabelCreateMatch,
             fullWidth: true,
           ),
@@ -505,17 +505,17 @@ String _shortWarmLabel(SuvbotActionItem action) => switch (action.id) {
 };
 
 IconData _iconFor(String icon) => switch (icon) {
-  'refresh' => CatchIcons.refreshRounded,
-  'clean' => CatchIcons.cleaningServicesRounded,
-  'event' => CatchIcons.eventAvailableRounded,
-  'flag' => CatchIcons.flagRounded,
-  'chat' => CatchIcons.forumRounded,
-  'payment' => CatchIcons.paymentsRounded,
-  'chatReset' => CatchIcons.forumOutlined,
-  'eventReset' => CatchIcons.eventBusyRounded,
-  'notifications' => CatchIcons.notificationsOffRounded,
-  'personAdd' => CatchIcons.personAddAlt1Rounded,
-  'check' => CatchIcons.factCheckOutlined,
-  'help' => CatchIcons.helpOutlineRounded,
-  _ => CatchIcons.autoAwesomeRounded,
+  'refresh' => CatchIcons.refresh,
+  'clean' => CatchIcons.cleanup,
+  'event' => CatchIcons.eventConfirmed,
+  'flag' => CatchIcons.flag,
+  'chat' => CatchIcons.conversations,
+  'payment' => CatchIcons.payment,
+  'chatReset' => CatchIcons.conversations,
+  'eventReset' => CatchIcons.eventUnavailable,
+  'notifications' => CatchIcons.notificationsOff,
+  'personAdd' => CatchIcons.addPerson,
+  'check' => CatchIcons.review,
+  'help' => CatchIcons.help,
+  _ => CatchIcons.magic,
 };

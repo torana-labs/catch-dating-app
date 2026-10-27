@@ -175,7 +175,9 @@ export async function createEventRehearsalHandler(
     request,
     validateCreateEventRehearsalCallablePayload
   );
-  await checkRateLimit(db, uid, "createEventRehearsal");
+  await checkRateLimit(db, uid, "createEventRehearsal", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   await requireOrganizerManager({
     db,
     organizerId: data.organizerId,
@@ -197,7 +199,9 @@ export async function getEventRehearsalBootstrapHandler(
     validateGetEventRehearsalBootstrapCallablePayload
   );
   const db = admin.firestore();
-  await checkRateLimit(db, uid, "getEventRehearsalBootstrap");
+  await checkRateLimit(db, uid, "getEventRehearsalBootstrap", {
+    maxRequests: 90, windowMs: 60 * 1000,
+  });
   const session = await requireHostSession(db, data.sessionId, uid);
   await maybeApplyReadFault(session);
   return hostProjection(db, data.sessionId, session, request, undefined,
@@ -211,7 +215,9 @@ export async function getEventRehearsalMovementHandler(
   const data = validateCallableWithAjv<MovementInput>(request,
     validateGetEventRehearsalMovementCallablePayload);
   const db = admin.firestore();
-  await checkRateLimit(db, uid, "getEventRehearsalMovement");
+  await checkRateLimit(db, uid, "getEventRehearsalMovement", {
+    maxRequests: 90, windowMs: 60 * 1000,
+  });
   return hostMovementReview(db, uid, data);
 }
 async function hostMovementReview(db: Firestore, uid: string,
@@ -256,7 +262,9 @@ export async function updateEventRehearsalSetupHandler(
     request,
     validateUpdateEventRehearsalSetupCallablePayload
   );
-  await checkRateLimit(db, uid, "updateEventRehearsalSetup");
+  await checkRateLimit(db, uid, "updateEventRehearsalSetup", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireHostSession(db, data.sessionId, uid);
   const sessionRef = db.collection(sessions).doc(data.sessionId);
   const actorQuery = db.collection(actors)
@@ -348,7 +356,9 @@ export async function controlEventRehearsalHandler(
     request,
     validateControlEventRehearsalCallablePayload
   );
-  await checkRateLimit(db, uid, "controlEventRehearsal");
+  await checkRateLimit(db, uid, "controlEventRehearsal", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   const authorized = await requireHostSession(db, data.sessionId, uid);
   const sessionRef = db.collection(sessions).doc(data.sessionId);
   const actorQuery = db.collection(actors)
@@ -745,7 +755,9 @@ export async function injectEventRehearsalBehaviorHandler(
       validateInjectEventRehearsalBehaviorCallablePayload
     );
   const db = admin.firestore();
-  await checkRateLimit(db, uid, "injectEventRehearsalBehavior");
+  await checkRateLimit(db, uid, "injectEventRehearsalBehavior", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   await requireHostSession(db, data.sessionId, uid);
   if (data.faultId !== "none" && !canUseInternalFaults(request)) {
     throw new HttpsError(
@@ -854,7 +866,9 @@ export async function controlEventRehearsalSpatialHandler(
     ControlEventRehearsalSpatialCallablePayload
   >(request, validateControlEventRehearsalSpatialCallablePayload);
   const db = admin.firestore();
-  await checkRateLimit(db, uid, "controlEventRehearsalSpatial");
+  await checkRateLimit(db, uid, "controlEventRehearsalSpatial", {
+    maxRequests: 120, windowMs: 60 * 1000,
+  });
   await requireHostSession(db, data.sessionId, uid);
   const sessionRef = db.collection(sessions).doc(data.sessionId);
   const actorRef = db.collection(actors)
@@ -950,7 +964,9 @@ export async function resetEventRehearsalHandler(
     request,
     validateResetEventRehearsalCallablePayload
   );
-  await checkRateLimit(db, uid, "resetEventRehearsal");
+  await checkRateLimit(db, uid, "resetEventRehearsal", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const session = await requireHostSession(db, data.sessionId, uid);
   if (data.fork) {
     await assertActiveSessionLimit(db, uid);
@@ -1022,7 +1038,9 @@ export async function rotateEventRehearsalGuestLinkHandler(
       validateRotateEventRehearsalGuestLinkCallablePayload
     );
   const db = admin.firestore();
-  await checkRateLimit(db, uid, "rotateEventRehearsalGuestLink");
+  await checkRateLimit(db, uid, "rotateEventRehearsalGuestLink", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   await requireHostSession(db, data.sessionId, uid);
   await deleteBySession(db, guestViews, data.sessionId);
   const publicRehearsalId = randomToken(24);
@@ -1048,7 +1066,8 @@ export async function getEventRehearsalGuestBootstrapHandler(
   await checkRateLimit(
     db,
     guestRateLimitIdentity(data.publicRehearsalId, data.clientInstanceId),
-    "getEventRehearsalGuestBootstrap"
+    "getEventRehearsalGuestBootstrap",
+    {maxRequests: 90, windowMs: 60 * 1000}
   );
   const resolved = await resolvePublicSession(db, data.publicRehearsalId);
   await maybeApplyGuestReadFault(resolved.session);
@@ -1086,7 +1105,8 @@ export async function submitEventRehearsalGuestActionHandler(
   await checkRateLimit(
     db,
     guestRateLimitIdentity(data.publicRehearsalId, data.slotToken),
-    "submitEventRehearsalGuestAction"
+    "submitEventRehearsalGuestAction",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   const resolved = await resolvePublicSession(db, data.publicRehearsalId);
   const slotId = data.slotToken.slice(0, 24);
@@ -1213,7 +1233,9 @@ export async function completeEventRehearsalHandler(
     validateGetEventRehearsalBootstrapCallablePayload
   );
   const db = admin.firestore();
-  await checkRateLimit(db, uid, "completeEventRehearsal");
+  await checkRateLimit(db, uid, "completeEventRehearsal", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   if (data.practiceOperatorId) {
     throw new HttpsError("invalid-argument",
       "This rehearsal control belongs to the Host, not a practice role.");
@@ -1293,7 +1315,9 @@ export async function exportEventRehearsalReproductionHandler(
     validateGetEventRehearsalBootstrapCallablePayload
   );
   const db = admin.firestore();
-  await checkRateLimit(db, uid, "exportEventRehearsalReproduction");
+  await checkRateLimit(db, uid, "exportEventRehearsalReproduction", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   if (data.practiceOperatorId) {
     throw new HttpsError("invalid-argument",
       "This rehearsal control belongs to the Host, not a practice role.");

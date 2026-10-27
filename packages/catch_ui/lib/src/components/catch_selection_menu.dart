@@ -103,9 +103,9 @@ class _CatchSelectionMenuState<T> extends State<CatchSelectionMenu<T>> {
           key: widget.buttonKey,
           label: widget.labelBuilder!(selectedItem),
           semanticsLabel: widget.tooltip,
-          leading: Icon(widget.icon ?? CatchIcons.sort, size: CatchIcon.sm),
+          leading: Icon(widget.icon ?? CatchIcons.sort, size: CatchIconSize.sm),
           variant: CatchButtonVariant.secondary,
-          size: CatchButtonSize.sm,
+          size: CatchButtonSize.md,
           onPressed: toggle,
         );
     if (widget.title != null &&

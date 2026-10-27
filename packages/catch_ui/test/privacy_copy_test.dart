@@ -13,17 +13,17 @@ void main() {
       (
         CatchPrivacyBadgeVariant.privateToYou,
         copy.privateToYouLabel,
-        CatchIcons.lockOutlineRounded,
+        CatchIcons.locked,
       ),
       (
         CatchPrivacyBadgeVariant.hostCanSee,
         copy.hostCanSeeLabel,
-        CatchIcons.visibilityOutlined,
+        CatchIcons.show,
       ),
       (
         CatchPrivacyBadgeVariant.catchPrivate,
         copy.catchPrivateLabel,
-        CatchIcons.shieldOutlined,
+        CatchIcons.safety,
       ),
     ]) {
       testWidgets('caller copy stays paired with $kind at scale $scale', (

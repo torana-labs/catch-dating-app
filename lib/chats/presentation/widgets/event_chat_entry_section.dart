@@ -40,7 +40,7 @@ class EventChatEntrySection extends ConsumerWidget {
                 ? context.l10n.eventChatEntryBody
                 : context.l10n.eventChatGuestWaiting,
             emphasis: CatchFieldEmphasis.title,
-            icon: CatchIcons.chatBubbleOutlineRounded,
+            icon: CatchIcons.chat,
             onTap: () => context.pushNamed(
               Routes.eventChatScreen.name,
               pathParameters: {'eventId': eventId},

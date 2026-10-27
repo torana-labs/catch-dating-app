@@ -81,7 +81,7 @@ class _HostClubEventDefaultsScreenState
                                   copy: catchFieldCopy(context.l10n),
                                   title: context.l10n.hostsPrivateEventCity,
                                   body: club.location,
-                                  icon: CatchIcons.locationOnOutlined,
+                                  icon: CatchIcons.location,
                                 ),
                                 CatchFieldSupportRow(
                                   text:
@@ -96,7 +96,7 @@ class _HostClubEventDefaultsScreenState
                                       context
                                           .l10n
                                           .hostsEventDefaultsChooseEachEvent,
-                                  icon: CatchIcons.languageOutlined,
+                                  icon: CatchIcons.web,
                                 ),
                                 CatchFieldSupportRow(
                                   text: context
@@ -156,7 +156,7 @@ class _HostClubEventDefaultsScreenState
                                           body: context
                                               .l10n
                                               .hostsEventDefaultsPendingUpdateBody,
-                                          icon: CatchIcons.lockOutline,
+                                          icon: CatchIcons.locked,
                                         ),
                                         CatchField.action(
                                           copy: catchFieldCopy(context.l10n),
@@ -195,7 +195,7 @@ class _HostClubEventDefaultsScreenState
                                     body: context
                                         .l10n
                                         .hostsEventDefaultsManagerUnavailableBody,
-                                    icon: CatchIcons.lockOutline,
+                                    icon: CatchIcons.locked,
                                   ),
                                   if (manager?.pending != null)
                                     CatchField.action(

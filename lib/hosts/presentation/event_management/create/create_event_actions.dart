@@ -491,14 +491,14 @@ extension _CreateEventActions on _CreateEventScreenState {
         value: _nameController.text.trim().isEmpty
             ? context.l10n.hostsWizardStatusNeedsInformation
             : _nameController.text.trim(),
-        icon: CatchIcons.eventAvailableOutlined,
+        icon: CatchIcons.eventConfirmed,
       ),
       CatchFormReviewSummaryItem(
         label: context.l10n.hostsCreateEventReviewActivity,
         value: _selectedEventFormat.isDistanceBased
             ? '$activity · ${_distanceController.text.trim()} km · ${_selectedPace?.label ?? context.l10n.hostsWizardStatusNeedsInformation}'
             : activity,
-        icon: CatchIcons.eventAvailableOutlined,
+        icon: CatchIcons.eventConfirmed,
       ),
       CatchFormReviewSummaryItem(
         label: context.l10n.hostsCreateEventReviewBooking,
@@ -507,7 +507,7 @@ extension _CreateEventActions on _CreateEventScreenState {
                 provider: _externalBookingProviderLabel,
               )
             : context.l10n.hostsCreateEventReviewCatchBookings,
-        icon: CatchIcons.confirmationNumberOutlined,
+        icon: CatchIcons.ticket,
       ),
       if (_externalBookingMode)
         CatchFormReviewSummaryItem(
@@ -524,28 +524,28 @@ extension _CreateEventActions on _CreateEventScreenState {
                   review: _pendingRosterImport!.needsReviewCount,
                   excluded: _pendingRosterImport!.excludedCount,
                 ),
-          icon: CatchIcons.groupsOutlined,
+          icon: CatchIcons.people,
         ),
       CatchFormReviewSummaryItem(
         label: context.l10n.hostsCreateEventReviewLocation,
         value: _meetingPointController.text.trim().isEmpty
             ? context.l10n.hostsWizardStatusNeedsInformation
             : _meetingPointController.text.trim(),
-        icon: CatchIcons.locationOnOutlined,
+        icon: CatchIcons.location,
       ),
       CatchFormReviewSummaryItem(
         label: context.l10n.hostsCreateEventReviewSchedule,
         value: start == null || end == null
             ? context.l10n.hostsWizardStatusNeedsInformation
             : '${EventFormatters.longDate(start)} · ${EventFormatters.timeRange(start, end)}',
-        icon: CatchIcons.calendarMonthOutlined,
+        icon: CatchIcons.date,
       ),
       CatchFormReviewSummaryItem(
         label: context.l10n.hostsCreateEventReviewCapacity,
         value: capacity == null
             ? context.l10n.hostsWizardStatusNeedsInformation
             : context.l10n.hostsCreateEventReviewCapacityValue(count: capacity),
-        icon: CatchIcons.peopleOutline,
+        icon: CatchIcons.people,
       ),
       CatchFormReviewSummaryItem(
         label: context.l10n.hostsCreateEventReviewPrice,
@@ -559,13 +559,13 @@ extension _CreateEventActions on _CreateEventScreenState {
                 priceInMinorUnits,
                 currencyCode: _eventCurrencyCode,
               ),
-        icon: CatchIcons.paymentsOutlined,
+        icon: CatchIcons.payment,
       ),
       if (!_externalBookingMode)
         CatchFormReviewSummaryItem(
           label: context.l10n.hostsCreateEventReviewAdmission,
           value: _policyState.admissionPreset.title(context.l10n),
-          icon: CatchIcons.howToRegOutlined,
+          icon: CatchIcons.checkIn,
         ),
     ];
   }

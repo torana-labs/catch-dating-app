@@ -17,7 +17,7 @@ export const resolvePublicRoute = cache(async (pathname: string) => {
   const event = getEventDetailForPath(pathname, buildPublicEventDetailRecords(catalog.listings, catalog.readAt));
   const routes: Record<string, PageKey> = {"/": "home", "/explore": "visitor_discovery", "/host": "host",
     "/host/apply": "host", "/organizers": "organizers", "/privacy": "privacy", "/terms": "terms", "/help": "help",
-    "/delete-account": "account_deletion", "/claim": "claim"};
+    "/delete-account": "account_deletion", "/refunds": "refunds", "/contact": "contact", "/claim": "claim"};
   const page: PageKey = listingRoute ? "listing" : event ? "event_detail" : routes[key] ??
     (/^\/claim\/[^/]+$/.test(key) ? "claim" : "not_found");
   const contact = isLegalPageKey(page) ? await readPublicContact() : null;

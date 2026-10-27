@@ -145,7 +145,7 @@ class HostTeamManagementSection extends ConsumerWidget {
               l10n: context.l10n,
               context: AppErrorContext.club,
             ),
-            icon: CatchIcons.errorOutlineRounded,
+            icon: CatchIcons.error,
             tone: CatchFieldTone.danger,
           ),
         if (hosts.isEmpty)
@@ -154,7 +154,7 @@ class HostTeamManagementSection extends ConsumerWidget {
             title: context
                 .l10n
                 .hostsHostTeamManagementSectionTextNoHostTeamMembers,
-            icon: CatchIcons.groups3Outlined,
+            icon: CatchIcons.people,
           )
         else
           for (final host in hosts)
@@ -171,7 +171,7 @@ class HostTeamManagementSection extends ConsumerWidget {
           CatchField.add(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsHostTeamManagementSectionTitleAddHost,
-            icon: CatchIcons.personAddAlt1Rounded,
+            icon: CatchIcons.addPerson,
             onTap: actionPending ? null : () => unawaited(showAddHostSheet()),
           ),
       ],
@@ -294,7 +294,7 @@ class HostTeamOwnerHostRow extends StatelessWidget {
                 tooltip: context
                     .l10n
                     .hostsHostTeamManagementSectionTooltipHostActions,
-                icon: CatchIcons.moreHorizRounded,
+                icon: CatchIcons.more,
                 onSelected: (value) {
                   if (value ==
                       context
@@ -317,7 +317,7 @@ class HostTeamOwnerHostRow extends StatelessWidget {
                     label: context
                         .l10n
                         .hostsHostTeamManagementSectionLabelTransferOwnership,
-                    icon: CatchIcons.adminPanelSettingsOutlined,
+                    icon: CatchIcons.admin,
                   ),
                   CatchActionMenuItem(
                     value: context
@@ -326,7 +326,7 @@ class HostTeamOwnerHostRow extends StatelessWidget {
                     label: context
                         .l10n
                         .hostsHostTeamManagementSectionLabelRemoveHost,
-                    icon: CatchIcons.personOffOutlined,
+                    icon: CatchIcons.personRemoved,
                     isDestructive: true,
                   ),
                 ],
@@ -423,7 +423,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
         onPressed: isSaving ? null : () => unawaited(_submit()),
         status: (isSaving) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
 
-        leading: Icon(CatchIcons.personAddAlt1Rounded),
+        leading: Icon(CatchIcons.addPerson),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -436,7 +436,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
               contract: CatchContractConstraints
                   .addClubHostCallablePayloadPhoneNumber,
               controller: _controller,
-              leading: Icon(CatchIcons.phoneOutlined),
+              leading: Icon(CatchIcons.phone),
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => unawaited(_submit()),

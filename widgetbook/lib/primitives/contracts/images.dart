@@ -90,9 +90,7 @@ Widget catchNetworkImageFallbackContractStates(BuildContext context) {
         label: 'custom-icon',
         child: SizedBox.square(
           dimension: WidgetbookPreviewLayout.networkFallbackExtent,
-          child: CatchImageFallbackSurface(
-            icon: CatchIcons.photoLibraryOutlined,
-          ),
+          child: CatchImageFallbackSurface(icon: CatchIcons.photos),
         ),
       ),
       WidgetbookContractStateCard(

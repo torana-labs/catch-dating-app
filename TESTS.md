@@ -24,9 +24,12 @@ Use focused tests while iterating, then run the owning surface's full gate befor
 Functions tests are discovered recursively from compiled
 `functions/lib/**/*.test.js` plus `functions/test/**/*.test.cjs`; rules specs
 remain in the emulator-owned `test:rules` lane. Adding a new nested Functions
-domain test therefore requires no script edit. CI splits the `test:rules` list
-across three emulator jobs with `CATCH_TEST_SHARD=<index>/3`; a local run
-without that variable executes the whole list.
+domain test therefore requires no script edit. The `test:rules` lane runs the
+strict list in `functions/test/emulator-tests.json`: add each new
+emulator-dependent test there, never to `functions/package.json`, whose edits
+redeploy every Function. CI splits that list across three emulator jobs with
+`CATCH_TEST_SHARD=<index>/3`; a local run without that variable executes the
+whole list.
 
 `.github/workflows/flutter-ci.yml` compiles Widgetbook on every relevant Flutter
 change and publishes an LCOV plus feature-level Markdown coverage artifact.

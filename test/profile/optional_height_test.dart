@@ -39,7 +39,7 @@ void main() {
                 child: Scaffold(
                   body: SingleChildScrollView(
                     child: ProfileInlineHeightEditor(
-                      icon: CatchIcons.heightOutlined,
+                      icon: CatchIcons.height,
                       label: 'Height',
                       value: '172 cm',
                       currentValue: 172,
@@ -86,7 +86,7 @@ void main() {
                 rebuild = setState;
                 return CatchFieldLanes.single(
                   child: ProfileInlineHeightEditor(
-                    icon: CatchIcons.heightOutlined,
+                    icon: CatchIcons.height,
                     label: 'Height',
                     value: '172 cm',
                     currentValue: 172,

@@ -82,7 +82,7 @@ class ProgramAttentionScreen extends ConsumerWidget {
                     : context.l10n.programsAttentionFeedSubtitle,
                 child: feed.items.isEmpty
                     ? CatchEmptyState(
-                        icon: CatchIcons.notificationsOutlined,
+                        icon: CatchIcons.notifications,
                         message: context.l10n.programsAttentionEmpty,
                         variant: CatchEmptyStateVariant.inline,
                       )
@@ -113,9 +113,9 @@ class ProgramAttentionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CatchFieldRow.standard(
     leading: Icon(switch (item.severity) {
-      'urgent' => CatchIcons.errorOutlineRounded,
-      'warning' => CatchIcons.warningAmberRounded,
-      _ => CatchIcons.notificationsOutlined,
+      'urgent' => CatchIcons.error,
+      'warning' => CatchIcons.warning,
+      _ => CatchIcons.notifications,
     }),
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,

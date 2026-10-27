@@ -466,7 +466,7 @@ class _HostFormResponseDetailScreenState
           actions: [
             CatchButton(
               label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: () => Navigator.of(dialogContext).pop(false),
             ),
             CatchButton(

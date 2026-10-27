@@ -163,7 +163,7 @@ class _ProgramLodgingLayoutState extends State<ProgramLodgingLayout> {
           ].join(' · '),
           variant: _destinationId == unit.inventoryId
               ? CatchButtonVariant.secondary
-              : CatchButtonVariant.ghost,
+              : CatchButtonVariant.quiet,
           onPressed:
               _pending ||
                   !_destinations.any((d) => d.inventoryId == unit.inventoryId)
@@ -188,7 +188,7 @@ class _ProgramLodgingLayoutState extends State<ProgramLodgingLayout> {
                     : '${party.label} · ${widget.copy.locked}',
                 variant: _partyId == party.id
                     ? CatchButtonVariant.secondary
-                    : CatchButtonVariant.ghost,
+                    : CatchButtonVariant.quiet,
                 onPressed:
                     _pending ||
                         !party.canMove ||

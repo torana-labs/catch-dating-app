@@ -62,7 +62,7 @@ List<TicketStubTileData> _ticketStubCells(Event event, AppLocalizations l10n) {
       label: l10n.eventsEventDetailDesignPrimitivesLabelWhen,
       value: event.shortDateLabel,
       detail: [event.compactTimeRangeLabel, ?event.eventTimezone].join(' · '),
-      icon: CatchIcons.calendarAdd,
+      icon: CatchIcons.addToCalendar,
     ),
     TicketStubTileData(
       label: l10n.eventsEventDetailDesignPrimitivesLabelWhere,

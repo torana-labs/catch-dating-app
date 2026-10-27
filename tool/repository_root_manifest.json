@@ -41,8 +41,7 @@
     {"pattern": "apps/*/android/app/src/*/res/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
     {"pattern": "apps/*/ios/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
     {"pattern": "apps/consumer/macos/Runner/Assets.xcassets/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
-    {"pattern": "apps/*/web/icons/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"},
-    {"pattern": "packages/phosphor_flutter/**", "review": "aggregate", "kind": "vendored_package", "owner": "repository_tooling"}
+    {"pattern": "apps/*/web/icons/**", "review": "aggregate", "kind": "platform_scaffold", "owner": "app_platform"}
   ],
   "patterns": [
     {"pattern": "flutter_*.log", "kind": "generated-evidence", "expectation": "ignored", "owner": "app_platform", "recovery": "Re-run the Flutter command that emitted the log.", "cleanable": true, "scope": "logs"},

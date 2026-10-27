@@ -31,6 +31,8 @@
         "terms",
         "help",
         "account_deletion",
+        "refunds",
+        "contact",
         "not_found",
         "event_booking",
         "sales_demo",
@@ -82,6 +84,12 @@
           "$ref": "#/$defs/staticMeta"
         },
         "account_deletion": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "refunds": {
+          "$ref": "#/$defs/staticMeta"
+        },
+        "contact": {
           "$ref": "#/$defs/staticMeta"
         },
         "not_found": {

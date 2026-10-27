@@ -33,11 +33,7 @@ interface EventMessagingBudgetReviewDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now: () => number;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   writeAudit: typeof writeAdminAuditLog;
 }
 
@@ -72,7 +68,8 @@ export async function adminReviewEventMessagingBudgetHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminReviewEventMessagingBudget"
+    "adminReviewEventMessagingBudget",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const decisionId = eventMessagingBudgetDecisionId(data);
   const decisionRef = db.collection(decisionCollection).doc(decisionId);

@@ -57,7 +57,7 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
               ? null
               : (organizerId: organizerId, eventId: eventId),
           unselected: CatchEmptyState(
-            icon: CatchIcons.chevronRightRounded,
+            icon: CatchIcons.disclosure,
             title: context.l10n.coreCatchFieldVisiblecopySelect,
           ),
           onBack: () => context.go(hostWorkspaceIndexUri(uri).toString()),
@@ -93,7 +93,7 @@ class HostWorkspaceIndexScreen extends StatelessWidget {
             selection: null,
             detailBuilder: (_) => const SizedBox.shrink(),
             unselected: CatchEmptyState(
-              icon: CatchIcons.chevronRightRounded,
+              icon: CatchIcons.disclosure,
               title: context.l10n.coreCatchFieldVisiblecopySelect,
             ),
           ),

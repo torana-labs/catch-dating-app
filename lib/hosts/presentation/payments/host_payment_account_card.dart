@@ -99,7 +99,7 @@ class HostPaymentAccountCard extends StatelessWidget {
                       .l10n
                       .hostsHostPaymentAccountCardLabelContinueToRazorpay
                 : context.l10n.hostsHostPaymentAccountCardLabelContinueToStripe,
-            leading: Icon(CatchIcons.openInNewRounded),
+            leading: Icon(CatchIcons.openExternal),
 
             status: (onboardingPending)
                 ? CatchButtonStatus.loading
@@ -147,7 +147,7 @@ class HostPaymentAccountCard extends StatelessWidget {
                     copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsHostPaymentAccountCardTitleCountry,
                     valueText: _countryLabel(country),
-                    icon: CatchIcons.locationOnOutlined,
+                    icon: CatchIcons.location,
                   ),
                   CatchField.read(
                     copy: catchFieldCopy(context.l10n),
@@ -155,7 +155,7 @@ class HostPaymentAccountCard extends StatelessWidget {
                         .l10n
                         .hostsHostPaymentAccountCardTitleDefaultCurrency,
                     valueText: currency.toUpperCase(),
-                    icon: CatchIcons.paymentsOutlined,
+                    icon: CatchIcons.payment,
                   ),
                 ],
               ),

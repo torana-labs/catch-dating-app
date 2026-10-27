@@ -62,13 +62,13 @@ Widget catchStatColumnCatalogStates(BuildContext context) {
               variant: CatchMetricTileVariant.mono,
             ),
             CatchMetricTile(
-              icon: CatchIcons.group,
+              icon: CatchIcons.people,
               value: '86%',
               label: 'Return rate',
               center: true,
             ),
             CatchMetricTile(
-              icon: CatchIcons.confirmationNumberOutlined,
+              icon: CatchIcons.ticket,
               value: 'Rs 1,200',
               label: 'Base',
               center: true,
@@ -98,11 +98,8 @@ Widget catchMetaRowGroupStates(BuildContext context) {
           width: WidgetbookPreviewLayout.standardContractWidth,
           child: CatchMetaRow.group(
             entries: [
-              CatchMetaEntry(label: 'Tonight', icon: CatchIcons.calendarAdd),
-              CatchMetaEntry(
-                label: 'Bandra West',
-                icon: CatchIcons.pinOutlined,
-              ),
+              CatchMetaEntry(label: 'Tonight', icon: CatchIcons.addToCalendar),
+              CatchMetaEntry(label: 'Bandra West', icon: CatchIcons.location),
               CatchMetaEntry(label: 'Easy pace'),
             ],
             trailing: CatchMetaEntry(label: '2.4 km'),
@@ -129,11 +126,8 @@ Widget catchMetaRowFlowStates(BuildContext context) {
           width: WidgetbookPreviewLayout.compactComponentWidth,
           child: CatchMetaRow.flow(
             entries: [
-              CatchMetaEntry(label: 'Tonight', icon: CatchIcons.calendarAdd),
-              CatchMetaEntry(
-                label: 'Bandra West',
-                icon: CatchIcons.pinOutlined,
-              ),
+              CatchMetaEntry(label: 'Tonight', icon: CatchIcons.addToCalendar),
+              CatchMetaEntry(label: 'Bandra West', icon: CatchIcons.location),
               CatchMetaEntry(label: 'Easy pace'),
             ],
           ),
@@ -165,7 +159,7 @@ Widget catchMetaRowEntryStates(BuildContext context) {
             CatchMetaRow.entry(
               entry: CatchMetaEntry(
                 label: 'Bandra',
-                icon: CatchIcons.pinOutlined,
+                icon: CatchIcons.location,
                 iconColor: t.primary,
               ),
             ),

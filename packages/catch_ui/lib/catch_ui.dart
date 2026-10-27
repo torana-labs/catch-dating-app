@@ -232,6 +232,7 @@ export 'src/primitives/catch_fractional_viewport.dart';
 export 'src/primitives/catch_gap.dart';
 export 'src/primitives/catch_graded_image.dart';
 export 'src/primitives/catch_hero_viewport.dart';
+export 'src/primitives/catch_icon.dart';
 export 'src/primitives/catch_icon_tile.dart';
 export 'src/primitives/catch_image_fallback_surface.dart';
 export 'src/primitives/catch_kicker_text.dart';

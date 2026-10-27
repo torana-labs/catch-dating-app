@@ -86,7 +86,7 @@ class MyApp extends ConsumerWidget {
                       id: 'connectivity.offline',
                       label: context.l10n.sharedOfflineTitle,
                       message: context.l10n.sharedOfflineBody,
-                      icon: CatchIcons.cloudOffRounded,
+                      icon: CatchIcons.offline,
                       color: CatchTokens.of(context).warning,
                     ),
                 ],
@@ -246,7 +246,7 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Icon(CatchIcons.cloudOffOutlined, size: 48),
+                Icon(CatchIcons.offline, size: 48),
                 gapH24,
                 CatchText(
                   l10n.sharedForceUpdateCheckErrorTitle,

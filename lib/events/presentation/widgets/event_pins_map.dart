@@ -219,7 +219,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
                       .l10n
                       .eventsEventPinsMapTooltipShowAllEventsAndDistance,
                   onPressed: _restoreOverview,
-                  child: Icon(CatchIcons.fitMap),
+                  child: Icon(CatchIcons.fitToView),
                 ),
               ),
             ),

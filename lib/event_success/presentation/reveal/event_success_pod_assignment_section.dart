@@ -32,21 +32,18 @@ class EventSuccessPodAssignmentSection extends StatelessWidget {
                 .eventSuccessEventSuccessLiveRevealWidgetsLabelValue1People(
                   value1: assignment.peerUids.length + 1,
                 ),
-            icon: CatchIcons.groupOutlined,
+            icon: CatchIcons.people,
           ),
           if (peersLoading)
             CatchBadge(
               label: context
                   .l10n
                   .eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPodmates,
-              icon: CatchIcons.hourglassEmptyRounded,
+              icon: CatchIcons.pending,
             )
           else
             for (final profile in peerProfiles)
-              CatchBadge(
-                label: profile.name,
-                icon: CatchIcons.personOutlineRounded,
-              ),
+              CatchBadge(label: profile.name, icon: CatchIcons.person),
         ],
       ),
     );

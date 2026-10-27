@@ -16,7 +16,6 @@ analyzer:
     - packages/catch_tokens/**
     - packages/catch_ui/**
     - packages/catch_ui_lints/**
-    - packages/phosphor_flutter/**
     - tool/widget_dedupe/**
     - packages/**/build/**
     - widgetbook/**

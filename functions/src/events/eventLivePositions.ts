@@ -54,7 +54,9 @@ export async function publishEventLivePositionHandler(
       validatePublishEventLivePositionCallablePayload
     );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "publishEventLivePosition");
+  await deps.checkRateLimit(db, actorUid, "publishEventLivePosition", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const eventSnap = await db.collection("events").doc(payload.eventId).get();
   if (!eventSnap.exists) {
     throw new HttpsError("not-found", "Event not found.");

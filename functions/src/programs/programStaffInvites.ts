@@ -90,7 +90,9 @@ export async function inviteProgramStaffHandler(
   const data = validateCallableWithAjv<InviteProgramStaffCallablePayload>(
     request, validateInviteProgramStaffCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "inviteProgramStaff");
+  await deps.checkRateLimit(db, actorUid, "inviteProgramStaff", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const phone = normalizeRosterPhone(data.phoneNumber);
   if (!phone.value || phone.issue) {
     throw new HttpsError("invalid-argument", phone.issue ?? "Invalid phone.");
@@ -203,7 +205,9 @@ export async function claimProgramStaffInviteHandler(
     validateCallableWithAjv<ClaimProgramStaffInviteCallablePayload>(
       request, validateClaimProgramStaffInviteCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "claimProgramStaffInvite");
+  await deps.checkRateLimit(db, uid, "claimProgramStaffInvite", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const rawPhone = request.auth?.token.phone_number;
   const callerPhone = typeof rawPhone === "string" ?
     normalizeRosterPhone(rawPhone).value : null;
@@ -370,7 +374,9 @@ export async function revokeProgramStaffInviteHandler(
     validateCallableWithAjv<RevokeProgramStaffInviteCallablePayload>(
       request, validateRevokeProgramStaffInviteCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "revokeProgramStaffInvite");
+  await deps.checkRateLimit(db, actorUid, "revokeProgramStaffInvite", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const inviteRef = db.collection("programStaffInvites").doc(data.inviteId);
   return db.runTransaction(async (tx) => {
     const [snap, {program}] = await Promise.all([

@@ -140,9 +140,51 @@ function isNonRuntimeFile(name) {
       name === "functions/scripts/run-tests.test.cjs" ||
       name === "functions/scripts/set-callable-invokers-public.cjs" ||
       /^functions\/scripts\/(?:operations\/|backfill-[a-z0-9-]+\.cjs$)/.test(name)) return true;
-  return /\.(?:md|test\.ts|spec\.ts)$/.test(name) ||
+  return /\.(?:md|(?:test|spec)\.(?:ts|js|cjs|mjs))$/.test(name) ||
     /^functions\/(?:test|tests|__tests__)\//.test(name) ||
     /\/(?:__tests__|__mocks__)\//.test(name);
+}
+
+const PACKAGE = "functions/package.json";
+// npm runs these scripts while Cloud Build installs the deployed package, and
+// the deploy builds with the build lifecycle. Every other script (tests,
+// emulators, operator tooling) never touches what deploys, unless a
+// firebase.json predeploy hook runs it.
+const DEPLOY_SCRIPTS = ["preinstall", "install", "postinstall", "preprepare", "prepare",
+  "postprepare", "gcp-build", "prebuild", "build", "postbuild"];
+
+// Compares functions/package.json without the scripts nothing in a deploy
+// runs, so listing a test or adding an operator script redeploys nothing.
+// Dependency fields still count here, and package-lock.json changes force a
+// full deploy on their own.
+function runtimePackageChanged(root, baseSha, headSha) {
+  const quiet = {stdio: ["ignore", "pipe", "ignore"]};
+  const scripts = new Set(DEPLOY_SCRIPTS);
+  try {
+    const config = JSON.parse(git(root, ["show", `${headSha}:firebase.json`], quiet));
+    for (const codebase of [config.functions ?? []].flat()) {
+      for (const command of [codebase.predeploy ?? []].flat()) {
+        const names = [...String(command).matchAll(/\brun(?:-script)?\s+["']?([\w:.-]+)/gu)]
+          .map((match) => match[1]);
+        // A package manager command whose script cannot be named may run any.
+        if (!names.length && /\b(?:npm|yarn|pnpm)\b/u.test(command)) return true;
+        for (const name of names) scripts.add(name).add(`pre${name}`).add(`post${name}`);
+      }
+    }
+  } catch {
+    return true;
+  }
+  const runtime = (sha) => {
+    try {
+      const {scripts: all = {}, ...fields} = JSON.parse(git(root, ["show", `${sha}:${PACKAGE}`], quiet));
+      return JSON.stringify({...fields, scripts: Object.entries(all).filter(([name]) => scripts.has(name))});
+    } catch {
+      return undefined; // Missing or unreadable package metadata is treated as changed.
+    }
+  };
+  const before = runtime(baseSha);
+  const after = runtime(headSha);
+  return before === undefined || after === undefined || before !== after;
 }
 
 // firebase.json also configures Hosting, Flutter and emulators; only the
@@ -183,9 +225,10 @@ export function affectedFunctionTargets({
   ]).split("\0").filter(Boolean));
   if (changed.has(".firebaserc") ||
     changed.has("firebase.json") && backendConfigChanged(sourceRoot, baseSha, sourceSha) ||
+    changed.has(PACKAGE) && runtimePackageChanged(sourceRoot, baseSha, sourceSha) ||
     [...changed].some((name) =>
       name.startsWith("functions/") && !name.startsWith("functions/src/") &&
-      !isNonRuntimeFile(name))) {
+      name !== PACKAGE && !isNonRuntimeFile(name))) {
     return all("Functions runtime, dependency, build, or deployment configuration changed");
   }
   try {

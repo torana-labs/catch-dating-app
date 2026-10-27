@@ -26,12 +26,6 @@ export function CheckboxControl(props: CheckboxControlProps) {
   return <input type="checkbox" {...props} />;
 }
 
-export interface BadgeControlProps extends HTMLAttributes<HTMLSpanElement> {}
-
-export function BadgeControl(props: BadgeControlProps) {
-  return <span {...props} />;
-}
-
 export type EmptyStateAnnouncement = "assertive" | "off" | "polite";
 
 export interface EmptyStateControlProps
@@ -83,28 +77,6 @@ export function SelectControl({
       {...props}
       aria-describedby={descriptionId}
       aria-invalid={invalid || undefined}
-    />
-  );
-}
-
-export interface ButtonControlProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "aria-busy"> {
-  loading?: boolean;
-}
-
-export function ButtonControl({
-  disabled,
-  loading = false,
-  type = "button",
-  ...props
-}: ButtonControlProps) {
-  return (
-    <button
-      {...props}
-      aria-busy={loading || undefined}
-      data-loading={loading || undefined}
-      disabled={disabled || loading}
-      type={type}
     />
   );
 }

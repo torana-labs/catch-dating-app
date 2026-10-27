@@ -469,7 +469,7 @@ class ProfileFactsSection extends StatelessWidget {
                   padding: const EdgeInsets.only(top: CatchSpacing.micro2),
                   child: Icon(
                     fact.icon,
-                    size: CatchIcon.control,
+                    size: CatchIconSize.control,
                     color: t.ink3,
                   ),
                 ),

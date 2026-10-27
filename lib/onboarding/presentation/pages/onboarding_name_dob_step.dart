@@ -195,7 +195,6 @@ class OnboardingNameDobStep extends StatelessWidget {
               ? CatchButtonStatus.loading
               : CatchButtonStatus.idle,
           fullWidth: true,
-          size: CatchButtonSize.lg,
         ),
         children: [
           CatchSection.fieldRows(
@@ -210,7 +209,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                       CatchContractConstraints.onboardingDraftDocumentFirstName,
                   controller: controllers.firstName,
                   autofocus: state.shouldAutofocus,
-                  icon: CatchIcons.personOutlineRounded,
+                  icon: CatchIcons.person,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.givenName],
@@ -228,7 +227,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                   contract:
                       CatchContractConstraints.onboardingDraftDocumentLastName,
                   controller: controllers.lastName,
-                  icon: CatchIcons.personOutlineRounded,
+                  icon: CatchIcons.person,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.familyName],
@@ -250,7 +249,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 controller: controllers.date,
                 inputMode: CatchTextInputMode.readOnly,
                 onTap: () => callbacks.onPickDate(state.datePickerRequest),
-                icon: CatchIcons.calendarTodayOutlined,
+                icon: CatchIcons.date,
                 suffixText: state.ageSuffix,
                 helperText:
                     context.l10n.onboardingNameDobPageHelpertextWeNeverShowYour,
@@ -268,9 +267,9 @@ class OnboardingNameDobStep extends StatelessWidget {
                   keyboardType: TextInputType.phone,
                   textInputAction: TextInputAction.done,
                   autofillHints: const [AutofillHints.telephoneNumberNational],
-                  icon: CatchIcons.phoneOutlined,
+                  icon: CatchIcons.phone,
                   prefixText: state.phonePrefix,
-                  trailing: Icon(CatchIcons.verifiedRounded),
+                  trailing: Icon(CatchIcons.verified),
                   helperText: context
                       .l10n
                       .onboardingNameDobPageHelpertextVerifiedViaOtp,

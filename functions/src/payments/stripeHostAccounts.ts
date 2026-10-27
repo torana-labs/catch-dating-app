@@ -44,11 +44,7 @@ interface StripeHostAccountDeps {
   firestore: () => FirebaseFirestore.Firestore;
   stripe: () => StripeClient;
   serverTimestamp: () => unknown;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: StripeHostAccountDeps = {
@@ -71,7 +67,9 @@ export async function createStripeHostOnboardingLinkHandler(
     normalizeStripeHostOnboardingPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "createStripeHostOnboardingLink");
+  await deps.checkRateLimit?.(db, uid, "createStripeHostOnboardingLink", {
+    maxRequests: 5, windowMs: 60 * 1000,
+  });
 
   const [userSnap, hostClaimSnap, existing] = await Promise.all([
     db.collection("users").doc(uid).get(),
@@ -134,7 +132,9 @@ export async function refreshStripeHostPaymentAccountHandler(
     normalizeRefreshStripeHostPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "refreshStripeHostPaymentAccount");
+  await deps.checkRateLimit?.(db, uid, "refreshStripeHostPaymentAccount", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const existing = await findHostPaymentAccount(db, uid, "stripe");
   if (!existing.account) {
     return {account: null};

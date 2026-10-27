@@ -109,7 +109,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
                     label: context
                         .l10n
                         .eventSuccessEventSuccessCompanionWingmanLabelWithdraw,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                     variant: CatchButtonVariant.secondary,
                     status: (withdrawing)
                         ? CatchButtonStatus.loading

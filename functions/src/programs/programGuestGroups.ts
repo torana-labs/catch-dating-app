@@ -124,7 +124,9 @@ export async function upsertProgramGuestGroupHandler(
       request, validateUpsertProgramGuestGroupCallablePayload,
       normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "upsertProgramGuestGroup");
+  await deps.checkRateLimit(db, actorUid, "upsertProgramGuestGroup", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const ref = data.groupId ?
     db.collection("programGuestGroups").doc(data.groupId) :
     db.collection("programGuestGroups").doc();
@@ -205,7 +207,9 @@ export async function listProgramGuestGroupsHandler(
   const data = validateCallableWithAjv<ProgramIdCallablePayload>(
     request, validateProgramIdCallablePayload, normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listProgramGuestGroups");
+  await deps.checkRateLimit(db, actorUid, "listProgramGuestGroups", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });
@@ -251,7 +255,9 @@ export async function deleteProgramGuestGroupHandler(
       request, validateDeleteProgramGuestGroupCallablePayload,
       normalizePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "deleteProgramGuestGroup");
+  await deps.checkRateLimit(db, actorUid, "deleteProgramGuestGroup", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const ref = db.collection("programGuestGroups").doc(data.groupId);
   let deletedRevision = 0;
   let organizerId = "";

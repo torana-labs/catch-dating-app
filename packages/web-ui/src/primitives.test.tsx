@@ -1,14 +1,13 @@
 import {fireEvent, render, screen} from "@testing-library/react";
 import {describe, expect, it, vi} from "vitest";
 import {
-  BadgeControl,
-  ButtonControl,
   DataTableControl,
   EmptyStateControl,
   SelectControl,
   ToggleButtonControl,
   ToggleGroupControl,
 } from "./primitives";
+import {ButtonControl} from "./components/ButtonControl";
 
 describe("shared button control", () => {
   it("defaults to a non-submitting button", () => {
@@ -117,10 +116,5 @@ describe("shared feedback controls", () => {
     const status = screen.getByRole("status");
     expect(status.getAttribute("aria-live")).toBe("polite");
     expect(status.querySelector("span")?.textContent).toBe("No matches");
-  });
-
-  it("keeps badge content in a non-interactive inline element", () => {
-    render(<BadgeControl>Ready</BadgeControl>);
-    expect(screen.getByText("Ready").tagName).toBe("SPAN");
   });
 });

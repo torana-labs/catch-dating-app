@@ -90,7 +90,9 @@ export async function listProgramStaffAttentionHandler(
   const data = validateCallableWithAjv<ProgramIdCallablePayload>(
     request, validateProgramIdCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listProgramStaffAttention");
+  await deps.checkRateLimit(db, actorUid, "listProgramStaffAttention", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const access = await requireProgramAccess({
     db, programId: data.programId, actorUid, now: deps.now(),
   });

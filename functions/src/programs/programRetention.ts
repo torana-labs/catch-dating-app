@@ -81,7 +81,9 @@ export async function archiveProgramHandler(
   const data = validateCallableWithAjv<ArchiveProgramCallablePayload>(
     request, validateArchiveProgramCallablePayload, normalizeRetentionPayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "archiveProgram");
+  await deps.checkRateLimit(db, actorUid, "archiveProgram", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const ref = db.collection("organizerPrograms").doc(data.programId);
   let committed: {revision: number; anonymizeAtMillis: number;
     alreadyApplied: boolean} | null = null;
@@ -133,7 +135,9 @@ export async function unarchiveProgramHandler(
     request, validateUnarchiveProgramCallablePayload,
     normalizeRetentionPayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "unarchiveProgram");
+  await deps.checkRateLimit(db, actorUid, "unarchiveProgram", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const ref = db.collection("organizerPrograms").doc(data.programId);
   const runRef = db.collection("programRetentionRuns").doc(data.programId);
   let committed: {revision: number;

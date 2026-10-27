@@ -352,7 +352,7 @@ class EventDetailDock extends ConsumerWidget {
         warn: dockState.priceWarn,
       ),
       EventDetailBookingDockLeadingKind.booked => EventDockStatusText(
-        icon: CatchIcons.checkCircleRounded,
+        icon: CatchIcons.success,
         label: context.l10n.eventsEventDetailCtaLabelYouReIn,
       ),
       EventDetailBookingDockLeadingKind.waitlistOffer => WaitlistOfferNotice(
@@ -363,7 +363,7 @@ class EventDetailDock extends ConsumerWidget {
             : null,
       ),
       EventDetailBookingDockLeadingKind.attended => EventDockStatusText(
-        icon: CatchIcons.directionsRunRounded,
+        icon: CatchIcons.activity,
         label: context.l10n.eventsEventDetailCtaLabelCompleted,
       ),
     };
@@ -538,7 +538,7 @@ class EventDockStatusText extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: t.primary, size: CatchIcon.md),
+        Icon(icon, color: t.primary, size: CatchIconSize.md),
         gapW6,
         CatchText(
           label,

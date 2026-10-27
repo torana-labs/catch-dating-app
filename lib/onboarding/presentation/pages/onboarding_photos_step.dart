@@ -111,7 +111,6 @@ class OnboardingPhotosStep extends StatelessWidget {
             label: context.l10n.onboardingPhotosPageLabelContinue,
             onPressed: callbacks.onContinue,
             fullWidth: true,
-            size: CatchButtonSize.lg,
           ),
           if (state.continueHint(context.l10n) case final continueHint?) ...[
             gapH12,
@@ -144,7 +143,11 @@ class OnboardingPhotosStep extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(CatchIcons.bolt, size: CatchIcon.xs, color: t.accent),
+                  Icon(
+                    CatchIcons.instant,
+                    size: CatchIconSize.xs,
+                    color: t.accent,
+                  ),
                   gapW8,
                   Expanded(
                     child: CatchText(

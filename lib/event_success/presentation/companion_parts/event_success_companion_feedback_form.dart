@@ -230,11 +230,9 @@ class RatingRow extends StatelessWidget {
                 ),
             onPressed: () => onChanged(i),
             child: Icon(
-              i <= value
-                  ? CatchIcons.starRounded
-                  : CatchIcons.starBorderRounded,
+              i <= value ? CatchIcons.rating : CatchIcons.rating,
               color: i <= value ? t.gold : t.ink3,
-              size: CatchIcon.md,
+              size: CatchIconSize.md,
             ),
           ),
       ],
@@ -267,9 +265,9 @@ class CounterRow extends StatelessWidget {
               .eventSuccessEventSuccessCompanionFeedbackTooltipDecreasePeopleMet,
           onPressed: value <= 0 ? null : () => onChanged(value - 1),
           child: Icon(
-            CatchIcons.removeCircleOutlineRounded,
+            CatchIcons.removeItem,
             color: value <= 0 ? t.ink3 : t.ink2,
-            size: CatchIcon.md,
+            size: CatchIconSize.md,
           ),
         ),
         CatchText(
@@ -283,11 +281,7 @@ class CounterRow extends StatelessWidget {
               .l10n
               .eventSuccessEventSuccessCompanionFeedbackTooltipIncreasePeopleMet,
           onPressed: () => onChanged(value + 1),
-          child: Icon(
-            CatchIcons.addCircleOutlineRounded,
-            color: t.ink2,
-            size: CatchIcon.md,
-          ),
+          child: Icon(CatchIcons.create, color: t.ink2, size: CatchIconSize.md),
         ),
       ],
     );

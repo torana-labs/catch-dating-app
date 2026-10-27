@@ -31,7 +31,7 @@ void main() {
         ),
       );
 
-      expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(3));
+      expect(find.byIcon(CatchIcons.person), findsNWidgets(3));
       expect(find.text('+1'), findsOneWidget);
     },
   );

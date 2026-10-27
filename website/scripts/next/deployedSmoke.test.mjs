@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {expectedRelease, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
+import {expectedRelease, sharedCacheSeconds, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
 import {consumerHomeCopy} from "../../src/content/consumerHome.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
 import {exploreCopy} from "../../src/content/explore.ts";
@@ -18,6 +18,7 @@ function responder(base, change = () => {}) {
     if (path === "/robots.txt") body = live ? "User-agent: *\nAllow: /" : "User-agent: *\nDisallow: /";
     if (path === "/sitemap.xml") body = "<url><loc>https://catchdates.com/</loc></url>";
     if (path === "/.well-known/apple-app-site-association") body = JSON.stringify({applinks: {}});
+    if (path.startsWith("/f/")) body = '<title>Organizer form | Catch</title><link rel="canonical" href="https://catchdates.com/f/">';
     const result = {body, status, headers}; change(path, result);
     return new Response(result.body, {status: result.status, headers: result.headers});
   };
@@ -52,6 +53,27 @@ test("deployed acceptance rejects stale builds, bad status, indexing leaks and b
   ]) await assert.rejects(verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, change)}));
   await assert.rejects(verifyDeployedWebsite("https://unrelated.example", sourceSha));
   await assert.rejects(verifyDeployedWebsite("https://catchdates.com", sourceSha, {fetchImpl: responder("https://catchdates.com", (path, result) => {result.headers["x-robots-tag"] = "noindex";})}));
+});
+
+test("only a positive shared lifetime counts as a shared cache", async () => {
+  // Live robots.txt is Next's metadata route default; the 26 Oct promotion's live check tripped on it.
+  const robots = (path, result) => {
+    if (result.status === 200 && sharedCachePage(path)) result.headers["cache-control"] = "public, s-maxage=60";
+    if (path === "/robots.txt") result.headers["cache-control"] = "public, max-age=0, must-revalidate";
+  };
+  await verifyDeployedWebsite("https://catchdates.com", sourceSha, {fetchImpl: responder("https://catchdates.com", robots)});
+  assert.deepEqual(["public, max-age=0, must-revalidate", "private, no-store", "no-store", "private, no-cache, no-store, max-age=0, must-revalidate",
+    "public", "max-age=600", "private, max-age=600, s-maxage=60"].map(sharedCacheSeconds), [0, 0, 0, 0, 0, 0, 0]);
+  assert.deepEqual(["public, s-maxage=60", "s-maxage=60", "public, max-age=600", "Public, Max-Age=300, S-MaxAge=3600"].map(sharedCacheSeconds), [60, 60, 600, 3600]);
+});
+test("the preview proves private shell metadata; promotion and live stay release-neutral", async () => {
+  const candidate = preview.replace("next-release", "next-candidate");
+  const bare = (path, result) => {if (path.startsWith("/f/")) result.body = "<title>Catch</title>";};
+  await assert.rejects(verifyDeployedWebsite(candidate, sourceSha, {fetchImpl: responder(candidate, bare)}), /route-family title/u);
+  await assert.rejects(verifyDeployedWebsite(candidate, sourceSha, {fetchImpl: responder(candidate,
+    (path, result) => {if (path.startsWith("/f/")) result.body = "<title>Organizer form | Catch</title>";})}), /canonical/u);
+  await verifyDeployedWebsite(preview, sourceSha, {fetchImpl: responder(preview, bare)});
+  await verifyDeployedWebsite("https://catchdates.com", sourceSha, {fetchImpl: responder("https://catchdates.com", bare)});
 });
 
 test("promotion checks the preview's release, which main may have moved past", () => {

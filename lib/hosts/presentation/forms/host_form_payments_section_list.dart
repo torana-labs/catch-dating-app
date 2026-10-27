@@ -81,7 +81,7 @@ class _HostFormPaymentsSectionListState
                 ),
                 CatchButton.command(
                   label: l10n.hostFormPaymentsRefresh,
-                  leading: Icon(CatchIcons.refreshRounded),
+                  leading: Icon(CatchIcons.refresh),
                   onPressed: (asyncState.isLoading || asyncState.isRefreshing)
                       ? null
                       : () => ref.invalidate(provider),
@@ -97,7 +97,7 @@ class _HostFormPaymentsSectionListState
           builder: (context, state) {
             if (state.items.isEmpty) {
               return CatchSliverEmptyState(
-                icon: CatchIcons.receiptLongOutlined,
+                icon: CatchIcons.receipt,
                 title: _filter == HostFormPaymentFilter.all
                     ? l10n.hostFormPaymentsEmpty
                     : l10n.hostFormPaymentsNoMatches,

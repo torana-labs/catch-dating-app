@@ -28,7 +28,7 @@ void main() {
             message: 'Your spot is confirmed.',
             details: [
               CelebrationDetail(
-                icon: CatchIcons.locationOnOutlined,
+                icon: CatchIcons.location,
                 label: 'Where',
                 value: 'Carter Road',
               ),
@@ -56,15 +56,15 @@ void main() {
     expect(find.text('Carter Road'), findsOneWidget);
     expect(find.text('Arrive by the meeting time.'), findsOneWidget);
     expect(
-      tester.widget<Icon>(find.byIcon(CatchIcons.checkRounded)).color,
+      tester.widget<Icon>(find.byIcon(CatchIcons.check)).color,
       Colors.white,
     );
     expect(
-      tester.widget<Icon>(find.byIcon(CatchIcons.locationOnOutlined)).color,
+      tester.widget<Icon>(find.byIcon(CatchIcons.location)).color,
       Colors.white,
     );
     expect(
-      tester.widget<Icon>(find.byIcon(CatchIcons.boltRounded)).color,
+      tester.widget<Icon>(find.byIcon(CatchIcons.instant)).color,
       Colors.white,
     );
     expect(

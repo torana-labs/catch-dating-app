@@ -113,21 +113,57 @@ test("empty and duplicate selections fail before execution", () => {
   }
 });
 
-test("canonical rules command selects readiness exactly once in strict mode", () => {
+test("canonical rules command runs the strict list file, which selects readiness exactly once", () => {
   const packageJson = JSON.parse(fs.readFileSync(
     path.resolve(__dirname, "../package.json"), "utf8"));
+  assert.equal(packageJson.scripts["test:rules"],
+    "npm run build && node scripts/run-tests.cjs --require-emulators");
+  const {listedStrictTests} = require(runner);
   const selected = "lib/catchMessaging/whatsappReadinessFirestore.test.js";
-  const command = packageJson.scripts["test:rules"];
-  function assertSelected(value) {
-    assert.match(value,
-      /^npm run build && node scripts\/run-tests\.cjs --require-emulators /u);
-    assert.equal(value.split(/\s+/u).filter(token => token === selected).length,
+  function assertSelected(listed) {
+    assert.equal(listed.filter(file => file === selected).length,
       1, "readiness must run exactly once in the canonical strict rules lane");
   }
-  assertSelected(command);
-  for (const broken of [command.replace(selected, ""),
-    `${command} ${selected}`, command.replace("--require-emulators ", "")]) {
+  const listed = listedStrictTests();
+  assertSelected(listed);
+  for (const broken of [listed.filter(file => file !== selected), [...listed, selected]]) {
     assert.throws(() => assertSelected(broken));
+  }
+});
+
+test("strict mode without explicit files runs the strict list file", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-strict-cli-"));
+  try {
+    const selection = path.join(root, "selection.json");
+    fs.writeFileSync(selection, JSON.stringify({mode: "selected", tests: []}));
+    const env = {...process.env, FIRESTORE_EMULATOR_HOST: "127.0.0.1:1",
+      FIREBASE_STORAGE_EMULATOR_HOST: "127.0.0.1:2", CATCH_TEST_SELECTION: selection};
+    delete env.NODE_TEST_CONTEXT;
+    delete env.CATCH_TEST_SHARD;
+    delete env.CATCH_TEST_EVIDENCE_PATH;
+    const result = spawnSync(process.execPath, [runner, "--require-emulators"],
+      {env, encoding: "utf8", timeout: 15000});
+    assert.equal(result.status, 0, result.stderr);
+    const evidence = JSON.parse(result.stdout.trim().split("\n").at(-1));
+    assert.equal(evidence.selection.listed, require(runner).listedStrictTests().length);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
+
+test("the strict list file must be an array of paths", () => {
+  const {listedStrictTests, strictTestList} = require(runner);
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-strict-list-"));
+  try {
+    fs.mkdirSync(path.join(root, path.dirname(strictTestList)), {recursive: true});
+    for (const [contents, expected] of [['["lib/a.test.js"]', ["lib/a.test.js"]],
+      ['{"tests": []}', null], ['["lib/a.test.js", 1]', null]]) {
+      fs.writeFileSync(path.join(root, strictTestList), contents);
+      if (expected) assert.deepEqual(listedStrictTests(root), expected);
+      else assert.throws(() => listedStrictTests(root), /must be an array of test paths/u);
+    }
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
   }
 });
 
@@ -313,10 +349,7 @@ function emulatorTestInventory(root) {
     .replace(/^src\//u, "lib/").replace(/\.ts$/u, ".js"));
 }
 
-function assertEmulatorSelection(command, required) {
-  const prefix = "npm run build && node scripts/run-tests.cjs --require-emulators ";
-  assert.ok(command.startsWith(prefix), "Rules lane must build and run the strict driver");
-  const selected = command.slice(prefix.length).trim().split(/\s+/u);
+function assertEmulatorSelection(selected, required) {
   assert.ok(selected.every(file => /^(?:lib|test)\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_.-]+\.test\.(?:js|cjs)$/u.test(file)),
     "Rules lane requires explicit local test paths");
   assert.equal(new Set(selected).size, selected.length, "Rules lane must not repeat a test file");
@@ -327,12 +360,12 @@ function assertEmulatorSelection(command, required) {
 test("canonical strict rules lane selects every authored emulator-guarded test", () => {
   const root = path.resolve(__dirname, "..");
   const required = emulatorTestInventory(root);
-  const command = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).scripts["test:rules"];
-  assertEmulatorSelection(command, required);
+  const listed = require(runner).listedStrictTests(root);
+  assertEmulatorSelection(listed, required);
   // Each source-discovered file is a real omission sentinel, including mixed
   // unit/emulator files whose ordinary test run can otherwise pass with a skip.
   for (const file of required) {
-    assert.throws(() => assertEmulatorSelection(command.replace(file, ""), required),
+    assert.throws(() => assertEmulatorSelection(listed.filter(entry => entry !== file), required),
       error => error instanceof assert.AssertionError && error.actual.includes(file));
   }
 });
@@ -380,7 +413,7 @@ test("unsupported registration guards fail explicitly instead of losing coverage
     /Unsupported test registration guard/u);
 });
 
-test("a newly authored emulator test requires selection without a registry edit", () => {
+test("a newly authored emulator test is detected and must join the strict list", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-emulator-parity-"));
   try {
     fs.mkdirSync(path.join(root, "src/example"), {recursive: true});
@@ -388,11 +421,10 @@ test("a newly authored emulator test requires selection without a registry edit"
       "import {test} from 'node:test'; test('new integration', {skip: !process.env.FIRESTORE_EMULATOR_HOST}, () => {});");
     const required = emulatorTestInventory(root);
     assert.deepEqual(required, ["lib/example/new.test.js"]);
-    const prefix = "npm run build && node scripts/run-tests.cjs --require-emulators ";
-    assert.throws(() => assertEmulatorSelection(prefix + "test/old.test.cjs", required),
+    assert.throws(() => assertEmulatorSelection(["test/old.test.cjs"], required),
       error => error instanceof assert.AssertionError && error.actual.includes(required[0]));
-    assertEmulatorSelection(prefix + required[0], required);
-    assert.throws(() => assertEmulatorSelection(prefix + required[0] + " && echo passed", required),
+    assertEmulatorSelection([required[0]], required);
+    assert.throws(() => assertEmulatorSelection([required[0], "&& echo passed"], required),
       /explicit local test paths/u);
     assert.throws(() => emulatorTestInventory(path.join(root, "missing")));
   } finally {

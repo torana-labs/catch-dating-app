@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_public_pages.schema.json",
+  "title": "EventPublicPageDocument",
+  "description": "Read model holding exactly what one public event page shows, stored at eventPublicPage/{eventId} for a published Catch event or a public imported event. Functions rebuild it with its organizer's page, using the website publication and suppression rules. An event that fails those rules, or whose organizer page is withheld, has no document. It never holds contact details, owner identities, rosters or dating fields. Only the Admin SDK reads it.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventPublicPage",
+  "x-firestore-path": "eventPublicPage/{eventId}",
+  "x-document-id-field": "eventId",
+  "x-catch-ownership": "trigger-owned",
+  "x-owner": "functions/src/publicPages: rebuilt with its organizer's page by the organizer, event, external event, review and follower triggers, the scheduled reconcile and the backfill script. No client reads or writes.",
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "organizerId",
+    "path",
+    "builtAt",
+    "contentHash",
+    "item",
+    "capacity",
+    "organizer",
+    "reviews",
+    "moreEvents",
+    "listing"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "eventId": {
+      "$ref": "../shared/public_page_common.schema.json#/definitions/publicDocumentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/public_page_common.schema.json#/definitions/publicDocumentId"
+    },
+    "path": {
+      "$ref": "../shared/public_page_common.schema.json#/definitions/eventPath"
+    },
+    "builtAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "contentHash": {
+      "type": "string",
+      "description": "SHA-256 of the page content without builtAt, so unchanged rebuilds skip the write.",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "item": {
+      "description": "Every public field of the event, including the optional photo, itinerary, meeting location, included, requirements, accessibility, cancellation policy, waitlist and Catch experience activities, with its source and where a guest books it.",
+      "$ref": "../shared/public_page_common.schema.json#/definitions/pageEvent"
+    },
+    "capacity": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Capacity when the page was built. Booking rechecks it live.",
+      "required": ["state", "capacityLimit", "bookedCount", "waitlistedCount", "spotsLeft", "waitlistAvailable"],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["open", "full", "external"]
+        },
+        "capacityLimit": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "bookedCount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "waitlistedCount": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "spotsLeft": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "waitlistAvailable": {
+          "type": "boolean"
+        }
+      }
+    },
+    "organizer": {
+      "$ref": "../shared/public_page_common.schema.json#/definitions/organizerCard"
+    },
+    "reviews": {
+      "type": "array",
+      "description": "The organizer's two newest published reviews. Empty when public reviews are not readable.",
+      "maxItems": 2,
+      "items": {
+        "$ref": "../shared/public_page_common.schema.json#/definitions/publicReview"
+      }
+    },
+    "moreEvents": {
+      "type": "array",
+      "description": "Up to three other upcoming events from the same organizer, soonest first.",
+      "maxItems": 3,
+      "items": {
+        "$ref": "../shared/public_page_common.schema.json#/definitions/eventCard"
+      }
+    },
+    "listing": {
+      "description": "Today's organizer listing for this event, with this event's own published reviews, so the current event page renders unchanged. The event is attached at read time.",
+      "$ref": "../shared/public_page_common.schema.json#/definitions/listing"
+    }
+  }
+}

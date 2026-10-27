@@ -64,7 +64,7 @@ Widget _buildSectionModule(
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, color: tokens.ink2, size: CatchIcon.md),
+              Icon(icon, color: tokens.ink2, size: CatchIconSize.md),
               const SizedBox(width: CatchSpacing.s2),
               Expanded(child: heading),
             ],

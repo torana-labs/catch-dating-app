@@ -45,8 +45,8 @@ extension _HostFormResponsesFilters on _HostFormResponsesSectionState {
               onClose: () => Navigator.of(sheetContext).pop(),
               trailing: CatchButton(
                 label: context.l10n.hostFiltersResetAll,
-                variant: CatchButtonVariant.ghost,
-                size: CatchButtonSize.sm,
+                variant: CatchButtonVariant.quiet,
+                size: CatchButtonSize.md,
                 onPressed:
                     _answerFilters.isEmpty &&
                         !hasVersionOverride &&

@@ -33,7 +33,7 @@ class ClubPlaceholderCover extends StatelessWidget {
           CustomPaint(painter: _ClubCoverPatternPainter(palette)),
           Align(
             child: CatchIconTile(
-              icon: CatchIcons.locationOnRounded,
+              icon: CatchIcons.location,
               iconColor: palette.icon,
               backgroundColor: palette.iconFill,
               borderColor: palette.iconBorder,

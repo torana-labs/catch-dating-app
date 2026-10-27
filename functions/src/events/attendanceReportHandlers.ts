@@ -19,7 +19,9 @@ export async function getEventAttendanceReportHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventAttendanceReport");
+  await deps.rateLimit(db, uid, "getEventAttendanceReport", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   return deps.store(db).get(uid, request.data);
 }
 

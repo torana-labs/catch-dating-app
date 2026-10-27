@@ -212,7 +212,6 @@ void _registerCatchPrimitivesControlsTests() {
                 CatchButton(
                   label: 'Join event',
                   onPressed: () => taps++,
-                  size: CatchButtonSize.lg,
                   fullWidth: true,
                 ),
                 const SizedBox(height: 12),
@@ -229,7 +228,7 @@ void _registerCatchPrimitivesControlsTests() {
 
       expect(
         tester.getSize(find.widgetWithText(CatchButton, 'Join event')).height,
-        56,
+        CatchButtonTokens.largeHeight,
       );
       expect(
         tester.getSize(find.widgetWithText(CatchButton, 'Join event')).width,
@@ -583,7 +582,7 @@ void _registerCatchPrimitivesControlsTests() {
             CatchButton(
               label: 'Ghost',
               onPressed: null,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
             ),
             CatchButton(
               label: 'Danger',

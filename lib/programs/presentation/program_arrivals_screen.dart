@@ -80,7 +80,7 @@ class ProgramArrivalsScreen extends ConsumerWidget {
                   message: context.l10n.programsSnapshotBanner(
                     time: AppTimeFormatters.time(result.snapshotAt!),
                   ),
-                  icon: CatchIcons.wifiOffRounded,
+                  icon: CatchIcons.offline,
                   tone: CatchBannerTone.warning,
                 ),
               ),
@@ -200,7 +200,7 @@ List<CatchSectionListItem> _rosterSections(
         subtitle: context.l10n.programsArrivalsReadySubtitle,
         child: ready.isEmpty
             ? CatchEmptyState(
-                icon: CatchIcons.flagBanner,
+                icon: CatchIcons.meetingPoint,
                 message: context.l10n.programsArrivalsReadyEmpty,
                 variant: CatchEmptyStateVariant.inline,
               )
@@ -223,7 +223,7 @@ List<CatchSectionListItem> _rosterSections(
         subtitle: context.l10n.programsArrivalsExpectedSubtitle,
         child: expected.isEmpty
             ? CatchEmptyState(
-                icon: CatchIcons.flightLanding,
+                icon: CatchIcons.arrivals,
                 message: context.l10n.programsArrivalsExpectedEmpty,
                 variant: CatchEmptyStateVariant.inline,
               )
@@ -268,16 +268,16 @@ class ProgramArrivalRow extends StatelessWidget {
     return CatchFieldRow.standard(
       leading: Icon(
         row.needsAttention
-            ? CatchIcons.warningAmberRounded
+            ? CatchIcons.warning
             : row.readiness == TravelLegReadiness.ready
-            ? CatchIcons.flagBanner
-            : CatchIcons.flightLanding,
+            ? CatchIcons.meetingPoint
+            : CatchIcons.arrivals,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CatchText(row.partyTitle, variant: CatchTextVariant.sectionTitle),
-          CatchMetaRow(icon: CatchIcons.group, label: _meta(context)),
+          CatchMetaRow(icon: CatchIcons.people, label: _meta(context)),
           gapH4,
           Wrap(
             spacing: CatchSpacing.s2,
@@ -302,7 +302,7 @@ class ProgramArrivalRow extends StatelessWidget {
                   tone: queuedStatus == ProgramOperationOutboxStatus.needsReview
                       ? CatchBadgeTone.danger
                       : CatchBadgeTone.warning,
-                  icon: CatchIcons.wifiOffRounded,
+                  icon: CatchIcons.offline,
                 ),
             ],
           ),

@@ -37,11 +37,7 @@ import {
 
 interface ManageOrganizerTeamDeps {
   firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ManageOrganizerTeamDeps = {
@@ -60,7 +56,9 @@ export async function addOrganizerManagerHandler(
     normalizeTeamPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, callerUid, "addOrganizerManager");
+  await deps.checkRateLimit?.(db, callerUid, "addOrganizerManager", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const targetUid = await resolveTargetUid(db, data);
   await db.runTransaction(async (tx) => {
     const organizerRef = db.collection("organizers").doc(data.organizerId);
@@ -144,7 +142,9 @@ export async function removeOrganizerManagerHandler(
     normalizeTeamPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, callerUid, "removeOrganizerManager");
+  await deps.checkRateLimit?.(db, callerUid, "removeOrganizerManager", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   await db.runTransaction(async (tx) => {
     const organizerRef = db.collection("organizers").doc(data.organizerId);
     const callerDeletedRef = db.collection("deletedUsers").doc(callerUid);
@@ -194,7 +194,9 @@ export async function transferOrganizerOwnershipHandler(
     normalizeTeamPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, callerUid, "transferOrganizerOwnership");
+  await deps.checkRateLimit?.(db, callerUid, "transferOrganizerOwnership", {
+    maxRequests: 5, windowMs: 60 * 1000,
+  });
   await db.runTransaction(async (tx) => {
     const organizerRef = db.collection("organizers").doc(data.organizerId);
     const targetUserRef = db.collection("users").doc(data.uid);

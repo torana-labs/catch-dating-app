@@ -237,7 +237,7 @@ class EventChatReactionSection extends StatelessWidget {
             CatchIconAction(
               tooltip: context.l10n.eventChatCloseReactions,
               onPressed: onClose,
-              child: Icon(CatchIcons.closeRounded),
+              child: Icon(CatchIcons.close),
             ),
           ],
         ),

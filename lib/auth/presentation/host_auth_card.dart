@@ -70,7 +70,7 @@ class HostAuthProgressButton extends StatelessWidget {
         child: CatchButton(
           label: label,
           leading: SizedBox.square(
-            dimension: CatchIcon.sm,
+            dimension: CatchIconSize.sm,
             child: CatchLoadingIndicator(
               color: variant == CatchButtonVariant.primary
                   ? t.primaryInk
@@ -81,7 +81,6 @@ class HostAuthProgressButton extends StatelessWidget {
           variant: variant,
           isInteractive: false,
           fullWidth: true,
-          size: CatchButtonSize.lg,
           mode: CatchButtonMode.rounded,
         ),
       ),

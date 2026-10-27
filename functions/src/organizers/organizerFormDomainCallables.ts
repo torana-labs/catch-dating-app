@@ -74,7 +74,9 @@ export async function manageOrganizerFormDomainHandler(
   const actorUid = requireAuth(request);
   const input = parseDomainRequest(request.data);
   const db = deps.firestore();
-  await deps.checkLimit(db, actorUid, "manageOrganizerFormDomain");
+  await deps.checkLimit(db, actorUid, "manageOrganizerFormDomain", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   await deps.assertManager({db, organizerId: input.organizerId, actorUid});
   if (input.action === "revoke") {
     await revokeOrganizerFormDomain(db, input.hostname, input.organizerId,
@@ -85,7 +87,9 @@ export async function manageOrganizerFormDomainHandler(
     // Key by organizer as well as caller so several managers cannot multiply
     // the pending-host reservation budget.
     await deps.checkLimit(db, input.organizerId,
-      "reserveOrganizerFormDomain");
+      "reserveOrganizerFormDomain", {
+        maxRequests: 3, windowMs: 24 * 60 * 60 * 1000,
+      });
     const record = await reserveOrganizerFormDomain(db, {
       hostname: input.hostname, organizerId: input.organizerId,
       formId: input.formId, actorUid,

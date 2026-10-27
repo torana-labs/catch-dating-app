@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.86.1
-updated: 2026-10-25
+version: 1.87.0
+updated: 2026-10-26
 owner: app_architecture
 status: active
 ---
@@ -61,8 +61,9 @@ section under 120 lines.
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
 
 Shared foundations are imported through `package:catch_ui/catch_ui.dart`.
-The package owns its branded fonts and licenses and depends only on Flutter,
-`catch_tokens`, Phosphor, and `skeletonizer` pinned to 2.1.3. Loading wrappers
+The package owns its branded fonts, the vendored icon font and their licenses,
+and depends only on Flutter, `catch_tokens`, and `skeletonizer` pinned to
+2.1.3. Loading wrappers
 use Skeletonizer as their single engine for explicit shapes and real-layout
 skeletons, with shared token colors, timing, effect, reduced-motion handling,
 and loading semantics. The separate `shimmer` package is removed in the same
@@ -1215,7 +1216,7 @@ remain in `lib/core/theme` until their Phase 3 disposition.
 
 | Tier | Owner | Examples | Use when |
 |---|---|---|---|
-| Primitive scale | `package:catch_tokens/catch_tokens.dart` | `CatchSpacing`, `CatchRadius`, `CatchStroke`, `CatchMotion`, `CatchOpacity`, `CatchIcon` | A reusable value is part of the global visual scale. |
+| Primitive scale | `package:catch_tokens/catch_tokens.dart` | `CatchSpacing`, `CatchRadius`, `CatchStroke`, `CatchMotion`, `CatchOpacity`, `CatchIconSize` | A reusable value is part of the global visual scale. |
 | Semantic layout role | `package:catch_tokens/catch_tokens.dart` or a shared primitive | `CatchGaps.section`, `CatchInsets.pageBody`, `CatchLayout.maxContentWidth` | A value describes a repeated relationship or viewport/content contract. |
 | Expressive palette role | `ActivityPalette` / `CatchTokens` theme extensions | activity swatches, functional status colors, photo grade overlays | Color communicates activity, state, or theme meaning rather than decoration. |
 | Component contract | Owning component or primitive | profile tab body padding, ticket geometry, control shell sizing | A value is tied to one component family and should not become a global token yet. |
@@ -1247,9 +1248,13 @@ version the website's `lucide-react` resolves. Its groups are interface roles,
 one role per event `activityKind`, and the Playbook marks with their badge.
 A role records a `note` where the family has no good match.
 
-`node tool/design/generate_icon_catalog.mjs` writes `CatchIcons` in
-`packages/catch_ui/lib/src/foundations/catch_icons.g.dart` from the catalog.
-The stable `catch_icons.dart` facade exports the generated class.
+`node tool/design/generate_icon_catalog.mjs` writes both icon layers from the
+catalog. Flutter gets `CatchIcons` in
+`packages/catch_ui/lib/src/foundations/catch_icons.g.dart`, exported by the
+stable `catch_icons.dart` facade. `@catch/web-ui` gets `catchIconGlyphs` (role
+to `lucide-react` component) in `packages/web-ui/src/icons/`, plus SVG node
+data for the activity and Playbook roles so server-rendered artwork can draw
+them (`catchIconSvgMarkup`, `activityIconName`).
 Each role is a getter returning const `IconData` in the Lucide font vendored
 under `packages/catch_ui/assets/fonts/lucide/`, so release builds keep only the
 glyphs in use. The generator's `--check` mode fails when:
@@ -1257,9 +1262,17 @@ glyphs in use. The generator's `--check` mode fails when:
 - a glyph is missing from the vendored font or from the React package;
 - the font's hash, the catalog's version and the locked React version disagree;
 - an `activityKind` has no role, or has more than one;
-- the generated class is stale.
+- a generated output is stale.
 
 Every role draws at one stroke weight, the family's default.
+
+`CatchIcon` (`catch.icon`, T1) draws one role in both frameworks:
+`CatchIcon(CatchIcons.back, size: CatchIconSize.md, tone: CatchIconTone.muted)`
+in Flutter, `<CatchIcon icon="back" size="md" tone="muted" />` in React. It
+takes a `CatchIconSize` step and a semantic tone, and is decorative unless it
+has a `semanticLabel`. A component's icon slot takes `CatchIcons.<role>`
+(`IconData`) in Flutter and `<CatchIcon icon="<role>" />` (`ReactNode`) in
+React; features never import an icon family.
 
 To change a glyph, edit its role in the catalog and regenerate. To change the
 family, change the catalog's `family` block and glyph names, vendor that
@@ -1301,7 +1314,7 @@ owning source line rather than through a count allowance:
 
 Constant dimensions are allowed only for:
 
-- icon sizes through `CatchIcon.{sm,md,lg}`;
+- icon sizes through `CatchIconSize.{sm,md,lg}`;
 - hairlines/dividers (`1` px) and `0`;
 - spacing gaps through `CatchSpacing` or `gapH*`/`gapW*`;
 - radii through named tokens, and UI boundaries through semantic
@@ -2755,7 +2768,7 @@ or implementation technique cannot justify a second shared implementation.
   consolidation review. Flags do not approve exceptions or establish conformance.
   App bootstrap classes and app-core adapters are not feature UI.
 - **Role nouns (closed; extend only via component-registry review):** Button,
-  IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, Chip,
+  Icon, IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, Chip,
   Badge, Banner, Sheet, Dialog, Notice, EmptyState, ErrorState,
   Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
   ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
@@ -3648,10 +3661,9 @@ resolution, state, and rendering files remain within 800 lines.
 `lib/routing/go_router.dart` is exempt from the line budget entirely: the route
 inventory requires every `GoRoute` construction to live in that single file, so
 its length tracks route count and is bounded by the route and widget
-inventories rather than a line ratchet. Known generated suffixes, configured
-localization outputs, and exact vendored icon-generator outputs are excluded; a
-directory named `generated` or a generated-file comment alone grants no
-exemption.
+inventories rather than a line ratchet. Known generated suffixes and configured
+localization outputs are excluded; a directory named `generated` or a
+generated-file comment alone grants no exemption.
 
 ## Enforcement And Overrides
 

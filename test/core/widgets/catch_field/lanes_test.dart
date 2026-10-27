@@ -36,7 +36,7 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
+    expect(find.byIcon(CatchIcons.disclosure), findsNothing);
     await tester.tap(field);
     expect(taps, 1);
   });
@@ -127,7 +127,7 @@ void main() {
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Help & support',
             valueText: 'Contact us',
-            icon: CatchIcons.helpOutline,
+            icon: CatchIcons.help,
           ),
         ),
       ),
@@ -157,14 +157,14 @@ void main() {
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Notifications',
             valueText: 'On',
-            icon: CatchIcons.helpOutline,
+            icon: CatchIcons.help,
           ),
         ),
       ),
     );
 
     final fieldRect = tester.getRect(find.byType(CatchField));
-    final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.help));
     final labelLeft = tester.getTopLeft(find.text('Notifications')).dx;
     final valueRight = tester.getTopRight(find.text('On')).dx;
 
@@ -189,7 +189,7 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Notifications',
               valueText: 'On',
-              icon: CatchIcons.helpOutline,
+              icon: CatchIcons.help,
             ),
           ),
         ),
@@ -197,7 +197,7 @@ void main() {
     );
 
     final fieldRect = tester.getRect(find.byType(CatchField));
-    final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.help));
     final labelLeft = tester.getTopLeft(find.text('Notifications')).dx;
     final valueRight = tester.getTopRight(find.text('On')).dx;
 
@@ -219,7 +219,7 @@ void main() {
               key: const ValueKey('notifications-field'),
               title: 'Notifications',
               valueText: 'On',
-              icon: CatchIcons.helpOutline,
+              icon: CatchIcons.help,
             ),
           ),
         ),
@@ -229,7 +229,7 @@ void main() {
     final fieldRect = tester.getRect(
       find.byKey(const ValueKey('notifications-field')),
     );
-    final iconRect = tester.getRect(find.byIcon(CatchIcons.helpOutline));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.help));
 
     expect(iconRect.left - fieldRect.left, CatchSpacing.s4);
     expect(find.byType(CatchFieldLanes), findsOneWidget);
@@ -331,7 +331,7 @@ void main() {
           width: 360,
           child: CatchField<String>.choices(
             copy: catchFieldCopy(AppLocalizationsEn()),
-            icon: CatchIcons.translateRounded,
+            icon: CatchIcons.language,
             title: 'Languages',
             body: 'English · Hindi',
             values: const ['English', 'Hindi'],
@@ -354,7 +354,7 @@ void main() {
     final doneRect = tester.getRect(
       find.byKey(const ValueKey('catch-field-done')),
     );
-    final caretRect = tester.getRect(find.byIcon(CatchIcons.expandMoreRounded));
+    final caretRect = tester.getRect(find.byIcon(CatchIcons.expand));
 
     expect(
       doneRect.right,
@@ -417,7 +417,7 @@ void main() {
             children: [
               CatchField<String>.choices(
                 copy: catchFieldCopy(AppLocalizationsEn()),
-                icon: CatchIcons.translateRounded,
+                icon: CatchIcons.language,
                 title: 'Languages',
                 values: const ['English', 'Hindi'],
                 itemLabelBuilder: (value) => value,
@@ -441,7 +441,7 @@ void main() {
     final doneRect = tester.getRect(
       find.byKey(const ValueKey('catch-field-done')),
     );
-    final caretRect = tester.getRect(find.byIcon(CatchIcons.expandMoreRounded));
+    final caretRect = tester.getRect(find.byIcon(CatchIcons.expand));
 
     expect(actionBarRect.right, fieldRect.right);
     expect(doneRect.right, fieldRect.right);
@@ -455,7 +455,7 @@ void main() {
       _wrap(
         CatchField.toggle(
           copy: catchFieldCopy(AppLocalizationsEn()),
-          icon: CatchIcons.visibilityOutlined,
+          icon: CatchIcons.show,
           title: 'Show my pace on my profile',
           value: true,
           onChanged: (_) {},
@@ -463,9 +463,7 @@ void main() {
       ),
     );
 
-    final iconCenter = tester.getCenter(
-      find.byIcon(CatchIcons.visibilityOutlined),
-    );
+    final iconCenter = tester.getCenter(find.byIcon(CatchIcons.show));
     final labelCenter = tester.getCenter(
       find.text('Show my pace on my profile'),
     );
@@ -498,13 +496,13 @@ void main() {
             ),
             CatchField.input(
               copy: catchFieldCopy(AppLocalizationsEn()),
-              icon: CatchIcons.personOutlined,
+              icon: CatchIcons.person,
               title: 'Display name',
               initialValue: 'Suvrat',
             ),
             CatchField.input(
               copy: catchFieldCopy(AppLocalizationsEn()),
-              icon: CatchIcons.cakeOutlined,
+              icon: CatchIcons.birthday,
               title: 'Locked value',
               initialValue: 'Fixed',
               inputMode: CatchTextInputMode.inactiveWithoutSelection,
@@ -521,8 +519,8 @@ void main() {
       ),
     );
 
-    expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
-    expect(find.byIcon(CatchIcons.expandMoreRounded), findsNothing);
+    expect(find.byIcon(CatchIcons.disclosure), findsOneWidget);
+    expect(find.byIcon(CatchIcons.expand), findsNothing);
   });
 
   testWidgets('CatchField explicit-save preserves label metrics and order', (
@@ -614,7 +612,7 @@ void main() {
     expect((field.leading! as Semantics).properties.label, '27 May');
     expect(find.text('Wednesday Evening Run'), findsOneWidget);
     expect(find.text('2 attended · 20% full · free'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.chevronRightRounded), findsOneWidget);
+    expect(find.byIcon(CatchIcons.disclosure), findsOneWidget);
 
     await tester.tap(find.byType(CatchField));
     await tester.pump();
@@ -634,7 +632,7 @@ void main() {
             alignment: Alignment.topLeft,
             child: CatchField.nav(
               copy: catchFieldCopy(AppLocalizationsEn()),
-              icon: CatchIcons.personOutlined,
+              icon: CatchIcons.person,
               title: 'Display name',
               body: 'Shown on your profile and event rosters',
               onTap: () => tapped = true,
@@ -666,7 +664,7 @@ void main() {
             children: [
               CatchField.action(
                 copy: catchFieldCopy(AppLocalizationsEn()),
-                icon: CatchIcons.notificationsNoneRounded,
+                icon: CatchIcons.notifications,
                 title: 'Event starts tomorrow',
                 body: 'Sundowner 5K meets at Carter Road Jetty.',
                 actions: const Text('2H'),
@@ -691,9 +689,7 @@ void main() {
       fieldRect.right + CatchFieldTokens.dividedRowBleed,
     );
 
-    final iconRect = tester.getRect(
-      find.byIcon(CatchIcons.notificationsNoneRounded),
-    );
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.notifications));
     final titleLeft = tester.getTopLeft(find.text('Event starts tomorrow')).dx;
     expect(iconRect.left, fieldRect.left);
     expect(titleLeft - fieldRect.left, CatchFieldRow.textLaneInset);
@@ -897,7 +893,7 @@ void main() {
       ),
     );
 
-    final validIcon = tester.widget<Icon>(find.byIcon(CatchIcons.checkCircle));
+    final validIcon = tester.widget<Icon>(find.byIcon(CatchIcons.success));
     expect(validIcon.color, CatchTokens.editorialLight.success);
   });
 

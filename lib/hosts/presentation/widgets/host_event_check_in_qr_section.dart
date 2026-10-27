@@ -95,7 +95,7 @@ class _HostEventCheckInQrSectionState
               label:
                   context.l10n.hostsHostEventAttendancePanelRuntimeShareLabel,
               leading: Icon(CatchIcons.share),
-              size: CatchButtonSize.sm,
+              size: CatchButtonSize.md,
               variant: CatchButtonVariant.secondary,
               status: (_sharing)
                   ? CatchButtonStatus.loading

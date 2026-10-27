@@ -23,7 +23,7 @@ class EventSuccessActivityFieldLanes extends StatelessWidget {
         title: profile.formatLabel,
         body: profile.summary,
         valueText: profile.interactionModel.label,
-        icon: CatchIcons.autoAwesomeOutlined,
+        icon: CatchIcons.magic,
         actions: CatchBadge(
           label: context.l10n
               .eventSuccessEventSuccessHostSharedLabelLengthSelected(

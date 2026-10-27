@@ -99,7 +99,6 @@ class EmptyHeroBody extends StatelessWidget {
             label: context.l10n.dashboardEmptyHeroCardLabelFindAnEventNear,
             onPressed: onFindEvent,
             variant: CatchButtonVariant.light,
-            size: CatchButtonSize.lg,
             fullWidth: true,
           ),
         ),

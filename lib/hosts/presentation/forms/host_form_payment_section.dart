@@ -147,7 +147,7 @@ class HostFormPaymentSetupSection extends StatelessWidget {
             title: l10n.hostFormPaymentConnect,
             body: l10n.hostFormPaymentConnectHelp,
             bodyMaxLines: 12,
-            icon: CatchIcons.openInNewRounded,
+            icon: CatchIcons.openExternal,
             status: state.pending
                 ? CatchFieldStatus.saving
                 : CatchFieldStatus.idle,
@@ -157,7 +157,7 @@ class HostFormPaymentSetupSection extends StatelessWidget {
         CatchField.action(
           copy: catchFieldCopy(l10n),
           title: l10n.hostFormPaymentRefresh,
-          icon: CatchIcons.refreshRounded,
+          icon: CatchIcons.refresh,
           onTap: state.pending ? null : onRefresh,
         ),
         if (state.error case final error?)

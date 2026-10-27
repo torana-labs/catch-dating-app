@@ -1585,7 +1585,7 @@ class _FiltersBodyCapture extends StatelessWidget {
       appBar: CatchTopBar.route(
         title: 'Filters',
         leading: CatchIconAction.toolbar(
-          icon: CatchIcons.closeRounded,
+          icon: CatchIcons.close,
           tooltip: 'Close filters',
           onPressed: _noopFiltersTap,
         ),
@@ -5888,14 +5888,14 @@ class _HostChatSafetyPendingMenuCapture extends StatelessWidget {
                     value: 'report',
                     label: 'Report',
                     sublabel: 'Submitting...',
-                    icon: CatchIcons.flagOutlined,
+                    icon: CatchIcons.flag,
                     enabled: false,
                   ),
                   CatchMenuItem<String>(
                     value: 'block',
                     label: 'Block',
                     sublabel: 'Blocking...',
-                    icon: CatchIcons.blockRounded,
+                    icon: CatchIcons.block,
                     danger: true,
                     enabled: false,
                   ),
@@ -17528,12 +17528,9 @@ final _profileFixture = ProfileView(
     ProfileFactsSectionData(
       title: 'Details',
       facts: <ProfileFact>[
-        ProfileFact(
-          icon: CatchIcons.workOutlineRounded,
-          text: 'Product designer',
-        ),
-        ProfileFact(icon: CatchIcons.straightenRounded, text: '168 cm'),
-        ProfileFact(icon: CatchIcons.schoolOutlined, text: 'Design school'),
+        ProfileFact(icon: CatchIcons.work, text: 'Product designer'),
+        ProfileFact(icon: CatchIcons.measure, text: '168 cm'),
+        ProfileFact(icon: CatchIcons.education, text: 'Design school'),
       ],
       reaction: _target('details', SwipeReactionTargetType.details, 'Details'),
     ),

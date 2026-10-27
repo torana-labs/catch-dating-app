@@ -342,7 +342,7 @@ class _HostPersonConversationPageBodyState
                         ),
                         CatchButton(
                           label: context.l10n.sharedActionTryAgain,
-                          variant: CatchButtonVariant.ghost,
+                          variant: CatchButtonVariant.quiet,
                           onPressed: _retry,
                         ),
                       ],
@@ -351,7 +351,7 @@ class _HostPersonConversationPageBodyState
                           label: history.value.error == null
                               ? context.l10n.hostInboxOlderMessages
                               : context.l10n.sharedActionTryAgain,
-                          variant: CatchButtonVariant.ghost,
+                          variant: CatchButtonVariant.quiet,
                           onPressed: history.value.loading
                               ? null
                               : () => ref
@@ -407,7 +407,7 @@ class _HostPersonConversationPageBodyState
                         variant: selected == route.key
                             ? CatchButtonVariant.primary
                             : CatchButtonVariant.secondary,
-                        size: CatchButtonSize.sm,
+                        size: CatchButtonSize.md,
                         onPressed: _sending || _sendingImage
                             ? null
                             : () => _selectRoute(route.key),

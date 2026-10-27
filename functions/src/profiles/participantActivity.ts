@@ -40,7 +40,9 @@ export async function listParticipantActivityHandler(
   const data = validateCallableWithAjv(request,
     validateListParticipantActivityCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "listParticipantActivity");
+  await deps.rateLimit(db, uid, "listParticipantActivity", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   let page;
   try {
     page = await readParticipantFormActivityPageSource({db, uid,
@@ -63,7 +65,9 @@ export async function getParticipantActivityHandler(
   const data = validateCallableWithAjv(request,
     validateGetParticipantActivityCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getParticipantActivity");
+  await deps.rateLimit(db, uid, "getParticipantActivity", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const source = await readParticipantFormActivitySource({db, uid,
     responseId: data.sourceId, nowMillis: deps.nowMillis()});
   if (!source) {

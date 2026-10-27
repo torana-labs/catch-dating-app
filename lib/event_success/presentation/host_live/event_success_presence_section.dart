@@ -72,7 +72,7 @@ class EventSuccessPresenceSection extends StatelessWidget {
                   ? null
                   : () => unawaited(onRegenerate!()),
               variant: CatchButtonVariant.secondary,
-              size: CatchButtonSize.sm,
+              size: CatchButtonSize.md,
             ),
           ],
           if (lateArrivals.isNotEmpty) ...[
@@ -99,7 +99,7 @@ class EventSuccessPresenceSection extends StatelessWidget {
                       label: context
                           .l10n
                           .eventSuccessEventSuccessHostLiveLabelPlaceNextRound,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       status: (resolvingLateArrival)
                           ? CatchButtonStatus.loading
                           : CatchButtonStatus.idle,

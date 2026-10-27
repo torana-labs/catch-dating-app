@@ -15,7 +15,6 @@ on:
       - "firebase.json"
       - "firebase/prod/host/**"
       - "lib/**"
-      - "packages/phosphor_flutter/**"
       - "pubspec.lock"
       - "pubspec.yaml"
       - "tool/app_targets.json"

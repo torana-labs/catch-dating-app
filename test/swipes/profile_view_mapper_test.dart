@@ -41,10 +41,10 @@ void main() {
           ),
         ],
         attributes: [
-          (icon: CatchIcons.workOutlineRounded, text: 'Designer at Catch'),
-          (icon: CatchIcons.straightenRounded, text: '170 cm'),
+          (icon: CatchIcons.work, text: 'Designer at Catch'),
+          (icon: CatchIcons.measure, text: '170 cm'),
         ],
-        lifestyle: [(icon: CatchIcons.ecoOutlined, text: 'Vegetarian')],
+        lifestyle: [(icon: CatchIcons.sustainability, text: 'Vegetarian')],
         relationshipGoal: RelationshipGoal.casual,
         profilePrompts: const [
           ProfilePromptAnswer(

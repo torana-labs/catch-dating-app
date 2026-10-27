@@ -58,7 +58,7 @@ void main() {
                 width: 360,
                 child: CatchField.inputActions(
                   copy: catchFieldCopy(AppLocalizationsEn()),
-                  icon: CatchIcons.formatQuoteRounded,
+                  icon: CatchIcons.quote,
                   title: 'A perfect event with me looks like...',
                   controller: controller,
                   focusNode: focusNode,

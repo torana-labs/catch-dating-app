@@ -108,7 +108,7 @@ class CreateEventDockSkeleton extends StatelessWidget {
               children: [
                 CatchSkeleton.box(
                   width: CatchLayout.skeletonTextBodyWidth,
-                  height: CatchLayout.buttonLgHeight,
+                  height: CatchButtonTokens.largeHeight,
                   radius: CatchRadius.pill,
                 ),
                 gapW12,
@@ -117,7 +117,7 @@ class CreateEventDockSkeleton extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: CatchSkeleton.box(
                       width: CatchLayout.skeletonTextInlineTitleWidth,
-                      height: CatchLayout.buttonLgHeight,
+                      height: CatchButtonTokens.largeHeight,
                       radius: CatchRadius.pill,
                     ),
                   ),

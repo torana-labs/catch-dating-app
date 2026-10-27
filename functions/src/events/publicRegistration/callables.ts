@@ -75,7 +75,9 @@ export async function managePublicEventCheckoutHandler(
   }
   const data = validateCallableWithAjv(request, validateInput);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "managePublicEventCheckout");
+  await deps.rateLimit(db, uid, "managePublicEventCheckout", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await db.runTransaction((tx) =>
     deps.guest({db, tx, uid, phoneE164: phone}),
   );
@@ -270,7 +272,9 @@ export async function configureEventRegistrationHandler(
     validateConfigureEventRegistrationCallablePayload,
   );
   const db = admin.firestore();
-  await checkRateLimit(db, actorUid, "configureEventRegistration");
+  await checkRateLimit(db, actorUid, "configureEventRegistration", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   // Read-only provider preparation follows manager authorization; the final
   // transaction rechecks manager, revision, policy and frozen routing binding.
   const source = await db.runTransaction((tx) =>

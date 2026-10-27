@@ -24,7 +24,7 @@ class OrganizerMomentsEntryField extends StatelessWidget {
         copy: catchFieldCopy(context.l10n),
         title: context.l10n.hostMomentsManageEntryTitle,
         body: context.l10n.hostMomentsManageEntryBody,
-        icon: CatchIcons.autoAwesomeOutlined,
+        icon: CatchIcons.magic,
         emphasis: CatchFieldEmphasis.title,
         onTap: () => context.pushNamed(
           Routes.hostAppEventMomentsScreen.name,

@@ -149,7 +149,7 @@ class HostFormOverviewSectionList extends ConsumerWidget {
           ),
           CatchButton.command(
             label: context.l10n.hostFormsViewResponsesAction,
-            leading: Icon(CatchIcons.forwardArrow),
+            leading: Icon(CatchIcons.forward),
             onPressed: onReviewResponses,
           ),
         ],
@@ -160,7 +160,7 @@ class HostFormOverviewSectionList extends ConsumerWidget {
               CatchField.nav(
                 copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostFormsAnalyticsAction,
-                icon: CatchIcons.insightsOutlined,
+                icon: CatchIcons.insights,
                 emphasis: CatchFieldEmphasis.title,
                 onTap: () => context.pushNamed(
                   Routes.hostFormAnalyticsScreen.name,
@@ -171,14 +171,14 @@ class HostFormOverviewSectionList extends ConsumerWidget {
             CatchField.nav(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormSettings,
-              icon: CatchIcons.settingsOutlined,
+              icon: CatchIcons.settings,
               emphasis: CatchFieldEmphasis.title,
               onTap: onSettings,
             ),
             CatchField.nav(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormsAutomationsAction,
-              icon: CatchIcons.autoAwesomeOutlined,
+              icon: CatchIcons.magic,
               emphasis: CatchFieldEmphasis.title,
               onTap: () => context.pushNamed(
                 Routes.hostFormAutomationsScreen.name,

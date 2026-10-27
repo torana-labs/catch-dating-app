@@ -44,16 +44,16 @@ class CatchesPassButton extends StatelessWidget {
             size: CatchLayout.passButtonExtent,
             child: isPending
                 ? SizedBox.square(
-                    dimension: CatchIcon.passButton,
+                    dimension: CatchIconSize.passButton,
                     child: CircularProgressIndicator(
                       strokeWidth: CatchStroke.passProgress,
                       valueColor: AlwaysStoppedAnimation<Color>(passColor),
                     ),
                   )
                 : Icon(
-                    CatchIcons.closeRounded,
+                    CatchIcons.close,
                     color: passColor,
-                    size: CatchIcon.passButton,
+                    size: CatchIconSize.passButton,
                   ),
           ),
         ),

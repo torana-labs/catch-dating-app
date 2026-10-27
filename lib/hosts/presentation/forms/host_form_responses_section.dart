@@ -261,7 +261,7 @@ class _HostFormResponsesSectionState
                 children: [
                   CatchButton(
                     label: context.l10n.hostResponseQueryReviewInbox,
-                    variant: CatchButtonVariant.ghost,
+                    variant: CatchButtonVariant.quiet,
                     onPressed: () => setState(() {
                       queryController.clearSelection();
                       _answerWorkspaceOpen = false;
@@ -408,7 +408,7 @@ class _HostFormResponsesSectionState
                 if (widget.queryCapability != null && widget.formId != null)
                   CatchButton(
                     label: context.l10n.hostResponseQueryOpenAnswers,
-                    variant: CatchButtonVariant.ghost,
+                    variant: CatchButtonVariant.quiet,
                     onPressed: () =>
                         setState(() => _answerWorkspaceOpen = true),
                   ),

@@ -423,7 +423,7 @@ class HostFormSettingsSectionList extends StatelessWidget {
               ),
               actions: IconButton(
                 tooltip: context.l10n.hostFormRemoveRule,
-                icon: Icon(CatchIcons.deleteOutlineRounded),
+                icon: Icon(CatchIcons.delete),
                 onPressed: () => notifier.removeLogicRule(ruleEntry.$1),
               ),
               onTap: null,

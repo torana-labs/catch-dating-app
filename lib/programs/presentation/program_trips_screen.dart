@@ -122,7 +122,7 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
                     label: _exporting
                         ? context.l10n.programsTripsExporting
                         : context.l10n.programsTripsExport,
-                    leading: Icon(CatchIcons.downloadRounded),
+                    leading: Icon(CatchIcons.download),
                     onPressed: _exporting
                         ? null
                         : () => _export(access?.title ?? widget.programId),
@@ -171,7 +171,7 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
                 subtitle: context.l10n.programsTripsLedgerSubtitle,
                 child: list.trips.isEmpty
                     ? CatchEmptyState(
-                        icon: CatchIcons.receiptLongOutlined,
+                        icon: CatchIcons.receipt,
                         message: context.l10n.programsTripsEmpty,
                         variant: CatchEmptyStateVariant.inline,
                       )
@@ -188,7 +188,7 @@ class _ProgramTripsScreenState extends ConsumerState<ProgramTripsScreen> {
                               : list.trips;
                           if (visible.isEmpty) {
                             return CatchEmptyState(
-                              icon: CatchIcons.checkCircleOutlineRounded,
+                              icon: CatchIcons.success,
                               message: context.l10n.programsTripsReviewEmpty,
                               variant: CatchEmptyStateVariant.inline,
                             );
@@ -332,7 +332,7 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
           gapH8,
           CatchMetaRow(icon: CatchIcons.hotel, label: trip.destinationLabel),
           CatchMetaRow(
-            icon: CatchIcons.group,
+            icon: CatchIcons.people,
             label: context.l10n.programsTripsRowMeta(
               passengers: trip.passengerCount,
               names: trip.guestNames.join(', '),
@@ -344,7 +344,7 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
               variant: CatchTextVariant.bodyS,
             ),
           CatchMetaRow(
-            icon: CatchIcons.clock,
+            icon: CatchIcons.time,
             label: trip.arrivedAt != null
                 ? context.l10n.programsTripsRowTimingArrived(
                     departed: AppTimeFormatters.time(trip.departedAt),
@@ -355,15 +355,9 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
                   ),
           ),
           if (trip.vendorName != null)
-            CatchMetaRow(
-              icon: CatchIcons.businessOutlined,
-              label: trip.vendorName!,
-            ),
+            CatchMetaRow(icon: CatchIcons.business, label: trip.vendorName!),
           if (trip.voidReason != null)
-            CatchMetaRow(
-              icon: CatchIcons.warningAmberRounded,
-              label: trip.voidReason!,
-            ),
+            CatchMetaRow(icon: CatchIcons.warning, label: trip.voidReason!),
           if (_error != null) ...[
             gapH8,
             CatchBanner.error(
@@ -374,7 +368,7 @@ class _ProgramTripLedgerRowState extends ConsumerState<ProgramTripLedgerRow> {
             gapH12,
             CatchButton.command(
               label: context.l10n.programsTripsVoidAction,
-              leading: Icon(CatchIcons.blockOutlined),
+              leading: Icon(CatchIcons.block),
               onPressed: _busy ? null : _voidTrip,
             ),
           ],
@@ -413,7 +407,7 @@ class _ProgramTripVoidSheetState extends State<ProgramTripVoidSheet> {
       ),
       title: context.l10n.programsTripsVoidSheetTitle,
       subtitle: context.l10n.programsTripsVoidSheetSubtitle,
-      glyph: CatchIcons.warningAmberRounded,
+      glyph: CatchIcons.warning,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

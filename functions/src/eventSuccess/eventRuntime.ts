@@ -146,7 +146,8 @@ export async function getEventRuntimeBootstrapHandler(
   await deps.checkRateLimit(
     db,
     rateLimitIdentity,
-    "getEventRuntimeBootstrap"
+    "getEventRuntimeBootstrap",
+    {maxRequests: 60, windowMs: 60 * 1000}
   );
   const resolved = await resolveRuntimeEvent(db, payload.publicRuntimeId);
   const participantRef = request.auth ? db
@@ -249,7 +250,9 @@ export async function claimEventRuntimeAccessHandler(
   );
   const phone = verifiedPhone(request);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "claimEventRuntimeAccess");
+  await deps.checkRateLimit(db, uid, "claimEventRuntimeAccess", {
+    maxRequests: 10, windowMs: 60 * 60 * 1000,
+  });
   const resolved = await resolveRuntimeEvent(db, payload.publicRuntimeId);
   const inviteAttribution = await resolveInviteAttributionToken({
     db,
@@ -582,7 +585,9 @@ export async function submitEventRuntimeProfileHandler(
     normalizeProfilePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "submitEventRuntimeProfile");
+  await deps.checkRateLimit(db, uid, "submitEventRuntimeProfile", {
+    maxRequests: 30, windowMs: 60 * 60 * 1000,
+  });
   const resolved = await resolveRuntimeEvent(db, payload.publicRuntimeId);
   requireRuntimeTerms(resolved.event, payload.runtimeTermsVersion);
   const participantRef = db.collection("eventRuntimeParticipants")
@@ -707,7 +712,9 @@ export async function checkInEventRuntimeHandler(
     normalizeRuntimeIdPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, uid, "checkInEventRuntime");
+  await deps.checkRateLimit(db, uid, "checkInEventRuntime", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const resolved = await resolveRuntimeEvent(db, payload.publicRuntimeId);
   const now = deps.timestamp();
   const claims = (deps.verifyVenueSessionToken ??
@@ -840,7 +847,9 @@ export async function approveEventRuntimeClaimHandler(
     normalizeApprovalPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, hostUid, "approveEventRuntimeClaim");
+  await deps.checkRateLimit(db, hostUid, "approveEventRuntimeClaim", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const eventRef = db.collection("events").doc(payload.eventId);
   const participantId = eventRuntimeParticipantId(payload.eventId, payload.uid);
   const participantRef = db.collection("eventRuntimeParticipants")

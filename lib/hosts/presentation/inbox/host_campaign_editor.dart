@@ -224,7 +224,7 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
                     CatchButton(
                       label: context.l10n.hostSendsSchedule,
                       variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.sm,
+                      size: CatchButtonSize.md,
                       onPressed: _campaign == null && !_busy
                           ? _pickSchedule
                           : null,
@@ -232,8 +232,8 @@ class _HostCampaignEditorState extends ConsumerState<HostCampaignEditor> {
                     if (_scheduledAt != null)
                       CatchButton(
                         label: context.l10n.hostSendsClearSchedule,
-                        variant: CatchButtonVariant.ghost,
-                        size: CatchButtonSize.sm,
+                        variant: CatchButtonVariant.quiet,
+                        size: CatchButtonSize.md,
                         onPressed: _campaign == null && !_busy
                             ? () => setState(() {
                                 _scheduledAt = null;
@@ -672,12 +672,12 @@ class HostCampaignReportSection extends StatelessWidget {
             if (onCancel != null)
               CatchButton(
                 label: context.l10n.hostsHostAudienceCancel,
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 onPressed: busy ? null : onCancel,
               ),
             CatchButton(
               label: context.l10n.hostsHostAudienceNewCampaign,
-              variant: CatchButtonVariant.ghost,
+              variant: CatchButtonVariant.quiet,
               onPressed: busy ? null : onNew,
             ),
           ],

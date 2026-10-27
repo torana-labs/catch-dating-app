@@ -163,7 +163,8 @@ export async function getPublicOrganizerFormHandler(
   await deps.checkRateLimit(
     db,
     request.auth?.uid ?? `public-form:${data.publicFormId}`,
-    "getPublicOrganizerForm"
+    "getPublicOrganizerForm",
+    {maxRequests: 120, windowMs: 60 * 1000}
   );
   const resolved = await resolvePublicForm(db, data.publicFormId, deps);
   const sourceLinkId = await resolveSourceLink(
@@ -206,7 +207,8 @@ export async function beginOrganizerFormResponseHandler(
   await deps.checkRateLimit(
     db,
     request.auth?.uid ?? `public-form:${data.publicFormId}`,
-    "beginOrganizerFormResponse"
+    "beginOrganizerFormResponse",
+    {maxRequests: 20, windowMs: 60 * 1000}
   );
   const resolved = await resolvePublicForm(db, data.publicFormId, deps);
   assertAcceptingResponses(resolved.projection);
@@ -390,7 +392,8 @@ export async function saveOrganizerFormResponseDraftHandler(
   await deps.checkRateLimit(
     db,
     request.auth?.uid ?? `form-draft:${data.draftId}`,
-    "saveOrganizerFormResponseDraft"
+    "saveOrganizerFormResponseDraft",
+    {maxRequests: 120, windowMs: 60 * 1000}
   );
   const draftRef = db.collection("organizerFormResponseDrafts")
     .doc(data.draftId);
@@ -471,7 +474,8 @@ export async function createOrganizerFormAssetIntentHandler(
   await deps.checkRateLimit(
     db,
     request.auth?.uid ?? `form-draft:${data.draftId}`,
-    "createOrganizerFormAssetIntent"
+    "createOrganizerFormAssetIntent",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const draftSnap = await db.collection("organizerFormResponseDrafts")
     .doc(data.draftId).get();
@@ -611,7 +615,8 @@ export async function finalizeOrganizerFormAssetHandler(
   await deps.checkRateLimit(
     db,
     request.auth?.uid ?? `form-draft:${data.draftId}`,
-    "finalizeOrganizerFormAsset"
+    "finalizeOrganizerFormAsset",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const [draftSnap, assetSnap] = await Promise.all([
     db.collection("organizerFormResponseDrafts").doc(data.draftId).get(),
@@ -689,7 +694,8 @@ export async function submitOrganizerFormResponseHandler(
   await deps.checkRateLimit(
     db,
     request.auth?.uid ?? `form-draft:${data.draftId}`,
-    "submitOrganizerFormResponse"
+    "submitOrganizerFormResponse",
+    {maxRequests: 20, windowMs: 60 * 1000}
   );
   const responseId = deterministicId("formresponse", data.draftId);
   const withdrawalToken = bearerToken(
@@ -955,7 +961,8 @@ export async function withdrawOrganizerFormResponseHandler(
   await deps.checkRateLimit(
     db,
     request.auth?.uid ?? `form-response:${data.responseId}`,
-    "withdrawOrganizerFormResponse"
+    "withdrawOrganizerFormResponse",
+    {maxRequests: 10, windowMs: 60 * 1000}
   );
   const responseRef = db.collection("organizerFormResponses")
     .doc(data.responseId);
@@ -1017,7 +1024,9 @@ export async function createOrganizerFormShareLinkHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "createOrganizerFormShareLink");
+  await deps.checkRateLimit(db, actorUid, "createOrganizerFormShareLink", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const formSnap = await db.collection("organizerForms").doc(data.formId).get();
   const form = requireOwnedPublishedForm(formSnap, data.organizerId);
@@ -1084,7 +1093,9 @@ export async function getOrganizerFormShareAssetsHandler(
     })
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerFormShareAssets");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerFormShareAssets", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const formSnap = await db.collection("organizerForms").doc(data.formId).get();
   const form = requireOwnedPublishedForm(formSnap, data.organizerId);

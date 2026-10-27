@@ -365,7 +365,7 @@ tests green, goldens regenerated):**
 
 **Wave 3 — batch 2 (analyze-clean, tests green, goldens regenerated):**
 - **FieldRow** inset divider opacity 0.62→0.38 (new `fieldRowDivider` token); leading glyph
-  22→20 (`CatchIcon.control`) with the 32px divider inset.
+  22→20 (`CatchIconSize.control`) with the 32px divider inset.
 - **ChatListTile** inbox divider → `fieldRowDivider` (0.38); inbox time now mono `t-meta`
   (was the sans `statusLabel`).
 - **ContactRow** (club detail) glyph + value → ink (contact info never takes the

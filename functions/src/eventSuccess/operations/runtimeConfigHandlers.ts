@@ -19,7 +19,9 @@ export async function getEventAssistanceRuntimeConfigHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "getEventAssistanceRuntimeConfig");
+  await deps.rateLimit(db, uid, "getEventAssistanceRuntimeConfig", {
+    maxRequests: 60, windowMs: 60_000,
+  });
   return deps.store(db).get(uid, request.data);
 }
 
@@ -28,7 +30,9 @@ export async function setEventAssistanceRuntimeConfigHandler(
 ) {
   const uid = requireAuth(request);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "setEventAssistanceRuntimeConfig");
+  await deps.rateLimit(db, uid, "setEventAssistanceRuntimeConfig", {
+    maxRequests: 30, windowMs: 60_000,
+  });
   return deps.store(db).set(uid, request.data);
 }
 

@@ -37,7 +37,9 @@ export async function getEventRcsPreferenceHandler(
   const input = validateCallableWithAjv(request,
     validateGetEventRcsPreferenceCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actor.uid, "getEventRcsPreference");
+  await deps.checkRateLimit(db, actor.uid, "getEventRcsPreference", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const result = await new RcsPreferenceStore(db, deps.now).get(actor, input);
   if (!validateEventRcsPreferenceCallableResponse(result)) {
     throw new HttpsError("internal", "Event RCS preference unavailable.");
@@ -52,7 +54,9 @@ export async function setEventRcsPreferenceHandler(
   const input = validateCallableWithAjv(request,
     validateSetEventRcsPreferenceCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actor.uid, "setEventRcsPreference");
+  await deps.checkRateLimit(db, actor.uid, "setEventRcsPreference", {
+    maxRequests: 20, windowMs: 60 * 1000,
+  });
   const result = await new RcsPreferenceStore(db, deps.now).set(actor, input);
   if (!validateEventRcsPreferenceCallableResponse(result)) {
     throw new HttpsError("internal",

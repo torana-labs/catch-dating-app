@@ -154,7 +154,9 @@ export async function createOrganizerProgramHandler(
     normalizeProgramPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "createOrganizerProgram");
+  await deps.checkRateLimit(db, actorUid, "createOrganizerProgram", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   if (data.endsAtMillis <= data.startsAtMillis) {
     throw new HttpsError(
       "invalid-argument", "Program end must be after its start."
@@ -231,7 +233,9 @@ export async function updateOrganizerProgramHandler(
     normalizeProgramPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "updateOrganizerProgram");
+  await deps.checkRateLimit(db, actorUid, "updateOrganizerProgram", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const ref = db.collection("organizerPrograms").doc(data.programId);
   let committedRevision = 0;
   await db.runTransaction(async (tx) => {
@@ -336,7 +340,9 @@ export async function listOrganizerProgramsHandler(
       normalizeProgramPayload
     );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOrganizerPrograms");
+  await deps.checkRateLimit(db, actorUid, "listOrganizerPrograms", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   const pageSize = data.limit ?? 50;
   const {programDocs, hasMore} =
     await db.runTransaction(async (tx) => {
@@ -491,7 +497,9 @@ export async function getOrganizerProgramHandler(
   const data = validateCallableWithAjv<ProgramIdCallablePayload>(
     request, validateProgramIdCallablePayload, normalizeProgramPayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getOrganizerProgram");
+  await deps.checkRateLimit(db, actorUid, "getOrganizerProgram", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (tx) => {
     await requireActiveProgramAccount({db, actorUid, transaction: tx});
     const {program, administration} = await requireProgramSetupAccess({

@@ -142,7 +142,7 @@ Widget previewEventSuccessReportStatus(BuildContext context) =>
       catalogId: 'Event Success Host workspace',
       children: [
         CatchSection.status(
-          icon: CatchIcons.insightsOutlined,
+          icon: CatchIcons.insights,
           title: 'Waiting for attendee feedback',
           message: 'The report appears when attendee feedback is available.',
         ),

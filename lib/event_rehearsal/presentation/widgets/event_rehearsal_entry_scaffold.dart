@@ -81,7 +81,6 @@ class EventRehearsalEntryScaffold extends StatelessWidget {
               child: CatchButton(
                 label: context.l10n.hostRehearsalStart,
                 fullWidth: true,
-                size: CatchButtonSize.lg,
                 status: isPending
                     ? CatchButtonStatus.loading
                     : CatchButtonStatus.idle,

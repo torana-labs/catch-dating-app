@@ -89,7 +89,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           Consumer(
             builder: (context, ref, child) {
               return CatchIconAction.toolbar(
-                icon: CatchIcons.calendarMonthOutlined,
+                icon: CatchIcons.date,
                 tooltip: context.l10n.dashboardDashboardScreenTooltipCalendar,
                 onPressed: () {
                   ref
@@ -181,8 +181,8 @@ class NotificationsAction extends ConsumerWidget {
 
     return CatchIconAction.counted(
       icon: unreadCount > 0
-          ? CatchIcons.notificationsRounded
-          : CatchIcons.notificationsNoneRounded,
+          ? CatchIcons.notifications
+          : CatchIcons.notifications,
       count: unreadCount,
       tooltip: context.l10n.dashboardDashboardScreenTooltipNotifications,
       onPressed: () {

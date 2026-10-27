@@ -32,7 +32,9 @@ export async function previewOrganizerFormAdmissionHandler(
   const payload = validateCallableWithAjv(request,
     validatePreviewOrganizerFormAdmissionCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "previewOrganizerFormAdmission");
+  await deps.checkRateLimit(db, actorUid, "previewOrganizerFormAdmission", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   let result: PreviewOrganizerFormAdmissionCallableResponse;
   try {
     result = await deps.preview({db, actorUid, payload});

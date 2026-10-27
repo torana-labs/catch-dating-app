@@ -309,7 +309,7 @@ void main() {
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   key: inputKey,
                   title: 'Job title',
-                  icon: CatchIcons.workOutline,
+                  icon: CatchIcons.work,
                   labelMode: CatchFieldLabelTextMode.optional,
                 ),
                 CatchField.input(
@@ -330,7 +330,7 @@ void main() {
                   onSelectionChanged: (_) {},
                   addable: true,
                   labelMode: CatchFieldLabelTextMode.optional,
-                  icon: CatchIcons.fitnessCenterOutlined,
+                  icon: CatchIcons.fitness,
                 ),
               ],
             ),
@@ -353,7 +353,7 @@ void main() {
         closeTo(tester.getSize(find.byKey(choiceKey)).height, 0.1),
       );
       expect(
-        tester.getCenter(find.byIcon(CatchIcons.workOutline)).dy,
+        tester.getCenter(find.byIcon(CatchIcons.work)).dy,
         closeTo(tester.getCenter(find.text('Add job title · Optional')).dy, 1),
       );
 
@@ -816,7 +816,7 @@ void main() {
               labelMode: CatchFieldLabelTextMode.hidden,
               placeholder: 'Search by name',
               size: CatchFieldSize.compact,
-              leading: Icon(CatchIcons.searchRounded, size: 18),
+              leading: Icon(CatchIcons.search, size: 18),
             ),
           ),
         ),
@@ -825,7 +825,7 @@ void main() {
 
     final fieldRect = tester.getRect(find.byType(TextField));
     final hintRect = tester.getRect(find.text('Search by name'));
-    final iconRect = tester.getRect(find.byIcon(CatchIcons.searchRounded));
+    final iconRect = tester.getRect(find.byIcon(CatchIcons.search));
 
     expect(
       (hintRect.center.dy - fieldRect.center.dy).abs(),
@@ -1017,7 +1017,7 @@ void main() {
               values: defaultCityOptions,
               itemLabelBuilder: (city) => city.label,
               value: selected,
-              leading: Icon(CatchIcons.locationOnOutlined),
+              leading: Icon(CatchIcons.location),
               onChanged: (_) {},
             ),
           ),
@@ -1044,7 +1044,7 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'City',
               initialValue: 'Mumbai',
-              leading: Icon(CatchIcons.locationOnOutlined),
+              leading: Icon(CatchIcons.location),
             ),
           ),
         ),
@@ -1052,7 +1052,7 @@ void main() {
     );
 
     expect(
-      tester.getCenter(find.byIcon(CatchIcons.locationOnOutlined)).dx,
+      tester.getCenter(find.byIcon(CatchIcons.location)).dx,
       greaterThan(tester.getCenter(find.byType(EditableText)).dx),
     );
   });
@@ -1070,7 +1070,7 @@ void main() {
               values: defaultCityOptions,
               itemLabelBuilder: (city) => city.label,
               value: cityOptionByName('mumbai'),
-              leading: Icon(CatchIcons.locationOnOutlined),
+              leading: Icon(CatchIcons.location),
               onChanged: (_) {},
             ),
           ),
@@ -1079,10 +1079,8 @@ void main() {
     );
 
     expect(
-      tester.getCenter(find.byIcon(CatchIcons.locationOnOutlined)).dx,
-      greaterThan(
-        tester.getCenter(find.byIcon(CatchIcons.expandMoreRounded)).dx,
-      ),
+      tester.getCenter(find.byIcon(CatchIcons.location)).dx,
+      greaterThan(tester.getCenter(find.byIcon(CatchIcons.expand)).dx),
     );
   });
 }

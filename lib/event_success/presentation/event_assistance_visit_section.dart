@@ -171,7 +171,7 @@ class EventAssistanceVisitSection extends StatelessWidget {
         CatchButton(
           key: const ValueKey('visit.done'),
           label: l10n.eventAssistanceVisitDone,
-          variant: CatchButtonVariant.ghost,
+          variant: CatchButtonVariant.quiet,
           status: pending ? CatchButtonStatus.loading : CatchButtonStatus.idle,
           onPressed: pending ? null : onDone,
         ),

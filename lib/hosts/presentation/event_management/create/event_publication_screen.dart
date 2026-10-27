@@ -109,7 +109,7 @@ class EventPublicationScreen extends ConsumerWidget {
                                 CatchField.read(
                                   copy: copy,
                                   title: requirement(item),
-                                  icon: CatchIcons.errorOutlineRounded,
+                                  icon: CatchIcons.error,
                                 ),
                             if (!published &&
                                 onEditDetails != null &&

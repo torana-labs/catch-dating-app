@@ -8,7 +8,7 @@ class StarRatingRow extends StatelessWidget {
   const StarRatingRow({
     super.key,
     required this.rating,
-    this.size = CatchIcon.xs,
+    this.size = CatchIconSize.xs,
   });
 
   final int rating;
@@ -24,9 +24,7 @@ class StarRatingRow extends StatelessWidget {
       children: List.generate(
         5,
         (i) => Icon(
-          i < clampedRating
-              ? CatchIcons.starRounded
-              : CatchIcons.starOutlineRounded,
+          i < clampedRating ? CatchIcons.rating : CatchIcons.rating,
           size: size,
           // Ratings are ink data — pigment never touches stars: filled ink,
           // empty line2.
@@ -85,9 +83,7 @@ class StarRatingPicker extends StatelessWidget {
               child: Padding(
                 padding: CatchInsets.inlineHorizontalTight,
                 child: Icon(
-                  i < clampedRating
-                      ? CatchIcons.starRounded
-                      : CatchIcons.starOutlineRounded,
+                  i < clampedRating ? CatchIcons.rating : CatchIcons.rating,
                   size: size,
                   color: i < clampedRating ? t.ink : t.line2,
                 ),

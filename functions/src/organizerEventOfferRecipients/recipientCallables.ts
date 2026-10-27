@@ -56,7 +56,9 @@ export async function prepareEventOfferInvitationHandler(
   const data = validateCallableWithAjv<InvitationInput>(request,
     validatePrepareEventOfferInvitationCallablePayload);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "prepareEventOfferInvitation");
+  await deps.rateLimit(db, uid, "prepareEventOfferInvitation", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   const invitation = await deps.issue({db, actorUid: uid,
     scope: {organizerId: data.organizerId, eventId: data.eventId,
       offerId: data.offerId, responseId: data.responseId},
@@ -77,7 +79,9 @@ export async function manageEventOfferCheckoutHandler(
   }
   const data = validateCallableWithAjv<Input>(request, validateInput);
   const db = deps.db();
-  await deps.rateLimit(db, uid, "manageEventOfferCheckout");
+  await deps.rateLimit(db, uid, "manageEventOfferCheckout", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const result: Response = {grant: null, payment: null,
     serverTimeMillis: deps.now()};
   const respond = () => checkedResponse(result, deps.now(),

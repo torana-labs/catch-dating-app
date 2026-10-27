@@ -227,7 +227,7 @@ void main() {
           matching: find.byType(CatchButton),
         ),
       );
-      expect(createButton.size, CatchButtonSize.sm);
+      expect(createButton.size, CatchButtonSize.md);
     }
   });
 
@@ -360,7 +360,7 @@ void main() {
           expect(
             find.descendant(
               of: chip(label),
-              matching: find.byIcon(CatchIcons.checkRounded),
+              matching: find.byIcon(CatchIcons.check),
             ),
             findsOneWidget,
           );

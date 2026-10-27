@@ -21,9 +21,9 @@
 
 /*
  * Display steps (blueprint D19): Archivo at its single 78% width, weight 760,
- * six sizes on a 1.25 ratio. The values are interim literals until the token
- * promotion moves them into catch.tokens.json; foundationParity.test.ts pins
- * each one to the Flutter step table in catch_text_styles.dart.
+ * six sizes on a 1.25 ratio, read from typography.brand.display* in
+ * catch.tokens.json. foundationParity.test.ts pins each token to the Flutter
+ * step table in catch_text_styles.dart.
  */
 .text[data-variant^="display"] {
   font-family: var(--catch-font-voice), sans-serif;
@@ -32,51 +32,70 @@
 }
 
 .text[data-variant="displayXs"] {
-  --catch-text-size: 24px;
-  --catch-text-line-height: 1.1;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.02em;
+  --catch-text-size: var(--catch-typography-brand-display-xs-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-xs-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-xs-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-xs-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="displayS"] {
-  --catch-text-size: 30px;
-  --catch-text-line-height: 1.05;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.025em;
+  --catch-text-size: var(--catch-typography-brand-display-s-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-s-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-s-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-s-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="displayM"] {
-  --catch-text-size: 38px;
-  --catch-text-line-height: 1.05;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.03em;
+  --catch-text-size: var(--catch-typography-brand-display-m-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-m-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-m-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-m-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="displayL"] {
-  --catch-text-size: 48px;
-  --catch-text-line-height: 1;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.035em;
+  --catch-text-size: var(--catch-typography-brand-display-l-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-l-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-l-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-l-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="displayXl"] {
-  --catch-text-size: 60px;
-  --catch-text-line-height: 1;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.04em;
+  --catch-text-size: var(--catch-typography-brand-display-xl-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-xl-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-xl-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-xl-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
 }
 
 .text[data-variant="displayXxl"] {
-  --catch-text-size: 72px;
-  --catch-text-line-height: 1;
-  --catch-text-weight: 760;
-  --catch-text-tracking: -0.04em;
+  --catch-text-size: var(--catch-typography-brand-display-xxl-size);
+  --catch-text-line-height: var(--catch-typography-brand-display-xxl-line-height);
+  --catch-text-weight: var(--catch-typography-brand-display-xxl-weight);
+  --catch-text-tracking: var(--catch-typography-brand-display-xxl-tracking);
   --catch-text-role-color: var(--catch-theme-ink);
+}
+
+/*
+ * Phone step-down (D19): below 640px of page width the two hero steps drop
+ * two steps, displayXxl to displayL and displayXl to displayM. Flutter has no
+ * Xl or Xxl feature call site yet and takes the same rule with its first one.
+ */
+@container catch-page (width < 640px) {
+  .text[data-variant="displayXxl"] {
+    --catch-text-size: var(--catch-typography-brand-display-l-size);
+    --catch-text-line-height: var(--catch-typography-brand-display-l-line-height);
+    --catch-text-tracking: var(--catch-typography-brand-display-l-tracking);
+  }
+
+  .text[data-variant="displayXl"] {
+    --catch-text-size: var(--catch-typography-brand-display-m-size);
+    --catch-text-line-height: var(--catch-typography-brand-display-m-line-height);
+    --catch-text-tracking: var(--catch-typography-brand-display-m-tracking);
+  }
 }
 
 .text[data-variant="headline"] {
@@ -192,6 +211,28 @@
 .text[data-color="positiveText"] { --catch-text-color: var(--catch-theme-positive-text); }
 .text[data-color="attentionText"] { --catch-text-color: var(--catch-theme-attention-text); }
 .text[data-color="inherit"] { color: inherit; }
+
+/* Palette accents for coloured labels: the deep shade on light, the accent on dark. */
+.text[data-color="coral"] { --catch-text-color: var(--catch-palette-coral-deep); }
+.text[data-color="pink"] { --catch-text-color: var(--catch-palette-pink-deep); }
+.text[data-color="yellow"] { --catch-text-color: var(--catch-palette-yellow-deep); }
+.text[data-color="mint"] { --catch-text-color: var(--catch-palette-mint-deep); }
+.text[data-color="indigo"] { --catch-text-color: var(--catch-palette-indigo-deep); }
+.text[data-color="magenta"] { --catch-text-color: var(--catch-palette-magenta-deep); }
+
+:where([data-catch-theme="dark"]) .text[data-color="coral"] { --catch-text-color: var(--catch-palette-coral); }
+:where([data-catch-theme="dark"]) .text[data-color="pink"] { --catch-text-color: var(--catch-palette-pink); }
+:where([data-catch-theme="dark"]) .text[data-color="yellow"] { --catch-text-color: var(--catch-palette-yellow); }
+:where([data-catch-theme="dark"]) .text[data-color="mint"] { --catch-text-color: var(--catch-palette-mint); }
+:where([data-catch-theme="dark"]) .text[data-color="indigo"] { --catch-text-color: var(--catch-palette-indigo); }
+:where([data-catch-theme="dark"]) .text[data-color="magenta"] { --catch-text-color: var(--catch-palette-magenta); }
+
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="coral"] { --catch-text-color: var(--catch-palette-coral-deep); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="pink"] { --catch-text-color: var(--catch-palette-pink-deep); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="yellow"] { --catch-text-color: var(--catch-palette-yellow-deep); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="mint"] { --catch-text-color: var(--catch-palette-mint-deep); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="indigo"] { --catch-text-color: var(--catch-palette-indigo-deep); }
+:where([data-catch-theme="dark"] [data-catch-theme="light"]) .text[data-color="magenta"] { --catch-text-color: var(--catch-palette-magenta-deep); }
 
 .text[data-align="start"] { text-align: start; }
 .text[data-align="center"] { text-align: center; }

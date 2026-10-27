@@ -28,7 +28,7 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               StageSectionHeader(
-                icon: CatchIcons.autoAwesomeRounded,
+                icon: CatchIcons.magic,
                 label: context
                     .l10n
                     .eventSuccessEventSuccessCompanionAfterglowLabelPrivateAfterglow,
@@ -57,7 +57,7 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
           AfterglowBeatGrid._(
             beats: [
               _AfterglowBeat(
-                icon: CatchIcons.eventAvailableOutlined,
+                icon: CatchIcons.eventConfirmed,
                 label: context
                     .l10n
                     .eventSuccessEventSuccessCompanionAfterglowLabelYouShowedUp,
@@ -68,7 +68,7 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
                     ),
               ),
               _AfterglowBeat(
-                icon: CatchIcons.forumOutlined,
+                icon: CatchIcons.conversations,
                 label: openersEnabled
                     ? context
                           .l10n
@@ -85,7 +85,7 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
                           .eventSuccessEventSuccessCompanionAfterglowVisiblecopyKeepTheUsefulParts,
               ),
               _AfterglowBeat(
-                icon: CatchIcons.favoriteBorderRounded,
+                icon: CatchIcons.like,
                 label: feedback == null
                     ? context
                           .l10n
@@ -119,8 +119,8 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  CatchIcons.lockOutlineRounded,
-                  size: CatchIcon.md,
+                  CatchIcons.locked,
+                  size: CatchIconSize.md,
                   color: t.primary,
                 ),
                 gapW8,
@@ -266,7 +266,11 @@ class _AfterglowBeatRowState extends State<AfterglowBeatRow>
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(beat.icon, size: CatchIcon.control, color: t.primary),
+                  Icon(
+                    beat.icon,
+                    size: CatchIconSize.control,
+                    color: t.primary,
+                  ),
                   gapW10,
                   Expanded(
                     child: Column(

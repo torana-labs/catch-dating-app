@@ -115,7 +115,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                 children: [
                   Icon(
                     CatchIcons.nearMeOutlined,
-                    size: CatchIcon.md,
+                    size: CatchIconSize.md,
                     color: t.primary,
                   ),
                   gapW8,
@@ -153,7 +153,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
                     label: context
                         .l10n
                         .eventSuccessEventSuccessCompanionArrivalMissionLabelUseNormalCheckIn,
-                    variant: CatchButtonVariant.ghost,
+                    variant: CatchButtonVariant.quiet,
                     leading: Icon(CatchIcons.qrCode2Rounded),
                     status: (skipping)
                         ? CatchButtonStatus.loading
@@ -340,7 +340,7 @@ class FirstHelloMissionEditor extends StatelessWidget {
             children: [
               Icon(
                 CatchIcons.questionAnswerOutlined,
-                size: CatchIcon.md,
+                size: CatchIconSize.md,
                 color: t.primary,
               ),
               gapW8,
@@ -398,7 +398,7 @@ class FirstHelloMissionEditor extends StatelessWidget {
                 label: context
                     .l10n
                     .eventSuccessEventSuccessCompanionArrivalMissionLabelCanTFindThem,
-                variant: CatchButtonVariant.ghost,
+                variant: CatchButtonVariant.quiet,
                 leading: Icon(CatchIcons.swapHorizRounded),
                 status: (skipping)
                     ? CatchButtonStatus.loading

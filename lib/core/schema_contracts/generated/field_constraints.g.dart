@@ -55007,6 +55007,448 @@ abstract final class CatchContractConstraints {
     minimum: 1,
   );
 
+  static const eventPublicPageDocumentBuiltAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.builtAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventPublicPageDocumentBuiltAtSeconds = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.builtAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventPublicPageDocumentCapacityBookedCount = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.capacity.bookedCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventPublicPageDocumentCapacityCapacityLimit = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.capacity.capacityLimit',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventPublicPageDocumentCapacitySpotsLeft = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.capacity.spotsLeft',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventPublicPageDocumentCapacityState = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.capacity.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['open', 'full', 'external'],
+  );
+
+  static const eventPublicPageDocumentCapacityWaitlistAvailable = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.capacity.waitlistAvailable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventPublicPageDocumentCapacityWaitlistedCount = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.capacity.waitlistedCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventPublicPageDocumentContentHash = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventPublicPageDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const eventPublicPageDocumentItemBookingKind = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.item.booking.kind',
+    required: true,
+  );
+
+  static const eventPublicPageDocumentItemBookingLabel = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.item.booking.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentItemBookingUrl = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.item.booking.url',
+    maxLength: 4096,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const eventPublicPageDocumentItemEvent = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.item.event',
+    required: true,
+  );
+
+  static const eventPublicPageDocumentItemEventId = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.item.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const eventPublicPageDocumentItemPath = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.item.path',
+    maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/\$',
+  );
+
+  static const eventPublicPageDocumentItemSource = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.item.source',
+    required: true,
+  );
+
+  static const eventPublicPageDocumentListing = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.listing',
+    required: true,
+  );
+
+  static const eventPublicPageDocumentMoreEvents = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 3,
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsActivityKind = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.activityKind',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsBookingKind = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.booking.kind',
+    required: true,
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsBookingLabel = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.booking.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsBookingPath = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.booking.path',
+    maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/\$',
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsBookingUrl = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.booking.url',
+    maxLength: 4096,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsDate = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.date',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsEndTime = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.endTime',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsEventId = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsLocation = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.location',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsPath = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.path',
+    maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/\$',
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsPhotoUrl = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.photoUrl',
+    maxLength: 4096,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsPriceLabel = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.priceLabel',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsSource = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'external'],
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsStartTime = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.startTime',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const eventPublicPageDocumentMoreEventsItemsTitle = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.moreEvents.items.title',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentOrganizerCategory = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.category',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentOrganizerCity = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.city',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentOrganizerFollowerCount = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.followerCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventPublicPageDocumentOrganizerLogoMode = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.logo.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['monogram'],
+  );
+
+  static const eventPublicPageDocumentOrganizerLogoStatus = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.logo.status',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentOrganizerLogoText = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.logo.text',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentOrganizerName = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.name',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentOrganizerOrganizerId = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const eventPublicPageDocumentOrganizerPath = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.path',
+    maxLength: 240,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/organizers/(?:[a-z0-9-]+/){1,2}\$',
+  );
+
+  static const eventPublicPageDocumentOrganizerRating = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.rating',
+    valueTypes: <String>['number'],
+    maximum: 5,
+  );
+
+  static const eventPublicPageDocumentOrganizerReviewCount = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.reviewCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventPublicPageDocumentOrganizerUpcomingEventCount = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.upcomingEventCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventPublicPageDocumentOrganizerVerified = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.verified',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventPublicPageDocumentOrganizerVerifiedReviewCount = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizer.verifiedReviewCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const eventPublicPageDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const eventPublicPageDocumentPath = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.path',
+    maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/\$',
+  );
+
+  static const eventPublicPageDocumentReviews = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const eventPublicPageDocumentReviewsItemsComment = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.comment',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentReviewsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.createdAt',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentReviewsItemsEventId = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.eventId',
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentReviewsItemsId = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.id',
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentReviewsItemsIsAnonymous = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.isAnonymous',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventPublicPageDocumentReviewsItemsOwnerResponseHostAvatarUrl = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.ownerResponse.hostAvatarUrl',
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const eventPublicPageDocumentReviewsItemsOwnerResponseHostName = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.ownerResponse.hostName',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentReviewsItemsOwnerResponseMessage = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.ownerResponse.message',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentReviewsItemsOwnerResponseUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.ownerResponse.updatedAt',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentReviewsItemsRating = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.rating',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 5,
+  );
+
+  static const eventPublicPageDocumentReviewsItemsReviewerName = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.reviewerName',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPublicPageDocumentReviewsItemsSource = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEvent', 'publicListing'],
+  );
+
+  static const eventPublicPageDocumentReviewsItemsVerificationStatus = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.reviews.items.verificationStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['verified', 'unverified'],
+  );
+
+  static const eventPublicPageDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventPublicPageDocument.schemaVersion',
+    required: true,
+  );
+
   static const eventRcsBudgetDocumentAgentId = CatchContractFieldConstraints(
     path: 'eventRcsBudgetDocument.agentId',
     maxLength: 512,
@@ -124710,6 +125152,626 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerPublicPageDocumentBuiltAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.builtAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPublicPageDocumentBuiltAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.builtAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesClaimRequestReason = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.claimRequest.reason',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesClaimRequestState = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.claimRequest.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'disabled'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesPublicReviewsReadState = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.publicReviews.readState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'disabled'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesPublicReviewsReason = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.publicReviews.reason',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesPublicReviewsTargetState = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.publicReviews.targetState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'disabled'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesPublicReviewsWriteState = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.publicReviews.writeState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'disabled'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesSupplyBookable = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.supply.bookable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesSupplyClaimable = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.supply.claimable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesSupplyHostContactEnabled = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.supply.hostContactEnabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesSupplyMode = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.supply.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unclaimed_read_only', 'claimed_managed'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesSupplyPaymentsEnabled = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.supply.paymentsEnabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesSupplyReviewPolicy = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.supply.reviewPolicy',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['after_event_end', 'attended_event_only'],
+  );
+
+  static const organizerPublicPageDocumentCapabilitiesSupplyWaitlistEnabled = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.capabilities.supply.waitlistEnabled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPublicPageDocumentClaimClaimable = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.claim.claimable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPublicPageDocumentClaimHref = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.claim.href',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentClaimLabel = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.claim.label',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentClaimState = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.claim.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unclaimed', 'claimPending', 'claimed', 'verified'],
+  );
+
+  static const organizerPublicPageDocumentContentHash = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerPublicPageDocumentFollowerCount = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.followerCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPublicPageDocumentIdentityCategory = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.category',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityCity = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.city',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityCitySlug = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.citySlug',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityCountry = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.country',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityDescription = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.description',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityFormats = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.formats',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 40,
+  );
+
+  static const organizerPublicPageDocumentIdentityFormatsItems = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.formats.items',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityHeadline = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.headline',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityIndexing = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.indexing',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['index, follow', 'noindex, follow'],
+  );
+
+  static const organizerPublicPageDocumentIdentityLogoMode = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.logo.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['monogram'],
+  );
+
+  static const organizerPublicPageDocumentIdentityLogoStatus = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.logo.status',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityLogoText = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.logo.text',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityName = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.name',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityRegion = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.region',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentIdentityVerified = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.identity.verified',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviews = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsComment = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.comment',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.createdAt',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsEventId = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.eventId',
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsId = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.id',
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsIsAnonymous = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.isAnonymous',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsOwnerResponseHostAvatarUrl = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.ownerResponse.hostAvatarUrl',
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsOwnerResponseHostName = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.ownerResponse.hostName',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsOwnerResponseMessage = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.ownerResponse.message',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsOwnerResponseUpdatedAt = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.ownerResponse.updatedAt',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsRating = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.rating',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 5,
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsReviewerName = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.reviewerName',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsSource = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEvent', 'publicListing'],
+  );
+
+  static const organizerPublicPageDocumentLatestReviewsItemsVerificationStatus = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.latestReviews.items.verificationStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['verified', 'unverified'],
+  );
+
+  static const organizerPublicPageDocumentLegacyPaths = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.legacyPaths',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const organizerPublicPageDocumentLegacyPathsItems = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.legacyPaths.items',
+    maxLength: 240,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/organizers/(?:[a-z0-9-]+/){1,2}\$',
+  );
+
+  static const organizerPublicPageDocumentLinks = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.links',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const organizerPublicPageDocumentLinksItemsId = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.links.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerPublicPageDocumentLinksItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.links.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentLinksItemsPinned = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.links.items.pinned',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPublicPageDocumentLinksItemsShowUntilNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.links.items.showUntil._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPublicPageDocumentLinksItemsShowUntilSeconds = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.links.items.showUntil._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPublicPageDocumentLinksItemsUrl = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.links.items.url',
+    maxLength: 4096,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const organizerPublicPageDocumentListing = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.listing',
+    required: true,
+  );
+
+  static const organizerPublicPageDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerPublicPageDocumentPastMoments = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.pastMoments',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 24,
+  );
+
+  static const organizerPublicPageDocumentPastMomentsItemsBookingKind = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.pastMoments.items.booking.kind',
+    required: true,
+  );
+
+  static const organizerPublicPageDocumentPastMomentsItemsBookingLabel = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.pastMoments.items.booking.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentPastMomentsItemsBookingUrl = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.pastMoments.items.booking.url',
+    maxLength: 4096,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const organizerPublicPageDocumentPastMomentsItemsEvent = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.pastMoments.items.event',
+    required: true,
+  );
+
+  static const organizerPublicPageDocumentPastMomentsItemsEventId = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.pastMoments.items.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerPublicPageDocumentPastMomentsItemsPath = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.pastMoments.items.path',
+    maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/\$',
+  );
+
+  static const organizerPublicPageDocumentPastMomentsItemsSource = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.pastMoments.items.source',
+    required: true,
+  );
+
+  static const organizerPublicPageDocumentPath = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.path',
+    maxLength: 240,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/organizers/(?:[a-z0-9-]+/){1,2}\$',
+  );
+
+  static const organizerPublicPageDocumentRecommendable = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.recommendable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerPublicPageDocumentRecommendedOrganizers = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.recommendedOrganizers',
+    required: true,
+    valueTypes: <String>['array'],
+    maxItems: 3,
+  );
+
+  static const organizerPublicPageDocumentRecommendedOrganizersItems = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.recommendedOrganizers.items',
+    required: true,
+  );
+
+  static const organizerPublicPageDocumentReviewSummaryCount = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.reviewSummary.count',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPublicPageDocumentReviewSummaryDistribution1 = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.reviewSummary.distribution.1',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPublicPageDocumentReviewSummaryDistribution2 = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.reviewSummary.distribution.2',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPublicPageDocumentReviewSummaryDistribution3 = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.reviewSummary.distribution.3',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPublicPageDocumentReviewSummaryDistribution4 = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.reviewSummary.distribution.4',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPublicPageDocumentReviewSummaryDistribution5 = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.reviewSummary.distribution.5',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPublicPageDocumentReviewSummaryRating = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.reviewSummary.rating',
+    valueTypes: <String>['number'],
+    maximum: 5,
+  );
+
+  static const organizerPublicPageDocumentReviewSummaryReadState = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.reviewSummary.readState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['enabled', 'disabled'],
+  );
+
+  static const organizerPublicPageDocumentReviewSummaryVerifiedCount = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.reviewSummary.verifiedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const organizerPublicPageDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.schemaVersion',
+    required: true,
+  );
+
+  static const organizerPublicPageDocumentUpcomingEvents = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.upcomingEvents',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const organizerPublicPageDocumentUpcomingEventsItemsBookingKind = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.upcomingEvents.items.booking.kind',
+    required: true,
+  );
+
+  static const organizerPublicPageDocumentUpcomingEventsItemsBookingLabel = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.upcomingEvents.items.booking.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPublicPageDocumentUpcomingEventsItemsBookingUrl = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.upcomingEvents.items.booking.url',
+    maxLength: 4096,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const organizerPublicPageDocumentUpcomingEventsItemsEvent = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.upcomingEvents.items.event',
+    required: true,
+  );
+
+  static const organizerPublicPageDocumentUpcomingEventsItemsEventId = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.upcomingEvents.items.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerPublicPageDocumentUpcomingEventsItemsPath = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.upcomingEvents.items.path',
+    maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/\$',
+  );
+
+  static const organizerPublicPageDocumentUpcomingEventsItemsSource = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.upcomingEvents.items.source',
+    required: true,
+  );
+
   static const organizerSalesAccountDocumentAssignedOwnerUid = CatchContractFieldConstraints(
     path: 'organizerSalesAccountDocument.assignedOwnerUid',
     maxLength: 180,
@@ -141517,6 +142579,46 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['policyReviewRequired', 'sensitiveEvent', 'eventClassificationUnavailable'],
+  );
+
+  static const publicPageBuildDocumentEventPageCount = CatchContractFieldConstraints(
+    path: 'publicPageBuildDocument.eventPageCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const publicPageBuildDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'publicPageBuildDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const publicPageBuildDocumentPublished = CatchContractFieldConstraints(
+    path: 'publicPageBuildDocument.published',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const publicPageBuildDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'publicPageBuildDocument.schemaVersion',
+    required: true,
+  );
+
+  static const publicPageBuildDocumentSourceReadAtNanoseconds = CatchContractFieldConstraints(
+    path: 'publicPageBuildDocument.sourceReadAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const publicPageBuildDocumentSourceReadAtSeconds = CatchContractFieldConstraints(
+    path: 'publicPageBuildDocument.sourceReadAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const publicProfileDocumentActivityPreferencesRunningPaceMaxSecsPerKm = CatchContractFieldConstraints(
@@ -179542,6 +180644,71 @@ abstract final class CatchContractConstraints {
     'eventPublicationCallableResponse.publicationState': eventPublicationCallableResponsePublicationState,
     'eventPublicationCallableResponse.replayed': eventPublicationCallableResponseReplayed,
     'eventPublicationCallableResponse.setupRevision': eventPublicationCallableResponseSetupRevision,
+    'eventPublicPageDocument.builtAt._nanoseconds': eventPublicPageDocumentBuiltAtNanoseconds,
+    'eventPublicPageDocument.builtAt._seconds': eventPublicPageDocumentBuiltAtSeconds,
+    'eventPublicPageDocument.capacity.bookedCount': eventPublicPageDocumentCapacityBookedCount,
+    'eventPublicPageDocument.capacity.capacityLimit': eventPublicPageDocumentCapacityCapacityLimit,
+    'eventPublicPageDocument.capacity.spotsLeft': eventPublicPageDocumentCapacitySpotsLeft,
+    'eventPublicPageDocument.capacity.state': eventPublicPageDocumentCapacityState,
+    'eventPublicPageDocument.capacity.waitlistAvailable': eventPublicPageDocumentCapacityWaitlistAvailable,
+    'eventPublicPageDocument.capacity.waitlistedCount': eventPublicPageDocumentCapacityWaitlistedCount,
+    'eventPublicPageDocument.contentHash': eventPublicPageDocumentContentHash,
+    'eventPublicPageDocument.eventId': eventPublicPageDocumentEventId,
+    'eventPublicPageDocument.item.booking.kind': eventPublicPageDocumentItemBookingKind,
+    'eventPublicPageDocument.item.booking.label': eventPublicPageDocumentItemBookingLabel,
+    'eventPublicPageDocument.item.booking.url': eventPublicPageDocumentItemBookingUrl,
+    'eventPublicPageDocument.item.event': eventPublicPageDocumentItemEvent,
+    'eventPublicPageDocument.item.eventId': eventPublicPageDocumentItemEventId,
+    'eventPublicPageDocument.item.path': eventPublicPageDocumentItemPath,
+    'eventPublicPageDocument.item.source': eventPublicPageDocumentItemSource,
+    'eventPublicPageDocument.listing': eventPublicPageDocumentListing,
+    'eventPublicPageDocument.moreEvents': eventPublicPageDocumentMoreEvents,
+    'eventPublicPageDocument.moreEvents.items.activityKind': eventPublicPageDocumentMoreEventsItemsActivityKind,
+    'eventPublicPageDocument.moreEvents.items.booking.kind': eventPublicPageDocumentMoreEventsItemsBookingKind,
+    'eventPublicPageDocument.moreEvents.items.booking.label': eventPublicPageDocumentMoreEventsItemsBookingLabel,
+    'eventPublicPageDocument.moreEvents.items.booking.path': eventPublicPageDocumentMoreEventsItemsBookingPath,
+    'eventPublicPageDocument.moreEvents.items.booking.url': eventPublicPageDocumentMoreEventsItemsBookingUrl,
+    'eventPublicPageDocument.moreEvents.items.date': eventPublicPageDocumentMoreEventsItemsDate,
+    'eventPublicPageDocument.moreEvents.items.endTime': eventPublicPageDocumentMoreEventsItemsEndTime,
+    'eventPublicPageDocument.moreEvents.items.eventId': eventPublicPageDocumentMoreEventsItemsEventId,
+    'eventPublicPageDocument.moreEvents.items.location': eventPublicPageDocumentMoreEventsItemsLocation,
+    'eventPublicPageDocument.moreEvents.items.path': eventPublicPageDocumentMoreEventsItemsPath,
+    'eventPublicPageDocument.moreEvents.items.photoUrl': eventPublicPageDocumentMoreEventsItemsPhotoUrl,
+    'eventPublicPageDocument.moreEvents.items.priceLabel': eventPublicPageDocumentMoreEventsItemsPriceLabel,
+    'eventPublicPageDocument.moreEvents.items.source': eventPublicPageDocumentMoreEventsItemsSource,
+    'eventPublicPageDocument.moreEvents.items.startTime': eventPublicPageDocumentMoreEventsItemsStartTime,
+    'eventPublicPageDocument.moreEvents.items.title': eventPublicPageDocumentMoreEventsItemsTitle,
+    'eventPublicPageDocument.organizer.category': eventPublicPageDocumentOrganizerCategory,
+    'eventPublicPageDocument.organizer.city': eventPublicPageDocumentOrganizerCity,
+    'eventPublicPageDocument.organizer.followerCount': eventPublicPageDocumentOrganizerFollowerCount,
+    'eventPublicPageDocument.organizer.logo.mode': eventPublicPageDocumentOrganizerLogoMode,
+    'eventPublicPageDocument.organizer.logo.status': eventPublicPageDocumentOrganizerLogoStatus,
+    'eventPublicPageDocument.organizer.logo.text': eventPublicPageDocumentOrganizerLogoText,
+    'eventPublicPageDocument.organizer.name': eventPublicPageDocumentOrganizerName,
+    'eventPublicPageDocument.organizer.organizerId': eventPublicPageDocumentOrganizerOrganizerId,
+    'eventPublicPageDocument.organizer.path': eventPublicPageDocumentOrganizerPath,
+    'eventPublicPageDocument.organizer.rating': eventPublicPageDocumentOrganizerRating,
+    'eventPublicPageDocument.organizer.reviewCount': eventPublicPageDocumentOrganizerReviewCount,
+    'eventPublicPageDocument.organizer.upcomingEventCount': eventPublicPageDocumentOrganizerUpcomingEventCount,
+    'eventPublicPageDocument.organizer.verified': eventPublicPageDocumentOrganizerVerified,
+    'eventPublicPageDocument.organizer.verifiedReviewCount': eventPublicPageDocumentOrganizerVerifiedReviewCount,
+    'eventPublicPageDocument.organizerId': eventPublicPageDocumentOrganizerId,
+    'eventPublicPageDocument.path': eventPublicPageDocumentPath,
+    'eventPublicPageDocument.reviews': eventPublicPageDocumentReviews,
+    'eventPublicPageDocument.reviews.items.comment': eventPublicPageDocumentReviewsItemsComment,
+    'eventPublicPageDocument.reviews.items.createdAt': eventPublicPageDocumentReviewsItemsCreatedAt,
+    'eventPublicPageDocument.reviews.items.eventId': eventPublicPageDocumentReviewsItemsEventId,
+    'eventPublicPageDocument.reviews.items.id': eventPublicPageDocumentReviewsItemsId,
+    'eventPublicPageDocument.reviews.items.isAnonymous': eventPublicPageDocumentReviewsItemsIsAnonymous,
+    'eventPublicPageDocument.reviews.items.ownerResponse.hostAvatarUrl': eventPublicPageDocumentReviewsItemsOwnerResponseHostAvatarUrl,
+    'eventPublicPageDocument.reviews.items.ownerResponse.hostName': eventPublicPageDocumentReviewsItemsOwnerResponseHostName,
+    'eventPublicPageDocument.reviews.items.ownerResponse.message': eventPublicPageDocumentReviewsItemsOwnerResponseMessage,
+    'eventPublicPageDocument.reviews.items.ownerResponse.updatedAt': eventPublicPageDocumentReviewsItemsOwnerResponseUpdatedAt,
+    'eventPublicPageDocument.reviews.items.rating': eventPublicPageDocumentReviewsItemsRating,
+    'eventPublicPageDocument.reviews.items.reviewerName': eventPublicPageDocumentReviewsItemsReviewerName,
+    'eventPublicPageDocument.reviews.items.source': eventPublicPageDocumentReviewsItemsSource,
+    'eventPublicPageDocument.reviews.items.verificationStatus': eventPublicPageDocumentReviewsItemsVerificationStatus,
+    'eventPublicPageDocument.schemaVersion': eventPublicPageDocumentSchemaVersion,
     'eventRcsBudgetDocument.agentId': eventRcsBudgetDocumentAgentId,
     'eventRcsBudgetDocument.approvalId': eventRcsBudgetDocumentApprovalId,
     'eventRcsBudgetDocument.budgetId': eventRcsBudgetDocumentBudgetId,
@@ -189059,6 +190226,97 @@ abstract final class CatchContractConstraints {
     'organizerProviderSetupCallableResponse.providers.items.importSupport': organizerProviderSetupCallableResponseProvidersItemsImportSupport,
     'organizerProviderSetupCallableResponse.providers.items.provider': organizerProviderSetupCallableResponseProvidersItemsProvider,
     'organizerProviderSetupCallableResponse.providers.items.requirement': organizerProviderSetupCallableResponseProvidersItemsRequirement,
+    'organizerPublicPageDocument.builtAt._nanoseconds': organizerPublicPageDocumentBuiltAtNanoseconds,
+    'organizerPublicPageDocument.builtAt._seconds': organizerPublicPageDocumentBuiltAtSeconds,
+    'organizerPublicPageDocument.capabilities.claimRequest.reason': organizerPublicPageDocumentCapabilitiesClaimRequestReason,
+    'organizerPublicPageDocument.capabilities.claimRequest.state': organizerPublicPageDocumentCapabilitiesClaimRequestState,
+    'organizerPublicPageDocument.capabilities.publicReviews.readState': organizerPublicPageDocumentCapabilitiesPublicReviewsReadState,
+    'organizerPublicPageDocument.capabilities.publicReviews.reason': organizerPublicPageDocumentCapabilitiesPublicReviewsReason,
+    'organizerPublicPageDocument.capabilities.publicReviews.targetState': organizerPublicPageDocumentCapabilitiesPublicReviewsTargetState,
+    'organizerPublicPageDocument.capabilities.publicReviews.writeState': organizerPublicPageDocumentCapabilitiesPublicReviewsWriteState,
+    'organizerPublicPageDocument.capabilities.supply.bookable': organizerPublicPageDocumentCapabilitiesSupplyBookable,
+    'organizerPublicPageDocument.capabilities.supply.claimable': organizerPublicPageDocumentCapabilitiesSupplyClaimable,
+    'organizerPublicPageDocument.capabilities.supply.hostContactEnabled': organizerPublicPageDocumentCapabilitiesSupplyHostContactEnabled,
+    'organizerPublicPageDocument.capabilities.supply.mode': organizerPublicPageDocumentCapabilitiesSupplyMode,
+    'organizerPublicPageDocument.capabilities.supply.paymentsEnabled': organizerPublicPageDocumentCapabilitiesSupplyPaymentsEnabled,
+    'organizerPublicPageDocument.capabilities.supply.reviewPolicy': organizerPublicPageDocumentCapabilitiesSupplyReviewPolicy,
+    'organizerPublicPageDocument.capabilities.supply.waitlistEnabled': organizerPublicPageDocumentCapabilitiesSupplyWaitlistEnabled,
+    'organizerPublicPageDocument.claim.claimable': organizerPublicPageDocumentClaimClaimable,
+    'organizerPublicPageDocument.claim.href': organizerPublicPageDocumentClaimHref,
+    'organizerPublicPageDocument.claim.label': organizerPublicPageDocumentClaimLabel,
+    'organizerPublicPageDocument.claim.state': organizerPublicPageDocumentClaimState,
+    'organizerPublicPageDocument.contentHash': organizerPublicPageDocumentContentHash,
+    'organizerPublicPageDocument.followerCount': organizerPublicPageDocumentFollowerCount,
+    'organizerPublicPageDocument.identity.category': organizerPublicPageDocumentIdentityCategory,
+    'organizerPublicPageDocument.identity.city': organizerPublicPageDocumentIdentityCity,
+    'organizerPublicPageDocument.identity.citySlug': organizerPublicPageDocumentIdentityCitySlug,
+    'organizerPublicPageDocument.identity.country': organizerPublicPageDocumentIdentityCountry,
+    'organizerPublicPageDocument.identity.description': organizerPublicPageDocumentIdentityDescription,
+    'organizerPublicPageDocument.identity.formats': organizerPublicPageDocumentIdentityFormats,
+    'organizerPublicPageDocument.identity.formats.items': organizerPublicPageDocumentIdentityFormatsItems,
+    'organizerPublicPageDocument.identity.headline': organizerPublicPageDocumentIdentityHeadline,
+    'organizerPublicPageDocument.identity.indexing': organizerPublicPageDocumentIdentityIndexing,
+    'organizerPublicPageDocument.identity.logo.mode': organizerPublicPageDocumentIdentityLogoMode,
+    'organizerPublicPageDocument.identity.logo.status': organizerPublicPageDocumentIdentityLogoStatus,
+    'organizerPublicPageDocument.identity.logo.text': organizerPublicPageDocumentIdentityLogoText,
+    'organizerPublicPageDocument.identity.name': organizerPublicPageDocumentIdentityName,
+    'organizerPublicPageDocument.identity.region': organizerPublicPageDocumentIdentityRegion,
+    'organizerPublicPageDocument.identity.verified': organizerPublicPageDocumentIdentityVerified,
+    'organizerPublicPageDocument.latestReviews': organizerPublicPageDocumentLatestReviews,
+    'organizerPublicPageDocument.latestReviews.items.comment': organizerPublicPageDocumentLatestReviewsItemsComment,
+    'organizerPublicPageDocument.latestReviews.items.createdAt': organizerPublicPageDocumentLatestReviewsItemsCreatedAt,
+    'organizerPublicPageDocument.latestReviews.items.eventId': organizerPublicPageDocumentLatestReviewsItemsEventId,
+    'organizerPublicPageDocument.latestReviews.items.id': organizerPublicPageDocumentLatestReviewsItemsId,
+    'organizerPublicPageDocument.latestReviews.items.isAnonymous': organizerPublicPageDocumentLatestReviewsItemsIsAnonymous,
+    'organizerPublicPageDocument.latestReviews.items.ownerResponse.hostAvatarUrl': organizerPublicPageDocumentLatestReviewsItemsOwnerResponseHostAvatarUrl,
+    'organizerPublicPageDocument.latestReviews.items.ownerResponse.hostName': organizerPublicPageDocumentLatestReviewsItemsOwnerResponseHostName,
+    'organizerPublicPageDocument.latestReviews.items.ownerResponse.message': organizerPublicPageDocumentLatestReviewsItemsOwnerResponseMessage,
+    'organizerPublicPageDocument.latestReviews.items.ownerResponse.updatedAt': organizerPublicPageDocumentLatestReviewsItemsOwnerResponseUpdatedAt,
+    'organizerPublicPageDocument.latestReviews.items.rating': organizerPublicPageDocumentLatestReviewsItemsRating,
+    'organizerPublicPageDocument.latestReviews.items.reviewerName': organizerPublicPageDocumentLatestReviewsItemsReviewerName,
+    'organizerPublicPageDocument.latestReviews.items.source': organizerPublicPageDocumentLatestReviewsItemsSource,
+    'organizerPublicPageDocument.latestReviews.items.verificationStatus': organizerPublicPageDocumentLatestReviewsItemsVerificationStatus,
+    'organizerPublicPageDocument.legacyPaths': organizerPublicPageDocumentLegacyPaths,
+    'organizerPublicPageDocument.legacyPaths.items': organizerPublicPageDocumentLegacyPathsItems,
+    'organizerPublicPageDocument.links': organizerPublicPageDocumentLinks,
+    'organizerPublicPageDocument.links.items.id': organizerPublicPageDocumentLinksItemsId,
+    'organizerPublicPageDocument.links.items.label': organizerPublicPageDocumentLinksItemsLabel,
+    'organizerPublicPageDocument.links.items.pinned': organizerPublicPageDocumentLinksItemsPinned,
+    'organizerPublicPageDocument.links.items.showUntil._nanoseconds': organizerPublicPageDocumentLinksItemsShowUntilNanoseconds,
+    'organizerPublicPageDocument.links.items.showUntil._seconds': organizerPublicPageDocumentLinksItemsShowUntilSeconds,
+    'organizerPublicPageDocument.links.items.url': organizerPublicPageDocumentLinksItemsUrl,
+    'organizerPublicPageDocument.listing': organizerPublicPageDocumentListing,
+    'organizerPublicPageDocument.organizerId': organizerPublicPageDocumentOrganizerId,
+    'organizerPublicPageDocument.pastMoments': organizerPublicPageDocumentPastMoments,
+    'organizerPublicPageDocument.pastMoments.items.booking.kind': organizerPublicPageDocumentPastMomentsItemsBookingKind,
+    'organizerPublicPageDocument.pastMoments.items.booking.label': organizerPublicPageDocumentPastMomentsItemsBookingLabel,
+    'organizerPublicPageDocument.pastMoments.items.booking.url': organizerPublicPageDocumentPastMomentsItemsBookingUrl,
+    'organizerPublicPageDocument.pastMoments.items.event': organizerPublicPageDocumentPastMomentsItemsEvent,
+    'organizerPublicPageDocument.pastMoments.items.eventId': organizerPublicPageDocumentPastMomentsItemsEventId,
+    'organizerPublicPageDocument.pastMoments.items.path': organizerPublicPageDocumentPastMomentsItemsPath,
+    'organizerPublicPageDocument.pastMoments.items.source': organizerPublicPageDocumentPastMomentsItemsSource,
+    'organizerPublicPageDocument.path': organizerPublicPageDocumentPath,
+    'organizerPublicPageDocument.recommendable': organizerPublicPageDocumentRecommendable,
+    'organizerPublicPageDocument.recommendedOrganizers': organizerPublicPageDocumentRecommendedOrganizers,
+    'organizerPublicPageDocument.recommendedOrganizers.items': organizerPublicPageDocumentRecommendedOrganizersItems,
+    'organizerPublicPageDocument.reviewSummary.count': organizerPublicPageDocumentReviewSummaryCount,
+    'organizerPublicPageDocument.reviewSummary.distribution.1': organizerPublicPageDocumentReviewSummaryDistribution1,
+    'organizerPublicPageDocument.reviewSummary.distribution.2': organizerPublicPageDocumentReviewSummaryDistribution2,
+    'organizerPublicPageDocument.reviewSummary.distribution.3': organizerPublicPageDocumentReviewSummaryDistribution3,
+    'organizerPublicPageDocument.reviewSummary.distribution.4': organizerPublicPageDocumentReviewSummaryDistribution4,
+    'organizerPublicPageDocument.reviewSummary.distribution.5': organizerPublicPageDocumentReviewSummaryDistribution5,
+    'organizerPublicPageDocument.reviewSummary.rating': organizerPublicPageDocumentReviewSummaryRating,
+    'organizerPublicPageDocument.reviewSummary.readState': organizerPublicPageDocumentReviewSummaryReadState,
+    'organizerPublicPageDocument.reviewSummary.verifiedCount': organizerPublicPageDocumentReviewSummaryVerifiedCount,
+    'organizerPublicPageDocument.schemaVersion': organizerPublicPageDocumentSchemaVersion,
+    'organizerPublicPageDocument.upcomingEvents': organizerPublicPageDocumentUpcomingEvents,
+    'organizerPublicPageDocument.upcomingEvents.items.booking.kind': organizerPublicPageDocumentUpcomingEventsItemsBookingKind,
+    'organizerPublicPageDocument.upcomingEvents.items.booking.label': organizerPublicPageDocumentUpcomingEventsItemsBookingLabel,
+    'organizerPublicPageDocument.upcomingEvents.items.booking.url': organizerPublicPageDocumentUpcomingEventsItemsBookingUrl,
+    'organizerPublicPageDocument.upcomingEvents.items.event': organizerPublicPageDocumentUpcomingEventsItemsEvent,
+    'organizerPublicPageDocument.upcomingEvents.items.eventId': organizerPublicPageDocumentUpcomingEventsItemsEventId,
+    'organizerPublicPageDocument.upcomingEvents.items.path': organizerPublicPageDocumentUpcomingEventsItemsPath,
+    'organizerPublicPageDocument.upcomingEvents.items.source': organizerPublicPageDocumentUpcomingEventsItemsSource,
     'organizerSalesAccountDocument.assignedOwnerUid': organizerSalesAccountDocumentAssignedOwnerUid,
     'organizerSalesAccountDocument.city': organizerSalesAccountDocumentCity,
     'organizerSalesAccountDocument.classification': organizerSalesAccountDocumentClassification,
@@ -191350,6 +192608,12 @@ abstract final class CatchContractConstraints {
     'publicOrganizerTrackingSettingsCallableResponse.eventId': publicOrganizerTrackingSettingsCallableResponseEventId,
     'publicOrganizerTrackingSettingsCallableResponse.organizerId': publicOrganizerTrackingSettingsCallableResponseOrganizerId,
     'publicOrganizerTrackingSettingsCallableResponse.policyReason': publicOrganizerTrackingSettingsCallableResponsePolicyReason,
+    'publicPageBuildDocument.eventPageCount': publicPageBuildDocumentEventPageCount,
+    'publicPageBuildDocument.organizerId': publicPageBuildDocumentOrganizerId,
+    'publicPageBuildDocument.published': publicPageBuildDocumentPublished,
+    'publicPageBuildDocument.schemaVersion': publicPageBuildDocumentSchemaVersion,
+    'publicPageBuildDocument.sourceReadAt._nanoseconds': publicPageBuildDocumentSourceReadAtNanoseconds,
+    'publicPageBuildDocument.sourceReadAt._seconds': publicPageBuildDocumentSourceReadAtSeconds,
     'publicProfileDocument.activityPreferences.running.paceMaxSecsPerKm': publicProfileDocumentActivityPreferencesRunningPaceMaxSecsPerKm,
     'publicProfileDocument.activityPreferences.running.paceMinSecsPerKm': publicProfileDocumentActivityPreferencesRunningPaceMinSecsPerKm,
     'publicProfileDocument.activityPreferences.running.preferredDistances': publicProfileDocumentActivityPreferencesRunningPreferredDistances,

@@ -1,3 +1,4 @@
+import {CatchBadge} from "@catch/web-ui";
 import {
   Activity,
   CheckCircle2,
@@ -24,7 +25,6 @@ import {
   AdminMetricGrid,
   AdminOrganizerIntakeCurationPanel,
   AdminOrganizerIntakeList,
-  AdminTag,
   AdminTagList,
   EmptyState,
   Panel,
@@ -251,7 +251,7 @@ function OrganizerIntakeDiagnostics({
           </AdminIntakeStateGrid>
           <AdminTagList>
             {Object.entries(bridge.crawlPlan.summary.platforms).map(([platform, count]) => (
-              <AdminTag key={platform}>{platform} x{count}</AdminTag>
+              <CatchBadge key={platform} label={`${platform} x${count}`} />
             ))}
           </AdminTagList>
         </Panel>

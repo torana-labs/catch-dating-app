@@ -74,11 +74,7 @@ type Suggestion =
 interface GetCrossPathsSuggestionsDeps {
   firestore: () => FirebaseFirestore.Firestore;
   now: () => FirebaseFirestore.Timestamp;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
   signToken?: (payload: SuggestionTokenPayload) => string;
 }
 
@@ -133,7 +129,9 @@ export async function getCrossPathsSuggestionsHandler(
     normalizePayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, viewerUid, "getCrossPathsSuggestions");
+  await deps.checkRateLimit?.(db, viewerUid, "getCrossPathsSuggestions", {
+    maxRequests: 12, windowMs: 60 * 1000,
+  });
   const now = deps.now();
   const nowMillis = now.toMillis();
   const sessionIdHash = sha256(data.sessionId);

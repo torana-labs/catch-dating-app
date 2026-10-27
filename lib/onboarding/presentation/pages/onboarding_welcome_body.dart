@@ -370,7 +370,6 @@ class WelcomeSceneLayout extends StatelessWidget {
                           .l10n
                           .onboardingWelcomePageLabelContinueWithPhone,
                       onPressed: onContinue,
-                      size: CatchButtonSize.lg,
                       fullWidth: true,
                       backgroundColor: tokens.primary,
                       foregroundColor: tokens.primaryInk,
@@ -384,7 +383,6 @@ class WelcomeSceneLayout extends StatelessWidget {
                       label: context.l10n.onboardingWelcomePageLabelSeeWhatSOn,
                       onPressed: onExplore,
                       variant: CatchButtonVariant.secondary,
-                      size: CatchButtonSize.lg,
                       fullWidth: true,
                       backgroundColor: Colors.transparent,
                       foregroundColor: tokens.ink,

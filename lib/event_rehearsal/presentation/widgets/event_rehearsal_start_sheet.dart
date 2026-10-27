@@ -26,7 +26,7 @@ class EventRehearsalStartSheet extends StatelessWidget {
           description: context.l10n.hostRehearsalStartUpcomingDescription(
             count: event.signedUpCount,
           ),
-          icon: CatchIcons.calendarTodayOutlined,
+          icon: CatchIcons.date,
           onTap: () => Navigator.of(
             context,
           ).pop(EventRehearsalStartChoice.upcomingEvent),
@@ -36,7 +36,7 @@ class EventRehearsalStartSheet extends StatelessWidget {
           key: const ValueKey<String>('rehearsal-start-custom'),
           title: context.l10n.hostRehearsalStartCustom,
           description: context.l10n.hostRehearsalStartCustomDescription,
-          icon: CatchIcons.tuneRounded,
+          icon: CatchIcons.filters,
           onTap: () =>
               Navigator.of(context).pop(EventRehearsalStartChoice.custom),
         ),

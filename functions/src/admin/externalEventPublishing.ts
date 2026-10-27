@@ -35,11 +35,7 @@ interface ExternalEventPublishingDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now?: () => Date;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: ExternalEventPublishingDeps = {
@@ -88,7 +84,8 @@ export async function adminPublishExternalEventHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminPublishExternalEvent"
+    "adminPublishExternalEvent",
+    {maxRequests: 10, windowMs: 60 * 1000}
   );
 
   const eventId = eventIdFromTargetPath(data.targetPath);

@@ -61,8 +61,6 @@ local.properties
 
 # Standalone library/tool package lockfiles are local resolution artifacts.
 /packages/catch_ui_lints/pubspec.lock
-/packages/phosphor_flutter/pubspec.lock
-/packages/phosphor_flutter/example/pubspec.lock
 /tool/widget_dedupe/pubspec.lock
 
 /coverage

@@ -46,11 +46,7 @@ interface EventSuccessPresenceDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
   environment: NodeJS.ProcessEnv;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const DEFAULT_PRESENCE_POLICY: EventSuccessPresencePolicy = {
@@ -160,7 +156,9 @@ export async function heartbeatEventSuccessPresenceHandler(
       validateHeartbeatEventSuccessPresenceCallablePayload
     );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "heartbeatEventSuccessPresence");
+  await deps.checkRateLimit?.(db, uid, "heartbeatEventSuccessPresence", {
+    maxRequests: 6, windowMs: 60 * 1000,
+  });
   const [eventSnap, participant] = await Promise.all([
     db.collection("events").doc(payload.eventId).get(),
     loadEventSuccessRosterParticipant(db, payload.eventId, uid),
@@ -216,7 +214,8 @@ export async function getEventSuccessPresenceSummaryHandler(
   await deps.checkRateLimit?.(
     db,
     hostUid,
-    "getEventSuccessPresenceSummary"
+    "getEventSuccessPresenceSummary",
+    {maxRequests: 6, windowMs: 60 * 1000}
   );
   const [eventSnap, planSnap] = await Promise.all([
     db.collection("events").doc(payload.eventId).get(),

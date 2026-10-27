@@ -46,7 +46,7 @@
 
 .track {
   display: block;
-  height: var(--catch-space-s2);
+  height: 8px;
   overflow: hidden;
   border-radius: var(--catch-radius-pill);
   background: var(--catch-theme-line);

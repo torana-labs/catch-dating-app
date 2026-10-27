@@ -56,7 +56,7 @@ void main() {
           (background.b * 255).round(),
           255,
         ],
-        reason: 'Scrolling content must never paint through a ghost action.',
+        reason: 'Scrolling content must never paint through a quiet action.',
       );
     });
   }
@@ -94,15 +94,13 @@ void main() {
                       label: 'Save and continue',
                       onPressed: () => presses++,
                       fullWidth: true,
-                      size: CatchButtonSize.lg,
                     ),
                     const SizedBox(height: 8),
                     CatchButton(
                       label: 'Previous',
                       onPressed: () {},
-                      variant: CatchButtonVariant.ghost,
+                      variant: CatchButtonVariant.quiet,
                       fullWidth: true,
-                      size: CatchButtonSize.lg,
                     ),
                   ],
                 ),

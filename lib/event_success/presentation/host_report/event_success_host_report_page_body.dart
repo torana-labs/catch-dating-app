@@ -64,7 +64,7 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
           if (entries != null) const SizedBox(height: CatchGaps.section),
           CatchSection.status(
             key: const ValueKey('event-success-report-status'),
-            icon: CatchIcons.insightsOutlined,
+            icon: CatchIcons.insights,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostReportTitleNoEventReportYet,
@@ -89,7 +89,7 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
           if (entries != null) const SizedBox(height: CatchGaps.section),
           CatchSection.status(
             key: const ValueKey('event-success-report-status'),
-            icon: CatchIcons.insightsOutlined,
+            icon: CatchIcons.insights,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostReportTitlePostEventInsightsAre,
@@ -136,7 +136,7 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
           ))
             CatchSection.status(
               key: const ValueKey('event-success-report-status'),
-              icon: CatchIcons.insightsOutlined,
+              icon: CatchIcons.insights,
               title: context
                   .l10n
                   .eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback,
@@ -166,7 +166,7 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
           const SizedBox(height: CatchGaps.section),
         ...errorStates.expand((error) => [error, gapH16]),
         CatchBanner(
-          icon: CatchIcons.assignmentTurnedInOutlined,
+          icon: CatchIcons.taskDone,
           title: context.l10n
               .eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse(
                 feedbackCount: feedbackCount,

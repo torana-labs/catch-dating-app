@@ -22,11 +22,7 @@ const decisionCollection = "organizerPolicyGapReviewDecisions";
 interface OrganizerPolicyGapDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: OrganizerPolicyGapDeps = {
@@ -76,7 +72,8 @@ export async function adminDecideOrganizerPolicyGapHandler(
   await deps.checkRateLimit?.(
     db,
     adminContext.uid,
-    "adminDecideOrganizerPolicyGap"
+    "adminDecideOrganizerPolicyGap",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const decisionId = decisionIdForPolicyGap(data.gapId);
   const decisionRef = db.collection(decisionCollection).doc(decisionId);

@@ -81,7 +81,9 @@ export async function createPrivateEventSetupHandler(
   const command = validateCallableWithAjv(request,
     validateCreatePrivateEventSetupCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "createPrivateEventSetup");
+  await deps.checkRateLimit(db, actorUid, "createPrivateEventSetup", {
+    maxRequests: 10, windowMs: 60 * 1000,
+  });
   return createSetup({actorUid, command, deps: deps.service(db)});
 }
 
@@ -93,7 +95,9 @@ export async function updatePrivateEventBasicsHandler(
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventBasicsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "updatePrivateEventBasics");
+  await deps.checkRateLimit(db, actorUid, "updatePrivateEventBasics", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   return updateBasics({actorUid, command, deps: deps.service(db)});
 }
 
@@ -105,7 +109,9 @@ export async function getPrivateEventSetupHandler(
   const command = validateCallableWithAjv(request,
     validateGetPrivateEventSetupCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getPrivateEventSetup");
+  await deps.checkRateLimit(db, actorUid, "getPrivateEventSetup", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   return readSetup({actorUid, command, db});
 }
 
@@ -124,7 +130,9 @@ export async function updatePrivateEventPreferencesHandler(
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventPreferencesCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "updatePrivateEventPreferences");
+  await deps.checkRateLimit(db, actorUid, "updatePrivateEventPreferences", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   return updatePreferences({actorUid, command, deps: deps.service(db)});
 }
 
@@ -139,7 +147,9 @@ export async function listPrivateEventSetupsHandler(
   const command = validateCallableWithAjv(request,
     validateListPrivateEventSetupsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listPrivateEventSetups");
+  await deps.checkRateLimit(db, actorUid, "listPrivateEventSetups", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const result = await listSetups({actorUid, command, db});
   if (!validatePrivateEventSetupListCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid private event list response.");
@@ -158,7 +168,9 @@ export async function updatePrivateEventDetailsHandler(
   const command = validateCallableWithAjv(request,
     validateUpdatePrivateEventDetailsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "updatePrivateEventDetails");
+  await deps.checkRateLimit(db, actorUid, "updatePrivateEventDetails", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const result = await updateDetails({actorUid, command,
     deps: deps.service(db)});
   if (!validatePrivateEventSetupMutationCallableResponse(result)) {
@@ -177,7 +189,9 @@ export async function listOfferEventTargetsHandler(
   const command = validateCallableWithAjv(request,
     validateListOfferEventTargetsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listOfferEventTargets");
+  await deps.checkRateLimit(db, actorUid, "listOfferEventTargets", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const result = await listOfferTargets({actorUid, command, db});
   if (!validateOfferEventTargetListCallableResponse(result)) {
     throw new HttpsError("internal", "Invalid event target list response.");
@@ -195,7 +209,9 @@ export async function setEventPublicationHandler(
   const command = validateCallableWithAjv(request,
     validateSetEventPublicationCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "setEventPublication");
+  await deps.checkRateLimit(db, actorUid, "setEventPublication", {
+    maxRequests: 15, windowMs: 60 * 1000,
+  });
   const result = await setPublication({actorUid, command,
     deps: deps.service(db)});
   if (!validateEventPublicationCallableResponse(result)) {
@@ -217,7 +233,9 @@ export async function reconcilePrivateEventSeatsHandler(
   const command = validateCallableWithAjv(request,
     validateReconcilePrivateEventSeatsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "reconcilePrivateEventSeats");
+  await deps.checkRateLimit(db, actorUid, "reconcilePrivateEventSeats", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   const {discard, ...settings} = command;
   const result = await reconcileSeats({actorUid, command: settings, discard,
     deps: {...deps.service(db), auth: deps.seatAuth ?? admin.auth(),

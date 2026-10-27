@@ -19,7 +19,7 @@ void _registerExploreDiscoveryWidgetsTests() {
       CatchTextStyles.displayXs(titleContext).fontSize,
     );
     expect(title.style?.fontStyle, isNot(FontStyle.italic));
-    expect(find.byIcon(CatchIcons.forwardArrow), findsOneWidget);
+    expect(find.byIcon(CatchIcons.forward), findsOneWidget);
 
     await pumpTestApp(
       tester,
@@ -31,7 +31,7 @@ void _registerExploreDiscoveryWidgetsTests() {
       ),
     );
 
-    expect(find.byIcon(CatchIcons.forwardArrow), findsNothing);
+    expect(find.byIcon(CatchIcons.forward), findsNothing);
   });
 
   testWidgets('ClubsContent renders personal rail and mixed discovery cards', (
@@ -605,12 +605,9 @@ void _registerExploreDiscoveryWidgetsTests() {
               body: _exploreCoverHeader(
                 featuredItem: item,
                 heroActions: [
+                  heroAction(icon: CatchIcons.date, tooltip: 'Calendar'),
                   heroAction(
-                    icon: CatchIcons.calendarTodayOutlined,
-                    tooltip: 'Calendar',
-                  ),
-                  heroAction(
-                    icon: CatchIcons.openActivity,
+                    icon: CatchIcons.activityOpenActivity,
                     tooltip: 'Activity',
                   ),
                 ],
@@ -668,10 +665,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     );
     expect(tester.widget<Icon>(searchIcon).color, CatchTokens.dark.ink);
 
-    for (final icon in [
-      CatchIcons.calendarTodayOutlined,
-      CatchIcons.openActivity,
-    ]) {
+    for (final icon in [CatchIcons.date, CatchIcons.activityOpenActivity]) {
       expect(
         tester.widget<Icon>(find.byIcon(icon)).color,
         CatchTokens.dark.ink,

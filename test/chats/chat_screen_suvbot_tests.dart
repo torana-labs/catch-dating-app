@@ -93,8 +93,8 @@ void _registerChatScreenSuvbotTests() {
       expect(find.text('Reset...'), findsOneWidget);
       expect(find.text('YOU BOTH RAN'), findsNothing);
       expect(find.byType(TextField), findsNothing);
-      expect(find.byIcon(CatchIcons.imageOutlined), findsNothing);
-      expect(find.byIcon(CatchIcons.sendRounded), findsNothing);
+      expect(find.byIcon(CatchIcons.photo), findsNothing);
+      expect(find.byIcon(CatchIcons.send), findsNothing);
 
       await tester.tap(find.text('Check setup'));
       await pumpFeatureUi(tester);

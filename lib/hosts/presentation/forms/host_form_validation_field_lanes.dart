@@ -69,7 +69,7 @@ class HostFormValidationFieldLanes extends StatelessWidget {
             child: CatchField.action(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormPatternNone,
-              icon: CatchIcons.closeRounded,
+              icon: CatchIcons.close,
               onTap: () => update(validation.copyWith(patternPreset: null)),
             ),
           ),

@@ -40,15 +40,15 @@ class EventSuccessCountdownSurface extends StatelessWidget {
     final beatItems = [
       (
         label: context.l10n.eventSuccessEventSuccessLiveRevealWidgetsLabelHold,
-        icon: CatchIcons.panToolAltOutlined,
+        icon: CatchIcons.tap,
       ),
       (
         label: context.l10n.eventSuccessEventSuccessLiveRevealWidgetsLabelWatch,
-        icon: CatchIcons.visibilityOutlined,
+        icon: CatchIcons.show,
       ),
       (
         label: context.l10n.eventSuccessEventSuccessLiveRevealWidgetsLabelMove,
-        icon: CatchIcons.boltRounded,
+        icon: CatchIcons.instant,
       ),
     ];
     final urgency = seconds <= 3
@@ -117,7 +117,7 @@ class EventSuccessCountdownSurface extends StatelessWidget {
                       label: context
                           .l10n
                           .eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold,
-                      icon: CatchIcons.lockClockRounded,
+                      icon: CatchIcons.lockedUntil,
                     ),
                     CatchBadge.onDarkStatus(
                       label: kind.label(context.l10n),

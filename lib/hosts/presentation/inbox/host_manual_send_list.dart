@@ -199,7 +199,7 @@ class HostManualSendListBody extends StatelessWidget {
       trailing: CatchButton(
         key: const ValueKey('host-manual-send-replan'),
         label: context.l10n.hostManualSendQueueReplan,
-        size: CatchButtonSize.sm,
+        size: CatchButtonSize.md,
         variant: CatchButtonVariant.secondary,
         status: (replanning)
             ? CatchButtonStatus.loading

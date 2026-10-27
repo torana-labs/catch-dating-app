@@ -179,8 +179,8 @@ class CatchDock extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        CatchIcons.sparkle,
-                        size: CatchIcon.xs,
+                        CatchIcons.spark,
+                        size: CatchIconSize.xs,
                         color: action.catchLineAccent ?? t.ink2,
                       ),
                       const SizedBox(width: CatchSpacing.micro6),

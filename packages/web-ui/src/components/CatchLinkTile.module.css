@@ -1,7 +1,8 @@
 /*
  * Website v2 link tile (CAT-249): a 68px row on paper, or on an accent ground
  * when pinned. Stats take the coral deep shade, AA on paper; on an accent they
- * take the ground's secondary ink.
+ * take the ground's secondary ink. Without an icon (CAT-251) the copy starts
+ * 18px in, so its edge matches the arrow's.
  */
 .tile {
   composes: ground from "./grounds.module.css";
@@ -35,6 +36,11 @@
 .tile:focus-visible {
   outline: var(--catch-stroke-focus-ring) solid var(--catch-palette-ink);
   outline-offset: var(--catch-space-micro2);
+}
+
+.tile:not([data-icon]) {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding-inline-start: var(--catch-space-micro18);
 }
 
 .icon {

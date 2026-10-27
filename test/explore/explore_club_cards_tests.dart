@@ -807,8 +807,8 @@ void _registerExploreClubCardsTests() {
       tester.getSize(_topLevelSearchField()).height,
       CatchSearchField.heightFor(tester.element(_topLevelSearchField())),
     );
-    expect(find.byIcon(CatchIcons.arrowBackRounded), findsNothing);
-    expect(find.byIcon(CatchIcons.keyboardHideRounded), findsNothing);
+    expect(find.byIcon(CatchIcons.back), findsNothing);
+    expect(find.byIcon(CatchIcons.hideKeyboard), findsNothing);
     expect(
       tester.widget<TextField>(find.byType(TextField)).textInputAction,
       TextInputAction.done,
@@ -819,7 +819,7 @@ void _registerExploreClubCardsTests() {
 
     expect(container.read(exploreSearchQueryProvider), 'asha');
 
-    await tester.tap(find.byIcon(CatchIcons.clearCircle));
+    await tester.tap(find.byIcon(CatchIcons.clear));
     await tester.pump();
 
     expect(container.read(exploreSearchQueryProvider), isEmpty);

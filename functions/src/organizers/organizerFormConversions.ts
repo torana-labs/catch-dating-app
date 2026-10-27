@@ -107,7 +107,9 @@ export async function previewOrganizerFormConversionHandler(
     normalizeConversionPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "previewOrganizerFormConversion");
+  await deps.checkRateLimit(db, actorUid, "previewOrganizerFormConversion", {
+    maxRequests: 60, windowMs: 60 * 1000,
+  });
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
   const context = await conversionContext(db, data);
   return {
@@ -137,7 +139,9 @@ export async function convertOrganizerFormResponseHandler(
     normalizeConversionPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "convertOrganizerFormResponse");
+  await deps.checkRateLimit(db, actorUid, "convertOrganizerFormResponse", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   if (deps.requireManagerAuthority !== false) {
     await requireOrganizerManager({
       db,

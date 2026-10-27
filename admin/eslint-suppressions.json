@@ -191,14 +191,11 @@
     }
   },
   "src/shared/ui/AdminPrimitives/cards.tsx": {
-    "react/forbid-component-props": {
-      "count": 1
-    },
     "react/forbid-dom-props": {
-      "count": 15
+      "count": 13
     },
     "react/forbid-elements": {
-      "count": 18
+      "count": 16
     }
   },
   "src/shared/ui/AdminPrimitives/data.tsx": {
@@ -206,10 +203,10 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 13
+      "count": 12
     },
     "react/forbid-elements": {
-      "count": 20
+      "count": 19
     }
   },
   "src/shared/ui/AdminPrimitives/forms.tsx": {

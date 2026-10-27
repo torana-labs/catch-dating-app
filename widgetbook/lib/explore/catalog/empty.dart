@@ -26,7 +26,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'empty city',
         child: CatchEmptyState(
-          icon: CatchIcons.groupsOutlined,
+          icon: CatchIcons.people,
           title: 'No clubs in Mumbai yet',
           message:
               'Try another city from the location control, or create the first '
@@ -37,7 +37,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'search only',
         child: CatchEmptyState(
-          icon: CatchIcons.groupsOutlined,
+          icon: CatchIcons.people,
           title: 'No clubs match this search',
           message: 'Try another club, neighborhood, host, or tag.',
           actions: [_secondaryAction('Clear search')],
@@ -46,7 +46,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'filter only',
         child: CatchEmptyState(
-          icon: CatchIcons.groupsOutlined,
+          icon: CatchIcons.people,
           title: 'No clubs match these filters',
           message:
               'Clear one or more filters to bring nearby clubs back into view.',
@@ -56,7 +56,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'search plus filters',
         child: CatchEmptyState(
-          icon: CatchIcons.groupsOutlined,
+          icon: CatchIcons.people,
           title: 'No clubs match this search',
           message:
               'Clear the search or filters to bring nearby clubs back into view.',
@@ -66,7 +66,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'offline copy candidate',
         child: CatchEmptyState(
-          icon: CatchIcons.groupsOutlined,
+          icon: CatchIcons.people,
           title: 'Explore is offline',
           message:
               'Check your connection and try again to reload clubs and events.',

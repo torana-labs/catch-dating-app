@@ -1194,6 +1194,57 @@ describe("firestore.rules", () => {
       )));
     });
 
+    it("keeps public page read models and build markers server-only", async () => {
+      // Published, withdrawn and suppressed pages are all Admin SDK reads.
+      for (const [id, organizerId] of [["published", "organizer-1"],
+        ["suppressed", "organizer-2"]]) {
+        await seed(["organizerPublicPage", id], {
+          schemaVersion: 1,
+          organizerId,
+          path: `/organizers/${id}/`,
+          recommendable: true,
+        });
+        await seed(["eventPublicPage", `event-${id}`], {
+          schemaVersion: 1,
+          eventId: `event-${id}`,
+          organizerId,
+        });
+      }
+      await seed(["publicPageBuilds", "organizer-1"], {
+        schemaVersion: 1,
+        organizerId: "organizer-1",
+        published: true,
+        eventPageCount: 1,
+      });
+
+      for (const db of [authedDb("owner-1"),
+        testEnv.unauthenticatedContext().firestore()]) {
+        for (const [name, id] of [["organizerPublicPage", "published"],
+          ["organizerPublicPage", "suppressed"],
+          ["organizerPublicPage", "withdrawn"],
+          ["eventPublicPage", "event-published"],
+          ["publicPageBuilds", "organizer-1"]]) {
+          await assertFails(getDoc(doc(db, name, id)));
+          await assertFails(setDoc(doc(db, name, `client-${id}`), {
+            schemaVersion: 1,
+          }));
+        }
+        await assertFails(getDocs(query(
+          collection(db, "organizerPublicPage"),
+          where("path", "==", "/organizers/published/"),
+          limit(2),
+        )));
+        await assertFails(getDocs(query(
+          collection(db, "eventPublicPage"),
+          where("organizerId", "==", "organizer-1"),
+        )));
+        await assertFails(updateDoc(doc(db, "organizerPublicPage",
+          "published"), {recommendable: false}));
+        await assertFails(deleteDoc(doc(db, "eventPublicPage",
+          "event-published")));
+      }
+    });
+
     it("keeps organizer attention projections server-only", async () => {
       await seed(["organizerAttentionItems", "attention-1"], {
         organizerId: "organizer-1",

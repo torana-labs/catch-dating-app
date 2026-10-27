@@ -31,7 +31,7 @@ void _registerHostOperationsCustomerEditorTests() {
     expect(
       find.descendant(
         of: find.byType(HostCustomerIdentityCard),
-        matching: find.byIcon(CatchIcons.chevronRightRounded),
+        matching: find.byIcon(CatchIcons.disclosure),
       ),
       findsNothing,
     );

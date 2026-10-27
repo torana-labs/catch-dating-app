@@ -1,0 +1,113 @@
+/*
+ * Flutter CatchNotice: a floating surface with 12px padding whose fill is the
+ * surface with 8% of the tone, its border the line with 32% of the tone, and
+ * a 36px icon circle with 16% of the tone around the tone-coloured glyph. The
+ * title is titleS and the message supporting ink2, 2px under it, 12px after
+ * the lead; the action sits 8px after the copy, or under it when the notice is
+ * narrow; the dismiss control is a 48px target with an 18px ink2 glyph.
+ */
+.notice {
+  --catch-notice-tone: var(--catch-theme-accent);
+
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: var(--catch-space-s3);
+  border: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-line), var(--catch-notice-tone) 32%);
+  border-radius: var(--catch-radius-md);
+  background: color-mix(in srgb, var(--catch-theme-surface), var(--catch-notice-tone) 8%);
+  box-shadow: var(--catch-elevation-overlay);
+  color: var(--catch-theme-ink);
+  font: inherit;
+  text-align: start;
+  container-type: inline-size;
+}
+
+.notice[data-tone="success"] { --catch-notice-tone: var(--catch-theme-success); }
+.notice[data-tone="warning"] { --catch-notice-tone: var(--catch-theme-warning); }
+.notice[data-tone="danger"] { --catch-notice-tone: var(--catch-theme-danger); }
+.notice[data-tone="event"] { --catch-notice-tone: var(--catch-theme-primary); }
+
+button.notice { cursor: pointer; }
+
+button.notice:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.lead {
+  display: inline-flex;
+  margin-inline-end: var(--catch-space-s3);
+}
+
+.icon {
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--catch-radius-pill);
+  background: color-mix(in srgb, var(--catch-theme-surface), var(--catch-notice-tone) 16%);
+  color: var(--catch-notice-tone);
+}
+
+.icon > svg,
+.dismiss > svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.icon > svg {
+  width: 20px;
+  height: 20px;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro2);
+  min-width: 0;
+}
+
+.action { margin-inline-start: var(--catch-space-s2); }
+
+.dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: calc(-1 * var(--catch-space-s2)) calc(-1 * var(--catch-space-s2)) calc(-1 * var(--catch-space-s2)) var(--catch-space-s1);
+  padding: 0;
+  border: 0;
+  border-radius: var(--catch-radius-pill);
+  background: none;
+  color: var(--catch-theme-ink2);
+  cursor: pointer;
+}
+
+.dismiss > svg {
+  width: 18px;
+  height: 18px;
+}
+
+.dismiss:hover { background: color-mix(in srgb, var(--catch-theme-ink) 5%, transparent); }
+
+.dismiss:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: calc(-1 * var(--catch-space-s1));
+}
+
+@container (width < 360px) {
+  .action {
+    grid-row: 2;
+    grid-column: 2 / -1;
+    justify-self: start;
+    margin: var(--catch-space-s2) 0 0;
+  }
+}

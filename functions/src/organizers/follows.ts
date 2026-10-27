@@ -29,11 +29,7 @@ import {normalizeOrganizerIdPayload} from
 
 interface OrganizerFollowDeps {
   firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: OrganizerFollowDeps = {
@@ -56,7 +52,9 @@ export async function followOrganizerHandler(
     throw new HttpsError("aborted", "Your signed-in account changed.");
   }
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "followOrganizer");
+  await deps.checkRateLimit?.(db, uid, "followOrganizer", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await db.runTransaction(async (tx) => {
     const organizerRef = db.collection("organizers").doc(organizerId);
     const userRef = db.collection("users").doc(uid);
@@ -112,7 +110,9 @@ export async function unfollowOrganizerHandler(
     throw new HttpsError("aborted", "Your signed-in account changed.");
   }
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, uid, "unfollowOrganizer");
+  await deps.checkRateLimit?.(db, uid, "unfollowOrganizer", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   await db.runTransaction(async (tx) => {
     const organizerRef = db.collection("organizers").doc(organizerId);
     const followRef = db.collection("organizerFollows")
@@ -161,7 +161,8 @@ export async function setOrganizerNotificationPreferenceHandler(
   await deps.checkRateLimit?.(
     db,
     uid,
-    "setOrganizerNotificationPreference"
+    "setOrganizerNotificationPreference",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   await db.runTransaction(async (tx) => {
     const followRef = db.collection("organizerFollows")

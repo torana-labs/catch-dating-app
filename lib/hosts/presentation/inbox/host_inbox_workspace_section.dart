@@ -494,7 +494,7 @@ class HostInboxEmptyState extends StatelessWidget {
     return Padding(
       padding: CatchInsets.contentRelaxed,
       child: CatchEmptyState(
-        icon: CatchIcons.chatBubbleOutlineRounded,
+        icon: CatchIcons.chat,
         title: title,
         message: message,
       ),

@@ -140,12 +140,12 @@ class _ChatInputBarState extends State<ChatInput> {
                             liveRegion: sendingImage,
                             child: sendingImage
                                 ? SizedBox.square(
-                                    dimension: CatchIcon.control,
+                                    dimension: CatchIconSize.control,
                                     child: CatchLoadingIndicator(color: t.ink2),
                                   )
                                 : Icon(
-                                    CatchIcons.imageOutlined,
-                                    size: CatchIcon.md,
+                                    CatchIcons.photo,
+                                    size: CatchIconSize.md,
                                     color: t.ink2,
                                   ),
                           ),
@@ -202,14 +202,14 @@ class _ChatInputBarState extends State<ChatInput> {
                           liveRegion: sending,
                           child: sending
                               ? SizedBox.square(
-                                  dimension: CatchIcon.control,
+                                  dimension: CatchIconSize.control,
                                   child: CatchLoadingIndicator(
                                     color: t.primaryInk,
                                   ),
                                 )
                               : Icon(
-                                  CatchIcons.sendRounded,
-                                  size: CatchIcon.md,
+                                  CatchIcons.send,
+                                  size: CatchIconSize.md,
                                   color: t.primaryInk,
                                 ),
                         ),

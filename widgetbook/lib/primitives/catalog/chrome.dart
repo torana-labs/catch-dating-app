@@ -71,7 +71,7 @@ Widget catchTopBarScreenCatalogStates(BuildContext context) {
         label: 'root search chrome',
         child: CatchTopBar.screen(
           leading: CatchIconAction.toolbar(
-            icon: CatchIcons.locationOnOutlined,
+            icon: CatchIcons.location,
             tooltip: 'Change city',
             onPressed: widgetbookNoop,
           ),
@@ -148,7 +148,7 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
           tone: CatchTopBarTone.surface,
           actions: [
             CatchIconAction.toolbar(
-              icon: CatchIcons.savedOutlined,
+              icon: CatchIcons.bookmark,
               tooltip: 'Save',
               onPressed: widgetbookNoop,
             ),
@@ -193,7 +193,7 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
                   onPressed: widgetbookNoop,
                 ),
                 CatchIconAction.toolbar(
-                  icon: CatchIcons.savedOutlined,
+                  icon: CatchIcons.bookmark,
                   tooltip: 'Save',
                   onPressed: widgetbookNoop,
                 ),
@@ -208,12 +208,12 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
                   onPressed: widgetbookNoop,
                 ),
                 CatchIconAction.toolbar(
-                  icon: CatchIcons.calendarAdd,
+                  icon: CatchIcons.addToCalendar,
                   tooltip: 'Add to calendar',
                   onPressed: widgetbookNoop,
                 ),
                 CatchIconAction.toolbar(
-                  icon: CatchIcons.savedOutlined,
+                  icon: CatchIcons.bookmark,
                   tooltip: 'Save pending',
                   onPressed: null,
                 ),
@@ -243,7 +243,7 @@ Widget catchTopBarPrimaryActionCatalogStates(BuildContext context) {
           data: mediaQuery.copyWith(size: const Size(390, 844)),
           child: CatchTopBarPrimaryButton(
             label: 'Create event',
-            icon: CatchIcons.addRounded,
+            icon: CatchIcons.add,
             onPressed: widgetbookNoop,
           ),
         ),
@@ -254,7 +254,7 @@ Widget catchTopBarPrimaryActionCatalogStates(BuildContext context) {
           data: mediaQuery.copyWith(size: const Size(800, 900)),
           child: CatchTopBarPrimaryButton(
             label: 'Create event',
-            icon: CatchIcons.addRounded,
+            icon: CatchIcons.add,
             onPressed: widgetbookNoop,
           ),
         ),
@@ -278,7 +278,7 @@ Widget catchIconActionCatalogStates(BuildContext context) {
         child: WidgetbookContractWrap(
           children: [
             CatchIconAction.toolbar(
-              icon: CatchIcons.savedOutlined,
+              icon: CatchIcons.bookmark,
               tooltip: 'Save',
               onPressed: widgetbookNoop,
             ),
@@ -286,10 +286,10 @@ Widget catchIconActionCatalogStates(BuildContext context) {
               tooltip: 'Share',
               variant: CatchIconActionVariant.plain,
               onPressed: widgetbookNoop,
-              child: Icon(CatchIcons.share, size: CatchIcon.md),
+              child: Icon(CatchIcons.share, size: CatchIconSize.md),
             ),
             CatchIconAction.toolbar(
-              icon: CatchIcons.moreHorizRounded,
+              icon: CatchIcons.more,
               tooltip: 'Disabled',
               onPressed: null,
             ),
@@ -471,14 +471,14 @@ Widget catchIconTileCatalogStates(BuildContext context) {
         label: 'default / tinted / compact',
         child: WidgetbookContractWrap(
           children: [
-            CatchIconTile(icon: CatchIcons.eventOutlined, iconColor: t.primary),
+            CatchIconTile(icon: CatchIcons.event, iconColor: t.primary),
             CatchIconTile(
-              icon: CatchIcons.lockOutlineRounded,
+              icon: CatchIcons.locked,
               iconColor: t.danger,
               backgroundColor: t.primarySoft,
             ),
             CatchIconTile(
-              icon: CatchIcons.sparkle,
+              icon: CatchIcons.spark,
               iconColor: t.ink,
               size: 32,
               iconSize: 16,
@@ -509,8 +509,8 @@ class _TabBarDemoState extends State<_TabBarDemo> {
       items: [
         CatchTabBarItem(
           id: 'home',
-          icon: CatchIcons.homeOutlined,
-          activeIcon: CatchIcons.homeRounded,
+          icon: CatchIcons.home,
+          activeIcon: CatchIcons.home,
           label: 'Home',
         ),
         CatchTabBarItem(
@@ -521,7 +521,7 @@ class _TabBarDemoState extends State<_TabBarDemo> {
         ),
         CatchTabBarItem(
           id: 'chats',
-          icon: CatchIcons.chatBubbleOutlineRounded,
+          icon: CatchIcons.chat,
           label: 'Chats',
           badgeCount: 12,
         ),

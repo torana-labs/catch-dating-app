@@ -46,11 +46,7 @@ interface EventSuccessLateArrivalDeps {
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   nowMillis: () => number;
   environment: NodeJS.ProcessEnv;
-  checkRateLimit?: (
-    db: FirebaseFirestore.Firestore,
-    uid: string,
-    action: string
-  ) => Promise<void>;
+  checkRateLimit?: typeof defaultCheckRateLimit;
 }
 
 const defaultDeps: EventSuccessLateArrivalDeps = {
@@ -298,7 +294,8 @@ export async function resolveEventSuccessLateArrivalHandler(
   await deps.checkRateLimit?.(
     db,
     hostUid,
-    "resolveEventSuccessLateArrival"
+    "resolveEventSuccessLateArrival",
+    {maxRequests: 30, windowMs: 60 * 1000}
   );
   const [eventSnap, participant] = await Promise.all([
     db.collection("events").doc(payload.eventId).get(),

@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 ///
 /// Owns the sequence geometry and caller-provided copy. It does not select a
 /// current step or edit form values. The final row has no trailing connector.
+/// A step's marker, such as a time, replaces its number, and its tag sits
+/// under the body in the accent colour.
 class CatchStepList extends StatelessWidget {
   const CatchStepList({super.key, required this.steps, this.accent});
 
@@ -24,22 +26,23 @@ class CatchStepList extends StatelessWidget {
       context,
       color: accentColor,
     ).copyWith(fontWeight: FontWeight.w700);
-    // Reserve the actual scaled monospace number width, while keeping the
-    // standard column as the minimum. Numbers must never split across lines.
-    final indexPainter = TextPainter(
-      text: TextSpan(
-        text: steps.length.toString().padLeft(2, '0'),
-        style: indexStyle,
-      ),
-      textDirection: Directionality.of(context),
-      textScaler: MediaQuery.textScalerOf(context),
-      maxLines: 1,
-    )..layout();
-    final indexWidth = math.max(
-      CatchLayout.journeyStepsIndexColumnWidth,
-      indexPainter.width.ceilToDouble(),
-    );
-    indexPainter.dispose();
+    final labels = [
+      for (var i = 0; i < steps.length; i++)
+        steps[i].marker ?? (i + 1).toString().padLeft(2, '0'),
+    ];
+    // Reserve the widest scaled label, while keeping the standard column as
+    // the minimum. Numbers and markers must never split across lines.
+    var indexWidth = CatchLayout.journeyStepsIndexColumnWidth;
+    for (final label in labels) {
+      final indexPainter = TextPainter(
+        text: TextSpan(text: label, style: indexStyle),
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+        maxLines: 1,
+      )..layout();
+      indexWidth = math.max(indexWidth, indexPainter.width.ceilToDouble());
+      indexPainter.dispose();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -54,7 +57,7 @@ class CatchStepList extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(top: CatchStroke.hairline),
                     child: Text(
-                      (i + 1).toString().padLeft(2, '0'),
+                      labels[i],
                       style: indexStyle,
                       maxLines: 1,
                       softWrap: false,
@@ -109,6 +112,17 @@ class CatchStepList extends StatelessWidget {
                           Text(
                             steps[i].body!,
                             style: CatchTextStyles.supporting(context),
+                          ),
+                        ],
+                        if (steps[i].tag case final tag?
+                            when tag.trim().isNotEmpty) ...[
+                          gapH6,
+                          Text(
+                            tag,
+                            style: CatchTextStyles.statusLabel(
+                              context,
+                              color: accentColor,
+                            ),
                           ),
                         ],
                       ],

@@ -406,8 +406,8 @@ class _HostResponseQueryWorkspaceSectionState
                             label:
                                 '${view.selectedIds.contains(row.responseId) ? copy.deselect : copy.select}: ${row.identity.primaryLabel ?? context.l10n.hostFormResponsesAnonymous}',
                             icon: view.selectedIds.contains(row.responseId)
-                                ? CatchIcons.checkCircleFilled
-                                : CatchIcons.circle,
+                                ? CatchIcons.success
+                                : CatchIcons.unselected,
                             onActivate: () => widget.controller.toggleSelection(
                               row.responseId,
                             ),

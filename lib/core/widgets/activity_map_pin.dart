@@ -50,7 +50,7 @@ class ActivityMapPin extends StatelessWidget {
           const SizedBox(height: CatchSpacing.micro2),
         ],
         Icon(
-          CatchIcons.pin,
+          CatchIcons.location,
           size: pinSize,
           color: activity.accent,
           shadows: [

@@ -306,8 +306,8 @@ class ProfileSurfaceFactsSkeleton extends StatelessWidget {
             Row(
               children: [
                 CatchSkeleton.box(
-                  width: CatchIcon.control,
-                  height: CatchIcon.control,
+                  width: CatchIconSize.control,
+                  height: CatchIconSize.control,
                   radius: CatchRadius.pill,
                 ),
                 gapW12,

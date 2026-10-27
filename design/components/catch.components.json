@@ -207,19 +207,29 @@
         ]
       },
       "react": {
-        "symbol": "BadgeControl",
-        "file": "packages/web-ui/src/primitives.tsx",
-        "api": "headless-control",
+        "symbol": "CatchBadge",
+        "file": "packages/web-ui/src/components/CatchBadge.tsx",
+        "api": "styled",
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/primitives.stories.tsx",
-          "exportName": "Feedback",
+          "story": "packages/web-ui/src/components/CatchBadge.stories.tsx",
+          "exportName": "Contract",
           "states": [
-            "inline",
-            "surface-tone-adapter"
+            "metadata",
+            "functional",
+            "semantic-tones",
+            "status",
+            "solid",
+            "live",
+            "on-dark",
+            "privacy",
+            "ticket-status",
+            "optional-field",
+            "icon",
+            "dark"
           ]
         },
-        "notes": "Shared non-interactive inline badge root for status-oriented surface adapters; structural eyebrow labels use catch.typography instead."
+        "notes": "React implements every CatchBadge named constructor as recipe (standard is the default constructor). Flutter's colour overrides (accentColor, backgroundColor, foregroundColor, borderColor) have no React prop: the library takes no styling escape hatches. Functional recipes uppercase the copy with CSS, so the DOM keeps the authored text."
       },
       "design": {
         "figma": {
@@ -356,6 +366,23 @@
               "strong"
             ],
             "notes": "Ticket-status constructor only; preserves its soft pigment and strong dark recipes."
+          },
+          {
+            "name": "color",
+            "type": "color",
+            "required": false,
+            "dartType": "Color",
+            "tsType": "string",
+            "notes": "Ticket-status recipe only: the caller's pigment, a CSS colour on the web."
+          },
+          {
+            "name": "hasError",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "tsType": "boolean",
+            "notes": "Optional recipe only: shows the field's validation feedback."
           }
         ],
         "states": [
@@ -393,8 +420,8 @@
           "CatchTextStyles.titleS",
           "CatchTextStyles.kicker",
           "CatchTextStyles.buttonSm",
-          "CatchIcon.badge",
-          "CatchIcon.sm",
+          "CatchIconSize.badge",
+          "CatchIconSize.sm",
           "CatchLayout.badgeActionHeight",
           "CatchCountBadge",
           "CatchStatusIndicator",
@@ -583,21 +610,39 @@
         ]
       },
       "react": {
-        "symbol": "ButtonControl",
-        "file": "packages/web-ui/src/primitives.tsx",
-        "api": "headless-control",
+        "symbol": "CatchButton",
+        "file": "packages/web-ui/src/components/CatchButton.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "ButtonControl"
+        ],
         "storybook": {
           "status": "ready",
-          "story": "packages/web-ui/src/primitives.stories.tsx",
-          "exportName": "Button",
+          "story": "packages/web-ui/src/components/CatchButton.stories.tsx",
+          "exportName": "Contract",
           "states": [
             "default",
             "disabled",
             "loading",
-            "explicit-submit"
+            "full-width",
+            "with-icon",
+            "rounded",
+            "command",
+            "selection",
+            "floating-label",
+            "floating-label-with-icon",
+            "floating-label-with-value",
+            "floating-with-count",
+            "floating-semantic-label",
+            "text-primary",
+            "text-neutral",
+            "text-danger",
+            "text-disabled",
+            "text-custom-color",
+            "text-custom-padding"
           ]
         },
-        "notes": "Shared safe button type and loading semantics used by both surface adapters; styling, density, icons, and labels remain surface-owned."
+        "notes": "The D20 styled twin with every recipe: 4px corners; sm 32px, md 40px and lg 48px; primary, secondary, quiet, danger and light. Web additions: href draws a link with the button's look, type sets the native button type, and the default recipe takes a trailing glyph. Pressed, hovered and focused are pointer and keyboard states (the Interaction story presses by pointer and keyboard); large text and reduced motion follow the reader's settings, so the Contract story does not list them. ButtonControl, in its own file beside it, is the retiring headless button (a safe default type and busy loading, drawing nothing) under the four surface adapters (website Button and StepRail, Admin AdminButton and AdminIntakeStageRail); it is deleted when the D20 call-site moves to CatchButton land."
       },
       "design": {
         "figma": {
@@ -641,7 +686,7 @@
             "values": [
               "primary",
               "secondary",
-              "ghost",
+              "quiet",
               "danger",
               "light"
             ]
@@ -942,7 +987,7 @@
           "CatchMotion.fast",
           "CatchOpacity.controlOverlayPressed",
           "CatchOpacity.controlOverlayHover",
-          "CatchIcon.md",
+          "CatchIconSize.md",
           "CatchTextStyles.buttonSm",
           "CatchTextStyles.buttonMd",
           "CatchTextStyles.buttonLg",
@@ -1334,7 +1379,7 @@
           "CatchBorderRole.focus",
           "CatchTextStyles.titleS",
           "CatchTextStyles.bodyLead",
-          "CatchIcon.sm",
+          "CatchIconSize.sm",
           "CatchLayout.activityChipIconSize",
           "ActivityPalette.resolve",
           "CatchElevation.segmentedSelected",
@@ -1420,7 +1465,7 @@
             "surface-content-adapter"
           ]
         },
-        "notes": "Shared empty-state root owns opt-in status announcements and content wrapping while surface adapters own anatomy styling and variants."
+        "notes": "Shared empty-state root owns opt-in status announcements and content wrapping while surface adapters own anatomy styling and variants. CatchEmptyState (packages/web-ui/src/components/CatchEmptyState.tsx) is the prepared styled twin with every contract state; this record moves to it when the Admin and website EmptyStateControl adapters migrate."
       },
       "design": {
         "figma": {
@@ -1665,6 +1710,29 @@
         "constructors": [
           "CatchErrorState"
         ]
+      },
+      "react": {
+        "symbol": "CatchErrorState",
+        "file": "packages/web-ui/src/components/CatchErrorState.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchErrorState.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "full-screen",
+            "inline",
+            "compact",
+            "from-error",
+            "with-retry",
+            "secondary-action",
+            "scaffold",
+            "sliver",
+            "icon",
+            "dark"
+          ]
+        },
+        "notes": "mode is \"fullScreen\" | \"inline\" | \"compact\". The retry is a D20 CatchButton with a leading refresh glyph, md when compact and lg otherwise; actions follow it. Scaffold and sliver are Flutter placements; on the web the page places the full-screen or inline state."
       },
       "design": {
         "figma": {
@@ -2342,6 +2410,33 @@
         "constructors": [
           "CatchNotice"
         ]
+      },
+      "react": {
+        "symbol": "CatchNotice",
+        "file": "packages/web-ui/src/components/CatchNotice.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "CatchNoticeRegion"
+        ],
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchNotice.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "status",
+            "success",
+            "warning",
+            "danger",
+            "event",
+            "with-action",
+            "dismissible",
+            "arrival-tap-to-open",
+            "arrival-swipe-to-dismiss",
+            "arrival-reduced-motion",
+            "dark"
+          ]
+        },
+        "notes": "CatchNoticeData is a plain object with icon as a node and accentColor as a CSS colour. The action is a D20 md secondary CatchButton and the dismiss control a 48px plain icon button. An arrival notice (onOpen) is one button that dismisses and opens; Escape dismisses it, standing in for the app's swipe. CatchNoticeRegion is the app-level overlay: one polite live region fixed above the bottom edge and safe area; the host owns timing, dedupe and priority."
       },
       "design": {
         "figma": {
@@ -3226,6 +3321,22 @@
             "dartType": "String?",
             "tsType": "string",
             "notes": "The select recipe's empty first choice, which selects null."
+          },
+          {
+            "name": "prefixText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Input recipe: fixed text before the value, such as a \"+91\" dialling code, in the secondary ink. React describes the input with it."
+          },
+          {
+            "name": "suffixText",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Input recipe: fixed text after the value, such as a unit, in the secondary ink."
           }
         ],
         "states": [
@@ -4493,6 +4604,8 @@
             "select-hint",
             "hidden-label",
             "leading",
+            "prefix",
+            "suffix",
             "dark"
           ]
         },
@@ -5623,6 +5736,27 @@
           "CatchSkeleton.content"
         ]
       },
+      "react": {
+        "symbol": "CatchSkeleton",
+        "file": "packages/web-ui/src/components/CatchSkeleton.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchSkeleton.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "card",
+            "box",
+            "text",
+            "text-block",
+            "circle",
+            "custom",
+            "derived-content",
+            "dark"
+          ]
+        },
+        "notes": "Each named constructor is shape=\"...\" on the one component, and CatchSkeleton.content is shape=\"content\". Skeletonizer's derived paint is approximated in CSS: inside content, text and media keep their boxes and take the shimmer while the subtree is inert and hidden from assistive technology."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -5774,6 +5908,27 @@
           "CatchLoadingIndicator.dots",
           "CatchLoadingIndicator.inline"
         ]
+      },
+      "react": {
+        "symbol": "CatchLoadingIndicator",
+        "file": "packages/web-ui/src/components/CatchLoadingIndicator.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchLoadingIndicator.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "small",
+            "tinted",
+            "dots-primary",
+            "dots-light",
+            "inline-status",
+            "inline-commit",
+            "dark"
+          ]
+        },
+        "notes": "CatchLoadingIndicator.dots and .inline are recipe=\"dots\" | \"inline\" on the one component; color is a CSS colour. label is web-only: with one the indicator is a named progressbar, without one it is decorative beside the caller's own loading copy. Reduced motion holds the circular and inline recipes still."
       },
       "design": {
         "figma": {
@@ -6418,10 +6573,11 @@
             "recolored",
             "clamped",
             "aligned",
-            "heading-element"
+            "heading-element",
+            "accent-labels"
           ]
         },
-        "notes": "React takes the text as children so inline links and emphasis stay inside the role, an as prop for the semantic element, and color as a theme role name."
+        "notes": "React takes the text as children so inline links and emphasis stay inside the role, an as prop for the semantic element, and color as a theme role name or a palette accent. An accent (CatchTextAccent) is the deep shade under a light theme and the accent under a dark one; with supportingStrong it is the Website v2 coloured sentence-case label, which Flutter draws by passing the palette colour."
       },
       "design": {
         "figma": {
@@ -6483,7 +6639,7 @@
             "required": false,
             "dartType": "Color?",
             "tsType": "CatchTextColor",
-            "notes": "Overrides the role's default color; React names the theme role (ink2, danger)."
+            "notes": "Overrides the role's default color; React names the theme role (ink2, danger) or a palette accent (coral, mint). An accent draws its deep shade on light and the accent itself on dark, which is the coloured sentence-case label recipe with supportingStrong."
           },
           {
             "name": "maxLines",
@@ -7404,6 +7560,184 @@
       }
     },
     {
+      "id": "catch.icon",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Every size, tone and the labelled state render in the generated Widgetbook contract; the icon-family gate and parity tests pin both frameworks to design/tokens/catch.icons.json."
+      },
+      "name": "CatchIcon",
+      "status": "active",
+      "kind": "primitive",
+      "tier": "T1",
+      "aliases": [
+        "Glyph",
+        "IconGlyph",
+        "SvgIcon",
+        "LucideIcon"
+      ],
+      "summary": "One icon role from the catalog, drawn at a CatchIconSize step in a semantic tone; decorative unless it has a label.",
+      "dart": {
+        "symbol": "CatchIcon",
+        "file": "packages/catch_ui/lib/src/primitives/catch_icon.dart",
+        "constructors": [
+          "CatchIcon"
+        ]
+      },
+      "react": {
+        "symbol": "CatchIcon",
+        "file": "packages/web-ui/src/components/CatchIcon.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchIcon.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "sizes",
+            "tones",
+            "labelled"
+          ]
+        },
+        "notes": "Flutter passes CatchIcons.<role> (IconData); React passes the same role name as a string. Both resolve through design/tokens/catch.icons.json."
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/Icon",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "Icon",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "icon",
+            "type": "object",
+            "required": true,
+            "dartType": "IconData",
+            "tsType": "CatchIconName",
+            "notes": "A role from CatchIcons; positional in Flutter. React names the role."
+          },
+          {
+            "name": "size",
+            "type": "enum",
+            "required": false,
+            "default": "md",
+            "dartType": "double",
+            "tsType": "\"micro\" | \"sm\" | \"xs\" | \"md\" | \"control\" | \"row\" | \"lg\" | \"tile\" | \"emptyState\" | \"hero\"",
+            "values": [
+              "micro",
+              "sm",
+              "xs",
+              "md",
+              "control",
+              "row",
+              "lg",
+              "tile",
+              "emptyState",
+              "hero"
+            ],
+            "notes": "A CatchIconSize step; React names the step."
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "default": "inherit",
+            "dartType": "CatchIconTone",
+            "tsType": "CatchIconTone",
+            "values": [
+              "inherit",
+              "ink",
+              "muted",
+              "primary",
+              "success",
+              "warning",
+              "danger"
+            ]
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string",
+            "notes": "Without a label the icon is decorative and hidden from assistive technology."
+          }
+        ],
+        "states": [
+          "sizes",
+          "tones",
+          "labelled"
+        ],
+        "slots": [],
+        "tokens": [
+          "theme.light.color.ink",
+          "theme.light.color.ink2",
+          "theme.light.color.primary",
+          "theme.light.color.success",
+          "theme.light.color.warning",
+          "theme.light.color.danger"
+        ],
+        "dartRoles": [
+          "CatchIcons",
+          "CatchIconSize.md",
+          "CatchIconTone"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Name a role from design/tokens/catch.icons.json; never a glyph of an icon family.",
+          "Components that take an icon slot (IconData in Flutter, ReactNode in React) receive CatchIcons.<role> or <CatchIcon icon=\"<role>\" />."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.icon",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "none",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.icon"
+      },
+      "level": "L2",
+      "roleNoun": "Icon",
+      "naming": {
+        "useCase": "",
+        "comparedWith": [
+          "catch.icon_tile",
+          "catch.icon_button"
+        ],
+        "reason": "A bare glyph with no container or command. CatchIconTile draws a container around an icon and CatchIconAction makes a glyph a command; both render CatchIcon roles."
+      }
+    },
+    {
       "id": "catch.icon_button",
       "enforcement": {
         "code": "catch_icon_button_requires_tooltip",
@@ -8165,7 +8499,7 @@
           "theme.light.color.primarySoft"
         ],
         "dartRoles": [
-          "CatchIcon.md",
+          "CatchIconSize.md",
           "CatchRadius.sm",
           "CatchRadius.md",
           "CatchIconTileVariant"
@@ -8450,6 +8784,28 @@
           "CatchStepper",
           "CatchStepper.actions"
         ]
+      },
+      "react": {
+        "symbol": "CatchStepper",
+        "file": "packages/web-ui/src/components/CatchStepper.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchStepper.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "interactive",
+            "min-bound",
+            "max-bound",
+            "disabled",
+            "custom-step",
+            "custom-format",
+            "explicit-actions",
+            "keyboard-focused",
+            "dark"
+          ]
+        },
+        "notes": "CatchStepper.actions is recipe=\"actions\" on the one component. A pointer press steps and then repeats on Flutter's cadence (400ms, 110ms, then 55ms after ten repeats) while held; a keyboard click steps once. labelledBy is web-only: it names the stepper as a group from visible text such as the board's \"Places\"."
       },
       "design": {
         "figma": {
@@ -9094,7 +9450,7 @@
           "CatchInsets.tileContentCompact",
           "CatchTextStyles.titleS",
           "CatchTextStyles.supporting",
-          "CatchIcon.lg"
+          "CatchIconSize.lg"
         ],
         "goldens": [],
         "accessibility": {
@@ -9953,6 +10309,24 @@
           "CatchStepList"
         ]
       },
+      "react": {
+        "symbol": "CatchStepList",
+        "file": "packages/web-ui/src/components/CatchStepList.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchStepList.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "numbered-trace",
+            "titles-only",
+            "accented",
+            "timed",
+            "dark"
+          ]
+        },
+        "notes": "An ordered list whose rows share one subgrid, so the widest number or marker sets the column as Flutter's measured index does. accent is a CSS colour; the caller picks one that reads on its ground."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -9990,7 +10364,8 @@
           "numbered-trace",
           "titles-only",
           "accented",
-          "long-copy"
+          "long-copy",
+          "timed"
         ],
         "slots": [],
         "tokens": [
@@ -11724,7 +12099,7 @@
           "CatchTextStyles.monoLabel",
           "CatchTextStyles.name",
           "CatchTextStyles.bodyS",
-          "CatchIcon.md"
+          "CatchIconSize.md"
         ],
         "goldens": [],
         "accessibility": {
@@ -11884,7 +12259,7 @@
           "Image.asset",
           "ImageCache",
           "CatchIcons.imageOutlined",
-          "CatchIcon.md"
+          "CatchIconSize.md"
         ],
         "goldens": [],
         "members": [
@@ -12127,6 +12502,27 @@
         "constructors": [
           "CatchCodeInput"
         ]
+      },
+      "react": {
+        "symbol": "CatchCodeInput",
+        "file": "packages/web-ui/src/components/CatchCodeInput.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchCodeInput.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "empty",
+            "partial",
+            "active-caret",
+            "complete",
+            "custom-length",
+            "no-caret",
+            "error",
+            "dark"
+          ]
+        },
+        "notes": "Digit cells over one transparent native input with autocomplete one-time-code and a numeric keyboard, so paste, SMS autofill and screen readers use one text field, as in Flutter. Flutter's controller has no React prop; value is the web's optional controlled code, and the component keeps its own otherwise."
       },
       "design": {
         "figma": {
@@ -14436,8 +14832,41 @@
         "constructors": [
           "CatchAvatar",
           "CatchAvatar.count",
-          "CatchAvatar.veiled"
+          "CatchAvatar.veiled",
+          "CatchAvatar.monogram"
         ]
+      },
+      "react": {
+        "symbol": "CatchAvatar",
+        "file": "packages/web-ui/src/components/CatchAvatar.tsx",
+        "api": "styled",
+        "additionalSymbols": [
+          "CatchAvatarRow"
+        ],
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchAvatar.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "photo",
+            "fallback-initials",
+            "activity-context",
+            "activity-dim",
+            "ring",
+            "status-dot",
+            "obscured",
+            "square",
+            "count",
+            "veiled-run",
+            "veiled-dinner",
+            "monogram",
+            "monogram-display",
+            "row",
+            "row-veiled",
+            "dark"
+          ]
+        },
+        "notes": "CatchAvatar.count, .veiled and .monogram are recipe=\"count\" | \"veiled\" | \"monogram\" on the one component; CatchAvatarRow is the stack member. Avatars render aria-hidden: the name beside them carries the identity, as in the board rows and review items. A photo that fails to load falls back to initials, as Flutter's errorBuilder does."
       },
       "design": {
         "figma": {
@@ -14564,6 +14993,25 @@
             "dartType": "int",
             "tsType": "number",
             "notes": "Only available through CatchAvatar.count."
+          },
+          {
+            "name": "ground",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchGround",
+            "tsType": "CatchGround",
+            "values": [
+              "white",
+              "paper",
+              "ink",
+              "coral",
+              "pink",
+              "yellow",
+              "mint",
+              "indigo",
+              "magenta"
+            ],
+            "notes": "Required by CatchAvatar.monogram: initials on a palette ground (CAT-245), in its fill and ink; initials of 24px and up take the display voice (D19)."
           }
         ],
         "states": [
@@ -14577,7 +15025,9 @@
           "square",
           "count",
           "veiled-run",
-          "veiled-dinner"
+          "veiled-dinner",
+          "monogram",
+          "monogram-display"
         ],
         "slots": [],
         "tokens": [
@@ -15243,6 +15693,25 @@
         "constructors": [
           "CatchHeroImage"
         ]
+      },
+      "react": {
+        "symbol": "CatchHeroImage",
+        "file": "packages/web-ui/src/components/CatchHeroImage.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchHeroImage.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "photo",
+            "scrim",
+            "no-scrim",
+            "image-error",
+            "fallback-gradient",
+            "dark"
+          ]
+        },
+        "notes": "Fills the caller's box like Flutter's Stack. The photo takes CatchGradedImage's grade as a CSS filter with multiply and screen tint layers, deeper under a dark theme. framed is web-only: the v2 event page's media frame, 16:10 at radius lg and 4:3 below 840px. Without semanticLabel the photo is decorative."
       },
       "design": {
         "figma": {
@@ -16733,6 +17202,23 @@
           "MapPreview"
         ]
       },
+      "react": {
+        "symbol": "MapPreview",
+        "file": "packages/web-ui/src/components/MapPreview.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/MapPreview.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "exact-location",
+            "missing-coordinate",
+            "no-map-image",
+            "dark"
+          ]
+        },
+        "notes": "The web draws no map itself: imageUrl is a static map the caller's provider renders with its marker, route and zoom, which stand in for markerHue, path, markers and zoom. Without a coordinate or an image it shows Flutter's fallback, whose label takes ink2 because Flutter's ink3 is under 4.5:1 on bg. framed is web-only: the v2 event page's map card, 5:2 at radius lg."
+      },
       "level": "L5",
       "roleNoun": "Preview"
     },
@@ -16834,7 +17320,7 @@
             "dartType": "double",
             "tsType": "number",
             "required": false,
-            "default": "CatchIcon.sm",
+            "default": "CatchIconSize.sm",
             "notes": "Compact entry, flow and group icon extent."
           },
           {
@@ -16941,6 +17427,27 @@
           "CatchIndexRow"
         ]
       },
+      "react": {
+        "symbol": "CatchIndexRow",
+        "file": "packages/web-ui/src/components/CatchIndexRow.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchIndexRow.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "selected",
+            "leading",
+            "trailing",
+            "stacked",
+            "link",
+            "disabled",
+            "dark"
+          ]
+        },
+        "notes": "onTap makes the row a button and the web-only href makes it a link; with neither it is passive, as Flutter disables it. selected is aria-current. Leading and trailing stay passive inside a link or button row. Keyboard focus adds an inset ring on the web, where the 4% overlay alone is too faint. The footer lays its children in one wrapping line 8px apart."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -17001,6 +17508,28 @@
             "required": false,
             "dartType": "String?",
             "tsType": "string"
+          },
+          {
+            "name": "subtitle",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "tsType": "string"
+          },
+          {
+            "name": "footer",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
+          },
+          {
+            "name": "titleMaxLines",
+            "type": "number",
+            "required": false,
+            "default": 1,
+            "dartType": "int",
+            "tsType": "number"
           }
         ],
         "states": [
@@ -17008,12 +17537,17 @@
           "selected",
           "leading",
           "trailing",
+          "stacked",
           "disabled"
         ],
         "slots": [
           {
             "name": "leading",
             "kind": "optional-leading-widget"
+          },
+          {
+            "name": "footer",
+            "kind": "optional-footer-widget"
           },
           {
             "name": "trailing",
@@ -17029,6 +17563,7 @@
         ],
         "dartRoles": [
           "CatchTextStyles.titleL",
+          "CatchTextStyles.supporting",
           "CatchLayout.eventTypeIndexRowHeight"
         ],
         "goldens": [],

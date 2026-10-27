@@ -50,7 +50,7 @@ class EventItineraryEditor extends StatelessWidget {
           title: context.l10n.hostsEventItineraryAdd,
           body: context.l10n.hostsEventItineraryAddBody,
           valueText: context.l10n.hostsEventItineraryAddAction,
-          icon: CatchIcons.addRounded,
+          icon: CatchIcons.add,
           onTap:
               items.length <
                   CatchContractConstraints.eventDocumentItinerary.maxItems!
@@ -137,7 +137,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   CatchButton(
                     label: context.l10n.hostsEventItineraryDelete,
                     variant: CatchButtonVariant.danger,
-                    size: CatchButtonSize.sm,
+                    size: CatchButtonSize.md,
                     onPressed: () => Navigator.of(
                       dialogContext,
                     ).pop(const _ItineraryDialogResult.delete()),
@@ -145,12 +145,12 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                 CatchButton(
                   label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
                   variant: CatchButtonVariant.secondary,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   onPressed: () => Navigator.of(dialogContext).pop(),
                 ),
                 CatchButton(
                   label: context.l10n.hostsEventItinerarySave,
-                  size: CatchButtonSize.sm,
+                  size: CatchButtonSize.md,
                   onPressed: () {
                     final normalizedTitle = title.text.trim();
                     final normalizedOffset = int.tryParse(offset.text.trim());
@@ -201,7 +201,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                       .createEventCallablePayloadItineraryItemsTitle,
                   controller: title,
                   inputHint: context.l10n.hostsEventItineraryFieldTitleHint,
-                  icon: CatchIcons.editNoteOutlined,
+                  icon: CatchIcons.note,
                 ),
                 CatchField.input(
                   copy: catchFieldCopy(context.l10n),
@@ -211,7 +211,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                       .createEventCallablePayloadItineraryItemsOffsetMinutes,
                   controller: offset,
                   keyboardType: TextInputType.number,
-                  icon: CatchIcons.scheduleOutlined,
+                  icon: CatchIcons.time,
                 ),
                 CatchField.input(
                   copy: catchFieldCopy(context.l10n),
@@ -222,7 +222,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   controller: duration,
                   keyboardType: TextInputType.number,
                   labelMode: CatchFieldLabelTextMode.optional,
-                  icon: CatchIcons.timerOutlined,
+                  icon: CatchIcons.timer,
                 ),
                 if (hasRoutePath || existing?.routeDistanceMeters != null)
                   CatchField.input(
@@ -234,7 +234,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                     controller: routeDistance,
                     keyboardType: TextInputType.number,
                     labelMode: CatchFieldLabelTextMode.optional,
-                    icon: CatchIcons.routeOutlined,
+                    icon: CatchIcons.route,
                   ),
                 CatchField.input(
                   copy: catchFieldCopy(context.l10n),
@@ -245,7 +245,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   controller: description,
                   maxLines: 3,
                   labelMode: CatchFieldLabelTextMode.optional,
-                  icon: CatchIcons.descriptionOutlined,
+                  icon: CatchIcons.document,
                 ),
                 CatchField<EventItineraryKind>.choices(
                   copy: catchFieldCopy(context.l10n),
@@ -284,7 +284,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                     valueText: selectedLocation == null
                         ? context.l10n.hostsEventItineraryLocationChoose
                         : context.l10n.hostsEventItineraryLocationChange,
-                    icon: CatchIcons.locationOnOutlined,
+                    icon: CatchIcons.location,
                     onTap: () async {
                       final picked = await onPickLocation(selectedLocation);
                       if (picked != null) {
@@ -298,7 +298,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                       title: context.l10n.hostsEventItineraryLocationRemove,
                       body: selectedLocation!.name,
                       valueText: context.l10n.hostsEventItineraryDelete,
-                      icon: CatchIcons.deleteOutline,
+                      icon: CatchIcons.delete,
                       onTap: () => setState(() => selectedLocation = null),
                     ),
                 ],
@@ -325,10 +325,10 @@ String _kindLabel(BuildContext context, EventItineraryKind kind) =>
     };
 
 IconData _iconFor(EventItineraryKind kind) => switch (kind) {
-  EventItineraryKind.gather => CatchIcons.groups2Outlined,
-  EventItineraryKind.activity => CatchIcons.routeOutlined,
-  EventItineraryKind.stop => CatchIcons.locationOnOutlined,
-  EventItineraryKind.breakTime => CatchIcons.timerOutlined,
-  EventItineraryKind.transition => CatchIcons.syncAltRounded,
-  EventItineraryKind.finish => CatchIcons.flagOutlined,
+  EventItineraryKind.gather => CatchIcons.people,
+  EventItineraryKind.activity => CatchIcons.route,
+  EventItineraryKind.stop => CatchIcons.location,
+  EventItineraryKind.breakTime => CatchIcons.timer,
+  EventItineraryKind.transition => CatchIcons.swap,
+  EventItineraryKind.finish => CatchIcons.flag,
 };

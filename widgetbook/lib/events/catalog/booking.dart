@@ -88,7 +88,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
             label: 'Cancel booking',
             onPressed: widgetbookNoop,
             leadingContent: EventDockStatusText(
-              icon: CatchIcons.checkCircleRounded,
+              icon: CatchIcons.success,
               label: "You're in!",
             ),
           ),
@@ -140,7 +140,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
                 label: 'You attended this event',
                 onPressed: null,
                 leadingContent: EventDockStatusText(
-                  icon: CatchIcons.directionsRunRounded,
+                  icon: CatchIcons.activity,
                   label: 'Completed',
                 ),
               ),
@@ -421,15 +421,9 @@ Widget eventCtaStatusLeadingStates(BuildContext context) {
     mainAxisSize: MainAxisSize.min,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      EventDockStatusText(
-        icon: CatchIcons.checkCircleRounded,
-        label: "You're in!",
-      ),
+      EventDockStatusText(icon: CatchIcons.success, label: "You're in!"),
       gapH12,
-      EventDockStatusText(
-        icon: CatchIcons.directionsRunRounded,
-        label: 'Completed',
-      ),
+      EventDockStatusText(icon: CatchIcons.activity, label: 'Completed'),
     ],
   );
 }

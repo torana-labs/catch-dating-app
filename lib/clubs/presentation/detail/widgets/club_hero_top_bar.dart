@@ -125,10 +125,7 @@ class ClubHeroTopBar extends StatelessWidget {
               tooltip: context.l10n.clubsClubHeroAppBarTooltipBack,
               variant: CatchIconActionVariant.float,
               onPressed: () => Navigator.of(context).pop(),
-              child: Icon(
-                CatchIcons.arrowBackIosNewRounded,
-                size: CatchIcon.md,
-              ),
+              child: Icon(CatchIcons.back, size: CatchIconSize.md),
             ),
           ),
           actions: [
@@ -154,7 +151,7 @@ class ClubHeroTopBar extends StatelessWidget {
                     CatchIcons.platformShare(
                       platform: Theme.of(context).platform,
                     ),
-                    size: CatchIcon.md,
+                    size: CatchIconSize.md,
                   ),
                 ),
               ),
@@ -245,9 +242,9 @@ double _heroCaptionExtentFor(
     textDirection: textDirection,
     textScaler: textScaler,
   )..layout(maxWidth: locationTextWidth);
-  final locationRowHeight = locationPainter.height > CatchIcon.md
+  final locationRowHeight = locationPainter.height > CatchIconSize.md
       ? locationPainter.height
-      : CatchIcon.md;
+      : CatchIconSize.md;
 
   return CatchLayout.clubDetailHeroTitleTopPadding +
       kickerPainter.height +
@@ -366,8 +363,8 @@ class ClubHeroHeader extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  CatchIcons.locationOnOutlined,
-                  size: CatchIcon.md,
+                  CatchIcons.location,
+                  size: CatchIconSize.md,
                   color: t.ink2,
                 ),
                 gapW6,
@@ -467,8 +464,8 @@ class ClubHeroHeader extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    CatchIcons.locationOnOutlined,
-                    size: CatchIcon.md,
+                    CatchIcons.location,
+                    size: CatchIconSize.md,
                     color: t.ink2,
                   ),
                   gapW6,

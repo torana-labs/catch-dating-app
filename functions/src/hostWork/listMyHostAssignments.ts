@@ -73,7 +73,9 @@ export async function listMyHostAssignmentsHandler(
   const data = validateCallableWithAjv<ListMyHostAssignmentsCallablePayload>(
     request, validateListMyHostAssignmentsCallablePayload);
   const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listMyHostAssignments");
+  await deps.checkRateLimit(db, actorUid, "listMyHostAssignments", {
+    maxRequests: 30, windowMs: 60 * 1000,
+  });
   return db.runTransaction(async (tx) => {
     await requireActiveProgramActor({db, actorUid, transaction: tx});
     const [programGrantSnaps, eventGrantSnaps, membershipSnaps] =

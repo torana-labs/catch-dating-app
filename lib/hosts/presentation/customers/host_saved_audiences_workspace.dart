@@ -138,7 +138,7 @@ class _HostSavedAudiencesListState
           loadingBuilder: (_) => CatchSection.sliverLoadingRows(
             itemCount: 4,
             layoutBuilder: (_, _) => CatchRecordLayout.placeholder(
-              icon: CatchIcons.groupsOutlined,
+              icon: CatchIcons.people,
               hasMetadata: true,
               factCount: 1,
             ),
@@ -196,7 +196,7 @@ class _HostSavedAudiencesListState
                         facts: [
                           _savedAudienceSummaryDirectoryBody(context, audience),
                         ],
-                        icon: CatchIcons.groupsOutlined,
+                        icon: CatchIcons.people,
                         metadata: audience.isStatic
                             ? context.l10n.hostAudienceManualGroup
                             : context.l10n.hostAudienceAutomaticGroup,
@@ -216,7 +216,7 @@ class _HostSavedAudiencesListState
                           CatchButton(
                             label: context.l10n.hostCustomersLoadMore,
                             variant: CatchButtonVariant.secondary,
-                            size: CatchButtonSize.sm,
+                            size: CatchButtonSize.md,
                             status: continuation.loadingMore
                                 ? CatchButtonStatus.loading
                                 : CatchButtonStatus.idle,
@@ -242,7 +242,7 @@ class _HostSavedAudiencesListState
                 if (visible.isEmpty)
                   SliverToBoxAdapter(
                     child: CatchEmptyState(
-                      icon: CatchIcons.groupsOutlined,
+                      icon: CatchIcons.people,
                       title:
                           query == null &&
                               _membership == _HostSavedAudienceMembership.all

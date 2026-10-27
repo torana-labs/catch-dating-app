@@ -21,6 +21,8 @@ export const staticMetaKeys = [
   "terms",
   "help",
   "account_deletion",
+  "refunds",
+  "contact",
   "not_found",
 ] as const;
 

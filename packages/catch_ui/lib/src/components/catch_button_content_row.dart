@@ -39,7 +39,7 @@ class CatchButtonContentRow extends StatelessWidget {
       children: [
         if (iconWidget != null) ...[
           IconTheme(
-            data: IconThemeData(color: color, size: CatchIcon.md),
+            data: IconThemeData(color: color, size: CatchIconSize.md),
             child: iconWidget,
           ),
           SizedBox(width: gap),

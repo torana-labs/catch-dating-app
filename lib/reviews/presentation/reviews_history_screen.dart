@@ -108,7 +108,7 @@ class ReviewsHistoryBody extends StatelessWidget {
       ReviewsHistoryLoading() => const ReviewsHistorySkeleton(),
       ReviewsHistoryEmpty(:final title, :final message) => Center(
         child: CatchEmptyState(
-          icon: CatchIcons.rateReviewOutlined,
+          icon: CatchIcons.feedback,
           title: title,
           message: message,
         ),
@@ -239,8 +239,8 @@ class ReviewHistoryRowSkeleton extends StatelessWidget {
                           children: [
                             for (var i = 0; i < 5; i++) ...[
                               CatchSkeleton.box(
-                                width: CatchIcon.badge,
-                                height: CatchIcon.badge,
+                                width: CatchIconSize.badge,
+                                height: CatchIconSize.badge,
                               ),
                               if (i < 4) gapW3,
                             ],
