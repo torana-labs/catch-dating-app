@@ -7114,7 +7114,7 @@
       "command": "node tool/audit/check_fn_readme_inventory.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Diffs functions/src/index.ts exports against functions/README.md inventory and ratchets existing omissions.",
+      "description": "Diffs current functions/README.md inventory rows and functions/src/index.ts exports in both directions while ratcheting existing omissions.",
       "checks": [
         "node --check tool/audit/check_fn_readme_inventory.mjs",
         "node --test tool/audit/check_fn_readme_inventory.test.mjs",
@@ -7135,7 +7135,8 @@
         "contains": [
           "scanFunctionReadmeInventory flags exports missing from README",
           "scanFunctionReadmeInventory passes documented exports",
-          "scanFunctionReadmeInventory ratchets baseline findings"
+          "scanFunctionReadmeInventory ratchets baseline findings",
+          "scanFunctionReadmeInventory rejects stale active rows but permits historical mentions"
         ]
       },
       "ciRequirements": {
