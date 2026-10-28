@@ -21,18 +21,25 @@ export async function assembleHomeCatalog(
 ): Promise<HomeCatalog> {
   const documents = await Promise.all(cities.map((city) =>
     findCityPlans(db, city.marketSlug).catch(() => null)));
-  let listings: Promise<HostListing[]> | null = null;
+  let listings: Promise<HostListing[] | null> | null = null;
   const fallbackListings = () => (listings ??= assemblePublicCatalog(db, readAt)
-    .then((catalog) => catalog.listings).catch(() => []));
+    .then((catalog) => catalog.listings).catch(() => null));
+  const unreadable = new Set<string>();
   const plans: HomeCityPlans[] = await Promise.all(cities.map(async (city, index) => {
     const document = documents[index];
     if (document) {
       const {builtAt: _builtAt, ...current} = cityPlansAt(document, readAt);
       return current satisfies HomeCityPlans;
     }
-    return cityPlansFromListings(await fallbackListings(), city, cities, readAt);
+    const fallback = await fallbackListings();
+    const built = cityPlansFromListings(fallback ?? [], city, cities, readAt);
+    if (fallback) return built;
+    // Nothing could be read: a launched city stays live rather than claim it is launching soon.
+    unreadable.add(city.slug);
+    return city.status === "live" ? {...built, status: "live"} : built;
   }));
-  return homeCatalogFromPlans(cities, plans, requestedCity, readAt);
+  const catalog = homeCatalogFromPlans(cities, plans, requestedCity, readAt);
+  return unreadable.has(catalog.selected.slug) ? {...catalog, phase: "unavailable"} : catalog;
 }
 
 /** React cache deduplicates within one render only. */

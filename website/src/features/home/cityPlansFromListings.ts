@@ -3,7 +3,7 @@ import type {MarketCity} from "@content/markets/types";
 import {eligibleHomeCatchEvents} from "../organizers/homeEventEligibility";
 import {eventDeepLinkForListing} from "../organizers/publicDiscovery";
 import {isPubliclyReadableListing} from "../organizers/selectors";
-import type {HostListing} from "../organizers/types";
+import type {HostListing, HostListingCatchEvent} from "../organizers/types";
 import type {HomeCityPlans, HomeFormat, HomeOrganizer, HomePlan} from "./homeTypes";
 
 const day = 24 * 60 * 60 * 1000;
@@ -26,7 +26,7 @@ export function cityPlansFromListings(
 ): HomeCityPlans {
   const windowEnd = now + windowDays * day;
   const readable = listings.filter(isPubliclyReadableListing);
-  const rows = eligibleHomeCatchEvents(readable, {now, cities})
+  const rows = eligibleHomeCatchEvents<HostListingCatchEvent, HostListing>(readable, {now, cities})
     .filter(({listing, sortTime}) => cityOf(listing, cities)?.id === city.id && sortTime < windowEnd);
   const plans: HomePlan[] = rows.map(({listing, event}) => ({
     source: "catch",

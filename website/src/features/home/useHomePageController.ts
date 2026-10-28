@@ -17,7 +17,7 @@ export function useHomePageController(catalog: HomeCatalog, navigate: (href: str
   const filtered = filter === "all" ? week : week.filter((plan) => plan.format === filter);
   const shown = (filter === "all" ? filtered.slice(0, gridSize) : filtered).map((plan) => planCard(plan, city.timezone));
   const filterName = filter === "all" ? "" : homeFormats.find((item) => item.format === filter)?.name ?? "";
-  const note = filter === "all" ? fill(copy.week.note, {shown: shown.length, total: week.length}) :
+  const note = catalog.phase === "unavailable" ? copy.week.unavailable : filter === "all" ? fill(copy.week.note, {shown: shown.length, total: week.length}) :
     shown.length ? fill(copy.week.filteredNote, {shown: shown.length, total: filtered.length, format: filterName}) :
       fill(copy.week.emptyFormat, {format: filterName.toLocaleLowerCase("en-IN")});
   return {

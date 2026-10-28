@@ -5,19 +5,7 @@ import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/
 import type {ExploreFilters} from "./exploreDiscovery";
 import type {HomeCatalog} from "./homeTypes";
 import {renderExploreDiscovery} from "./sections/exploreSections";
-import {
-  HomeAppBand,
-  HomeFaq,
-  HomeFooter,
-  HomeFormats,
-  HomeHeader,
-  HomeHero,
-  HomeHostBand,
-  HomeLaunchingSoon,
-  HomeOrganisers,
-  HomeStory,
-  HomeThisWeek,
-} from "./sections/homeSections";
+import {HomePageSections} from "./sections/homeSections";
 import {useExploreController} from "./useExploreController";
 import {useHomePageController} from "./useHomePageController";
 
@@ -44,18 +32,5 @@ export function HomePage({catalog, downloadUrl, navigate, signup}: {
   signup?: ReactNode;
 }) {
   const home = useHomePageController(catalog, navigate);
-  return <>
-    <HomeHeader home={home} />
-    <WebsitePageMain id="top">
-      <HomeHero home={home} />
-      <HomeFormats home={home} />
-      {home.live ? <HomeThisWeek home={home} /> : <HomeLaunchingSoon home={home} signup={signup} />}
-      <HomeStory />
-      <HomeOrganisers home={home} />
-      <HomeHostBand />
-      <HomeAppBand downloadUrl={downloadUrl} />
-      <HomeFaq />
-    </WebsitePageMain>
-    <HomeFooter home={home} />
-  </>;
+  return <HomePageSections downloadUrl={downloadUrl} home={home} signup={signup} />;
 }

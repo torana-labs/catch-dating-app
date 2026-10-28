@@ -35,6 +35,7 @@ export const homePageCopy = {
     note: "{shown} of {total} plans shown. Hosts set their own prices.",
     filteredNote: "Showing {shown} of {total} this week · {format}",
     emptyFormat: "No {format} this week. Try another format.",
+    unavailable: "We couldn’t load this week’s plans. Please try again in a moment.",
     spotsLeft: "{count} left",
     full: "Full",
     free: "Free",

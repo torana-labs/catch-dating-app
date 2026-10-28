@@ -162,24 +162,62 @@
       "source": "website/src/features/home/HomePage.tsx",
       "exportName": "HomePage",
       "css": [
-        "website/src/styles/site-shell.css",
-        "website/src/styles/home.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css"
+        "website/src/styles/site-shell.css"
       ],
       "storybook": {
         "status": "ready",
-        "story": "website/src/stories/MarketingRoutes.stories.tsx",
-        "exportName": "Home",
+        "story": "website/src/stories/HomePage.stories.tsx",
+        "exportName": "MumbaiLive1280",
         "states": [
-          "default",
-          "empty-city",
+          "mumbai-live",
+          "launching-soon",
+          "thin-city",
           "catalog-unavailable",
-          "city-and-format",
-          "mobile-menu"
+          "format-filter",
+          "city-picker"
         ]
       },
-      "notes": "Consumer discovery homepage with explicit inventory states; authored copy and catalog data remain separate."
+      "notes": "Website v2 homepage composed only of @catch/web-ui parts (D18): the page arranges the parts and binds the city's cityPlans read model to them; copy lives in content/homePage.ts."
+    },
+    {
+      "id": "home_page_sections",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home"
+      ],
+      "owner": "features/home",
+      "source": "website/src/features/home/sections/homeSections.tsx",
+      "exportName": "HomePageSections",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteHeader.module.css",
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchHeroShowcase.module.css",
+        "packages/web-ui/src/components/CatchDeviceFrame.module.css",
+        "packages/web-ui/src/components/CatchFormatTile.module.css",
+        "packages/web-ui/src/components/CatchScroller.module.css",
+        "packages/web-ui/src/components/CatchPlanCard.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchScrollStory.module.css",
+        "packages/web-ui/src/components/CatchOrganizerCard.module.css",
+        "packages/web-ui/src/components/CatchStoreButton.module.css",
+        "packages/web-ui/src/components/CatchQrCode.module.css",
+        "packages/web-ui/src/components/CatchAccordion.module.css",
+        "packages/web-ui/src/components/CatchMenu.module.css",
+        "packages/web-ui/src/components/CatchSiteFooter.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/HomePage.stories.tsx",
+        "exportName": "MumbaiLive390",
+        "states": [
+          "phone-live",
+          "phone-launching-soon"
+        ]
+      },
+      "notes": "The homepage's sections in the WebHomeV2 board's order, private to one assembly: header with the city picker, hero, format tiles, this week or launching soon, how a night works, organisers, the host band, the app band, the FAQ and the footer. Each section arranges library parts and binds the controller's view of the city (D18)."
     },
     {
       "id": "shared_identity_display_shell",

@@ -3,7 +3,7 @@ import {
   CatchAvatar,
   CatchBand,
   CatchButton,
-  CatchChip,
+  CatchChoiceInput,
   CatchDeviceFrame,
   CatchFormatTile,
   CatchGap,
@@ -23,17 +23,19 @@ import {
   CatchStoreButton,
   CatchText,
   type CatchHeroShowcaseSticker,
+  type CatchTextAccent,
 } from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {siteFooterLegalLinks} from "@content/site";
+import {WebsitePageMain} from "../../../shared/site";
 import {useAppDownloadCtas, type AppDownloadCta} from "../../marketing/useAppDownloadCtas";
 import {cityStatusLabel} from "../homeModel";
-import type {HomePageController} from "../useHomePageController";
-import {HomeSectionHeading} from "./homeSectionHeading";
+import type {HomeFilter, HomePageController} from "../useHomePageController";
 
 type Home = HomePageController;
+const filterValues: HomeFilter[] = ["all", ...homeFormats.map((item) => item.format)];
 // A link button's press only navigates.
 const follow = () => undefined;
 const areasOf = (home: Home) => homeCityAreas[home.city.marketSlug];
@@ -50,7 +52,7 @@ function StoreButtons({placement, size = "l", stores}: {placement: string; size?
   );
 }
 
-export function HomeHeader({home}: {home: Home}) {
+function HomeHeader({home}: {home: Home}) {
   return (
     <CatchSiteHeader
       actions={
@@ -80,7 +82,7 @@ export function HomeHeader({home}: {home: Home}) {
   );
 }
 
-export function HomeHero({home}: {home: Home}) {
+function HomeHero({home}: {home: Home}) {
   const city = home.city.label;
   const stickers: CatchHeroShowcaseSticker[] = home.stickers.map((plan, index) => ({
     label: plan.label, title: plan.title, ground: (["white", "ink", "yellow"] as const)[index],
@@ -116,7 +118,7 @@ export function HomeHero({home}: {home: Home}) {
   );
 }
 
-export function HomeFormats({home}: {home: Home}) {
+function HomeFormats({home}: {home: Home}) {
   return (
     <CatchBand aria-labelledby="home-formats-title" pb="regular" pt="compact" width="full">
       <CatchGap size="section">
@@ -136,7 +138,7 @@ export function HomeFormats({home}: {home: Home}) {
   );
 }
 
-export function HomeThisWeek({home}: {home: Home}) {
+function HomeThisWeek({home}: {home: Home}) {
   const city = home.city.label;
   const areas = areasOf(home);
   return (
@@ -150,12 +152,13 @@ export function HomeThisWeek({home}: {home: Home}) {
           title={fill(copy.week.title, {city})}
         />
         <CatchText as="p" color="ink2" variant="bodyLead">{areas ? fill(copy.week.lead, {areas}) : fill(copy.week.leadNoAreas, {city})}</CatchText>
-        <CatchGap aria-label={copy.week.filters} direction="horizontal" role="group" size="inline" wrap>
-          <CatchChip label={copy.week.everything} mode="single" onPressed={() => home.setFilter("all")} recipe="choice" selected={home.filter === "all"} />
-          {homeFormats.map((item) => (
-            <CatchChip key={item.format} label={item.name} mode="single" onPressed={() => home.setFilter(item.format)} recipe="choice" selected={home.filter === item.format} />
-          ))}
-        </CatchGap>
+        <CatchChoiceInput
+          itemLabelBuilder={(value: HomeFilter) => value === "all" ? copy.week.everything : homeFormats.find((item) => item.format === value)?.name ?? value}
+          mode="single"
+          onChanged={(chosen) => home.setFilter([...chosen][0] ?? "all")}
+          selected={new Set<HomeFilter>([home.filter])}
+          values={filterValues}
+        />
         {home.plans.length ? (
           <CatchGrid columns={4} compactColumns={1}>
             {home.plans.map((plan) => (
@@ -170,7 +173,7 @@ export function HomeThisWeek({home}: {home: Home}) {
   );
 }
 
-export function HomeLaunchingSoon({home, signup}: {home: Home; signup?: ReactNode}) {
+function HomeLaunchingSoon({home, signup}: {home: Home; signup?: ReactNode}) {
   const city = home.city.label;
   const areas = areasOf(home);
   const stores = useAppDownloadCtas({placement: "home_launching_soon"});
@@ -178,7 +181,7 @@ export function HomeLaunchingSoon({home, signup}: {home: Home; signup?: ReactNod
     <CatchBand aria-labelledby="home-soon-title" ground="paper" id="whats-on" pb="spacious" pt="spacious">
       <CatchGap size="section">
         <HomeSectionHeading eyebrow={copy.soon.eyebrow} eyebrowAccent="indigo" id="home-soon-title" title={fill(copy.soon.title, {city})} />
-        <CatchText as="p" color="ink2" variant="bodyLead">{areas ? fill(copy.soon.lead, {areas, city}) : fill(copy.soon.leadNoAreas, {city})}</CatchText>
+        <CatchText as="p" color="ink2" variant="bodyLead">{areas ? fill(copy.soon.lead, {areas}) : fill(copy.soon.leadNoAreas, {city})}</CatchText>
         <CatchSplit
           align="stretch"
           end={
@@ -240,7 +243,7 @@ export function HomeLaunchingSoon({home, signup}: {home: Home; signup?: ReactNod
   );
 }
 
-export function HomeStory() {
+function HomeStory() {
   return (
     <CatchBand aria-labelledby="home-story-title" ground="ink" id="how" pb="spacious" pt="spacious">
       <CatchGap size="majorSection">
@@ -268,7 +271,7 @@ export function HomeStory() {
   );
 }
 
-export function HomeOrganisers({home}: {home: Home}) {
+function HomeOrganisers({home}: {home: Home}) {
   const city = home.city.label;
   return (
     <CatchBand aria-labelledby="home-organisers-title" id="organisers" pb="spacious" pt="spacious">
@@ -316,7 +319,7 @@ export function HomeOrganisers({home}: {home: Home}) {
   );
 }
 
-export function HomeHostBand() {
+function HomeHostBand() {
   return (
     <CatchBand aria-labelledby="home-host-title" ground="coral" id="hosts" pb="spacious" pt="spacious">
       <CatchSplit
@@ -352,7 +355,7 @@ export function HomeHostBand() {
 }
 
 /** The QR code appears once there is one download link for both stores (CAT-204). */
-export function HomeAppBand({downloadUrl}: {downloadUrl?: string}) {
+function HomeAppBand({downloadUrl}: {downloadUrl?: string}) {
   return (
     <CatchBand aria-labelledby="home-app-title" id="app" pb="compact" pt="spacious">
       <CatchGroundCard ground="pink" padding="spacious">
@@ -382,7 +385,7 @@ export function HomeAppBand({downloadUrl}: {downloadUrl?: string}) {
   );
 }
 
-export function HomeFaq() {
+function HomeFaq() {
   return (
     <CatchBand aria-labelledby="home-faq-title" id="faq" pb="spacious" pt="compact">
       <CatchSplit
@@ -398,7 +401,7 @@ export function HomeFaq() {
   );
 }
 
-export function HomeFooter({home}: {home: Home}) {
+function HomeFooter({home}: {home: Home}) {
   const links = copy.footer.links;
   return (
     <CatchSiteFooter
@@ -415,4 +418,50 @@ export function HomeFooter({home}: {home: Home}) {
       tagline={copy.footer.tagline}
     />
   );
+}
+
+/**
+ * A homepage section opening: a coloured eyebrow, a display headline and a
+ * lead, with the lead or an action across from the headline on a wide page.
+ */
+function HomeSectionHeading({aside, eyebrow, eyebrowAccent, id, lead, title, titleVariant = "displayXl"}: {
+  aside?: ReactNode;
+  eyebrow: string;
+  eyebrowAccent?: CatchTextAccent;
+  id: string;
+  lead?: string;
+  title: string;
+  titleVariant?: "displayXl" | "displayXxl";
+}) {
+  const opening = (
+    <CatchGap size="related">
+      <CatchText as="p" color={eyebrowAccent} variant="supportingStrong">{eyebrow}</CatchText>
+      <CatchText as="h2" id={id} variant={titleVariant}>{title}</CatchText>
+    </CatchGap>
+  );
+  const side = aside ?? (lead ? <CatchText as="p" color="ink2" variant="bodyLead">{lead}</CatchText> : null);
+  return side ? <CatchSplit align="end" end={side} ratio="sevenFive" start={opening} /> : opening;
+}
+
+/**
+ * The homepage's sections in the board's order: header, hero, formats, this
+ * week (or launching soon), how a night works, organisers, the host band, the
+ * app band, the FAQ and the footer. It arranges library parts and binds the
+ * controller's view of the city to them (D18).
+ */
+export function HomePageSections({downloadUrl, home, signup}: {home: Home; downloadUrl?: string; signup?: ReactNode}) {
+  return <>
+    <HomeHeader home={home} />
+    <WebsitePageMain id="top">
+      <HomeHero home={home} />
+      <HomeFormats home={home} />
+      {home.live ? <HomeThisWeek home={home} /> : <HomeLaunchingSoon home={home} signup={signup} />}
+      <HomeStory />
+      <HomeOrganisers home={home} />
+      <HomeHostBand />
+      <HomeAppBand downloadUrl={downloadUrl} />
+      <HomeFaq />
+    </WebsitePageMain>
+    <HomeFooter home={home} />
+  </>;
 }

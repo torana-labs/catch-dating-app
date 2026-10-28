@@ -71,4 +71,6 @@ export interface HomeCatalog {
   plans: HomeCityPlans;
   /** The busiest live city other than the selected one, for a launching-soon page. */
   liveCity: HomeCity | null;
+  /** Set when the selected city's plans could not be read at all. */
+  phase?: "unavailable";
 }

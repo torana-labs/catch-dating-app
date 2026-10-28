@@ -1,59 +1,107 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
-import {afterEach, describe, expect, it} from "vitest";
+import {afterEach, describe, expect, it, vi} from "vitest";
+import {homeCatalogFixture, mumbaiLiveCatalog, puneLaunchingSoonCatalog} from "../../stories/fixtures/homeCatalogs";
 import {HomePage} from "./HomePage";
-import {publicEventListingsContext} from "../organizers/usePublicEventListingsController";
-import {hostListings} from "../organizers/data";
-import type {HostListing} from "../organizers/types";
-const now = Date.parse("2030-01-01");
-const listing: HostListing = {...hostListings[0], id: "home-club", name: "Preview Club", city: "Mumbai", citySlug: "mumbai", path: "/organizers/preview-club/", authority: {...hostListings[0].authority, publishStatus: "published", claimState: "claimed"}, catchEvents: [
-  {id: "run", role: "Hosted event", title: "Preview social run", summary: "", activityKind: "socialRun", timeline: "upcoming", startTime: "2030-01-02", endTime: "2030-01-03", date: "Tomorrow", location: "Park", capacityLimit: 20, bookedCount: 1, checkedInCount: 0, waitlistedCount: 0, priceLabel: "Free", publicRegistrationEnabled: true},
-]};
-function show(phase: "ready" | "loading" | "unavailable" = "ready") {
- return render(<publicEventListingsContext.Provider value={{listings: [listing], phase, readAt: now}}><HomePage captures={{}} /></publicEventListingsContext.Provider>);
-}
-afterEach(cleanup);
-describe("consumer homepage", () => {
- it("previews eligible events, canonical destinations and the inclusive Host handoff", () => {
-  show();
-  const main = within(screen.getByRole("main"));
-  expect(main.getByRole("heading", {level: 1}).textContent).toBe("Find something worth showing up for.");
-  expect(main.getByRole("link", {name: /Preview social run/}).getAttribute("href")).toBe("/events/run/");
-  expect(main.getByRole("link", {name: "Explore Catch Host"}).getAttribute("href")).toBe("/host/");
-  expect(main.getByText(/independent hosts, growing clubs, community organisers/i)).toBeTruthy();
-  // Without photos the event and organiser cards draw the activity covers, never a stand-in photo.
-  expect(main.queryByText("Illustrative image")).toBeNull();
-  expect(main.getByRole("link", {name: /Preview social run/}).querySelector("img")).toBeNull();
-  expect(main.getByRole("link", {name: /Preview social run/}).querySelector("[data-activity-kind=socialRun]")).not.toBeNull();
-  const organiser = main.getAllByRole("link").find(link => link.getAttribute("href") === "/organizers/preview-club/" && link.querySelector("h3"));
-  expect(organiser?.querySelector("img")).toBeNull();
-  expect(organiser?.querySelector("[data-activity-kind=socialRun]")).not.toBeNull();
- });
- it("distinguishes a format with no matches from a city with no events", () => {
-  show();
-  fireEvent.click(screen.getByRole("button", {name: "Sport"}));
-  expect(screen.getByText("No events match this format in Mumbai.")).toBeTruthy();
-  fireEvent.click(screen.getByRole("button", {name: "Clear filters"}));
-  expect(screen.getByRole("link", {name: /Preview social run/})).toBeTruthy();
-  fireEvent.change(screen.getAllByRole("combobox", {name: "Choose your city"})[0], {target: {value: "indore"}});
-  expect(screen.getByText("We don’t have upcoming events listed in Indore yet.")).toBeTruthy();
-  expect(screen.getByRole("heading", {name: "Discover organisers across Catch."})).toBeTruthy();
-  expect(screen.queryByRole("link", {name: /Preview social run/})).toBeNull();
-  expect(screen.getAllByRole("link", {name: "Find events"}).some(link => link.getAttribute("href") === "/explore/?city=indore#events")).toBe(true);
- });
- it.each(["loading", "unavailable"] as const)("withholds stale cards when %s without claiming an empty city", phase => {
-  show(phase);
-  expect(screen.queryByRole("link", {name: /Preview social run/})).toBeNull();
-  expect(screen.queryByText(/We don’t have upcoming events/)).toBeNull();
-  expect(screen.getByRole("heading", {name: phase === "loading" ? "Finding upcoming events…" : "We couldn’t load events right now."})).toBeTruthy();
- });
- it("opens participation guidance, FAQ answers and the mobile navigation", () => {
-  show();
-  const explanation = screen.getByRole("button", {name: "How it works"});
-  fireEvent.click(explanation); expect(explanation.getAttribute("aria-expanded")).toBe("true");
-  const question = screen.getByRole("button", {name: "Is Catch only for dating?"});
-  fireEvent.click(question); expect(question.getAttribute("aria-expanded")).toBe("true");
-  expect(screen.getByText(/No. Catch is for discovering events/)).toBeTruthy();
-  const menu = screen.getByRole("button", {name: /menu/i});
-  fireEvent.click(menu); expect(menu.getAttribute("aria-expanded")).toBe("true");
- });
+
+const trackMarketingEvent = vi.hoisted(() => vi.fn());
+vi.mock("../../analytics", async (original) => ({...await original<typeof import("../../analytics")>(), trackMarketingEvent}));
+
+afterEach(() => {cleanup(); trackMarketingEvent.mockReset();});
+
+describe("homepage", () => {
+  it("shows a live city's week of plans, eight at a time, each linking to its event page", () => {
+    render(<HomePage catalog={mumbaiLiveCatalog} />);
+    const main = within(screen.getByRole("main"));
+    expect(main.getByRole("heading", {level: 1}).textContent).toBe("Find something worth showing up for.");
+    expect(main.getByText("In Mumbai this week")).toBeTruthy();
+    expect(main.getByRole("heading", {name: "This week in Mumbai"})).toBeTruthy();
+    // Ten plans start in the next seven days; the eleventh is later.
+    expect(main.getByText("10 plans this week")).toBeTruthy();
+    expect(main.getByText("8 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
+    const quiz = main.getByRole("link", {name: /Thursday Evening Pub Quiz/});
+    expect(quiz.getAttribute("href")).toBe("/events/thursday-pub-quiz/");
+    expect(quiz.textContent).toContain("Games and quizzes · Thu 7:30 PM");
+    expect(quiz.textContent).toContain("6 left");
+    expect(main.getByText("Hosted plans across Bandra, Khar, Andheri and Worli.")).toBeTruthy();
+    expect(main.getByRole("link", {name: "See everything in Mumbai"}).getAttribute("href")).toBe("/explore/?city=mumbai");
+  });
+
+  it("filters the week by format from the tiles and the chips, and says when a format has none", () => {
+    render(<HomePage catalog={mumbaiLiveCatalog} />);
+    const games = screen.getByRole("button", {name: /3 this week.*Games and quizzes/});
+    fireEvent.click(games);
+    expect(games.getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByText("Showing 3 of 3 this week · Games and quizzes")).toBeTruthy();
+    expect(screen.queryByRole("link", {name: /Strangers’ Supper/})).toBeNull();
+    fireEvent.click(games);
+    expect(screen.getByText("8 of 10 plans shown. Hosts set their own prices.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", {name: /2 this week.*Pickleball/}));
+    expect(screen.getByRole("link", {name: /Doubles Ladder Night/}).textContent).toContain("Full");
+  });
+
+  it("shows a city that has not launched as launching soon, with who is joining and the busiest live city", () => {
+    render(<HomePage catalog={puneLaunchingSoonCatalog} />);
+    const main = within(screen.getByRole("main"));
+    expect(main.getByText("Launching soon in Pune")).toBeTruthy();
+    expect(main.getByRole("heading", {name: "Catch is coming to Pune."})).toBeTruthy();
+    expect(main.queryByRole("heading", {name: /This week in/})).toBeNull();
+    expect(main.getByText("Run clubs, dinners and games and quizzes")).toBeTruthy();
+    expect(main.getAllByText("Koregaon Park Runners").length).toBeGreaterThan(0);
+    // Organisers joining a city before launch have no page to link to.
+    expect(main.queryByRole("link", {name: "Koregaon Park Runners"})).toBeNull();
+    expect(main.getAllByText("Joining at launch").length).toBe(2);
+    expect(main.getByRole("link", {name: "See what’s on in Mumbai"}).getAttribute("href")).toBe("/?city=mumbai");
+    expect(main.getAllByText("Coming to Pune").length).toBe(5);
+  });
+
+  it("reads a launched city too thin to fill a page as launching soon", () => {
+    render(<HomePage catalog={homeCatalogFixture("indore")} />);
+    expect(screen.getByRole("heading", {name: "Catch is coming to Indore."})).toBeTruthy();
+  });
+
+  it("says plans could not load instead of calling a live city launching soon", () => {
+    render(<HomePage catalog={{...mumbaiLiveCatalog, phase: "unavailable", plans: {...mumbaiLiveCatalog.plans, plans: [], organizers: []}}} />);
+    expect(screen.getByRole("heading", {name: "This week in Mumbai"})).toBeTruthy();
+    expect(screen.getByText("We couldn’t load this week’s plans. Please try again in a moment.")).toBeTruthy();
+    expect(screen.queryByText(/Catch is coming to Mumbai/)).toBeNull();
+  });
+
+  it("links organisers to their pages, and an unclaimed listing to its claim", () => {
+    render(<HomePage catalog={mumbaiLiveCatalog} />);
+    const organisers = within(screen.getByRole("region", {name: "The people behind the plans."}));
+    expect(organisers.getByRole("link", {name: "See Carter Road Runners’s plans"}).getAttribute("href")).toBe("/organizers/carter-road-runners/");
+    expect(organisers.getByText("212 followers")).toBeTruthy();
+    expect(organisers.getByRole("link", {name: "Is this you? Claim it"}).getAttribute("href")).toBe("/organizers/bandra-book-swap/#claim");
+    expect(organisers.getByText("Next: Fri 6:30 AM · Carter Road Social Run")).toBeTruthy();
+  });
+
+  it("moves to another city from the picker", () => {
+    const navigate = vi.fn();
+    render(<HomePage catalog={mumbaiLiveCatalog} navigate={navigate} />);
+    fireEvent.click(screen.getByRole("button", {name: "Mumbai"}));
+    fireEvent.click(screen.getByRole("option", {name: /Pune/}));
+    expect(navigate).toHaveBeenCalledWith("/?city=pune");
+  });
+
+  it("states the host price without a take-home figure and keeps dating words off the page", () => {
+    const {container} = render(<HomePage catalog={mumbaiLiveCatalog} />);
+    expect(screen.getByText("5% of ticket sales, capped at ₹10,000 a month")).toBeTruthy();
+    expect(screen.getByText(/Payment gateway fees are charged separately/)).toBeTruthy();
+    expect(container.textContent).not.toMatch(/dating|singles|mixer|\bmatch/i);
+  });
+
+  it("records a store that is not live yet instead of following it", () => {
+    render(<HomePage catalog={mumbaiLiveCatalog} />);
+    const [appStore] = screen.getAllByRole("button", {name: "Download on the App Store"});
+    fireEvent.click(appStore);
+    expect(trackMarketingEvent).toHaveBeenCalledWith("store_cta_pending", expect.objectContaining({platform: "ios", placement: "home_hero"}));
+    expect(screen.queryByRole("img", {name: /QR code/})).toBeNull();
+  });
+
+  it("lists every city in the footer, the ones not open marked soon", () => {
+    render(<HomePage catalog={mumbaiLiveCatalog} />);
+    const footer = within(screen.getByRole("contentinfo"));
+    expect(footer.getByRole("link", {name: "Mumbai"}).getAttribute("href")).toBe("/?city=mumbai");
+    expect(footer.getByRole("link", {name: "Pune · soon"}).getAttribute("href")).toBe("/?city=pune");
+  });
 });
