@@ -278,10 +278,10 @@ function linksOf(record: OrganizerPageRecord, readAt: number): OrganizerLinkView
       key: link.id,
       href: link.url,
       title: link.label,
-      subtitle: link.pinned && link.showUntil ?
-        copy.pinnedUntil(format(new Date(link.showUntil), defaultZone, {day: "numeric", month: "short"})) : hostOf(link.url),
+      subtitle: link.subtitle ?? (link.pinned && link.showUntil ?
+        copy.pinnedUntil(format(new Date(link.showUntil), defaultZone, {day: "numeric", month: "short"})) : hostOf(link.url)),
       pinned: link.pinned,
-      icon: iconFor(link.url),
+      icon: link.icon ? ownerLinkIcons[link.icon] : iconFor(link.url),
       analytics: {eventName: "outboundClick", source: "organizer_page"},
     }))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
@@ -409,6 +409,20 @@ function eventSourceNames(record: OrganizerPageRecord): string[] {
   return [...new Set([...record.upcomingEvents, ...record.pastMoments]
     .flatMap((item) => item.source === "external" ? [item.booking.label] : []))];
 }
+
+/** The CatchIcon for each role an owner can give a link (CAT-254). */
+const ownerLinkIcons = {
+  community: "chat",
+  social: "photo",
+  tickets: "ticket",
+  calendar: "event",
+  shop: "pricing",
+  partner: "partner",
+  video: "play",
+  route: "route",
+  website: "web",
+  link: "link",
+} as const satisfies Record<NonNullable<OrganizerPageRecord["links"][number]["icon"]>, CatchIconName>;
 
 function iconFor(url: string): CatchIconName {
   if (url.startsWith("mailto:")) return "email";

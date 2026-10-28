@@ -155208,6 +155208,101 @@ export const organizerDocumentSchema = {
       },
       "x-catch-ownership": "callable-owned"
     },
+    "ownerLinks": {
+      "type": "array",
+      "maxItems": 20,
+      "description": "Links the owner, or staff for them, put on the organizer page, in display order. Written only by adminUpdateOrganizerDetails after the owner-link URL policy in functions/src/organizers/organizerLinks.ts.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One owner-managed link on the organizer page (CAT-254). Pinned links lead; a link with showUntil disappears after that time.",
+        "required": [
+          "id",
+          "label",
+          "subtitle",
+          "url",
+          "icon",
+          "pinned",
+          "showUntil"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "subtitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 4096,
+            "pattern": "^https://"
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "link",
+              "website",
+              "community",
+              "social",
+              "tickets",
+              "calendar",
+              "shop",
+              "partner",
+              "video",
+              "route",
+              null
+            ],
+            "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "showUntil": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "publicSources": {
       "type": "array",
       "maxItems": 20,
@@ -190142,16 +190237,18 @@ export const organizerPublicPageDocumentSchema = {
     },
     "links": {
       "type": "array",
-      "description": "Owner links in display order. Empty until owner link editing ships (CAT-254).",
+      "description": "The owner's live links from organizers/{id}.ownerLinks (CAT-254): pinned first, otherwise in the owner's order, without links whose showUntil had passed when the page was built. Readers also hide links that have since expired.",
       "maxItems": 20,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "description": "One owner-managed link on the organizer page. Pinned links lead; a link with showUntil disappears after that time.",
+        "description": "One owner-managed link on the organizer page (CAT-254). Pinned links lead; a link with showUntil disappears after that time.",
         "required": [
           "id",
           "label",
+          "subtitle",
           "url",
+          "icon",
           "pinned",
           "showUntil"
         ],
@@ -190165,11 +190262,39 @@ export const organizerPublicPageDocumentSchema = {
             "minLength": 1,
             "maxLength": 80
           },
+          "subtitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
           "url": {
             "type": "string",
             "format": "uri",
             "maxLength": 4096,
             "pattern": "^https://"
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "link",
+              "website",
+              "community",
+              "social",
+              "tickets",
+              "calendar",
+              "shop",
+              "partner",
+              "video",
+              "route",
+              null
+            ],
+            "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
           },
           "pinned": {
             "type": "boolean"
@@ -263894,6 +264019,80 @@ export const adminUpdateClubDetailsCallablePayloadSchema = {
             }
           }
         },
+        "ownerLinks": {
+          "type": "array",
+          "maxItems": 20,
+          "description": "Replaces the organizer page links, in display order. An empty array removes them.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "An owner link as an admin edit sends it. showUntil is an ISO date-time; the server checks the URL against the owner-link policy before saving.",
+            "required": [
+              "id",
+              "label",
+              "subtitle",
+              "url",
+              "icon",
+              "pinned",
+              "showUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "subtitle": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 4096,
+                "pattern": "^https://"
+              },
+              "icon": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "link",
+                  "website",
+                  "community",
+                  "social",
+                  "tickets",
+                  "calendar",
+                  "shop",
+                  "partner",
+                  "video",
+                  "route",
+                  null
+                ],
+                "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
+              },
+              "pinned": {
+                "type": "boolean"
+              },
+              "showUntil": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            }
+          }
+        },
         "publicProfile": {
           "type": "object",
           "additionalProperties": false,
@@ -264295,6 +264494,80 @@ export const adminUpdateOrganizerDetailsCallablePayloadSchema = {
                 "sourceBacked",
                 "ownerVerified"
               ]
+            }
+          }
+        },
+        "ownerLinks": {
+          "type": "array",
+          "maxItems": 20,
+          "description": "Replaces the organizer page links, in display order. An empty array removes them.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "An owner link as an admin edit sends it. showUntil is an ISO date-time; the server checks the URL against the owner-link policy before saving.",
+            "required": [
+              "id",
+              "label",
+              "subtitle",
+              "url",
+              "icon",
+              "pinned",
+              "showUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "subtitle": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 4096,
+                "pattern": "^https://"
+              },
+              "icon": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "link",
+                  "website",
+                  "community",
+                  "social",
+                  "tickets",
+                  "calendar",
+                  "shop",
+                  "partner",
+                  "video",
+                  "route",
+                  null
+                ],
+                "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
+              },
+              "pinned": {
+                "type": "boolean"
+              },
+              "showUntil": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
             }
           }
         },

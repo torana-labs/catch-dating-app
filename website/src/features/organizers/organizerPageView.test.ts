@@ -75,15 +75,22 @@ describe("organizerPageView", () => {
 
   it("shows owner links pinned first and drops one past its date", () => {
     const links = view(claimedOrganizerPage).links;
-    expect(links.map((link) => [link.title, link.pinned, link.icon])).toEqual([
-      ["Lantern Night · Sat 14 Nov", true, "event"],
-      ["Join the WhatsApp community", false, "chat"],
-      ["Strava club", false, "route"],
-      ["Club tees and caps", false, "link"],
+    expect(links.map((link) => [link.title, link.pinned, link.icon, link.subtitle])).toEqual([
+      ["Lantern Night · Sat 14 Nov", true, "event", "Pinned until 14 Nov"],
+      ["Join the WhatsApp community", false, "chat", "chat.whatsapp.com/lantern-lane"],
+      ["Strava club", false, "route", "Every run, logged"],
+      ["Club tees and caps", false, "pricing", "Ships across India"],
     ]);
-    expect(links[0].subtitle).toBe("Pinned until 14 Nov");
     const expired = organizerPageView(claimedOrganizerPage, Date.parse("2026-11-20T00:00:00Z")).links;
     expect(expired.map((link) => link.title)).not.toContain("Lantern Night · Sat 14 Nov");
+  });
+
+  it("draws each owner link role with its icon", () => {
+    const roles = ["community", "social", "tickets", "calendar", "shop", "partner", "video", "route", "website", "link"] as const;
+    const page = {...claimedOrganizerPage, links: roles.map((icon) =>
+      ({...claimedOrganizerPage.links[3], id: icon, url: `https://example.org/${icon}`, icon}))};
+    expect(view(page).links.map((link) => link.icon)).toEqual(
+      ["chat", "photo", "ticket", "event", "pricing", "partner", "play", "route", "web", "link"]);
   });
 
   it("falls back to the public pages a listing came from, never its seeding notes", () => {

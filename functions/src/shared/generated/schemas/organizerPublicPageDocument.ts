@@ -177,16 +177,18 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
     },
     "links": {
       "type": "array",
-      "description": "Owner links in display order. Empty until owner link editing ships (CAT-254).",
+      "description": "The owner's live links from organizers/{id}.ownerLinks (CAT-254): pinned first, otherwise in the owner's order, without links whose showUntil had passed when the page was built. Readers also hide links that have since expired.",
       "maxItems": 20,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "description": "One owner-managed link on the organizer page. Pinned links lead; a link with showUntil disappears after that time.",
+        "description": "One owner-managed link on the organizer page (CAT-254). Pinned links lead; a link with showUntil disappears after that time.",
         "required": [
           "id",
           "label",
+          "subtitle",
           "url",
+          "icon",
           "pinned",
           "showUntil"
         ],
@@ -200,11 +202,39 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
             "minLength": 1,
             "maxLength": 80
           },
+          "subtitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
           "url": {
             "type": "string",
             "format": "uri",
             "maxLength": 4096,
             "pattern": "^https://"
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "link",
+              "website",
+              "community",
+              "social",
+              "tickets",
+              "calendar",
+              "shop",
+              "partner",
+              "video",
+              "route",
+              null
+            ],
+            "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
           },
           "pinned": {
             "type": "boolean"

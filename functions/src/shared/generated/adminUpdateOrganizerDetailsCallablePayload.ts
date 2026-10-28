@@ -65,6 +65,34 @@ export interface AdminUpdateOrganizerDetailsCallablePayload {
         | "ownerVerified";
       verificationStatus?: "unverified" | "sourceBacked" | "ownerVerified";
     };
+    /**
+     * Replaces the organizer page links, in display order. An empty array removes them.
+     *
+     * @maxItems 20
+     */
+    ownerLinks?: {
+      id: string;
+      label: string;
+      subtitle: string | null;
+      url: string;
+      /**
+       * What an owner link is for, which picks its icon. Null lets the page infer one from the URL.
+       */
+      icon:
+        | "link"
+        | "website"
+        | "community"
+        | "social"
+        | "tickets"
+        | "calendar"
+        | "shop"
+        | "partner"
+        | "video"
+        | "route"
+        | null;
+      pinned: boolean;
+      showUntil: string | null;
+    }[];
     publicProfile?: {
       headline?: string | null;
       summary?: string | null;

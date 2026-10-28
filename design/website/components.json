@@ -874,7 +874,7 @@
           "source-links"
         ]
       },
-      "notes": "The organiser's links, pinned first and dropped after their show-until date; until owners can add links (CAT-254), the public pages a listing came from."
+      "notes": "The organiser's own links (CAT-254), pinned first and dropped after their show-until date, each drawn with the icon of the role the owner gave it; a page with no owner links shows the public pages its listing came from."
     },
     {
       "id": "organizer_events_section",

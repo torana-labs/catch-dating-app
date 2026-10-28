@@ -4439,9 +4439,9 @@ renders each page from one Admin SDK read (CAT-250). Their contracts are
 `contracts/firestore/event_public_pages.schema.json` and the shared
 definitions in `contracts/shared/public_page_common.schema.json`.
 
-- The organizer page holds identity, owner links (empty until CAT-254),
-  upcoming events from every source with their booking target, past moments,
-  a review summary (verified-only rating, count and distribution of every
+- The organizer page holds identity, the owner's live links, upcoming
+  events from every source with their booking target, past moments, a
+  review summary (verified-only rating, count and distribution of every
   published review) with the latest reviews marked verified or unverified,
   the follower count, claim state, capabilities and today's recommendation
   rail. The event page holds every public event field, a capacity snapshot,
@@ -4455,6 +4455,14 @@ definitions in `contracts/shared/public_page_common.schema.json`.
   expected output the website reader writes; the Functions port must
   reproduce it. A page that fails those rules has no document, and an id
   published as both a Catch and an imported event has no event page.
+- Owner links (CAT-254) live in the callable-owned `organizers/{id}.ownerLinks`
+  list, which only `adminUpdateOrganizerDetails` writes, after
+  `functions/src/organizers/organizerLinks.ts` checks each address (https,
+  no credentials or port, a public dotted host, no link shorteners, at most
+  2048 characters) and the operator-wording rule. The page carries the links
+  still live at build time, pinned first; readers also hide a link once its
+  `showUntil` passes. `icon` names what a link is for, and null lets the
+  page pick an icon from the address.
 - The pages never hold contact details, owner identities, rosters or dating
   framing: no `balanced` admission label, `rotations` experience,
   `singlesMixer` activity, Event Success scorecard or `mutualMatchCount`. The

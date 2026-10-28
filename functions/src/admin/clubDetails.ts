@@ -1,6 +1,7 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {Timestamp} from "firebase-admin/firestore";
 import crypto from "node:crypto";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import type {
@@ -58,6 +59,11 @@ import {
 import {marketForIdOrAlias} from "../locations/marketConfig";
 import {assertOrganizerPublicContent} from
   "../organizers/organizerPublicContent";
+import {
+  adminOwnerLinks,
+  storedOwnerLinks,
+  type OwnerLinkInput,
+} from "../organizers/organizerLinks";
 
 const clubDetailsRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -78,6 +84,8 @@ const defaultDeps: ClubDetailsDeps = {
 type ClubDetailsPatch = AdminUpdateClubDetailsCallablePayload["fields"];
 type OrganizerWithLearningSource = ClubDocument &
   Pick<OrganizerDocument, "intakeLearningSource">;
+type OrganizerWithOwnerLinks = ClubDocument &
+  Pick<OrganizerDocument, "ownerLinks">;
 
 export interface AdminClubDetailsSnapshot {
   clubId: string;
@@ -124,6 +132,8 @@ export interface AdminClubDetailsSnapshot {
     sourceSummary: string | null;
     formats: string[];
   };
+  /** Organizer page links, expired ones included, in display order. */
+  ownerLinks: OwnerLinkInput[];
 }
 
 export interface AdminGetClubDetailsResponse {
@@ -593,12 +603,12 @@ function sameLearningValue(
 /**
  * Builds the admin UI snapshot from the canonical club document.
  * @param {string} clubId Firestore document id.
- * @param {ClubDocument} club Canonical club document.
+ * @param {OrganizerWithOwnerLinks} club Canonical organizer document.
  * @return {AdminClubDetailsSnapshot} Admin-safe snapshot.
  */
 function publicClubDetails(
   clubId: string,
-  club: ClubDocument
+  club: OrganizerWithOwnerLinks
 ): AdminClubDetailsSnapshot {
   return {
     clubId,
@@ -646,6 +656,7 @@ function publicClubDetails(
       sourceSummary: club.publicProfile?.sourceSummary ?? null,
       formats: club.publicProfile?.formats ?? [],
     },
+    ownerLinks: adminOwnerLinks(club.ownerLinks),
   };
 }
 
@@ -807,6 +818,10 @@ function buildFirestorePatch(
       Object.keys(fields.provenance).length > 0) {
     patch["provenance.lastVerifiedAt"] = timestamp;
   }
+  if (fields.ownerLinks !== undefined) {
+    patch.ownerLinks = storedOwnerLinks(fields.ownerLinks,
+      (date) => Timestamp.fromDate(date));
+  }
   return patch;
 }
 
@@ -967,6 +982,7 @@ function normalizeClubDetailsFields(
       fields.publicProfile,
       normalizePublicProfile
     ),
+    ownerLinks: normalizeOwnerLinks(fields.ownerLinks),
   };
 }
 
@@ -1031,6 +1047,25 @@ function normalizePublicProfile(
     sourceSummary: normalizeNullableString(value.sourceSummary),
     formats: normalizeStringArray(value.formats),
   };
+}
+
+/**
+ * Trims owner link text so blank subtitles and padded URLs validate.
+ * @param {unknown} value Raw owner links.
+ * @return {unknown} Normalized owner links.
+ */
+function normalizeOwnerLinks(value: unknown): unknown {
+  if (!Array.isArray(value)) return value;
+  return value.map((link) => {
+    if (!link || typeof link !== "object" || Array.isArray(link)) return link;
+    const fields = link as Record<string, unknown>;
+    return {
+      ...fields,
+      ...mapStringFields(fields, ["label", "url"]),
+      subtitle: normalizeNullableString(fields.subtitle),
+      showUntil: normalizeNullableString(fields.showUntil),
+    };
+  });
 }
 
 /**
