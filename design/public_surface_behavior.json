@@ -6105,9 +6105,9 @@
       ],
       "evidence": [
         {
-          "path": "website/src/features/organizers/useHostListingPageController.test.tsx",
+          "path": "website/src/features/organizers/useOrganizerPageController.test.tsx",
           "contains": [
-            "persists account-backed follows and exposes event-aware navigation",
+            "follows through the visitor's account until follow by phone lands, and records the save",
             "resumes the requested follow after account completion",
             "reads an existing follow on a new page mount"
           ]

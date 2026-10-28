@@ -9205,6 +9205,14 @@
       },
       "$description": "Explicit Catch timing retained; not claimed to be a platform default."
     },
+    "spinnerPeriod": {
+      "$type": "duration",
+      "$value": {
+        "value": 800,
+        "unit": "ms"
+      },
+      "$description": "One full turn of the inline loading spinner. A loop period, not a transition duration."
+    },
     "standardCurve": {
       "$type": "cubicBezier",
       "$value": [

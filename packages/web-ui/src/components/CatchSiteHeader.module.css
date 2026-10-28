@@ -1,0 +1,66 @@
+/*
+ * Website v2 site header (CAT-260): an 84px row on the band's ground. Links
+ * other than the compact ones and the wide actions leave the bar below 840px,
+ * the expanded window size (pinned in websiteLayoutTokens.test.ts).
+ */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
+  min-height: 84px;
+}
+
+.brand {
+  color: var(--catch-theme-ink);
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-s6);
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-s6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link {
+  color: var(--catch-theme-ink);
+  text-decoration: none;
+  text-underline-offset: var(--catch-space-micro3);
+}
+
+.link:hover,
+.link[aria-current="page"] {
+  text-decoration: underline;
+}
+
+.link:focus-visible,
+.brand:focus-visible {
+  border-radius: var(--catch-radius-xs);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.wide {
+  display: contents;
+}
+
+@container catch-page (width < 840px) {
+  .nav,
+  .links {
+    gap: var(--catch-space-s4);
+  }
+
+  .links li:not([data-compact]),
+  .wide {
+    display: none;
+  }
+}

@@ -130,13 +130,6 @@ export function EmptyState({
   );
 }
 
-export function ListingReviewEmptyState({
-  className,
-  ...props
-}: Parameters<typeof EmptyState>[0]) {
-  return <EmptyState {...props} variant="listing-review" className={className} />;
-}
-
 export interface BadgeRowItem {
   key?: string;
   label: string;

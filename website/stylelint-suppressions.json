@@ -144,17 +144,6 @@
       "count": 2
     }
   },
-  "src/styles/organiser-profile.css": {
-    "declaration-property-unit-allowed-list": {
-      "count": 39
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 6
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 3
-    }
-  },
   "src/styles/organizers.css": {
     "declaration-property-unit-allowed-list": {
       "count": 140

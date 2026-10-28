@@ -13,6 +13,8 @@ import {canonicalInventory, exportHostedCaptures, MAX_CAPTURES, resolveCaptureRe
 import {planHostedCaptures} from "./lib/capture_seeds.mjs";
 
 const repository = "owner/repo";
+const flutterVersion = fs.readFileSync(fromRepo("tool/ci/toolchain.env"), "utf8")
+  .match(/^FLUTTER_VERSION=(.+)$/mu)[1];
 function labelEvent() {
   return {repository: {full_name: repository}, action: "labeled", label: {name: "capture:requested"},
     number: 543, pull_request: {number: 543, state: "open", draft: true,
@@ -117,7 +119,7 @@ function fixture(t, {web = false} = {}) {
     fs.chmodSync(file, 0o755);
   };
   executable("flutter", `const fs = require('node:fs'); const args = process.argv.slice(2);
-    if (args.includes('--version')) process.stdout.write(JSON.stringify({frameworkVersion:'3.44.9'}));
+    if (args.includes('--version')) process.stdout.write(JSON.stringify({frameworkVersion:${JSON.stringify(flutterVersion)}}));
     else fs.appendFileSync(${JSON.stringify(calls)}, JSON.stringify({command:'flutter', args})+'\\n');`);
   executable("dart", `const fs = require('node:fs'); const args = process.argv.slice(2);
     fs.writeFileSync(args[args.indexOf('--output')+1], Buffer.from(${JSON.stringify(png.toString("base64"))},'base64'));
@@ -243,7 +245,7 @@ test("tracked symlink cannot redirect final capture writes", t => {
 
 test("render failure cannot package stale captures", t => {
   const f = fixture(t);
-  f.executable("flutter", `if (process.argv.includes('--version')) process.stdout.write(JSON.stringify({frameworkVersion:'3.44.9'})); else process.exit(1);`);
+  f.executable("flutter", `if (process.argv.includes('--version')) process.stdout.write(JSON.stringify({frameworkVersion:${JSON.stringify(flutterVersion)}})); else process.exit(1);`);
   assert.throws(() => exportHostedCaptures(f.options), /failed/);
   assert.ok(!fs.existsSync(f.options.outputDir));
   for (const c of f.manifest.captures) assert.ok(!fs.existsSync(path.join(f.root, c.sourcePath)));

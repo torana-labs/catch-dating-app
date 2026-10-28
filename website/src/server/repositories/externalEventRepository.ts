@@ -1,3 +1,4 @@
+import {withoutExternalDatingFraming} from "../../features/organizers/publicDatingFraming";
 import type {HostListingExternalEvent} from "../../features/organizers/types";
 import {publicExternalEvent} from "../publicExternalEvent";
 import {readBounded, type PublicDocument, type PublicReader} from "./publicReader";
@@ -13,7 +14,7 @@ export interface PublicExternalEventRow {
 function project(docs: readonly PublicDocument[]): PublicExternalEventRow[] {
   return docs.flatMap((doc) => {
     const row = publicExternalEvent(doc.id, doc.data() as Record<string, unknown>);
-    return row ? [row] : [];
+    return row ? [{...row, event: withoutExternalDatingFraming(row.event)}] : [];
   });
 }
 

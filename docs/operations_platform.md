@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.35.0
-updated: 2026-10-25
+version: 1.36.0
+updated: 2026-10-28
 owner: operations_platform
 status: active
 ---
@@ -327,6 +327,13 @@ on. The owner records accept, hold or reject with `adminDecideOrganizerPolicyGap
 itself: the capability turns on only when a reviewed change to its policy file
 sets `enabled` and cites that decision id, and the runtime refuses a cited
 decision that is not accepted.
+
+Page fetching is on. The owner accepted `policy-on-demand-page-fetch-policy`
+on 28 October 2026 (CAT-266), and `acquisition_policy.json` cites it with at
+most 12 pages per nomination and 600 a month. Every environment's worker
+reads its own copy of the decision, so dev and staging hold the same accepted
+record as production; without it a nomination fails closed with
+`ACQUISITION_POLICY_DECISION_REQUIRED`. The other three capabilities stay off.
 
 ## Reference Layout
 

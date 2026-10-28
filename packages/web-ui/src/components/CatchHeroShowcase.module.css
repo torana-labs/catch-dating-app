@@ -1,0 +1,66 @@
+/*
+ * Website v2 hero showcase (CAT-260): the device sits towards the panel's top
+ * end; three stickers take fixed slots on its start side. Below 840px the
+ * device centres and the stickers leave.
+ */
+.panel {
+  composes: ground from "./grounds.module.css";
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  box-sizing: border-box;
+  min-height: 620px;
+  overflow: hidden;
+  padding: var(--catch-space-s16) var(--catch-space-s12) 0;
+  border-radius: calc(var(--catch-radius-lg) * 1.6);
+}
+
+.device {
+  width: 300px;
+  max-width: 70%;
+}
+
+.sticker {
+  composes: ground from "./grounds.module.css";
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  padding: var(--catch-space-micro10) var(--catch-space-micro14);
+  border-radius: var(--catch-radius-md);
+  box-shadow: var(--catch-elevation-raised);
+}
+
+.sticker[data-slot="0"] {
+  top: 34%;
+  left: var(--catch-space-s6);
+  transform: rotate(-3deg);
+}
+
+.sticker[data-slot="1"] {
+  top: 66%;
+  left: var(--catch-space-s11);
+  transform: rotate(2deg);
+}
+
+.sticker[data-slot="2"] {
+  bottom: var(--catch-space-s16);
+  left: var(--catch-space-s6);
+  transform: rotate(-2deg);
+}
+
+@container catch-page (width < 840px) {
+  .panel {
+    justify-content: center;
+    min-height: 460px;
+    padding-inline: 0;
+  }
+
+  .device {
+    width: 230px;
+  }
+
+  .sticker {
+    display: none;
+  }
+}
