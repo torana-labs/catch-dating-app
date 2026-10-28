@@ -12730,6 +12730,94 @@ export interface OrganizerClaimRequestDocument {
 }
 
 /**
+ * One signed-in user's attempt to prove they run an organizer listing, stored at organizerClaimVerifications/{attemptId}. The requester reads their own attempt to show its code and to follow its status; a verified attempt records the evidence and the claim request it approved.
+ */
+export interface OrganizerClaimVerificationDocument {
+  attemptId: string;
+  organizerId: string;
+  requesterUid: string;
+  /**
+   * instagramMessage: the organiser sends the code to Catch's Instagram account from the listing's handle. lumaDescription: the organiser puts the code in the listing's Luma calendar description.
+   */
+  method: "instagramMessage" | "lumaDescription";
+  /**
+   * awaitingProof until the proof arrives. An attempt still awaitingProof after expiresAt has expired; readers treat it so.
+   */
+  status: "awaitingProof" | "verified" | "expired" | "superseded";
+  /**
+   * The one-time code the requester shows the proof surface. Only the requester and the server can read it.
+   */
+  code: string;
+  /**
+   * Where the proof must come from: the listing's Instagram username without @, or its Luma calendar URL.
+   */
+  proofTarget: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  verifiedAt: FirebaseFirestore.Timestamp | null;
+  claimRequestId: string | null;
+  /**
+   * What proved the claim. Null until verified.
+   */
+  evidence: {
+    source: "instagramMessage" | "lumaDescription";
+    /**
+     * The Instagram username Graph API returned for the sender, or the Luma calendar URL that showed the code.
+     */
+    observedIdentity: string;
+    /**
+     * SHA-256 of the Instagram message id. Null for Luma.
+     */
+    messageKey: string | null;
+    observedAt: FirebaseFirestore.Timestamp;
+  } | null;
+  /**
+   * The latest proof that arrived and did not verify, so the claim page can say what to fix.
+   */
+  lastRejection: {
+    reason: "wrongSender" | "codeNotFound";
+    at: FirebaseFirestore.Timestamp;
+  } | null;
+}
+
+/**
+ * Server-only reservation of a live Instagram claim code, stored at organizerClaimInstagramCodes/{code}. Keying by the code keeps live codes unique and lets the webhook find the attempt without a query. Firestore TTL deletes it after expiresAt.
+ */
+export interface OrganizerClaimInstagramCodeDocument {
+  code: string;
+  attemptId: string;
+  organizerId: string;
+  expiresAt: FirebaseFirestore.Timestamp;
+  /**
+   * Set when the code verified a claim or its attempt was superseded. A consumed code stays reserved until expiresAt, so a replay gets a clear answer.
+   */
+  consumedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Server-only receipt for one Instagram direct message the claim webhook handled, stored at organizerClaimInstagramMessages/{messageKey}. Meta retries deliveries, so the receipt makes each message count once. It keeps no message text or sender id. Firestore TTL deletes it after expiresAt.
+ */
+export interface OrganizerClaimInstagramMessageDocument {
+  /**
+   * SHA-256 of the Instagram message id.
+   */
+  messageKey: string;
+  outcome:
+    | "verified"
+    | "wrongSender"
+    | "expiredCode"
+    | "codeAlreadyUsed"
+    | "unknownCode"
+    | "claimUnavailable"
+    | "senderUnknown"
+    | "rateLimited";
+  attemptId: string | null;
+  receivedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned time-slot claim stored at organizerScheduleLocks/{organizerId_slot}.
  */
 export interface OrganizerScheduleLockDocument {

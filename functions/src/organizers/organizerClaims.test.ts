@@ -23,7 +23,8 @@ function fixture(visibility: "hidden" | "discoverable" | undefined) {
     ["organizerClaimRequests/claim-one", {requestId: "claim-one",
       organizerId: "example-host", requesterUid: "host-one",
       status: "pending"}],
-    ["users/host-one", {name: "Example Owner", profileComplete: true}],
+    ["users/host-one", {name: "Example Owner", phoneNumber: "+919800000003",
+      profileComplete: false}],
   ]);
   let id = 0;
   const db = {
