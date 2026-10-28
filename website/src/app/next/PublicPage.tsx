@@ -30,7 +30,7 @@ const Missing = dynamic(() => import("../../features/notFound/NotFoundPage").the
 
 export function PublicPage({page, readAt, contact}: {page: PageKey; readAt: number; contact?: PublicContact}) {
   const location = useLocation();
-  const {listings, readAt: currentReadAt} = usePublicHostListings();
+  const {listings, readAt: currentReadAt, organizerPage} = usePublicHostListings();
   const navigate = useNavigate();
   const exploreRouteState = exploreRouteStateForSearch(location.search);
   const homeRouteState = homeRouteStateForSearch(location.search);
@@ -53,7 +53,7 @@ export function PublicPage({page, readAt, contact}: {page: PageKey; readAt: numb
     const listing = getHostListingRouteForPath(location.pathname, listings)?.listing;
     if (listing) structured = {"@context": "https://schema.org", "@type": "Organization",
       name: listing.name, description: listing.description, url: `https://catchdates.com${listing.path}`};
-    content = listing ? <Listing listing={listing} /> : <Missing />;
+    content = listing ? <Listing listing={listing} page={organizerPage} readAt={currentReadAt ?? readAt} /> : <Missing />;
   } else if (page === "event_detail") {
     const event = getEventDetailForPath(location.pathname, buildPublicEventDetailRecords(listings, currentReadAt ?? readAt));
     if (event) structured = {"@context": "https://schema.org", "@type": "Event", name: event.title,

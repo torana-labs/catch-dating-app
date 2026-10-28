@@ -58,13 +58,6 @@ export function CheckboxField({
   );
 }
 
-export function ListingReviewCheckbox({
-  className,
-  ...props
-}: Parameters<typeof CheckboxField>[0]) {
-  return <CheckboxField {...props} className={classNames("listing-review-checkbox", className)} />;
-}
-
 export function FormStatus({
   status,
 }: {
@@ -103,22 +96,6 @@ export const Form = forwardRef<
         </fieldset>
       )}
     </form>
-  );
-});
-
-export const ListingReviewForm = forwardRef<
-  HTMLFormElement,
-  FormHTMLAttributes<HTMLFormElement> & {pending?: boolean; reveal?: boolean}
->(function ListingReviewForm({
-  className,
-  ...props
-}, ref) {
-  return (
-    <Form
-      {...props}
-      className={classNames("listing-review-form", className)}
-      ref={ref}
-    />
   );
 });
 
