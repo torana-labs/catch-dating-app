@@ -3894,9 +3894,10 @@
       "source": "packages/web-ui/src/components/CatchPreviewCard.tsx",
       "exportName": "CatchPreviewCard",
       "comparedWith": [
-        "catch.text"
+        "catch.text",
+        "catch.button"
       ],
-      "comparisonReason": "A linked event card on a ground that sets its label, title and meta in CatchText roles; it owns a card's layout and link, not a text role.",
+      "comparisonReason": "A linked event card on a ground that sets its label, title and meta in CatchText roles, and in its feature size a non-interactive CatchButton as the action label; the whole card is the one link, so it owns a card's layout, not a text role or a button.",
       "css": [
         "packages/web-ui/src/components/CatchPreviewCard.module.css"
       ],
