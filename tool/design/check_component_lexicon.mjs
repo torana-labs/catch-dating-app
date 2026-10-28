@@ -75,7 +75,7 @@ for (const [surface, relativePath] of Object.entries(surfaceRegistries)) {
       id: "known_bad_adapter",
       source: "website/src/shared/ui/primitives/feedback.tsx",
       exportName: "BadgeRow",
-      componentId: "catch.sheet",
+      componentId: "catch.tab_bar",
     });
   }
   for (const entry of document.components ?? []) {

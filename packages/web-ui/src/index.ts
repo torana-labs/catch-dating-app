@@ -81,6 +81,14 @@ export {CatchDateTile} from "./components/CatchDateTile";
 export type {CatchDateTileProps} from "./components/CatchDateTile";
 export {ButtonControl} from "./components/ButtonControl";
 export type {ButtonControlProps} from "./components/ButtonControl";
+export {CatchDock} from "./components/CatchDock";
+export type {
+  CatchDockPageActionProps,
+  CatchDockPrimaryContentProps,
+  CatchDockPrimaryProps,
+  CatchDockProps,
+  CatchDockUtilityProps,
+} from "./components/CatchDock";
 export {CatchBadge} from "./components/CatchBadge";
 export type {
   CatchBadgeEmphasis,
@@ -199,10 +207,20 @@ export {CatchShareBar} from "./components/CatchShareBar";
 export {CatchSkeleton} from "./components/CatchSkeleton";
 export type {CatchSkeletonProps} from "./components/CatchSkeleton";
 export type {CatchShareBarProps, CatchShareBarSegment} from "./components/CatchShareBar";
+export {CatchSheet} from "./components/CatchSheet";
+export type {
+  CatchSheetDefaultProps,
+  CatchSheetFilterProps,
+  CatchSheetMode,
+  CatchSheetProps,
+  CatchSheetStandardProps,
+} from "./components/CatchSheet";
 export {CatchStepList} from "./components/CatchStepList";
 export type {CatchStepListProps, CatchStepRowData} from "./components/CatchStepList";
 export {CatchStepper} from "./components/CatchStepper";
 export type {CatchStepperProps} from "./components/CatchStepper";
+export {CatchStickyAside} from "./components/CatchStickyAside";
+export type {CatchStickyAsideProps} from "./components/CatchStickyAside";
 export {CatchStoreButton} from "./components/CatchStoreButton";
 export type {CatchStoreButtonProps, CatchStoreButtonSize, CatchStoreButtonStore} from "./components/CatchStoreButton";
 export {CatchText} from "./components/CatchText";
