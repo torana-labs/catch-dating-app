@@ -3914,6 +3914,202 @@
         ]
       },
       "notes": "Website T4 under D18 (CAT-249). A link to the Catch app in the App Store or Google Play, drawn as a D20 primary action (theme primary fill, 4px corners, overlay and press feedback) with a plain store mark and an optional kicker line. Search aliases: AppStoreBadge, AppStoreButton, GooglePlayBadge, DownloadButton, StoreBadge, GetTheApp."
+    },
+    {
+      "id": "shared_catch_site_header",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchSiteHeader.tsx",
+      "exportName": "CatchSiteHeader",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteHeader.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchSiteHeader.stories.tsx",
+        "exportName": "Widths",
+        "states": [
+          "wide",
+          "compact",
+          "current-link",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-260). The Website v2 site header: the wordmark, the main links and the page's own controls (a city picker, Get the app) on one 84px row at the content width. Links not marked compact and the wide actions leave the bar below 840px; the footer carries every link. Nearest concept: shared_public_site_header (PublicSiteChrome), the legacy chrome it replaces. Search aliases: SiteHeader, TopBar, NavBar, Masthead, PageHeader."
+    },
+    {
+      "id": "shared_catch_site_footer",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchSiteFooter.tsx",
+      "exportName": "CatchSiteFooter",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteFooter.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchSiteFooter.stories.tsx",
+        "exportName": "Widths",
+        "states": [
+          "wide",
+          "compact",
+          "soon-notes",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-260). The Website v2 site footer on the ink ground: four titled link columns (two below 840px), each link with an optional quiet note such as 'soon', then the wordmark and tagline over a hairline. Nearest concept: shared_public_site_footer (PublicSiteChrome), the legacy chrome it replaces. Search aliases: SiteFooter, Footer, FooterLinks, Colophon."
+    },
+    {
+      "id": "shared_device_frame",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchDeviceFrame.tsx",
+      "exportName": "CatchDeviceFrame",
+      "css": [
+        "packages/web-ui/src/components/CatchDeviceFrame.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchDeviceFrame.stories.tsx",
+        "exportName": "Kinds",
+        "states": [
+          "iphone",
+          "android",
+          "ipad",
+          "tilt-left",
+          "tilt-right",
+          "on-ink"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-260). A device bezel (iPhone, Android or iPad) around an app screen for showing the Catch apps on the website, upright or turned. The frame is decoration; the screen image carries the description. Nearest concept: CatchAppCaptureImage, which frames a capture as a figure without hardware. Search aliases: PhoneFrame, DeviceMockup, Bezel, TabletFrame, ScreenFrame."
+    },
+    {
+      "id": "shared_hero_showcase",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchHeroShowcase.tsx",
+      "exportName": "CatchHeroShowcase",
+      "css": [
+        "packages/web-ui/src/components/CatchHeroShowcase.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchHeroShowcase.stories.tsx",
+        "exportName": "Panel",
+        "states": [
+          "with-stickers",
+          "compact",
+          "no-stickers",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-260). The homepage hero art: a rounded panel on one ground with the app in a device frame and up to three decorative plan stickers, which are hidden from assistive technology and leave pages narrower than 840px. Nearest concept: CatchHeroImage, a photo hero without a device. Search aliases: HeroArt, PhoneShowcase, HeroPanel, FloatingChips."
+    },
+    {
+      "id": "shared_format_tile",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchFormatTile.tsx",
+      "exportName": "CatchFormatTile",
+      "css": [
+        "packages/web-ui/src/components/CatchFormatTile.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchFormatTile.stories.tsx",
+        "exportName": "Formats",
+        "states": [
+          "run",
+          "dinner",
+          "games",
+          "courts",
+          "nights-out",
+          "pressed",
+          "accent-only",
+          "photo",
+          "link",
+          "coming-soon",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-260). One activity format on its accent: a count line, the format's name and line, and a plan photo at its foot when there is one. It is a pressed toggle when it filters and a link when it navigates. Nearest concept: catch.chip.field (CatchChip choice), the compact filter it pairs with. Search aliases: FormatCard, CategoryTile, ActivityTile, FilterTile."
+    },
+    {
+      "id": "shared_plan_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchPlanCard.tsx",
+      "exportName": "CatchPlanCard",
+      "css": [
+        "packages/web-ui/src/components/CatchPlanCard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchPlanCard.stories.tsx",
+        "exportName": "Plans",
+        "states": [
+          "photo",
+          "poster",
+          "formats",
+          "full",
+          "no-format",
+          "long-title",
+          "compact-row",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-260). One plan as a single link: the photo or a poster on its format accent, a label coloured by its format, the title, host and place, then the price and places left. Below 840px it becomes a row with the media at its start. Nearest concept: shared_preview_card (CatchPreviewCard), which has no media. Search aliases: EventCard, PlanTile, ListingCard, EventPreview."
+    },
+    {
+      "id": "shared_organizer_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchOrganizerCard.tsx",
+      "exportName": "CatchOrganizerCard",
+      "css": [
+        "packages/web-ui/src/components/CatchOrganizerCard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchOrganizerCard.stories.tsx",
+        "exportName": "Organizers",
+        "states": [
+          "follow",
+          "following",
+          "unclaimed",
+          "joining",
+          "no-page",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-260). An organiser on paper: monogram, name (linked when the organiser has a page), what they run, the next plan, and a footnote across from the page's action (Follow, a claim link). Nearest concept: catch.organizer_poster, the photo-led organiser card. Search aliases: HostCard, OrganiserCard, ClubCard, FollowCard."
     }
   ]
 }
