@@ -95234,7 +95234,6 @@ abstract final class CatchContractConstraints {
   static const joinWaitlistHTTPRequestEmail = CatchContractFieldConstraints(
     path: 'joinWaitlistHTTPRequest.email',
     maxLength: 320,
-    required: true,
     valueTypes: <String>['string'],
     format: 'email',
   );
@@ -95428,6 +95427,31 @@ abstract final class CatchContractConstraints {
     path: 'joinWaitlistHTTPRequest.website',
     maxLength: 512,
     valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappConsentVersion = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.consentVersion',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9-]{1,40}\$',
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappLaunchNotice = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.launchNotice',
+    required: true,
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappMarketing = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.marketing',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappPhone = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.phone',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
   );
 
   static const joinWaitlistHTTPResponseAlreadyJoined = CatchContractFieldConstraints(
@@ -186474,6 +186498,10 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.instagram': joinWaitlistHTTPRequestInstagram,
     'joinWaitlistHTTPRequest.role': joinWaitlistHTTPRequestRole,
     'joinWaitlistHTTPRequest.website': joinWaitlistHTTPRequestWebsite,
+    'joinWaitlistHTTPRequest.whatsapp.consentVersion': joinWaitlistHTTPRequestWhatsappConsentVersion,
+    'joinWaitlistHTTPRequest.whatsapp.launchNotice': joinWaitlistHTTPRequestWhatsappLaunchNotice,
+    'joinWaitlistHTTPRequest.whatsapp.marketing': joinWaitlistHTTPRequestWhatsappMarketing,
+    'joinWaitlistHTTPRequest.whatsapp.phone': joinWaitlistHTTPRequestWhatsappPhone,
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
     'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
     'joinWaitlistHTTPResponse.hostLead.eventId': joinWaitlistHTTPResponseHostLeadEventId,

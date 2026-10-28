@@ -451,6 +451,139 @@ function setCorsHeaders(request: {
 /**
  * Stores a waitlist submission for catchdates.com launch access.
  */
+/**
+ * The WhatsApp launch-notice key: one request per number and city, so
+ * asking again for the same city updates it and another city adds one.
+ * @param {string} phone The E.164 number.
+ * @param {string} city The city as submitted.
+ * @return {string} The launchWaitlist document id.
+ */
+export function whatsappLaunchNoticeId(phone: string, city: string): string {
+  return `whatsapp_${Buffer.from(`${phone}|${city.toLowerCase()}`)
+    .toString("base64url")}`;
+}
+
+/**
+ * A member asks for one WhatsApp message when Catch opens in their city
+ * (CAT-260). The launch notice is the form's explicit purpose; marketing
+ * permission is a separate choice, recorded as made and off unless chosen
+ * (CAT-72). Each decision keeps the wording version and when it was made.
+ * Nothing is sent here: the message on opening day is CAT-16's.
+ * @param {Request} request The HTTP request.
+ * @param {Response} response The HTTP response.
+ * @param {Record<string, unknown>} body The parsed request body.
+ * @param {object} context Fields the shared handler already normalized.
+ */
+async function joinByWhatsapp(
+  request: Request,
+  response: Response,
+  body: Record<string, unknown>,
+  context: {
+    city: string;
+    submittedRole: string;
+    marketingAnalytics: ReturnType<typeof normalizeMarketingAnalytics>;
+    marketingAttribution: ReturnType<typeof normalizeMarketingAttribution>;
+  },
+): Promise<void> {
+  const {city, submittedRole, marketingAnalytics, marketingAttribution} =
+    context;
+  const whatsapp = isRecord(body.whatsapp) ? body.whatsapp : {};
+  const phone = normalizeText(whatsapp.phone).replace(/[\s-]/g, "");
+  if (!/^\+[1-9][0-9]{7,14}$/.test(phone)) {
+    sendWaitlistJson(response, 400, {
+      error: "Please enter a valid mobile number.",
+    });
+    return;
+  }
+  if (!isValidCity(city)) {
+    sendWaitlistJson(response, 400, {
+      error: "Please choose your city.",
+    });
+    return;
+  }
+  if (submittedRole !== "member" || whatsapp.launchNotice !== true ||
+      !validateJoinWaitlistHTTPRequest({...body, whatsapp: {...whatsapp,
+        phone}})) {
+    logger.warn("WhatsApp launch notice failed schema validation", {
+      errors: schemaErrorMessages(validateJoinWaitlistHTTPRequest),
+    });
+    sendWaitlistJson(response, 400, {
+      error: "Please check your submission and try again.",
+    });
+    return;
+  }
+
+  const firestore = admin.firestore();
+  const noticeRef = firestore.collection("launchWaitlist")
+    .doc(whatsappLaunchNoticeId(phone, city));
+  const decidedAt = admin.firestore.Timestamp.now();
+  const decision = (purpose: string, granted: boolean) => ({
+    purpose, channel: "whatsapp", granted,
+    consentVersion: String(whatsapp.consentVersion),
+    source: "website_launching_soon", decidedAt,
+  });
+  const consents = {
+    launchNotice: decision("cityLaunchNotice", true),
+    marketing: decision("marketing", whatsapp.marketing === true),
+  };
+  let alreadyJoined = false;
+  await firestore.runTransaction(async (transaction) => {
+    const existing = await transaction.get(noticeRef);
+    const data = {
+      channel: "whatsapp",
+      phone,
+      city,
+      role: "member",
+      fullName: null,
+      email: null,
+      consents,
+      source: "catchdates.com",
+      referrer: normalizeText(request.get("referer")) || null,
+      userAgent: normalizeText(request.get("user-agent")) || null,
+      marketingAnalytics,
+      marketingAttribution,
+    };
+    if (existing.exists) {
+      alreadyJoined = true;
+      // The person's newest choice replaces the older one.
+      transaction.update(noticeRef, {
+        ...data,
+        lastSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
+        submissionCount: admin.firestore.FieldValue.increment(1),
+      });
+      return;
+    }
+    transaction.create(noticeRef, {
+      ...data,
+      status: "pending",
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      lastSubmittedAt: admin.firestore.FieldValue.serverTimestamp(),
+      submissionCount: 1,
+    });
+    transaction.set(firestore.collection("marketingConversionEvents")
+      .doc(noticeRef.id), {
+      analytics: marketingAnalytics,
+      attribution: marketingAttribution,
+      city,
+      consent: marketingAnalytics?.consent ?? null,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      eventId: marketingAnalytics?.eventId ??
+        `waitlist_${Date.now()}_${noticeRef.id}`,
+      eventName: "waitlist_submitted",
+      leadId: noticeRef.id,
+      leadPath: noticeRef.path,
+      hostApplication: null,
+      role: "member",
+      source: "catchdates.com",
+      status: "readyForReview",
+      standardEvent: "Lead",
+    });
+  });
+  // The number stays out of logs.
+  logger.info("WhatsApp launch notice stored", {city, alreadyJoined});
+  sendWaitlistJson(response, 200, {ok: true, alreadyJoined});
+}
+
 export function createJoinWaitlistHandler(options: {
   measurementEnabled: boolean;
 }) {
@@ -499,6 +632,13 @@ export function createJoinWaitlistHandler(options: {
     if (honeypot) {
       logger.info("Waitlist honeypot tripped", {email});
       sendWaitlistJson(response, 200, {ok: true, alreadyJoined: false});
+      return;
+    }
+
+    if (body.whatsapp !== undefined) {
+      await joinByWhatsapp(request, response, body, {
+        city, submittedRole, marketingAnalytics, marketingAttribution,
+      });
       return;
     }
 
