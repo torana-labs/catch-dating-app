@@ -32,7 +32,7 @@ function reader(docs: Record<string, unknown>, fail = false): PublicReader {
 const mumbaiListing: HostListing = {...hostListings[0], id: "home-club", name: "Preview Club", city: "Mumbai", citySlug: "mumbai",
   path: "/organizers/preview-club/", authority: {...hostListings[0].authority, publishStatus: "published", claimState: "claimed"},
   catchEvents: ["one", "two", "three", "four"].map((id, index) => ({
-    id, role: "Hosted event", title: `Preview run ${id}`, summary: "", activityKind: "socialRun", timeline: "upcoming",
+    id, role: "Hosted event", title: id, summary: "", activityKind: "socialRun", timeline: "upcoming",
     startTime: new Date(readAt + (index + 1) * 864e5).toISOString(), endTime: null, date: "Soon", location: "Park",
     capacityLimit: 20, bookedCount: 1, checkedInCount: 0, waitlistedCount: 0, priceLabel: "Free", publicRegistrationEnabled: true,
   }))};

@@ -86,7 +86,8 @@ function HomeHero({home}: {home: Home}) {
   const city = home.city.label;
   const stickers: CatchHeroShowcaseSticker[] = home.stickers.map((plan, index) => ({
     label: plan.label, title: plan.title, ground: (["white", "ink", "yellow"] as const)[index],
-    labelAccent: plan.format ? ({run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"} as const)[plan.format] : undefined,
+    // An accent label clears AA on the white and ink stickers, not on the yellow one.
+    labelAccent: plan.format && index < 2 ? ({run: "coral", dinner: "pink", games: "yellow", courts: "mint", nightsOut: "magenta"} as const)[plan.format] : undefined,
   }));
   return (
     <CatchBand aria-labelledby="home-title" pb="regular" pt="compact">
@@ -94,7 +95,7 @@ function HomeHero({home}: {home: Home}) {
         align="stretch"
         end={
           <CatchHeroShowcase
-            device={<CatchDeviceFrame kind="iphone" tilt="left"><img alt={copy.hero.screenAlt} src="/assets/app-screens/explore.png" /></CatchDeviceFrame>}
+            device={<CatchDeviceFrame kind="iphone" tilt="left"><img alt={copy.hero.screenAlt} fetchPriority="high" height={1688} src="/assets/app-screens/explore.png" width={780} /></CatchDeviceFrame>}
             ground="pink"
             stickers={stickers}
           />
@@ -260,7 +261,7 @@ function HomeStory() {
                 <CatchText as="p" color="ink2" variant="bodyL">{step.body}</CatchText>
               </CatchGap>
             ),
-            media: <CatchDeviceFrame kind="android"><img alt={step.alt} loading="lazy" src={step.screen} /></CatchDeviceFrame>,
+            media: <CatchDeviceFrame kind="android"><img alt={step.alt} height={1688} loading="lazy" src={step.screen} width={780} /></CatchDeviceFrame>,
           }))}
           label={copy.story.label}
           nextLabel={copy.story.next}
@@ -327,8 +328,8 @@ function HomeHostBand() {
         end={
           <CatchDeviceFrame kind="ipad" tilt="left">
             <CatchGrid columns={2} compactColumns={2} gap="inline">
-              <img alt={copy.host.todayAlt} loading="lazy" src="/assets/app-screens/host-today.png" />
-              <img alt={copy.host.doorAlt} loading="lazy" src="/assets/app-screens/host-door.png" />
+              <img alt={copy.host.todayAlt} height={1688} loading="lazy" src="/assets/app-screens/host-today.png" width={780} />
+              <img alt={copy.host.doorAlt} height={1688} loading="lazy" src="/assets/app-screens/host-door.png" width={780} />
             </CatchGrid>
           </CatchDeviceFrame>
         }

@@ -13,6 +13,16 @@ describe("CatchStoreButton", () => {
     expect(link.textContent).toBe("Download on theApp Store");
   });
 
+  it("stays on the page as a button while the store is not live, and reports the press", () => {
+    const click = vi.fn();
+    render(<CatchStoreButton accessibleLabel="Download on the App Store" label="App Store" onClick={click} store="appStore" />);
+    const button = screen.getByRole("button", {name: "Download on the App Store"});
+    expect(button.getAttribute("type")).toBe("button");
+    expect(screen.queryByRole("link")).toBeNull();
+    fireEvent.click(button);
+    expect(click).toHaveBeenCalledOnce();
+  });
+
   it("falls back to its visible label and reports clicks", () => {
     const click = vi.fn();
     render(<CatchStoreButton href="#" label="Google Play" onClick={click} size="m" store="googlePlay" />);

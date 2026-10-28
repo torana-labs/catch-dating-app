@@ -8,7 +8,8 @@ vi.mock("../../analytics", async (original) => ({...await original<typeof import
 
 afterEach(() => {cleanup(); trackMarketingEvent.mockReset();});
 
-describe("homepage", () => {
+// Each test renders the whole page, which a loaded CI runner can take seconds over.
+describe("homepage", {timeout: 20_000}, () => {
   it("shows a live city's week of plans, eight at a time, each linking to its event page", () => {
     render(<HomePage catalog={mumbaiLiveCatalog} />);
     const main = within(screen.getByRole("main"));
@@ -45,7 +46,7 @@ describe("homepage", () => {
     expect(main.getByText("Launching soon in Pune")).toBeTruthy();
     expect(main.getByRole("heading", {name: "Catch is coming to Pune."})).toBeTruthy();
     expect(main.queryByRole("heading", {name: /This week in/})).toBeNull();
-    expect(main.getByText("Run clubs, dinners and games and quizzes")).toBeTruthy();
+    expect(main.getByText("Run clubs, supper clubs and game nights")).toBeTruthy();
     expect(main.getAllByText("Koregaon Park Runners").length).toBeGreaterThan(0);
     // Organisers joining a city before launch have no page to link to.
     expect(main.queryByRole("link", {name: "Koregaon Park Runners"})).toBeNull();

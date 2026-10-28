@@ -50,7 +50,7 @@ export function planCard(plan: HomePlan, timezone: string): PlanCardView {
     title: plan.title,
     label: name ? `${name} · ${when}` : when,
     format: plan.format === "other" ? null : plan.format,
-    detail: `${plan.organizer.name} · ${plan.location}`,
+    detail: fill(copy.week.detail, {host: plan.organizer.name, place: plan.location}),
     price: plan.priceLabel,
     availability: plan.spotsLeft === null ? undefined :
       plan.spotsLeft === 0 ? copy.week.full : fill(copy.week.spotsLeft, {count: plan.spotsLeft}),
@@ -86,7 +86,7 @@ export function formatTiles(plans: HomeCityPlans, city: HomeCity, readAt: number
 export function comingFormats(plans: HomeCityPlans) {
   const found = homeFormats.filter(({format}) => plans.organizers.some((organizer) => organizer.formats.includes(format)));
   if (!found.length) return copy.soon.comingFallback;
-  const names = found.map(({name}, index) => (index === 0 ? name : name.toLocaleLowerCase("en-IN")));
+  const names = found.map(({coming}, index) => (index === 0 ? coming[0].toLocaleUpperCase("en-IN") + coming.slice(1) : coming));
   return new Intl.ListFormat("en-IN", {style: "long", type: "conjunction"}).format(names);
 }
 

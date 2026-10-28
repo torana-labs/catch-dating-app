@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import {fileURLToPath} from "node:url";
-import {consumerHomeCopy} from "../../src/content/consumerHome.ts";
+import {homePageCopy} from "../../src/content/homePage.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
 import {exploreCopy} from "../../src/content/explore.ts";
 import {organiserDirectoryCopy} from "../../src/content/organiserDirectory.ts";
@@ -45,7 +45,7 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
     }
     const text = await response.text(); evidence.push({path, status: response.status}); return {response, text};
   }
-  for (const [path, title] of [["/", consumerHomeCopy.hero.title], ["/host/", hostLandingCopy.hero.title], ["/explore/", exploreCopy.title], ["/organizers/", organiserDirectoryCopy.title]]) {
+  for (const [path, title] of [["/", homePageCopy.hero.title], ["/host/", hostLandingCopy.hero.title], ["/explore/", exploreCopy.title], ["/organizers/", organiserDirectoryCopy.title]]) {
     const {response, text} = await get(path);
     assert.ok(text.includes(title) && text.includes("<h1"), `${path} rendered content`);
     if (live && ["/", "/host/"].includes(path)) assert.doesNotMatch(response.headers.get("x-robots-tag") ?? "", /noindex/u);

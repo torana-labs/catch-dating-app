@@ -36,6 +36,7 @@ export const homePageCopy = {
     filteredNote: "Showing {shown} of {total} this week · {format}",
     emptyFormat: "No {format} this week. Try another format.",
     unavailable: "We couldn’t load this week’s plans. Please try again in a moment.",
+    detail: "{host} · {place}",
     spotsLeft: "{count} left",
     full: "Full",
     free: "Free",
@@ -136,12 +137,13 @@ export const homePageCopy = {
 } as const;
 
 /** Each format's tile and filter copy, in the board's order. */
-export const homeFormats: readonly {format: CatchFormat; name: string; line: string; poster: string}[] = [
-  {format: "run", name: "Run clubs", line: "Pace groups and a first hello for every newcomer.", poster: "Run club"},
-  {format: "dinner", name: "Dinners", line: "Long tables, good food and new people.", poster: "Supper club"},
-  {format: "games", name: "Games and quizzes", line: "Teams, rounds and a room that’s in it together.", poster: "Game night"},
-  {format: "courts", name: "Pickleball", line: "Courts and partners, rotated by level.", poster: "On court"},
-  {format: "nightsOut", name: "Nights out", line: "Crawls and socials that move through the city.", poster: "Night out"},
+/** `coming` names the format in the launching-soon sentence, such as "Run clubs, supper clubs and game nights". */
+export const homeFormats: readonly {format: CatchFormat; name: string; line: string; poster: string; coming: string}[] = [
+  {format: "run", name: "Run clubs", line: "Pace groups and a first hello for every newcomer.", poster: "Run club", coming: "run clubs"},
+  {format: "dinner", name: "Dinners", line: "Long tables, good food and new people.", poster: "Supper club", coming: "supper clubs"},
+  {format: "games", name: "Games and quizzes", line: "Teams, rounds and a room that’s in it together.", poster: "Game night", coming: "game nights"},
+  {format: "courts", name: "Pickleball", line: "Courts and partners, rotated by level.", poster: "On court", coming: "pickleball"},
+  {format: "nightsOut", name: "Nights out", line: "Crawls and socials that move through the city.", poster: "Night out", coming: "nights out"},
 ];
 
 /** The poster label for a plan outside the five formats. */

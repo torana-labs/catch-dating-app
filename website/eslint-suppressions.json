@@ -89,11 +89,6 @@
       "count": 11
     }
   },
-  "src/features/home/sections/consumerHomeSections.tsx": {
-    "react/forbid-elements": {
-      "count": 38
-    }
-  },
   "src/features/home/sections/exploreSections.tsx": {
     "react/forbid-elements": {
       "count": 19
@@ -234,13 +229,13 @@
   },
   "src/shared/ui/primitives/consumerHome.tsx": {
     "react/forbid-component-props": {
-      "count": 6
+      "count": 1
     },
     "react/forbid-dom-props": {
-      "count": 33
+      "count": 7
     },
     "react/forbid-elements": {
-      "count": 33
+      "count": 7
     }
   },
   "src/shared/ui/primitives/eventDetail.tsx": {
