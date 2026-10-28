@@ -57,7 +57,6 @@ export function organizerListingAt(moment: DemoMoment): HostListing {
     host: {name: world.host.displayName, role: "Owner", avatarUrl: null},
     catchEvents: events,
     externalEvents: [],
-    eventSuccessSummary: null,
     eventEvidence: [],
     reviews: [],
     sources: [{type: "catch_demo", label: "Catch demo world", detail: `Demo world ${world.id}.`, confidence: "high"}],

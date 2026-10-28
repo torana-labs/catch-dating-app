@@ -149,7 +149,6 @@ function publicGuestDetails(data: Record<string, unknown>, format: Record<string
   if (admission?.manualApprovalRequired || admission?.format === "manualApproval") labels.push("approval");
   if (admission?.inviteRequired || admission?.format === "inviteOnly" || record(admission?.privateAccessPolicy)?.mode === "inviteCode") labels.push("invitation");
   if (admission?.membershipRequired || admission?.format === "membersOnly") labels.push("membership");
-  if (admission?.balancedRatioPolicy != null || admission?.format === "balancedRatio" || admission?.format === "fixedCohortCaps" || constraints?.maxMen != null || constraints?.maxWomen != null) labels.push("balanced");
   const waitlist = record(admission?.waitlistPolicy)?.mode;
   const cancellation = record(record(data.eventPolicy)?.cancellation)?.policyId;
   return {

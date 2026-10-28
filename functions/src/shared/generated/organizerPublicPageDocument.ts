@@ -90,20 +90,16 @@ export interface OrganizerPublicPageDocument {
         eventId: string;
         path: string;
         /**
-         * The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.
+         * The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.
          */
         event: {
           /**
            * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
            *
            * @minItems 1
-           * @maxItems 3
+           * @maxItems 2
            */
-          catchExperienceActivities?: (
-            | "introductions"
-            | "sharedActivities"
-            | "rotations"
-          )[];
+          catchExperienceActivities?: ("introductions" | "sharedActivities")[];
           id: string;
           role: string;
           title: string;
@@ -159,14 +155,9 @@ export interface OrganizerPublicPageDocument {
           included?: string;
           registrationAccess?: "open" | "restricted" | "app";
           /**
-           * @maxItems 4
+           * @maxItems 3
            */
-          admissionLabels?: (
-            | "approval"
-            | "invitation"
-            | "membership"
-            | "balanced"
-          )[];
+          admissionLabels?: ("approval" | "invitation" | "membership")[];
           waitlistAvailable?: boolean;
           cancellationPolicy?:
             | "notApplicable"
@@ -182,9 +173,6 @@ export interface OrganizerPublicPageDocument {
           amountPaise?: number;
           currency?: string;
           priceLabel: string;
-          scorecard?: {
-            [k: string]: unknown;
-          } | null;
         };
         /**
          * A Catch-native event books on its Catch event page. Live terms are rechecked by the booking callables, never trusted from this snapshot.
@@ -244,20 +232,16 @@ export interface OrganizerPublicPageDocument {
         eventId: string;
         path: string;
         /**
-         * The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.
+         * The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.
          */
         event: {
           /**
            * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
            *
            * @minItems 1
-           * @maxItems 3
+           * @maxItems 2
            */
-          catchExperienceActivities?: (
-            | "introductions"
-            | "sharedActivities"
-            | "rotations"
-          )[];
+          catchExperienceActivities?: ("introductions" | "sharedActivities")[];
           id: string;
           role: string;
           title: string;
@@ -313,14 +297,9 @@ export interface OrganizerPublicPageDocument {
           included?: string;
           registrationAccess?: "open" | "restricted" | "app";
           /**
-           * @maxItems 4
+           * @maxItems 3
            */
-          admissionLabels?: (
-            | "approval"
-            | "invitation"
-            | "membership"
-            | "balanced"
-          )[];
+          admissionLabels?: ("approval" | "invitation" | "membership")[];
           waitlistAvailable?: boolean;
           cancellationPolicy?:
             | "notApplicable"
@@ -336,9 +315,6 @@ export interface OrganizerPublicPageDocument {
           amountPaise?: number;
           currency?: string;
           priceLabel: string;
-          scorecard?: {
-            [k: string]: unknown;
-          } | null;
         };
         /**
          * A Catch-native event books on its Catch event page. Live terms are rechecked by the booking callables, never trusted from this snapshot.

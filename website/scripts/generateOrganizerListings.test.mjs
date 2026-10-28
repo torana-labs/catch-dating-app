@@ -49,7 +49,7 @@ test("production output excludes demo listings while explicit story output inclu
 
   const productionListings = JSON.parse(fs.readFileSync(productionPath, "utf8"));
   const storyListings = JSON.parse(fs.readFileSync(storyPath, "utf8"));
-  assert.equal(productionListings.some((listing) => listing.catchEvents?.length || listing.eventSuccessSummary), false);
+  assert.equal(productionListings.some((listing) => listing.catchEvents?.length), false);
   assert.equal(
     productionListings.some((listing) => listing.dataOrigin === "catchDemo"),
     false

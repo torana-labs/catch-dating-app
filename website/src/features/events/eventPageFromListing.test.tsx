@@ -9,8 +9,8 @@ const catchEvent: HostListingCatchEvent = {
   startTime: "2099-01-01T13:30:00.000Z", endTime: "2099-01-01T15:30:00.000Z", timezone: "Asia/Kolkata",
   date: "Thu, 1 Jan 2099, 7:00 PM-9:00 PM", location: "Bandra West, Mumbai", summary: "A hosted evening.",
   capacityLimit: 20, bookedCount: 20, checkedInCount: 0, waitlistedCount: 3, waitlistAvailable: true,
-  priceLabel: "₹1,500", scorecard: null, admissionLabels: ["balanced", "approval"],
-  catchExperienceActivities: ["rotations", "introductions"], cancellationPolicy: "flexible",
+  priceLabel: "₹1,500", admissionLabels: ["approval"], catchExperienceActivities: ["introductions"],
+  cancellationPolicy: "flexible",
 };
 const externalEvent: HostListingExternalEvent = {
   id: "listing-run", title: "Sunset run", activityKind: "socialRun", availability: "read_only_external",
@@ -41,8 +41,8 @@ describe("eventPageFromListing", () => {
     const page = eventPageFromListing(listing(true), "listing-dinner");
     expect(page?.item.source).toBe("catch");
     const event = page?.item.event as HostListingCatchEvent;
-    expect([event.activityKind, event.title, event.admissionLabels, event.catchExperienceActivities, "scorecard" in event])
-      .toEqual(["openActivity", "Hosted event", ["approval"], ["introductions"], false]);
+    expect([event.activityKind, event.title, event.admissionLabels, event.catchExperienceActivities])
+      .toEqual(["openActivity", "Hosted event", ["approval"], ["introductions"]]);
     expect(page?.capacity).toEqual({state: "full", capacityLimit: 20, bookedCount: 20, waitlistedCount: 3, spotsLeft: 0,
       waitlistAvailable: true});
     expect(page?.reviews.map((review) => review.id)).toEqual(["review-3", "review-2"]);

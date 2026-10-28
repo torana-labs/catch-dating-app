@@ -129,9 +129,9 @@ describe("buildEventPageView", () => {
       body: "The organiser reviews requests before confirming places. This event is for the organiser’s members."});
   });
 
-  it("never shows a rotations moment or a free event's cancellation terms", () => {
+  it("shows no moments without a participation declaration, and no free event's cancellation terms", () => {
     const event = {...fullEventPage.item.event, cancellationPolicy: "notApplicable",
-      catchExperienceActivities: ["rotations"]} as const;
+      catchExperienceActivities: undefined} as const;
     const page = view({...fullEventPage, item: {...fullEventPage.item, event} as EventPageData["item"]});
     expect(page.moments).toBeNull();
     expect(page.goodToKnow.map((item) => item.key)).not.toContain("cancellation");

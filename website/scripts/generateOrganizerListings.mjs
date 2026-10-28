@@ -15,7 +15,6 @@ import {
 } from "../../tool/contracts/generated/schema_contract_validators.mjs";
 import {
   civilInstant,
-  eventOutcomesAt,
   eventStateAt,
   personaForPerson,
   validateDemoWorld,
@@ -200,8 +199,7 @@ function validateExistingProjection(filePath, {includeDemo}) {
   }
   const existing = JSON.parse(fs.readFileSync(filePath, "utf8"));
   validateListingProjections(existing);
-  if (!includeDemo && existing.some((listing) =>
-    listing.catchEvents?.length || listing.eventSuccessSummary)) {
+  if (!includeDemo && existing.some((listing) => listing.catchEvents?.length)) {
     fail("Production organizer projection must not contain mutable Catch event snapshots.");
   }
   const containsDemo = existing.some((listing) =>
@@ -613,7 +611,6 @@ function listingFromDemoWorld(world, moment) {
   const now = civilInstant(world.timeZone, world.moments[moment]);
   const events = demoWorldEvents(world, moment, now);
   const reviews = demoWorldReviews(world, now);
-  const reported = latestEndedEvent(world, moment);
   const nextEvent = events.find((event) => event.timeline === "upcoming");
   const authority = organizerAuthority({
     ownershipState: "userCreated",
@@ -676,7 +673,6 @@ function listingFromDemoWorld(world, moment) {
       avatarUrl: null,
     },
     catchEvents: events,
-    eventSuccessSummary: reported ? eventSuccessSummary(world, reported.id, moment) : null,
     eventEvidence: [],
     reviews,
     fitNotes: [
@@ -755,30 +751,9 @@ function demoWorldEvents(world, moment, now) {
         checkedInCount: state.checkedIn,
         waitlistedCount: state.waitlisted,
         priceLabel: priceLabel(event.priceInPaise),
-        scorecard: null,
       };
     })
     .sort((a, b) => b.startTime.localeCompare(a.startTime));
-}
-
-function latestEndedEvent(world, moment) {
-  return world.events
-    .filter((event) => eventStateAt(world, event.id, moment).phase === "ended")
-    .sort((a, b) => `${b.civilDate}T${b.endTime}`.localeCompare(`${a.civilDate}T${a.endTime}`))[0] ?? null;
-}
-
-// The format has no safety incident records, so the count is zero.
-function eventSuccessSummary(world, eventId, moment) {
-  const state = eventStateAt(world, eventId, moment);
-  const outcomes = eventOutcomesAt(world, eventId, moment);
-  return {
-    bookedCount: state.booked,
-    checkedInCount: state.checkedIn,
-    mutualMatchCount: outcomes.mutualMatches,
-    chatStartedCount: outcomes.chatsStarted,
-    catchSentCount: outcomes.catchSent,
-    safetyIncidentCount: 0,
-  };
 }
 
 // Reviews written by the moment, newest first.
