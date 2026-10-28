@@ -64,6 +64,14 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+      # These minor bumps require majors the major rule above cannot hold
+      # back: the Firebase mocks need FlutterFire 5 (CAT-281), and
+      # analysis_server_plugin needs analyzer 14 (CAT-274). Remove each
+      # pair when its migration lands.
+      - dependency-name: "fake_cloud_firestore"
+      - dependency-name: "firebase_auth_mocks"
+      - dependency-name: "analysis_server_plugin"
+      - dependency-name: "analyzer"
 
   - package-ecosystem: "github-actions"
     directory: "/"
