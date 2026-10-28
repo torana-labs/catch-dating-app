@@ -2,6 +2,7 @@ import {
   projectLivePublicCatchEvent,
   type LivePublicCatchEvent,
 } from "../../features/organizers/publicCatchEventProjection";
+import {withoutDatingFraming} from "../../features/organizers/publicDatingFraming";
 import {publicEventAuthorized} from "../publicReadPolicy";
 import {readBounded, type PublicDocument, type PublicReader} from "./publicReader";
 
@@ -13,7 +14,7 @@ function project(docs: readonly PublicDocument[], readAt: number): LivePublicCat
     const raw = doc.data();
     if (!publicEventAuthorized(doc.id, raw)) return [];
     const row = projectLivePublicCatchEvent(doc.id, raw, readAt);
-    return row ? [row] : [];
+    return row ? [{...row, event: withoutDatingFraming(row.event)}] : [];
   });
 }
 
