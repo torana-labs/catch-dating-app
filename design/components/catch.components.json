@@ -4609,7 +4609,7 @@
             "dark"
           ]
         },
-        "notes": "React implements CatchField.input and CatchField.select as recipe=\"input\" | \"select\" on one component. The input recipe takes a controlled value where Flutter passes a controller, renders a text area when maxLines is not 1, and adds native min, max, step, pattern and minLength. The select recipe keys options through itemValueBuilder because web options are strings, and takes labelMode where Flutter's select takes showLabel. Native form attributes (id, name, form, required, autoComplete) pass through."
+        "notes": "React implements CatchField.input and CatchField.select as recipe=\"input\" | \"select\" on one component. The input recipe takes a controlled value where Flutter passes a controller, renders a text area when maxLines is not 1, and adds native min, max, step, pattern and minLength. The select recipe keys options through itemValueBuilder because web options are strings, and takes labelMode where Flutter's select takes showLabel. Native form attributes (id, name, form, required, autoComplete) pass through. Inside a Website v2 CatchGroundCard the field takes the boards' boxed input at rest from the card's --catch-field-rest-fill, --catch-field-rest-line and --catch-field-rest-stroke (field.restLineAlpha, field.restTintOnDarkAlpha); elsewhere it stays the quiet row, matching Flutter."
       },
       "level": "L3",
       "roleNoun": "Field",

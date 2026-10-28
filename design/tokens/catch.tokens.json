@@ -3321,6 +3321,10 @@
     "activityArtworkGlyph": {
       "$description": "Activity glyph over activity artwork: the EventBackdropImage.iconOpacity default in lib/core/widgets/event_backdrop_image.dart.",
       "$value": 0.2
+    },
+    "groundCardOutline": {
+      "$description": "Website v2: ground-ink alpha of an outlined CatchGroundCard's stroke, as the boards draw white cards on a white page.",
+      "$value": 0.12
     }
   },
   "field": {
@@ -3334,6 +3338,14 @@
     },
     "disabledOpacity": {
       "$value": 0.4
+    },
+    "restLineAlpha": {
+      "$description": "Website v2: ground-ink alpha of a resting field's box when a CatchGroundCard holds it, the WebOrgV2 board's boxed input. Flutter's fields have no ground card yet.",
+      "$value": 0.25
+    },
+    "restTintOnDarkAlpha": {
+      "$description": "Website v2: ground-ink tint that fills a resting field on the dark ink ground card, where a white box would hide the field's light ink. Kept low so error ink on it still clears AA (4.7:1).",
+      "$value": 0.04
     }
   },
   "font": {
