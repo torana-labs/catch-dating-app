@@ -51,11 +51,11 @@ export function GuestEventEntryView({eventId, controller: c, startLabel}: {
   }
   const notifications = c.user && guest?.applicationStatus ?
     <ApprovalNotifications eventId={eventId} key={`${eventId}:${uid}`} user={c.user} /> : null;
+  const next = guest && mode ? guestEventAction(guest, eventId) : null;
   return (
     <CatchGap size="section">
       {!guest ? <CatchText as="p" color="ink2" role="status" variant="bodyM">{copy.unavailable}</CatchText> :
-        mode ? <Start label={guestEventAction(guest, eventId).label} note={guestEventAction(guest, eventId).status}
-          onStart={() => setFlow({uid, mode})} /> :
+        next && mode ? <Start label={next.label} note={next.status} onStart={() => setFlow({uid, mode})} /> :
           <GuestStatus eventId={eventId} guest={guest} />}
       {notifications}
       <CatchGap direction="horizontal" size="inline" wrap>
