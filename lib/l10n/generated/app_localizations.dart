@@ -40850,6 +40850,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We can’t verify which messages belong to this program. Conversation history and replies are unavailable here.'**
   String get hostInboxProgramPurposeUnresolvedBody;
+
+  /// Payouts screen: title explaining that guest payments go to the organiser's own Razorpay account.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay you directly'**
+  String get hostPayoutsRazorpayIntroTitle;
+
+  /// Payouts screen: how money flows when the organiser connects Razorpay; mirrors the website organiser terms.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.'**
+  String get hostPayoutsRazorpayIntroBody;
+
+  /// Payouts screen: shown while Catch's Razorpay OAuth partner configuration is not set up.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting Razorpay isn’t available yet. Catch is finishing its Razorpay partner setup. Free events and forms work as usual.'**
+  String get hostPayoutsRazorpayUnavailable;
+
+  /// Payouts screen: heading for organisers without a Razorpay account.
+  ///
+  /// In en, this message translates to:
+  /// **'No Razorpay account yet?'**
+  String get hostPayoutsRazorpayNoAccountTitle;
+
+  /// Payouts screen: how an organiser without Razorpay gets started.
+  ///
+  /// In en, this message translates to:
+  /// **'Create one at razorpay.com and finish Razorpay’s verification, then connect it here.'**
+  String get hostPayoutsRazorpayNoAccountBody;
+
+  /// Payouts screen: disclosure of what the organiser authorises before the Razorpay OAuth consent page; mirrors the website organiser terms.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to Razorpay and approve Catch. This lets Catch create orders for your events and forms, check payment and refund status, set up payment notifications, and issue refunds under your cancellation policy. You can disconnect at any time.'**
+  String get hostPayoutsRazorpayConnectHelp;
+
+  /// Payouts screen: confirmation body when disconnecting the organiser's Razorpay account.
+  ///
+  /// In en, this message translates to:
+  /// **'This stops new checkouts for your events and forms. Catch can still finish refunds for bookings that are already paid.'**
+  String get hostPayoutsRazorpayDisconnectHelp;
+
+  /// Payouts screen: heading above the disclosure of what connecting Razorpay authorises Catch to do.
+  ///
+  /// In en, this message translates to:
+  /// **'What connecting allows'**
+  String get hostPayoutsRazorpayPermissionsTitle;
 }
 
 class _AppLocalizationsDelegate

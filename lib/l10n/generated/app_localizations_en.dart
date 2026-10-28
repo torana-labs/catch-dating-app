@@ -25308,4 +25308,33 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostInboxProgramPurposeUnresolvedBody =>
       'We can’t verify which messages belong to this program. Conversation history and replies are unavailable here.';
+
+  @override
+  String get hostPayoutsRazorpayIntroTitle => 'Guests pay you directly';
+
+  @override
+  String get hostPayoutsRazorpayIntroBody =>
+      'Ticket and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.';
+
+  @override
+  String get hostPayoutsRazorpayUnavailable =>
+      'Connecting Razorpay isn’t available yet. Catch is finishing its Razorpay partner setup. Free events and forms work as usual.';
+
+  @override
+  String get hostPayoutsRazorpayNoAccountTitle => 'No Razorpay account yet?';
+
+  @override
+  String get hostPayoutsRazorpayNoAccountBody =>
+      'Create one at razorpay.com and finish Razorpay’s verification, then connect it here.';
+
+  @override
+  String get hostPayoutsRazorpayConnectHelp =>
+      'Sign in to Razorpay and approve Catch. This lets Catch create orders for your events and forms, check payment and refund status, set up payment notifications, and issue refunds under your cancellation policy. You can disconnect at any time.';
+
+  @override
+  String get hostPayoutsRazorpayDisconnectHelp =>
+      'This stops new checkouts for your events and forms. Catch can still finish refunds for bookings that are already paid.';
+
+  @override
+  String get hostPayoutsRazorpayPermissionsTitle => 'What connecting allows';
 }
