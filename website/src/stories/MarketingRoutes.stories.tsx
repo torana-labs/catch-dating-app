@@ -386,6 +386,32 @@ export const AccountDeletion: Story = {
   render: () => <LegalStoryPage pageKey="account_deletion" />,
 };
 
+export const Refunds: Story = {
+  name: "/refunds/",
+  parameters: {
+    catchRoute: {
+      id: "refunds",
+      path: "/refunds/",
+      reviewStates: ["published"],
+      stateCoverage: {storybook: ["published"], manual: []},
+    },
+  },
+  render: () => <LegalStoryPage pageKey="refunds" />,
+};
+
+export const Contact: Story = {
+  name: "/contact/",
+  parameters: {
+    catchRoute: {
+      id: "contact",
+      path: "/contact/",
+      reviewStates: ["published"],
+      stateCoverage: {storybook: ["published"], manual: []},
+    },
+  },
+  render: () => <LegalStoryPage pageKey="contact" />,
+};
+
 export const LegalDocumentShell: Story = {
   name: "Legal document shell",
   parameters: {

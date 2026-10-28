@@ -44,6 +44,8 @@ describe("public route navigation targets", () => {
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
     const footer = screen.getByRole("navigation", {name: "Footer"});
     expect(within(footer).getByRole("link", {name: "Help"}).getAttribute("href")).toBe("/help/");
+    expect(within(footer).getByRole("link", {name: "Refunds"}).getAttribute("href")).toBe("/refunds/");
+    expect(within(footer).getByRole("link", {name: "Contact"}).getAttribute("href")).toBe("/contact/");
     expect(within(footer).getByRole("link", {name: "Find events"}).getAttribute("href")).toBe("/explore/");
   });
 });

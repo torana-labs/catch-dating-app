@@ -26,6 +26,7 @@ export function scanFunctionReadmeInventory({
     : "";
   const exports = extractFunctionExports(indexSource);
   const documented = extractDocumentedFunctionNames(readmeSource);
+  const exportNames = new Set(exports);
   const baselineKeys = new Set(
     (baseline.allowedFindings ?? []).map((finding) => findingKey(finding)),
   );
@@ -36,7 +37,13 @@ export function scanFunctionReadmeInventory({
       rule: "missingReadmeFunction",
       function: name,
       reason: "functions/README.md must list every exported function",
-    }));
+    })).concat([...documented]
+      .filter((name) => !exportNames.has(name))
+      .map((name) => ({
+        rule: "staleReadmeFunction",
+        function: name,
+        reason: "Current functions/README.md inventory row has no index.ts export",
+      })));
   const findings = [];
   const baselineFindings = [];
   for (const finding of allFindings) {
@@ -93,8 +100,17 @@ export function extractFunctionExports(source) {
 
 export function extractDocumentedFunctionNames(source) {
   const names = new Set();
-  for (const match of source.matchAll(/`([A-Za-z_$][\w$]*)`/gu)) {
-    names.add(match[1]);
+  const inventory = /^## Function inventory\s*$/gmu.exec(source);
+  if (!inventory) return names;
+  const remainder = source.slice(inventory.index + inventory[0].length);
+  const nextSection = /^## /gmu.exec(remainder);
+  const section = nextSection ? remainder.slice(0, nextSection.index) : remainder;
+  for (const line of section.split(/\r?\n/u)) {
+    const firstCell = /^\|\s*([^|]+)\s*\|/u.exec(line)?.[1];
+    if (!firstCell) continue;
+    for (const match of firstCell.matchAll(/`([A-Za-z_$][\w$]*)`/gu)) {
+      names.add(match[1]);
+    }
   }
   return names;
 }
@@ -191,8 +207,9 @@ function runCli() {
   node tool/audit/check_fn_readme_inventory.mjs --json
   node tool/audit/check_fn_readme_inventory.mjs --write-baseline
 
-Diffs functions/src/index.ts exports against function names listed in
-functions/README.md. Existing omissions are ratcheted through
+Diffs functions/src/index.ts exports against current Function inventory rows in
+functions/README.md in both directions. Historical mentions outside those rows
+are ignored. Existing omissions are ratcheted through
 tool/audit/fn_readme_inventory_baseline.json; obsolete allowances fail the check.`);
     return;
   }

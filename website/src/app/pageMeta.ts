@@ -26,6 +26,8 @@ export type PageKey =
   | "terms"
   | "help"
   | "account_deletion"
+  | "refunds"
+  | "contact"
   | "not_found";
 
 export interface PageMeta {
@@ -39,7 +41,8 @@ export interface PageMeta {
 const websiteMeta = validatedWebsiteMeta(metaContent);
 
 export function isLegalPageKey(page: PageKey): page is PublishedLegalPageKey {
-  return page === "privacy" || page === "terms" || page === "help" || page === "account_deletion";
+  return page === "privacy" || page === "terms" || page === "help" || page === "account_deletion" ||
+    page === "refunds" || page === "contact";
 }
 
 export const pageMeta: Record<Exclude<PageKey, "listing" | "event_detail">, PageMeta> =
@@ -97,6 +100,8 @@ export function getPageKey(
   if (pathname.startsWith("/terms")) return "terms";
   if (pathname.startsWith("/help")) return "help";
   if (pathname.startsWith("/delete-account")) return "account_deletion";
+  if (pathname.startsWith("/refunds")) return "refunds";
+  if (pathname.startsWith("/contact")) return "contact";
   if (pathname.startsWith("/booking/")) return "event_booking";
   if (pathname.startsWith("/join/")) return "event_runtime";
   if (pathname === "/offer" || pathname === "/offer/") return "event_offer";

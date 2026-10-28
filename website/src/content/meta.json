@@ -79,6 +79,18 @@
       "canonicalPath": "/delete-account/",
       "twitterDescription": "How to delete a Catch or Catch Host account and associated data, with or without the app."
     },
+    "refunds": {
+      "title": "Refund and cancellation policy | Catch",
+      "description": "When you can cancel a paid Catch event ticket, how much is refunded under the Flexible, Standard and Strict policies, what happens if the organiser cancels, and how long refunds take.",
+      "canonicalPath": "/refunds/",
+      "twitterDescription": "Cancellation deadlines, organiser cancellations and refund timing for paid Catch event tickets."
+    },
+    "contact": {
+      "title": "Contact us | Catch",
+      "description": "Contact Torana, the operator of Catch, by email, phone, WhatsApp or post.",
+      "canonicalPath": "/contact/",
+      "twitterDescription": "Email, phone, WhatsApp and postal address for Catch."
+    },
     "not_found": {
       "title": "Page not found | Catch",
       "description": "This Catch page does not exist. Search organizer profiles, browse the member site, or explore host tools.",

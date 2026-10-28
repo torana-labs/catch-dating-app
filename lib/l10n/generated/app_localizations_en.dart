@@ -25300,4 +25300,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostAccountDeletionConfirmation =>
       'Permanently delete your Catch account and Host profile? You’ll lose organizer access. Shared business records and required safety/payment records remain. Transfer organizer ownership first if needed.';
+
+  @override
+  String get hostInboxProgramPurposeUnresolvedTitle =>
+      'Program conversations unavailable';
+
+  @override
+  String get hostInboxProgramPurposeUnresolvedBody =>
+      'We can’t verify which messages belong to this program. Conversation history and replies are unavailable here.';
 }

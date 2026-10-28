@@ -622,6 +622,64 @@
       }
     },
     {
+      "id": "refunds",
+      "kind": "static",
+      "path": "/refunds/",
+      "pageKey": "refunds",
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "metaKey": "refunds",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Published refund and cancellation policy for paid Catch event tickets: organiser as seller, the Flexible, Standard and Strict cash refund deadlines enforced by checkout, organiser cancellation, waitlists, and refund timing.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "published"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "published"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
+      "id": "contact",
+      "kind": "static",
+      "path": "/contact/",
+      "pageKey": "contact",
+      "source": "website/src/features/legal/LegalPage.tsx",
+      "metaKey": "contact",
+      "staticOutput": "postbuild",
+      "indexing": "index",
+      "sitemap": "included",
+      "notes": "Published operator contact page: Torana operating Catch, postal address, support email, phone and WhatsApp, and the grievance officer.",
+      "review": {
+        "priority": "p0",
+        "status": "ready",
+        "viewports": [
+          "desktop",
+          "mobile"
+        ],
+        "states": [
+          "published"
+        ],
+        "stateCoverage": {
+          "storybook": [
+            "published"
+          ],
+          "manual": []
+        }
+      }
+    },
+    {
       "id": "not_found",
       "kind": "static",
       "path": "/404/",
