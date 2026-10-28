@@ -83,7 +83,7 @@ void main() {
     expect(permissions.body, contains('disconnect at any time'));
     expect(find.text('No Razorpay account yet?'), findsOneWidget);
     await tester.ensureVisible(find.text('Connect Razorpay'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('Connect Razorpay'));
     expect(connects, 1);
     _readable(tester);
@@ -120,16 +120,25 @@ void main() {
       _readable(tester);
       await _capture(tester, 'ready-${dark ? 'dark' : 'light'}');
 
-      await tester.ensureVisible(find.text('Disconnect account').first);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Disconnect account').first);
-      await tester.pumpAndSettle();
+      final disconnectRow = find.descendant(
+        of: find.byType(CatchField),
+        matching: find.text('Disconnect account'),
+      );
+      await tester.ensureVisible(disconnectRow);
+      await pumpFeatureUi(tester);
+      await tester.tap(disconnectRow);
+      await pumpFeatureUi(tester);
       expect(
         find.textContaining('stops new checkouts for your events and forms'),
         findsOneWidget,
       );
-      await tester.tap(find.text('Disconnect account').last);
-      await tester.pumpAndSettle();
+      await tester.tap(
+        find.descendant(
+          of: find.byType(CatchButton),
+          matching: find.text('Disconnect account'),
+        ),
+      );
+      await pumpFeatureUi(tester);
       expect(disconnected, ['rpc_example']);
     });
   }
