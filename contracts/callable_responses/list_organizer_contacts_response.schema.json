@@ -38,7 +38,8 @@
         "whatsappAdminSuppressed": {"type": "boolean"},
         "smsStatus": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]},
         "sourceCoverage": {"type": "string", "enum": ["exact", "partial", "insufficientData"]},
-        "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991}
+        "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "membership": {"$ref": "../shared/host_membership_common.schema.json#/definitions/contactMembership"}
       }
     }
   }

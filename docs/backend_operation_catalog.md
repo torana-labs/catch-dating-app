@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.108.0
+version: 1.109.0
 updated: 2026-10-28
 owner: recursive_audit_loop
 status: active
@@ -445,6 +445,41 @@ Account/viewer read projections, legacy/manual/exemption sources and gated
 public OTP/external continuations remain future adapters, with existing payment,
 seat, offer and attendance owners retained. All four new roots deny direct client
 reads/writes; grants do not publish a profile or disclose private endpoints.
+
+## Paid host membership operations
+
+Paid host memberships ([spec](plans/host_memberships_spec.md)) are entirely
+server-owned; clients write nothing.
+
+- `manageHostMembershipProgram` (manager) snapshots the organizer owner's ready
+  Route account and requires `feeBasisPoints.hostMembership` in the pinned
+  platform config before enabling. Billing pause/resume only records intent;
+  `processHostMembershipBillingPause` pages through members with the provider.
+- `manageHostMembershipPlans` (manager) owns `hostMembershipPlans`; publishing
+  creates one immutable Razorpay plan per interval and price revision.
+- `manageHostMembershipCheckout` (member) reserves cap capacity with an open
+  checkout, creates the Razorpay subscription and returns its hosted
+  authorization link; `refresh` pulls provider state.
+- `hostMembershipRazorpayWebhook` verifies the HMAC, account, project and
+  Catch notes, writes a create-once receipt and is, with checkout refresh,
+  self-serve and billing pause, the only path into
+  `membershipStore.applySubscriptionSnapshot` — the single writer of
+  `hostMemberships` and member counters. Foreign or unknown payloads write
+  nothing.
+- Each `subscription.charged` payment is recorded in `hostMembershipCharges`
+  and split with a payment-level Route transfer under a lease;
+  `reconcileHostMembershipCharges` retries with read-before-resend recovery.
+- `manageEventMembershipRules` (manager) owns `eventMembershipRules`, outside
+  `eventPolicy`. `getEventViewerState`, `signUpForFreeEvent` and
+  `managePublicEventCheckout` evaluate it through
+  `hostMemberships/entitlement.ts` after the policy quote; the free and public
+  paid paths record `hostMembershipBenefitUses`, and `cancelEventSignUp`
+  releases them.
+- `onHostMembershipAudienceProjected` and the daily
+  `refreshHostMembershipSegments` project memberships onto linked organizer
+  contacts (CRM definition version 4).
+- `requestAccountDeletion` cancels a deleted member's live subscriptions
+  immediately, then erases membership, checkout and benefit-use roots.
 
 ## Backend-Owned Collections And Fields
 

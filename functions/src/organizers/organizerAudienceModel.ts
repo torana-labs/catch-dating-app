@@ -8,7 +8,7 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 
 export const organizerAudienceProjectionVersion = 1;
-export const organizerAudienceDefinitionVersion = 3;
+export const organizerAudienceDefinitionVersion = 4;
 export const organizerIdentityHashVersion = "hmac-sha256-v1" as const;
 export const organizerPastAttendeeSegmentId = "past_attendee" as const;
 
@@ -184,6 +184,8 @@ export function organizerContactTraits(params: {
   referredRegistrationCount?: number;
   referredCheckedInCount?: number;
   referredCheckedIn365DayCount?: number;
+  /** The linked account's paid membership with this organizer, if any. */
+  membership?: NonNullable<OrganizerContactTraitDocument["membership"]> | null;
 }): OrganizerContactTraitDocument | null {
   const {contact, edges, now} = params;
   if (contact.deletedAt !== null || contact.identityState === "merged") {
@@ -221,6 +223,11 @@ export function organizerContactTraits(params: {
     nowMillis - time.toMillis() <= 180 * 24 * 60 * 60 * 1000
   ).length;
   const lastAttendedAt = attendanceTimes.at(-1) ?? null;
+  const dayMillis = 24 * 60 * 60 * 1000;
+  const attendedWithin = (days: number) => attendanceTimes.filter((time) =>
+    nowMillis - time.toMillis() <= days * dayMillis).length;
+  const attended30DayCount = attendedWithin(30);
+  const attended60DayCount = attendedWithin(60);
   if (recent180DayCount >= 3) segmentIds.push("regular");
   if (attended.length >= 2 && lastAttendedAt !== null &&
       nowMillis - lastAttendedAt.toMillis() > 90 * 24 * 60 * 60 * 1000) {
@@ -244,6 +251,17 @@ export function organizerContactTraits(params: {
   }
   if (referredCheckedIn365DayCount >= 3) {
     segmentIds.push("high_impact_advocate");
+  }
+  // Paid membership segments (definition version 4).
+  const membership = params.membership ?? null;
+  const activeMember = membership?.entitled === true;
+  if (activeMember) segmentIds.push("active_member");
+  if (membership?.status === "expired") segmentIds.push("lapsed_member");
+  if (activeMember && attended30DayCount === 0) {
+    segmentIds.push("member_no_recent_attendance");
+  }
+  if (!activeMember && attended60DayCount >= 4) {
+    segmentIds.push("frequent_non_member");
   }
   if (contact.whatsappStatus === "optedIn" && contact.phoneE164 !== null) {
     segmentIds.push("whatsapp_reachable");
@@ -270,6 +288,9 @@ export function organizerContactTraits(params: {
     lastAttendedAt,
     attendanceRate,
     segmentIds,
+    membership,
+    attended30DayCount,
+    attended60DayCount,
     definitionVersion: organizerAudienceDefinitionVersion,
     whatsappStatus: contact.whatsappStatus,
     smsStatus: contact.smsStatus,

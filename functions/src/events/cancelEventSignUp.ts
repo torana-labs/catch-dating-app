@@ -68,6 +68,8 @@ import {eventDiscoveryProjection} from "./eventDiscoveryProjection";
 import {requireEventTimeRange} from "./configuredEvent";
 import {isEventPubliclyAccessible} from "./eventPublicationAccess";
 import {stripeSecretKey} from "../payments/stripe";
+import {releaseHostMembershipBenefitUse} from
+  "../hostMemberships/entitlementReader";
 import {planLegacyCancellationRefund,
   type LegacyRazorpayRefundAuthorization} from
   "../payments/legacyRefunds/intent";
@@ -613,6 +615,12 @@ export async function cancelEventSignUpHandler(
       logger.error("Native cancellation refund requires recovery", {
         eventId, paymentId: committed.refundPaymentId});
     }
+  }
+  if (committed.cancelled) {
+    // Member savings and the upcoming member-priced booking cap ignore a
+    // cancelled booking even if this best-effort release is lost.
+    await releaseHostMembershipBenefitUse(db, eventId, userId)
+      .catch(() => undefined);
   }
   return {cancelled: committed.cancelled};
 }

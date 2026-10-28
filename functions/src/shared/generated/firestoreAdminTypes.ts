@@ -820,6 +820,10 @@ export interface HostContactSummaryDocument {
       | "high_impact_advocate"
       | "whatsapp_reachable"
       | "sms_reachable"
+      | "active_member"
+      | "lapsed_member"
+      | "member_no_recent_attendance"
+      | "frequent_non_member"
     )[];
     /**
      * @maxItems 5
@@ -833,6 +837,22 @@ export interface HostContactSummaryDocument {
     smsStatus: "unknown" | "optedIn" | "optedOut";
     sourceCoverage: "exact" | "partial" | "insufficientData";
     revision: number;
+    /**
+     * CRM projection of one contact's paid membership with the organizer, through the contact's linked account.
+     */
+    membership?: {
+      planId: string;
+      planName: string;
+      status:
+        | "trialing"
+        | "active"
+        | "past_due"
+        | "paused"
+        | "canceling"
+        | "expired";
+      memberSinceMillis: number | null;
+      entitled: boolean;
+    } | null;
   };
   version: 1;
 }
@@ -9887,7 +9907,11 @@ export interface OrganizerSavedAudienceDocument {
             | "advocate"
             | "high_impact_advocate"
             | "whatsapp_reachable"
-            | "sms_reachable";
+            | "sms_reachable"
+            | "active_member"
+            | "lapsed_member"
+            | "member_no_recent_attendance"
+            | "frequent_non_member";
         }
       | {
           kind: "manualTag";
@@ -9960,6 +9984,10 @@ export interface OrganizerSavedAudienceDocument {
             | "high_impact_advocate"
             | "whatsapp_reachable"
             | "sms_reachable"
+            | "active_member"
+            | "lapsed_member"
+            | "member_no_recent_attendance"
+            | "frequent_non_member"
           )[];
           /**
            * @maxItems 20
@@ -10600,7 +10628,29 @@ export interface OrganizerContactTraitDocument {
     | "high_impact_advocate"
     | "whatsapp_reachable"
     | "sms_reachable"
+    | "active_member"
+    | "lapsed_member"
+    | "member_no_recent_attendance"
+    | "frequent_non_member"
   )[];
+  /**
+   * CRM projection of one contact's paid membership with the organizer, through the contact's linked account.
+   */
+  membership?: {
+    planId: string;
+    planName: string;
+    status:
+      | "trialing"
+      | "active"
+      | "past_due"
+      | "paused"
+      | "canceling"
+      | "expired";
+    memberSinceMillis: number | null;
+    entitled: boolean;
+  } | null;
+  attended30DayCount?: number;
+  attended60DayCount?: number;
   definitionVersion: number;
   whatsappStatus: "unknown" | "optedIn" | "optedOut";
   smsStatus: "unknown" | "optedIn" | "optedOut";

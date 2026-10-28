@@ -103,7 +103,11 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                       "advocate",
                       "high_impact_advocate",
                       "whatsapp_reachable",
-                      "sms_reachable"
+                      "sms_reachable",
+                      "active_member",
+                      "lapsed_member",
+                      "member_no_recent_attendance",
+                      "frequent_non_member"
                     ]
                   }
                 }
@@ -365,7 +369,11 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                         "advocate",
                         "high_impact_advocate",
                         "whatsapp_reachable",
-                        "sms_reachable"
+                        "sms_reachable",
+                        "active_member",
+                        "lapsed_member",
+                        "member_no_recent_attendance",
+                        "frequent_non_member"
                       ]
                     }
                   },
@@ -630,7 +638,11 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                       "advocate",
                       "high_impact_advocate",
                       "whatsapp_reachable",
-                      "sms_reachable"
+                      "sms_reachable",
+                      "active_member",
+                      "lapsed_member",
+                      "member_no_recent_attendance",
+                      "frequent_non_member"
                     ]
                   }
                 }
@@ -892,7 +904,11 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                         "advocate",
                         "high_impact_advocate",
                         "whatsapp_reachable",
-                        "sms_reachable"
+                        "sms_reachable",
+                        "active_member",
+                        "lapsed_member",
+                        "member_no_recent_attendance",
+                        "frequent_non_member"
                       ]
                     }
                   },
@@ -939,7 +955,11 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                 "advocate",
                 "high_impact_advocate",
                 "whatsapp_reachable",
-                "sms_reachable"
+                "sms_reachable",
+                "active_member",
+                "lapsed_member",
+                "member_no_recent_attendance",
+                "frequent_non_member"
               ]
             }
           }
@@ -1201,7 +1221,11 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
                   "advocate",
                   "high_impact_advocate",
                   "whatsapp_reachable",
-                  "sms_reachable"
+                  "sms_reachable",
+                  "active_member",
+                  "lapsed_member",
+                  "member_no_recent_attendance",
+                  "frequent_non_member"
                 ]
               }
             },
@@ -1248,7 +1272,11 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -1288,7 +1316,11 @@ export const organizerSavedAudienceDocumentSchema: Record<string, unknown> = {
             "advocate",
             "high_impact_advocate",
             "whatsapp_reachable",
-            "sms_reachable"
+            "sms_reachable",
+            "active_member",
+            "lapsed_member",
+            "member_no_recent_attendance",
+            "frequent_non_member"
           ]
         }
       }

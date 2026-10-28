@@ -264,15 +264,19 @@ export async function getEventRosterInsightsHandler(
   const cutoffAtMillis = event.startTime.toMillis();
   const spend = paymentResult.truncated || organizerEvents.truncated ? null :
     catchSpendProjection(paymentResult.rows, cutoffAtMillis);
-  const rows = attendees.map((attendee) => buildInsightRow({
-    attendee,
-    currentEdge: currentEdgeByAttendeeId.get(attendee.id),
-    contacts,
-    traits,
-    history: historyResult.byContactId,
-    spend,
-    cutoffAtMillis,
-  }));
+  const rows = attendees.map((attendee) => {
+    const row = buildInsightRow({
+      attendee,
+      currentEdge: currentEdgeByAttendeeId.get(attendee.id),
+      contacts,
+      traits,
+      history: historyResult.byContactId,
+      spend,
+      cutoffAtMillis,
+    });
+    return data.includeHostMembership ?
+      withMemberSignal(row, traits, contacts) : row;
+  });
   const projectionPending = rows.some((row) =>
     row.availability === "projectionPending"
   );
@@ -504,3 +508,20 @@ export const getEventRosterInsights = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 60, maxInstances: 20}),
   (request) => getEventRosterInsightsHandler(request)
 );
+
+/**
+ * Paid members are badged at check-in even before they have enough history
+ * for attendance insights; ambiguous or merged identities stay unlabeled.
+ */
+export function withMemberSignal(row: InsightRow,
+  traits: Map<string, OrganizerContactTraitDocument>,
+  contacts: Map<string, ContactRow>): InsightRow {
+  if (row.contactId === null ||
+      !["ready", "insufficientHistory"].includes(row.availability)) return row;
+  const identity = contacts.get(row.contactId)?.data.identityState;
+  if (identity === "ambiguous" || identity === "merged") return row;
+  if (!traits.get(row.contactId)?.segmentIds.includes("active_member")) {
+    return row;
+  }
+  return {...row, signals: [...new Set([...row.signals, "member" as const])]};
+}

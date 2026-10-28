@@ -32,6 +32,8 @@ import {
   readRegistrationManager,
 } from "./authority";
 import {publicCheckoutQuote, registrationUnavailable} from "./policy";
+import {publicHostMembershipQuoteTerms} from
+  "../../hostMemberships/publicCheckout";
 import {
   publicPaymentId,
   PUBLIC_PAYMENT_COLLECTION,
@@ -101,6 +103,8 @@ export async function managePublicEventCheckoutHandler(
         deps.now(),
         await publicGuestMembership({db, tx, event, uid,
           nowMillis: deps.now()}),
+        await publicHostMembershipQuoteTerms({db, tx, eventId: data.eventId,
+          event, uid, nowMillis: deps.now()}),
       );
     });
   } else if (data.action === "find") {
@@ -153,6 +157,9 @@ export async function managePublicEventCheckoutHandler(
             source.organizer,
             deps.now(),
             await publicGuestMembership({db, tx, event: source.event, uid,
+              nowMillis: deps.now()}),
+            await publicHostMembershipQuoteTerms({db, tx,
+              eventId: data.eventId, event: source.event, uid,
               nowMillis: deps.now()}),
           );
           return {organizerId: source.event.organizerId!, quote};

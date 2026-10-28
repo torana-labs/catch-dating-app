@@ -285,7 +285,8 @@
         "segmentIds": {"type": "array", "uniqueItems": true, "maxItems": 16, "items": {"$ref": "../firestore/organizer_contact_traits.schema.json#/definitions/segmentId"}},
         "whatsappStatus": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]},
         "smsStatus": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]},
-        "sourceCoverage": {"type": "string", "enum": ["exact", "partial", "insufficientData"]}
+        "sourceCoverage": {"type": "string", "enum": ["exact", "partial", "insufficientData"]},
+        "membership": {"$ref": "../shared/host_membership_common.schema.json#/definitions/contactMembership"}
       }
     },
     "event": {

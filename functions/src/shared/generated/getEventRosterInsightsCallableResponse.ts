@@ -23,7 +23,7 @@ export interface GetEventRosterInsightsCallableResponse {
       | "ambiguousIdentity"
       | "insufficientHistory";
     /**
-     * @maxItems 10
+     * @maxItems 11
      */
     signals: (
       | "first_time"
@@ -36,6 +36,7 @@ export interface GetEventRosterInsightsCallableResponse {
       | "high_impact_advocate"
       | "known_catch_spender"
       | "top_catch_spender"
+      | "member"
     )[];
     priorAttendedEventCount: number;
     priorExpectedEventCount: number;

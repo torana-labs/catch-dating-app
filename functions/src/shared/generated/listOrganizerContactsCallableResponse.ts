@@ -37,6 +37,10 @@ export interface ListOrganizerContactsCallableResponse {
       | "high_impact_advocate"
       | "whatsapp_reachable"
       | "sms_reachable"
+      | "active_member"
+      | "lapsed_member"
+      | "member_no_recent_attendance"
+      | "frequent_non_member"
     )[];
     /**
      * @maxItems 5
@@ -50,6 +54,22 @@ export interface ListOrganizerContactsCallableResponse {
     smsStatus: "unknown" | "optedIn" | "optedOut";
     sourceCoverage: "exact" | "partial" | "insufficientData";
     revision: number;
+    /**
+     * CRM projection of one contact's paid membership with the organizer, through the contact's linked account.
+     */
+    membership?: {
+      planId: string;
+      planName: string;
+      status:
+        | "trialing"
+        | "active"
+        | "past_due"
+        | "paused"
+        | "canceling"
+        | "expired";
+      memberSinceMillis: number | null;
+      entitled: boolean;
+    } | null;
   }[];
   nextCursor: string | null;
   matchCount: number;

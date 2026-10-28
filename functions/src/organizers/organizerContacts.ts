@@ -957,6 +957,7 @@ export async function getOrganizerContactDetailHandler(
       whatsappStatus: traits.whatsappStatus,
       smsStatus: traits.smsStatus,
       sourceCoverage: traits.sourceCoverage,
+      ...(traits.membership ? {membership: traits.membership} : {}),
     },
     revenue: revenueResult.revenue,
     events,
@@ -2556,6 +2557,7 @@ function safeContactRow(
     smsStatus: traits.smsStatus,
     sourceCoverage: traits.sourceCoverage,
     revision: contact.revision,
+    ...(traits.membership ? {membership: traits.membership} : {}),
   };
 }
 

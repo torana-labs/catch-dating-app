@@ -43,3 +43,21 @@ test("profile rejects mismatched mode and implicit commissions", async () => {
   await assert.rejects(loader.load(version), (error: Error) =>
     !error.message.includes("private"));
 });
+
+test("profile accepts an optional host membership fee and nothing else",
+  async () => {
+    const withMembership = new RazorpayPlatformPaymentConfigLoader(
+      "catch-test", async () => JSON.stringify({...config,
+        feeBasisPoints: {formFee: 0, eventAdmission: 0,
+          hostMembership: 750}}));
+    assert.equal((await withMembership.load(version)).feeBasisPoints
+      .hostMembership, 750);
+    for (const feeBasisPoints of [
+      {formFee: 0, eventAdmission: 0, hostMembership: 10000},
+      {formFee: 0, eventAdmission: 0, membership: 500},
+    ]) {
+      const loader = new RazorpayPlatformPaymentConfigLoader("catch-test",
+        async () => JSON.stringify({...config, feeBasisPoints}));
+      await assert.rejects(loader.load(version), /not configured/);
+    }
+  });

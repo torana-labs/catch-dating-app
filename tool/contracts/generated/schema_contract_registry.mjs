@@ -722,7 +722,11 @@ export const hostGroupDetailDocumentSchema = {
                           "advocate",
                           "high_impact_advocate",
                           "whatsapp_reachable",
-                          "sms_reachable"
+                          "sms_reachable",
+                          "active_member",
+                          "lapsed_member",
+                          "member_no_recent_attendance",
+                          "frequent_non_member"
                         ]
                       }
                     }
@@ -984,7 +988,11 @@ export const hostGroupDetailDocumentSchema = {
                             "advocate",
                             "high_impact_advocate",
                             "whatsapp_reachable",
-                            "sms_reachable"
+                            "sms_reachable",
+                            "active_member",
+                            "lapsed_member",
+                            "member_no_recent_attendance",
+                            "frequent_non_member"
                           ]
                         }
                       },
@@ -1795,7 +1803,11 @@ export const hostContactSummaryDocumentSchema = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -1854,6 +1866,53 @@ export const hostContactSummaryDocumentSchema = {
           "type": "integer",
           "minimum": 1,
           "maximum": 9007199254740991
+        },
+        "membership": {
+          "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "planId",
+            "planName",
+            "status",
+            "memberSinceMillis",
+            "entitled"
+          ],
+          "properties": {
+            "planId": {
+              "type": "string",
+              "pattern": "^hmp_[A-Za-z0-9]{20}$"
+            },
+            "planName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "status": {
+              "enum": [
+                "trialing",
+                "active",
+                "past_due",
+                "paused",
+                "canceling",
+                "expired"
+              ]
+            },
+            "memberSinceMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "entitled": {
+              "type": "boolean"
+            }
+          }
         }
       },
       "x-catch-ownership": "server-only"
@@ -167942,9 +168001,70 @@ export const organizerContactDocumentSchema = {
                   "advocate",
                   "high_impact_advocate",
                   "whatsapp_reachable",
-                  "sms_reachable"
+                  "sms_reachable",
+                  "active_member",
+                  "lapsed_member",
+                  "member_no_recent_attendance",
+                  "frequent_non_member"
                 ]
               }
+            },
+            "membership": {
+              "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "planId",
+                "planName",
+                "status",
+                "memberSinceMillis",
+                "entitled"
+              ],
+              "properties": {
+                "planId": {
+                  "type": "string",
+                  "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                },
+                "planName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60
+                },
+                "status": {
+                  "enum": [
+                    "trialing",
+                    "active",
+                    "past_due",
+                    "paused",
+                    "canceling",
+                    "expired"
+                  ]
+                },
+                "memberSinceMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "entitled": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "attended30DayCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "attended60DayCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
             },
             "definitionVersion": {
               "type": "integer",
@@ -168016,7 +168136,11 @@ export const organizerContactDocumentSchema = {
                 "advocate",
                 "high_impact_advocate",
                 "whatsapp_reachable",
-                "sms_reachable"
+                "sms_reachable",
+                "active_member",
+                "lapsed_member",
+                "member_no_recent_attendance",
+                "frequent_non_member"
               ]
             },
             "channelStatus": {
@@ -168733,7 +168857,11 @@ export const organizerSavedAudienceDocumentSchema = {
                       "advocate",
                       "high_impact_advocate",
                       "whatsapp_reachable",
-                      "sms_reachable"
+                      "sms_reachable",
+                      "active_member",
+                      "lapsed_member",
+                      "member_no_recent_attendance",
+                      "frequent_non_member"
                     ]
                   }
                 }
@@ -168995,7 +169123,11 @@ export const organizerSavedAudienceDocumentSchema = {
                         "advocate",
                         "high_impact_advocate",
                         "whatsapp_reachable",
-                        "sms_reachable"
+                        "sms_reachable",
+                        "active_member",
+                        "lapsed_member",
+                        "member_no_recent_attendance",
+                        "frequent_non_member"
                       ]
                     }
                   },
@@ -169260,7 +169392,11 @@ export const organizerSavedAudienceDocumentSchema = {
                       "advocate",
                       "high_impact_advocate",
                       "whatsapp_reachable",
-                      "sms_reachable"
+                      "sms_reachable",
+                      "active_member",
+                      "lapsed_member",
+                      "member_no_recent_attendance",
+                      "frequent_non_member"
                     ]
                   }
                 }
@@ -169522,7 +169658,11 @@ export const organizerSavedAudienceDocumentSchema = {
                         "advocate",
                         "high_impact_advocate",
                         "whatsapp_reachable",
-                        "sms_reachable"
+                        "sms_reachable",
+                        "active_member",
+                        "lapsed_member",
+                        "member_no_recent_attendance",
+                        "frequent_non_member"
                       ]
                     }
                   },
@@ -169569,7 +169709,11 @@ export const organizerSavedAudienceDocumentSchema = {
                 "advocate",
                 "high_impact_advocate",
                 "whatsapp_reachable",
-                "sms_reachable"
+                "sms_reachable",
+                "active_member",
+                "lapsed_member",
+                "member_no_recent_attendance",
+                "frequent_non_member"
               ]
             }
           }
@@ -169831,7 +169975,11 @@ export const organizerSavedAudienceDocumentSchema = {
                   "advocate",
                   "high_impact_advocate",
                   "whatsapp_reachable",
-                  "sms_reachable"
+                  "sms_reachable",
+                  "active_member",
+                  "lapsed_member",
+                  "member_no_recent_attendance",
+                  "frequent_non_member"
                 ]
               }
             },
@@ -169878,7 +170026,11 @@ export const organizerSavedAudienceDocumentSchema = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -169918,7 +170070,11 @@ export const organizerSavedAudienceDocumentSchema = {
             "advocate",
             "high_impact_advocate",
             "whatsapp_reachable",
-            "sms_reachable"
+            "sms_reachable",
+            "active_member",
+            "lapsed_member",
+            "member_no_recent_attendance",
+            "frequent_non_member"
           ]
         }
       }
@@ -173740,9 +173896,70 @@ export const organizerContactTraitDocumentSchema = {
           "advocate",
           "high_impact_advocate",
           "whatsapp_reachable",
-          "sms_reachable"
+          "sms_reachable",
+          "active_member",
+          "lapsed_member",
+          "member_no_recent_attendance",
+          "frequent_non_member"
         ]
       }
+    },
+    "membership": {
+      "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "planId",
+        "planName",
+        "status",
+        "memberSinceMillis",
+        "entitled"
+      ],
+      "properties": {
+        "planId": {
+          "type": "string",
+          "pattern": "^hmp_[A-Za-z0-9]{20}$"
+        },
+        "planName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "status": {
+          "enum": [
+            "trialing",
+            "active",
+            "past_due",
+            "paused",
+            "canceling",
+            "expired"
+          ]
+        },
+        "memberSinceMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "entitled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "attended30DayCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "attended60DayCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
     },
     "definitionVersion": {
       "type": "integer",
@@ -173814,7 +174031,11 @@ export const organizerContactTraitDocumentSchema = {
         "advocate",
         "high_impact_advocate",
         "whatsapp_reachable",
-        "sms_reachable"
+        "sms_reachable",
+        "active_member",
+        "lapsed_member",
+        "member_no_recent_attendance",
+        "frequent_non_member"
       ]
     },
     "channelStatus": {
@@ -278117,7 +278338,11 @@ export const upsertOrganizerSavedAudienceCallablePayloadSchema = {
                       "advocate",
                       "high_impact_advocate",
                       "whatsapp_reachable",
-                      "sms_reachable"
+                      "sms_reachable",
+                      "active_member",
+                      "lapsed_member",
+                      "member_no_recent_attendance",
+                      "frequent_non_member"
                     ]
                   }
                 }
@@ -278379,7 +278604,11 @@ export const upsertOrganizerSavedAudienceCallablePayloadSchema = {
                         "advocate",
                         "high_impact_advocate",
                         "whatsapp_reachable",
-                        "sms_reachable"
+                        "sms_reachable",
+                        "active_member",
+                        "lapsed_member",
+                        "member_no_recent_attendance",
+                        "frequent_non_member"
                       ]
                     }
                   },
@@ -278709,7 +278938,11 @@ export const organizerSavedAudienceCallableResponseSchema = {
                       "advocate",
                       "high_impact_advocate",
                       "whatsapp_reachable",
-                      "sms_reachable"
+                      "sms_reachable",
+                      "active_member",
+                      "lapsed_member",
+                      "member_no_recent_attendance",
+                      "frequent_non_member"
                     ]
                   }
                 }
@@ -278971,7 +279204,11 @@ export const organizerSavedAudienceCallableResponseSchema = {
                         "advocate",
                         "high_impact_advocate",
                         "whatsapp_reachable",
-                        "sms_reachable"
+                        "sms_reachable",
+                        "active_member",
+                        "lapsed_member",
+                        "member_no_recent_attendance",
+                        "frequent_non_member"
                       ]
                     }
                   },
@@ -279184,7 +279421,11 @@ export const listOrganizerSavedAudiencesCallableResponseSchema = {
                             "advocate",
                             "high_impact_advocate",
                             "whatsapp_reachable",
-                            "sms_reachable"
+                            "sms_reachable",
+                            "active_member",
+                            "lapsed_member",
+                            "member_no_recent_attendance",
+                            "frequent_non_member"
                           ]
                         }
                       }
@@ -279446,7 +279687,11 @@ export const listOrganizerSavedAudiencesCallableResponseSchema = {
                               "advocate",
                               "high_impact_advocate",
                               "whatsapp_reachable",
-                              "sms_reachable"
+                              "sms_reachable",
+                              "active_member",
+                              "lapsed_member",
+                              "member_no_recent_attendance",
+                              "frequent_non_member"
                             ]
                           }
                         },
@@ -279835,7 +280080,11 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
                           "advocate",
                           "high_impact_advocate",
                           "whatsapp_reachable",
-                          "sms_reachable"
+                          "sms_reachable",
+                          "active_member",
+                          "lapsed_member",
+                          "member_no_recent_attendance",
+                          "frequent_non_member"
                         ]
                       }
                     }
@@ -280097,7 +280346,11 @@ export const previewOrganizerSavedAudienceCallableResponseSchema = {
                             "advocate",
                             "high_impact_advocate",
                             "whatsapp_reachable",
-                            "sms_reachable"
+                            "sms_reachable",
+                            "active_member",
+                            "lapsed_member",
+                            "member_no_recent_attendance",
+                            "frequent_non_member"
                           ]
                         }
                       },
@@ -308672,6 +308925,10 @@ export const getEventRosterInsightsCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "includeHostMembership": {
+      "type": "boolean",
+      "description": "Opt-in for the paid-membership \"member\" signal; older clients omit it."
     }
   }
 };
@@ -308769,7 +309026,7 @@ export const getEventRosterInsightsCallableResponseSchema = {
           "signals": {
             "type": "array",
             "uniqueItems": true,
-            "maxItems": 10,
+            "maxItems": 11,
             "items": {
               "type": "string",
               "enum": [
@@ -308782,7 +309039,8 @@ export const getEventRosterInsightsCallableResponseSchema = {
                 "advocate",
                 "high_impact_advocate",
                 "known_catch_spender",
-                "top_catch_spender"
+                "top_catch_spender",
+                "member"
               ]
             }
           },
@@ -308866,7 +309124,8 @@ export const getEventRosterInsightsCallableResponseSchema = {
         "advocate",
         "high_impact_advocate",
         "known_catch_spender",
-        "top_catch_spender"
+        "top_catch_spender",
+        "member"
       ]
     },
     "spendAmount": {
@@ -308939,7 +309198,7 @@ export const getEventRosterInsightsCallableResponseSchema = {
         "signals": {
           "type": "array",
           "uniqueItems": true,
-          "maxItems": 10,
+          "maxItems": 11,
           "items": {
             "type": "string",
             "enum": [
@@ -308952,7 +309211,8 @@ export const getEventRosterInsightsCallableResponseSchema = {
               "advocate",
               "high_impact_advocate",
               "known_catch_spender",
-              "top_catch_spender"
+              "top_catch_spender",
+              "member"
             ]
           }
         },
@@ -309187,7 +309447,11 @@ export const listOrganizerContactsCallablePayloadSchema = {
             "advocate",
             "high_impact_advocate",
             "whatsapp_reachable",
-            "sms_reachable"
+            "sms_reachable",
+            "active_member",
+            "lapsed_member",
+            "member_no_recent_attendance",
+            "frequent_non_member"
           ]
         },
         {
@@ -309220,7 +309484,11 @@ export const listOrganizerContactsCallablePayloadSchema = {
           "advocate",
           "high_impact_advocate",
           "whatsapp_reachable",
-          "sms_reachable"
+          "sms_reachable",
+          "active_member",
+          "lapsed_member",
+          "member_no_recent_attendance",
+          "frequent_non_member"
         ]
       },
       "description": "OR within attendance, reliability, advocacy and reachable categories; AND across selected categories."
@@ -328367,7 +328635,11 @@ export const listOrganizerContactsCallableResponseSchema = {
                 "advocate",
                 "high_impact_advocate",
                 "whatsapp_reachable",
-                "sms_reachable"
+                "sms_reachable",
+                "active_member",
+                "lapsed_member",
+                "member_no_recent_attendance",
+                "frequent_non_member"
               ]
             }
           },
@@ -328426,6 +328698,53 @@ export const listOrganizerContactsCallableResponseSchema = {
             "type": "integer",
             "minimum": 1,
             "maximum": 9007199254740991
+          },
+          "membership": {
+            "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "planId",
+              "planName",
+              "status",
+              "memberSinceMillis",
+              "entitled"
+            ],
+            "properties": {
+              "planId": {
+                "type": "string",
+                "pattern": "^hmp_[A-Za-z0-9]{20}$"
+              },
+              "planName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "status": {
+                "enum": [
+                  "trialing",
+                  "active",
+                  "past_due",
+                  "paused",
+                  "canceling",
+                  "expired"
+                ]
+              },
+              "memberSinceMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "entitled": {
+                "type": "boolean"
+              }
+            }
           }
         }
       }
@@ -328590,7 +328909,11 @@ export const listOrganizerContactsCallableResponseSchema = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -328649,6 +328972,53 @@ export const listOrganizerContactsCallableResponseSchema = {
           "type": "integer",
           "minimum": 1,
           "maximum": 9007199254740991
+        },
+        "membership": {
+          "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "planId",
+            "planName",
+            "status",
+            "memberSinceMillis",
+            "entitled"
+          ],
+          "properties": {
+            "planId": {
+              "type": "string",
+              "pattern": "^hmp_[A-Za-z0-9]{20}$"
+            },
+            "planName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "status": {
+              "enum": [
+                "trialing",
+                "active",
+                "past_due",
+                "paused",
+                "canceling",
+                "expired"
+              ]
+            },
+            "memberSinceMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "entitled": {
+              "type": "boolean"
+            }
+          }
         }
       }
     }
@@ -329173,7 +329543,11 @@ export const getOrganizerContactDetailCallableResponseSchema = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -329200,6 +329574,53 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "partial",
             "insufficientData"
           ]
+        },
+        "membership": {
+          "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "planId",
+            "planName",
+            "status",
+            "memberSinceMillis",
+            "entitled"
+          ],
+          "properties": {
+            "planId": {
+              "type": "string",
+              "pattern": "^hmp_[A-Za-z0-9]{20}$"
+            },
+            "planName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "status": {
+              "enum": [
+                "trialing",
+                "active",
+                "past_due",
+                "paused",
+                "canceling",
+                "expired"
+              ]
+            },
+            "memberSinceMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "entitled": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
@@ -331888,7 +332309,11 @@ export const getOrganizerContactDetailCallableResponseSchema = {
               "advocate",
               "high_impact_advocate",
               "whatsapp_reachable",
-              "sms_reachable"
+              "sms_reachable",
+              "active_member",
+              "lapsed_member",
+              "member_no_recent_attendance",
+              "frequent_non_member"
             ]
           }
         },
@@ -331915,6 +332340,53 @@ export const getOrganizerContactDetailCallableResponseSchema = {
             "partial",
             "insufficientData"
           ]
+        },
+        "membership": {
+          "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "planId",
+            "planName",
+            "status",
+            "memberSinceMillis",
+            "entitled"
+          ],
+          "properties": {
+            "planId": {
+              "type": "string",
+              "pattern": "^hmp_[A-Za-z0-9]{20}$"
+            },
+            "planName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "status": {
+              "enum": [
+                "trialing",
+                "active",
+                "past_due",
+                "paused",
+                "canceling",
+                "expired"
+              ]
+            },
+            "memberSinceMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "entitled": {
+              "type": "boolean"
+            }
+          }
         }
       }
     },
@@ -333044,7 +333516,11 @@ export const exportOrganizerContactsCallablePayloadSchema = {
             "advocate",
             "high_impact_advocate",
             "whatsapp_reachable",
-            "sms_reachable"
+            "sms_reachable",
+            "active_member",
+            "lapsed_member",
+            "member_no_recent_attendance",
+            "frequent_non_member"
           ]
         },
         {
@@ -333070,7 +333546,11 @@ export const exportOrganizerContactsCallablePayloadSchema = {
           "advocate",
           "high_impact_advocate",
           "whatsapp_reachable",
-          "sms_reachable"
+          "sms_reachable",
+          "active_member",
+          "lapsed_member",
+          "member_no_recent_attendance",
+          "frequent_non_member"
         ]
       },
       "description": "OR within attendance, reliability, advocacy and reachable categories; AND across selected categories."

@@ -15,7 +15,10 @@
       "maximum": 9007199254740991
     },
     "nullableMillis": {
-      "type": ["integer", "null"],
+      "type": [
+        "integer",
+        "null"
+      ],
       "minimum": 0,
       "maximum": 9007199254740991
     },
@@ -37,13 +40,21 @@
       "pattern": "^hmc_[A-Za-z0-9]{20}$"
     },
     "interval": {
-      "enum": ["monthly", "annual"]
+      "enum": [
+        "monthly",
+        "annual"
+      ]
     },
     "provider": {
-      "enum": ["razorpay"]
+      "enum": [
+        "razorpay"
+      ]
     },
     "providerMode": {
-      "enum": ["test", "live"]
+      "enum": [
+        "test",
+        "live"
+      ]
     },
     "planPriceAmountPaise": {
       "type": "integer",
@@ -64,9 +75,15 @@
     "planPrice": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["amountPaise", "providerPriceIds", "revision"],
+      "required": [
+        "amountPaise",
+        "providerPriceIds",
+        "revision"
+      ],
       "properties": {
-        "amountPaise": {"$ref": "#/definitions/planPriceAmountPaise"},
+        "amountPaise": {
+          "$ref": "#/definitions/planPriceAmountPaise"
+        },
         "providerPriceIds": {
           "type": "object",
           "additionalProperties": false,
@@ -77,7 +94,9 @@
             }
           }
         },
-        "revision": {"$ref": "#/definitions/revision"}
+        "revision": {
+          "$ref": "#/definitions/revision"
+        }
       }
     },
     "planPrices": {
@@ -85,8 +104,12 @@
       "additionalProperties": false,
       "minProperties": 1,
       "properties": {
-        "monthly": {"$ref": "#/definitions/planPrice"},
-        "annual": {"$ref": "#/definitions/planPrice"}
+        "monthly": {
+          "$ref": "#/definitions/planPrice"
+        },
+        "annual": {
+          "$ref": "#/definitions/planPrice"
+        }
       }
     },
     "planBenefit": {
@@ -94,26 +117,43 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type", "percentOff"],
+          "required": [
+            "type",
+            "percentOff"
+          ],
           "properties": {
-            "type": {"const": "eventDiscount"},
-            "percentOff": {"type": "integer", "minimum": 1, "maximum": 100}
+            "type": {
+              "const": "eventDiscount"
+            },
+            "percentOff": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
           }
         },
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type"],
+          "required": [
+            "type"
+          ],
           "properties": {
-            "type": {"const": "earlyAccess"}
+            "type": {
+              "const": "earlyAccess"
+            }
           }
         },
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type"],
+          "required": [
+            "type"
+          ],
           "properties": {
-            "type": {"const": "membersOnlyAccess"}
+            "type": {
+              "const": "membersOnlyAccess"
+            }
           }
         }
       ]
@@ -121,30 +161,52 @@
     "planBenefits": {
       "type": "array",
       "maxItems": 3,
-      "items": {"$ref": "#/definitions/planBenefit"}
+      "items": {
+        "$ref": "#/definitions/planBenefit"
+      }
     },
     "planPerks": {
       "type": "array",
       "maxItems": 8,
-      "items": {"type": "string", "minLength": 1, "maxLength": 120}
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      }
     },
     "planLimits": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["maxUpcomingMemberPricedBookings"],
+      "required": [
+        "maxUpcomingMemberPricedBookings"
+      ],
       "properties": {
         "maxUpcomingMemberPricedBookings": {
-          "type": ["integer", "null"],
+          "type": [
+            "integer",
+            "null"
+          ],
           "minimum": 1,
           "maximum": 20
         }
       }
     },
     "planStatus": {
-      "enum": ["draft", "published", "archived"]
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ]
     },
     "membershipStatus": {
-      "enum": ["trialing", "active", "past_due", "paused", "canceling", "expired"]
+      "enum": [
+        "trialing",
+        "active",
+        "past_due",
+        "paused",
+        "canceling",
+        "expired"
+      ]
     },
     "membershipStatusReason": {
       "enum": [
@@ -158,26 +220,45 @@
       ]
     },
     "pauseInitiator": {
-      "enum": ["member", "host"]
+      "enum": [
+        "member",
+        "host"
+      ]
     },
     "memberPriceOverride": {
       "oneOf": [
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["planId", "percentOff"],
+          "required": [
+            "planId",
+            "percentOff"
+          ],
           "properties": {
-            "planId": {"$ref": "#/definitions/planId"},
-            "percentOff": {"type": "integer", "minimum": 1, "maximum": 100}
+            "planId": {
+              "$ref": "#/definitions/planId"
+            },
+            "percentOff": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
           }
         },
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["planId", "priceInPaise"],
+          "required": [
+            "planId",
+            "priceInPaise"
+          ],
           "properties": {
-            "planId": {"$ref": "#/definitions/planId"},
-            "priceInPaise": {"$ref": "#/definitions/eventPriceInPaise"}
+            "planId": {
+              "$ref": "#/definitions/planId"
+            },
+            "priceInPaise": {
+              "$ref": "#/definitions/eventPriceInPaise"
+            }
           }
         }
       ]
@@ -185,12 +266,46 @@
     "memberPriceOverrides": {
       "type": "array",
       "maxItems": 10,
-      "items": {"$ref": "#/definitions/memberPriceOverride"}
+      "items": {
+        "$ref": "#/definitions/memberPriceOverride"
+      }
     },
     "earlyAccessHours": {
       "type": "integer",
       "minimum": 1,
       "maximum": 168
+    },
+    "contactMembership": {
+      "description": "CRM projection of one contact's paid membership with the organizer, through the contact's linked account.",
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "required": [
+        "planId",
+        "planName",
+        "status",
+        "memberSinceMillis",
+        "entitled"
+      ],
+      "properties": {
+        "planId": {
+          "$ref": "#/definitions/planId"
+        },
+        "planName": {
+          "$ref": "#/definitions/planName"
+        },
+        "status": {
+          "$ref": "#/definitions/membershipStatus"
+        },
+        "memberSinceMillis": {
+          "$ref": "#/definitions/nullableMillis"
+        },
+        "entitled": {
+          "type": "boolean"
+        }
+      }
     }
   }
 }

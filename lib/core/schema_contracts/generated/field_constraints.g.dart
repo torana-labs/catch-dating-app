@@ -80679,14 +80679,14 @@ abstract final class CatchContractConstraints {
   static const exportOrganizerContactsCallablePayloadSegmentId = CatchContractFieldConstraints(
     path: 'exportOrganizerContactsCallablePayload.segmentId',
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const exportOrganizerContactsCallablePayloadSegmentIds = CatchContractFieldConstraints(
     path: 'exportOrganizerContactsCallablePayload.segmentIds',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -80695,7 +80695,7 @@ abstract final class CatchContractConstraints {
     path: 'exportOrganizerContactsCallablePayload.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const exportOrganizerContactsCallableResponseCsv = CatchContractFieldConstraints(
@@ -83873,6 +83873,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getEventRosterInsightsCallablePayloadIncludeHostMembership = CatchContractFieldConstraints(
+    path: 'getEventRosterInsightsCallablePayload.includeHostMembership',
+    valueTypes: <String>['boolean'],
+  );
+
   static const getEventRosterInsightsCallableResponseComputedAtMillis = CatchContractFieldConstraints(
     path: 'getEventRosterInsightsCallableResponse.computedAtMillis',
     required: true,
@@ -84006,8 +84011,8 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['first_time', 'returning', 'regular', 're_engaging', 'reliable', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'known_catch_spender', 'top_catch_spender'],
-    maxItems: 10,
+    itemEnumValues: <String>['first_time', 'returning', 'regular', 're_engaging', 'reliable', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'known_catch_spender', 'top_catch_spender', 'member'],
+    maxItems: 11,
     uniqueItems: true,
   );
 
@@ -84015,7 +84020,7 @@ abstract final class CatchContractConstraints {
     path: 'getEventRosterInsightsCallableResponse.rows.items.signals.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['first_time', 'returning', 'regular', 're_engaging', 'reliable', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'known_catch_spender', 'top_catch_spender'],
+    enumValues: <String>['first_time', 'returning', 'regular', 're_engaging', 'reliable', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'known_catch_spender', 'top_catch_spender', 'member'],
   );
 
   static const getEventRosterInsightsCallableResponseSourceCoverage = CatchContractFieldConstraints(
@@ -86824,6 +86829,40 @@ abstract final class CatchContractConstraints {
     maximum: 1000000,
   );
 
+  static const getOrganizerContactDetailCallableResponseTraitsMembershipEntitled = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.membership.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsMembershipMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.membership.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsMembershipPlanId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.membership.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsMembershipPlanName = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.membership.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseTraitsMembershipStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.traits.membership.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const getOrganizerContactDetailCallableResponseTraitsNoShowCount = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallableResponse.traits.noShowCount',
     required: true,
@@ -86837,7 +86876,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -86846,7 +86885,7 @@ abstract final class CatchContractConstraints {
     path: 'getOrganizerContactDetailCallableResponse.traits.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const getOrganizerContactDetailCallableResponseTraitsSmsStatus = CatchContractFieldConstraints(
@@ -91477,6 +91516,40 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const hostContactSummaryDocumentRowMembershipEntitled = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.membership.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const hostContactSummaryDocumentRowMembershipMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.membership.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const hostContactSummaryDocumentRowMembershipPlanId = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.membership.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const hostContactSummaryDocumentRowMembershipPlanName = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.membership.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostContactSummaryDocumentRowMembershipStatus = CatchContractFieldConstraints(
+    path: 'hostContactSummaryDocument.row.membership.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const hostContactSummaryDocumentRowPhoneE164 = CatchContractFieldConstraints(
     path: 'hostContactSummaryDocument.row.phoneE164',
     valueTypes: <String>['string'],
@@ -91496,7 +91569,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -91505,7 +91578,7 @@ abstract final class CatchContractConstraints {
     path: 'hostContactSummaryDocument.row.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const hostContactSummaryDocumentRowSmsStatus = CatchContractFieldConstraints(
@@ -92224,7 +92297,7 @@ abstract final class CatchContractConstraints {
     path: 'hostGroupDetailDocument.row.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const hostGroupDetailDocumentRowDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -92232,7 +92305,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -92241,7 +92314,7 @@ abstract final class CatchContractConstraints {
     path: 'hostGroupDetailDocument.row.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const hostGroupDetailDocumentRowDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -99304,14 +99377,14 @@ abstract final class CatchContractConstraints {
   static const listOrganizerContactsCallablePayloadSegmentId = CatchContractFieldConstraints(
     path: 'listOrganizerContactsCallablePayload.segmentId',
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const listOrganizerContactsCallablePayloadSegmentIds = CatchContractFieldConstraints(
     path: 'listOrganizerContactsCallablePayload.segmentIds',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -99320,7 +99393,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactsCallablePayload.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const listOrganizerContactsCallablePayloadSort = CatchContractFieldConstraints(
@@ -99427,6 +99500,40 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{32}\$',
   );
 
+  static const listOrganizerContactsCallableResponseContactsItemsMembershipEntitled = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.membership.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsMembershipMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.membership.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsMembershipPlanId = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.membership.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsMembershipPlanName = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.membership.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerContactsCallableResponseContactsItemsMembershipStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerContactsCallableResponse.contacts.items.membership.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const listOrganizerContactsCallableResponseContactsItemsPhoneE164 = CatchContractFieldConstraints(
     path: 'listOrganizerContactsCallableResponse.contacts.items.phoneE164',
     valueTypes: <String>['string'],
@@ -99446,7 +99553,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -99455,7 +99562,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerContactsCallableResponse.contacts.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const listOrganizerContactsCallableResponseContactsItemsSmsStatus = CatchContractFieldConstraints(
@@ -101878,7 +101985,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -101886,7 +101993,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -101895,7 +102002,7 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerSavedAudiencesCallableResponse.audiences.items.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const listOrganizerSavedAudiencesCallableResponseAudiencesItemsDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -111569,6 +111676,20 @@ abstract final class CatchContractConstraints {
     maximum: 1,
   );
 
+  static const organizerContactDocumentHiddenTraitSnapshotAttended30DayCount = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.attended30DayCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerContactDocumentHiddenTraitSnapshotAttended60DayCount = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.attended60DayCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
   static const organizerContactDocumentHiddenTraitSnapshotAttendedEventCount = CatchContractFieldConstraints(
     path: 'organizerContactDocument.hiddenTraitSnapshot.attendedEventCount',
     required: true,
@@ -111693,6 +111814,40 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const organizerContactDocumentHiddenTraitSnapshotMembershipEntitled = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.membership.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerContactDocumentHiddenTraitSnapshotMembershipMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.membership.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactDocumentHiddenTraitSnapshotMembershipPlanId = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.membership.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const organizerContactDocumentHiddenTraitSnapshotMembershipPlanName = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.membership.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactDocumentHiddenTraitSnapshotMembershipStatus = CatchContractFieldConstraints(
+    path: 'organizerContactDocument.hiddenTraitSnapshot.membership.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const organizerContactDocumentHiddenTraitSnapshotNoShowCount = CatchContractFieldConstraints(
     path: 'organizerContactDocument.hiddenTraitSnapshot.noShowCount',
     required: true,
@@ -111746,7 +111901,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -111755,7 +111910,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactDocument.hiddenTraitSnapshot.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerContactDocumentHiddenTraitSnapshotSmsStatus = CatchContractFieldConstraints(
@@ -113602,6 +113757,20 @@ abstract final class CatchContractConstraints {
     maximum: 1,
   );
 
+  static const organizerContactTraitDocumentAttended30DayCount = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.attended30DayCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
+  static const organizerContactTraitDocumentAttended60DayCount = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.attended60DayCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000000,
+  );
+
   static const organizerContactTraitDocumentAttendedEventCount = CatchContractFieldConstraints(
     path: 'organizerContactTraitDocument.attendedEventCount',
     required: true,
@@ -113726,6 +113895,40 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const organizerContactTraitDocumentMembershipEntitled = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.membership.entitled',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerContactTraitDocumentMembershipMemberSinceMillis = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.membership.memberSinceMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const organizerContactTraitDocumentMembershipPlanId = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.membership.planId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^hmp_[A-Za-z0-9]{20}\$',
+  );
+
+  static const organizerContactTraitDocumentMembershipPlanName = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.membership.planName',
+    maxLength: 60,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerContactTraitDocumentMembershipStatus = CatchContractFieldConstraints(
+    path: 'organizerContactTraitDocument.membership.status',
+    required: true,
+    enumValues: <String>['trialing', 'active', 'past_due', 'paused', 'canceling', 'expired'],
+  );
+
   static const organizerContactTraitDocumentNoShowCount = CatchContractFieldConstraints(
     path: 'organizerContactTraitDocument.noShowCount',
     required: true,
@@ -113779,7 +113982,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 16,
     uniqueItems: true,
   );
@@ -113788,7 +113991,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerContactTraitDocument.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerContactTraitDocumentSmsStatus = CatchContractFieldConstraints(
@@ -128834,7 +129037,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -128842,7 +129045,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -128851,7 +129054,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerSavedAudienceCallableResponse.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerSavedAudienceCallableResponseDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -129164,7 +129367,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerSavedAudienceDocument.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerSavedAudienceDocumentDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -129172,7 +129375,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -129181,7 +129384,7 @@ abstract final class CatchContractConstraints {
     path: 'organizerSavedAudienceDocument.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const organizerSavedAudienceDocumentDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -134331,7 +134534,7 @@ abstract final class CatchContractConstraints {
     path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -134339,7 +134542,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -134348,7 +134551,7 @@ abstract final class CatchContractConstraints {
     path: 'previewOrganizerSavedAudienceCallableResponse.audience.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const previewOrganizerSavedAudienceCallableResponseAudienceDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -171274,7 +171477,7 @@ abstract final class CatchContractConstraints {
     path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentId',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentIds = CatchContractFieldConstraints(
@@ -171282,7 +171485,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    itemEnumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
     maxItems: 12,
     uniqueItems: true,
   );
@@ -171291,7 +171494,7 @@ abstract final class CatchContractConstraints {
     path: 'upsertOrganizerSavedAudienceCallablePayload.definition.predicates.items.segmentIds.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable'],
+    enumValues: <String>['new_to_organizer', 'past_attendee', 'first_time_attendee', 'repeat_attendee', 'regular', 'lapsed_regular', 'reliable_attendee', 'needs_confirmation', 'advocate', 'high_impact_advocate', 'whatsapp_reachable', 'sms_reachable', 'active_member', 'lapsed_member', 'member_no_recent_attendance', 'frequent_non_member'],
   );
 
   static const upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsValue = CatchContractFieldConstraints(
@@ -187261,6 +187464,7 @@ abstract final class CatchContractConstraints {
     'getEventRehearsalMovementCallablePayload.sessionId': getEventRehearsalMovementCallablePayloadSessionId,
     'getEventRehearsalSummaryCallablePayload.organizerId': getEventRehearsalSummaryCallablePayloadOrganizerId,
     'getEventRosterInsightsCallablePayload.eventId': getEventRosterInsightsCallablePayloadEventId,
+    'getEventRosterInsightsCallablePayload.includeHostMembership': getEventRosterInsightsCallablePayloadIncludeHostMembership,
     'getEventRosterInsightsCallableResponse.computedAtMillis': getEventRosterInsightsCallableResponseComputedAtMillis,
     'getEventRosterInsightsCallableResponse.cutoffAtMillis': getEventRosterInsightsCallableResponseCutoffAtMillis,
     'getEventRosterInsightsCallableResponse.eventId': getEventRosterInsightsCallableResponseEventId,
@@ -187663,6 +187867,11 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.traits.cancelledEventCount': getOrganizerContactDetailCallableResponseTraitsCancelledEventCount,
     'getOrganizerContactDetailCallableResponse.traits.expectedEventCount': getOrganizerContactDetailCallableResponseTraitsExpectedEventCount,
     'getOrganizerContactDetailCallableResponse.traits.importedEventCount': getOrganizerContactDetailCallableResponseTraitsImportedEventCount,
+    'getOrganizerContactDetailCallableResponse.traits.membership.entitled': getOrganizerContactDetailCallableResponseTraitsMembershipEntitled,
+    'getOrganizerContactDetailCallableResponse.traits.membership.memberSinceMillis': getOrganizerContactDetailCallableResponseTraitsMembershipMemberSinceMillis,
+    'getOrganizerContactDetailCallableResponse.traits.membership.planId': getOrganizerContactDetailCallableResponseTraitsMembershipPlanId,
+    'getOrganizerContactDetailCallableResponse.traits.membership.planName': getOrganizerContactDetailCallableResponseTraitsMembershipPlanName,
+    'getOrganizerContactDetailCallableResponse.traits.membership.status': getOrganizerContactDetailCallableResponseTraitsMembershipStatus,
     'getOrganizerContactDetailCallableResponse.traits.noShowCount': getOrganizerContactDetailCallableResponseTraitsNoShowCount,
     'getOrganizerContactDetailCallableResponse.traits.segmentIds': getOrganizerContactDetailCallableResponseTraitsSegmentIds,
     'getOrganizerContactDetailCallableResponse.traits.segmentIds.items': getOrganizerContactDetailCallableResponseTraitsSegmentIdsItems,
@@ -188310,6 +188519,11 @@ abstract final class CatchContractConstraints {
     'hostContactSummaryDocument.row.manualTags': hostContactSummaryDocumentRowManualTags,
     'hostContactSummaryDocument.row.manualTags.items.label': hostContactSummaryDocumentRowManualTagsItemsLabel,
     'hostContactSummaryDocument.row.manualTags.items.tagId': hostContactSummaryDocumentRowManualTagsItemsTagId,
+    'hostContactSummaryDocument.row.membership.entitled': hostContactSummaryDocumentRowMembershipEntitled,
+    'hostContactSummaryDocument.row.membership.memberSinceMillis': hostContactSummaryDocumentRowMembershipMemberSinceMillis,
+    'hostContactSummaryDocument.row.membership.planId': hostContactSummaryDocumentRowMembershipPlanId,
+    'hostContactSummaryDocument.row.membership.planName': hostContactSummaryDocumentRowMembershipPlanName,
+    'hostContactSummaryDocument.row.membership.status': hostContactSummaryDocumentRowMembershipStatus,
     'hostContactSummaryDocument.row.phoneE164': hostContactSummaryDocumentRowPhoneE164,
     'hostContactSummaryDocument.row.revision': hostContactSummaryDocumentRowRevision,
     'hostContactSummaryDocument.row.segmentIds': hostContactSummaryDocumentRowSegmentIds,
@@ -189413,6 +189627,11 @@ abstract final class CatchContractConstraints {
     'listOrganizerContactsCallableResponse.contacts.items.manualTags': listOrganizerContactsCallableResponseContactsItemsManualTags,
     'listOrganizerContactsCallableResponse.contacts.items.manualTags.items.label': listOrganizerContactsCallableResponseContactsItemsManualTagsItemsLabel,
     'listOrganizerContactsCallableResponse.contacts.items.manualTags.items.tagId': listOrganizerContactsCallableResponseContactsItemsManualTagsItemsTagId,
+    'listOrganizerContactsCallableResponse.contacts.items.membership.entitled': listOrganizerContactsCallableResponseContactsItemsMembershipEntitled,
+    'listOrganizerContactsCallableResponse.contacts.items.membership.memberSinceMillis': listOrganizerContactsCallableResponseContactsItemsMembershipMemberSinceMillis,
+    'listOrganizerContactsCallableResponse.contacts.items.membership.planId': listOrganizerContactsCallableResponseContactsItemsMembershipPlanId,
+    'listOrganizerContactsCallableResponse.contacts.items.membership.planName': listOrganizerContactsCallableResponseContactsItemsMembershipPlanName,
+    'listOrganizerContactsCallableResponse.contacts.items.membership.status': listOrganizerContactsCallableResponseContactsItemsMembershipStatus,
     'listOrganizerContactsCallableResponse.contacts.items.phoneE164': listOrganizerContactsCallableResponseContactsItemsPhoneE164,
     'listOrganizerContactsCallableResponse.contacts.items.revision': listOrganizerContactsCallableResponseContactsItemsRevision,
     'listOrganizerContactsCallableResponse.contacts.items.segmentIds': listOrganizerContactsCallableResponseContactsItemsSegmentIds,
@@ -191086,6 +191305,8 @@ abstract final class CatchContractConstraints {
     'organizerContactDocument.hiddenAt._seconds': organizerContactDocumentHiddenAtSeconds,
     'organizerContactDocument.hiddenBy': organizerContactDocumentHiddenBy,
     'organizerContactDocument.hiddenTraitSnapshot.attendanceRate': organizerContactDocumentHiddenTraitSnapshotAttendanceRate,
+    'organizerContactDocument.hiddenTraitSnapshot.attended30DayCount': organizerContactDocumentHiddenTraitSnapshotAttended30DayCount,
+    'organizerContactDocument.hiddenTraitSnapshot.attended60DayCount': organizerContactDocumentHiddenTraitSnapshotAttended60DayCount,
     'organizerContactDocument.hiddenTraitSnapshot.attendedEventCount': organizerContactDocumentHiddenTraitSnapshotAttendedEventCount,
     'organizerContactDocument.hiddenTraitSnapshot.cancelledEventCount': organizerContactDocumentHiddenTraitSnapshotCancelledEventCount,
     'organizerContactDocument.hiddenTraitSnapshot.computedAt._nanoseconds': organizerContactDocumentHiddenTraitSnapshotComputedAtNanoseconds,
@@ -191103,6 +191324,11 @@ abstract final class CatchContractConstraints {
     'organizerContactDocument.hiddenTraitSnapshot.lastSeenAt._nanoseconds': organizerContactDocumentHiddenTraitSnapshotLastSeenAtNanoseconds,
     'organizerContactDocument.hiddenTraitSnapshot.lastSeenAt._seconds': organizerContactDocumentHiddenTraitSnapshotLastSeenAtSeconds,
     'organizerContactDocument.hiddenTraitSnapshot.linkedAccount': organizerContactDocumentHiddenTraitSnapshotLinkedAccount,
+    'organizerContactDocument.hiddenTraitSnapshot.membership.entitled': organizerContactDocumentHiddenTraitSnapshotMembershipEntitled,
+    'organizerContactDocument.hiddenTraitSnapshot.membership.memberSinceMillis': organizerContactDocumentHiddenTraitSnapshotMembershipMemberSinceMillis,
+    'organizerContactDocument.hiddenTraitSnapshot.membership.planId': organizerContactDocumentHiddenTraitSnapshotMembershipPlanId,
+    'organizerContactDocument.hiddenTraitSnapshot.membership.planName': organizerContactDocumentHiddenTraitSnapshotMembershipPlanName,
+    'organizerContactDocument.hiddenTraitSnapshot.membership.status': organizerContactDocumentHiddenTraitSnapshotMembershipStatus,
     'organizerContactDocument.hiddenTraitSnapshot.noShowCount': organizerContactDocumentHiddenTraitSnapshotNoShowCount,
     'organizerContactDocument.hiddenTraitSnapshot.organizerId': organizerContactDocumentHiddenTraitSnapshotOrganizerId,
     'organizerContactDocument.hiddenTraitSnapshot.projectionVersion': organizerContactDocumentHiddenTraitSnapshotProjectionVersion,
@@ -191360,6 +191586,8 @@ abstract final class CatchContractConstraints {
     'organizerContactTagVocabularyDocument.updatedAt._nanoseconds': organizerContactTagVocabularyDocumentUpdatedAtNanoseconds,
     'organizerContactTagVocabularyDocument.updatedAt._seconds': organizerContactTagVocabularyDocumentUpdatedAtSeconds,
     'organizerContactTraitDocument.attendanceRate': organizerContactTraitDocumentAttendanceRate,
+    'organizerContactTraitDocument.attended30DayCount': organizerContactTraitDocumentAttended30DayCount,
+    'organizerContactTraitDocument.attended60DayCount': organizerContactTraitDocumentAttended60DayCount,
     'organizerContactTraitDocument.attendedEventCount': organizerContactTraitDocumentAttendedEventCount,
     'organizerContactTraitDocument.cancelledEventCount': organizerContactTraitDocumentCancelledEventCount,
     'organizerContactTraitDocument.computedAt._nanoseconds': organizerContactTraitDocumentComputedAtNanoseconds,
@@ -191377,6 +191605,11 @@ abstract final class CatchContractConstraints {
     'organizerContactTraitDocument.lastSeenAt._nanoseconds': organizerContactTraitDocumentLastSeenAtNanoseconds,
     'organizerContactTraitDocument.lastSeenAt._seconds': organizerContactTraitDocumentLastSeenAtSeconds,
     'organizerContactTraitDocument.linkedAccount': organizerContactTraitDocumentLinkedAccount,
+    'organizerContactTraitDocument.membership.entitled': organizerContactTraitDocumentMembershipEntitled,
+    'organizerContactTraitDocument.membership.memberSinceMillis': organizerContactTraitDocumentMembershipMemberSinceMillis,
+    'organizerContactTraitDocument.membership.planId': organizerContactTraitDocumentMembershipPlanId,
+    'organizerContactTraitDocument.membership.planName': organizerContactTraitDocumentMembershipPlanName,
+    'organizerContactTraitDocument.membership.status': organizerContactTraitDocumentMembershipStatus,
     'organizerContactTraitDocument.noShowCount': organizerContactTraitDocumentNoShowCount,
     'organizerContactTraitDocument.organizerId': organizerContactTraitDocumentOrganizerId,
     'organizerContactTraitDocument.projectionVersion': organizerContactTraitDocumentProjectionVersion,

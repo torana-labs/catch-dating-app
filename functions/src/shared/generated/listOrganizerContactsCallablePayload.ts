@@ -25,6 +25,10 @@ export interface ListOrganizerContactsCallablePayload {
         | "high_impact_advocate"
         | "whatsapp_reachable"
         | "sms_reachable"
+        | "active_member"
+        | "lapsed_member"
+        | "member_no_recent_attendance"
+        | "frequent_non_member"
       )
     | null;
   manualTagId?: string | null;
@@ -46,6 +50,10 @@ export interface ListOrganizerContactsCallablePayload {
     | "high_impact_advocate"
     | "whatsapp_reachable"
     | "sms_reachable"
+    | "active_member"
+    | "lapsed_member"
+    | "member_no_recent_attendance"
+    | "frequent_non_member"
   )[];
   /**
    * Match any selected manual tag, combined with all selected segment categories.

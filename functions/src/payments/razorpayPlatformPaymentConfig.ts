@@ -12,7 +12,9 @@ export interface RazorpayPlatformPaymentConfig {
   keyId: string;
   keySecret: string;
   webhookSecret: string;
-  feeBasisPoints: {formFee: number; eventAdmission: number};
+  /** `hostMembership` is optional; memberships stay unavailable without it. */
+  feeBasisPoints: {formFee: number; eventAdmission: number;
+    hostMembership?: number};
 }
 
 /** A pinned platform profile is independent of Technology Partner approval.
@@ -65,8 +67,8 @@ function parseConfig(raw: string): RazorpayPlatformPaymentConfig {
       !new RegExp(`^rzp_${value.mode}_[A-Za-z0-9]+$`, "u").test(value.keyId) ||
       !secret(value.keySecret) || !secret(value.webhookSecret) ||
       !record(value.feeBasisPoints) ||
-      Object.keys(value.feeBasisPoints).sort().join(",") !==
-        "eventAdmission,formFee" ||
+      !["eventAdmission,formFee", "eventAdmission,formFee,hostMembership"]
+        .includes(Object.keys(value.feeBasisPoints).sort().join(",")) ||
       !Object.values(value.feeBasisPoints).every((fee) =>
         typeof fee === "number" && Number.isSafeInteger(fee) &&
         fee >= 0 && fee < 10000)) unavailable();

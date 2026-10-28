@@ -7,6 +7,7 @@ import {
   eventRelativeAttendanceInsight,
   getEventRosterInsightsHandler,
   shouldExposeAttendanceInsight,
+  withMemberSignal,
 } from "./eventRosterInsights";
 import type {
   OrganizerContactEventEdgeDocument,
@@ -267,3 +268,24 @@ test("the callable denies organizer staff without management authority",
         error.code === "permission-denied"
     );
   });
+
+test("paid members are badged even before attendance history", () => {
+  const row = {attendeeId: "attendee-1", contactId: "contact-1",
+    availability: "insufficientHistory" as const, signals: [],
+    priorAttendedEventCount: 0, priorExpectedEventCount: 0,
+    priorNoShowCount: 0, lastAttendedAtMillis: null, attendanceRate: null,
+    catchSpend: []};
+  const traits = new Map([["contact-1", {segmentIds: ["active_member"]}]]) as
+    unknown as Parameters<typeof withMemberSignal>[1];
+  const contact = (identityState: string) => new Map([["contact-1",
+    {id: "contact-1", data: {identityState}}]]) as
+    unknown as Parameters<typeof withMemberSignal>[2];
+  assert.deepEqual(withMemberSignal(row, traits, contact("verified")).signals,
+    ["member"]);
+  assert.deepEqual(withMemberSignal(row, traits, contact("ambiguous"))
+    .signals, []);
+  assert.deepEqual(withMemberSignal({...row, availability:
+    "projectionPending"}, traits, contact("verified")).signals, []);
+  assert.deepEqual(withMemberSignal(row, new Map() as typeof traits,
+    contact("verified")).signals, []);
+});

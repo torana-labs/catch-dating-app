@@ -37,11 +37,32 @@ import {prepareCatchUidSeatIdentity, SeatIdentityAuthorityError} from
 import {FirestoreSeatTransaction, prepareFirestoreSeat,
   deriveEventSeatPolicy} from "./seatAuthority/firestoreAdapter";
 import {heldSeatCount, SeatAuthorityError} from "./seatAuthority/seatAuthority";
+import {evaluateHostMembershipContext, readHostMembershipContext} from
+  "../hostMemberships/entitlementReader";
+import {HostMembershipIntegrityError} from
+  "../hostMemberships/membershipStore";
 
 const readLimit = 100;
 type Restriction = SignupPolicyRestriction | "bookingDetailsRequired" |
   "runPreferencesRequired" | "ageRestricted" | "scheduleConflict" |
-  "eventUnavailable" | "past" | "cancelled" | "unsupportedRoute";
+  "eventUnavailable" | "past" | "cancelled" | "unsupportedRoute" |
+  "paidMembershipRequired" | "memberEarlyAccess";
+
+/** Server-evaluated paid host membership facts for one viewer and event. */
+export interface EventViewerHostMembership {
+  member: {membershipId: string; planId: string; planName: string;
+    status: "trialing" | "active" | "past_due" | "paused" | "canceling" |
+      "expired"; entitled: boolean} | null;
+  listPriceInPaise: number | null;
+  memberPriceApplied: boolean;
+  memberPriceBlockedReason: null | "bookingCapReached";
+  savingsInPaise: number;
+  membersOnly: boolean;
+  generalSaleOpensAtMillis: number | null;
+  offer: {planId: string; planName: string; interval: "monthly" | "annual";
+    planPriceInPaise: number; memberPriceInPaise: number;
+    savingsInPaise: number; unlocksAccess: boolean} | null;
+}
 
 /** Internal native source, not a public listing or a reservation promise. */
 export interface EventViewerStateSource {
@@ -64,6 +85,8 @@ export interface EventViewerStateSource {
   quotedPriceInPaise: number | null;
   basis: {policyHash: string | null; inventoryRevision: number | null;
     capacityRevision: number | null; migrationRevision: number | null};
+  /** Present only when the caller opted into paid host membership facts. */
+  hostMembership?: EventViewerHostMembership;
 }
 
 /** Requires an Auth-derived UID. One read transaction, never applies plans.
@@ -77,6 +100,8 @@ export async function readEventViewerStateSource(params: {
   publicPaymentId?: string | null;
   nowMillis?: number;
   loadCurrentAuthPhone?: (uid: string) => Promise<string | null>;
+  /** Older clients parse a strict shape; only opted-in callers get these. */
+  includeHostMembership?: boolean;
 }): Promise<EventViewerStateSource | null> {
   const {db, uid, eventId} = params;
   const nowMillis = params.nowMillis ?? Date.now();
@@ -212,7 +237,32 @@ export async function readEventViewerStateSource(params: {
         {excludeUid: uid, nowMillis, readLimit});
       const cohortId = activeOffer ? offer!.cohortAtOffer :
         cohortIdForUser(user);
-      result.quotedPriceInPaise = quotePriceInPaise({policy, cohortId, roster});
+      const listPriceInPaise = quotePriceInPaise({policy, cohortId, roster});
+      result.quotedPriceInPaise = listPriceInPaise;
+      // Paid membership pricing applies after the policy quote and never to
+      // a waitlist offer, whose accept path keeps list price.
+      const membershipContext = await readHostMembershipContext({db, tx,
+        organizerId: result.organizerId, uid, eventId, nowMillis});
+      const entitlement = evaluateHostMembershipContext(membershipContext,
+        listPriceInPaise, nowMillis);
+      if (!activeOffer) result.quotedPriceInPaise = entitlement.priceInPaise;
+      if (params.includeHostMembership) {
+        const member = membershipContext.membership;
+        result.hostMembership = {
+          member: member ? {membershipId: membershipContext.membershipId,
+            planId: member.planId, planName: member.planName,
+            status: member.status,
+            entitled: entitlement.member?.entitled ?? false} : null,
+          listPriceInPaise,
+          memberPriceApplied: entitlement.memberPriceApplied && !activeOffer,
+          memberPriceBlockedReason: entitlement.memberPriceBlockedReason,
+          savingsInPaise: activeOffer ? 0 : entitlement.savingsInPaise,
+          membersOnly: membershipContext.rules?.membersOnly ?? false,
+          generalSaleOpensAtMillis: membershipContext.rules?.earlyAccess
+            ?.generalSaleOpensAtMillis ?? null,
+          offer: entitlement.offer,
+        };
+      }
       const decision = signupPolicyDecision({policy, cohortId, roster,
         hasActiveCommunityMembership: result.membership.state === "active",
         hasHostApproval: hostApproved || activeOffer,
@@ -223,6 +273,13 @@ export async function readEventViewerStateSource(params: {
             inviteCode: params.inviteCode}),
       });
       if (!decision.allowed) return deny(decision.reason);
+      if (!entitlement.admission.allowed && !activeOffer) {
+        const reason = entitlement.admission.reason;
+        // Older clients only know the community-membership restriction.
+        return deny(params.includeHostMembership ? reason :
+          reason === "paidMembershipRequired" ? "membershipRequired" :
+            "eventUnavailable");
+      }
       const scheduleConflict = await readUserEventScheduleConflictInTransaction(
         tx, db, {uid, eventId, clubId: event.clubId,
           organizerId: result.organizerId,
@@ -265,6 +322,7 @@ export async function readEventViewerStateSource(params: {
       if (error instanceof SeatAuthorityError ||
           error instanceof SeatIdentityAuthorityError ||
           error instanceof EventRosterReadLimitError ||
+          error instanceof HostMembershipIntegrityError ||
           error instanceof HttpsError && error.code === "failed-precondition") {
         return deny("eventUnavailable");
       }

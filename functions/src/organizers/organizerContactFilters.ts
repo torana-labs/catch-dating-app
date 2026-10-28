@@ -16,6 +16,8 @@ export const organizerContactFilterGroups: readonly (readonly Segment[])[] = [
   ["reliable_attendee", "needs_confirmation"],
   ["advocate", "high_impact_advocate"],
   ["whatsapp_reachable", "sms_reachable"],
+  ["active_member", "lapsed_member", "member_no_recent_attendance",
+    "frequent_non_member"],
 ];
 
 export function contactFilterSelection(input: {

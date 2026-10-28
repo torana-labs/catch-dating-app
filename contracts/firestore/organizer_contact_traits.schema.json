@@ -37,6 +37,9 @@
     "lastAttendedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "attendanceRate": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
     "segmentIds": {"type": "array", "uniqueItems": true, "maxItems": 16, "items": {"$ref": "#/definitions/segmentId"}},
+    "membership": {"$ref": "../shared/host_membership_common.schema.json#/definitions/contactMembership"},
+    "attended30DayCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "attended60DayCount": {"type": "integer", "minimum": 0, "maximum": 1000000},
     "definitionVersion": {"type": "integer", "minimum": 1, "maximum": 1000},
     "whatsappStatus": {"$ref": "#/definitions/channelStatus"},
     "smsStatus": {"$ref": "#/definitions/channelStatus"},
@@ -45,7 +48,7 @@
     "computedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
   },
   "definitions": {
-    "segmentId": {"type": "string", "enum": ["new_to_organizer", "past_attendee", "first_time_attendee", "repeat_attendee", "regular", "lapsed_regular", "reliable_attendee", "needs_confirmation", "advocate", "high_impact_advocate", "whatsapp_reachable", "sms_reachable"]},
+    "segmentId": {"type": "string", "enum": ["new_to_organizer", "past_attendee", "first_time_attendee", "repeat_attendee", "regular", "lapsed_regular", "reliable_attendee", "needs_confirmation", "advocate", "high_impact_advocate", "whatsapp_reachable", "sms_reachable", "active_member", "lapsed_member", "member_no_recent_attendance", "frequent_non_member"]},
     "channelStatus": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]}
   }
 }

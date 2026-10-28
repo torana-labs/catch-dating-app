@@ -20,5 +20,9 @@ const schemaGetEventRosterInsightsCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'includeHostMembership': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Opt-in for the paid-membership "member" signal; older clients omit it.',
+    },
   },
 };

@@ -9,11 +9,14 @@
 final class GetEventRosterInsightsCallableRequest {
   const GetEventRosterInsightsCallableRequest({
     required this.eventId,
+    this.includeHostMembership,
   });
 
   final String eventId;
+  final bool? includeHostMembership;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
+    'includeHostMembership': ?includeHostMembership,
   };
 }

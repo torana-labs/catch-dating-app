@@ -263,6 +263,16 @@ export {
 } from "./organizers/organizerApplications";
 export {decideOrganizerCommunityMembership} from
   "./memberships/communityMembership";
+export {manageHostMembershipProgram} from "./hostMemberships/program";
+export {manageHostMembershipPlans} from "./hostMemberships/plans";
+export {manageHostMembershipCheckout} from "./hostMemberships/checkout";
+export {manageMyHostMembership} from "./hostMemberships/selfServe";
+export {manageEventMembershipRules} from "./hostMemberships/eventRules";
+export {hostMembershipRazorpayWebhook} from "./hostMemberships/webhook";
+export {reconcileHostMembershipCharges} from "./hostMemberships/charges";
+export {processHostMembershipBillingPause} from
+  "./hostMemberships/billingPause";
+export {refreshHostMembershipSegments} from "./hostMemberships/crmRefresh";
 export {listOrganizerAttentionItems} from
   "./organizers/organizerAttention";
 export {
@@ -381,6 +391,7 @@ export {
 } from "./organizers/organizerWhatsappWebhook";
 export {
   onEventAttendeeAudienceProjected,
+  onHostMembershipAudienceProjected,
   onOrganizerCommunicationPreferenceAudienceProjected,
 } from "./organizers/organizerAudienceProjection";
 export {

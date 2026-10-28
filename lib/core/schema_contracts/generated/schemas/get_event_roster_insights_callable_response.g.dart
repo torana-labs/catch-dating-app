@@ -97,7 +97,7 @@ const schemaGetEventRosterInsightsCallableResponseSchema = <String, Object?>{
           'signals': <String, Object?>{
             'type': 'array',
             'uniqueItems': true,
-            'maxItems': 10,
+            'maxItems': 11,
             'items': <String, Object?>{
               'type': 'string',
               'enum': <Object?>[
@@ -111,6 +111,7 @@ const schemaGetEventRosterInsightsCallableResponseSchema = <String, Object?>{
                 'high_impact_advocate',
                 'known_catch_spender',
                 'top_catch_spender',
+                'member',
               ],
             },
           },
@@ -195,6 +196,7 @@ const schemaGetEventRosterInsightsCallableResponseSchema = <String, Object?>{
         'high_impact_advocate',
         'known_catch_spender',
         'top_catch_spender',
+        'member',
       ],
     },
     'spendAmount': <String, Object?>{
@@ -267,7 +269,7 @@ const schemaGetEventRosterInsightsCallableResponseSchema = <String, Object?>{
         'signals': <String, Object?>{
           'type': 'array',
           'uniqueItems': true,
-          'maxItems': 10,
+          'maxItems': 11,
           'items': <String, Object?>{
             'type': 'string',
             'enum': <Object?>[
@@ -281,6 +283,7 @@ const schemaGetEventRosterInsightsCallableResponseSchema = <String, Object?>{
               'high_impact_advocate',
               'known_catch_spender',
               'top_catch_spender',
+              'member',
             ],
           },
         },
