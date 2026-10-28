@@ -3,6 +3,7 @@ import {cleanup, render, screen, within} from "@testing-library/react";
 import {afterEach, describe, expect, it, vi} from "vitest";
 import {HomePage, VisitorDiscoveryPage} from "../features/home/HomePage";
 import {ClaimPage} from "../features/claims/ClaimPage";
+import {mumbaiLiveCatalog} from "../stories/fixtures/homeCatalogs";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
 
 vi.mock("../analytics", () => ({trackMarketingEvent: vi.fn()}));
@@ -21,10 +22,10 @@ function renderPage(page: React.ReactNode) {
 
 describe("public route navigation targets", () => {
   it("shares canonical audience destinations without a duplicate root menu", () => {
-    renderPage(<HomePage captures={{}} />);
-    const nav = screen.getByRole("navigation", {name: "Primary"});
+    renderPage(<HomePage catalog={mumbaiLiveCatalog} />);
+    const nav = screen.getByRole("navigation", {name: "Main"});
     expect(within(nav).getAllByRole("link").map((link) => link.getAttribute("href")))
-      .toEqual(["/explore/", "/organizers/", "/host/"]);
+      .toEqual(["/explore/?city=mumbai", "/organizers/", "/host/", "#app"]);
     expect(screen.queryByRole("navigation", {name: "On this page"})).toBeNull();
   });
 

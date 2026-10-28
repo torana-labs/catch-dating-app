@@ -4199,6 +4199,28 @@
       "migrationNotes": [
         "Private marker; a rebuild that read older sources than the marker is discarded, so it cannot revive a withdrawn page."
       ]
+    },
+    {
+      "id": "cityPlans",
+      "path": "cityPlans/{citySlug}",
+      "rulesMatch": "/cityPlans/{citySlug}",
+      "typescriptInterface": "CityPlansDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps city plans read models server-only"
+      ],
+      "owner": "Website city plans read model (CAT-260)",
+      "read": "server only; the website server reads one document per city with the Admin SDK",
+      "write": "server only; rebuilt from organizer page read models (and published organizers in cities that have not launched) by functions/src/cityPlans",
+      "exportedFunctions": [
+        "onCityPlansOrganizerPageWritten",
+        "rebuildCityPlansHourly"
+      ],
+      "migrationNotes": [
+        "The hourly rebuild creates every launched and planned city's document; no backfill script is needed.",
+        "A city that has not launched lists published organizers without page links, because their pages stay withheld until it launches."
+      ]
     }
   ]
 }

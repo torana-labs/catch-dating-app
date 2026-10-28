@@ -1,18 +1,13 @@
-import {ConsumerHome} from "../../shared/ui/primitives/consumerHome";
-import {renderConsumerHero, renderConsumerEvents, renderConsumerStory} from "./sections/consumerHomeSections";
-import {useConsumerHomeController} from "./useConsumerHomeController";
-import type {HomeCategory} from "./homeDiscovery";
-type HomeRouteState = {city: string; category: HomeCategory};
+import type {ReactNode} from "react";
 import {ExplorePageLayout} from "../../shared/ui/primitives/explore";
-import {renderExploreDiscovery} from "./sections/exploreSections";
-import {useExploreController} from "./useExploreController";
-import type {ExploreFilters} from "./exploreDiscovery";
 import type {CaptureSlots} from "../../shared/media/MediaSlot";
-import {
-  PublicSiteFooter,
-  PublicSiteHeader,
-  WebsitePageMain,
-} from "../../shared/site";
+import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
+import type {ExploreFilters} from "./exploreDiscovery";
+import type {HomeCatalog} from "./homeTypes";
+import {renderExploreDiscovery} from "./sections/exploreSections";
+import {HomePageSections} from "./sections/homeSections";
+import {useExploreController} from "./useExploreController";
+import {useHomePageController} from "./useHomePageController";
 
 export function VisitorDiscoveryPage({routeState, onFiltersChange}: {captures: CaptureSlots; routeState?: ExploreFilters; onFiltersChange?: (filters: ExploreFilters) => void}) {
   const explore = useExploreController(routeState, onFiltersChange);
@@ -23,11 +18,19 @@ export function VisitorDiscoveryPage({routeState, onFiltersChange}: {captures: C
   </ExplorePageLayout>;
 }
 
-export function HomePage({captures, routeState}: {captures: CaptureSlots; routeState?: HomeRouteState}) {
-  const home = useConsumerHomeController(routeState?.city, routeState?.category);
-  return <ConsumerHome >
-    <PublicSiteHeader />
-    <WebsitePageMain id="top">{renderConsumerHero(home)}{renderConsumerEvents(home)}{renderConsumerStory(home, captures)}</WebsitePageMain>
-    <PublicSiteFooter />
-  </ConsumerHome>;
+/**
+ * The Website v2 homepage (CAT-260, the WebHomeV2 board): one city's plans
+ * from its cityPlans read model, or its launching-soon state, around the
+ * guest story and the host band.
+ */
+export function HomePage({catalog, downloadUrl, navigate, signup}: {
+  catalog: HomeCatalog;
+  /** One link for both stores; the QR code appears once there is one (CAT-204). */
+  downloadUrl?: string;
+  navigate?: (href: string) => void;
+  /** The launching-soon signup form. */
+  signup?: ReactNode;
+}) {
+  const home = useHomePageController(catalog, navigate);
+  return <HomePageSections downloadUrl={downloadUrl} home={home} signup={signup} />;
 }

@@ -641,6 +641,7 @@ export {validateExternalEventDocument} from "./validators/externalEventDocument"
 export {validateOrganizerPublicPageDocument} from "./validators/organizerPublicPageDocument";
 export {validateEventPublicPageDocument} from "./validators/eventPublicPageDocument";
 export {validatePublicPageBuildDocument} from "./validators/publicPageBuildDocument";
+export {validateCityPlansDocument} from "./validators/cityPlansDocument";
 export {validateEventPrivateAccessDocument} from "./validators/eventPrivateAccessDocument";
 export {validateEventInviteLinkDocument} from "./validators/eventInviteLinkDocument";
 export {validateEventInviteLinkSecretDocument} from "./validators/eventInviteLinkSecretDocument";

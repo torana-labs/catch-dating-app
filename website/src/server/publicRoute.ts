@@ -10,7 +10,8 @@ import {buildPublicEventDetailRecords, getEventDetailForPath} from "../features/
 import type {Metadata} from "next";
 export const resolvePublicRoute = cache(async (pathname: string) => {
   const key = pathname.replace(/\/+$/, "") || "/";
-  const live = key === "/" || key === "/explore" || /^\/(organizers|events|claim)(\/|$)/.test(key);
+  // The homepage reads its cityPlans documents in the page itself.
+  const live = key === "/explore" || /^\/(organizers|events|claim)(\/|$)/.test(key);
   // Detail routes read only their organizer or event, reviews included.
   const catalog = live ? await readRouteCatalog(pathname) : {listings: [], readAt: 0};
   const listingRoute = getHostListingRouteForPath(pathname, catalog.listings);

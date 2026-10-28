@@ -31,7 +31,7 @@
       "staticOutput": "postbuild",
       "indexing": "index",
       "sitemap": "included",
-      "notes": "Consumer homepage: city-scoped upcoming events, optional participation explanation, organiser profiles, FAQ and Host handoff. No inventory and catalog failure remain distinct.",
+      "notes": "Website v2 homepage (CAT-260, WebHomeV2 board): one city's plans from its cityPlans read model, or its launching-soon state, with formats, the guest story, organisers, the host band, the app band and the FAQ. A city that cannot be read stays live and says so.",
       "review": {
         "priority": "p0",
         "status": "ready",
@@ -40,22 +40,23 @@
           "mobile"
         ],
         "states": [
-          "default",
-          "empty-city",
+          "mumbai-live",
+          "launching-soon",
+          "thin-city",
           "catalog-unavailable",
-          "city-and-format",
-          "mobile-menu"
+          "format-filter",
+          "city-picker"
         ],
         "stateCoverage": {
           "storybook": [
-            "default",
-            "empty-city",
-            "catalog-unavailable"
+            "mumbai-live",
+            "launching-soon",
+            "thin-city",
+            "catalog-unavailable",
+            "format-filter",
+            "city-picker"
           ],
-          "manual": [
-            "city-and-format",
-            "mobile-menu"
-          ]
+          "manual": []
         }
       }
     },

@@ -232,6 +232,7 @@ export 'change_event_assistance_route_callable_payload.g.dart';
 export 'chat_message_document.g.dart';
 export 'check_in_event_runtime_callable_payload.g.dart';
 export 'check_in_event_runtime_callable_response.g.dart';
+export 'city_plans_document.g.dart';
 export 'claim_event_runtime_access_callable_payload.g.dart';
 export 'claim_event_runtime_access_callable_response.g.dart';
 export 'claim_participant_form_profile_callable_payload.g.dart';

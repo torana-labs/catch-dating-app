@@ -189,7 +189,6 @@
       "caption": "Confirm guest arrivals and follow the host-led run of show.",
       "walkthroughStep": "Live",
       "pages": [
-        "/",
         "/host/"
       ]
     },

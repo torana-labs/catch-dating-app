@@ -1,0 +1,68 @@
+/*
+ * Website v2 device frame (CAT-260). The bezel is padding on the night
+ * surface (phones) or ink (tablet), so its width takes the spacing scale; the
+ * screen clips to the inner radius. Phones mark the camera with a pill
+ * (iPhone) or a dot (Android).
+ */
+.frame {
+  --catch-device-bezel: var(--catch-space-micro10);
+  --catch-device-radius: calc(var(--catch-radius-lg) * 2.5);
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--catch-device-bezel);
+  border-radius: var(--catch-device-radius);
+  background: var(--catch-palette-night-surface);
+  box-shadow: var(--catch-elevation-overlay);
+}
+
+.frame[data-kind="android"] {
+  --catch-device-bezel: var(--catch-space-s2);
+  --catch-device-radius: calc(var(--catch-radius-lg) * 1.6);
+}
+
+.frame[data-kind="ipad"] {
+  --catch-device-bezel: var(--catch-space-micro18);
+  --catch-device-radius: calc(var(--catch-radius-lg) * 2);
+  background: var(--catch-palette-ink);
+}
+
+.frame[data-tilt="left"] { transform: rotate(-4deg); }
+.frame[data-tilt="right"] { transform: rotate(2deg); }
+
+.screen {
+  overflow: hidden;
+  border-radius: calc(var(--catch-device-radius) - var(--catch-device-bezel));
+  background: var(--catch-palette-ink);
+}
+
+.screen img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.frame[data-kind="iphone"]::after,
+.frame[data-kind="android"]::after {
+  position: absolute;
+  top: calc(var(--catch-device-bezel) + var(--catch-space-s2));
+  left: 50%;
+  width: 30%;
+  height: 24px;
+  border-radius: var(--catch-radius-pill);
+  background: var(--catch-palette-black);
+  content: "";
+  transform: translateX(-50%);
+}
+
+.frame[data-kind="android"]::after {
+  width: 12px;
+  height: 12px;
+}
+
+@container catch-page (width < 840px) {
+  .frame[data-kind="ipad"] {
+    --catch-device-bezel: var(--catch-space-micro10);
+    --catch-device-radius: calc(var(--catch-radius-lg) * 1.2);
+  }
+}

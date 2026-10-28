@@ -6,7 +6,7 @@ import {MemoryRouter} from "react-router";
 import {useRevealAnimations} from "../app/usePageLifecycle";
 import {ClaimPage} from "../features/claims/ClaimPage";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
-import {HomePage, VisitorDiscoveryPage} from "../features/home/HomePage";
+import {VisitorDiscoveryPage} from "../features/home/HomePage";
 import {HostPage} from "../features/host/HostPage";
 import {EventDetailPage} from "../features/events/EventDetailPage";
 import {EventInvitePage} from "../features/events/EventInvitePage";
@@ -68,25 +68,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-export const Home: Story = {
-  name: "/ · Discover",
-  parameters: {
-    a11y: {test: "error"},
-    catchRoute: {id: "home", path: "/", reviewStates: ["default", "empty-city", "catalog-unavailable", "city-and-format", "mobile-menu"], stateCoverage: {storybook: ["default", "empty-city", "catalog-unavailable"], manual: ["city-and-format", "mobile-menu"]}},
-    catchComponent: {id: "route_home", routeIds: ["home"], states: ["default", "empty-city", "catalog-unavailable", "city-and-format", "mobile-menu"]},
-  },
-  render: () => <publicEventListingsContext.Provider value={{listings: consumerHomeStoryListings, phase: "ready", readAt: Date.parse("2030-01-01")}}><HomePage captures={captures} /></publicEventListingsContext.Provider>,
-};
-
-export const HomeEmptyCity: Story = {
-  name: "/ · Empty city",
-  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "ready", readAt: 0}}><HomePage captures={captures} routeState={{city: "indore", category: "all"}} /></publicEventListingsContext.Provider>,
-};
-export const HomeUnavailable: Story = {
-  name: "/ · Catalogue unavailable",
-  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "unavailable"}}><HomePage captures={captures} /></publicEventListingsContext.Provider>,
-};
 
 export const VisitorDiscovery: Story = {
   name: "/explore/",

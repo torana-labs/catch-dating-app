@@ -3,6 +3,11 @@ export type MarketCityStatus = "live" | "waitlist";
 export interface MarketCity {
   readonly id: string;
   readonly slug: string;
+  /**
+   * The canonical market slug in functions/src/locations/marketConfig.ts,
+   * which names the city's cityPlans read model.
+   */
+  readonly marketSlug: string;
   readonly label: string;
   readonly aliases: readonly string[];
   readonly timezone: string;
