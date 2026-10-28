@@ -185670,6 +185670,490 @@ export const organizerClaimRequestDocumentSchema = {
   }
 };
 
+export const organizerClaimVerificationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_claim_verifications.schema.json",
+  "title": "OrganizerClaimVerificationDocument",
+  "description": "One signed-in user's attempt to prove they run an organizer listing, stored at organizerClaimVerifications/{attemptId}. The requester reads their own attempt to show its code and to follow its status; a verified attempt records the evidence and the claim request it approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerClaimVerifications",
+  "x-firestore-path": "organizerClaimVerifications/{attemptId}",
+  "x-document-id-field": "attemptId",
+  "x-owner": "startOrganizerClaimVerification callable and instagramClaimWebhook",
+  "required": [
+    "attemptId",
+    "organizerId",
+    "requesterUid",
+    "method",
+    "status",
+    "code",
+    "proofTarget",
+    "createdAt",
+    "updatedAt",
+    "expiresAt",
+    "verifiedAt",
+    "claimRequestId",
+    "evidence",
+    "lastRejection"
+  ],
+  "properties": {
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requesterUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "method": {
+      "description": "instagramMessage: the organiser sends the code to Catch's Instagram account from the listing's handle. lumaDescription: the organiser puts the code in the listing's Luma calendar description.",
+      "type": "string",
+      "enum": [
+        "instagramMessage",
+        "lumaDescription"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "description": "awaitingProof until the proof arrives. An attempt still awaitingProof after expiresAt has expired; readers treat it so.",
+      "type": "string",
+      "enum": [
+        "awaitingProof",
+        "verified",
+        "expired",
+        "superseded"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "code": {
+      "description": "The one-time code the requester shows the proof surface. Only the requester and the server can read it.",
+      "type": "string",
+      "pattern": "^[0-9]{6}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "proofTarget": {
+      "description": "Where the proof must come from: the listing's Instagram username without @, or its Luma calendar URL.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "verifiedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "claimRequestId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "evidence": {
+      "description": "What proved the claim. Null until verified.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "observedIdentity",
+            "messageKey",
+            "observedAt"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "instagramMessage",
+                "lumaDescription"
+              ]
+            },
+            "observedIdentity": {
+              "description": "The Instagram username Graph API returned for the sender, or the Luma calendar URL that showed the code.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "messageKey": {
+              "description": "SHA-256 of the Instagram message id. Null for Luma.",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "observedAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRejection": {
+      "description": "The latest proof that arrived and did not verify, so the claim page can say what to fix.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reason",
+            "at"
+          ],
+          "properties": {
+            "reason": {
+              "type": "string",
+              "enum": [
+                "wrongSender",
+                "codeNotFound"
+              ]
+            },
+            "at": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
+export const organizerClaimInstagramCodeDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_claim_instagram_codes.schema.json",
+  "title": "OrganizerClaimInstagramCodeDocument",
+  "description": "Server-only reservation of a live Instagram claim code, stored at organizerClaimInstagramCodes/{code}. Keying by the code keeps live codes unique and lets the webhook find the attempt without a query. Firestore TTL deletes it after expiresAt.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerClaimInstagramCodes",
+  "x-firestore-path": "organizerClaimInstagramCodes/{code}",
+  "x-document-id-field": "code",
+  "x-owner": "startOrganizerClaimVerification callable and instagramClaimWebhook",
+  "required": [
+    "code",
+    "attemptId",
+    "organizerId",
+    "expiresAt",
+    "consumedAt"
+  ],
+  "properties": {
+    "code": {
+      "type": "string",
+      "pattern": "^[0-9]{6}$",
+      "x-catch-ownership": "server-only"
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "consumedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Set when the code verified a claim or its attempt was superseded. A consumed code stays reserved until expiresAt, so a replay gets a clear answer.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const organizerClaimInstagramMessageDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_claim_instagram_messages.schema.json",
+  "title": "OrganizerClaimInstagramMessageDocument",
+  "description": "Server-only receipt for one Instagram direct message the claim webhook handled, stored at organizerClaimInstagramMessages/{messageKey}. Meta retries deliveries, so the receipt makes each message count once. It keeps no message text or sender id. Firestore TTL deletes it after expiresAt.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerClaimInstagramMessages",
+  "x-firestore-path": "organizerClaimInstagramMessages/{messageKey}",
+  "x-document-id-field": "messageKey",
+  "x-owner": "instagramClaimWebhook",
+  "required": [
+    "messageKey",
+    "outcome",
+    "attemptId",
+    "receivedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "messageKey": {
+      "description": "SHA-256 of the Instagram message id.",
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "wrongSender",
+        "expiredCode",
+        "codeAlreadyUsed",
+        "unknownCode",
+        "claimUnavailable",
+        "senderUnknown",
+        "rateLimited"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "attemptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "receivedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const organizerScheduleLockDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_schedule_locks.schema.json",
@@ -257263,6 +257747,187 @@ export const requestOrganizerClaimCallableResponseSchema = {
       "enum": [
         "pending"
       ]
+    }
+  }
+};
+
+export const startOrganizerClaimVerificationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/start_organizer_claim_verification_payload.schema.json",
+  "title": "StartOrganizerClaimVerificationCallablePayload",
+  "description": "Callable payload accepted by startOrganizerClaimVerification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "method"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "instagramMessage",
+        "lumaDescription"
+      ]
+    }
+  }
+};
+
+export const startOrganizerClaimVerificationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/start_organizer_claim_verification_response.schema.json",
+  "title": "StartOrganizerClaimVerificationCallableResponse",
+  "description": "Callable response returned by startOrganizerClaimVerification: the live attempt and the code to show. Starting again while an attempt has more than five minutes left returns that attempt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attemptId",
+    "organizerId",
+    "method",
+    "code",
+    "proofTarget",
+    "catchInstagramHandle",
+    "expiresAt"
+  ],
+  "properties": {
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "instagramMessage",
+        "lumaDescription"
+      ]
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[0-9]{6}$"
+    },
+    "proofTarget": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "catchInstagramHandle": {
+      "description": "Catch's Instagram username without @, for instagramMessage attempts.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 30
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+};
+
+export const getOrganizerClaimVerificationOptionsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_claim_verification_options_payload.schema.json",
+  "title": "GetOrganizerClaimVerificationOptionsCallablePayload",
+  "description": "Callable payload accepted by getOrganizerClaimVerificationOptions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const organizerClaimVerificationOptionsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_claim_verification_options_response.schema.json",
+  "title": "OrganizerClaimVerificationOptionsCallableResponse",
+  "description": "Callable response returned by getOrganizerClaimVerificationOptions: which ways of proving ownership this listing offers the signed-in user. Staff review stays available whatever this says.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "methods",
+    "catchInstagramHandle"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "methods": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "available",
+          "proofTarget",
+          "unavailableReason"
+        ],
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": [
+              "instagramMessage",
+              "lumaDescription"
+            ]
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "proofTarget": {
+            "description": "The listing's Instagram username without @, or its Luma calendar URL.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "unavailableReason": {
+            "description": "turnedOff: Catch has not switched this method on. noSourceOnListing: the listing has no Instagram account or Luma calendar to check.",
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "turnedOff",
+                  "noSourceOnListing"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "catchInstagramHandle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 30
     }
   }
 };
@@ -340754,12 +341419,10 @@ export const joinWaitlistHTTPRequestSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/http/join_waitlist_request.schema.json",
   "title": "Join Waitlist HTTP Request",
-  "description": "Version 1 request body for member waitlist and optional Host operating-application submissions.",
+  "description": "Version 1 request body for member waitlist and optional Host operating-application submissions. A member may instead ask for one WhatsApp message when Catch opens in their city: that path carries `whatsapp` and needs no name or email.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "fullName",
-    "email",
     "city",
     "role"
   ],
@@ -341204,6 +341867,34 @@ export const joinWaitlistHTTPRequestSchema = {
           "type": "string",
           "format": "date-time",
           "maxLength": 80
+        }
+      }
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A member's request for one WhatsApp message on the day Catch opens in their city. The launch notice is the explicit purpose of the form; marketing permission is a separate choice that is off unless the person chose it (CAT-72). consentVersion names the wording they saw.",
+      "required": [
+        "phone",
+        "launchNotice",
+        "marketing",
+        "consentVersion"
+      ],
+      "properties": {
+        "phone": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$",
+          "description": "E.164 mobile number."
+        },
+        "launchNotice": {
+          "const": true
+        },
+        "marketing": {
+          "type": "boolean"
+        },
+        "consentVersion": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,40}$"
         }
       }
     }
@@ -341712,7 +342403,55 @@ export const joinWaitlistHTTPRequestSchema = {
           "maxLength": 80
         }
       }
+    },
+    "whatsappLaunchNotice": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A member's request for one WhatsApp message on the day Catch opens in their city. The launch notice is the explicit purpose of the form; marketing permission is a separate choice that is off unless the person chose it (CAT-72). consentVersion names the wording they saw.",
+      "required": [
+        "phone",
+        "launchNotice",
+        "marketing",
+        "consentVersion"
+      ],
+      "properties": {
+        "phone": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$",
+          "description": "E.164 mobile number."
+        },
+        "launchNotice": {
+          "const": true
+        },
+        "marketing": {
+          "type": "boolean"
+        },
+        "consentVersion": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,40}$"
+        }
+      }
     }
+  },
+  "if": {
+    "required": [
+      "whatsapp"
+    ]
+  },
+  "then": {
+    "description": "The WhatsApp launch notice is for members only.",
+    "properties": {
+      "role": {
+        "const": "member"
+      }
+    }
+  },
+  "else": {
+    "description": "The email waitlist and Host application need a name and email.",
+    "required": [
+      "fullName",
+      "email"
+    ]
   }
 };
 

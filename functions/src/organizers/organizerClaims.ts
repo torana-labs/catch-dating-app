@@ -8,7 +8,6 @@ import {setAdminAuditLogInTransaction} from "../admin/adminAudit";
 import type {
   OrganizerClaimRequestDocument,
   OrganizerDocument,
-  UserProfileDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {RequestOrganizerClaimCallablePayload} from
   "../shared/generated/requestOrganizerClaimCallablePayload";
@@ -26,18 +25,18 @@ import {
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
-  activeOrganizerTeamMembershipPatch,
-  organizerRelationshipId,
-} from "../shared/relationshipDocuments";
-import {publicAvatarUrl, publicDisplayName} from
-  "../shared/profileProjection";
-import {
   activityNotificationId,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
 import {organizerSupplyCapabilitiesFor} from
   "../shared/organizerSupplyCapabilities";
 import {prepareClaimSalesTransition} from "./claimSalesActivity";
+import {
+  assertCanBeClaimed,
+  claimRequestOwnsPendingState,
+  organizerClaimRequestId,
+  prepareOrganizerClaimApproval,
+} from "./organizerClaimApproval";
 
 const claimReviewRoles = ["admin", "adminOwner", "support"] as const;
 
@@ -210,14 +209,13 @@ export async function adminDecideOrganizerClaimHandler(
     const organizerSnap = await tx.get(organizerRef);
     const organizer = organizerSnap.exists ?
       requireDoc<OrganizerDocument>(organizerSnap, "OrganizerDocument") : null;
-    const stageSalesTransition = await prepareClaimSalesTransition(tx, db, {
-      organizerId: claimRequest.organizerId, claimRequestId: data.requestId,
-      transitionId,
-      status: data.decision === "approve" ? "approved" : "rejected",
-      actorUid: adminContext.uid, recordedAt,
-    });
 
     if (data.decision === "reject") {
+      const stageSalesTransition = await prepareClaimSalesTransition(tx, db, {
+        organizerId: claimRequest.organizerId, claimRequestId: data.requestId,
+        transitionId, status: "rejected", actorUid: adminContext.uid,
+        recordedAt,
+      });
       const timestamp = deps.serverTimestamp();
       tx.set(requestRef, {
         status: "rejected",
@@ -282,112 +280,22 @@ export async function adminDecideOrganizerClaimHandler(
     if (!organizer) {
       throw new HttpsError("not-found", "Organizer listing not found.");
     }
-    const requesterRef = db.collection("users")
-      .doc(claimRequest.requesterUid);
-    const deletedUserRef = db.collection("deletedUsers")
-      .doc(claimRequest.requesterUid);
-    const teamRef = db.collection("organizerTeamMemberships").doc(
-      organizerRelationshipId(
-        claimRequest.organizerId,
-        claimRequest.requesterUid
-      )
-    );
-    const [requesterSnap, deletedUserSnap] = await Promise.all([
-      tx.get(requesterRef),
-      tx.get(deletedUserRef),
-    ]);
-    if (!requesterSnap.exists) {
-      throw new HttpsError("not-found", "Requesting user profile not found.");
-    }
-    if (deletedUserSnap.exists) {
-      throw new HttpsError(
-        "failed-precondition",
-        "This account cannot claim organizer listings."
-      );
-    }
-    assertCanBeClaimed(organizer);
-    if (organizer.claim?.state === "claimPending" &&
-        !claimRequestOwnsPendingState(organizer, data.requestId)) {
-      throw new HttpsError(
-        "failed-precondition",
-        "This claim request is no longer the active organizer claim."
-      );
-    }
-    const user = requireDoc<UserProfileDocument>(
-      requesterSnap,
-      "UserProfileDocument"
-    );
-    if (user.profileComplete !== true) {
-      throw new HttpsError(
-        "failed-precondition",
-        "The requester must complete their profile before claiming."
-      );
-    }
-    const timestamp = deps.serverTimestamp();
-    const displayName = publicDisplayName(user);
-    const avatarUrl = publicAvatarUrl(user);
-    const ownerProfile = {
-      uid: claimRequest.requesterUid,
-      displayName,
-      avatarUrl,
-      role: "owner",
-    };
-    const organizerPatch = {
-      ownerUserId: claimRequest.requesterUid,
-      hostUserId: claimRequest.requesterUid,
-      hostName: displayName,
-      hostAvatarUrl: avatarUrl,
-      hostUserIds: [claimRequest.requesterUid],
-      hostProfiles: [ownerProfile],
-      // Ownership approval does not publish the organizer. The publication
-      // action owns appVisibility and publicPage, including route reservation.
-      supplyCapabilities: organizerSupplyCapabilitiesFor({
-        ownershipState: "claimed",
-        claimState: "claimed",
-      }),
-      ownership: {
-        state: "claimed",
-        ownerUserId: claimRequest.requesterUid,
-        primaryHostUserId: claimRequest.requesterUid,
-        hostUserIds: [claimRequest.requesterUid],
-        claimedAt: timestamp,
-        claimedByUid: claimRequest.requesterUid,
-      },
-      claim: {
-        state: "claimed",
-        claimHref: null,
-        lastClaimRequestId: data.requestId,
-      },
-      provenance: {
-        origin: organizer.provenance?.origin ?? "adminSeed",
-        sourceConfidence: "ownerVerified",
-        verificationStatus: "ownerVerified",
-        lastVerifiedAt: timestamp,
-      },
-    };
-    tx.update(organizerRef, organizerPatch);
-    tx.set(requestRef, {
-      status: "approved",
-      updatedAt: timestamp,
-      decidedAt: timestamp,
+    // Ownership has one writer: verified claims approve through it too.
+    const stageApproval = await prepareOrganizerClaimApproval(tx, db, {
+      requestId: data.requestId,
+      organizerId: claimRequest.organizerId,
+      requesterUid: claimRequest.requesterUid,
+      organizer,
       decidedByUid: adminContext.uid,
       decisionReason: data.decisionReason ?? null,
-    }, {merge: true});
-    tx.set(teamRef, activeOrganizerTeamMembershipPatch({
-      organizerId: claimRequest.organizerId,
-      uid: claimRequest.requesterUid,
-      role: "owner",
-    }), {merge: true});
-    setActivityNotificationInTransaction(tx, db, {
-      id: activityNotificationId("organizerUpdate", data.requestId),
-      uid: claimRequest.requesterUid,
-      type: "organizerUpdate",
-      title: "Your organizer profile is ready",
-      body: `Open Catch to finish setup for ${organizer.name}.`,
-      createdAt: timestamp,
-      organizerId: claimRequest.organizerId,
-      actorUid: adminContext.uid,
+      notificationActorUid: adminContext.uid,
+      newRequest: null,
+      supersedeOtherPendingClaim: false,
+      transitionId,
+      recordedAt,
+      serverTimestamp: deps.serverTimestamp,
     });
+    stageApproval();
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminDecideOrganizerClaim",
       targetPath: requestRef.path,
@@ -408,45 +316,12 @@ export async function adminDecideOrganizerClaimHandler(
       decision: "approve",
       status: "approved",
     };
-    stageSalesTransition();
   });
 
   if (!response) {
     throw new HttpsError("internal", "Claim decision did not complete.");
   }
   return response;
-}
-
-function assertCanBeClaimed(organizer: OrganizerDocument) {
-  if (organizer.archived || organizer.status === "archived") {
-    throw new HttpsError(
-      "failed-precondition",
-      "Archived organizer listings cannot be claimed."
-    );
-  }
-  if (organizer.ownerUserId || organizer.hostUserId ||
-      organizer.ownership?.state === "claimed" ||
-      organizer.claim?.state === "claimed" ||
-      organizer.claim?.state === "verified") {
-    throw new HttpsError(
-      "failed-precondition",
-      "This organizer listing has already been claimed."
-    );
-  }
-  if (organizer.claim?.state === "suppressed") {
-    throw new HttpsError(
-      "failed-precondition",
-      "This organizer listing is not available for claims."
-    );
-  }
-}
-
-function claimRequestOwnsPendingState(
-  organizer: OrganizerDocument,
-  requestId: string
-): boolean {
-  return organizer.claim?.state === "claimPending" &&
-    organizer.claim.lastClaimRequestId === requestId;
 }
 
 function normalizeRequestPayload(value: unknown): Record<string, unknown> {
@@ -472,12 +347,6 @@ function normalizeDecisionPayload(value: unknown): Record<string, unknown> {
     decision: trimString(data.decision),
     decisionReason: nullableTrimmedString(data.decisionReason),
   };
-}
-
-function organizerClaimRequestId(organizerId: string, uid: string): string {
-  const hash = crypto.createHash("sha256")
-    .update(`${organizerId}:${uid}`).digest("hex").slice(0, 24);
-  return `organizer_claim_${hash}`;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
