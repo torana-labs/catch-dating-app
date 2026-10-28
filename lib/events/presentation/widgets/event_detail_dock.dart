@@ -10,6 +10,7 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_action_keys.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
+import 'package:catch_dating_app/events/presentation/organizer_event_checkout_controller.dart';
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
@@ -251,16 +252,24 @@ class EventDetailDock extends ConsumerWidget {
     void runBookAction(BuildContext context) {
       final router = GoRouter.maybeOf(context);
       final navigator = Navigator.of(context, rootNavigator: true);
+      final priceInPaise =
+          viewer.quotedPriceInPaise ?? event.priceInPaiseFor(userProfile);
       EventBookingController.bookMutation.run(ref, (tx) async {
-        final data = await tx
-            .get(eventBookingControllerProvider.notifier)
-            .book(
-              event: event,
-              user: userProfile,
-              quotedPriceInPaise: viewer.quotedPriceInPaise,
-              inviteCode: inviteCode,
-              inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
-            );
+        // Paid seats in an organizer-collected event go to the organizer's
+        // own Razorpay account; free seats keep the native booking path.
+        final data = priceInPaise > 0 && usesOrganizerCheckout(event)
+            ? await tx
+                  .get(organizerEventCheckoutControllerProvider.notifier)
+                  .book(event: event, user: userProfile)
+            : await tx
+                  .get(eventBookingControllerProvider.notifier)
+                  .book(
+                    event: event,
+                    user: userProfile,
+                    quotedPriceInPaise: viewer.quotedPriceInPaise,
+                    inviteCode: inviteCode,
+                    inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
+                  );
         handleBookingCompletion(
           router: router,
           navigator: navigator,
@@ -303,11 +312,17 @@ class EventDetailDock extends ConsumerWidget {
           runBookAction(context);
           return;
         case EventDetailBookingDockAction.cancelBooking:
+          final booking = participation;
           EventBookingController.cancelMutation.run(
             ref,
-            (tx) async => tx
-                .get(eventBookingControllerProvider.notifier)
-                .cancelBooking(event: event),
+            (tx) async => booking != null && isOrganizerBooking(booking)
+                // Refunded from the organizer's account at the current quote.
+                ? tx
+                      .get(organizerEventCheckoutControllerProvider.notifier)
+                      .cancel(event: event, participation: booking)
+                : tx
+                      .get(eventBookingControllerProvider.notifier)
+                      .cancelBooking(event: event),
           );
           return;
         case EventDetailBookingDockAction.joinWaitlist:

@@ -1,0 +1,75 @@
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
+import 'package:catch_dating_app/payments/data/organizer_event_checkout.dart';
+import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'organizer_event_checkout_controller.g.dart';
+
+/// Paid INR seats for this event are sold through the organizer's own
+/// Razorpay account, so Catch never collects the guest's money.
+bool usesOrganizerCheckout(Event event) =>
+    event.publicRegistrationMode == EventPublicRegistrationMode.paid &&
+    event.currency.trim().toUpperCase() == 'INR';
+
+/// The booking was paid to the organizer and is refunded from their account.
+bool isOrganizerBooking(EventParticipation? participation) =>
+    isOrganizerPaymentId(participation?.paymentId);
+
+/// Action controller for organizer-routed paid bookings. The event dock runs
+/// these through [EventBookingController]'s book and cancel mutations so the
+/// booking UI keeps one pending and error state.
+@riverpod
+class OrganizerEventCheckoutController
+    extends _$OrganizerEventCheckoutController {
+  @override
+  void build() {}
+
+  Future<PaymentConfirmationData> book({
+    required Event event,
+    required UserProfile user,
+  }) {
+    final session = ref.read(authenticatedSessionProvider);
+    final current = session.asData?.value;
+    if (session.isLoading ||
+        session.hasError ||
+        current == null ||
+        current.uid != user.uid) {
+      throw const SignInRequiredException('book an event');
+    }
+    return ref
+        .read(paymentRepositoryProvider)
+        .processOrganizerPayment(
+          eventId: event.id,
+          displayName: user.name,
+          description:
+              // copy:allow-inline(Composes governed event title and date separator copy)
+              '${event.title}${StructuredDomainCopy.eventTitleDateSeparator}${event.shortDateLabel}',
+          userEmail: user.email,
+          userContact: user.phoneNumber,
+        );
+  }
+
+  Future<void> cancel({
+    required Event event,
+    required EventParticipation participation,
+  }) {
+    requireSignedInUid(ref, action: 'cancel a booking');
+    final paymentId = participation.paymentId;
+    if (!isOrganizerPaymentId(paymentId)) {
+      throw const PaymentFailedException(
+        'This booking has no organizer payment.',
+      );
+    }
+    return ref
+        .read(paymentRepositoryProvider)
+        .cancelOrganizerBooking(eventId: event.id, paymentId: paymentId!);
+  }
+}
