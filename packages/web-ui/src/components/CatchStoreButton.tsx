@@ -39,7 +39,8 @@ export function CatchStoreButton({accessibleLabel, href, kicker, label, onClick,
         <path d={mark.path} />
       </svg>
       <span className={styles.copy}>
-        {kicker ? <span className={styles.kicker}>{kicker}</span> : null}
+        {/* The trailing space keeps the visible text "Download on the App Store", not "theApp". */}
+        {kicker ? <span className={styles.kicker}>{kicker} </span> : null}
         <span className={styles.label}>{label}</span>
       </span>
     </a>
