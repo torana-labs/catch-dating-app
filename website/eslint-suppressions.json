@@ -373,10 +373,10 @@
   },
   "src/shared/ui/primitives/organizer2.tsx": {
     "react/forbid-dom-props": {
-      "count": 13
+      "count": 10
     },
     "react/forbid-elements": {
-      "count": 19
+      "count": 16
     }
   },
   "src/shared/ui/primitives/organizer3.tsx": {
@@ -384,10 +384,10 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 22
+      "count": 15
     },
     "react/forbid-elements": {
-      "count": 45
+      "count": 25
     }
   },
   "src/shared/ui/primitives/publicForms.tsx": {
