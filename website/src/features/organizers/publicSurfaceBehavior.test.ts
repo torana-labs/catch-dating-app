@@ -339,7 +339,7 @@ function verifyEventDetail(
   root.innerHTML = view ? renderToStaticMarkup(createElement(Fragment, null,
     createElement(EventPageMain, {view}),
     createElement(EventBookingCard, {view, catchEntry: createElement("span", {"data-guest-entry": ""}),
-      externalAction: (button) => button, onExternalClick: () => undefined}),
+      onExternalClick: () => undefined}),
   )) : "";
   expect(Boolean(root.querySelector("[data-guest-entry]")))
     .toBe(expectations["event.webGuestJourney"].disposition === "visibleWeb");
