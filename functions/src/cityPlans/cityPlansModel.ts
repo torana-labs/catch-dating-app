@@ -48,30 +48,34 @@ export const cityPlanLimits = {
   livePlanMinimum: 4,
 } as const;
 
-export const cityFormats = ["runClubs", "dinners", "gamesAndQuizzes",
-  "pickleball", "nightsOut", "other"] as const satisfies readonly CityFormat[];
+export const cityFormats = ["run", "dinner", "games",
+  "courts", "nightsOut", "other"] as const satisfies readonly CityFormat[];
 
-const formatByActivity: Readonly<Record<string, CityFormat>> = {
-  socialRun: "runClubs",
-  running: "runClubs",
-  walking: "runClubs",
-  dinner: "dinners",
-  pubQuiz: "gamesAndQuizzes",
-  pickleball: "pickleball",
-  padel: "pickleball",
-  barCrawl: "nightsOut",
-};
+/**
+ * The activity kinds each format covers, as `formatActivityKinds` in
+ * packages/web-ui/src/components/palette.ts draws them; a parity test holds
+ * the two to the same map. Kinds not listed are `other`.
+ */
+export const formatActivityKinds: Readonly<
+  Record<Exclude<CityFormat, "other">, readonly string[]>> = {
+    run: ["socialRun", "running"],
+    dinner: ["dinner"],
+    games: ["pubQuiz"],
+    courts: ["pickleball", "padel", "tennis", "badminton"],
+    nightsOut: ["barCrawl"],
+  };
 
 export function formatForActivity(activityKind: string): CityFormat {
-  return formatByActivity[activityKind] ?? "other";
+  return cityFormats.find((format) => format !== "other" &&
+    formatActivityKinds[format].includes(activityKind)) ?? "other";
 }
 
 // Listed formats and categories are free text; quiz is tested before pub.
 const formatPatterns: readonly [RegExp, CityFormat][] = [
-  [/\b(quiz|trivia|game)/i, "gamesAndQuizzes"],
-  [/\b(run|walk|jog)/i, "runClubs"],
-  [/\b(dinner|supper|food|table|brunch)/i, "dinners"],
-  [/\b(pickle|padel)/i, "pickleball"],
+  [/\b(quiz|trivia|game)/i, "games"],
+  [/\b(run|jog)/i, "run"],
+  [/\b(dinner|supper|food|table|brunch)/i, "dinner"],
+  [/\b(pickle|padel|tennis|badminton)/i, "courts"],
   [/\b(bar|crawl|pub|night)/i, "nightsOut"],
 ];
 

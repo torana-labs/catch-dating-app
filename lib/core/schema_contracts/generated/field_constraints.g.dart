@@ -21481,15 +21481,22 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*\$',
   );
 
-  static const cityPlansDocumentFormatCountsDinners = CatchContractFieldConstraints(
-    path: 'cityPlansDocument.formatCounts.dinners',
+  static const cityPlansDocumentFormatCountsCourts = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.formatCounts.courts',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
   );
 
-  static const cityPlansDocumentFormatCountsGamesAndQuizzes = CatchContractFieldConstraints(
-    path: 'cityPlansDocument.formatCounts.gamesAndQuizzes',
+  static const cityPlansDocumentFormatCountsDinner = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.formatCounts.dinner',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentFormatCountsGames = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.formatCounts.games',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
@@ -21509,15 +21516,8 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
-  static const cityPlansDocumentFormatCountsPickleball = CatchContractFieldConstraints(
-    path: 'cityPlansDocument.formatCounts.pickleball',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const cityPlansDocumentFormatCountsRunClubs = CatchContractFieldConstraints(
-    path: 'cityPlansDocument.formatCounts.runClubs',
+  static const cityPlansDocumentFormatCountsRun = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.formatCounts.run',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
@@ -21564,7 +21564,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['runClubs', 'dinners', 'gamesAndQuizzes', 'pickleball', 'nightsOut', 'other'],
+    itemEnumValues: <String>['run', 'dinner', 'games', 'courts', 'nightsOut', 'other'],
     maxItems: 6,
     uniqueItems: true,
   );
@@ -21573,7 +21573,7 @@ abstract final class CatchContractConstraints {
     path: 'cityPlansDocument.organizers.items.formats.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['runClubs', 'dinners', 'gamesAndQuizzes', 'pickleball', 'nightsOut', 'other'],
+    enumValues: <String>['run', 'dinner', 'games', 'courts', 'nightsOut', 'other'],
   );
 
   static const cityPlansDocumentOrganizersItemsLogoMode = CatchContractFieldConstraints(
@@ -21707,7 +21707,7 @@ abstract final class CatchContractConstraints {
     path: 'cityPlansDocument.plans.items.format',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['runClubs', 'dinners', 'gamesAndQuizzes', 'pickleball', 'nightsOut', 'other'],
+    enumValues: <String>['run', 'dinner', 'games', 'courts', 'nightsOut', 'other'],
   );
 
   static const cityPlansDocumentPlansItemsLocation = CatchContractFieldConstraints(
@@ -176496,12 +176496,12 @@ abstract final class CatchContractConstraints {
     'cityPlansDocument.builtAt._seconds': cityPlansDocumentBuiltAtSeconds,
     'cityPlansDocument.cityLabel': cityPlansDocumentCityLabel,
     'cityPlansDocument.citySlug': cityPlansDocumentCitySlug,
-    'cityPlansDocument.formatCounts.dinners': cityPlansDocumentFormatCountsDinners,
-    'cityPlansDocument.formatCounts.gamesAndQuizzes': cityPlansDocumentFormatCountsGamesAndQuizzes,
+    'cityPlansDocument.formatCounts.courts': cityPlansDocumentFormatCountsCourts,
+    'cityPlansDocument.formatCounts.dinner': cityPlansDocumentFormatCountsDinner,
+    'cityPlansDocument.formatCounts.games': cityPlansDocumentFormatCountsGames,
     'cityPlansDocument.formatCounts.nightsOut': cityPlansDocumentFormatCountsNightsOut,
     'cityPlansDocument.formatCounts.other': cityPlansDocumentFormatCountsOther,
-    'cityPlansDocument.formatCounts.pickleball': cityPlansDocumentFormatCountsPickleball,
-    'cityPlansDocument.formatCounts.runClubs': cityPlansDocumentFormatCountsRunClubs,
+    'cityPlansDocument.formatCounts.run': cityPlansDocumentFormatCountsRun,
     'cityPlansDocument.marketStatus': cityPlansDocumentMarketStatus,
     'cityPlansDocument.organizers': cityPlansDocumentOrganizers,
     'cityPlansDocument.organizers.items.category': cityPlansDocumentOrganizersItemsCategory,

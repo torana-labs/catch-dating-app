@@ -40,10 +40,10 @@ export interface CityPlansDocument {
    * Plans in the window by format.
    */
   formatCounts: {
-    runClubs: number;
-    dinners: number;
-    gamesAndQuizzes: number;
-    pickleball: number;
+    run: number;
+    dinner: number;
+    games: number;
+    courts: number;
     nightsOut: number;
     other: number;
   };
@@ -60,13 +60,7 @@ export interface CityPlansDocument {
     /**
      * The homepage format a plan's activity belongs to.
      */
-    format:
-      | "runClubs"
-      | "dinners"
-      | "gamesAndQuizzes"
-      | "pickleball"
-      | "nightsOut"
-      | "other";
+    format: "run" | "dinner" | "games" | "courts" | "nightsOut" | "other";
     activityKind: string;
     startTime: string;
     endTime: string | null;
@@ -107,14 +101,7 @@ export interface CityPlansDocument {
      *
      * @maxItems 6
      */
-    formats: (
-      | "runClubs"
-      | "dinners"
-      | "gamesAndQuizzes"
-      | "pickleball"
-      | "nightsOut"
-      | "other"
-    )[];
+    formats: ("run" | "dinner" | "games" | "courts" | "nightsOut" | "other")[];
     followerCount: number;
     claimState: "unclaimed" | "claimPending" | "claimed" | "verified";
     /**

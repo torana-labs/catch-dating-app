@@ -98,27 +98,27 @@ export const cityPlansDocumentSchema: Record<string, unknown> = {
       "additionalProperties": false,
       "description": "Plans in the window by format.",
       "required": [
-        "runClubs",
-        "dinners",
-        "gamesAndQuizzes",
-        "pickleball",
+        "run",
+        "dinner",
+        "games",
+        "courts",
         "nightsOut",
         "other"
       ],
       "properties": {
-        "runClubs": {
+        "run": {
           "type": "integer",
           "minimum": 0
         },
-        "dinners": {
+        "dinner": {
           "type": "integer",
           "minimum": 0
         },
-        "gamesAndQuizzes": {
+        "games": {
           "type": "integer",
           "minimum": 0
         },
-        "pickleball": {
+        "courts": {
           "type": "integer",
           "minimum": 0
         },
@@ -181,10 +181,10 @@ export const cityPlansDocumentSchema: Record<string, unknown> = {
             "type": "string",
             "description": "The homepage format a plan's activity belongs to.",
             "enum": [
-              "runClubs",
-              "dinners",
-              "gamesAndQuizzes",
-              "pickleball",
+              "run",
+              "dinner",
+              "games",
+              "courts",
               "nightsOut",
               "other"
             ]
@@ -346,10 +346,10 @@ export const cityPlansDocumentSchema: Record<string, unknown> = {
               "type": "string",
               "description": "The homepage format a plan's activity belongs to.",
               "enum": [
-                "runClubs",
-                "dinners",
-                "gamesAndQuizzes",
-                "pickleball",
+                "run",
+                "dinner",
+                "games",
+                "courts",
                 "nightsOut",
                 "other"
               ]
@@ -423,10 +423,10 @@ export const cityPlansDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "description": "The homepage format a plan's activity belongs to.",
       "enum": [
-        "runClubs",
-        "dinners",
-        "gamesAndQuizzes",
-        "pickleball",
+        "run",
+        "dinner",
+        "games",
+        "courts",
         "nightsOut",
         "other"
       ]
@@ -476,10 +476,10 @@ export const cityPlansDocumentSchema: Record<string, unknown> = {
           "type": "string",
           "description": "The homepage format a plan's activity belongs to.",
           "enum": [
-            "runClubs",
-            "dinners",
-            "gamesAndQuizzes",
-            "pickleball",
+            "run",
+            "dinner",
+            "games",
+            "courts",
             "nightsOut",
             "other"
           ]
@@ -636,10 +636,10 @@ export const cityPlansDocumentSchema: Record<string, unknown> = {
             "type": "string",
             "description": "The homepage format a plan's activity belongs to.",
             "enum": [
-              "runClubs",
-              "dinners",
-              "gamesAndQuizzes",
-              "pickleball",
+              "run",
+              "dinner",
+              "games",
+              "courts",
               "nightsOut",
               "other"
             ]

@@ -70,12 +70,12 @@
       "type": "object",
       "additionalProperties": false,
       "description": "Plans in the window by format.",
-      "required": ["runClubs", "dinners", "gamesAndQuizzes", "pickleball", "nightsOut", "other"],
+      "required": ["run", "dinner", "games", "courts", "nightsOut", "other"],
       "properties": {
-        "runClubs": {"type": "integer", "minimum": 0},
-        "dinners": {"type": "integer", "minimum": 0},
-        "gamesAndQuizzes": {"type": "integer", "minimum": 0},
-        "pickleball": {"type": "integer", "minimum": 0},
+        "run": {"type": "integer", "minimum": 0},
+        "dinner": {"type": "integer", "minimum": 0},
+        "games": {"type": "integer", "minimum": 0},
+        "courts": {"type": "integer", "minimum": 0},
         "nightsOut": {"type": "integer", "minimum": 0},
         "other": {"type": "integer", "minimum": 0}
       }
@@ -101,7 +101,7 @@
     "format": {
       "type": "string",
       "description": "The homepage format a plan's activity belongs to.",
-      "enum": ["runClubs", "dinners", "gamesAndQuizzes", "pickleball", "nightsOut", "other"]
+      "enum": ["run", "dinner", "games", "courts", "nightsOut", "other"]
     },
     "cityPlan": {
       "type": "object",

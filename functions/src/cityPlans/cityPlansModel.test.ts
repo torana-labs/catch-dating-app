@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import {validateCityPlansDocument} from
@@ -8,6 +10,7 @@ import type {HostListing} from "../publicPages/publicOrganizer";
 import {
   buildCityPlans,
   cityPlanLimits,
+  formatActivityKinds,
   formatForActivity,
   formatsForText,
   type CityMarket,
@@ -83,8 +86,8 @@ test("a launched city lists its plans in the 14-day window", () => {
   assert.deepEqual(city.plans.map((plan) => plan.eventId),
     ["run-1", "quiz-1", "run-2", "crawl-1", "yoga-1"]);
   assert.equal(city.planCount, 5);
-  assert.deepEqual(city.formatCounts, {runClubs: 2, dinners: 0,
-    gamesAndQuizzes: 1, pickleball: 0, nightsOut: 1, other: 1});
+  assert.deepEqual(city.formatCounts, {run: 2, dinner: 0,
+    games: 1, courts: 0, nightsOut: 1, other: 1});
   assert.equal(city.windowEnd,
     new Date(now + cityPlanLimits.windowDays * day).toISOString());
   assert.deepEqual(city.plans[0].organizer, {organizerId: "carter",
@@ -102,7 +105,7 @@ test("organisers with a plan come first, then by followers", () => {
   const [carter, quiz, , quiet] = city.organizers;
   assert.equal(carter.upcomingPlanCount, 2);
   assert.deepEqual(carter.nextPlan && carter.nextPlan.eventId, "run-1");
-  assert.ok(carter.formats.includes("runClubs"));
+  assert.ok(carter.formats.includes("run"));
   // The plan beyond the window is not the next plan in it.
   assert.equal(quiz.upcomingPlanCount, 1);
   assert.equal(quiet.nextPlan, null);
@@ -145,24 +148,36 @@ test("a city that has not launched lists who is joining, with no pages", () => {
   assert.deepEqual(city.organizers, [{organizerId: "kp-runners",
     name: "Koregaon Park Runners", path: null, category: "Run club",
     logo: {mode: "monogram", text: "KP", status: "not_verified"},
-    formats: ["runClubs"], followerCount: 3, claimState: "unclaimed",
+    formats: ["run"], followerCount: 3, claimState: "unclaimed",
     upcomingPlanCount: 0, nextPlan: null}]);
   assert.ok(validateCityPlansDocument(stored(city)),
     JSON.stringify(validateCityPlansDocument.errors));
 });
 
 test("activities and free-text formats map to homepage formats", () => {
-  assert.equal(formatForActivity("socialRun"), "runClubs");
-  assert.equal(formatForActivity("dinner"), "dinners");
-  assert.equal(formatForActivity("pubQuiz"), "gamesAndQuizzes");
-  assert.equal(formatForActivity("padel"), "pickleball");
+  assert.equal(formatForActivity("socialRun"), "run");
+  assert.equal(formatForActivity("dinner"), "dinner");
+  assert.equal(formatForActivity("pubQuiz"), "games");
+  assert.equal(formatForActivity("padel"), "courts");
   assert.equal(formatForActivity("barCrawl"), "nightsOut");
   assert.equal(formatForActivity("yoga"), "other");
   assert.deepEqual(formatsForText("Pub quiz nights"),
-    ["gamesAndQuizzes", "nightsOut"]);
+    ["games", "nightsOut"]);
   assert.deepEqual(formatsForText("Supper clubs for strangers"),
-    ["dinners"]);
+    ["dinner"]);
   assert.deepEqual(formatsForText("beginner-friendly"), []);
+});
+
+test("formats group activities as the website library draws them", () => {
+  // packages/web-ui/src/components/palette.ts owns the drawn map.
+  const palette = fs.readFileSync(path.resolve(__dirname, "..", "..", "..",
+    "packages", "web-ui", "src", "components", "palette.ts"), "utf8");
+  const block = /formatActivityKinds[^=]*=\s*\{([\s\S]*?)\};/
+    .exec(palette)?.[1] ?? "";
+  const drawn = Object.fromEntries([...block.matchAll(
+    /(\w+):\s*\[([^\]]*)\]/g)].map(([, format, kinds]) => [format,
+    [...kinds.matchAll(/"(\w+)"/g)].map(([, kind]) => kind)]));
+  assert.deepEqual(drawn, formatActivityKinds);
 });
 
 test("dating framing never reaches a city document", () => {
