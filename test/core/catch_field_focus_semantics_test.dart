@@ -146,6 +146,81 @@ void main() {
     }
   });
 
+  testWidgets('disabling a focused input retains native field semantics', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    final controller = TextEditingController(text: '1997-01-01');
+    final focus = FocusNode();
+    var enabled = true;
+    late StateSetter update;
+    try {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) {
+                update = setState;
+                return CatchField.input(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  title: 'Birthday',
+                  controller: controller,
+                  focusNode: focus,
+                  suffixText: 'Age 29',
+                  states: enabled ? {} : {WidgetState.disabled},
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      focus.requestFocus();
+      await pumpFeatureUi(tester);
+      expect(focus.hasFocus, isTrue);
+      var input = tester.getSemantics(find.byType(TextField));
+      expect(input.label, contains('Birthday'));
+      expect(input.value, '1997-01-01');
+      expect(input.flagsCollection.isTextField, isTrue);
+      expect(
+        input.getSemanticsData().hasAction(SemanticsAction.setText),
+        isTrue,
+      );
+
+      update(() => enabled = false);
+      await pumpFeatureUi(tester);
+      expect(tester.takeException(), isNull);
+      expect(focus.hasFocus, isFalse);
+      input = tester.getSemantics(find.byType(TextField));
+      expect(input.label, contains('Birthday'));
+      expect(input.value, '1997-01-01');
+      expect(input.flagsCollection.isTextField, isTrue);
+      expect(
+        input.getSemanticsData().hasAction(SemanticsAction.setText),
+        isFalse,
+      );
+
+      update(() => enabled = true);
+      await pumpFeatureUi(tester);
+      focus.requestFocus();
+      await pumpFeatureUi(tester);
+      expect(focus.hasFocus, isTrue);
+      expect(tester.takeException(), isNull);
+      input = tester.getSemantics(find.byType(TextField));
+      expect(input.value, '1997-01-01');
+      expect(
+        input.getSemanticsData().hasAction(SemanticsAction.setText),
+        isTrue,
+      );
+    } finally {
+      await tester.pumpWidget(const SizedBox.shrink());
+      focus.dispose();
+      controller.dispose();
+      semantics.dispose();
+    }
+  });
+
   testWidgets('explicit-save disclosure retains its accessible open action', (
     tester,
   ) async {

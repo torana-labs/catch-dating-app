@@ -177,7 +177,7 @@ class EventBookingController extends _$EventBookingController {
         }
         // Acceptance is the current server-owned route; a stale local zero price
         // cannot turn the accepted paid offer into a free booking command.
-        return _startCheckout(
+        return await _startCheckout(
           event: event,
           user: user,
           inviteCode: inviteCode,

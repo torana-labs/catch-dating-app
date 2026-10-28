@@ -3776,7 +3776,7 @@ final class _ResolvedLayoutOwnerTerminalProof {
     if (!visitingNodes.add(node)) return false;
     try {
       if (node case final ParenthesizedExpression expression) {
-        return _nodeEveryTerminalUses(
+        return await _nodeEveryTerminalUses(
           expression.expression,
           graph: graph,
           visitingNodes: visitingNodes,
@@ -3784,7 +3784,7 @@ final class _ResolvedLayoutOwnerTerminalProof {
         );
       }
       if (node case final AwaitExpression expression) {
-        return _nodeEveryTerminalUses(
+        return await _nodeEveryTerminalUses(
           expression.expression,
           graph: graph,
           visitingNodes: visitingNodes,
@@ -3792,7 +3792,7 @@ final class _ResolvedLayoutOwnerTerminalProof {
         );
       }
       if (node case final AsExpression expression) {
-        return _nodeEveryTerminalUses(
+        return await _nodeEveryTerminalUses(
           expression.expression,
           graph: graph,
           visitingNodes: visitingNodes,
@@ -3801,7 +3801,7 @@ final class _ResolvedLayoutOwnerTerminalProof {
       }
       if (node case final PostfixExpression expression
           when expression.operator.lexeme == '!') {
-        return _nodeEveryTerminalUses(
+        return await _nodeEveryTerminalUses(
           expression.operand,
           graph: graph,
           visitingNodes: visitingNodes,
@@ -3851,7 +3851,7 @@ final class _ResolvedLayoutOwnerTerminalProof {
           }
           return true;
         }
-        return _resolvedExecutableEveryTerminalUses(
+        return await _resolvedExecutableEveryTerminalUses(
           identifier.element,
           visiting: visitingTargets,
         );
@@ -3860,7 +3860,7 @@ final class _ResolvedLayoutOwnerTerminalProof {
         final signature = _resolvedInstanceCreationSignature(creation);
         if (acceptedSignatures.contains(signature)) return true;
         if (signature == 'Stack') {
-          return _resolvedStackEveryTerminalUses(
+          return await _resolvedStackEveryTerminalUses(
             creation.argumentList,
             graph: graph,
             visitingNodes: visitingNodes,
@@ -3875,7 +3875,7 @@ final class _ResolvedLayoutOwnerTerminalProof {
           visitingTargets: visitingTargets,
         );
         if (transparent != null) return transparent;
-        return _resolvedExecutableEveryTerminalUses(
+        return await _resolvedExecutableEveryTerminalUses(
           creation.constructorName.element,
           visiting: visitingTargets,
         );
@@ -3884,7 +3884,7 @@ final class _ResolvedLayoutOwnerTerminalProof {
         final signature = _methodInvocationSignature(invocation);
         if (acceptedSignatures.contains(signature)) return true;
         if (signature == 'Stack') {
-          return _resolvedStackEveryTerminalUses(
+          return await _resolvedStackEveryTerminalUses(
             invocation.argumentList,
             graph: graph,
             visitingNodes: visitingNodes,
@@ -3918,13 +3918,13 @@ final class _ResolvedLayoutOwnerTerminalProof {
           visitingTargets: visitingTargets,
         );
         if (transparent != null) return transparent;
-        return _resolvedExecutableEveryTerminalUses(
+        return await _resolvedExecutableEveryTerminalUses(
           invocation.methodName.element,
           visiting: visitingTargets,
         );
       }
       if (node case final FunctionExpressionInvocation invocation) {
-        return _nodeEveryTerminalUses(
+        return await _nodeEveryTerminalUses(
           invocation.function,
           graph: graph,
           visitingNodes: visitingNodes,

@@ -97,7 +97,7 @@ launchEventSuccessCompanionForParticipation({
     if (event == null || !context.mounted) {
       return EventSuccessCompanionLaunchResult.unavailable;
     }
-    return launchEventSuccessCompanionIfAvailable(
+    return await launchEventSuccessCompanionIfAvailable(
       context: context,
       ref: ref,
       uid: uid,
