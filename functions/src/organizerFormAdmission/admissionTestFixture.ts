@@ -46,9 +46,11 @@ export class Store {
         direction]),
       limit: (count: number) => ({collection: name, filters, count, order}),
     });
-    return {doc: (id: string) => ({path: `${name}/${id}`}),
-      where: (field: string, op: string, value: unknown) =>
-        query([[field, op, value]])};
+    return {doc: (id: string) => ({path: `${name}/${id}`,
+      collection: (child: string) =>
+        this.collection(`${name}/${id}/${child}`)}),
+    where: (field: string, op: string, value: unknown) =>
+      query([[field, op, value]])};
   }
   runTransaction<T>(callback: (tx: FirebaseFirestore.Transaction) =>
     Promise<T>): Promise<T> {
