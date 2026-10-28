@@ -3197,6 +3197,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaPublicPageBuildDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'CityPlansDocument',
+    source: 'firestore/city_plans.schema.json',
+    schema: schemaCityPlansDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventPrivateAccessDocument',
     source: 'firestore/event_private_access.schema.json',
     schema: schemaEventPrivateAccessDocumentSchema,
@@ -6985,6 +6990,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'OrganizerPublicPageDocument': schemaOrganizerPublicPageDocumentSchema,
   'EventPublicPageDocument': schemaEventPublicPageDocumentSchema,
   'PublicPageBuildDocument': schemaPublicPageBuildDocumentSchema,
+  'CityPlansDocument': schemaCityPlansDocumentSchema,
   'EventPrivateAccessDocument': schemaEventPrivateAccessDocumentSchema,
   'EventInviteLinkDocument': schemaEventInviteLinkDocumentSchema,
   'EventInviteLinkSecretDocument': schemaEventInviteLinkSecretDocumentSchema,
@@ -8254,6 +8260,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/organizer_public_pages.schema.json': schemaOrganizerPublicPageDocumentSchema,
   'firestore/event_public_pages.schema.json': schemaEventPublicPageDocumentSchema,
   'firestore/public_page_builds.schema.json': schemaPublicPageBuildDocumentSchema,
+  'firestore/city_plans.schema.json': schemaCityPlansDocumentSchema,
   'firestore/event_private_access.schema.json': schemaEventPrivateAccessDocumentSchema,
   'firestore/event_invite_links.schema.json': schemaEventInviteLinkDocumentSchema,
   'firestore/event_invite_link_secrets.schema.json': schemaEventInviteLinkSecretDocumentSchema,
