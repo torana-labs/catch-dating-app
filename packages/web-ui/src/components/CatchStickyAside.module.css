@@ -27,9 +27,20 @@
   box-shadow: 0 -10px 30px color-mix(in srgb, var(--catch-palette-ink) 8%, transparent);
 }
 
-/* A CSS Modules rule must name a local class, so the page clearance keys on the dock's. */
+/*
+ * A CSS Modules rule must name a local class, so the page clearance keys on
+ * the dock's. The page keeps the dock's height clear at its end, and focus
+ * scrolls a control clear of the dock, focus ring included (WCAG 2.4.11).
+ * The height here is the one-line estimate; the component sets the measured
+ * height on the root element once the dock renders.
+ */
+:global(html):has(.dock) {
+  --catch-sticky-aside-dock-height: calc(2 * var(--catch-space-s3) + var(--catch-space-s10) + var(--catch-stroke-hairline) + env(safe-area-inset-bottom));
+  scroll-padding-bottom: calc(var(--catch-sticky-aside-dock-height) + var(--catch-space-s3));
+}
+
 :global(body):has(.dock) {
-  padding-bottom: calc(2 * var(--catch-space-s3) + var(--catch-space-s10) + var(--catch-stroke-hairline) + env(safe-area-inset-bottom));
+  padding-bottom: var(--catch-sticky-aside-dock-height);
 }
 
 .bar {
