@@ -2166,6 +2166,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /cityPlans/{citySlug} {
+      allow read, write: if false;
+    }
+
     match /eventPrivateAccess/{eventId} {
       allow read: if isAuthed()
         && resource.data.eventId == eventId

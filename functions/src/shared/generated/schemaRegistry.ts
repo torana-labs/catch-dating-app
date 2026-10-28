@@ -641,6 +641,7 @@ export {externalEventDocumentSchema} from "./schemas/externalEventDocument";
 export {organizerPublicPageDocumentSchema} from "./schemas/organizerPublicPageDocument";
 export {eventPublicPageDocumentSchema} from "./schemas/eventPublicPageDocument";
 export {publicPageBuildDocumentSchema} from "./schemas/publicPageBuildDocument";
+export {cityPlansDocumentSchema} from "./schemas/cityPlansDocument";
 export {eventPrivateAccessDocumentSchema} from "./schemas/eventPrivateAccessDocument";
 export {eventInviteLinkDocumentSchema} from "./schemas/eventInviteLinkDocument";
 export {eventInviteLinkSecretDocumentSchema} from "./schemas/eventInviteLinkSecretDocument";

@@ -1245,6 +1245,33 @@ describe("firestore.rules", () => {
       }
     });
 
+    it("keeps city plans read models server-only", async () => {
+      for (const [citySlug, status] of [["mumbai", "live"],
+        ["pune", "launchingSoon"]]) {
+        await seed(["cityPlans", citySlug], {
+          schemaVersion: 1,
+          citySlug,
+          status,
+          planCount: 0,
+        });
+      }
+
+      for (const db of [authedDb("owner-1"),
+        testEnv.unauthenticatedContext().firestore()]) {
+        for (const id of ["mumbai", "pune", "missing"]) {
+          await assertFails(getDoc(doc(db, "cityPlans", id)));
+          await assertFails(setDoc(doc(db, "cityPlans", `client-${id}`), {
+            schemaVersion: 1,
+          }));
+        }
+        await assertFails(getDocs(query(collection(db, "cityPlans"),
+          where("status", "==", "live"))));
+        await assertFails(updateDoc(doc(db, "cityPlans", "mumbai"),
+          {status: "launchingSoon"}));
+        await assertFails(deleteDoc(doc(db, "cityPlans", "pune")));
+      }
+    });
+
     it("keeps organizer attention projections server-only", async () => {
       await seed(["organizerAttentionItems", "attention-1"], {
         organizerId: "organizer-1",
