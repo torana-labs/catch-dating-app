@@ -28,7 +28,7 @@ test("lists each Supply Intake capability with its decision and whether its poli
     "recurring_event_crawl_policy", "agent_research_policy", "llm_extraction_fallback_policy"]);
   const [pages, crawl] = response.policies;
   assert.deepEqual([pages.decision?.decisionStatus, pages.enabled, pages.configCitesDecision, pages.decisionId],
-    ["accepted", false, false, "policy-on-demand-page-fetch-policy"], "accepted, but the policy file does not cite it yet");
+    ["accepted", true, true, "policy-on-demand-page-fetch-policy"], "accepted and switched on by the policy file (CAT-266)");
   assert.equal(pages.decision?.reviewedAt, "2026-10-20T08:00:00.000Z");
   assert.ok(pages.limits.some((limit) => limit.label === "Pages per month"));
   assert.equal(crawl.decision, null);

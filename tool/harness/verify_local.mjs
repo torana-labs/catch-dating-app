@@ -68,16 +68,22 @@ function resolveTargets({base, head, mode, full, commitWindow}) {
       ...(commitWindow ? ["--commit-window"] : []), "--json"],
     {encoding: "utf8", maxBuffer: 32 * 1024 * 1024},
   );
+  if (result.error) {
+    throw new Error(`harness plan spawn failed (${result.error.code || "unknown"}): ${result.error.message}`);
+  }
   // The planner exits non-zero when it cannot map every changed path, but it
   // still emits a usable plan. Treat that as "incomplete", not "unavailable":
   // the useful response is to run the gates it did resolve and say loudly which
   // paths were unmapped, rather than to refuse and leave the change unverified.
   let plan;
+  if (!result.stdout) {
+    throw new Error(`harness plan failed (exit ${result.status}) and produced no plan:\n${result.stderr || ""}`);
+  }
   try {
     plan = JSON.parse(result.stdout);
   } catch {
     throw new Error(
-      `harness plan failed (exit ${result.status}) and produced no plan:\n` +
+      `harness plan failed (exit ${result.status}) and produced invalid JSON:\n` +
       `${result.stderr || result.stdout}`,
     );
   }

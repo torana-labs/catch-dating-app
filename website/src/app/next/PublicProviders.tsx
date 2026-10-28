@@ -77,7 +77,8 @@ export function PublicProviders({children, catalog, pathname, initialSearch = ""
   }, []);
   return <Router location={location} navigator={navigator}>
     <WebsiteQueryProvider><PendingRequestProvider>
-      <publicEventListingsContext.Provider value={{listings: current?.listings ?? [], phase: current ? "ready" : "unavailable", readAt: current?.readAt}}>
+      <publicEventListingsContext.Provider value={{listings: current?.listings ?? [], phase: current ? "ready" : "unavailable", readAt: current?.readAt,
+        organizerPage: current?.organizerPage ?? null}}>
         {children}
       </publicEventListingsContext.Provider>
     </PendingRequestProvider></WebsiteQueryProvider>

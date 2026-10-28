@@ -2,6 +2,8 @@ import {eventGuestCancellationQuote} from "./eventCancellationPolicy";
 import type {EventPaymentLedger, EventSeatPaymentState,
   EventPaymentAdmissionReader} from "./eventPaymentState";
 import {Timestamp} from "firebase-admin/firestore";
+import type {EventDocument} from
+  "../../shared/generated/firestoreAdminTypes";
 import {HttpsError} from "firebase-functions/v2/https";
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
@@ -13,6 +15,8 @@ import {FirestoreSeatTransaction, assertCurrentReadySeatSnapshot} from
   "../../events/seatAuthority/firestoreAdapter";
 import {prepareSeatCommand, applySeatPlan, SeatAuthorityError} from
   "../../events/seatAuthority/seatAuthority";
+import {catchBookingCancellation, isPublicPaymentBooking} from
+  "../../events/publicRegistration/catchBookingBridge";
 function unavailable(): never {
   throw new HttpsError("failed-precondition",
     "Paid cancellation needs reconciliation.");
@@ -127,10 +131,13 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
     if (!ledger || !reservation || reservation.checkoutHold ||
         reservation.temporaryHold) unavailable();
     const participation = participationSnap.data();
-    // Preserve an independent Catch booking's attribution to the shared seat.
-    // Its cancellation is owned by that booking flow, not this paid admission.
-    const seatRetained = !!participation &&
+    const participationActive = !!participation &&
       ["signedUp", "attended"].includes(participation.status);
+    // A Consumer edge created by this admission shares its seat and money; an
+    // independent Catch booking keeps the seat and owns its own cancellation.
+    const bridgedBooking = participationActive &&
+      isPublicPaymentBooking(participation?.paymentId, paymentId);
+    const seatRetained = participationActive && !bridgedBooking;
     if (seatRetained && (participation?.eventId !== eventId ||
         participation?.uid !== recipientUid ||
         (participation?.organizerId ?? participation?.clubId) !==
@@ -146,9 +153,22 @@ export async function cancelPaidEventAdmission<P extends EventSeatPaymentState>(
         expectedReservationRevision: reservation.revision, nowMillis},
       resolveIdentity: async () => identity});
     const now = Timestamp.fromMillis(nowMillis);
+    if (bridgedBooking && (participation?.eventId !== eventId ||
+        participation?.uid !== recipientUid ||
+        (participation?.organizerId ?? participation?.clubId) !==
+          organizerId)) {
+      unavailable();
+    }
+    const bridgedCounts = bridgedBooking && input.guest ?
+      catchBookingCancellation({tx, participationRef: db
+        .collection("eventParticipations")
+        .doc(eventParticipationId(eventId, recipientUid)),
+      participation: participation!, event: event as EventDocument,
+      eventId, uid: recipientUid}) : {};
     if (release) {
       applySeatPlan(seatTx, release);
-      tx.update(eventRef, {bookedCount: ledger.occupied - 1});
+      tx.update(eventRef, {bookedCount: ledger.occupied - 1,
+        ...bridgedCounts});
     }
     tx.update(attendeeRef, {status: "cancelled", cancelledAt: now,
       preCheckInStatus: null, updatedAt: now});

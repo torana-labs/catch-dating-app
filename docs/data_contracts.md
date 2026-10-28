@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.177.0
-updated: 2026-10-25
+version: 1.178.0
+updated: 2026-10-28
 owner: recursive_audit_loop
 status: active
 ---
@@ -4428,6 +4428,32 @@ definitions in `contracts/shared/public_page_common.schema.json`.
   backfilled the website assembles a page without a read model from its
   sources under the same rules.
 
+### City plans
+
+`cityPlans/{citySlug}` holds what the website shows for one city: the plans
+starting in the next 14 days, how many there are of each homepage format
+(run, dinner, games, courts, nights out and other, grouped as
+`formatActivityKinds` in `@catch/web-ui`), the
+organisers in the city and whether the city is `live` or `launchingSoon`
+(CAT-260). Its contract is `contracts/firestore/city_plans.schema.json`.
+
+- Every launched and planned market in `functions/src/locations/marketConfig.ts`
+  has a document. A launched city is built only from its
+  `organizerPublicPage` documents, so it adds no publication rule of its own.
+- A launched city reads as `launchingSoon` until it has four plans in the
+  window, so a thin city never renders a sparse page.
+- A planned city has no plans. It lists the published organisers joining it,
+  projected under the organiser page rules with that city treated as live.
+  They carry no page link, because their pages stay withheld until the city
+  launches.
+- Like the pages it reads, it never holds contact details, owner identities,
+  rosters or dating framing; the schema rejects the `singlesMixer` activity.
+- An organiser page write rebuilds the cities it left and joined, and
+  `rebuildCityPlansHourly` rebuilds every city, which moves plans into and
+  out of the window. Each commit is a transaction that discards a rebuild
+  which read its sources before the stored `builtAt`.
+- The collection is server-only in `firestore.rules`.
+
 ## Read Path Discipline
 
 Firestore reads use an explicit surface policy instead of ad-hoc unbounded
@@ -4630,7 +4656,7 @@ confirmation. Preserve user documents and both canonical organizer documents
 and legacy club projections through any remote migration.
 
 If remote cleanup is approved, first export or back up existing `users`,
-`publicProfiles`, and old `runClubs` documents for each Firebase environment.
+`publicProfiles`, and old `run` documents for each Firebase environment.
 Then copy any host organizations worth preserving into `organizers`, reset
 event-specific legacy collections and edges such as old `runs`,
 `runParticipations`, `savedRuns`, reviews, event schedule locks, event-derived

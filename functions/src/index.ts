@@ -218,6 +218,10 @@ export {
   refreshPublicPageFollowers,
 } from "./publicPages/triggers";
 export {
+  onCityPlansOrganizerPageWritten,
+  rebuildCityPlansHourly,
+} from "./cityPlans/triggers";
+export {
   archiveOrganizer,
   deleteOrganizer,
   updateOrganizer,

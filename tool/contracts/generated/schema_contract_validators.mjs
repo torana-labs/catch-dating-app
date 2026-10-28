@@ -639,6 +639,7 @@ import {
   organizerPublicPageDocumentSchema,
   eventPublicPageDocumentSchema,
   publicPageBuildDocumentSchema,
+  cityPlansDocumentSchema,
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
   eventInviteLinkSecretDocumentSchema,
@@ -1929,6 +1930,7 @@ export const validateExternalEventDocument = ajv.compile(externalEventDocumentSc
 export const validateOrganizerPublicPageDocument = ajv.compile(organizerPublicPageDocumentSchema);
 export const validateEventPublicPageDocument = ajv.compile(eventPublicPageDocumentSchema);
 export const validatePublicPageBuildDocument = ajv.compile(publicPageBuildDocumentSchema);
+export const validateCityPlansDocument = ajv.compile(cityPlansDocumentSchema);
 export const validateEventPrivateAccessDocument = ajv.compile(eventPrivateAccessDocumentSchema);
 export const validateEventInviteLinkDocument = ajv.compile(eventInviteLinkDocumentSchema);
 export const validateEventInviteLinkSecretDocument = ajv.compile(eventInviteLinkSecretDocumentSchema);

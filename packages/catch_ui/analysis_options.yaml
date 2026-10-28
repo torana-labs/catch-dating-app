@@ -9,3 +9,6 @@ linter:
     - always_use_package_imports
     - directives_ordering
     - prefer_single_quotes
+analyzer:
+  exclude:
+    - build/**

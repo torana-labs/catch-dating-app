@@ -245,13 +245,13 @@
       "status": "required"
     },
     {
-      "source": "website/src/features/organizers/useHostListingPageController.ts",
-      "test": "website/src/features/organizers/useHostListingPageController.test.tsx",
+      "source": "website/src/features/organizers/useOrganizerDirectoryController.ts",
+      "test": "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
       "status": "required"
     },
     {
-      "source": "website/src/features/organizers/useOrganizerDirectoryController.ts",
-      "test": "website/src/features/organizers/useOrganizerDirectoryController.test.tsx",
+      "source": "website/src/features/organizers/useOrganizerPageController.ts",
+      "test": "website/src/features/organizers/useOrganizerPageController.test.tsx",
       "status": "required"
     },
     {

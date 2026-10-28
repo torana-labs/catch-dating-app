@@ -648,6 +648,7 @@ Do not edit it by hand.
 | OrganizerPublicPageDocument | `firestore/organizer_public_pages.schema.json` | `functions/src/shared/generated/organizerPublicPageDocument.ts` |
 | EventPublicPageDocument | `firestore/event_public_pages.schema.json` | `functions/src/shared/generated/eventPublicPageDocument.ts` |
 | PublicPageBuildDocument | `firestore/public_page_builds.schema.json` | `functions/src/shared/generated/publicPageBuildDocument.ts` |
+| CityPlansDocument | `firestore/city_plans.schema.json` | `functions/src/shared/generated/cityPlansDocument.ts` |
 | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `functions/src/shared/generated/eventPrivateAccessDocument.ts` |
 | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `functions/src/shared/generated/eventInviteLinkDocument.ts` |
 | EventInviteLinkSecretDocument | `firestore/event_invite_link_secrets.schema.json` | `functions/src/shared/generated/eventInviteLinkSecretDocument.ts` |
@@ -1919,6 +1920,7 @@ Do not edit it by hand.
 | `schemaOrganizerPublicPageDocumentSchema` | OrganizerPublicPageDocument | `firestore/organizer_public_pages.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_public_page_document.g.dart` |
 | `schemaEventPublicPageDocumentSchema` | EventPublicPageDocument | `firestore/event_public_pages.schema.json` | `lib/core/schema_contracts/generated/schemas/event_public_page_document.g.dart` |
 | `schemaPublicPageBuildDocumentSchema` | PublicPageBuildDocument | `firestore/public_page_builds.schema.json` | `lib/core/schema_contracts/generated/schemas/public_page_build_document.g.dart` |
+| `schemaCityPlansDocumentSchema` | CityPlansDocument | `firestore/city_plans.schema.json` | `lib/core/schema_contracts/generated/schemas/city_plans_document.g.dart` |
 | `schemaEventPrivateAccessDocumentSchema` | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `lib/core/schema_contracts/generated/schemas/event_private_access_document.g.dart` |
 | `schemaEventInviteLinkDocumentSchema` | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_document.g.dart` |
 | `schemaEventInviteLinkSecretDocumentSchema` | EventInviteLinkSecretDocument | `firestore/event_invite_link_secrets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_secret_document.g.dart` |

@@ -275,21 +275,6 @@ export function ListingRailLinkList({
   );
 }
 
-export function ListingRailEmptyState({
-  body,
-  title,
-}: {
-  body: ReactNode;
-  title: ReactNode;
-}) {
-  return (
-    <div className="listing-profile-rail__empty">
-      <strong>{title}</strong>
-      <p>{body}</p>
-    </div>
-  );
-}
-
 export function FeaturedOrganizersGrid({
   children,
   className,
@@ -373,23 +358,6 @@ export function ListingSectionIntro({
       <h2 id={titleId}>{title}</h2>
       <p>{body}</p>
     </div>
-  );
-}
-
-export function RecommendedOrganizersSectionShell({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <ListingSection
-      {...props}
-      className={classNames("recommended-organizers", className)}
-    >
-      {children}
-    </ListingSection>
   );
 }
 

@@ -94,7 +94,7 @@ target 'Runner' do
   # that the installed cloud_firestore plugin expects — bump this whenever
   # cloud_firestore is upgraded in pubspec.yaml, or pod install / linking will
   # silently desync. The expected version is in the cloud_firestore podspec.
-  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '12.19.0'
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '12.19.3'
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do

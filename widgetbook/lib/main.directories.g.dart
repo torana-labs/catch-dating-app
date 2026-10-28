@@ -247,6 +247,8 @@ import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_offer_payment_use_cases.dart'
     as _widgetbook_workspace_hosts_host_offer_payment_use_cases;
+import 'package:widgetbook_workspace/hosts/host_payout_connection_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_payout_connection_use_cases;
 import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
     as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/host_phone_import_use_cases.dart'
@@ -11971,6 +11973,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Canonical payout section states',
                     builder: _widgetbook_workspace_hosts_operations_payouts
                         .hostPaymentAccountSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRazorpayConnectionCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Organiser connection boundary',
+                    builder:
+                        _widgetbook_workspace_hosts_host_payout_connection_use_cases
+                            .hostRazorpayConnectionCardPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRazorpayConnectionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Unavailable, connect and ready',
+                    builder:
+                        _widgetbook_workspace_hosts_host_payout_connection_use_cases
+                            .hostRazorpayConnectionSectionPreview,
                   ),
                 ],
               ),

@@ -168,5 +168,3 @@ export function useListingClaimController(listing: HostListing) {
     user,
   };
 }
-
-export type ListingClaimController = ReturnType<typeof useListingClaimController>;

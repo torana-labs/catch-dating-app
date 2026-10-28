@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-10-26",
+  "updated": "2026-10-28",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "9d6d94b4a46b5b5c4b7bea52b19af1d89b08fd91ca8a1abdaf4dfbd0dc20982d",
+  "sourceDigest": "beb304d7bb5ac1bf40264cf89439deb32a103586fc94c2e841d5dc74932c3860",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "9d6d94b4a46b5b5c4b7bea52b19af1d89b08fd91ca8a1abdaf4dfbd0dc20982d",
-    "contractDigest": "9d6d94b4a46b5b5c4b7bea52b19af1d89b08fd91ca8a1abdaf4dfbd0dc20982d"
+    "digest": "beb304d7bb5ac1bf40264cf89439deb32a103586fc94c2e841d5dc74932c3860",
+    "contractDigest": "beb304d7bb5ac1bf40264cf89439deb32a103586fc94c2e841d5dc74932c3860"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "fd9a43a80e790a2b8d0a81ceadf1f275942c859806633f9c8970bbe0fac4796f",
+    "handoffRequestDigest": "121dca91de5a63305c17c5b1fc91992af2f6de51a7abb8e2d847552d5d5414a5",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,7 +461,7 @@
     "claudeAllowed": 71,
     "reactImplementationStates": {
       "headless-control": 6,
-      "styled": 19
+      "styled": 20
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -1442,9 +1442,9 @@
       "conceptId": "catch.chip.field",
       "dartSymbol": "CatchChoiceTile",
       "dartFile": "packages/catch_ui/lib/src/components/catch_choice_tile.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchChoiceTile",
+      "reactFile": "packages/web-ui/src/components/CatchChoiceTile.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/ChoiceTile",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1469,7 +1469,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ChoiceTile",
       "claudeAllowed": true,
-      "contractDigest": "ae42b80eeb38ded3d4e044a1b896ca28773a11b38b6661e031f138ee8a0df031"
+      "contractDigest": "020dff5d71ac363772f8e88837b957fd76a98464bbdaaa2f9975592d9edf8f7d"
     },
     {
       "contractId": "catch.surface",

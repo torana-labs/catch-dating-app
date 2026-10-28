@@ -242,6 +242,57 @@ test("local verification resolves Tools matrix checks and preserves package test
   }
 });
 
+test("local verification reports planner spawn errors before reading stdout", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-verify-plan-result-"));
+  const preload = path.join(root, "planner-result.cjs");
+  fs.writeFileSync(preload, [
+    'const child = require("node:child_process");',
+    'const {syncBuiltinESMExports} = require("node:module");',
+    'const original = child.spawnSync;',
+    'child.spawnSync = (command, args, options) =>',
+    '  args?.[0] === "tool/harness.mjs"',
+    '    ? JSON.parse(process.env.CATCH_VERIFY_PLAN_RESULT)',
+    '    : original(command, args, options);',
+    'syncBuiltinESMExports();',
+  ].join("\n"));
+  const run = (childResult) => spawnSync(process.execPath, [
+    "--require", preload, "tool/harness/verify_local.mjs", "--base", "HEAD", "--json",
+  ], {encoding: "utf8", env: {...process.env,
+    CATCH_VERIFY_PLAN_RESULT: JSON.stringify(childResult)}});
+  const plan = {complete: true, mode: "pr", full: false,
+    changedPaths: ["tool/harness/verify_local.mjs"],
+    operations: {ciTargets: ["tools"], codegenIds: []}};
+  try {
+    const denied = run({status: 0, stdout: "", stderr: "",
+      error: {code: "EPERM", message: "spawnSync node EPERM"}});
+    assert.equal(denied.status, 1);
+    assert.match(denied.stderr, /harness plan spawn failed \(EPERM\): spawnSync node EPERM/u);
+    assert.doesNotMatch(denied.stderr, /produced no plan/u);
+
+    const empty = run({status: 0, stdout: "", stderr: ""});
+    assert.equal(empty.status, 1);
+    assert.match(empty.stderr, /exit 0\) and produced no plan/u);
+    const malformed = run({status: 1, stdout: "{bad", stderr: "planner error"});
+    assert.equal(malformed.status, 1);
+    assert.match(malformed.stderr, /exit 1\) and produced invalid JSON/u);
+    assert.match(malformed.stderr, /planner error/u);
+
+    const valid = run({status: 0, stdout: JSON.stringify(plan), stderr: ""});
+    assert.equal(valid.status, 0, valid.stderr);
+    assert.deepEqual(JSON.parse(valid.stdout).targets, ["tools"]);
+    const incomplete = run({status: 1, stdout: JSON.stringify({...plan, complete: false,
+      unknownPaths: ["unmapped-file"]}), stderr: "unmapped path"});
+    assert.equal(incomplete.status, 0, incomplete.stderr);
+    assert.equal(JSON.parse(incomplete.stdout).complete, false);
+    assert.deepEqual(JSON.parse(incomplete.stdout).unknownPaths, ["unmapped-file"]);
+    const failed = run({status: 1, stdout: JSON.stringify(plan), stderr: "planner error"});
+    assert.equal(failed.status, 1);
+    assert.match(failed.stderr, /harness plan failed \(exit 1\): planner error/u);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});
+
 test("structural preflight runs from the declared sparse closure and fails closed", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-shared-preflight-"));
   const git = (args, options = {}) => spawnSync("git", args, {

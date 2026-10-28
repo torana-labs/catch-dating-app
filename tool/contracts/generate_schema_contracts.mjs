@@ -2179,6 +2179,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/publicPageBuildDocument.ts",
   },
   {
+    name: "CityPlansDocument",
+    source: "firestore/city_plans.schema.json",
+    typeOutput: "functions/src/shared/generated/cityPlansDocument.ts",
+  },
+  {
     name: "EventPrivateAccessDocument",
     source: "firestore/event_private_access.schema.json",
     typeOutput:
