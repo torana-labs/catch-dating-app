@@ -14772,6 +14772,62 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
   );
 
+  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinks = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsIcon = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.icon',
+    valueTypes: <String>['string'],
+    enumValues: <String>['link', 'website', 'community', 'social', 'tickets', 'calendar', 'shop', 'partner', 'video', 'route'],
+  );
+
+  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsId = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsLabel = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsPinned = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.pinned',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsShowUntil = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.showUntil',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsSubtitle = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.subtitle',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsUrl = CatchContractFieldConstraints(
+    path: 'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.url',
+    maxLength: 4096,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
   static const adminUpdateClubDetailsCallablePayloadFieldsPhoneNumber = CatchContractFieldConstraints(
     path: 'adminUpdateClubDetailsCallablePayload.fields.phoneNumber',
     maxLength: 320,
@@ -15347,6 +15403,62 @@ abstract final class CatchContractConstraints {
     path: 'adminUpdateOrganizerDetailsCallablePayload.fields.organizerType',
     valueTypes: <String>['string'],
     enumValues: <String>['club', 'community', 'individual', 'eventProducer', 'venue', 'brand'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinks = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsIcon = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.icon',
+    valueTypes: <String>['string'],
+    enumValues: <String>['link', 'website', 'community', 'social', 'tickets', 'calendar', 'shop', 'partner', 'video', 'route'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsId = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsLabel = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsPinned = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.pinned',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsShowUntil = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.showUntil',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsSubtitle = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.subtitle',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsUrl = CatchContractFieldConstraints(
+    path: 'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.url',
+    maxLength: 4096,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
   );
 
   static const adminUpdateOrganizerDetailsCallablePayloadFieldsPhoneNumber = CatchContractFieldConstraints(
@@ -85454,6 +85566,14 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['organizer', 'event', 'campaign'],
   );
 
+  static const getOrganizerClaimVerificationOptionsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerClaimVerificationOptionsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getOrganizerContactDetailCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallablePayload.contactId',
     maxLength: 180,
@@ -95234,7 +95354,6 @@ abstract final class CatchContractConstraints {
   static const joinWaitlistHTTPRequestEmail = CatchContractFieldConstraints(
     path: 'joinWaitlistHTTPRequest.email',
     maxLength: 320,
-    required: true,
     valueTypes: <String>['string'],
     format: 'email',
   );
@@ -95428,6 +95547,31 @@ abstract final class CatchContractConstraints {
     path: 'joinWaitlistHTTPRequest.website',
     maxLength: 512,
     valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappConsentVersion = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.consentVersion',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9-]{1,40}\$',
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappLaunchNotice = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.launchNotice',
+    required: true,
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappMarketing = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.marketing',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappPhone = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.phone',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
   );
 
   static const joinWaitlistHTTPResponseAlreadyJoined = CatchContractFieldConstraints(
@@ -108224,6 +108368,106 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerClaimInstagramCodeDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimInstagramCodeDocumentCode = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.code',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{6}\$',
+  );
+
+  static const organizerClaimInstagramCodeDocumentConsumedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.consumedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimInstagramCodeDocumentConsumedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.consumedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimInstagramCodeDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimInstagramCodeDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimInstagramCodeDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimInstagramMessageDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimInstagramMessageDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimInstagramMessageDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimInstagramMessageDocumentMessageKey = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.messageKey',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerClaimInstagramMessageDocumentOutcome = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['verified', 'wrongSender', 'expiredCode', 'codeAlreadyUsed', 'unknownCode', 'claimUnavailable', 'senderUnknown', 'rateLimited'],
+  );
+
+  static const organizerClaimInstagramMessageDocumentReceivedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.receivedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimInstagramMessageDocumentReceivedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.receivedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const organizerClaimRequestDocumentBusinessEmail = CatchContractFieldConstraints(
     path: 'organizerClaimRequestDocument.businessEmail',
     maxLength: 320,
@@ -108365,6 +108609,225 @@ abstract final class CatchContractConstraints {
     path: 'organizerClaimRequestDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentClaimRequestId = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.claimRequestId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentCode = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.code',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{6}\$',
+  );
+
+  static const organizerClaimVerificationDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentEvidenceMessageKey = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.evidence.messageKey',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerClaimVerificationDocumentEvidenceObservedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.evidence.observedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentEvidenceObservedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.evidence.observedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentEvidenceObservedIdentity = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.evidence.observedIdentity',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentEvidenceSource = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.evidence.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagramMessage', 'lumaDescription'],
+  );
+
+  static const organizerClaimVerificationDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentLastRejectionAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.lastRejection.at._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentLastRejectionAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.lastRejection.at._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentLastRejectionReason = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.lastRejection.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wrongSender', 'codeNotFound'],
+  );
+
+  static const organizerClaimVerificationDocumentMethod = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.method',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagramMessage', 'lumaDescription'],
+  );
+
+  static const organizerClaimVerificationDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentProofTarget = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.proofTarget',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentRequesterUid = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.requesterUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['awaitingProof', 'verified', 'expired', 'superseded'],
+  );
+
+  static const organizerClaimVerificationDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentVerifiedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.verifiedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentVerifiedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.verifiedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseCatchInstagramHandle = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.catchInstagramHandle',
+    maxLength: 30,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseMethods = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.methods',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseMethodsItemsAvailable = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.methods.items.available',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseMethodsItemsMethod = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.methods.items.method',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagramMessage', 'lumaDescription'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseMethodsItemsProofTarget = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.methods.items.proofTarget',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseMethodsItemsUnavailableReason = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.methods.items.unavailableReason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['turnedOff', 'noSourceOnListing'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerCommunicationPermissionReceiptDocumentActorClass = CatchContractFieldConstraints(
@@ -112708,6 +113171,70 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const organizerDocumentOwnerLinks = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownerLinks',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const organizerDocumentOwnerLinksItemsIcon = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownerLinks.items.icon',
+    valueTypes: <String>['string'],
+    enumValues: <String>['link', 'website', 'community', 'social', 'tickets', 'calendar', 'shop', 'partner', 'video', 'route'],
+  );
+
+  static const organizerDocumentOwnerLinksItemsId = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownerLinks.items.id',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const organizerDocumentOwnerLinksItemsLabel = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownerLinks.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerDocumentOwnerLinksItemsPinned = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownerLinks.items.pinned',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerDocumentOwnerLinksItemsShowUntilNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownerLinks.items.showUntil._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerDocumentOwnerLinksItemsShowUntilSeconds = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownerLinks.items.showUntil._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerDocumentOwnerLinksItemsSubtitle = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownerLinks.items.subtitle',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerDocumentOwnerLinksItemsUrl = CatchContractFieldConstraints(
+    path: 'organizerDocument.ownerLinks.items.url',
+    maxLength: 4096,
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
   );
 
   static const organizerDocumentOwnershipClaimedAtNanoseconds = CatchContractFieldConstraints(
@@ -125877,6 +126404,12 @@ abstract final class CatchContractConstraints {
     maxItems: 20,
   );
 
+  static const organizerPublicPageDocumentLinksItemsIcon = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.links.items.icon',
+    valueTypes: <String>['string'],
+    enumValues: <String>['link', 'website', 'community', 'social', 'tickets', 'calendar', 'shop', 'partner', 'video', 'route'],
+  );
+
   static const organizerPublicPageDocumentLinksItemsId = CatchContractFieldConstraints(
     path: 'organizerPublicPageDocument.links.items.id',
     required: true,
@@ -125910,6 +126443,13 @@ abstract final class CatchContractConstraints {
     path: 'organizerPublicPageDocument.links.items.showUntil._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerPublicPageDocumentLinksItemsSubtitle = CatchContractFieldConstraints(
+    path: 'organizerPublicPageDocument.links.items.subtitle',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const organizerPublicPageDocumentLinksItemsUrl = CatchContractFieldConstraints(
@@ -158981,6 +159521,72 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const startOrganizerClaimVerificationCallablePayloadMethod = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallablePayload.method',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagramMessage', 'lumaDescription'],
+  );
+
+  static const startOrganizerClaimVerificationCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseAttemptId = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseCatchInstagramHandle = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.catchInstagramHandle',
+    maxLength: 30,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseCode = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.code',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{6}\$',
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseExpiresAt = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.expiresAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseMethod = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.method',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagramMessage', 'lumaDescription'],
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseProofTarget = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.proofTarget',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const startOrganizerContactConversationCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'startOrganizerContactConversationCallablePayload.contactId',
     maxLength: 180,
@@ -171929,8 +172535,8 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.catchEvents.items.admissionLabels',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['approval', 'invitation', 'membership', 'balanced'],
-    maxItems: 4,
+    itemEnumValues: <String>['approval', 'invitation', 'membership'],
+    maxItems: 3,
     uniqueItems: true,
   );
 
@@ -171938,7 +172544,7 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.catchEvents.items.admissionLabels.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['approval', 'invitation', 'membership', 'balanced'],
+    enumValues: <String>['approval', 'invitation', 'membership'],
   );
 
   static const websiteHostListingProjectionCatchEventsItemsAmountPaise = CatchContractFieldConstraints(
@@ -171972,9 +172578,9 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.catchEvents.items.catchExperienceActivities',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['introductions', 'sharedActivities', 'rotations'],
+    itemEnumValues: <String>['introductions', 'sharedActivities'],
     minItems: 1,
-    maxItems: 3,
+    maxItems: 2,
     uniqueItems: true,
   );
 
@@ -171982,7 +172588,7 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.catchEvents.items.catchExperienceActivities.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['introductions', 'sharedActivities', 'rotations'],
+    enumValues: <String>['introductions', 'sharedActivities'],
   );
 
   static const websiteHostListingProjectionCatchEventsItemsCheckedInCount = CatchContractFieldConstraints(
@@ -172384,48 +172990,6 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummaryBookedCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.bookedCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummaryCatchSentCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.catchSentCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummaryChatStartedCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.chatStartedCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummaryCheckedInCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.checkedInCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummaryMutualMatchCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.mutualMatchCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummarySafetyIncidentCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.safetyIncidentCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
   );
 
   static const websiteHostListingProjectionExternalEvents = CatchContractFieldConstraints(
@@ -175594,6 +176158,14 @@ abstract final class CatchContractConstraints {
     'adminUpdateClubDetailsCallablePayload.fields.location': adminUpdateClubDetailsCallablePayloadFieldsLocation,
     'adminUpdateClubDetailsCallablePayload.fields.name': adminUpdateClubDetailsCallablePayloadFieldsName,
     'adminUpdateClubDetailsCallablePayload.fields.organizerType': adminUpdateClubDetailsCallablePayloadFieldsOrganizerType,
+    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinks,
+    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.icon': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsIcon,
+    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.id': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsId,
+    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.label': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsLabel,
+    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.pinned': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsPinned,
+    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.showUntil': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsShowUntil,
+    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.subtitle': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsSubtitle,
+    'adminUpdateClubDetailsCallablePayload.fields.ownerLinks.items.url': adminUpdateClubDetailsCallablePayloadFieldsOwnerLinksItemsUrl,
     'adminUpdateClubDetailsCallablePayload.fields.phoneNumber': adminUpdateClubDetailsCallablePayloadFieldsPhoneNumber,
     'adminUpdateClubDetailsCallablePayload.fields.profileImageUrl': adminUpdateClubDetailsCallablePayloadFieldsProfileImageUrl,
     'adminUpdateClubDetailsCallablePayload.fields.provenance.sourceConfidence': adminUpdateClubDetailsCallablePayloadFieldsProvenanceSourceConfidence,
@@ -175677,6 +176249,14 @@ abstract final class CatchContractConstraints {
     'adminUpdateOrganizerDetailsCallablePayload.fields.location': adminUpdateOrganizerDetailsCallablePayloadFieldsLocation,
     'adminUpdateOrganizerDetailsCallablePayload.fields.name': adminUpdateOrganizerDetailsCallablePayloadFieldsName,
     'adminUpdateOrganizerDetailsCallablePayload.fields.organizerType': adminUpdateOrganizerDetailsCallablePayloadFieldsOrganizerType,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks': adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinks,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.icon': adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsIcon,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.id': adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsId,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.label': adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsLabel,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.pinned': adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsPinned,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.showUntil': adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsShowUntil,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.subtitle': adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsSubtitle,
+    'adminUpdateOrganizerDetailsCallablePayload.fields.ownerLinks.items.url': adminUpdateOrganizerDetailsCallablePayloadFieldsOwnerLinksItemsUrl,
     'adminUpdateOrganizerDetailsCallablePayload.fields.phoneNumber': adminUpdateOrganizerDetailsCallablePayloadFieldsPhoneNumber,
     'adminUpdateOrganizerDetailsCallablePayload.fields.profileImageUrl': adminUpdateOrganizerDetailsCallablePayloadFieldsProfileImageUrl,
     'adminUpdateOrganizerDetailsCallablePayload.fields.provenance.sourceConfidence': adminUpdateOrganizerDetailsCallablePayloadFieldsProvenanceSourceConfidence,
@@ -185086,6 +185666,7 @@ abstract final class CatchContractConstraints {
     'getOrganizerApplicationDetailCallableResponse.submittedAtMillis': getOrganizerApplicationDetailCallableResponseSubmittedAtMillis,
     'getOrganizerApplicationDetailCallableResponse.targetId': getOrganizerApplicationDetailCallableResponseTargetId,
     'getOrganizerApplicationDetailCallableResponse.targetKind': getOrganizerApplicationDetailCallableResponseTargetKind,
+    'getOrganizerClaimVerificationOptionsCallablePayload.organizerId': getOrganizerClaimVerificationOptionsCallablePayloadOrganizerId,
     'getOrganizerContactDetailCallablePayload.contactId': getOrganizerContactDetailCallablePayloadContactId,
     'getOrganizerContactDetailCallablePayload.includeHistory': getOrganizerContactDetailCallablePayloadIncludeHistory,
     'getOrganizerContactDetailCallablePayload.organizerId': getOrganizerContactDetailCallablePayloadOrganizerId,
@@ -186474,6 +187055,10 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.instagram': joinWaitlistHTTPRequestInstagram,
     'joinWaitlistHTTPRequest.role': joinWaitlistHTTPRequestRole,
     'joinWaitlistHTTPRequest.website': joinWaitlistHTTPRequestWebsite,
+    'joinWaitlistHTTPRequest.whatsapp.consentVersion': joinWaitlistHTTPRequestWhatsappConsentVersion,
+    'joinWaitlistHTTPRequest.whatsapp.launchNotice': joinWaitlistHTTPRequestWhatsappLaunchNotice,
+    'joinWaitlistHTTPRequest.whatsapp.marketing': joinWaitlistHTTPRequestWhatsappMarketing,
+    'joinWaitlistHTTPRequest.whatsapp.phone': joinWaitlistHTTPRequestWhatsappPhone,
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
     'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
     'joinWaitlistHTTPResponse.hostLead.eventId': joinWaitlistHTTPResponseHostLeadEventId,
@@ -188229,6 +188814,20 @@ abstract final class CatchContractConstraints {
     'organizerCampaignWebhookReceiptDocument.payloadHash': organizerCampaignWebhookReceiptDocumentPayloadHash,
     'organizerCampaignWebhookReceiptDocument.provider': organizerCampaignWebhookReceiptDocumentProvider,
     'organizerCampaignWebhookReceiptDocument.providerEventId': organizerCampaignWebhookReceiptDocumentProviderEventId,
+    'organizerClaimInstagramCodeDocument.attemptId': organizerClaimInstagramCodeDocumentAttemptId,
+    'organizerClaimInstagramCodeDocument.code': organizerClaimInstagramCodeDocumentCode,
+    'organizerClaimInstagramCodeDocument.consumedAt._nanoseconds': organizerClaimInstagramCodeDocumentConsumedAtNanoseconds,
+    'organizerClaimInstagramCodeDocument.consumedAt._seconds': organizerClaimInstagramCodeDocumentConsumedAtSeconds,
+    'organizerClaimInstagramCodeDocument.expiresAt._nanoseconds': organizerClaimInstagramCodeDocumentExpiresAtNanoseconds,
+    'organizerClaimInstagramCodeDocument.expiresAt._seconds': organizerClaimInstagramCodeDocumentExpiresAtSeconds,
+    'organizerClaimInstagramCodeDocument.organizerId': organizerClaimInstagramCodeDocumentOrganizerId,
+    'organizerClaimInstagramMessageDocument.attemptId': organizerClaimInstagramMessageDocumentAttemptId,
+    'organizerClaimInstagramMessageDocument.expiresAt._nanoseconds': organizerClaimInstagramMessageDocumentExpiresAtNanoseconds,
+    'organizerClaimInstagramMessageDocument.expiresAt._seconds': organizerClaimInstagramMessageDocumentExpiresAtSeconds,
+    'organizerClaimInstagramMessageDocument.messageKey': organizerClaimInstagramMessageDocumentMessageKey,
+    'organizerClaimInstagramMessageDocument.outcome': organizerClaimInstagramMessageDocumentOutcome,
+    'organizerClaimInstagramMessageDocument.receivedAt._nanoseconds': organizerClaimInstagramMessageDocumentReceivedAtNanoseconds,
+    'organizerClaimInstagramMessageDocument.receivedAt._seconds': organizerClaimInstagramMessageDocumentReceivedAtSeconds,
     'organizerClaimRequestDocument.businessEmail': organizerClaimRequestDocumentBusinessEmail,
     'organizerClaimRequestDocument.businessPhone': organizerClaimRequestDocumentBusinessPhone,
     'organizerClaimRequestDocument.createdAt._nanoseconds': organizerClaimRequestDocumentCreatedAtNanoseconds,
@@ -188249,6 +188848,37 @@ abstract final class CatchContractConstraints {
     'organizerClaimRequestDocument.status': organizerClaimRequestDocumentStatus,
     'organizerClaimRequestDocument.updatedAt._nanoseconds': organizerClaimRequestDocumentUpdatedAtNanoseconds,
     'organizerClaimRequestDocument.updatedAt._seconds': organizerClaimRequestDocumentUpdatedAtSeconds,
+    'organizerClaimVerificationDocument.attemptId': organizerClaimVerificationDocumentAttemptId,
+    'organizerClaimVerificationDocument.claimRequestId': organizerClaimVerificationDocumentClaimRequestId,
+    'organizerClaimVerificationDocument.code': organizerClaimVerificationDocumentCode,
+    'organizerClaimVerificationDocument.createdAt._nanoseconds': organizerClaimVerificationDocumentCreatedAtNanoseconds,
+    'organizerClaimVerificationDocument.createdAt._seconds': organizerClaimVerificationDocumentCreatedAtSeconds,
+    'organizerClaimVerificationDocument.evidence.messageKey': organizerClaimVerificationDocumentEvidenceMessageKey,
+    'organizerClaimVerificationDocument.evidence.observedAt._nanoseconds': organizerClaimVerificationDocumentEvidenceObservedAtNanoseconds,
+    'organizerClaimVerificationDocument.evidence.observedAt._seconds': organizerClaimVerificationDocumentEvidenceObservedAtSeconds,
+    'organizerClaimVerificationDocument.evidence.observedIdentity': organizerClaimVerificationDocumentEvidenceObservedIdentity,
+    'organizerClaimVerificationDocument.evidence.source': organizerClaimVerificationDocumentEvidenceSource,
+    'organizerClaimVerificationDocument.expiresAt._nanoseconds': organizerClaimVerificationDocumentExpiresAtNanoseconds,
+    'organizerClaimVerificationDocument.expiresAt._seconds': organizerClaimVerificationDocumentExpiresAtSeconds,
+    'organizerClaimVerificationDocument.lastRejection.at._nanoseconds': organizerClaimVerificationDocumentLastRejectionAtNanoseconds,
+    'organizerClaimVerificationDocument.lastRejection.at._seconds': organizerClaimVerificationDocumentLastRejectionAtSeconds,
+    'organizerClaimVerificationDocument.lastRejection.reason': organizerClaimVerificationDocumentLastRejectionReason,
+    'organizerClaimVerificationDocument.method': organizerClaimVerificationDocumentMethod,
+    'organizerClaimVerificationDocument.organizerId': organizerClaimVerificationDocumentOrganizerId,
+    'organizerClaimVerificationDocument.proofTarget': organizerClaimVerificationDocumentProofTarget,
+    'organizerClaimVerificationDocument.requesterUid': organizerClaimVerificationDocumentRequesterUid,
+    'organizerClaimVerificationDocument.status': organizerClaimVerificationDocumentStatus,
+    'organizerClaimVerificationDocument.updatedAt._nanoseconds': organizerClaimVerificationDocumentUpdatedAtNanoseconds,
+    'organizerClaimVerificationDocument.updatedAt._seconds': organizerClaimVerificationDocumentUpdatedAtSeconds,
+    'organizerClaimVerificationDocument.verifiedAt._nanoseconds': organizerClaimVerificationDocumentVerifiedAtNanoseconds,
+    'organizerClaimVerificationDocument.verifiedAt._seconds': organizerClaimVerificationDocumentVerifiedAtSeconds,
+    'organizerClaimVerificationOptionsCallableResponse.catchInstagramHandle': organizerClaimVerificationOptionsCallableResponseCatchInstagramHandle,
+    'organizerClaimVerificationOptionsCallableResponse.methods': organizerClaimVerificationOptionsCallableResponseMethods,
+    'organizerClaimVerificationOptionsCallableResponse.methods.items.available': organizerClaimVerificationOptionsCallableResponseMethodsItemsAvailable,
+    'organizerClaimVerificationOptionsCallableResponse.methods.items.method': organizerClaimVerificationOptionsCallableResponseMethodsItemsMethod,
+    'organizerClaimVerificationOptionsCallableResponse.methods.items.proofTarget': organizerClaimVerificationOptionsCallableResponseMethodsItemsProofTarget,
+    'organizerClaimVerificationOptionsCallableResponse.methods.items.unavailableReason': organizerClaimVerificationOptionsCallableResponseMethodsItemsUnavailableReason,
+    'organizerClaimVerificationOptionsCallableResponse.organizerId': organizerClaimVerificationOptionsCallableResponseOrganizerId,
     'organizerCommunicationPermissionReceiptDocument.actorClass': organizerCommunicationPermissionReceiptDocumentActorClass,
     'organizerCommunicationPermissionReceiptDocument.actorUid': organizerCommunicationPermissionReceiptDocumentActorUid,
     'organizerCommunicationPermissionReceiptDocument.channel': organizerCommunicationPermissionReceiptDocumentChannel,
@@ -188846,6 +189476,15 @@ abstract final class CatchContractConstraints {
     'organizerDocument.organizerTypeUpdatedAt._nanoseconds': organizerDocumentOrganizerTypeUpdatedAtNanoseconds,
     'organizerDocument.organizerTypeUpdatedAt._seconds': organizerDocumentOrganizerTypeUpdatedAtSeconds,
     'organizerDocument.organizerTypeUpdatedByUid': organizerDocumentOrganizerTypeUpdatedByUid,
+    'organizerDocument.ownerLinks': organizerDocumentOwnerLinks,
+    'organizerDocument.ownerLinks.items.icon': organizerDocumentOwnerLinksItemsIcon,
+    'organizerDocument.ownerLinks.items.id': organizerDocumentOwnerLinksItemsId,
+    'organizerDocument.ownerLinks.items.label': organizerDocumentOwnerLinksItemsLabel,
+    'organizerDocument.ownerLinks.items.pinned': organizerDocumentOwnerLinksItemsPinned,
+    'organizerDocument.ownerLinks.items.showUntil._nanoseconds': organizerDocumentOwnerLinksItemsShowUntilNanoseconds,
+    'organizerDocument.ownerLinks.items.showUntil._seconds': organizerDocumentOwnerLinksItemsShowUntilSeconds,
+    'organizerDocument.ownerLinks.items.subtitle': organizerDocumentOwnerLinksItemsSubtitle,
+    'organizerDocument.ownerLinks.items.url': organizerDocumentOwnerLinksItemsUrl,
     'organizerDocument.ownership.claimedAt._nanoseconds': organizerDocumentOwnershipClaimedAtNanoseconds,
     'organizerDocument.ownership.claimedAt._seconds': organizerDocumentOwnershipClaimedAtSeconds,
     'organizerDocument.ownership.claimedByUid': organizerDocumentOwnershipClaimedByUid,
@@ -190694,11 +191333,13 @@ abstract final class CatchContractConstraints {
     'organizerPublicPageDocument.legacyPaths': organizerPublicPageDocumentLegacyPaths,
     'organizerPublicPageDocument.legacyPaths.items': organizerPublicPageDocumentLegacyPathsItems,
     'organizerPublicPageDocument.links': organizerPublicPageDocumentLinks,
+    'organizerPublicPageDocument.links.items.icon': organizerPublicPageDocumentLinksItemsIcon,
     'organizerPublicPageDocument.links.items.id': organizerPublicPageDocumentLinksItemsId,
     'organizerPublicPageDocument.links.items.label': organizerPublicPageDocumentLinksItemsLabel,
     'organizerPublicPageDocument.links.items.pinned': organizerPublicPageDocumentLinksItemsPinned,
     'organizerPublicPageDocument.links.items.showUntil._nanoseconds': organizerPublicPageDocumentLinksItemsShowUntilNanoseconds,
     'organizerPublicPageDocument.links.items.showUntil._seconds': organizerPublicPageDocumentLinksItemsShowUntilSeconds,
+    'organizerPublicPageDocument.links.items.subtitle': organizerPublicPageDocumentLinksItemsSubtitle,
     'organizerPublicPageDocument.links.items.url': organizerPublicPageDocumentLinksItemsUrl,
     'organizerPublicPageDocument.listing': organizerPublicPageDocumentListing,
     'organizerPublicPageDocument.organizerId': organizerPublicPageDocumentOrganizerId,
@@ -195243,6 +195884,15 @@ abstract final class CatchContractConstraints {
     'startClubHostConversationCallablePayload.hostUid': startClubHostConversationCallablePayloadHostUid,
     'startEventSuccessFirstHelloMissionCallablePayload.eventId': startEventSuccessFirstHelloMissionCallablePayloadEventId,
     'startEventSuccessFirstHelloMissionCallablePayload.venueSessionToken': startEventSuccessFirstHelloMissionCallablePayloadVenueSessionToken,
+    'startOrganizerClaimVerificationCallablePayload.method': startOrganizerClaimVerificationCallablePayloadMethod,
+    'startOrganizerClaimVerificationCallablePayload.organizerId': startOrganizerClaimVerificationCallablePayloadOrganizerId,
+    'startOrganizerClaimVerificationCallableResponse.attemptId': startOrganizerClaimVerificationCallableResponseAttemptId,
+    'startOrganizerClaimVerificationCallableResponse.catchInstagramHandle': startOrganizerClaimVerificationCallableResponseCatchInstagramHandle,
+    'startOrganizerClaimVerificationCallableResponse.code': startOrganizerClaimVerificationCallableResponseCode,
+    'startOrganizerClaimVerificationCallableResponse.expiresAt': startOrganizerClaimVerificationCallableResponseExpiresAt,
+    'startOrganizerClaimVerificationCallableResponse.method': startOrganizerClaimVerificationCallableResponseMethod,
+    'startOrganizerClaimVerificationCallableResponse.organizerId': startOrganizerClaimVerificationCallableResponseOrganizerId,
+    'startOrganizerClaimVerificationCallableResponse.proofTarget': startOrganizerClaimVerificationCallableResponseProofTarget,
     'startOrganizerContactConversationCallablePayload.contactId': startOrganizerContactConversationCallablePayloadContactId,
     'startOrganizerContactConversationCallablePayload.organizerId': startOrganizerContactConversationCallablePayloadOrganizerId,
     'startOrganizerConversationCallablePayload.eventId': startOrganizerConversationCallablePayloadEventId,
@@ -197108,12 +197758,6 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.eventEvidence.items.sourceLabel': websiteHostListingProjectionEventEvidenceItemsSourceLabel,
     'websiteHostListingProjection.eventEvidence.items.summary': websiteHostListingProjectionEventEvidenceItemsSummary,
     'websiteHostListingProjection.eventEvidence.items.title': websiteHostListingProjectionEventEvidenceItemsTitle,
-    'websiteHostListingProjection.eventSuccessSummary.bookedCount': websiteHostListingProjectionEventSuccessSummaryBookedCount,
-    'websiteHostListingProjection.eventSuccessSummary.catchSentCount': websiteHostListingProjectionEventSuccessSummaryCatchSentCount,
-    'websiteHostListingProjection.eventSuccessSummary.chatStartedCount': websiteHostListingProjectionEventSuccessSummaryChatStartedCount,
-    'websiteHostListingProjection.eventSuccessSummary.checkedInCount': websiteHostListingProjectionEventSuccessSummaryCheckedInCount,
-    'websiteHostListingProjection.eventSuccessSummary.mutualMatchCount': websiteHostListingProjectionEventSuccessSummaryMutualMatchCount,
-    'websiteHostListingProjection.eventSuccessSummary.safetyIncidentCount': websiteHostListingProjectionEventSuccessSummarySafetyIncidentCount,
     'websiteHostListingProjection.externalEvents': websiteHostListingProjectionExternalEvents,
     'websiteHostListingProjection.externalEvents.items.accessibility': websiteHostListingProjectionExternalEventsItemsAccessibility,
     'websiteHostListingProjection.externalEvents.items.activityKind': websiteHostListingProjectionExternalEventsItemsActivityKind,

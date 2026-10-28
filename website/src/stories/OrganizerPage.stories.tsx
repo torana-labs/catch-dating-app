@@ -3,6 +3,8 @@ import {CatchBand, CatchGap, CatchSplit} from "@catch/web-ui";
 import type {ReactNode} from "react";
 import {MemoryRouter} from "react-router";
 import {expect, userEvent, within} from "storybook/test";
+import {accountCopy} from "../content/account";
+import type {WebsiteAccountController} from "../features/account/useWebsiteAccountController";
 import {HostListingPage} from "../features/organizers/HostListingPage";
 import type {OrganizerPageRecord} from "../features/organizers/organizerPage";
 import {OrganizerAboutSection, OrganizerClaimSection, OrganizerPageFooter} from "../features/organizers/sections/organizerPage/OrganizerAboutSections";
@@ -146,6 +148,32 @@ export const FollowByPhone: Story = {
     await userEvent.type(canvas.getByLabelText(/Mobile number/u), "98765 43210");
     await userEvent.click(canvas.getByRole("button", {name: "Send code"}));
     await expect(canvas.getByText("Sent to +91 98765 43210.")).toBeInTheDocument();
+  },
+};
+
+/** The account step a follow opens for a visitor without a complete account, on its ground card. */
+const followAccountStep: WebsiteAccountController = {
+  id: "story-follow-account", uid: null, account: undefined, ready: false, loading: false, pending: false,
+  status: {message: "", tone: ""}, displayName: "", setDisplayName: () => undefined,
+  phoneNumber: "", setPhoneNumber: () => undefined, dateOfBirth: "", setDateOfBirth: () => undefined,
+  code: "", setCode: () => undefined, stage: "details", recaptchaId: "story-follow-recaptcha", verified: false,
+  ageRequired: false, ageIneligible: false, handleSubmit: async (event) => event.preventDefault(),
+  restartVerification: () => undefined,
+  refresh: async () => {
+    throw new Error("Storybook has no account backend.");
+  },
+};
+
+export const FollowAccountStep: Story = {
+  parameters: {catchComponent: {id: "organizer_identity_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["follow-account-step"]}},
+  render: () => (
+    <SectionStory column="rail" pages={[claimedOrganizerPage]}
+      render={(controller) => <OrganizerIdentitySection controller={{...controller, follow: {...controller.follow, account: followAccountStep}}} />} />
+  ),
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByLabelText(accountCopy.name)).toBeVisible();
+    await expect(canvas.getByLabelText(accountCopy.phone)).toBeVisible();
   },
 };
 

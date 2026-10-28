@@ -3,10 +3,14 @@
  * inside a card and 28px for a pitch, which steps down to 20px below 840px.
  * The card stacks what it holds with no gap of its own; the caller arranges
  * the contents with CatchGap. An outlined card draws the emphasis stroke in
- * its ground's ink at 12%.
+ * its ground's ink at 12%. Fields in a card take the boards' boxed input at
+ * rest: a white fill and the emphasis stroke in the ground's ink at 25%.
  */
 .card {
   composes: ground from "./grounds.module.css";
+  --catch-field-rest-fill: var(--catch-palette-white);
+  --catch-field-rest-line: color-mix(in srgb, var(--catch-on-ground-ink) 25%, transparent);
+  --catch-field-rest-stroke: var(--catch-stroke-emphasis);
 
   display: flex;
   flex-direction: column;
@@ -14,6 +18,11 @@
   min-width: 0;
   margin: 0;
   border-radius: var(--catch-radius-lg);
+}
+
+/* On the dark ground a white field would hide its light ink. */
+.card[data-ground="ink"] {
+  --catch-field-rest-fill: color-mix(in srgb, var(--catch-on-ground-ink) 8%, transparent);
 }
 
 .card[data-outlined] {

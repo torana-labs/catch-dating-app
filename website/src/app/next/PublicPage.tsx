@@ -13,6 +13,7 @@ import {marketingCaptures as captures} from "../marketingCaptures";
 import {usePublicHostListings} from "../../features/organizers/usePublicEventListingsController";
 import {getHostListingRouteForPath} from "../../features/organizers/routing";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../../features/events/eventDetailModel";
+import {useEventPage} from "../../features/events/eventPageContext";
 import {publishedLegalContent} from "../../content/legal";
 import type {PublicContact} from "../../content/publicContact";
 import {MarketingConsentBanner} from "../../features/marketing/MarketingConsentBanner";
@@ -31,6 +32,7 @@ const Missing = dynamic(() => import("../../features/notFound/NotFoundPage").the
 export function PublicPage({page, readAt, contact}: {page: PageKey; readAt: number; contact?: PublicContact}) {
   const location = useLocation();
   const {listings, readAt: currentReadAt, organizerPage} = usePublicHostListings();
+  const eventRoute = useEventPage();
   const navigate = useNavigate();
   const exploreRouteState = exploreRouteStateForSearch(location.search);
   const homeRouteState = homeRouteStateForSearch(location.search);
@@ -61,7 +63,8 @@ export function PublicPage({page, readAt, contact}: {page: PageKey; readAt: numb
       description: event.summary, url: `https://catchdates.com${event.path}`,
       location: {"@type": "Place", name: event.location},
       organizer: {"@type": "Organization", name: event.listing.name, url: `https://catchdates.com${event.listing.path}`}};
-    content = event ? <Event event={event} /> : <Missing />;
+    content = event && eventRoute?.page.eventId === event.eventId ?
+      <Event listing={event.listing} mapImageUrl={eventRoute.mapImageUrl} page={eventRoute.page} /> : <Missing />;
   } else if (page === "claim") {
     const state = claimRouteStateForLocation(location);
     state.listing = listings.find(item => item.id === state.lookup || item.slug === state.lookup || item.path === state.lookup || item.legacyPaths?.includes(state.lookup ?? "")) ?? null;

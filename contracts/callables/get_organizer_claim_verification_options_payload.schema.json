@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_claim_verification_options_payload.schema.json",
+  "title": "GetOrganizerClaimVerificationOptionsCallablePayload",
+  "description": "Callable payload accepted by getOrganizerClaimVerificationOptions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["organizerId"],
+  "properties": {
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

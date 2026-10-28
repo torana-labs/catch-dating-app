@@ -2,26 +2,6 @@ import {ToggleButtonControl, ToggleGroupControl} from "@catch/web-ui";
 import type {ButtonHTMLAttributes, HTMLAttributes, ReactNode} from "react";
 import {classNames} from "@catch/web-ui";
 
-export function CardGrid({
-  children,
-  className,
-  reveal = false,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames("card-grid", className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
 export function ChoiceChip({
   children,
   selected,

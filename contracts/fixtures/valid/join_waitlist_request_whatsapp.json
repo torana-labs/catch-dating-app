@@ -1,0 +1,20 @@
+{
+  "city": "Pune",
+  "role": "member",
+  "website": "",
+  "whatsapp": {
+    "phone": "+919812345678",
+    "launchNotice": true,
+    "marketing": false,
+    "consentVersion": "city-launch-whatsapp-v1"
+  },
+  "attribution": null,
+  "analytics": {
+    "consent": null,
+    "eventId": "waitlist_whatsapp_1",
+    "formVariant": "member",
+    "pagePath": "/",
+    "pageTitle": "Catch",
+    "submittedAt": "2026-10-28T08:00:00.000Z"
+  }
+}

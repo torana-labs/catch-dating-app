@@ -809,6 +809,34 @@ export interface AdminClubDetails {
     sourceSummary: string | null;
     formats: string[];
   };
+  /** Organizer page links in display order, expired ones included. */
+  ownerLinks: AdminOrganizerOwnerLink[];
+}
+
+/** contracts/shared/public_page_common.schema.json ownerLinkIcon. */
+export type OrganizerOwnerLinkIcon =
+  | "link"
+  | "website"
+  | "community"
+  | "social"
+  | "tickets"
+  | "calendar"
+  | "shop"
+  | "partner"
+  | "video"
+  | "route";
+
+/** contracts/shared/public_page_common.schema.json ownerLinkInput. */
+export interface AdminOrganizerOwnerLink {
+  id: string;
+  label: string;
+  subtitle: string | null;
+  url: string;
+  /** Null lets the page infer an icon from the URL. */
+  icon: OrganizerOwnerLinkIcon | null;
+  pinned: boolean;
+  /** ISO time after which the page hides the link. */
+  showUntil: string | null;
 }
 
 export interface AdminGetClubDetailsPayload {
@@ -898,6 +926,8 @@ export interface AdminUpdateClubDetailsPayload {
       sourceSummary?: string | null;
       formats?: string[];
     };
+    /** Replaces every organizer page link; an empty list removes them. */
+    ownerLinks?: AdminOrganizerOwnerLink[];
   };
   reviewNote?: string | null;
 }

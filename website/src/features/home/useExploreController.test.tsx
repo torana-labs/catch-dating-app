@@ -11,7 +11,7 @@ import {publicExperienceActivities} from "../organizers/publicExperience";
 afterEach(cleanup);
 const now = Date.parse("2030-01-01");
 const ordinary: HostListingCatchEvent = {id:"dinner", role:"Hosted event", title:"Long Table", summary:"Dinner", activityKind:"dinner", timeline:"upcoming", startTime:"2030-01-03", endTime:"2030-01-04", date:"3 Jan", location:"Khar", capacityLimit:20, bookedCount:1, checkedInCount:0, waitlistedCount:0, priceLabel:"₹400", publicRegistrationEnabled:true};
-const experience: HostListingCatchEvent = {...ordinary,id:"pickleball",title:"New Partners",activityKind:"pickleball",location:"Bandra",startTime:"2030-01-02",catchExperienceActivities:["rotations"]};
+const experience: HostListingCatchEvent = {...ordinary,id:"pickleball",title:"New Partners",activityKind:"pickleball",location:"Bandra",startTime:"2030-01-02",catchExperienceActivities:["introductions"]};
 const listing: HostListing = {...hostListings[0],id:"club",name:"Court Club",city:"Mumbai",citySlug:"mumbai",authority:{...hostListings[0].authority,publishStatus:"published",claimState:"claimed"},catchEvents:[ordinary,experience],externalEvents:[]};
 const wrapper = ({children}: PropsWithChildren) => <publicEventListingsContext.Provider value={{listings:[listing],phase:"ready",readAt:now}}>{children}</publicEventListingsContext.Provider>;
 it("composes city, format, query, date and participation filters without inferring badges",()=>{

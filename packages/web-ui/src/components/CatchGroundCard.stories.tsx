@@ -3,6 +3,7 @@ import {ReferenceComparison} from "../stories/referenceScreens";
 import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchButton} from "./CatchButton";
+import {CatchField} from "./CatchField";
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
 import {CatchGroundCard} from "./CatchGroundCard";
@@ -49,6 +50,27 @@ export const Grounds: Story = {
             </CatchGrid>
           </CatchGroundCard>
         </CatchGap>
+      </CatchBand>
+    </StoryPage>
+  ),
+};
+
+/** Fields in a card take the boards' boxed input at rest; outside a card a field stays a quiet row. */
+export const WithFields: Story = {
+  parameters: {catchComponent: {id: "shared_ground_card", routeIds: storyRoutes, states: ["boxed-fields"]}},
+  render: () => (
+    <StoryPage>
+      <CatchBand aria-label="Fields in cards" pb="compact" pt="compact">
+        <CatchGrid columns={3} compactColumns={1}>
+          {(["paper", "white", "ink"] as const).map((ground) => (
+            <CatchGroundCard ground={ground} key={ground} outlined={ground === "white"}>
+              <CatchGap size="formField">
+                <CatchField id={`ground-card-name-${ground}`} recipe="input" title="Name" />
+                <CatchField id={`ground-card-phone-${ground}`} inputHint="98765 43210" keyboardType="phone" recipe="input" title="Phone number" />
+              </CatchGap>
+            </CatchGroundCard>
+          ))}
+        </CatchGrid>
       </CatchBand>
     </StoryPage>
   ),

@@ -6,14 +6,12 @@ vi.mock("server-only", () => ({}));
 vi.mock("./publicRoute", () => ({resolvePublicRoute: mocks.route}));
 import {
   defaultMeetingPoint,
-  eventMapImagePath,
   eventMapResponse,
-  eventMapsAvailable,
-  eventMapVersion,
   forgetEventMaps,
   signedStaticMapUrl,
   type EventMapDependencies,
 } from "./eventMapImage";
+import {eventMapImagePath, eventMapsAvailable, eventMapVersion} from "./eventMapLink";
 
 afterEach(() => {forgetEventMaps(); vi.clearAllMocks();});
 

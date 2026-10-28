@@ -1,0 +1,34 @@
+/*
+ * Website v2 event poster (CAT-252): a ground in CatchHeroImage's framed
+ * geometry, 16:10 at radius lg and 4:3 below 840px, with 28px padding (20px
+ * below 840px). The kicker and date share the top line, the title takes the
+ * space between, and the place sits at the foot.
+ */
+.poster {
+  composes: ground from "./grounds.module.css";
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--catch-space-s4);
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  padding: var(--catch-space-s7);
+  border-radius: var(--catch-radius-lg);
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--catch-space-s4);
+  min-width: 0;
+}
+
+@container catch-page (width < 840px) {
+  .poster {
+    aspect-ratio: 4 / 3;
+    padding: var(--catch-space-s5);
+  }
+}
