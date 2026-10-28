@@ -19,6 +19,13 @@
   transition: transform var(--catch-motion-fast) var(--catch-motion-standard-curve);
 }
 
+/* A store that is not live yet is a button with the same face. */
+button.button {
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
 .button[data-size="m"] {
   --catch-store-height: 40px;
   padding-inline: var(--catch-space-s3) var(--catch-space-s4);

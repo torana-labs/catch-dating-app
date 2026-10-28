@@ -11,6 +11,7 @@ export const inMarket = {
     {
       id: "in-mumbai",
       slug: "mumbai",
+      marketSlug: "mumbai",
       label: "Mumbai",
       aliases: [],
       timezone: "Asia/Kolkata",
@@ -19,6 +20,7 @@ export const inMarket = {
     {
       id: "in-indore",
       slug: "indore",
+      marketSlug: "indore",
       label: "Indore",
       aliases: [],
       timezone: "Asia/Kolkata",
@@ -27,6 +29,7 @@ export const inMarket = {
     {
       id: "in-delhi",
       slug: "delhi",
+      marketSlug: "delhi-ncr",
       label: "Delhi",
       aliases: ["Delhi NCR", "New Delhi"],
       timezone: "Asia/Kolkata",
@@ -35,6 +38,7 @@ export const inMarket = {
     {
       id: "in-bangalore",
       slug: "bangalore",
+      marketSlug: "bengaluru",
       label: "Bangalore",
       aliases: ["Bengaluru"],
       timezone: "Asia/Kolkata",
@@ -43,6 +47,7 @@ export const inMarket = {
     {
       id: "in-pune",
       slug: "pune",
+      marketSlug: "pune",
       label: "Pune",
       aliases: [],
       timezone: "Asia/Kolkata",
@@ -51,6 +56,7 @@ export const inMarket = {
     {
       id: "in-hyderabad",
       slug: "hyderabad",
+      marketSlug: "hyderabad",
       label: "Hyderabad",
       aliases: [],
       timezone: "Asia/Kolkata",

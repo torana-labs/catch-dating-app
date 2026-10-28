@@ -1,6 +1,6 @@
 "use client";
 import {exploreRouteStateForSearch, exploreDiscoveryHref} from "../../features/home/exploreDiscovery";
-import {homeRouteStateForSearch} from "../../features/home/homeDiscovery";
+import type {HomeCatalog} from "../../features/home/homeTypes";
 import {publicJsonLd} from "../../shared/next/publicJsonLd";
 import dynamic from "next/dynamic";
 import {useEffect} from "react";
@@ -28,13 +28,11 @@ const Claim = dynamic(() => import("../../features/claims/ClaimPage").then(m => 
 const Legal = dynamic(() => import("../../features/legal/LegalPage").then(m => m.LegalPage));
 const Missing = dynamic(() => import("../../features/notFound/NotFoundPage").then(m => m.NotFoundPage));
 
-export function PublicPage({page, readAt, contact}: {page: PageKey; readAt: number; contact?: PublicContact}) {
+export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt: number; contact?: PublicContact; home?: HomeCatalog}) {
   const location = useLocation();
   const {listings, readAt: currentReadAt} = usePublicHostListings();
   const navigate = useNavigate();
   const exploreRouteState = exploreRouteStateForSearch(location.search);
-  const homeRouteState = homeRouteStateForSearch(location.search);
-  const homeRouteKey = `${homeRouteState.city}:${homeRouteState.category}`;
   useEffect(() => {
     const destination = retiredMarketingDestination(location);
     if (destination) window.location.replace(destination);
@@ -44,7 +42,7 @@ export function PublicPage({page, readAt, contact}: {page: PageKey; readAt: numb
   useMarketingAnalytics(page, location.pathname);
   let content;
   let structured: unknown = null;
-  if (page === "home") content = <Home key={homeRouteKey} captures={captures} routeState={homeRouteState} />;
+  if (page === "home") content = home ? <Home catalog={home} /> : <Missing />;
   else if (page === "visitor_discovery") content = <Explore captures={captures} routeState={exploreRouteState} onFiltersChange={filters => navigate(exploreDiscoveryHref(filters))} />;
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
     ? <Apply /> : <Host captures={captures} />;

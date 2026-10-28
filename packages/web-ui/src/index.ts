@@ -23,7 +23,7 @@ export type {
 } from "./components/CatchBand";
 /** A Website v2 ground (CAT-245); Flutter's `CatchGround` names the same nine. */
 export type {Ground as CatchGround} from "./components/palette";
-export {catchFormatAccentOf} from "./components/palette";
+export {catchFormatAccentOf, catchFormatOf} from "./components/palette";
 /** A Website v2 activity format: run, dinner, games, courts or nightsOut. */
 export type {Format as CatchFormat} from "./components/palette";
 export {CatchSiteHeader} from "./components/CatchSiteHeader";

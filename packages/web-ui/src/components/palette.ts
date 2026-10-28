@@ -50,10 +50,15 @@ export const formatActivityKinds: Readonly<Record<Format, readonly string[]>> = 
   nightsOut: ["barCrawl"],
 };
 
+/** The format an activity kind belongs to, or null when it has no v2 format yet. */
+export function catchFormatOf(activityKind: string): Format | null {
+  return (Object.keys(formatActivityKinds) as Format[])
+    .find((name) => formatActivityKinds[name].includes(activityKind)) ?? null;
+}
+
 /** The accent of the format an activity kind belongs to, or null when it has no v2 format yet. */
 export function catchFormatAccentOf(activityKind: string): PaletteAccent | null {
-  const format = (Object.keys(formatActivityKinds) as Format[])
-    .find((name) => formatActivityKinds[name].includes(activityKind));
+  const format = catchFormatOf(activityKind);
   return format ? formatAccents[format] : null;
 }
 
