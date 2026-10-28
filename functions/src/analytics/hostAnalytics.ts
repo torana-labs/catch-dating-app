@@ -12,6 +12,7 @@ import type {
   ClubDocument,
   EventAttendeeDocument,
   EventDocument,
+  OrganizerDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {
   HostAnalyticsQueryCallablePayload,
@@ -30,6 +31,7 @@ import {loadHostRegistrationAnalytics} from "./hostRegistrationAnalytics";
 import {
   defaultHostAnalyticsBigQuerySource,
   HostAnalyticsBigQuerySource,
+  HostAnalyticsLinkRow,
   HostAnalyticsMartRow,
 } from "./hostAnalyticsBigQuery";
 
@@ -68,6 +70,11 @@ interface AnalyticsRecords {
   events: EventRecord[];
   martRows: HostAnalyticsMartRow[];
   operationalAttendees?: EventAttendeeRecord[];
+  /**
+   * Owner link clicks in the range, by link and traffic source; null when the
+   * link mart could not be read.
+   */
+  linkRows?: HostAnalyticsLinkRow[] | null;
 }
 
 interface EventAttendeeRecord {
@@ -497,11 +504,15 @@ export function buildHostAnalyticsFromRecords(
     })),
     reviewSummary,
     discoverySummary,
-    dataQuality: dataQualityRows(
-      rows,
-      records.events,
-      records.operationalAttendees ?? []
-    ),
+    linkSummary: summarizeLinks(records.clubs, records.linkRows ?? []),
+    dataQuality: [
+      ...dataQualityRows(
+        rows,
+        records.events,
+        records.operationalAttendees ?? []
+      ),
+      ...(records.linkRows === null ? [linkClicksUnavailable] : []),
+    ],
   };
   assertValidResponse(response);
   return response;
@@ -524,7 +535,7 @@ async function loadHostAnalytics(
     if (cached !== null) return cached;
   }
   const events = await resolveEvents(db, payload, clubs, range, scope);
-  const [martRows, operationalAttendees, registrationAnalytics] =
+  const [martRows, operationalAttendees, registrationAnalytics, linkRows] =
     await Promise.all([
       deps.bigQuerySource.loadRows(
         {
@@ -542,9 +553,23 @@ async function loadHostAnalytics(
       loadOperationalAttendees(db, events),
       loadHostRegistrationAnalytics(db, clubs.map((club) => club.id),
         payload.eventId ?? null, range),
+      // Links belong to the organizer page, so event reports have none.
+      payload.eventId ? Promise.resolve([]) : deps.bigQuerySource.loadLinkRows(
+        {
+          startDate: zonedDateKey(range.start, range.timezone),
+          endDate: zonedDateKey(
+            addUtcMilliseconds(range.endExclusive, -1),
+            range.timezone
+          ),
+        },
+        clubs.map((club) => club.id),
+      ).catch((error) => {
+        console.warn("Owner link click rows unavailable.", error);
+        return null;
+      }),
     ]);
   const response = buildHostAnalyticsFromRecords(
-    {clubs, events, martRows, operationalAttendees},
+    {clubs, events, martRows, operationalAttendees, linkRows},
     range,
     now
   );
@@ -1113,6 +1138,7 @@ function summarizeDiscovery(
     contactClicks: sum.contactClicks + intValue(row.contactClicks),
     claimClicks: sum.claimClicks + intValue(row.claimClicks),
     outboundClicks: sum.outboundClicks + intValue(row.outboundClicks),
+    linkClicks: sum.linkClicks + intValue(row.linkClicks),
   }), {
     listingViews: 0,
     searchAppearances: 0,
@@ -1122,7 +1148,65 @@ function summarizeDiscovery(
     contactClicks: 0,
     claimClicks: 0,
     outboundClicks: 0,
+    linkClicks: 0,
   });
+}
+
+const trafficSources = ["instagram", "whatsapp", "facebook", "google", "qr",
+  "email", "direct", "other"] as const;
+type TrafficSource = typeof trafficSources[number];
+
+const linkClicksUnavailable:
+  HostAnalyticsCallableResponse["dataQuality"][number] = {
+    id: "owner-link-clicks",
+    state: "missing",
+    detail: "Owner link clicks could not be read from the BigQuery link mart.",
+    owner: "Analytics ops",
+    runbook: "docs/release_operations.md",
+    nextAction: "Deploy the host analytics DDL and refresh the link mart.",
+  };
+
+/**
+ * Owner link clicks (CAT-254): each link's total, most clicked first, with
+ * its current label, and the clicks by where visitors came from.
+ * @param {ClubRecord[]} clubs Organizers in scope, for current link labels.
+ * @param {HostAnalyticsLinkRow[]} rows Clicks by link and traffic source.
+ * @return {HostAnalyticsCallableResponse["linkSummary"]} The roll-up.
+ */
+function summarizeLinks(
+  clubs: ClubRecord[],
+  rows: HostAnalyticsLinkRow[]
+): HostAnalyticsCallableResponse["linkSummary"] {
+  // Organizers are read as ClubDocument here; ownerLinks is organizer-only.
+  const labels = new Map(clubs.flatMap((club) =>
+    ((club.data as Pick<OrganizerDocument, "ownerLinks">).ownerLinks ?? [])
+      .map((link): [string, string] => [`${club.id}/${link.id}`, link.label])));
+  const links = new Map<string, {organizerId: string; linkId: string;
+    clicks: number}>();
+  const sources = new Map<TrafficSource, number>();
+  for (const row of rows) {
+    const clicks = intValue(row.linkClicks);
+    if (clicks === 0) continue;
+    const key = `${row.clubId}/${row.linkId}`;
+    const link = links.get(key) ??
+      {organizerId: row.clubId, linkId: row.linkId, clicks: 0};
+    link.clicks += clicks;
+    links.set(key, link);
+    const source = trafficSources.find((name) => name === row.trafficSource) ??
+      "other";
+    sources.set(source, (sources.get(source) ?? 0) + clicks);
+  }
+  return {
+    links: [...links.entries()]
+      .sort(([keyA, a], [keyB, b]) => b.clicks - a.clicks ||
+        (keyA < keyB ? -1 : 1))
+      .slice(0, 50)
+      .map(([key, link]) => ({...link, label: labels.get(key) ?? null})),
+    trafficSources: trafficSources
+      .filter((source) => sources.has(source))
+      .map((source) => ({source, clicks: sources.get(source) ?? 0}))
+      .sort((a, b) => b.clicks - a.clicks),
+  };
 }
 
 function buildTrend(

@@ -109,10 +109,48 @@ test("recordOrganizerAnalyticsEvent writes a BigQuery row", async () => {
       session_hash:
         "a72e68b65309f769c0fb5d5ddc58c7b8be63dde169a26211745881ec1710b3eb",
       platform: "web",
+      link_id: null,
+      traffic_source: null,
       ingested_at: "2026-06-18T10:00:00.000Z",
     },
   });
 });
+
+test("link clicks record the owner link and a bounded traffic source",
+  async () => {
+    const bigQuery = new FakeBigQuery();
+    await recordOrganizerAnalyticsEventHandler(callableRequest({
+      organizerId: "club-1", eventName: "linkClick", linkId: " tickets ",
+      trafficSource: "instagram", pagePath: "/organizers/saket-run-club/",
+      source: "organizer_page",
+    }), deps(new FakeFirestore(linkDocs()), bigQuery));
+    const row = bigQuery.inserted[0].rows[0].json;
+    assert.equal(row.event_name, "linkClick");
+    assert.equal(row.link_id, "tickets");
+    assert.equal(row.traffic_source, "instagram");
+    assert.equal(row.target_event_id, null);
+  });
+
+for (const [name, payload] of [
+  ["an unknown link", {eventName: "linkClick", linkId: "gone"}],
+  ["no link", {eventName: "linkClick"}],
+  ["a campaign value", {eventName: "linkClick", linkId: "tickets",
+    trafficSource: "utm_summer_sale"}],
+  ["a link on another event", {eventName: "outboundClick",
+    linkId: "tickets"}],
+  ["a traffic source on another event", {eventName: "listingView",
+    trafficSource: "qr"}],
+] as const) {
+  test(`link clicks refuse ${name}`, async () => {
+    const bigQuery = new FakeBigQuery();
+    await assert.rejects(() => recordOrganizerAnalyticsEventHandler(
+      callableRequest({organizerId: "club-1",
+        pagePath: "/organizers/saket-run-club/", ...payload}),
+      deps(new FakeFirestore(linkDocs()), bigQuery)
+    ), {code: "invalid-argument"});
+    assert.equal(bigQuery.inserted.length, 0);
+  });
+}
 
 test("recordOrganizerAnalyticsEvent rejects mismatched scope", async () => {
   await assert.rejects(
@@ -362,6 +400,14 @@ function baseDocs(): Record<string, FakeData> {
       clubId: "club-1", publicationState: "published", status: "active",
     },
   };
+}
+
+function linkDocs(): Record<string, FakeData> {
+  return {...baseDocs(), "organizers/club-1": {...clubDoc(), ownerLinks: [
+    {id: "tickets", label: "Tickets", subtitle: null,
+      url: "https://www.district.in/saket", icon: "tickets", pinned: false,
+      showUntil: null},
+  ]}};
 }
 
 function clubDoc(publicPageOverrides: FakeData = {}): FakeData {

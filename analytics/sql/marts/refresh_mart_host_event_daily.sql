@@ -302,7 +302,8 @@ event_rows AS (
     0 AS contact_clicks,
     0 AS claim_clicks,
     0 AS outbound_clicks,
-    0 AS outbound_booking_clicks
+    0 AS outbound_booking_clicks,
+    0 AS link_clicks
   FROM event_dim ed
   LEFT JOIN payments p USING (event_id)
   LEFT JOIN participations pf USING (event_id)
@@ -347,7 +348,8 @@ review_rows AS (
     0 AS contact_clicks,
     0 AS claim_clicks,
     0 AS outbound_clicks,
-    0 AS outbound_booking_clicks
+    0 AS outbound_booking_clicks,
+    0 AS link_clicks
   FROM reviews r
   LEFT JOIN event_dim ed ON ed.event_id = r.event_id
   LEFT JOIN clubs c ON c.club_id = r.club_id
@@ -391,7 +393,8 @@ saved_event_rows AS (
     0 AS contact_clicks,
     0 AS claim_clicks,
     0 AS outbound_clicks,
-    0 AS outbound_booking_clicks
+    0 AS outbound_booking_clicks,
+    0 AS link_clicks
   FROM saved_events se
   JOIN event_dim ed USING (event_id)
   WHERE se.saved_date BETWEEN @refresh_start AND @refresh_end
@@ -466,7 +469,8 @@ discovery_rows AS (
     SUM(IF(event_name = 'contactClick', event_count, 0)) AS contact_clicks,
     SUM(IF(event_name = 'claimClick', event_count, 0)) AS claim_clicks,
     SUM(IF(event_name = 'outboundClick', event_count, 0)) AS outbound_clicks,
-    SUM(outbound_booking_clicks) AS outbound_booking_clicks
+    SUM(outbound_booking_clicks) AS outbound_booking_clicks,
+    SUM(IF(event_name = 'linkClick', event_count, 0)) AS link_clicks
   FROM behavior_counts
   GROUP BY date, club_id, event_id
 ),
@@ -514,6 +518,7 @@ SELECT
   SUM(u.claim_clicks) AS claim_clicks,
   SUM(u.outbound_clicks) AS outbound_clicks,
   SUM(u.outbound_booking_clicks) AS outbound_booking_clicks,
+  SUM(u.link_clicks) AS link_clicks,
   CURRENT_TIMESTAMP() AS refreshed_at
 FROM unioned u
 LEFT JOIN clubs c ON c.club_id = u.club_id
@@ -533,7 +538,27 @@ analytics_project, marketplace_dataset,
 analytics_project, analytics_dataset)
 USING refresh_start AS refresh_start, refresh_end AS refresh_end;
 
--- Build every replacement row before touching the published mart. If either
+-- Owner link clicks by organizer, link and traffic source (CAT-254). Only the
+-- contract's fixed traffic sources reach the mart; anything else is "other".
+EXECUTE IMMEDIATE FORMAT("""
+CREATE TEMP TABLE refreshed_host_link_daily AS
+SELECT
+  event_date AS date,
+  club_id,
+  link_id,
+  IF(traffic_source IN ('instagram', 'whatsapp', 'facebook', 'google', 'qr',
+    'email', 'direct', 'other'), traffic_source, 'other') AS traffic_source,
+  COUNT(DISTINCT analytics_event_id) AS link_clicks,
+  CURRENT_TIMESTAMP() AS refreshed_at
+FROM `%s.%s.host_analytics_events`
+WHERE event_date BETWEEN @refresh_start AND @refresh_end
+  AND event_name = 'linkClick'
+  AND link_id IS NOT NULL
+GROUP BY 1, 2, 3, 4
+""", analytics_project, analytics_dataset)
+USING refresh_start AS refresh_start, refresh_end AS refresh_end;
+
+-- Build every replacement row before touching the published marts. If any
 -- mutation fails, roll back the whole refresh and propagate the error.
 BEGIN
   BEGIN TRANSACTION;
@@ -583,6 +608,7 @@ INSERT INTO `%s.%s.mart_host_event_daily` (
   claim_clicks,
   outbound_clicks,
   outbound_booking_clicks,
+  link_clicks,
   refreshed_at
 )
 SELECT
@@ -623,8 +649,28 @@ SELECT
   claim_clicks,
   outbound_clicks,
   outbound_booking_clicks,
+  link_clicks,
   refreshed_at
 FROM refreshed_host_event_daily
+""", analytics_project, analytics_dataset);
+
+EXECUTE IMMEDIATE FORMAT("""
+DELETE FROM `%s.%s.mart_host_link_daily`
+WHERE date BETWEEN @refresh_start AND @refresh_end
+""", analytics_project, analytics_dataset)
+USING refresh_start AS refresh_start, refresh_end AS refresh_end;
+
+EXECUTE IMMEDIATE FORMAT("""
+INSERT INTO `%s.%s.mart_host_link_daily` (
+  date,
+  club_id,
+  link_id,
+  traffic_source,
+  link_clicks,
+  refreshed_at
+)
+SELECT date, club_id, link_id, traffic_source, link_clicks, refreshed_at
+FROM refreshed_host_link_daily
 """, analytics_project, analytics_dataset);
 
   COMMIT TRANSACTION;
