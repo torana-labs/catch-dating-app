@@ -11,7 +11,7 @@ class HostClubPaymentsScreen extends StatelessWidget {
       clubId: clubId,
       title: context.l10n.hostsHostClubEditTabLabelPayments,
       builder: (context, club, _, isOwner) => isOwner
-          ? HostPaymentAccountControllerCard(club: club)
+          ? HostRazorpayConnectionCard(organizerId: club.id)
           : CatchSection.fieldRows(
               first: true,
               child: CatchField.read(
