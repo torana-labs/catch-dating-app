@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_host_membership_checkout_response.schema.json",
+  "title": "ManageHostMembershipCheckoutCallableResponse",
+  "description": "Current checkout progress and, once authorized, the resulting membership status.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "checkoutId",
+    "state",
+    "authorizationUrl",
+    "expiresAtMillis",
+    "membershipId",
+    "membershipStatus"
+  ],
+  "properties": {
+    "checkoutId": {
+      "$ref": "../shared/host_membership_common.schema.json#/definitions/checkoutId"
+    },
+    "state": {
+      "enum": [
+        "creating",
+        "open",
+        "authorized",
+        "expired",
+        "failed"
+      ]
+    },
+    "authorizationUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500,
+      "pattern": "^https://"
+    },
+    "expiresAtMillis": {
+      "$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis"
+    },
+    "membershipId": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "../shared/host_membership_common.schema.json#/definitions/membershipId"
+        }
+      ]
+    },
+    "membershipStatus": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "../shared/host_membership_common.schema.json#/definitions/membershipStatus"
+        }
+      ]
+    }
+  }
+}

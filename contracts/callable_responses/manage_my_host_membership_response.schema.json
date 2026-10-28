@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_my_host_membership_response.schema.json",
+  "title": "ManageMyHostMembershipCallableResponse",
+  "description": "Membership status after the member action is applied with the provider.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "membershipId",
+    "status",
+    "cancelAtPeriodEnd",
+    "currentPeriodEndMillis"
+  ],
+  "properties": {
+    "membershipId": {
+      "$ref": "../shared/host_membership_common.schema.json#/definitions/membershipId"
+    },
+    "status": {
+      "$ref": "../shared/host_membership_common.schema.json#/definitions/membershipStatus"
+    },
+    "cancelAtPeriodEnd": {
+      "type": "boolean"
+    },
+    "currentPeriodEndMillis": {
+      "$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis"
+    }
+  }
+}

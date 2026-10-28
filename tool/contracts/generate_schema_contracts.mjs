@@ -1819,6 +1819,62 @@ const schemaSpecs = [
       "organizerEntitlementReceiptDocument.ts",
   },
   {
+    name: "HostMembershipProgramDocument",
+    source: "firestore/host_membership_programs.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "hostMembershipProgramDocument.ts",
+  },
+  {
+    name: "HostMembershipPlanDocument",
+    source: "firestore/host_membership_plans.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "hostMembershipPlanDocument.ts",
+  },
+  {
+    name: "HostMembershipDocument",
+    source: "firestore/host_memberships.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "hostMembershipDocument.ts",
+  },
+  {
+    name: "HostMembershipCheckoutDocument",
+    source: "firestore/host_membership_checkouts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "hostMembershipCheckoutDocument.ts",
+  },
+  {
+    name: "HostMembershipChargeDocument",
+    source: "firestore/host_membership_charges.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "hostMembershipChargeDocument.ts",
+  },
+  {
+    name: "HostMembershipWebhookReceiptDocument",
+    source: "firestore/host_membership_webhook_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "hostMembershipWebhookReceiptDocument.ts",
+  },
+  {
+    name: "HostMembershipBenefitUseDocument",
+    source: "firestore/host_membership_benefit_uses.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "hostMembershipBenefitUseDocument.ts",
+  },
+  {
+    name: "EventMembershipRulesDocument",
+    source: "firestore/event_membership_rules.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventMembershipRulesDocument.ts",
+  },
+  {
     name: "OrganizerContactIdentityLinkDocument",
     source: "firestore/organizer_contact_identity_links.schema.json",
     typeOutput:
@@ -4013,6 +4069,76 @@ const schemaSpecs = [
       "admin/src/generated/contracts/" +
       "organizerEntitlementCallableResponse.ts",
     ],
+  },
+  {
+    name: "ManageHostMembershipProgramCallablePayload",
+    source: "callables/manage_host_membership_program_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "manageHostMembershipProgramCallablePayload.ts",
+  },
+  {
+    name: "ManageHostMembershipProgramCallableResponse",
+    source: "callable_responses/manage_host_membership_program_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "manageHostMembershipProgramCallableResponse.ts",
+  },
+  {
+    name: "ManageHostMembershipPlansCallablePayload",
+    source: "callables/manage_host_membership_plans_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "manageHostMembershipPlansCallablePayload.ts",
+  },
+  {
+    name: "ManageHostMembershipPlansCallableResponse",
+    source: "callable_responses/manage_host_membership_plans_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "manageHostMembershipPlansCallableResponse.ts",
+  },
+  {
+    name: "ManageHostMembershipCheckoutCallablePayload",
+    source: "callables/manage_host_membership_checkout_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "manageHostMembershipCheckoutCallablePayload.ts",
+  },
+  {
+    name: "ManageHostMembershipCheckoutCallableResponse",
+    source: "callable_responses/manage_host_membership_checkout_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "manageHostMembershipCheckoutCallableResponse.ts",
+  },
+  {
+    name: "ManageMyHostMembershipCallablePayload",
+    source: "callables/manage_my_host_membership_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "manageMyHostMembershipCallablePayload.ts",
+  },
+  {
+    name: "ManageMyHostMembershipCallableResponse",
+    source: "callable_responses/manage_my_host_membership_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "manageMyHostMembershipCallableResponse.ts",
+  },
+  {
+    name: "ManageEventMembershipRulesCallablePayload",
+    source: "callables/manage_event_membership_rules_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "manageEventMembershipRulesCallablePayload.ts",
+  },
+  {
+    name: "ManageEventMembershipRulesCallableResponse",
+    source: "callable_responses/manage_event_membership_rules_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "manageEventMembershipRulesCallableResponse.ts",
   },
   {
     name: "AdminGetEventDetailsCallablePayload",

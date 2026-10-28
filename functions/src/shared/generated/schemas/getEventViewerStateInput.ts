@@ -45,6 +45,10 @@ export const getEventViewerStateCallablePayloadSchema: Record<string, unknown> =
         "guest"
       ],
       "description": "Defaults to native. Guest entry observes app-free roster, application and checkout sources without requiring a consumer profile."
+    },
+    "includeHostMembership": {
+      "type": "boolean",
+      "description": "Opt-in for paid host membership facts (hostMembership object and the paidMembershipRequired/memberEarlyAccess restrictions). Older clients omit it and receive the original shape."
     }
   },
   "$schema": "http://json-schema.org/draft-07/schema#",

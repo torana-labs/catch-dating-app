@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_event_membership_rules_response.schema.json",
+  "title": "ManageEventMembershipRulesCallableResponse",
+  "description": "The event's current membership rules and the organizer's non-archived plans the editor can reference.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "rules",
+    "plans"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "rules": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "memberPriceOverrides",
+            "earlyAccessHours",
+            "generalSaleOpensAtMillis",
+            "membersOnly",
+            "revision"
+          ],
+          "properties": {
+            "memberPriceOverrides": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/memberPriceOverrides"
+            },
+            "earlyAccessHours": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "../shared/host_membership_common.schema.json#/definitions/earlyAccessHours"
+                }
+              ]
+            },
+            "generalSaleOpensAtMillis": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis"
+            },
+            "membersOnly": {
+              "type": "boolean"
+            },
+            "revision": {
+              "$ref": "../shared/host_membership_common.schema.json#/definitions/revision"
+            }
+          }
+        }
+      ]
+    },
+    "plans": {
+      "type": "array",
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "planId",
+          "name",
+          "status",
+          "benefits"
+        ],
+        "properties": {
+          "planId": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/planId"
+          },
+          "name": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/planName"
+          },
+          "status": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/planStatus"
+          },
+          "benefits": {
+            "$ref": "../shared/host_membership_common.schema.json#/definitions/planBenefits"
+          }
+        }
+      }
+    }
+  }
+}

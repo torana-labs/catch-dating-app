@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_membership_checkouts.schema.json",
+  "title": "HostMembershipCheckoutDocument",
+  "description": "One membership purchase attempt: the provider subscription awaiting mandate authorization. The buyer may read their own checkout to follow progress; open checkouts reserve plan capacity until expiry.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostMembershipCheckouts",
+  "x-firestore-path": "hostMembershipCheckouts/{checkoutId}",
+  "x-document-id-field": "checkoutId",
+  "x-owner": "manageHostMembershipCheckout callable and the membership webhook",
+  "required": ["schemaVersion", "organizerId", "planId", "uid", "interval", "priceInPaise", "state", "provider", "providerSubscriptionId", "authorizationUrl", "expiresAtMillis", "createdAtMillis", "updatedAtMillis"],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "server-only"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "planId": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planId", "x-catch-ownership": "server-only"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "interval": {"$ref": "../shared/host_membership_common.schema.json#/definitions/interval", "x-catch-ownership": "server-only"},
+    "priceInPaise": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planPriceAmountPaise", "x-catch-ownership": "server-only"},
+    "state": {"enum": ["creating", "open", "authorized", "expired", "failed"], "x-catch-ownership": "server-only"},
+    "provider": {"$ref": "../shared/host_membership_common.schema.json#/definitions/provider", "x-catch-ownership": "server-only"},
+    "providerSubscriptionId": {"type": ["string", "null"], "pattern": "^sub_[A-Za-z0-9]{6,40}$", "x-catch-ownership": "server-only"},
+    "authorizationUrl": {"type": ["string", "null"], "maxLength": 500, "pattern": "^https://", "x-catch-ownership": "server-only"},
+    "expiresAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis", "x-catch-ownership": "server-only"},
+    "createdAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis", "x-catch-ownership": "server-only"},
+    "updatedAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis", "x-catch-ownership": "server-only"}
+  }
+}

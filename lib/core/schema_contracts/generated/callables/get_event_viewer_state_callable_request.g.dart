@@ -12,17 +12,20 @@ final class GetEventViewerStateCallableRequest {
     this.inviteCode,
     this.publicPaymentId,
     this.surface,
+    this.includeHostMembership,
   });
 
   final String eventId;
   final String? inviteCode;
   final String? publicPaymentId;
   final String? surface;
+  final bool? includeHostMembership;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'inviteCode': ?inviteCode,
     'publicPaymentId': ?publicPaymentId,
     'surface': ?surface,
+    'includeHostMembership': ?includeHostMembership,
   };
 }

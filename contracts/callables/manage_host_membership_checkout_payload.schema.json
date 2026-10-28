@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_host_membership_checkout_payload.schema.json",
+  "title": "ManageHostMembershipCheckoutCallablePayload",
+  "description": "Member checkout: prepare creates a provider subscription and returns its hosted mandate-authorization link; refresh pulls the provider state and applies it.",
+  "x-owner": "Consumer membership join flow",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "organizerId",
+        "planId",
+        "interval"
+      ],
+      "properties": {
+        "action": {
+          "const": "prepare"
+        },
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "planId": {
+          "$ref": "../shared/host_membership_common.schema.json#/definitions/planId"
+        },
+        "interval": {
+          "$ref": "../shared/host_membership_common.schema.json#/definitions/interval"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "checkoutId"
+      ],
+      "properties": {
+        "action": {
+          "const": "refresh"
+        },
+        "checkoutId": {
+          "$ref": "../shared/host_membership_common.schema.json#/definitions/checkoutId"
+        }
+      }
+    }
+  ]
+}

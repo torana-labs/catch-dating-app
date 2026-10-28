@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_membership_plans.schema.json",
+  "title": "HostMembershipPlanDocument",
+  "description": "One paid membership tier sold by an organizer. Published plans are readable by signed-in users; only the plans callable writes them. Price changes create a new provider price and leave existing members on the price they bought.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostMembershipPlans",
+  "x-firestore-path": "hostMembershipPlans/{planId}",
+  "x-document-id-field": "planId",
+  "x-owner": "manageHostMembershipPlans callable; member counts by the membership state machine",
+  "required": ["schemaVersion", "organizerId", "name", "description", "status", "prices", "memberCap", "trialDays", "benefits", "perks", "limits", "activeMemberCount", "sortOrder", "revision", "createdAtMillis", "updatedAtMillis", "publishedAtMillis"],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "callable-owned"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "callable-owned"},
+    "name": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planName", "x-catch-ownership": "callable-owned"},
+    "description": {"type": "string", "maxLength": 500, "x-catch-ownership": "callable-owned"},
+    "status": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planStatus", "x-catch-ownership": "callable-owned"},
+    "prices": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planPrices", "x-catch-ownership": "callable-owned"},
+    "memberCap": {"type": ["integer", "null"], "minimum": 1, "maximum": 100000, "x-catch-ownership": "callable-owned"},
+    "trialDays": {"type": "integer", "minimum": 0, "maximum": 30, "x-catch-ownership": "callable-owned"},
+    "benefits": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planBenefits", "x-catch-ownership": "callable-owned"},
+    "perks": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planPerks", "x-catch-ownership": "callable-owned"},
+    "limits": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planLimits", "x-catch-ownership": "callable-owned"},
+    "activeMemberCount": {"type": "integer", "minimum": 0, "maximum": 10000000, "x-catch-ownership": "server-only"},
+    "sortOrder": {"type": "integer", "minimum": 0, "maximum": 1000, "x-catch-ownership": "callable-owned"},
+    "revision": {"$ref": "../shared/host_membership_common.schema.json#/definitions/revision", "x-catch-ownership": "callable-owned"},
+    "createdAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis", "x-catch-ownership": "callable-owned"},
+    "updatedAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis", "x-catch-ownership": "callable-owned"},
+    "publishedAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis", "x-catch-ownership": "callable-owned"}
+  }
+}

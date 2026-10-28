@@ -181,7 +181,9 @@ export const getEventViewerStateCallableResponseSchema: Record<string, unknown> 
                     "eventUnavailable",
                     "past",
                     "cancelled",
-                    "unsupportedRoute"
+                    "unsupportedRoute",
+                    "paidMembershipRequired",
+                    "memberEarlyAccess"
                   ]
                 }
               }
@@ -401,6 +403,158 @@ export const getEventViewerStateCallableResponseSchema: Record<string, unknown> 
                 },
                 {
                   "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "hostMembership": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Present only when the request opted in. Server-evaluated paid membership entitlement for this viewer and event; quotedPriceInPaise is already the member price when memberPriceApplied.",
+          "required": [
+            "member",
+            "listPriceInPaise",
+            "memberPriceApplied",
+            "memberPriceBlockedReason",
+            "savingsInPaise",
+            "membersOnly",
+            "generalSaleOpensAtMillis",
+            "offer"
+          ],
+          "properties": {
+            "member": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "membershipId",
+                    "planId",
+                    "planName",
+                    "status",
+                    "entitled"
+                  ],
+                  "properties": {
+                    "membershipId": {
+                      "type": "string",
+                      "pattern": "^hm_[a-f0-9]{64}$"
+                    },
+                    "planId": {
+                      "type": "string",
+                      "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                    },
+                    "planName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 60
+                    },
+                    "status": {
+                      "enum": [
+                        "trialing",
+                        "active",
+                        "past_due",
+                        "paused",
+                        "canceling",
+                        "expired"
+                      ]
+                    },
+                    "entitled": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              ]
+            },
+            "listPriceInPaise": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "memberPriceApplied": {
+              "type": "boolean"
+            },
+            "memberPriceBlockedReason": {
+              "enum": [
+                null,
+                "bookingCapReached"
+              ]
+            },
+            "savingsInPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "membersOnly": {
+              "type": "boolean"
+            },
+            "generalSaleOpensAtMillis": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "offer": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "planId",
+                    "planName",
+                    "interval",
+                    "planPriceInPaise",
+                    "memberPriceInPaise",
+                    "savingsInPaise",
+                    "unlocksAccess"
+                  ],
+                  "properties": {
+                    "planId": {
+                      "type": "string",
+                      "pattern": "^hmp_[A-Za-z0-9]{20}$"
+                    },
+                    "planName": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 60
+                    },
+                    "interval": {
+                      "enum": [
+                        "monthly",
+                        "annual"
+                      ]
+                    },
+                    "planPriceInPaise": {
+                      "type": "integer",
+                      "minimum": 1000,
+                      "maximum": 1500000,
+                      "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication."
+                    },
+                    "memberPriceInPaise": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "savingsInPaise": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "unlocksAccess": {
+                      "type": "boolean"
+                    }
+                  }
                 }
               ]
             }

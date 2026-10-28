@@ -577,6 +577,14 @@ import {
   organizerAttentionItemDocumentSchema,
   organizerEntitlementsDocumentSchema,
   organizerEntitlementReceiptDocumentSchema,
+  hostMembershipProgramDocumentSchema,
+  hostMembershipPlanDocumentSchema,
+  hostMembershipDocumentSchema,
+  hostMembershipCheckoutDocumentSchema,
+  hostMembershipChargeDocumentSchema,
+  hostMembershipWebhookReceiptDocumentSchema,
+  hostMembershipBenefitUseDocumentSchema,
+  eventMembershipRulesDocumentSchema,
   organizerContactIdentityLinkDocumentSchema,
   organizerContactIdentityClaimDocumentSchema,
   organizerContactEventEdgeDocumentSchema,
@@ -918,6 +926,16 @@ import {
   getOrganizerEntitlementCallablePayloadSchema,
   organizerEntitlementMutationCallableResponseSchema,
   organizerEntitlementCallableResponseSchema,
+  manageHostMembershipProgramCallablePayloadSchema,
+  manageHostMembershipProgramCallableResponseSchema,
+  manageHostMembershipPlansCallablePayloadSchema,
+  manageHostMembershipPlansCallableResponseSchema,
+  manageHostMembershipCheckoutCallablePayloadSchema,
+  manageHostMembershipCheckoutCallableResponseSchema,
+  manageMyHostMembershipCallablePayloadSchema,
+  manageMyHostMembershipCallableResponseSchema,
+  manageEventMembershipRulesCallablePayloadSchema,
+  manageEventMembershipRulesCallableResponseSchema,
   adminGetEventDetailsCallablePayloadSchema,
   adminListEventDetailsCallablePayloadSchema,
   adminListExternalEventDetailsCallablePayloadSchema,
@@ -1875,6 +1893,14 @@ export const validateOrganizerManualSendTaskDocument = ajv.compile(organizerManu
 export const validateOrganizerAttentionItemDocument = ajv.compile(organizerAttentionItemDocumentSchema);
 export const validateOrganizerEntitlementsDocument = ajv.compile(organizerEntitlementsDocumentSchema);
 export const validateOrganizerEntitlementReceiptDocument = ajv.compile(organizerEntitlementReceiptDocumentSchema);
+export const validateHostMembershipProgramDocument = ajv.compile(hostMembershipProgramDocumentSchema);
+export const validateHostMembershipPlanDocument = ajv.compile(hostMembershipPlanDocumentSchema);
+export const validateHostMembershipDocument = ajv.compile(hostMembershipDocumentSchema);
+export const validateHostMembershipCheckoutDocument = ajv.compile(hostMembershipCheckoutDocumentSchema);
+export const validateHostMembershipChargeDocument = ajv.compile(hostMembershipChargeDocumentSchema);
+export const validateHostMembershipWebhookReceiptDocument = ajv.compile(hostMembershipWebhookReceiptDocumentSchema);
+export const validateHostMembershipBenefitUseDocument = ajv.compile(hostMembershipBenefitUseDocumentSchema);
+export const validateEventMembershipRulesDocument = ajv.compile(eventMembershipRulesDocumentSchema);
 export const validateOrganizerContactIdentityLinkDocument = ajv.compile(organizerContactIdentityLinkDocumentSchema);
 export const validateOrganizerContactIdentityClaimDocument = ajv.compile(organizerContactIdentityClaimDocumentSchema);
 export const validateOrganizerContactEventEdgeDocument = ajv.compile(organizerContactEventEdgeDocumentSchema);
@@ -2216,6 +2242,16 @@ export const validateAdminRevokeOrganizerEntitlementGrantCallablePayload = ajv.c
 export const validateGetOrganizerEntitlementCallablePayload = ajv.compile(getOrganizerEntitlementCallablePayloadSchema);
 export const validateOrganizerEntitlementMutationCallableResponse = ajv.compile(organizerEntitlementMutationCallableResponseSchema);
 export const validateOrganizerEntitlementCallableResponse = ajv.compile(organizerEntitlementCallableResponseSchema);
+export const validateManageHostMembershipProgramCallablePayload = ajv.compile(manageHostMembershipProgramCallablePayloadSchema);
+export const validateManageHostMembershipProgramCallableResponse = ajv.compile(manageHostMembershipProgramCallableResponseSchema);
+export const validateManageHostMembershipPlansCallablePayload = ajv.compile(manageHostMembershipPlansCallablePayloadSchema);
+export const validateManageHostMembershipPlansCallableResponse = ajv.compile(manageHostMembershipPlansCallableResponseSchema);
+export const validateManageHostMembershipCheckoutCallablePayload = ajv.compile(manageHostMembershipCheckoutCallablePayloadSchema);
+export const validateManageHostMembershipCheckoutCallableResponse = ajv.compile(manageHostMembershipCheckoutCallableResponseSchema);
+export const validateManageMyHostMembershipCallablePayload = ajv.compile(manageMyHostMembershipCallablePayloadSchema);
+export const validateManageMyHostMembershipCallableResponse = ajv.compile(manageMyHostMembershipCallableResponseSchema);
+export const validateManageEventMembershipRulesCallablePayload = ajv.compile(manageEventMembershipRulesCallablePayloadSchema);
+export const validateManageEventMembershipRulesCallableResponse = ajv.compile(manageEventMembershipRulesCallableResponseSchema);
 export const validateAdminGetEventDetailsCallablePayload = ajv.compile(adminGetEventDetailsCallablePayloadSchema);
 export const validateAdminListEventDetailsCallablePayload = ajv.compile(adminListEventDetailsCallablePayloadSchema);
 export const validateAdminListExternalEventDetailsCallablePayload = ajv.compile(adminListExternalEventDetailsCallablePayloadSchema);

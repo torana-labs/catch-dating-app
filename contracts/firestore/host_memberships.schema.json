@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/host_memberships.schema.json",
+  "title": "HostMembershipDocument",
+  "description": "One member's paid membership with one organizer, keyed hm_<sha256([organizerId, uid])> so a rejoining member keeps tenure. Written only by the membership state machine from verified provider evidence and member/host intents. Distinct from organizerCommunityMemberships (unpaid approval grants).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "hostMemberships",
+  "x-firestore-path": "hostMemberships/{membershipId}",
+  "x-document-id-field": "membershipId",
+  "x-owner": "host membership state machine (webhook, checkout refresh, self-serve and billing-pause callables)",
+  "required": ["schemaVersion", "organizerId", "uid", "planId", "planName", "interval", "status", "statusReason", "priceInPaise", "currency", "currentPeriodStartMillis", "currentPeriodEndMillis", "trialEndsAtMillis", "cancelAtPeriodEnd", "pause", "pastDueSinceMillis", "memberSinceMillis", "tenure", "provider", "providerSubscriptionId", "providerPlanId", "providerEventAtMillis", "lastCheckoutId", "revision", "createdAtMillis", "updatedAtMillis"],
+  "properties": {
+    "schemaVersion": {"const": 1, "x-catch-ownership": "server-only"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "planId": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planId", "x-catch-ownership": "server-only"},
+    "planName": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planName", "x-catch-ownership": "server-only"},
+    "interval": {"$ref": "../shared/host_membership_common.schema.json#/definitions/interval", "x-catch-ownership": "server-only"},
+    "status": {"$ref": "../shared/host_membership_common.schema.json#/definitions/membershipStatus", "x-catch-ownership": "server-only"},
+    "statusReason": {"$ref": "../shared/host_membership_common.schema.json#/definitions/membershipStatusReason", "x-catch-ownership": "server-only"},
+    "priceInPaise": {"$ref": "../shared/host_membership_common.schema.json#/definitions/planPriceAmountPaise", "x-catch-ownership": "server-only"},
+    "currency": {"const": "INR", "x-catch-ownership": "server-only"},
+    "currentPeriodStartMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis", "x-catch-ownership": "server-only"},
+    "currentPeriodEndMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis", "x-catch-ownership": "server-only"},
+    "trialEndsAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis", "x-catch-ownership": "server-only"},
+    "cancelAtPeriodEnd": {"type": "boolean", "x-catch-ownership": "server-only"},
+    "pause": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["initiator", "pausedAtMillis"],
+          "properties": {
+            "initiator": {"$ref": "../shared/host_membership_common.schema.json#/definitions/pauseInitiator"},
+            "pausedAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis"}
+          }
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "pastDueSinceMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis", "x-catch-ownership": "server-only"},
+    "memberSinceMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis", "x-catch-ownership": "server-only"},
+    "tenure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accumulatedMillis", "stretchStartedAtMillis"],
+      "properties": {
+        "accumulatedMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/millis"},
+        "stretchStartedAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/nullableMillis"}
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "provider": {"$ref": "../shared/host_membership_common.schema.json#/definitions/provider", "x-catch-ownership": "server-only"},
+    "providerSubscriptionId": {"type": "string", "pattern": "^sub_[A-Za-z0-9]{6,40}$", "x-catch-ownership": "server-only"},
+    "providerPlanId": {"type": "string", "pattern": "^plan_[A-Za-z0-9]{6,40}$", "x-catch-ownership": "server-only"},
+    "providerEventAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/millis", "x-catch-ownership": "server-only"},
+    "lastCheckoutId": {"$ref": "../shared/host_membership_common.schema.json#/definitions/checkoutId", "x-catch-ownership": "server-only"},
+    "revision": {"$ref": "../shared/host_membership_common.schema.json#/definitions/revision", "x-catch-ownership": "server-only"},
+    "createdAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis", "x-catch-ownership": "server-only"},
+    "updatedAtMillis": {"$ref": "../shared/host_membership_common.schema.json#/definitions/positiveMillis", "x-catch-ownership": "server-only"}
+  }
+}

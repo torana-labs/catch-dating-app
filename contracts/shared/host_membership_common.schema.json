@@ -1,0 +1,196 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/host_membership_common.schema.json",
+  "title": "HostMembershipCommon",
+  "description": "Shared definitions for paid host memberships: plans, intervals, structured benefits, membership statuses and event membership rules. See docs/plans/host_memberships_spec.md.",
+  "definitions": {
+    "millis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "positiveMillis": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "nullableMillis": {
+      "type": ["integer", "null"],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740990
+    },
+    "planId": {
+      "type": "string",
+      "pattern": "^hmp_[A-Za-z0-9]{20}$"
+    },
+    "membershipId": {
+      "type": "string",
+      "pattern": "^hm_[a-f0-9]{64}$"
+    },
+    "checkoutId": {
+      "type": "string",
+      "pattern": "^hmc_[A-Za-z0-9]{20}$"
+    },
+    "interval": {
+      "enum": ["monthly", "annual"]
+    },
+    "provider": {
+      "enum": ["razorpay"]
+    },
+    "providerMode": {
+      "enum": ["test", "live"]
+    },
+    "planPriceAmountPaise": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 1500000,
+      "description": "INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication."
+    },
+    "eventPriceInPaise": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100000000
+    },
+    "planName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "planPrice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["amountPaise", "providerPriceIds", "revision"],
+      "properties": {
+        "amountPaise": {"$ref": "#/definitions/planPriceAmountPaise"},
+        "providerPriceIds": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "razorpay": {
+              "type": "string",
+              "pattern": "^plan_[A-Za-z0-9]{6,40}$"
+            }
+          }
+        },
+        "revision": {"$ref": "#/definitions/revision"}
+      }
+    },
+    "planPrices": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "monthly": {"$ref": "#/definitions/planPrice"},
+        "annual": {"$ref": "#/definitions/planPrice"}
+      }
+    },
+    "planBenefit": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "percentOff"],
+          "properties": {
+            "type": {"const": "eventDiscount"},
+            "percentOff": {"type": "integer", "minimum": 1, "maximum": 100}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": {"const": "earlyAccess"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": {"const": "membersOnlyAccess"}
+          }
+        }
+      ]
+    },
+    "planBenefits": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {"$ref": "#/definitions/planBenefit"}
+    },
+    "planPerks": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {"type": "string", "minLength": 1, "maxLength": 120}
+    },
+    "planLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxUpcomingMemberPricedBookings"],
+      "properties": {
+        "maxUpcomingMemberPricedBookings": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 20
+        }
+      }
+    },
+    "planStatus": {
+      "enum": ["draft", "published", "archived"]
+    },
+    "membershipStatus": {
+      "enum": ["trialing", "active", "past_due", "paused", "canceling", "expired"]
+    },
+    "membershipStatusReason": {
+      "enum": [
+        null,
+        "memberPaused",
+        "hostPaused",
+        "paymentFailed",
+        "memberCanceled",
+        "planCompleted",
+        "providerCanceled"
+      ]
+    },
+    "pauseInitiator": {
+      "enum": ["member", "host"]
+    },
+    "memberPriceOverride": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["planId", "percentOff"],
+          "properties": {
+            "planId": {"$ref": "#/definitions/planId"},
+            "percentOff": {"type": "integer", "minimum": 1, "maximum": 100}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["planId", "priceInPaise"],
+          "properties": {
+            "planId": {"$ref": "#/definitions/planId"},
+            "priceInPaise": {"$ref": "#/definitions/eventPriceInPaise"}
+          }
+        }
+      ]
+    },
+    "memberPriceOverrides": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {"$ref": "#/definitions/memberPriceOverride"}
+    },
+    "earlyAccessHours": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 168
+    }
+  }
+}

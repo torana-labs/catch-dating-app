@@ -13,4 +13,8 @@ export interface GetEventViewerStateCallablePayload {
    * Defaults to native. Guest entry observes app-free roster, application and checkout sources without requiring a consumer profile.
    */
   surface?: "native" | "guest";
+  /**
+   * Opt-in for paid host membership facts (hostMembership object and the paidMembershipRequired/memberEarlyAccess restrictions). Older clients omit it and receive the original shape.
+   */
+  includeHostMembership?: boolean;
 }

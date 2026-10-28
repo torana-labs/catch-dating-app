@@ -184,6 +184,8 @@ const schemaGetEventViewerStateCallableResponseSchema = <String, Object?>{
                     'past',
                     'cancelled',
                     'unsupportedRoute',
+                    'paidMembershipRequired',
+                    'memberEarlyAccess',
                   ],
                 },
               },
@@ -403,6 +405,158 @@ const schemaGetEventViewerStateCallableResponseSchema = <String, Object?>{
                 },
                 <String, Object?>{
                   'type': 'null',
+                },
+              ],
+            },
+          },
+        },
+        'hostMembership': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'description': 'Present only when the request opted in. Server-evaluated paid membership entitlement for this viewer and event; quotedPriceInPaise is already the member price when memberPriceApplied.',
+          'required': <Object?>[
+            'member',
+            'listPriceInPaise',
+            'memberPriceApplied',
+            'memberPriceBlockedReason',
+            'savingsInPaise',
+            'membersOnly',
+            'generalSaleOpensAtMillis',
+            'offer',
+          ],
+          'properties': <String, Object?>{
+            'member': <String, Object?>{
+              'oneOf': <Object?>[
+                <String, Object?>{
+                  'type': 'null',
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'membershipId',
+                    'planId',
+                    'planName',
+                    'status',
+                    'entitled',
+                  ],
+                  'properties': <String, Object?>{
+                    'membershipId': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^hm_[a-f0-9]{64}\$',
+                    },
+                    'planId': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^hmp_[A-Za-z0-9]{20}\$',
+                    },
+                    'planName': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 60,
+                    },
+                    'status': <String, Object?>{
+                      'enum': <Object?>[
+                        'trialing',
+                        'active',
+                        'past_due',
+                        'paused',
+                        'canceling',
+                        'expired',
+                      ],
+                    },
+                    'entitled': <String, Object?>{
+                      'type': 'boolean',
+                    },
+                  },
+                },
+              ],
+            },
+            'listPriceInPaise': <String, Object?>{
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'memberPriceApplied': <String, Object?>{
+              'type': 'boolean',
+            },
+            'memberPriceBlockedReason': <String, Object?>{
+              'enum': <Object?>[
+                null,
+                'bookingCapReached',
+              ],
+            },
+            'savingsInPaise': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'membersOnly': <String, Object?>{
+              'type': 'boolean',
+            },
+            'generalSaleOpensAtMillis': <String, Object?>{
+              'type': <Object?>[
+                'integer',
+                'null',
+              ],
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'offer': <String, Object?>{
+              'oneOf': <Object?>[
+                <String, Object?>{
+                  'type': 'null',
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'planId',
+                    'planName',
+                    'interval',
+                    'planPriceInPaise',
+                    'memberPriceInPaise',
+                    'savingsInPaise',
+                    'unlocksAccess',
+                  ],
+                  'properties': <String, Object?>{
+                    'planId': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^hmp_[A-Za-z0-9]{20}\$',
+                    },
+                    'planName': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 60,
+                    },
+                    'interval': <String, Object?>{
+                      'enum': <Object?>[
+                        'monthly',
+                        'annual',
+                      ],
+                    },
+                    'planPriceInPaise': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 1000,
+                      'maximum': 1500000,
+                      'description': 'INR paise. The ceiling keeps every renewal inside the RBI e-mandate auto-debit limit without re-authentication.',
+                    },
+                    'memberPriceInPaise': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'savingsInPaise': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'unlocksAccess': <String, Object?>{
+                      'type': 'boolean',
+                    },
+                  },
                 },
               ],
             },
