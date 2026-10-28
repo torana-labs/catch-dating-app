@@ -27,7 +27,8 @@
   box-shadow: 0 -10px 30px color-mix(in srgb, var(--catch-palette-ink) 8%, transparent);
 }
 
-:global(body:has([data-catch-sticky-dock])) {
+/* A CSS Modules rule must name a local class, so the page clearance keys on the dock's. */
+:global(body):has(.dock) {
   padding-bottom: calc(2 * var(--catch-space-s3) + var(--catch-space-s10) + var(--catch-stroke-hairline) + env(safe-area-inset-bottom));
 }
 
