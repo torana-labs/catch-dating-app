@@ -339774,12 +339774,10 @@ export const joinWaitlistHTTPRequestSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/http/join_waitlist_request.schema.json",
   "title": "Join Waitlist HTTP Request",
-  "description": "Version 1 request body for member waitlist and optional Host operating-application submissions.",
+  "description": "Version 1 request body for member waitlist and optional Host operating-application submissions. A member may instead ask for one WhatsApp message when Catch opens in their city: that path carries `whatsapp` and needs no name or email.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "fullName",
-    "email",
     "city",
     "role"
   ],
@@ -340224,6 +340222,34 @@ export const joinWaitlistHTTPRequestSchema = {
           "type": "string",
           "format": "date-time",
           "maxLength": 80
+        }
+      }
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A member's request for one WhatsApp message on the day Catch opens in their city. The launch notice is the explicit purpose of the form; marketing permission is a separate choice that is off unless the person chose it (CAT-72). consentVersion names the wording they saw.",
+      "required": [
+        "phone",
+        "launchNotice",
+        "marketing",
+        "consentVersion"
+      ],
+      "properties": {
+        "phone": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$",
+          "description": "E.164 mobile number."
+        },
+        "launchNotice": {
+          "const": true
+        },
+        "marketing": {
+          "type": "boolean"
+        },
+        "consentVersion": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,40}$"
         }
       }
     }
@@ -340732,7 +340758,55 @@ export const joinWaitlistHTTPRequestSchema = {
           "maxLength": 80
         }
       }
+    },
+    "whatsappLaunchNotice": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A member's request for one WhatsApp message on the day Catch opens in their city. The launch notice is the explicit purpose of the form; marketing permission is a separate choice that is off unless the person chose it (CAT-72). consentVersion names the wording they saw.",
+      "required": [
+        "phone",
+        "launchNotice",
+        "marketing",
+        "consentVersion"
+      ],
+      "properties": {
+        "phone": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$",
+          "description": "E.164 mobile number."
+        },
+        "launchNotice": {
+          "const": true
+        },
+        "marketing": {
+          "type": "boolean"
+        },
+        "consentVersion": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,40}$"
+        }
+      }
     }
+  },
+  "if": {
+    "required": [
+      "whatsapp"
+    ]
+  },
+  "then": {
+    "description": "The WhatsApp launch notice is for members only.",
+    "properties": {
+      "role": {
+        "const": "member"
+      }
+    }
+  },
+  "else": {
+    "description": "The email waitlist and Host application need a name and email.",
+    "required": [
+      "fullName",
+      "email"
+    ]
   }
 };
 
