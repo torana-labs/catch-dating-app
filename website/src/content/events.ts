@@ -295,6 +295,7 @@ export const eventPageCopy = {
     verified: "Booked on Catch",
     unverified: "Unverified",
     stars: (rating: number) => `${rating} out of 5`,
+    replied: "replied:",
   },
   more: {
     title: (organizer: string) => `More from ${organizer}`,

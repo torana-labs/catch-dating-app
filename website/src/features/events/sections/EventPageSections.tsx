@@ -199,7 +199,7 @@ function EventReviews({reviews}: {reviews: NonNullable<EventPageView["reviews"]>
       <CatchGrid columns={2} compactColumns={1} gap="related">
         {reviews.items.map((review) => (
           <CatchReviewItem body={review.body} key={review.id} meta={review.meta} name={review.name} rating={review.rating}
-            ratingLabel={review.ratingLabel} variant="card"
+            ratingLabel={review.ratingLabel} reply={review.reply} variant="card"
             badge={<CatchBadge label={review.verified ? copy.reviews.verified : copy.reviews.unverified} recipe="status"
               tone={review.verified ? "success" : "neutral"} />} />
         ))}

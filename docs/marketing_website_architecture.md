@@ -418,15 +418,10 @@ The website is already split out of the old monolithic shell:
   ownership presentation. Organizer profiles use a white-mat polaroid with a
   mono location caption and upright Archivo identity; event notches,
   perforation, and ticket-stub typography remain exclusive to Event Detail.
-- Shared organizer listing review shells live in
-  `website/src/shared/ui/primitives/` as `ListingReviewSummary`,
-  `ListingReviewWorkspace`, `ListingReviewLanes`, `ReviewSignalLane`,
-  `ReviewSignalCard`, `OwnerResponsePrompt`, `ListingReviewEmptyState`,
-  `ListingReviewForm`, and `ListingReviewCheckbox`. `ListingReviewsSection`
-  owns review controller state, copy, submission behavior, and analytics
-  callbacks, but configures shared review shells instead of rendering raw
-  `review-signal-*`, `owner-response-prompt`, `listing-owner-response`, or
-  `listing-review-*` form/state markup.
+- Organiser and event pages render reviews with `CatchReviewItem` from
+  `@catch/web-ui`, including the organiser's reply. The old listing review
+  shells (`ReviewSignalLane`, `ReviewSignalCard` and the `ListingReview*`
+  wrappers) were retired with those pages (CAT-251, CAT-252).
 - Shared organizer listing claim shells live in
   `website/src/shared/ui/primitives/` as `ClaimMissingEvidenceList` and
   `ClaimRequestForm`, alongside the existing `ClaimBand*` and

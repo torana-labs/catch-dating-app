@@ -1,12 +1,10 @@
-import {CatchBadge} from "@catch/web-ui";
 import type {FormHTMLAttributes, HTMLAttributes, ReactNode} from "react";
 import type {StatStripItem} from "./foundation";
 import type {ListingSuccessMetricGridItem} from "./organizer";
 import {ButtonLink} from "./actions";
-import {EmptyState} from "./feedback";
 import {Form} from "./forms";
 import {StatStrip, classNames} from "./foundation";
-import {SuccessGrid, UiLabel} from "./layout";
+import {SuccessGrid} from "./layout";
 
 export function OrganizerResultCardFooter({
   children,
@@ -266,74 +264,4 @@ export interface PublicReviewCardModel {
     message: string;
     updatedAtLabel: string;
   } | null;
-}
-
-export function ReviewSignalLane({
-  body,
-  emptyBody,
-  emptyTitle,
-  reviews,
-  title,
-}: {
-  body: ReactNode;
-  emptyBody: ReactNode;
-  emptyTitle: ReactNode;
-  reviews: PublicReviewCardModel[];
-  title: string;
-}) {
-  return (
-    <section className="review-signal-lane" aria-label={title}>
-      <div className="review-signal-lane__head">
-        <div>
-          <UiLabel>{reviews.length}{" visible"}</UiLabel>
-          <h3>{title}</h3>
-        </div>
-        <p>{body}</p>
-      </div>
-      {reviews.length ? (
-        <div className="review-signal-lane__stack">
-          {reviews.map((review) => (
-            <ReviewSignalCard key={review.id} review={review} />
-          ))}
-        </div>
-      ) : (
-        <EmptyState variant="review-signal-lane">
-          <strong>{emptyTitle}</strong>
-          <p>{emptyBody}</p>
-        </EmptyState>
-      )}
-    </section>
-  );
-}
-
-function ReviewSignalCard({review}: {review: PublicReviewCardModel}) {
-  return (
-    <article className="review-signal-card">
-      <div className="review-signal-card__header">
-        <div>
-          <strong>{review.reviewerName}</strong>
-          <span>{review.createdAtLabel}</span>
-        </div>
-        <span aria-label={`${review.rating} out of 5 stars`}>
-          {"★".repeat(Math.max(0, Math.min(5, Math.round(review.rating))))}
-        </span>
-      </div>
-      <div className="review-signal-card__badges">
-        <CatchBadge
-          recipe="status"
-          tone={review.verified ? "success" : "warning"}
-          label={review.verificationLabel}
-        />
-        <CatchBadge recipe="status" label={review.sourceLabel} />
-      </div>
-      {review.comment ? <p>{review.comment}</p> : null}
-      {review.ownerResponse ? (
-        <div className="listing-owner-response">
-          <span>{"Host response · "}{review.ownerResponse.hostName}</span>
-          <p>{review.ownerResponse.message}</p>
-          <small>{review.ownerResponse.updatedAtLabel}</small>
-        </div>
-      ) : null}
-    </article>
-  );
 }

@@ -39,6 +39,7 @@ describe("Event page sections", () => {
     expect(within(screen.getByRole("list")).getAllByRole("listitem")).toHaveLength(4);
     expect(screen.getAllByText("Booked on Catch")).toHaveLength(2);
     expect(screen.getByText("Nov 2026")).toBeTruthy();
+    expect(screen.getByText("We've added a 7:00 per km group from this Sunday.", {exact: false})).toBeTruthy();
     expect(screen.getByRole("link", {name: "See their page"}).getAttribute("href")).toBe("/organizers/mumbai/salt-air-run-club/");
     expect(screen.getByRole("link", {name: /Sunset Run & Social/}).getAttribute("href")).toBe("/events/salt-air-sunset-run-social/");
   });

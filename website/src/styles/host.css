@@ -155,18 +155,12 @@
     height: 66px;
   }
 
-  .listing-review-summary {
-    grid-template-columns: 1fr;
-  }
-
-  .event-action-card,
-  .review-signal-lane__head {
+  .event-action-card {
     grid-template-columns: 1fr;
   }
 
   .event-action-card__meta,
-  .event-action-card__counts,
-  .owner-response-prompt__stats {
+  .event-action-card__counts {
     grid-template-columns: 1fr;
   }
 

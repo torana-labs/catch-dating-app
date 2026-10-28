@@ -94,7 +94,9 @@ const verifiedReviews: EventPageData["reviews"] = [
     createdAt: "2026-11-02T04:10:00.000Z", verificationStatus: "verified", source: "catchEvent", isAnonymous: false, ownerResponse: null},
   {id: "salt-air-review-2", eventId: "salt-air-sunday-5k", reviewerName: "Nikhil J.", rating: 4,
     comment: "Lovely crowd. The 6:00 per km group was a bit fast for a first-timer, but the leader waited for me at the turn.",
-    createdAt: "2026-10-19T04:30:00.000Z", verificationStatus: "verified", source: "catchEvent", isAnonymous: false, ownerResponse: null},
+    createdAt: "2026-10-19T04:30:00.000Z", verificationStatus: "verified", source: "catchEvent", isAnonymous: false,
+    ownerResponse: {hostName: "Pooja", hostAvatarUrl: null, updatedAt: "2026-10-20T03:00:00.000Z",
+      message: "Thanks Nikhil. We've added a 7:00 per km group from this Sunday."}},
 ];
 
 const moreEvents: EventPageData["moreEvents"] = [

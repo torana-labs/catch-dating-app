@@ -40,6 +40,8 @@ export interface EventPageReview {
   body: string;
   meta: string;
   verified: boolean;
+  /** The organiser's reply, as the organiser page shows it. */
+  reply?: {author: string; text: string; verb: string};
 }
 
 export interface EventPageMoreCard {
@@ -146,6 +148,8 @@ export function buildEventPageView(page: EventPageData, now: number = Date.now()
         body: review.comment,
         meta: monthLabel(review.createdAt),
         verified: review.verificationStatus === "verified",
+        ...(review.ownerResponse ? {reply: {author: review.ownerResponse.hostName, text: review.ownerResponse.message,
+          verb: copy.reviews.replied}} : {}),
       })),
     } : null,
     more: page.moreEvents.length ? {

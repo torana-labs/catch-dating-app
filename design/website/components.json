@@ -429,33 +429,6 @@
       "notes": "Shared website organizer profile primitives for the wide-primary two-column layout, CatchPolaroid-inspired hero, provenance status ledger, sticky action rail, source links, and empty rail states. Event ticket notches and perforation remain exclusive to the event-detail primitive family."
     },
     {
-      "id": "shared_listing_review_shell",
-      "kind": "supporting-component",
-      "routeIds": [
-        "event_detail_canonical",
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/organizer3.tsx",
-      "exportName": "ReviewSignalLane",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/ListingPrimitives.stories.tsx",
-        "exportName": "ListingReviewShellStory",
-        "states": [
-          "review-summary",
-          "review-lanes",
-          "empty-lane"
-        ]
-      },
-      "notes": "Shared website organizer listing review shell primitives for review signal lanes/cards, owner-response prompts, empty review state, public review form, and anonymous checkbox slots; raw organizer listing review shells are blocked by web:react-component-governance."
-    },
-    {
       "id": "shared_organizer_result_shell",
       "kind": "supporting-component",
       "routeIds": [
@@ -1390,7 +1363,7 @@
           "listing-review"
         ]
       },
-      "notes": "Shared website EmptyState shell with named variants for home discovery, claim lookup, organizer search results, review-signal lanes, and listing reviews; raw website empty-state containers or feature-level empty-state shell classes are blocked by web:react-component-governance.",
+      "notes": "Shared website EmptyState shell with named variants for home discovery, claim lookup, organizer search results, and listing reviews; raw website empty-state containers or feature-level empty-state shell classes are blocked by web:react-component-governance.",
       "exportName": "EmptyState",
       "componentId": "catch.empty_state"
     },
@@ -3225,18 +3198,11 @@
       "kind": "supporting-component",
       "routeIds": [
         "home",
-        "visitor_discovery",
-        "event_detail_canonical"
+        "visitor_discovery"
       ],
       "owner": "shared/media",
       "source": "packages/web-ui/src/components/EventBackdropImage.tsx",
       "exportName": "EventBackdropImage",
-      "comparedWith": [
-        "catch.detail_media",
-        "catch.graded_image",
-        "catch.network_image"
-      ],
-      "comparisonReason": "Paints activity artwork (duotone ground and line pattern) from an activity kind; it loads, grades and frames no photo. catch.network_image and catch.graded_image load and grade a supplied photo, and catch.detail_media composes a hero photo with its scrim.",
       "css": [
         "packages/web-ui/src/components/EventBackdropImage.module.css"
       ],
@@ -3513,10 +3479,6 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchFactTile.tsx",
       "exportName": "CatchFactTile",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "A labelled fact tile on a ground that sets its label, value and note in CatchText roles; it owns a tile's layout, not a text role.",
       "css": [
         "packages/web-ui/src/components/CatchFactTile.module.css"
       ],
@@ -3535,9 +3497,12 @@
       },
       "notes": "Website T4 under D18 (CAT-249). A label, its value and an optional note on a ground: the event page facts (When, Where, Price) and, as a stat on the displayS step, the owner view numbers with a positive change note. Nearest concept: catch.metric_strip (CatchMetricSection and CatchMetricTile), which sets the value above its label in the mono or metric role; the v2 tile leads with the label, so it is not a CatchMetricTile recipe. Search aliases: MetricTile, StatTile, StatCard, FactCard, KpiTile, InfoTile, KeyFact.",
       "comparedWith": [
+        "catch.analytics_metric",
+        "catch.icon_tile",
+        "catch.option_card",
         "catch.text"
       ],
-      "comparisonReason": "A labelled fact or stat on a ground; it arranges CatchText roles and is not a text role itself."
+      "comparisonReason": "A labelled fact or stat on a ground; it arranges CatchText roles and is not a text role itself. It shows a published fact, not a caller-formatted metric with partial and missing-data states (analytics_metric), an icon presentation (icon_tile) or a choice target with checked semantics (option_card)."
     },
     {
       "id": "shared_share_bar",
@@ -3706,10 +3671,6 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchReviewItem.tsx",
       "exportName": "CatchReviewItem",
-      "comparedWith": [
-        "catch.text"
-      ],
-      "comparisonReason": "One review with stars, verification and a reply, set in CatchText roles; it owns the review's anatomy, not a text role.",
       "css": [
         "packages/web-ui/src/components/CatchReviewItem.module.css"
       ],
@@ -3733,9 +3694,14 @@
       },
       "notes": "Website T4 under D18 (CAT-249). One review as an article named by the reviewer: stars, a verification badge slot (Booked on Catch or Unverified), the text, the organiser's reply and a footer slot for Reply. The row recipe is the organiser page's hairline list; the card recipe is the event page's paper card. Search aliases: Review, ReviewCard, ReviewRow, Testimonial, CustomerReview, Comment.",
       "comparedWith": [
+        "catch.analytics_metric",
+        "catch.icon_tile",
+        "catch.index_row",
+        "catch.meta_row",
+        "catch.option_card",
         "catch.text"
       ],
-      "comparisonReason": "One review with identity, stars, verification, text and reply; it arranges CatchText roles and is not a text role."
+      "comparisonReason": "One review with identity, stars, verification, text and reply; it arranges CatchText roles and is not a text role. It is not a metric, icon or choice tile, and not a directory index row or a passive metadata row: its meta line is one part of a review the reader reads whole."
     },
     {
       "id": "shared_star_input",
@@ -3835,11 +3801,6 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchPreviewCard.tsx",
       "exportName": "CatchPreviewCard",
-      "comparedWith": [
-        "catch.text",
-        "catch.button"
-      ],
-      "comparisonReason": "A linked event card on a ground that sets its label, title and meta in CatchText roles, and in its feature size a non-interactive CatchButton as the action label; the whole card is the one link, so it owns a card's layout, not a text role or a button.",
       "css": [
         "packages/web-ui/src/components/CatchPreviewCard.module.css"
       ],
