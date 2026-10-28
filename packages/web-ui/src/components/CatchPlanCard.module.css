@@ -1,6 +1,7 @@
 /*
- * Website v2 plan card (CAT-260): a white raised card, 170px media above the
- * copy. Below 840px it turns into a row with a 112px media column.
+ * Website v2 plan card (CAT-260): a white raised card, 170px media (the photo,
+ * or a poster on the format's accent ground) above the copy. Below 840px it
+ * turns into a row with a 112px media column.
  */
 .card {
   display: flex;
@@ -27,8 +28,23 @@
 .media {
   display: block;
   flex: none;
+  width: 100%;
   height: 170px;
-  overflow: hidden;
+  object-fit: cover;
+}
+
+.poster {
+  composes: ground from "./grounds.module.css";
+  display: flex;
+  align-items: flex-end;
+  box-sizing: border-box;
+  padding: var(--catch-space-s4);
+}
+
+/* A poster word never breaks; a long one is clipped at the poster's edge. */
+.poster > * {
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .body {
@@ -58,6 +74,11 @@
     width: 112px;
     height: auto;
     min-height: 124px;
+  }
+
+  .poster {
+    overflow: hidden;
+    padding: var(--catch-space-s2);
   }
 }
 

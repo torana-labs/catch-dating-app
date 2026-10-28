@@ -1,6 +1,6 @@
 /*
  * Website v2 format tile (CAT-260): the format's accent ground and ink, a
- * 340px tile (310px below 840px) with the media held to its foot. A pressed
+ * 340px tile (310px below 840px) with the photo held to its foot. A pressed
  * tile draws the selection stroke inside its edge in ink.
  */
 .tile {
@@ -64,13 +64,14 @@
   outline-offset: var(--catch-space-micro2);
 }
 
-.media {
+.photo {
   display: block;
   flex: none;
+  width: 100%;
   height: 118px;
   margin-top: auto;
-  overflow: hidden;
   border-radius: var(--catch-radius-md);
+  object-fit: cover;
 }
 
 @container catch-page (width < 840px) {
