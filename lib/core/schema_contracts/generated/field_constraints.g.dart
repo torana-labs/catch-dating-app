@@ -21451,6 +21451,370 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const cityPlansDocumentBuiltAtNanoseconds = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.builtAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const cityPlansDocumentBuiltAtSeconds = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.builtAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const cityPlansDocumentCityLabel = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.cityLabel',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentCitySlug = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.citySlug',
+    maxLength: 60,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*\$',
+  );
+
+  static const cityPlansDocumentFormatCountsCourts = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.formatCounts.courts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentFormatCountsDinner = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.formatCounts.dinner',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentFormatCountsGames = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.formatCounts.games',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentFormatCountsNightsOut = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.formatCounts.nightsOut',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentFormatCountsOther = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.formatCounts.other',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentFormatCountsRun = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.formatCounts.run',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentMarketStatus = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.marketStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['launched', 'planned'],
+  );
+
+  static const cityPlansDocumentOrganizers = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 24,
+  );
+
+  static const cityPlansDocumentOrganizersItemsCategory = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.category',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentOrganizersItemsClaimState = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.claimState',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unclaimed', 'claimPending', 'claimed', 'verified'],
+  );
+
+  static const cityPlansDocumentOrganizersItemsFollowerCount = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.followerCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentOrganizersItemsFormats = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.formats',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['run', 'dinner', 'games', 'courts', 'nightsOut', 'other'],
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const cityPlansDocumentOrganizersItemsFormatsItems = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.formats.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'dinner', 'games', 'courts', 'nightsOut', 'other'],
+  );
+
+  static const cityPlansDocumentOrganizersItemsLogoMode = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.logo.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['monogram'],
+  );
+
+  static const cityPlansDocumentOrganizersItemsLogoStatus = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.logo.status',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentOrganizersItemsLogoText = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.logo.text',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentOrganizersItemsName = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.name',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentOrganizersItemsNextPlanDate = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.nextPlan.date',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentOrganizersItemsNextPlanEventId = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.nextPlan.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const cityPlansDocumentOrganizersItemsNextPlanPath = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.nextPlan.path',
+    maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/\$',
+  );
+
+  static const cityPlansDocumentOrganizersItemsNextPlanStartTime = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.nextPlan.startTime',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const cityPlansDocumentOrganizersItemsNextPlanTitle = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.nextPlan.title',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentOrganizersItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const cityPlansDocumentOrganizersItemsPath = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.path',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+    pattern: '^/organizers/(?:[a-z0-9-]+/){1,2}\$',
+  );
+
+  static const cityPlansDocumentOrganizersItemsUpcomingPlanCount = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.organizers.items.upcomingPlanCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentPlanCount = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.planCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentPlans = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 120,
+  );
+
+  static const cityPlansDocumentPlansItemsActivityKind = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.activityKind',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentPlansItemsDate = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.date',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentPlansItemsEndTime = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.endTime',
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const cityPlansDocumentPlansItemsEventId = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const cityPlansDocumentPlansItemsFormat = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.format',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['run', 'dinner', 'games', 'courts', 'nightsOut', 'other'],
+  );
+
+  static const cityPlansDocumentPlansItemsLocation = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.location',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentPlansItemsOrganizerName = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.organizer.name',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentPlansItemsOrganizerOrganizerId = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.organizer.organizerId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+  );
+
+  static const cityPlansDocumentPlansItemsOrganizerPath = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.organizer.path',
+    maxLength: 240,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/organizers/(?:[a-z0-9-]+/){1,2}\$',
+  );
+
+  static const cityPlansDocumentPlansItemsPath = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.path',
+    maxLength: 200,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/\$',
+  );
+
+  static const cityPlansDocumentPlansItemsPhotoUrl = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.photoUrl',
+    maxLength: 4096,
+    valueTypes: <String>['string'],
+    format: 'uri',
+    pattern: '^https://',
+  );
+
+  static const cityPlansDocumentPlansItemsPriceLabel = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.priceLabel',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentPlansItemsSource = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'external'],
+  );
+
+  static const cityPlansDocumentPlansItemsSpotsLeft = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.spotsLeft',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const cityPlansDocumentPlansItemsStartTime = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.startTime',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const cityPlansDocumentPlansItemsTitle = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.plans.items.title',
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const cityPlansDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.schemaVersion',
+    required: true,
+  );
+
+  static const cityPlansDocumentStatus = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['live', 'launchingSoon'],
+  );
+
+  static const cityPlansDocumentWindowEnd = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.windowEnd',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const cityPlansDocumentWindowStart = CatchContractFieldConstraints(
+    path: 'cityPlansDocument.windowStart',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
   static const claimEventRuntimeAccessCallablePayloadAttendeeToken = CatchContractFieldConstraints(
     path: 'claimEventRuntimeAccessCallablePayload.attendeeToken',
     maxLength: 240,
@@ -176128,6 +176492,57 @@ abstract final class CatchContractConstraints {
     'checkInEventRuntimeCallablePayload.venueSessionToken': checkInEventRuntimeCallablePayloadVenueSessionToken,
     'checkInEventRuntimeCallableResponse.alreadyCheckedIn': checkInEventRuntimeCallableResponseAlreadyCheckedIn,
     'checkInEventRuntimeCallableResponse.status': checkInEventRuntimeCallableResponseStatus,
+    'cityPlansDocument.builtAt._nanoseconds': cityPlansDocumentBuiltAtNanoseconds,
+    'cityPlansDocument.builtAt._seconds': cityPlansDocumentBuiltAtSeconds,
+    'cityPlansDocument.cityLabel': cityPlansDocumentCityLabel,
+    'cityPlansDocument.citySlug': cityPlansDocumentCitySlug,
+    'cityPlansDocument.formatCounts.courts': cityPlansDocumentFormatCountsCourts,
+    'cityPlansDocument.formatCounts.dinner': cityPlansDocumentFormatCountsDinner,
+    'cityPlansDocument.formatCounts.games': cityPlansDocumentFormatCountsGames,
+    'cityPlansDocument.formatCounts.nightsOut': cityPlansDocumentFormatCountsNightsOut,
+    'cityPlansDocument.formatCounts.other': cityPlansDocumentFormatCountsOther,
+    'cityPlansDocument.formatCounts.run': cityPlansDocumentFormatCountsRun,
+    'cityPlansDocument.marketStatus': cityPlansDocumentMarketStatus,
+    'cityPlansDocument.organizers': cityPlansDocumentOrganizers,
+    'cityPlansDocument.organizers.items.category': cityPlansDocumentOrganizersItemsCategory,
+    'cityPlansDocument.organizers.items.claimState': cityPlansDocumentOrganizersItemsClaimState,
+    'cityPlansDocument.organizers.items.followerCount': cityPlansDocumentOrganizersItemsFollowerCount,
+    'cityPlansDocument.organizers.items.formats': cityPlansDocumentOrganizersItemsFormats,
+    'cityPlansDocument.organizers.items.formats.items': cityPlansDocumentOrganizersItemsFormatsItems,
+    'cityPlansDocument.organizers.items.logo.mode': cityPlansDocumentOrganizersItemsLogoMode,
+    'cityPlansDocument.organizers.items.logo.status': cityPlansDocumentOrganizersItemsLogoStatus,
+    'cityPlansDocument.organizers.items.logo.text': cityPlansDocumentOrganizersItemsLogoText,
+    'cityPlansDocument.organizers.items.name': cityPlansDocumentOrganizersItemsName,
+    'cityPlansDocument.organizers.items.nextPlan.date': cityPlansDocumentOrganizersItemsNextPlanDate,
+    'cityPlansDocument.organizers.items.nextPlan.eventId': cityPlansDocumentOrganizersItemsNextPlanEventId,
+    'cityPlansDocument.organizers.items.nextPlan.path': cityPlansDocumentOrganizersItemsNextPlanPath,
+    'cityPlansDocument.organizers.items.nextPlan.startTime': cityPlansDocumentOrganizersItemsNextPlanStartTime,
+    'cityPlansDocument.organizers.items.nextPlan.title': cityPlansDocumentOrganizersItemsNextPlanTitle,
+    'cityPlansDocument.organizers.items.organizerId': cityPlansDocumentOrganizersItemsOrganizerId,
+    'cityPlansDocument.organizers.items.path': cityPlansDocumentOrganizersItemsPath,
+    'cityPlansDocument.organizers.items.upcomingPlanCount': cityPlansDocumentOrganizersItemsUpcomingPlanCount,
+    'cityPlansDocument.planCount': cityPlansDocumentPlanCount,
+    'cityPlansDocument.plans': cityPlansDocumentPlans,
+    'cityPlansDocument.plans.items.activityKind': cityPlansDocumentPlansItemsActivityKind,
+    'cityPlansDocument.plans.items.date': cityPlansDocumentPlansItemsDate,
+    'cityPlansDocument.plans.items.endTime': cityPlansDocumentPlansItemsEndTime,
+    'cityPlansDocument.plans.items.eventId': cityPlansDocumentPlansItemsEventId,
+    'cityPlansDocument.plans.items.format': cityPlansDocumentPlansItemsFormat,
+    'cityPlansDocument.plans.items.location': cityPlansDocumentPlansItemsLocation,
+    'cityPlansDocument.plans.items.organizer.name': cityPlansDocumentPlansItemsOrganizerName,
+    'cityPlansDocument.plans.items.organizer.organizerId': cityPlansDocumentPlansItemsOrganizerOrganizerId,
+    'cityPlansDocument.plans.items.organizer.path': cityPlansDocumentPlansItemsOrganizerPath,
+    'cityPlansDocument.plans.items.path': cityPlansDocumentPlansItemsPath,
+    'cityPlansDocument.plans.items.photoUrl': cityPlansDocumentPlansItemsPhotoUrl,
+    'cityPlansDocument.plans.items.priceLabel': cityPlansDocumentPlansItemsPriceLabel,
+    'cityPlansDocument.plans.items.source': cityPlansDocumentPlansItemsSource,
+    'cityPlansDocument.plans.items.spotsLeft': cityPlansDocumentPlansItemsSpotsLeft,
+    'cityPlansDocument.plans.items.startTime': cityPlansDocumentPlansItemsStartTime,
+    'cityPlansDocument.plans.items.title': cityPlansDocumentPlansItemsTitle,
+    'cityPlansDocument.schemaVersion': cityPlansDocumentSchemaVersion,
+    'cityPlansDocument.status': cityPlansDocumentStatus,
+    'cityPlansDocument.windowEnd': cityPlansDocumentWindowEnd,
+    'cityPlansDocument.windowStart': cityPlansDocumentWindowStart,
     'claimEventRuntimeAccessCallablePayload.attendeeToken': claimEventRuntimeAccessCallablePayloadAttendeeToken,
     'claimEventRuntimeAccessCallablePayload.displayName': claimEventRuntimeAccessCallablePayloadDisplayName,
     'claimEventRuntimeAccessCallablePayload.inviteToken': claimEventRuntimeAccessCallablePayloadInviteToken,

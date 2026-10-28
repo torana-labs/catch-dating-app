@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "citySlug": "indore",
+  "cityLabel": "Indore",
+  "marketStatus": "launched",
+  "status": "live",
+  "windowStart": "2026-05-14T00:00:00.000Z",
+  "windowEnd": "2026-05-28T00:00:00.000Z",
+  "planCount": 4,
+  "formatCounts": {
+    "run": 1,
+    "dinner": 1,
+    "games": 1,
+    "courts": 0,
+    "nightsOut": 1,
+    "other": 0
+  },
+  "plans": [
+    {
+      "source": "catch",
+      "eventId": "indore-run-1",
+      "path": "/events/indore-run-1/",
+      "title": "Race Course social run",
+      "format": "run",
+      "activityKind": "singlesMixer",
+      "startTime": "2026-05-16T00:00:00.000Z",
+      "endTime": null,
+      "date": "16 May 2026, 5:30 – 6:40 am",
+      "location": "Race Course Road gate",
+      "priceLabel": "Free",
+      "photoUrl": null,
+      "spotsLeft": 8,
+      "organizer": {
+        "organizerId": "next-proof",
+        "name": "Next proof organizer",
+        "path": "/organizers/next-proof/"
+      }
+    },
+    {
+      "source": "catch",
+      "eventId": "indore-quiz-1",
+      "path": "/events/indore-quiz-1/",
+      "title": "Sunday pub quiz",
+      "format": "games",
+      "activityKind": "pubQuiz",
+      "startTime": "2026-05-17T14:00:00.000Z",
+      "endTime": null,
+      "date": "16 May 2026, 5:30 – 6:40 am",
+      "location": "Race Course Road gate",
+      "priceLabel": "Free",
+      "photoUrl": null,
+      "spotsLeft": 8,
+      "organizer": {
+        "organizerId": "next-proof",
+        "name": "Next proof organizer",
+        "path": "/organizers/next-proof/"
+      }
+    },
+    {
+      "source": "catch",
+      "eventId": "indore-dinner-1",
+      "path": "/events/indore-dinner-1/",
+      "title": "Long table supper",
+      "format": "dinner",
+      "activityKind": "dinner",
+      "startTime": "2026-05-20T14:00:00.000Z",
+      "endTime": null,
+      "date": "16 May 2026, 5:30 – 6:40 am",
+      "location": "Race Course Road gate",
+      "priceLabel": "Free",
+      "photoUrl": null,
+      "spotsLeft": 8,
+      "organizer": {
+        "organizerId": "next-proof",
+        "name": "Next proof organizer",
+        "path": "/organizers/next-proof/"
+      }
+    },
+    {
+      "source": "catch",
+      "eventId": "indore-crawl-1",
+      "path": "/events/indore-crawl-1/",
+      "title": "Friday crawl",
+      "format": "nightsOut",
+      "activityKind": "barCrawl",
+      "startTime": "2026-05-22T14:00:00.000Z",
+      "endTime": null,
+      "date": "16 May 2026, 5:30 – 6:40 am",
+      "location": "Race Course Road gate",
+      "priceLabel": "Free",
+      "photoUrl": null,
+      "spotsLeft": 8,
+      "organizer": {
+        "organizerId": "next-proof",
+        "name": "Next proof organizer",
+        "path": "/organizers/next-proof/"
+      }
+    }
+  ],
+  "organizers": [
+    {
+      "organizerId": "next-proof",
+      "name": "Next proof organizer",
+      "path": "/organizers/next-proof/",
+      "category": "Event producer",
+      "logo": {
+        "mode": "monogram",
+        "text": "NP",
+        "status": "not_verified"
+      },
+      "formats": [
+        "run",
+        "dinner",
+        "games",
+        "nightsOut"
+      ],
+      "followerCount": 7,
+      "claimState": "unclaimed",
+      "upcomingPlanCount": 4,
+      "nextPlan": {
+        "eventId": "indore-run-1",
+        "path": "/events/indore-run-1/",
+        "title": "Race Course social run",
+        "startTime": "2026-05-16T00:00:00.000Z",
+        "date": "16 May 2026, 5:30 – 6:40 am"
+      }
+    }
+  ],
+  "builtAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  }
+}

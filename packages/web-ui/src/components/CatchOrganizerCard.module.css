@@ -1,0 +1,53 @@
+/*
+ * Website v2 organiser card (CAT-260): a paper card with the monogram, name
+ * and subtitle, the next plan, and the foot row held to the bottom.
+ */
+.card {
+  composes: ground from "./grounds.module.css";
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+  box-sizing: border-box;
+  height: 100%;
+  padding: var(--catch-space-s5);
+  border-radius: calc(var(--catch-radius-lg) * 1.1);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--catch-space-s3);
+}
+
+.names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.names > * {
+  margin: 0;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.link:focus-visible {
+  border-radius: var(--catch-radius-xs);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
+  margin-top: auto;
+}
