@@ -15,7 +15,7 @@ import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.d
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/payments/data/organizer_event_checkout.dart';
-import 'package:catch_dating_app/payments/presentation/organizer_payment_method_sheet.dart';
+import 'package:catch_dating_app/events/presentation/widgets/organizer_payment_method_sheet.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';

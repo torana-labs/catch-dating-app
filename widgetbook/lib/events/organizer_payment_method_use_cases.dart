@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/payments/presentation/organizer_payment_method_sheet.dart';
+import 'package:catch_dating_app/events/presentation/widgets/organizer_payment_method_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/page_preview.dart';
