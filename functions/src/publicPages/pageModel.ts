@@ -13,6 +13,7 @@ import {
   publicExternalEvent,
   type PublicExternalEvent,
 } from "./publicExternalEvent";
+import {pageOwnerLinks} from "../organizers/organizerLinks";
 import {projectPublicOrganizer, type HostListing} from "./publicOrganizer";
 import {publicEventAuthorized} from "./publicReadPolicy";
 import {projectPublicReview, type PublicReview} from "./publicReview";
@@ -149,7 +150,8 @@ export function buildOrganizerScope(
       verified,
       indexing: listing.indexing,
     },
-    links: [],
+    links: pageOwnerLinks(
+      (organizer.data as {ownerLinks?: unknown} | null)?.ownerLinks, now),
     upcomingEvents: upcoming.slice(0, pageLimits.upcomingEvents),
     pastMoments: past.slice(0, pageLimits.pastMoments),
     reviewSummary,

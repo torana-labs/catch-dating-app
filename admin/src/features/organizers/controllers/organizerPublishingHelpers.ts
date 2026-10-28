@@ -1,8 +1,10 @@
 import type {
   AdminClubDetails,
+  AdminOrganizerOwnerLink,
   AdminSetClubIndexStatusPayload,
   AdminUpdateClubDetailsPayload,
   OrganizerAppVisibility,
+  OrganizerOwnerLinkIcon,
   OrganizerType,
   OrganizerPublishStatus,
   OrganizerSourceConfidence,
@@ -44,7 +46,19 @@ export interface OrganizerPublishingFormState {
   summary: string;
   sourceSummary: string;
   formatsText: string;
+  ownerLinks: OrganizerOwnerLinkDraft[];
   reviewNote: string;
+}
+
+/** An owner link as the editor holds it; showUntil is a local datetime. */
+export interface OrganizerOwnerLinkDraft {
+  id: string;
+  label: string;
+  subtitle: string;
+  url: string;
+  icon: OrganizerOwnerLinkIcon | "";
+  pinned: boolean;
+  showUntil: string;
 }
 
 export interface PublishChecklistState {
@@ -94,6 +108,29 @@ export const organizerPublishingFieldIds = {
   summary: "organizer-summary",
   verificationStatus: "organizer-verification-status",
 } as const;
+
+export const maxOrganizerOwnerLinks = 20;
+
+export const organizerOwnerLinkIconOptions = [
+  {value: "", label: "From the address"},
+  {value: "link", label: "Link"},
+  {value: "website", label: "Website"},
+  {value: "community", label: "Community chat"},
+  {value: "social", label: "Social profile"},
+  {value: "tickets", label: "Tickets"},
+  {value: "calendar", label: "Calendar"},
+  {value: "shop", label: "Shop"},
+  {value: "partner", label: "Partner"},
+  {value: "video", label: "Video"},
+  {value: "route", label: "Route"},
+] as const;
+
+export function organizerOwnerLinkFieldId(
+  index: number,
+  field: "label" | "url" | "showUntil"
+): string {
+  return `organizer-owner-link-${index}-${field}`;
+}
 
 export const organizerTypeOptions = [
   {value: "club", label: "Club"},
@@ -241,8 +278,63 @@ export function formFromOrganizerProfile(
     summary: club.publicProfile.summary ?? "",
     sourceSummary: club.publicProfile.sourceSummary ?? "",
     formatsText: listToText(club.publicProfile.formats),
+    ownerLinks: club.ownerLinks.map(ownerLinkDraft),
     reviewNote: "",
   };
+}
+
+export function emptyOrganizerOwnerLinkDraft(): OrganizerOwnerLinkDraft {
+  return {
+    id: `link-${globalThis.crypto.randomUUID()}`,
+    label: "",
+    subtitle: "",
+    url: "",
+    icon: "",
+    pinned: false,
+    showUntil: "",
+  };
+}
+
+/** The links an editor's drafts save, in order. */
+export function ownerLinksFromDrafts(
+  drafts: OrganizerOwnerLinkDraft[]
+): AdminOrganizerOwnerLink[] {
+  return drafts.map((draft) => ({
+    id: draft.id,
+    label: draft.label.trim(),
+    subtitle: nullableText(draft.subtitle),
+    url: draft.url.trim(),
+    icon: draft.icon || null,
+    pinned: draft.pinned,
+    showUntil: draft.showUntil.trim() ?
+      isoFromLocalDateTime(draft.showUntil) : null,
+  }));
+}
+
+function ownerLinkDraft(link: AdminOrganizerOwnerLink): OrganizerOwnerLinkDraft {
+  return {
+    id: link.id,
+    label: link.label,
+    subtitle: link.subtitle ?? "",
+    url: link.url,
+    icon: link.icon ?? "",
+    pinned: link.pinned,
+    showUntil: link.showUntil ? localDateTimeFromIso(link.showUntil) : "",
+  };
+}
+
+/** A datetime-local value in the browser's zone, to the minute. */
+function localDateTimeFromIso(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${
+    pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function isoFromLocalDateTime(value: string): string | null {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
 export function diffOrganizerProfile(
@@ -358,6 +450,12 @@ export function buildOrganizerSavePayload(
     fields.publicProfile = publicProfile;
   }
 
+  const ownerLinks = ownerLinksFromDrafts(form.ownerLinks);
+  if (JSON.stringify(ownerLinks) !==
+      JSON.stringify(ownerLinksFromDrafts(original.ownerLinks))) {
+    fields.ownerLinks = ownerLinks;
+  }
+
   return {
     clubId: form.clubId.trim(),
     reviewNote: nullableText(form.reviewNote),
@@ -442,6 +540,7 @@ export function validateOrganizerPublishingForm(
     organizerPublishingFieldIds.logoUrl
   );
   validateOptionalEmail(issues, form.email);
+  validateOwnerLinks(issues, form.ownerLinks);
   const routeIssue = validateCanonicalPath(form);
   if (routeIssue) issues.push(routeIssue);
   if (options.requireReviewNote && !form.reviewNote.trim()) {
@@ -633,6 +732,58 @@ function validateOptionalUrl(
   });
 }
 
+function validateOwnerLinks(
+  issues: OrganizerValidationIssue[],
+  drafts: OrganizerOwnerLinkDraft[]
+) {
+  if (drafts.length > maxOrganizerOwnerLinks) {
+    issues.push({
+      id: "owner-links-count",
+      label: "Page links",
+      detail: `Keep the page to ${maxOrganizerOwnerLinks} links or fewer.`,
+      severity: "blocker",
+    });
+  }
+  drafts.forEach((draft, index) => {
+    const label = `Page link ${index + 1}`;
+    if (!draft.label.trim()) {
+      issues.push({
+        id: `owner-link-${index}-label`,
+        label,
+        detail: "Give the link the label visitors will see.",
+        severity: "blocker",
+        targetId: organizerOwnerLinkFieldId(index, "label"),
+      });
+    }
+    if (!isHttpsUrl(draft.url.trim())) {
+      issues.push({
+        id: `owner-link-${index}-url`,
+        label,
+        detail: "Enter the full https:// address the link opens.",
+        severity: "blocker",
+        targetId: organizerOwnerLinkFieldId(index, "url"),
+      });
+    }
+    if (draft.showUntil.trim() && !isoFromLocalDateTime(draft.showUntil)) {
+      issues.push({
+        id: `owner-link-${index}-show-until`,
+        label,
+        detail: "Pick a valid show-until date and time, or clear it.",
+        severity: "blocker",
+        targetId: organizerOwnerLinkFieldId(index, "showUntil"),
+      });
+    }
+  });
+}
+
+function isHttpsUrl(value: string): boolean {
+  try {
+    return new URL(value).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 function validateOptionalEmail(
   issues: OrganizerValidationIssue[],
   value: string
@@ -655,6 +806,18 @@ function diffFields(
   const rows: OrganizerDiffRow[] = [];
   for (const key of Object.keys(before) as Array<keyof OrganizerPublishingFormState>) {
     if (key === "reviewNote") continue;
+    if (key === "ownerLinks") {
+      const beforeLinks = ownerLinksFromDrafts(before.ownerLinks);
+      const afterLinks = ownerLinksFromDrafts(after.ownerLinks);
+      if (JSON.stringify(beforeLinks) !== JSON.stringify(afterLinks)) {
+        rows.push({
+          field: "Page links",
+          before: ownerLinksSummary(beforeLinks),
+          after: ownerLinksSummary(afterLinks),
+        });
+      }
+      continue;
+    }
     const beforeValue = String(before[key] ?? "");
     const afterValue = String(after[key] ?? "");
     if (beforeValue !== afterValue) {
@@ -666,6 +829,12 @@ function diffFields(
     }
   }
   return rows;
+}
+
+function ownerLinksSummary(links: AdminOrganizerOwnerLink[]): string {
+  return links.map((link) =>
+    `${link.label || link.url || "Untitled"}${link.pinned ? " (pinned)" : ""}`)
+    .join(", ") || "empty";
 }
 
 function labelFromKey(key: string): string {

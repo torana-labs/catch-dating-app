@@ -2592,6 +2592,101 @@ export const organizerDocumentSchema: Record<string, unknown> = {
       },
       "x-catch-ownership": "callable-owned"
     },
+    "ownerLinks": {
+      "type": "array",
+      "maxItems": 20,
+      "description": "Links the owner, or staff for them, put on the organizer page, in display order. Written only by adminUpdateOrganizerDetails after the owner-link URL policy in functions/src/organizers/organizerLinks.ts.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One owner-managed link on the organizer page (CAT-254). Pinned links lead; a link with showUntil disappears after that time.",
+        "required": [
+          "id",
+          "label",
+          "subtitle",
+          "url",
+          "icon",
+          "pinned",
+          "showUntil"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "subtitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 4096,
+            "pattern": "^https://"
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "link",
+              "website",
+              "community",
+              "social",
+              "tickets",
+              "calendar",
+              "shop",
+              "partner",
+              "video",
+              "route",
+              null
+            ],
+            "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "showUntil": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "publicSources": {
       "type": "array",
       "maxItems": 20,

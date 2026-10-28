@@ -2594,6 +2594,101 @@ const schemaOrganizerDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'ownerLinks': <String, Object?>{
+      'type': 'array',
+      'maxItems': 20,
+      'description': 'Links the owner, or staff for them, put on the organizer page, in display order. Written only by adminUpdateOrganizerDetails after the owner-link URL policy in functions/src/organizers/organizerLinks.ts.',
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'description': 'One owner-managed link on the organizer page (CAT-254). Pinned links lead; a link with showUntil disappears after that time.',
+        'required': <Object?>[
+          'id',
+          'label',
+          'subtitle',
+          'url',
+          'icon',
+          'pinned',
+          'showUntil',
+        ],
+        'properties': <String, Object?>{
+          'id': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[A-Za-z0-9][A-Za-z0-9_-]{0,179}\$',
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
+          },
+          'subtitle': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'minLength': 1,
+            'maxLength': 80,
+          },
+          'url': <String, Object?>{
+            'type': 'string',
+            'format': 'uri',
+            'maxLength': 4096,
+            'pattern': '^https://',
+          },
+          'icon': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'enum': <Object?>[
+              'link',
+              'website',
+              'community',
+              'social',
+              'tickets',
+              'calendar',
+              'shop',
+              'partner',
+              'video',
+              'route',
+              null,
+            ],
+            'description': 'What an owner link is for, which picks its icon. Null lets the page infer one from the URL.',
+          },
+          'pinned': <String, Object?>{
+            'type': 'boolean',
+          },
+          'showUntil': <String, Object?>{
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'object',
+                'description': 'Serialized Firestore Timestamp fixture shape.',
+                'x-firestore-type': 'timestamp',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  '_seconds',
+                  '_nanoseconds',
+                ],
+                'properties': <String, Object?>{
+                  '_seconds': <String, Object?>{
+                    'type': 'integer',
+                  },
+                  '_nanoseconds': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 999999999,
+                  },
+                },
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
+            ],
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
     'publicSources': <String, Object?>{
       'type': 'array',
       'maxItems': 20,

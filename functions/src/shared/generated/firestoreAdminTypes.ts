@@ -8856,6 +8856,34 @@ export interface OrganizerDocument {
     }[];
   };
   /**
+   * Links the owner, or staff for them, put on the organizer page, in display order. Written only by adminUpdateOrganizerDetails after the owner-link URL policy in functions/src/organizers/organizerLinks.ts.
+   *
+   * @maxItems 20
+   */
+  ownerLinks?: {
+    id: string;
+    label: string;
+    subtitle: string | null;
+    url: string;
+    /**
+     * What an owner link is for, which picks its icon. Null lets the page infer one from the URL.
+     */
+    icon:
+      | "link"
+      | "website"
+      | "community"
+      | "social"
+      | "tickets"
+      | "calendar"
+      | "shop"
+      | "partner"
+      | "video"
+      | "route"
+      | null;
+    pinned: boolean;
+    showUntil: FirebaseFirestore.Timestamp | null;
+  }[];
+  /**
    * @maxItems 20
    */
   publicSources?: {
@@ -13178,14 +13206,30 @@ export interface OrganizerPublicPageDocument {
     indexing: "index, follow" | "noindex, follow";
   };
   /**
-   * Owner links in display order. Empty until owner link editing ships (CAT-254).
+   * The owner's live links from organizers/{id}.ownerLinks (CAT-254): pinned first, otherwise in the owner's order, without links whose showUntil had passed when the page was built. Readers also hide links that have since expired.
    *
    * @maxItems 20
    */
   links: {
     id: string;
     label: string;
+    subtitle: string | null;
     url: string;
+    /**
+     * What an owner link is for, which picks its icon. Null lets the page infer one from the URL.
+     */
+    icon:
+      | "link"
+      | "website"
+      | "community"
+      | "social"
+      | "tickets"
+      | "calendar"
+      | "shop"
+      | "partner"
+      | "video"
+      | "route"
+      | null;
     pinned: boolean;
     showUntil: FirebaseFirestore.Timestamp | null;
   }[];

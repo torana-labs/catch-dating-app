@@ -585,6 +585,26 @@ export const sampleClubDetails: Record<string, AdminClubDetails> =
       sourceConfidence: "medium",
       verificationStatus: "sourceBacked",
       formats: ["Social run", "Pace pods"],
+      ownerLinks: [
+        {
+          id: "diwali-run",
+          label: "Diwali night run tickets",
+          subtitle: "Pre-sale closes Friday",
+          url: "https://www.district.in/events/afterfly-diwali-run",
+          icon: "tickets",
+          pinned: true,
+          showUntil: "2026-11-14T18:30:00.000Z",
+        },
+        {
+          id: "whatsapp",
+          label: "Join the WhatsApp community",
+          subtitle: null,
+          url: "https://chat.whatsapp.com/afterflyindore",
+          icon: "community",
+          pinned: false,
+          showUntil: null,
+        },
+      ],
     }),
     sampleOrganizer({
       clubId: "bhag",
@@ -971,6 +991,7 @@ function sampleOrganizer(config: {
   sourceConfidence: AdminClubDetails["provenance"]["sourceConfidence"];
   verificationStatus: AdminClubDetails["provenance"]["verificationStatus"];
   formats: string[];
+  ownerLinks?: AdminClubDetails["ownerLinks"];
 }): AdminClubDetails {
   const market = sampleMarketsBySlug[config.citySlug] ?? {
     cityId: config.citySlug,
@@ -1035,6 +1056,7 @@ function sampleOrganizer(config: {
       sourceSummary: null,
       formats: config.formats,
     },
+    ownerLinks: config.ownerLinks ?? [],
   };
 }
 

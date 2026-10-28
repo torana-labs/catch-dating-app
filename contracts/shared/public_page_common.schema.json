@@ -396,14 +396,36 @@
     "publicReview": {
       "$ref": "../public/website_host_listing_projection.schema.json#/definitions/publicReview"
     },
+    "ownerLinkIcon": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "link",
+        "website",
+        "community",
+        "social",
+        "tickets",
+        "calendar",
+        "shop",
+        "partner",
+        "video",
+        "route",
+        null
+      ],
+      "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
+    },
     "ownerLink": {
       "type": "object",
       "additionalProperties": false,
-      "description": "One owner-managed link on the organizer page. Pinned links lead; a link with showUntil disappears after that time.",
+      "description": "One owner-managed link on the organizer page (CAT-254). Pinned links lead; a link with showUntil disappears after that time.",
       "required": [
         "id",
         "label",
+        "subtitle",
         "url",
+        "icon",
         "pinned",
         "showUntil"
       ],
@@ -416,14 +438,73 @@
           "minLength": 1,
           "maxLength": 80
         },
+        "subtitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
+        },
         "url": {
           "$ref": "#/definitions/httpsUrl"
+        },
+        "icon": {
+          "$ref": "#/definitions/ownerLinkIcon"
         },
         "pinned": {
           "type": "boolean"
         },
         "showUntil": {
           "$ref": "event_common.schema.json#/definitions/nullableTimestamp"
+        }
+      }
+    },
+    "ownerLinkInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "An owner link as an admin edit sends it. showUntil is an ISO date-time; the server checks the URL against the owner-link policy before saving.",
+      "required": [
+        "id",
+        "label",
+        "subtitle",
+        "url",
+        "icon",
+        "pinned",
+        "showUntil"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/publicDocumentId"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "subtitle": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "url": {
+          "$ref": "#/definitions/httpsUrl"
+        },
+        "icon": {
+          "$ref": "#/definitions/ownerLinkIcon"
+        },
+        "pinned": {
+          "type": "boolean"
+        },
+        "showUntil": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         }
       }
     },

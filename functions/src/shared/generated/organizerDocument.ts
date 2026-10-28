@@ -439,6 +439,37 @@ export interface OrganizerDocument {
     }[];
   };
   /**
+   * Links the owner, or staff for them, put on the organizer page, in display order. Written only by adminUpdateOrganizerDetails after the owner-link URL policy in functions/src/organizers/organizerLinks.ts.
+   *
+   * @maxItems 20
+   */
+  ownerLinks?: {
+    id: string;
+    label: string;
+    subtitle: string | null;
+    url: string;
+    /**
+     * What an owner link is for, which picks its icon. Null lets the page infer one from the URL.
+     */
+    icon:
+      | "link"
+      | "website"
+      | "community"
+      | "social"
+      | "tickets"
+      | "calendar"
+      | "shop"
+      | "partner"
+      | "video"
+      | "route"
+      | null;
+    pinned: boolean;
+    showUntil: {
+      _seconds: number;
+      _nanoseconds: number;
+    } | null;
+  }[];
+  /**
    * @maxItems 20
    */
   publicSources?: {
