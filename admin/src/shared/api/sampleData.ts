@@ -464,7 +464,9 @@ export const sampleHostAnalytics: HostAnalyticsResponse = {
     contactClicks: 0,
     claimClicks: 0,
     outboundClicks: 0,
+    linkClicks: 0,
   },
+  linkSummary: {links: [], trafficSources: []},
   dataQuality: [
     {
       id: "canonical-events",

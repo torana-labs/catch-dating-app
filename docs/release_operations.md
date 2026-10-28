@@ -2259,7 +2259,8 @@ The required IAM is not optional. The Functions runtime service account needs
 `roles/bigquery.jobUser` at project scope plus access to `catch_analytics`
 because the public analytics callable inserts into
 `catch_analytics.host_analytics_events` and the host/admin callables read
-`catch_analytics.mart_host_event_daily`. The deployer or scheduled-query
+`catch_analytics.mart_host_event_daily` and `catch_analytics.mart_host_link_daily`.
+The deployer or scheduled-query
 identity needs `roles/bigquery.jobUser`, write access to `catch_analytics`, and
 read access to `catch_marketplace_metrics` for Event Success scorecard joins.
 The `bq-host-*` extension service accounts must retain write access to their
@@ -2434,9 +2435,12 @@ A smoke build can also emit a single canary event with
   `observability-evidence.yml` after the first daily table lands.
 - **Host analytics marts**: source-controlled DDL and refresh SQL live under
   `analytics/sql/**`. `getHostAnalytics` and `adminGetHostAnalytics` read
-  `catch_analytics.mart_host_event_daily`; `recordOrganizerAnalyticsEvent`
-  writes aggregate-safe discovery events to
-  `catch_analytics.host_analytics_events`. The mart also reads
+  `catch_analytics.mart_host_event_daily`, and the owner link roll-up reads
+  `catch_analytics.mart_host_link_daily`; `recordOrganizerAnalyticsEvent`
+  writes aggregate-safe discovery events, including owner `linkClick`s, to
+  `catch_analytics.host_analytics_events`. Apply the DDL before deploying
+  Functions that read the link mart; until then the roll-up reports a missing
+  `owner-link-clicks` data-quality row instead of failing. The mart also reads
   `analytics_526484083.events_*` for `organizer_<eventName>` GA4 exports when
   the dataset/tables exist, using the larger direct-vs-GA4 daily count per
   club/event/event-name key to avoid double-counting mirrored browser events.
