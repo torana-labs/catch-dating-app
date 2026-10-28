@@ -1,7 +1,7 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-import {act, renderHook, waitFor} from "@testing-library/react";
+import {act, cleanup, renderHook, waitFor} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
-import {beforeEach, describe, expect, it, vi} from "vitest";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import {claimedOrganizerPage, generatedOrganizerPage, organizerPageReadAt, organizerStoryListing} from "../../stories/fixtures/organizerPages";
 import type {OrganizerPageRecord} from "./organizerPage";
 
@@ -16,8 +16,10 @@ vi.mock("./observeOrganizerProviders", () => ({observeOrganizerProviders: vi.fn(
 
 import {useOrganizerPageController, type OrganizerPageBackends} from "./useOrganizerPageController";
 
-const wrapper = ({children}: PropsWithChildren) =>
-  <QueryClientProvider client={new QueryClient({defaultOptions: {queries: {retry: false}}})}>{children}</QueryClientProvider>;
+// One client per test, cleared after it: no account read, mutation or cache
+// timer may outlive the test and render after jsdom is torn down.
+let queryClient: QueryClient;
+const wrapper = ({children}: PropsWithChildren) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 
 function renderController(page: OrganizerPageRecord = claimedOrganizerPage, backends?: OrganizerPageBackends) {
   const listing = organizerStoryListing(page);
@@ -25,7 +27,13 @@ function renderController(page: OrganizerPageRecord = claimedOrganizerPage, back
 }
 
 describe("useOrganizerPageController", () => {
+  afterEach(() => {
+    cleanup();
+    queryClient.clear();
+  });
+
   beforeEach(() => {
+    queryClient = new QueryClient({defaultOptions: {queries: {retry: false}}});
     vi.clearAllMocks();
     accountApi.watch.mockImplementation((callback) => {callback({uid: "one", phoneNumber: "+919876543210"}); return vi.fn();});
     accountApi.read.mockResolvedValue({uid: "one", accountReady: true, following: false, displayName: "Ada", profileRevision: 1, eventAge: null});
