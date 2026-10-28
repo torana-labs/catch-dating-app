@@ -90,12 +90,15 @@ describe("public dating framing (CAT-247)", () => {
   });
 
   it("keeps the events, with their other labels, as hosted events", async () => {
-    const {listings: [listing]} = await assembleRouteCatalog(fakeReader(datingWorld()), "/organizers/harbour/", readAt);
+    const world = datingWorld();
+    const {listings: [listing]} = await assembleRouteCatalog(fakeReader(world), "/organizers/harbour/", readAt);
     const [mixer, walk] = listing.catchEvents ?? [];
-    expect(mixer).toMatchObject({id: "harbour-mixer", activityKind: "openActivity", title: "Hosted event",
-      catchExperienceActivities: ["introductions"]});
+    expect(mixer).toMatchObject({id: "harbour-mixer", activityKind: "openActivity", catchExperienceActivities: ["introductions"]});
+    // An unnamed mixer takes the open activity's generated title.
+    expect(mixer.title).toBe("Hosted event");
     expect(mixer).not.toHaveProperty("admissionLabels");
-    expect(walk).toMatchObject({id: "harbour-walk", activityKind: "walking", title: "Lantern walk"});
+    expect(walk).toMatchObject({id: "harbour-walk", activityKind: "walking"});
+    expect(walk.title).toBe(world.events["harbour-walk"].name);
     expect(walk).not.toHaveProperty("catchExperienceActivities");
     expect(listing.externalEvents?.[0]).toMatchObject({id: "ext-harbour-mixer", activityKind: "openActivity"});
   });
