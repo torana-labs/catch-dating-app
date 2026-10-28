@@ -2,9 +2,9 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/events/presentation/widgets/organizer_payment_method_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/data/organizer_event_checkout.dart';
-import 'package:catch_dating_app/events/presentation/widgets/organizer_payment_method_sheet.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

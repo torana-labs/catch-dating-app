@@ -662,11 +662,11 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventDetailCalloutCard</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:207</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHostsSection</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:340</code> | — | — | Compact host identity, with all affordances derived from available actions. |
 | <code>GuestBookDock</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:318</code> | — | — | No class documentation or registry summary. |
-| <code>EventBookingDock</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:28</code> | — | — | Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states. |
-| <code>EventDetailDock</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:83</code> | — | — | No class documentation or registry summary. |
-| <code>EventDockStatusText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:581</code> | — | — | No class documentation or registry summary. |
-| <code>EventPriceText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:499</code> | — | — | No class documentation or registry summary. |
-| <code>WaitlistOfferNotice</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:537</code> | — | — | No class documentation or registry summary. |
+| <code>EventBookingDock</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:29</code> | — | — | Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states. |
+| <code>EventDetailDock</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:84</code> | — | — | No class documentation or registry summary. |
+| <code>EventDockStatusText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:582</code> | — | — | No class documentation or registry summary. |
+| <code>EventPriceText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:500</code> | — | — | No class documentation or registry summary. |
+| <code>WaitlistOfferNotice</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:538</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailFactList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:347</code> | — | — | Flat Event Detail fact rows with structural stacked and inline modes. |
 | <code>EventDetailGoodToKnowList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:314</code> | — | — | Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows. |
 | <code>EventDetailHintList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:81</code> | — | — | Why-you-might-click hint list derived from event format and activity context. |
