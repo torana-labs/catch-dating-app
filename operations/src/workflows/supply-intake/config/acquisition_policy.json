@@ -9,17 +9,17 @@
     "decisionId": null
   },
   "pageFetch": {
-    "enabled": false,
-    "adapterId": null,
+    "enabled": true,
+    "adapterId": "page_fetch",
     "policyGapId": "on_demand_page_fetch_policy",
-    "decisionId": null,
+    "decisionId": "policy-on-demand-page-fetch-policy",
     "userAgent": "CatchSupplyIntake/1.0 (+https://catchdates.com)",
     "productToken": "CatchSupplyIntake",
     "timeoutMs": 10000,
     "maxResponseBytes": 4194304,
     "maxRedirects": 3,
-    "maxRequestsPerIntake": 0,
-    "maxRequestsPerMonth": 0
+    "maxRequestsPerIntake": 12,
+    "maxRequestsPerMonth": 600
   },
   "budgets": {
     "maxNetworkRequestsPerRun": 0,
