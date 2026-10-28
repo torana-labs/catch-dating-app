@@ -52,7 +52,8 @@ export function OrganizerIdentitySection({controller}: {controller: OrganizerPag
         verifiedLabel={header.verified ? copy.verifiedLabel : undefined}
       />
       {follow.phone ? <OrganizerFollowSheet name={view.name} phone={follow.phone} error={follow.error} /> : null}
-      {follow.account ? renderAccountForm(follow.account) : null}
+      {/* CatchField is borderless; it shows its box only on a ground, never on the white page. */}
+      {follow.account ? <CatchGroundCard>{renderAccountForm(follow.account)}</CatchGroundCard> : null}
       {!follow.phone && follow.error ? <CatchText color="danger" role="alert" variant="bodyS">{follow.error}</CatchText> : null}
       {share.open ? (
         <CatchGroundCard>

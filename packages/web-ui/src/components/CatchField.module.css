@@ -19,9 +19,14 @@
   flex-direction: column;
   min-width: 0;
   padding: var(--catch-space-s3) var(--catch-space-s4);
-  border: var(--catch-stroke-hairline) solid transparent;
+  /*
+   * Quiet at rest, as in the app. A container may give resting fields a box:
+   * CatchGroundCard sets these for the boxed inputs the Website v2 boards draw.
+   */
+  border: var(--catch-field-rest-stroke, var(--catch-stroke-hairline)) solid
+    var(--catch-field-rest-line, transparent);
   border-radius: var(--catch-radius-interactive-tile);
-  background: transparent;
+  background: var(--catch-field-rest-fill, transparent);
   /* A field reads from the start edge, whatever its container aligns. */
   text-align: start;
   transition:
@@ -36,7 +41,7 @@
 
 .field[data-input-mode="editable"]:hover:not([data-focused]) {
   background: color-mix(in srgb, var(--catch-theme-ink)
-    calc(var(--catch-opacity-control-overlay-hover) * 100%), transparent);
+    calc(var(--catch-opacity-control-overlay-hover) * 100%), var(--catch-field-rest-fill, transparent));
 }
 
 .field[data-focused] {

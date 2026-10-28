@@ -821,7 +821,8 @@
           "claimed",
           "generated",
           "share-open",
-          "follow-by-phone"
+          "follow-by-phone",
+          "follow-account-step"
         ]
       },
       "notes": "Profile header with follow and share; the share card holds the page's QR code and copy action. Follow uses the visitor's account until follow by phone (CAT-253) lands; its sheet is built and hidden behind OrganizerPageBackends.followByPhone."
@@ -3677,7 +3678,8 @@
           "dark-ground",
           "outlined",
           "share-card",
-          "board-reference"
+          "board-reference",
+          "boxed-fields"
         ]
       },
       "notes": "Website T4 under D18 (CAT-251). A rounded card on one Website v2 ground that holds what the page arranges in it: the share card, a form step, the claim pitch and its points. Library text inside takes the ground's inks, ink resolves through the dark theme, and an outlined card draws the emphasis stroke in its ground's ink at 12% (the boards' white cards). Nearest concept: catch.surface (CatchSurface), whose tones are theme surfaces, not palette grounds. Search aliases: GroundPanel, ColorCard, PitchCard, TintCard, Callout."
