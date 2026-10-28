@@ -8,6 +8,7 @@ import type {Firestore} from "firebase-admin/firestore";
 import type {OperationRun, OperationWorkItem} from "../operations/models";
 import type {ProjectionImportWriter} from "../operations/projectionImporter";
 import {FakeFirestore} from "../operations/testFirestore";
+import {acceptPageFetch, notFoundTransport} from "../operations/supplyIntake/testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "../operations/supplyIntake/worker";
 import {schemaErrorMessages, validateAdminListOrganizerListingReviewsCallableResponse} from "../shared/generated/schemaValidators";
 import {adminListOrganizerListingReviewsHandler, publicSlugFor} from "./organizerListingReviewQueue";
@@ -35,6 +36,7 @@ class MemoryWriter implements ProjectionImportWriter {
 /** Three listings the real worker built, completed an hour apart, oldest first. */
 async function harness() {
   const db = new FakeFirestore();
+  acceptPageFetch(db);
   const writer = new MemoryWriter();
   const names = ["Afterfly", "The Bhag", "Sunday Sketchers"];
   for (const [index, name] of names.entries()) {
@@ -47,7 +49,8 @@ async function harness() {
       status: "queued", attempts: 0, leaseUntil: null, result: null, failure: null, approval: null,
       createdAt: at, updatedAt: at});
     const outcome = await processSupplyIntakeRequest({db: db as unknown as Firestore, now: () => new Date(at),
-      projectionWriter: writer, putSnapshot: async () => "supply-intake/snapshots/x.json"}, requestId);
+      projectionWriter: writer, transport: notFoundTransport, putSnapshot: async () => "supply-intake/snapshots/x.json"},
+    requestId);
     const stored = db.read(`${supplyIntakeCollections.requests}/${requestId}`) as {result: {listingWorkItemId: string}, failure: unknown};
     assert.equal(outcome, "completed", JSON.stringify(stored.failure));
     db.write(`operationWorkItems/${stored.result.listingWorkItemId}`,
