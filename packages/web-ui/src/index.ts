@@ -61,6 +61,8 @@ export type {CatchCheckboxInputProps} from "./components/CatchCheckboxInput";
 export {CatchChip} from "./components/CatchChip";
 export type {CatchChipData, CatchChipEmphasis, CatchChipMode, CatchChipProps} from "./components/CatchChip";
 export {CatchChoiceInput} from "./components/CatchChoiceInput";
+export {CatchSearchField} from "./components/CatchSearchField";
+export type {CatchSearchFieldCopy, CatchSearchFieldProps} from "./components/CatchSearchField";
 export type {CatchChoiceInputProps, CatchChoiceInputVariant, CatchOption} from "./components/CatchChoiceInput";
 export * from "./artwork";
 export {ClubCover} from "./components/ClubCover";

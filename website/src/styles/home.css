@@ -1,41 +1,21 @@
 /*
  * Home page + shared marketing sections.
- * One style regime built on the Catch design language: hairline containment,
- * Archivo voice type at 78%, tracked mono kickers, activity pigments as the
- * only chroma, ticket/polaroid materials, and a dark wow hero.
- */
-
-/* ---------------------------------------------------------------- layout */
-
-.organizer-search-hero,
-.organizer-results,
-.listing-section,
-.claim-band,
-.format-band,
-.proof-section,
-.site-footer {
+ * One style regime built on the Catch design language: hairline containment,* Archivo voice type at 78%,tracked mono kickers,activity pigments as the
+ * only chroma,ticket/polaroid materials,.organizer-results,.listing-section,.claim-band,.site-footer {
   width: min(calc(100% - (var(--website-gutter) * 2)), var(--website-content));
   margin: 0 auto;
 }
 
-h1,
-h2,
-h3,
-p {
+h1,h2,h3,p {
   margin: 0;
 }
 
-h1,
-h2,
-h3 {
+h1,h2,h3 {
   font-family: var(--catch-font-voice), system-ui, sans-serif;
   font-weight: 600;
 }
 
-/* Section rhythm: generous whitespace, hairline separators. */
-.format-band,
-.proof-section,
-.listing-section {
+/* Section rhythm: generous whitespace,.listing-section {
   padding: clamp(72px, 10vw, 112px) 0;
 }
 
@@ -50,34 +30,27 @@ h3 {
   max-width: 920px;
 }
 
-.section-heading .ui-label,
-.proof-section__copy .ui-label {
+.section-heading .ui-label {
   display: inline-flex;
   align-items: center;
   gap: var(--catch-space-s3);
 }
 
-.section-heading .ui-label::before,
-.proof-section__copy .ui-label::before {
+.section-heading .ui-label::before {
   width: var(--catch-space-s7);
   height: var(--catch-stroke-hairline);
   background: var(--website-text-faint);
   content: "";
 }
 
-.section-heading h2,
-.proof-section__copy h2,
-.listing-section--split h2,
-.claim-band h2 {
+.section-heading h2,.listing-section--split h2,.claim-band h2 {
   margin-top: var(--catch-space-micro18);
   font-size: clamp(32px, 5vw, 52px);
   line-height: 1;
   text-wrap: balance;
 }
 
-.section-heading p,
-.proof-section__copy p,
-.listing-section--split p {
+.section-heading p,.listing-section--split p {
   max-width: 62ch;
   margin-top: var(--catch-space-micro18);
   color: var(--website-copy-muted);
@@ -107,8 +80,7 @@ h3 {
 }
 
 @keyframes hero-stage-float {
-  0%,
-  100% {
+  0%,100% {
     transform: translateY(0);
   }
 
@@ -127,7 +99,7 @@ h3 {
   gap: var(--catch-space-micro18);
 }
 
-/* Empty state: designed, honest, not apologetic. */
+/* Empty state: designed,honest,not apologetic. */
 .public-event-empty {
   display: grid;
   max-width: 640px;
@@ -166,86 +138,12 @@ h3 {
   border: var(--catch-stroke-hairline) solid var(--website-line);
 }
 
-.format-card {
-  --format-accent: var(--website-accent);
-  --format-deep: var(--website-text);
-  --format-soft: var(--website-raised);
-  display: grid;
-  min-height: 200px;
-  align-content: space-between;
-  gap: 22px;
-  padding: 22px;
-  background: var(--website-surface);
-  transition: background-color var(--catch-motion-base) var(--catch-motion-standard-curve);
-}
-
-.format-card:hover {
-  background: color-mix(in srgb, var(--format-soft) 55%, var(--website-surface));
-}
-
-.format-card:nth-child(1) {
-  --format-accent: var(--catch-activity-social-run-accent);
-  --format-deep: var(--catch-activity-social-run-deep);
-  --format-soft: var(--catch-activity-social-run-soft);
-}
-
-.format-card:nth-child(2) {
-  --format-accent: var(--catch-activity-padel-accent);
-  --format-deep: var(--catch-activity-padel-deep);
-  --format-soft: var(--catch-activity-padel-soft);
-}
-
-.format-card:nth-child(3) {
-  --format-accent: var(--catch-activity-dinner-accent);
-  --format-deep: var(--catch-activity-dinner-deep);
-  --format-soft: var(--catch-activity-dinner-soft);
-}
-
-.format-card:nth-child(4) {
-  --format-accent: var(--catch-activity-pub-quiz-accent);
-  --format-deep: var(--catch-activity-pub-quiz-deep);
-  --format-soft: var(--catch-activity-pub-quiz-soft);
-}
-
-.format-card:nth-child(5) {
-  --format-accent: var(--catch-activity-singles-mixer-accent);
-  --format-deep: var(--catch-activity-singles-mixer-deep);
-  --format-soft: var(--catch-activity-singles-mixer-soft);
-}
-
-.format-card:nth-child(6) {
-  --format-accent: var(--catch-activity-open-activity-accent);
-  --format-deep: var(--catch-activity-open-activity-deep);
-  --format-soft: var(--catch-activity-open-activity-soft);
-}
-
-.format-card__mark {
-  display: grid;
-  width: var(--catch-space-s11);
-  height: var(--catch-space-s11);
-  place-items: center;
-  border-radius: var(--catch-radius-sm);
-  background: var(--format-soft);
-  color: var(--format-deep);
-  font-family: var(--catch-font-mono), ui-monospace, monospace;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-}
-
-.format-card h3,
-.loop-list h3,
-.trust-grid h3 {
+.loop-list h3,.trust-grid h3 {
   font-size: 21px;
   line-height: 1.05;
 }
 
-.format-card p,
-.loop-list p,
-.surface-grid p,
-.trust-grid p,
-.listing-card p,
-.listing-event-card p {
+.loop-list p,.surface-grid p,.trust-grid p,.listing-card p,.listing-event-card p {
   margin-top: var(--catch-space-micro10);
   color: var(--website-copy-faint);
   font-size: 14px;
@@ -260,7 +158,7 @@ h3 {
   margin-top: var(--catch-space-s10);
 }
 
-/* Polaroid material: white frame, pigment mark, mono caption. */
+/* Polaroid material: white frame,pigment mark,mono caption. */
 .organizer-mini-card {
   --activity: var(--website-accent);
   display: grid;
@@ -278,8 +176,7 @@ h3 {
     box-shadow var(--catch-motion-micro) var(--catch-motion-standard-curve);
 }
 
-.organizer-mini-card:hover,
-.organizer-mini-card:focus-visible {
+.organizer-mini-card:hover,.organizer-mini-card:focus-visible {
   border-color: color-mix(in srgb, var(--activity) 45%, var(--website-line));
   box-shadow: var(--catch-elevation-raised);
   transform: translateY(-2px);
@@ -316,19 +213,6 @@ h3 {
   letter-spacing: 0.08em;
 }
 
-.activity-mark--sm {
-  width: var(--catch-space-s11);
-  height: var(--catch-space-s11);
-  font-size: 11px;
-}
-
-.activity-mark--lg {
-  width: 78px;
-  height: 78px;
-  border-radius: var(--catch-radius-md);
-  font-size: 17px;
-}
-
 .activity-mark.is-unclaimed {
   background: var(--website-raised);
   box-shadow: inset 0 0 0 var(--catch-stroke-emphasis) var(--website-line-strong);
@@ -363,23 +247,6 @@ h3 {
   font-weight: 500;
   letter-spacing: 0.04em;
   line-height: 1;
-}
-
-/* ------------------------------------------------- proof + real captures */
-
-.proof-section {
-  display: grid;
-  gap: var(--catch-space-s11);
-}
-
-.proof-section__copy {
-  width: 100%;
-  max-width: 640px;
-  min-width: 0;
-}
-
-.proof-section__copy .button {
-  margin-top: var(--catch-space-s7);
 }
 
 /* -------------------------------------------------------------- download */

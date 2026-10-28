@@ -6,7 +6,6 @@ import {MemoryRouter} from "react-router";
 import {useRevealAnimations} from "../app/usePageLifecycle";
 import {ClaimPage} from "../features/claims/ClaimPage";
 import {emptyClaimRouteState} from "../features/claims/claimRouting";
-import {VisitorDiscoveryPage} from "../features/home/HomePage";
 import {HostPage} from "../features/host/HostPage";
 import {EventDetailPage} from "../features/events/EventDetailPage";
 import {EventInvitePage} from "../features/events/EventInvitePage";
@@ -16,7 +15,6 @@ import {publishedLegalContent} from "../content/legal";
 import type {PublishedLegalPageKey} from "../content/types";
 import {hostListings} from "./fixtures/hostListings";
 import {HostListingPage} from "../features/organizers/HostListingPage";
-import {OrganizerSearchPage} from "../features/organizers/OrganizerSearchPage";
 import type {HostListing} from "../features/organizers/types";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
 import {PageShell} from "../shared/site";
@@ -68,24 +66,6 @@ const meta = {
 export default meta;
 
 type Story = StoryObj<typeof meta>;
-
-export const VisitorDiscovery: Story = {
-  name: "/explore/",
-  parameters: {
-    a11y: {test: "error"},
-    catchRoute: {id: "visitor_discovery", path: "/explore/", reviewStates: ["default", "empty-city", "no-results", "experience-filter", "catalog-unavailable", "search-and-date", "mobile-menu"], stateCoverage: {storybook: ["default", "empty-city", "catalog-unavailable"], manual: ["no-results", "experience-filter", "search-and-date", "mobile-menu"]}},
-    catchComponent: {id: "route_visitor_discovery", routeIds: ["visitor_discovery"], states: ["default", "empty-city", "no-results", "experience-filter", "catalog-unavailable", "search-and-date", "mobile-menu"]},
-  },
-  render: () => <publicEventListingsContext.Provider value={{listings: consumerHomeStoryListings, phase: "ready", readAt: Date.parse("2030-01-01")}}><VisitorDiscoveryPage captures={captures} /></publicEventListingsContext.Provider>,
-};
-export const ExploreEmptyCity: Story = {
-  name: "/explore/ · Empty city",
-  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "ready", readAt: 0}}><VisitorDiscoveryPage captures={captures} /></publicEventListingsContext.Provider>,
-};
-export const ExploreUnavailable: Story = {
-  name: "/explore/ · Catalogue unavailable",
-  render: () => <publicEventListingsContext.Provider value={{listings: [], phase: "unavailable"}}><VisitorDiscoveryPage captures={captures} /></publicEventListingsContext.Provider>,
-};
 
 export const Host: Story = {
   name: "/host/",
@@ -407,43 +387,6 @@ export const LegalDocumentShell: Story = {
     },
   },
   render: () => <LegalStoryPage pageKey="privacy" />,
-};
-
-export const OrganizerSearch: Story = {
-  name: "/organizers/",
-  parameters: {
-    a11y: {test: "error"},
-    catchRoute: {
-      id: "organizer_search",
-      path: "/organizers/",
-      reviewStates: ["default", "filtered", "empty-results", "catalog-unavailable", "mobile-menu"],
-      stateCoverage: {
-        storybook: ["default", "empty-results", "catalog-unavailable"],
-        manual: ["filtered", "mobile-menu"],
-      },
-    },
-    catchComponent: {
-      id: "route_organizer_search",
-      routeIds: ["organizer_search"],
-      states: ["default", "filtered", "empty-results", "catalog-unavailable", "mobile-menu"],
-    },
-  },
-  render: () => (
-    <MemoryRouter initialEntries={["/organizers/"]}>
-      <OrganizerSearchPage listings={hostListings} />
-    </MemoryRouter>
-  ),
-};
-
-export const OrganisersEmpty: Story = {
-  name: "/organizers/ · Empty results",
-  parameters: {a11y: {test: "error"}},
-  render: () => <MemoryRouter initialEntries={["/organizers/?q=not-found"]}><OrganizerSearchPage listings={hostListings} /></MemoryRouter>,
-};
-export const OrganisersUnavailable: Story = {
-  name: "/organizers/ · Catalogue unavailable",
-  parameters: {a11y: {test: "error"}},
-  render: () => <MemoryRouter><publicEventListingsContext.Provider value={{listings:[],phase:"unavailable"}}><OrganizerSearchPage /></publicEventListingsContext.Provider></MemoryRouter>,
 };
 
 export const OrganizerListing: Story = {

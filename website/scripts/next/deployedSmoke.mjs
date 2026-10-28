@@ -2,13 +2,14 @@ import assert from "node:assert/strict";
 import {fileURLToPath} from "node:url";
 import {homePageCopy} from "../../src/content/homePage.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
-import {exploreCopy} from "../../src/content/explore.ts";
-import {organiserDirectoryCopy} from "../../src/content/organiserDirectory.ts";
+import {explorePageCopy} from "../../src/content/explorePage.ts";
+import {inMarket as activeMarket} from "../../src/content/markets/in.ts";
 import {PUBLIC_PAGE_CACHE_CONTROL} from "../../src/app/next/publicPageCache.ts";
 import {productionProbeContracts} from "../probeProduction.mjs";
 /** Home and the organiser, event and Explore families; never Host, legal, claim or private routes. */
 export function sharedCachePage(path) {
-  return path === "/" || /^\/(?:explore|organizers|events)\/(?:[^?#]*)$/u.test(path);
+  return path === "/" || /^\/(?:explore|organizers|events)\/(?:[^?#]*)$/u.test(path) ||
+    activeMarket.cities.some((city) => path === `/${city.slug}/`);
 }
 /**
  * How long a shared cache such as the Hosting CDN may keep a response. `public`
@@ -45,11 +46,14 @@ export async function verifyDeployedWebsite(base, sourceSha, {fetchImpl = fetch}
     }
     const text = await response.text(); evidence.push({path, status: response.status}); return {response, text};
   }
-  for (const [path, title] of [["/", homePageCopy.hero.title], ["/host/", hostLandingCopy.hero.title], ["/explore/", exploreCopy.title], ["/organizers/", organiserDirectoryCopy.title]]) {
+  for (const [path, title] of [["/", homePageCopy.hero.title], ["/host/", hostLandingCopy.hero.title], ["/explore/", explorePageCopy.lead], ["/mumbai/", explorePageCopy.lead]]) {
     const {response, text} = await get(path);
     assert.ok(text.includes(title) && text.includes("<h1"), `${path} rendered content`);
     if (live && ["/", "/host/"].includes(path)) assert.doesNotMatch(response.headers.get("x-robots-tag") ?? "", /noindex/u);
   }
+  // The directory is Explore's organisers view; its query comes along (CAT-261).
+  const directory = await get("/organizers/?q=run", 308);
+  assert.equal(directory.response.headers.get("location"), "/explore/?q=run&show=organisers", "/organizers/ redirect");
   const catalog = await get("/api/public-catalog");
   assert.match(catalog.response.headers.get("cache-control"), /no-store/u);
   const data = JSON.parse(catalog.text); assert.ok(Array.isArray(data.listings));

@@ -13,7 +13,7 @@ export const productionProbeContracts = [
     path: "/explore/",
     title: "Find events, clubs and communities | Catch",
     canonicalPath: "/explore/",
-    markers: ["Discover upcoming runs, dinners, games and social events"],
+    markers: ["Find runs, dinners, games and nights out in your city"],
   },
   {
     path: "/host/apply/",

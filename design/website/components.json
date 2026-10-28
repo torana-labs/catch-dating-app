@@ -23,7 +23,6 @@
       "terms",
       "help",
       "not_found",
-      "organizer_search",
       "organizer_listing_canonical",
       "organizer_listing_legacy",
       "event_detail_canonical"
@@ -556,34 +555,6 @@
         ]
       },
       "notes": "Host landing page balances business workflows and guest participation, with five interactive before/during/after format examples, audience insights, flexible adoption and selected pilot access. Existing retired-route anchors remain. Application lives at /host/apply/. Includes selectable adoption circles and participation/privacy guidance."
-    },
-    {
-      "id": "route_organizer_search",
-      "kind": "route",
-      "routeIds": [
-        "organizer_search"
-      ],
-      "owner": "features/organizers",
-      "source": "website/src/features/organizers/OrganizerSearchPage.tsx",
-      "exportName": "OrganizerSearchPage",
-      "css": [
-        "website/src/styles/site-shell.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/organiser-directory.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/MarketingRoutes.stories.tsx",
-        "exportName": "OrganizerSearch",
-        "states": [
-          "default",
-          "filtered",
-          "empty-results",
-          "catalog-unavailable",
-          "mobile-menu"
-        ]
-      },
-      "notes": "Consumer organiser directory with shared chrome, progressive search filters, profile provenance and a separate host/claim invitation."
     },
     {
       "id": "route_organizer_listing",
@@ -2054,56 +2025,6 @@
       "notes": "Host route section band, heading and FAQ list. The claim page renders them; the rest of the legacy host preview shell was removed with its dead sections (CAT-218)."
     },
     {
-      "id": "organizer_search_hero",
-      "kind": "section",
-      "routeIds": [
-        "organizer_search"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
-      "exportName": "OrganizerSearchHeroSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
-        "exportName": "OrganizerSearchHero",
-        "states": [
-          "default",
-          "filtered"
-        ]
-      },
-      "notes": "Search/filter hero section backed by the organizer directory URL-state controller; configures shared scanner-enforced organizer search section shell primitives instead of rendering raw section shells."
-    },
-    {
-      "id": "organizer_results_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_search"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/OrganizerSearchSections.tsx",
-      "exportName": "OrganizerResultsSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerSearchSections.stories.tsx",
-        "exportName": "OrganizerResults",
-        "states": [
-          "default",
-          "event-backed",
-          "unclaimed",
-          "empty-results"
-        ]
-      },
-      "notes": "Organizer result-list section including empty state coverage; configures shared scanner-enforced organizer search section shell primitives instead of rendering raw section shells."
-    },
-    {
       "id": "listing_hero_section",
       "kind": "section",
       "routeIds": [
@@ -3195,28 +3116,82 @@
         "visitor_discovery"
       ],
       "owner": "features/home",
-      "source": "website/src/features/home/HomePage.tsx",
-      "exportName": "VisitorDiscoveryPage",
+      "source": "website/src/features/home/ExplorePage.tsx",
+      "exportName": "ExplorePage",
       "css": [
-        "website/src/styles/site-shell.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/explore.css"
+        "website/src/styles/site-shell.css"
       ],
       "storybook": {
         "status": "ready",
-        "story": "website/src/stories/MarketingRoutes.stories.tsx",
-        "exportName": "VisitorDiscovery",
+        "story": "website/src/stories/ExplorePage.stories.tsx",
+        "exportName": "CityPlans",
         "states": [
-          "default",
-          "empty-city",
+          "city-plans",
+          "search-and-filters",
+          "launching-soon",
           "no-results",
-          "experience-filter",
-          "catalog-unavailable",
-          "search-and-date",
-          "mobile-menu"
+          "catalog-unavailable"
         ]
       },
-      "notes": "Event discovery and explicit Catch Experience participation distinction; consumer chrome shared with Home and Host."
+      "notes": "Website v2 Explore (CAT-261) at /explore/ and each city page (/mumbai/): a city's plans and organisers from its cityPlans read model, searched and filtered by format and date, with the state in the URL. The organiser directory redirects here with show=organisers."
+    },
+    {
+      "id": "explore_page_sections",
+      "kind": "supporting-component",
+      "routeIds": [
+        "visitor_discovery"
+      ],
+      "owner": "features/home",
+      "source": "website/src/features/home/sections/explorePageSections.tsx",
+      "exportName": "ExplorePageSections",
+      "css": [
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchSearchField.module.css",
+        "packages/web-ui/src/components/CatchChoiceInput.module.css",
+        "packages/web-ui/src/components/CatchChip.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchPlanCard.module.css",
+        "packages/web-ui/src/components/CatchOrganizerCard.module.css",
+        "packages/web-ui/src/components/CatchEmptyState.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/ExplorePage.stories.tsx",
+        "exportName": "CityPlans390",
+        "states": [
+          "phone"
+        ]
+      },
+      "notes": "Explore's sections, private to one assembly: the heading (or launching soon with the live city), search, the plans or organisers view, format and date choices, and the results or an empty state. Each arranges library parts and binds the controller's view of the city (D18)."
+    },
+    {
+      "id": "city_site_chrome",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "features/home",
+      "source": "website/src/features/home/sections/cityChrome.tsx",
+      "exportName": "CitySiteChrome",
+      "css": [
+        "packages/web-ui/src/components/CatchSiteHeader.module.css",
+        "packages/web-ui/src/components/CatchMenu.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchSiteFooter.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/ExplorePage.stories.tsx",
+        "exportName": "Organisers",
+        "states": [
+          "organisers-link"
+        ]
+      },
+      "notes": "The Website v2 header and footer around a city's page (the homepage and Explore): the city picker with each city's status, and the footer's city list with the ones not open marked soon. Other routes keep the legacy PublicSiteChrome until they are rebuilt."
     },
     {
       "id": "sales_demo_continuation",

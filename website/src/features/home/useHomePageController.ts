@@ -3,6 +3,7 @@ import {homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
 import {formatTiles, organizerCard, planCard, weekPlans, comingFormats} from "./homeModel";
 import type {HomeCatalog, HomeFormat} from "./homeTypes";
+import {cityPagePath} from "./sections/cityChrome";
 
 export type HomeFilter = HomeFormat | "all";
 const gridSize = 8;
@@ -41,7 +42,7 @@ export function useHomePageController(catalog: HomeCatalog, navigate: (href: str
       if (slug !== city.slug) navigate(`/?city=${encodeURIComponent(slug)}`);
     },
     cityHref: (slug: string) => `/?city=${encodeURIComponent(slug)}`,
-    exploreHref: `/explore/?city=${encodeURIComponent(city.slug)}`,
+    exploreHref: cityPagePath(city.slug),
   };
 }
 

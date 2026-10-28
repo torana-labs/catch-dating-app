@@ -1,8 +1,7 @@
-import {exploreRouteStateForSearch, exploreDiscoveryHref} from "../features/home/exploreDiscovery";
 import {activeMarket} from "@content/markets";
 import {cityPlansFromListings} from "../features/home/cityPlansFromListings";
 import {homeCatalogFromPlans, requestedHomeCity} from "../features/home/homeCatalog";
-import {retiredMarketingDestination} from "./retiredMarketingRoutes";
+import {organizerDirectoryDestination, retiredMarketingDestination} from "./retiredMarketingRoutes";
 import {salesDemoApiFromCallable} from "../features/salesDemo/salesDemoModel";
 import {invokeSalesDemoCallable} from "../firebase";
 import {captureOfferCredential} from "../features/eventOffers/offerCredential";
@@ -11,6 +10,7 @@ import {PublicEventListingsProvider} from "./PublicEventListingsProvider";
 import {usePublicHostListings} from "../features/organizers/usePublicEventListingsController";
 import {BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useParams} from "react-router";
 import {
+  cityForPath,
   getPageKey,
   pageClassFor,
   pageMeta,
@@ -65,7 +65,6 @@ const recoveryModules = import.meta.glob<Record<string, unknown>>([
   "../features/host/HostApplicationPage.tsx",
   "../features/host/HostPage.tsx",
   "../features/notFound/NotFoundPage.tsx",
-  "../features/organizers/OrganizerSearchPage.tsx",
   "../features/legal/LegalPage.tsx",
 ], {query: "?route-recovery"});
 
@@ -87,9 +86,9 @@ const SalesDemoPage = route(async () => ({
 const ClaimPage = route(async () => ({
   default: (await import("../features/claims/ClaimPage")).ClaimPage,
 }), "../features/claims/ClaimPage", "ClaimPage");
-const VisitorDiscoveryPage = route(async () => ({
-  default: (await import("../features/home/HomePage")).VisitorDiscoveryPage,
-}), "../features/home/HomePage", "VisitorDiscoveryPage");
+const ExplorePage = route(async () => ({
+  default: (await import("../features/home/ExplorePage")).ExplorePage,
+}), "../features/home/ExplorePage", "ExplorePage");
 const HomePage = route(async () => ({
   default: (await import("../features/home/HomePage")).HomePage,
 }), "../features/home/HomePage", "HomePage");
@@ -134,9 +133,6 @@ const HostPage = route(async () => ({
 const NotFoundPage = route(async () => ({
   default: (await import("../features/notFound/NotFoundPage")).NotFoundPage,
 }), "../features/notFound/NotFoundPage", "NotFoundPage");
-const OrganizerSearchPage = route(async () => ({
-  default: (await import("../features/organizers/OrganizerSearchPage")).OrganizerSearchPage,
-}), "../features/organizers/OrganizerSearchPage", "OrganizerSearchPage");
 const LegalPage = route(async () => ({
   default: (await import("../features/legal/LegalPage")).LegalPage,
 }), "../features/legal/LegalPage", "LegalPage");
@@ -179,12 +175,11 @@ function CanonicalMarketingRouteShell() {
       ? "listing"
       : fallbackPage;
   const navigate = useNavigate();
-  const exploreRouteState = exploreRouteStateForSearch(location.search);
   // The static build has no server, so the homepage builds its cities from the live catalog.
   const homeCatalog = useMemo(() => {
     const now = Date.now();
     return homeCatalogFromPlans(activeMarket.cities, activeMarket.cities.map((city) =>
-      cityPlansFromListings(listings, city, activeMarket.cities, now)), requestedHomeCity(location.search), now);
+      cityPlansFromListings(listings, city, activeMarket.cities, now)), cityForPath(location.pathname)?.slug ?? requestedHomeCity(location.search), now);
   }, [listings, location.search]);
   const routeKey = page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "household_rsvp" ? page :
@@ -215,7 +210,7 @@ function CanonicalMarketingRouteShell() {
           <Route path={marketingRoutePaths.sales_demo}
             element={<SalesDemoPage api={salesDemoApi} />} />
           <Route path={marketingRoutePaths.visitor_discovery}
-            element={<VisitorDiscoveryPage captures={captures} routeState={exploreRouteState} onFiltersChange={filters => navigate(exploreDiscoveryHref(filters))} />} />
+            element={<ExplorePage catalog={homeCatalog} />} />
           <Route
             path={marketingRoutePaths.home}
             element={<HomePage catalog={homeCatalog} />}
@@ -226,8 +221,11 @@ function CanonicalMarketingRouteShell() {
           />
           <Route
             path={marketingRoutePaths.organizer_search}
-            element={<OrganizerSearchPage />}
+            element={<Navigate replace to={organizerDirectoryDestination(new URLSearchParams(location.search))} />}
           />
+          {activeMarket.cities.map((city) => (
+            <Route key={city.slug} path={`/${city.slug}/`} element={<ExplorePage catalog={homeCatalog} />} />
+          ))}
           <Route
             path={marketingRoutePaths.organizer_listing}
             element={listing ? (

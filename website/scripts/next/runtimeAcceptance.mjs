@@ -7,7 +7,7 @@ import {chromium} from "playwright";
 import {organizerFixture} from "./organizerFixture.mjs";
 import {sharedCachePage} from "./deployedSmoke.mjs";
 import {PUBLIC_PAGE_CACHE_CONTROL} from "../../src/app/next/publicPageCache.ts";
-import {organiserDirectoryCopy} from "../../src/content/organiserDirectory.ts";
+import {explorePageCopy} from "../../src/content/explorePage.ts";
 
 // Writes are hard-bound to the task's isolated emulator; never a live project.
 if (process.env.FIRESTORE_EMULATOR_HOST !== "127.0.0.1:8765") throw new Error("Isolated emulator required");
@@ -118,12 +118,17 @@ try {
   await page.screenshot({path: "/tmp/catch-nextjs-organizer-desktop.png"});
   await page.setViewportSize({width: 390, height: 844});
   await page.screenshot({path: "/tmp/catch-nextjs-organizer-mobile.png"});
-  await page.goto(origin + "/organizers/");
-  const field = page.getByPlaceholder(organiserDirectoryCopy.placeholder);
+  // The directory redirects to Explore's organisers view, which searches the city's organisers (CAT-261).
+  await page.goto(origin + "/organizers/?city=indore");
+  assert.equal(new URL(page.url()).pathname, "/explore/");
+  assert.equal(new URL(page.url()).searchParams.get("show"), "organisers");
+  const field = page.getByPlaceholder(explorePageCopy.search.placeholder);
   await field.fill("no-matching-organizer-proof");
+  await field.press("Enter");
   await page.locator('a[href="/organizers/next-proof/"]').first().waitFor({state: "hidden"});
   assert(new URL(page.url()).searchParams.get("q")?.includes("no-matching"));
   await field.fill("Next proof");
+  await field.press("Enter");
   await page.locator('a[href="/organizers/next-proof/"]').first().waitFor({state: "visible"});
   await page.goto(origin + "/host/");
   const menu = page.getByRole("button", {name: "Menu", exact: true});

@@ -11,14 +11,11 @@ import {
   CatchGroundCard,
   CatchHeroShowcase,
   CatchIndexRow,
-  CatchMenu,
   CatchOrganizerCard,
   CatchPlanCard,
   CatchQrCode,
   CatchScroller,
   CatchScrollStory,
-  CatchSiteFooter,
-  CatchSiteHeader,
   CatchSplit,
   CatchStoreButton,
   CatchText,
@@ -28,11 +25,9 @@ import {
 import type {ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
-import {siteFooterLegalLinks} from "@content/site";
-import {WebsitePageMain} from "../../../shared/site";
 import {useAppDownloadCtas, type AppDownloadCta} from "../../marketing/useAppDownloadCtas";
-import {cityStatusLabel} from "../homeModel";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
+import {CitySiteChrome} from "./cityChrome";
 
 type Home = HomePageController;
 const filterValues: HomeFilter[] = ["all", ...homeFormats.map((item) => item.format)];
@@ -52,35 +47,6 @@ function StoreButtons({placement, size = "l", stores}: {placement: string; size?
   );
 }
 
-function HomeHeader({home}: {home: Home}) {
-  return (
-    <CatchSiteHeader
-      actions={
-        <CatchMenu
-          align="end"
-          builder={(menu) => (
-            <CatchButton {...menu.triggerProps} label={home.city.label} onPressed={menu.toggle} size="md" variant="secondary" />
-          )}
-          items={home.cities.map((city) => ({value: city.slug, label: city.label, sublabel: cityStatusLabel(city),
-            selected: city.slug === home.city.slug, variant: "choice" as const}))}
-          label={copy.header.cityMenu}
-          onSelected={home.chooseCity}
-          recipe="anchored"
-          width={300}
-        />
-      }
-      brandHref="/"
-      brandLabel="Catch"
-      links={[
-        {href: home.exploreHref, label: copy.header.explore},
-        {href: "/organizers/", label: copy.header.organisers},
-        {href: "/host/", label: copy.header.hosts, compact: true},
-      ]}
-      navLabel={copy.header.nav}
-      wideActions={<CatchButton href="#app" label={copy.header.app} onPressed={follow} size="md" />}
-    />
-  );
-}
 
 function HomeHero({home}: {home: Home}) {
   const city = home.city.label;
@@ -402,24 +368,6 @@ function HomeFaq() {
   );
 }
 
-function HomeFooter({home}: {home: Home}) {
-  const links = copy.footer.links;
-  return (
-    <CatchSiteFooter
-      brandHref="/"
-      brandLabel="Catch"
-      groups={[
-        {title: copy.footer.groups.explore, links: [{href: home.exploreHref, label: links.whatsOn}, {href: "/organizers/", label: links.organisers}, {href: "#app", label: links.app}]},
-        {title: copy.footer.groups.cities, links: home.cities.map((city) => ({href: home.cityHref(city.slug), label: city.label,
-          note: city.status === "live" ? undefined : copy.footer.soon}))},
-        {title: copy.footer.groups.hosts, links: [{href: "/host/", label: links.hosts}, {href: "/host/#pricing", label: links.pricing}, {href: "/claim/", label: links.claim}]},
-        {title: copy.footer.groups.help, links: siteFooterLegalLinks.map((link) => ({href: link.href, label: link.label}))},
-      ]}
-      navLabel={copy.footer.nav}
-      tagline={copy.footer.tagline}
-    />
-  );
-}
 
 /**
  * A homepage section opening: a coloured eyebrow, a display headline and a
@@ -451,9 +399,8 @@ function HomeSectionHeading({aside, eyebrow, eyebrowAccent, id, lead, title, tit
  * controller's view of the city to them (D18).
  */
 export function HomePageSections({downloadUrl, home, signup}: {home: Home; downloadUrl?: string; signup?: ReactNode}) {
-  return <>
-    <HomeHeader home={home} />
-    <WebsitePageMain id="top">
+  return (
+    <CitySiteChrome appHref="#app" cities={home.cities} city={home.city} exploreHref={home.exploreHref} onChooseCity={home.chooseCity}>
       <HomeHero home={home} />
       <HomeFormats home={home} />
       {home.live ? <HomeThisWeek home={home} /> : <HomeLaunchingSoon home={home} signup={signup} />}
@@ -462,7 +409,6 @@ export function HomePageSections({downloadUrl, home, signup}: {home: Home; downl
       <HomeHostBand />
       <HomeAppBand downloadUrl={downloadUrl} />
       <HomeFaq />
-    </WebsitePageMain>
-    <HomeFooter home={home} />
-  </>;
+    </CitySiteChrome>
+  );
 }
