@@ -23,17 +23,6 @@
       "count": 3
     }
   },
-  "src/styles/event-detail.css": {
-    "declaration-property-unit-allowed-list": {
-      "count": 19
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 6
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 1
-    }
-  },
   "src/styles/event-runtime.css": {
     "declaration-property-unit-allowed-list": {
       "count": 91

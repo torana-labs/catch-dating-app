@@ -11,7 +11,7 @@
   },
   "src/features/account/accountForm.tsx": {
     "react/forbid-elements": {
-      "count": 3
+      "count": 1
     }
   },
   "src/features/claims/DemoContinuationWorkspace.tsx": {
@@ -61,7 +61,7 @@
   },
   "src/features/events/GuestEventEntry.tsx": {
     "react/forbid-elements": {
-      "count": 9
+      "count": 1
     }
   },
   "src/features/events/PublicBookingPage.tsx": {
@@ -76,7 +76,7 @@
   },
   "src/features/events/PublicPaidEventRegistration.tsx": {
     "react/forbid-elements": {
-      "count": 13
+      "count": 2
     }
   },
   "src/features/forms/PublicFormPage.tsx": {
@@ -208,17 +208,6 @@
     },
     "react/forbid-elements": {
       "count": 33
-    }
-  },
-  "src/shared/ui/primitives/eventDetail.tsx": {
-    "react/forbid-component-props": {
-      "count": 1
-    },
-    "react/forbid-dom-props": {
-      "count": 6
-    },
-    "react/forbid-elements": {
-      "count": 11
     }
   },
   "src/shared/ui/primitives/eventRuntime.tsx": {
