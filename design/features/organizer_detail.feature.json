@@ -1005,14 +1005,14 @@
       "bindings": {
         "previewSources": [
           "website/src/stories/MarketingRoutes.stories.tsx",
-          "website/src/stories/OrganizerListingSections.stories.tsx"
+          "website/src/stories/OrganizerPage.stories.tsx"
         ],
         "actionOwners": [
           {
             "id": "listing_controller",
             "language": "typescript",
-            "file": "website/src/features/organizers/useHostListingPageController.ts",
-            "symbol": "useHostListingPageController"
+            "file": "website/src/features/organizers/useOrganizerPageController.ts",
+            "symbol": "useOrganizerPageController"
           },
           {
             "id": "claim_controller",
@@ -1029,10 +1029,11 @@
         ],
         "componentContracts": [
           "route_organizer_listing",
-          "listing_hero_section",
-          "listing_external_events_section",
-          "listing_reviews_section",
-          "listing_missing_evidence_section"
+          "listing_sections_assembly",
+          "organizer_identity_section",
+          "organizer_events_section",
+          "organizer_reviews_section",
+          "organizer_claim_section"
         ],
         "dataContracts": [
           "contracts/callables/create_public_organizer_review_payload.schema.json",
@@ -1045,21 +1046,20 @@
             "route_organizer_listing/OrganizerListing"
           ],
           "public-api-disabled": [
-            "listing_missing_evidence_section/ListingMissingEvidence"
+            "listing_sections_assembly/Guest"
           ],
           "external-events": [
-            "listing_external_events_section/ListingExternalEvents"
+            "organizer_events_section/ComingUp"
           ],
           "claim-cta": [
             "route_organizer_listing/OrganizerListing",
-            "listing_hero_section/ListingHero",
-            "listing_missing_evidence_section/ListingMissingEvidence"
+            "organizer_claim_section/Generated"
           ]
         },
         "testEvidence": {
           "indexable": [
             "website/src/features/organizers/publicSurfaceBehavior.test.ts",
-            "website/src/features/organizers/useHostListingPageController.test.tsx"
+            "website/src/features/organizers/useOrganizerPageController.test.tsx"
           ],
           "noindex": [
             "website/scripts/checkOrganizerBuildOutputs.test.mjs",
@@ -1077,7 +1077,7 @@
           "claim-cta": [
             "website/src/features/claims/useClaimRequestMutation.test.tsx",
             "website/src/features/organizers/publicSurfaceBehavior.test.ts",
-            "website/src/features/organizers/useHostListingPageController.test.tsx"
+            "website/src/features/organizers/useOrganizerPageController.test.tsx"
           ]
         }
       },
@@ -1133,7 +1133,7 @@
         {
           "id": "follow_listing",
           "owner": "listing_controller",
-          "codeValue": "handleFollowListing",
+          "codeValue": "pressFollow",
           "cardinality": "singleton",
           "scopeKeys": [
             "uid",
@@ -1151,7 +1151,7 @@
         {
           "id": "share_listing",
           "owner": "listing_controller",
-          "codeValue": "handleShareListing",
+          "codeValue": "copyLink",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -1164,7 +1164,7 @@
               "id": "organizer.web_share_completed_or_reported"
             }
           ],
-          "description": "Uses native share, clipboard, or a manual URL fallback and exposes completion, cancellation, or error status."
+          "description": "Opens the share panel with the page link and QR code, copies the link to the clipboard, and reports completion or failure."
         },
         {
           "id": "request_claim",

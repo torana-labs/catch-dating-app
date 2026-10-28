@@ -32026,5 +32026,21 @@
   "paymentMethodNetbanking": "Net banking",
   "@paymentMethodNetbanking": {"description": "Payment page: pay through the guest's bank.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.presentation.widgets.organizer_payment_method_sheet"},
   "paymentMethodSheetSecureNote": "Payments are processed securely by Razorpay. Card details are entered on Razorpay’s form, never in Catch.",
-  "@paymentMethodSheetSecureNote": {"description": "Payment page footer: Razorpay processes payments; card details never touch Catch.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.presentation.widgets.organizer_payment_method_sheet"}
+  "@paymentMethodSheetSecureNote": {"description": "Payment page footer: Razorpay processes payments; card details never touch Catch.", "x-audience": "consumer", "x-owner": "product", "x-surface": "events.presentation.widgets.organizer_payment_method_sheet"},
+  "hostPayoutsRazorpayIntroTitle": "Guests pay you directly",
+  "@hostPayoutsRazorpayIntroTitle": {"description": "Payouts screen: title explaining that guest payments go to the organiser's own Razorpay account.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayIntroBody": "Ticket and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.",
+  "@hostPayoutsRazorpayIntroBody": {"description": "Payouts screen: how money flows when the organiser connects Razorpay; mirrors the website organiser terms.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayUnavailable": "Connecting Razorpay isn’t available yet. Catch is finishing its Razorpay partner setup. Free events and forms work as usual.",
+  "@hostPayoutsRazorpayUnavailable": {"description": "Payouts screen: shown while Catch's Razorpay OAuth partner configuration is not set up.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayNoAccountTitle": "No Razorpay account yet?",
+  "@hostPayoutsRazorpayNoAccountTitle": {"description": "Payouts screen: heading for organisers without a Razorpay account.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayNoAccountBody": "Create one at razorpay.com and finish Razorpay’s verification, then connect it here.",
+  "@hostPayoutsRazorpayNoAccountBody": {"description": "Payouts screen: how an organiser without Razorpay gets started.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayConnectHelp": "Sign in to Razorpay and approve Catch. This lets Catch create orders for your events and forms, check payment and refund status, set up payment notifications, and issue refunds under your cancellation policy. You can disconnect at any time.",
+  "@hostPayoutsRazorpayConnectHelp": {"description": "Payouts screen: disclosure of what the organiser authorises before the Razorpay OAuth consent page; mirrors the website organiser terms.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayDisconnectHelp": "This stops new checkouts for your events and forms. Catch can still finish refunds for bookings that are already paid.",
+  "@hostPayoutsRazorpayDisconnectHelp": {"description": "Payouts screen: confirmation body when disconnecting the organiser's Razorpay account.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"},
+  "hostPayoutsRazorpayPermissionsTitle": "What connecting allows",
+  "@hostPayoutsRazorpayPermissionsTitle": {"description": "Payouts screen: heading above the disclosure of what connecting Razorpay authorises Catch to do.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.payments.host_razorpay_connection_section"}
 }

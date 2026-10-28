@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-10-19",
-  "sourceDigest": "sha256:e42501ed06eb96a948f14485afe80fe62ebc705926d0507e7e8477f3dc36df36",
-  "resolvedDigest": "sha256:629fd2eb53ef8ff311580d067f5cc54acb97ebff2116023bc4f4f55f383dba56",
+  "sourceDigest": "sha256:9394b74224b2769b388fea06049361fe75a179a3222d77a209c19fad57a4b21d",
+  "resolvedDigest": "sha256:dc909e6fca2d1b68d9281108fa021f531a404e53412e74186d50d49e1f213448",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -2521,14 +2521,14 @@
       "bindings": {
         "previewSources": [
           "website/src/stories/MarketingRoutes.stories.tsx",
-          "website/src/stories/OrganizerListingSections.stories.tsx"
+          "website/src/stories/OrganizerPage.stories.tsx"
         ],
         "actionOwners": [
           {
             "id": "listing_controller",
             "language": "typescript",
-            "file": "website/src/features/organizers/useHostListingPageController.ts",
-            "symbol": "useHostListingPageController"
+            "file": "website/src/features/organizers/useOrganizerPageController.ts",
+            "symbol": "useOrganizerPageController"
           },
           {
             "id": "claim_controller",
@@ -2545,10 +2545,11 @@
         ],
         "componentContracts": [
           "route_organizer_listing",
-          "listing_hero_section",
-          "listing_external_events_section",
-          "listing_reviews_section",
-          "listing_missing_evidence_section"
+          "listing_sections_assembly",
+          "organizer_identity_section",
+          "organizer_events_section",
+          "organizer_reviews_section",
+          "organizer_claim_section"
         ],
         "dataContracts": [
           "contracts/callables/create_public_organizer_review_payload.schema.json",
@@ -2561,21 +2562,20 @@
             "route_organizer_listing/OrganizerListing"
           ],
           "public-api-disabled": [
-            "listing_missing_evidence_section/ListingMissingEvidence"
+            "listing_sections_assembly/Guest"
           ],
           "external-events": [
-            "listing_external_events_section/ListingExternalEvents"
+            "organizer_events_section/ComingUp"
           ],
           "claim-cta": [
             "route_organizer_listing/OrganizerListing",
-            "listing_hero_section/ListingHero",
-            "listing_missing_evidence_section/ListingMissingEvidence"
+            "organizer_claim_section/Generated"
           ]
         },
         "testEvidence": {
           "indexable": [
             "website/src/features/organizers/publicSurfaceBehavior.test.ts",
-            "website/src/features/organizers/useHostListingPageController.test.tsx"
+            "website/src/features/organizers/useOrganizerPageController.test.tsx"
           ],
           "noindex": [
             "website/scripts/checkOrganizerBuildOutputs.test.mjs",
@@ -2593,7 +2593,7 @@
           "claim-cta": [
             "website/src/features/claims/useClaimRequestMutation.test.tsx",
             "website/src/features/organizers/publicSurfaceBehavior.test.ts",
-            "website/src/features/organizers/useHostListingPageController.test.tsx"
+            "website/src/features/organizers/useOrganizerPageController.test.tsx"
           ]
         }
       },
@@ -2659,7 +2659,7 @@
         {
           "id": "follow_listing",
           "owner": "listing_controller",
-          "codeValue": "handleFollowListing",
+          "codeValue": "pressFollow",
           "cardinality": "singleton",
           "scopeKeys": [
             "uid",
@@ -2678,7 +2678,7 @@
         {
           "id": "share_listing",
           "owner": "listing_controller",
-          "codeValue": "handleShareListing",
+          "codeValue": "copyLink",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -2691,7 +2691,7 @@
               "id": "organizer.web_share_completed_or_reported"
             }
           ],
-          "description": "Uses native share, clipboard, or a manual URL fallback and exposes completion, cancellation, or error status.",
+          "description": "Opens the share panel with the page link and QR code, copies the link to the clipboard, and reports completion or failure.",
           "implementationStatus": "implemented"
         },
         {
@@ -2773,7 +2773,7 @@
             ],
             "tests": [
               "website/src/features/organizers/publicSurfaceBehavior.test.ts",
-              "website/src/features/organizers/useHostListingPageController.test.tsx"
+              "website/src/features/organizers/useOrganizerPageController.test.tsx"
             ]
           },
           "actionCases": [
@@ -2885,7 +2885,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "listing_missing_evidence_section/ListingMissingEvidence"
+              "listing_sections_assembly/Guest"
             ],
             "tests": [
               "website/src/features/claims/useClaimRequestMutation.test.tsx",
@@ -2934,7 +2934,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "listing_external_events_section/ListingExternalEvents"
+              "organizer_events_section/ComingUp"
             ],
             "tests": [
               "website/src/features/organizers/publicDiscovery.test.ts",
@@ -2982,14 +2982,13 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "listing_hero_section/ListingHero",
-              "listing_missing_evidence_section/ListingMissingEvidence",
+              "organizer_claim_section/Generated",
               "route_organizer_listing/OrganizerListing"
             ],
             "tests": [
               "website/src/features/claims/useClaimRequestMutation.test.tsx",
               "website/src/features/organizers/publicSurfaceBehavior.test.ts",
-              "website/src/features/organizers/useHostListingPageController.test.tsx"
+              "website/src/features/organizers/useOrganizerPageController.test.tsx"
             ]
           },
           "actionCases": [
@@ -3082,76 +3081,96 @@
               "story": "website/src/stories/MarketingRoutes.stories.tsx",
               "exportName": "OrganizerListing",
               "states": [
-                "claimable-unclaimed",
-                "missing-evidence",
-                "listing-reviews"
+                "generated-from-listing",
+                "claim-pitch"
               ]
             }
           },
           {
-            "id": "listing_hero_section",
-            "kind": "section",
-            "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
-            "exportName": "ListingHeroSection",
+            "id": "listing_sections_assembly",
+            "kind": "supporting-component",
+            "source": "website/src/features/organizers/sections/HostListingSections.tsx",
+            "exportName": "HostListingSections",
             "storybook": {
               "status": "ready",
-              "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-              "exportName": "ListingHero",
+              "story": "website/src/stories/OrganizerPage.stories.tsx",
+              "exportName": "Guest",
               "states": [
-                "claimable-unclaimed"
+                "guest-page",
+                "first-phone-screen"
               ]
             }
           },
           {
-            "id": "listing_external_events_section",
+            "id": "organizer_identity_section",
             "kind": "section",
-            "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
-            "exportName": "ListingExternalEventsSection",
+            "source": "website/src/features/organizers/sections/organizerPage/OrganizerIdentitySection.tsx",
+            "exportName": "OrganizerIdentitySection",
             "storybook": {
               "status": "ready",
-              "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-              "exportName": "ListingExternalEvents",
+              "story": "website/src/stories/OrganizerPage.stories.tsx",
+              "exportName": "Identity",
               "states": [
-                "source-attributed-events"
+                "claimed",
+                "generated",
+                "share-open",
+                "follow-by-phone"
               ]
             }
           },
           {
-            "id": "listing_reviews_section",
+            "id": "organizer_events_section",
             "kind": "section",
-            "source": "website/src/features/organizers/sections/ListingReviewsSection.tsx",
-            "exportName": "ListingReviewsSection",
+            "source": "website/src/features/organizers/sections/organizerPage/OrganizerEventsSections.tsx",
+            "exportName": "OrganizerEventsSection",
             "storybook": {
               "status": "ready",
-              "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-              "exportName": "ListingReviews",
+              "story": "website/src/stories/OrganizerPage.stories.tsx",
+              "exportName": "ComingUp",
               "states": [
-                "verified",
-                "public-form",
-                "empty"
+                "catch-and-luma",
+                "luma-only",
+                "empty-calendar"
               ]
             }
           },
           {
-            "id": "listing_missing_evidence_section",
+            "id": "organizer_reviews_section",
             "kind": "section",
-            "source": "website/src/features/organizers/sections/ListingClaimSections.tsx",
-            "exportName": "ListingMissingEvidenceSection",
+            "source": "website/src/features/organizers/sections/organizerPage/OrganizerReviewsSection.tsx",
+            "exportName": "OrganizerReviewsSection",
             "storybook": {
               "status": "ready",
-              "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-              "exportName": "ListingMissingEvidence",
+              "story": "website/src/stories/OrganizerPage.stories.tsx",
+              "exportName": "Reviews",
               "states": [
-                "claim-unavailable",
-                "missing-evidence"
+                "verified-and-unverified",
+                "unclaimed-notes",
+                "no-reviews",
+                "review-form"
+              ]
+            }
+          },
+          {
+            "id": "organizer_claim_section",
+            "kind": "section",
+            "source": "website/src/features/organizers/sections/organizerPage/OrganizerAboutSections.tsx",
+            "exportName": "OrganizerClaimSection",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/OrganizerPage.stories.tsx",
+              "exportName": "Generated",
+              "states": [
+                "generated-page",
+                "claim-pitch"
               ]
             }
           }
         ],
         "previews": [
-          "listing_external_events_section/ListingExternalEvents",
-          "listing_hero_section/ListingHero",
-          "listing_missing_evidence_section/ListingMissingEvidence",
+          "listing_sections_assembly/Guest",
+          "organizer_claim_section/Generated",
+          "organizer_events_section/ComingUp",
           "route_organizer_listing/OrganizerListing"
         ]
       }

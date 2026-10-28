@@ -497,10 +497,15 @@ page shows, built with a port of this reader's projectors (`publicReadPolicy`,
 `projectPublicReview`). The shared inputs and expected output in
 `contracts/fixtures/public_pages` hold the two to the same result:
 `website/src/server/publicPageParity.test.ts` writes the expected file and
-`functions/src/publicPages/parity.test.ts` must reproduce it. The read models
-also drop dating framing (the `balanced` label, the `rotations` experience and
-the `singlesMixer` activity, CAT-247). Readers treat an event that ended after
-its page was built as past.
+`functions/src/publicPages/parity.test.ts` must reproduce it. Catch is not a
+dating product (CAT-247), so the projectors keep that parity and dating framing
+(the `balanced` label, the `rotations` experience, the `singlesMixer` activity
+and the Event Success scorecard) is dropped where events are arranged for a
+page: by the read models, and on the website by the event repositories and the
+live event listing (`website/src/features/organizers/publicDatingFraming.ts`).
+`website/src/server/publicDatingFraming.test.ts` proves none of it leaves the
+server for an organiser, event or city read. Readers treat an event that ended
+after its page was built as past.
 
 Until every environment is backfilled, a page without a valid read model is
 assembled from its sources (`assembleOrganizerDetailFromSources`,

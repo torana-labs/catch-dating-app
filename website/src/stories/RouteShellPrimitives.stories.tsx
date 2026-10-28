@@ -1,18 +1,9 @@
 import {CatchField, CatchGap} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import type {FormEvent, ReactNode} from "react";
-import {hostListings} from "./fixtures/hostListings";
-import {claimHrefForListing} from "../features/organizers/routing";
-import {isUnclaimedListing} from "../features/organizers/selectors";
-import {HostListingSections} from "../features/organizers/sections/HostListingSections";
-import type {HostListingPageController} from "../features/organizers/useHostListingPageController";
-import type {ListingClaimController} from "../features/claims/useListingClaimController";
-import type {HostListing} from "../features/organizers/types";
+import type {FormEvent} from "react";
 import {PageShell, WebsitePageMain} from "../shared/site/PageShell";
-import {WebsiteQueryProvider} from "../shared/query/queryClient";
 import {Button, ButtonLink, ClaimBandGrid, ClaimBandRail, ClaimBandSection, ClaimFlowHero, ClaimFlowMain, ClaimFlowPanel, ClaimFlowStage, ClaimFlowWorkspace, ClaimListingResults, ClaimRequestForm, ClaimRequestPanel, ClaimRequestPanelHeading, ClaimResultButton, ContentGrid, FormStatus, HostApplicationCompletenessSummary, HostApplicationPanel, HostApplicationReviewCard, HostApplicationReviewGrid, HostApplicationShell, HostApplicationStage, HostApplicationSubmitted, HostPreviewFaqList, HostPreviewSection, HostPreviewSectionHead, OperationalNote, OwnerUnlockBoard, SelectedListingCard, UiLabel, VerificationMethodGrid} from "../shared/ui/primitives";
 
-const claimableListing = hostListings.find(isUnclaimedListing) ?? requireListing("afterfly");
 const listingRouteIds = ["organizer_listing_canonical", "organizer_listing_legacy"];
 
 const meta = {
@@ -269,84 +260,6 @@ export const HostPreviewShellStory: Story = {
     </HostPreviewSection>
   ),
 };
-export const ListingSectionsAssemblyStory: Story = {
-  name: "Listing sections assembly",
-  parameters: {
-    catchComponent: {
-      id: "listing_sections_assembly",
-      routeIds: listingRouteIds,
-      states: ["route-assembly"],
-    },
-  },
-  render: () => (
-    <QueryStoryFrame>
-      <HostListingSections
-        claimController={mockListingClaimController()}
-        controller={mockHostListingController(claimableListing)}
-        listing={claimableListing}
-      />
-    </QueryStoryFrame>
-  ),
-};
-
-function QueryStoryFrame({children}: {children: ReactNode}) {
-  return <WebsiteQueryProvider>{children}</WebsiteQueryProvider>;
-}
-
 function preventSubmit(event: FormEvent<HTMLFormElement>) {
   event.preventDefault();
-}
-
-function mockHostListingController(listing: HostListing): HostListingPageController {
-  return {
-    claimHref: claimHrefForListing(listing),
-    footerLinks: [
-      {href: "/host/", label: "For hosts"},
-      {href: "#profile", label: "Profile"},
-    ],
-    handleFollowListing: () => undefined,
-    handleShareListing: async () => undefined,
-    hasEventSupply: Boolean(listing.catchEvents?.length || listing.externalEvents?.length),
-    headerCtaLabel: "Claim listing",
-    isAppCreated: false,
-    isFollowing: false,
-    followPending: false, followRequested: false, followError: "",
-    account: {loading: false} as HostListingPageController["account"],
-    nav: [
-      {href: "#profile", label: "Profile"},
-      {href: "#reviews", label: "Reviews"},
-      {href: "/organizers/", label: "Search"},
-    ],
-    shareStatus: "",
-  };
-}
-
-function mockListingClaimController(
-  overrides: Partial<ListingClaimController> = {}
-): ListingClaimController {
-  return {
-    authReady: true,
-    handleSignIn: async () => undefined,
-    handleSignOut: async () => undefined,
-    handleSubmit: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-    },
-    isConfigured: true,
-    isSigningIn: false,
-    isSubmitting: false,
-    notConfiguredReason: "",
-    presentation: {panel: "form"},
-    publicApiEnabled: true,
-    status: {message: "", tone: ""},
-    user: null,
-    ...overrides,
-  };
-}
-
-function requireListing(slug: string) {
-  const listing = hostListings.find((item) => item.slug === slug || item.id === slug);
-  if (!listing) {
-    throw new Error(`Missing generated organizer listing fixture: ${slug}`);
-  }
-  return listing;
 }
