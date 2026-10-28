@@ -27,11 +27,6 @@
     },
     {
       "file": "website/src/stories/ListingPrimitives.stories.tsx",
-      "export": "ListingReviewShellStory",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
-      "file": "website/src/stories/ListingPrimitives.stories.tsx",
       "export": "OrganizerResultShellStory",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },

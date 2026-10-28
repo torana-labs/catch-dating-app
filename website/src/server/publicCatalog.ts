@@ -35,6 +35,9 @@ import {
   organizerPageListings,
 } from "./repositories/publicPageRepository";
 import {organizerPath, publicDocumentId} from "./publicReadPolicy";
+import {eventPageFromListing} from "../features/events/eventPageFromListing";
+import type {EventPageData} from "../features/events/eventPageModel";
+import {eventMapLink, eventMapsAvailable} from "./eventMapLink";
 
 const markets = new Set(activeEventLiveCities.map(city => city.slug));
 export function publicFirestore() {
@@ -96,14 +99,29 @@ export async function assembleOrganizerDetailCatalog(
   })());
 }
 
-/** One event page from its read model, or from its sources until backfilled. */
+/**
+ * One event page from its read model, or from its sources until backfilled.
+ * The listing still feeds route metadata and the organizer analytics.
+ */
 export async function assembleEventDetailCatalog(
-  db: PublicReader, eventId: string, readAt: number
+  db: PublicReader, eventId: string, readAt: number, mapsAvailable: () => Promise<boolean> = () => eventMapsAvailable()
 ): Promise<PublicCatalog | null> {
   return withinReadDeadline((async () => {
-    const page = await findEventPage(db, eventId);
-    if (page) return {listings: [eventPageListing(page, readAt)], readAt};
-    return assembleEventDetailFromSources(db, eventId, readAt);
+    // Secret Manager answers while the page is read; a cached answer is instant.
+    const [page, mapsOn] = await Promise.all([findEventPage(db, eventId), mapsAvailable()]);
+    const withMap = async (catalog: PublicCatalog & {eventPage: EventPageData}): Promise<PublicCatalog> => {
+      const {item} = catalog.eventPage;
+      const eventMap = await eventMapLink(eventId, item.source === "catch" ? item.event.meetingLocation : null,
+        async () => mapsOn);
+      return eventMap ? {...catalog, eventMap} : catalog;
+    };
+    if (page) {
+      const {builtAt: _builtAt, contentHash: _contentHash, listing: _listing, ...eventPage} = page;
+      return withMap({listings: [eventPageListing(page, readAt)], readAt, eventPage});
+    }
+    const catalog = await assembleEventDetailFromSources(db, eventId, readAt);
+    const eventPage = catalog?.listings[0] ? eventPageFromListing(catalog.listings[0], eventId) : null;
+    return catalog && eventPage ? withMap({...catalog, eventPage}) : catalog;
   })());
 }
 

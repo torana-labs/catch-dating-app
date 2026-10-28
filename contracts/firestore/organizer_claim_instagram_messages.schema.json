@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_claim_instagram_messages.schema.json",
+  "title": "OrganizerClaimInstagramMessageDocument",
+  "description": "Server-only receipt for one Instagram direct message the claim webhook handled, stored at organizerClaimInstagramMessages/{messageKey}. Meta retries deliveries, so the receipt makes each message count once. It keeps no message text or sender id. Firestore TTL deletes it after expiresAt.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerClaimInstagramMessages",
+  "x-firestore-path": "organizerClaimInstagramMessages/{messageKey}",
+  "x-document-id-field": "messageKey",
+  "x-owner": "instagramClaimWebhook",
+  "required": ["messageKey", "outcome", "attemptId", "receivedAt", "expiresAt"],
+  "properties": {
+    "messageKey": {
+      "description": "SHA-256 of the Instagram message id.",
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": ["verified", "wrongSender", "expiredCode", "codeAlreadyUsed", "unknownCode", "claimUnavailable", "senderUnknown", "rateLimited"],
+      "x-catch-ownership": "server-only"
+    },
+    "attemptId": {
+      "anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}],
+      "x-catch-ownership": "server-only"
+    },
+    "receivedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"}
+  }
+}

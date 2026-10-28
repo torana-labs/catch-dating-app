@@ -2003,7 +2003,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use ReviewSignalLane, ReviewSignalCard, OwnerResponsePrompt, ListingReviewEmptyState, ListingReviewForm, and ListingReviewCheckbox instead of rendering organizer listing review shells directly.",
+    guidance: "The organizer listing review shells were retired in CAT-251 and CAT-252. Render reviews with CatchReviewItem from @catch/web-ui instead of reviving raw review-shell classes.",
   },
   {
     family: "website-listing-claim-shell",

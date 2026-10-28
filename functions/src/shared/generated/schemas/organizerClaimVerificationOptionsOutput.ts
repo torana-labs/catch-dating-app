@@ -1,0 +1,80 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const organizerClaimVerificationOptionsCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_claim_verification_options_response.schema.json",
+  "title": "OrganizerClaimVerificationOptionsCallableResponse",
+  "description": "Callable response returned by getOrganizerClaimVerificationOptions: which ways of proving ownership this listing offers the signed-in user. Staff review stays available whatever this says.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "methods",
+    "catchInstagramHandle"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "methods": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "available",
+          "proofTarget",
+          "unavailableReason"
+        ],
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": [
+              "instagramMessage",
+              "lumaDescription"
+            ]
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "proofTarget": {
+            "description": "The listing's Instagram username without @, or its Luma calendar URL.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "unavailableReason": {
+            "description": "turnedOff: Catch has not switched this method on. noSourceOnListing: the listing has no Instagram account or Luma calendar to check.",
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "turnedOff",
+                  "noSourceOnListing"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "catchInstagramHandle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 30
+    }
+  }
+} as const;

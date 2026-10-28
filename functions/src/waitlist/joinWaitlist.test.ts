@@ -11,6 +11,7 @@ import {
   normalizeWaitlistRole,
   resolveWaitlistCorsOrigin,
   waitlistAllowedOrigins,
+  whatsappLaunchNoticeId,
 } from "./joinWaitlist";
 import {hostConsentKey, newHostConsentAuthority} from
   "../acquisition/consentPolicy";
@@ -36,17 +37,128 @@ test(
       "fixtures/valid/join_waitlist_request_member.json",
       "fixtures/valid/join_waitlist_request_host.json",
       "fixtures/valid/join_waitlist_request_runner_compatibility.json",
+      "fixtures/valid/join_waitlist_request_whatsapp.json",
     ]) {
       assert.equal(validateJoinWaitlistHTTPRequest(readFixture(fixture)), true);
     }
-    assert.equal(
-      validateJoinWaitlistHTTPRequest(
-        readFixture("fixtures/invalid/join_waitlist_request_missing_city.json")
-      ),
-      false
-    );
+    for (const fixture of [
+      "fixtures/invalid/join_waitlist_request_missing_city.json",
+      "fixtures/invalid/join_waitlist_request_member_missing_email.json",
+      "fixtures/invalid/join_waitlist_request_whatsapp_host.json",
+      "fixtures/invalid/join_waitlist_request_whatsapp_marketing_unset.json",
+    ]) {
+      assert.equal(
+        validateJoinWaitlistHTTPRequest(readFixture(fixture)), false, fixture);
+    }
   }
 );
+
+test("WhatsApp launch notices store the consented phone per city",
+  async (context) => {
+    if (!admin.apps.length) {
+      admin.initializeApp({projectId: "demo-sales-intent"});
+    }
+    const database = admin.firestore();
+    const records = new Map<string, Record<string, unknown>>();
+    type TransactionRunner = (tx: unknown) => Promise<unknown>;
+    context.mock.method(database,
+      "runTransaction",
+      async (run: TransactionRunner) => {
+        const writes: Array<{path: string; value: Record<string, unknown>}> =
+          [];
+        const tx = {
+          get: async (ref: {path: string}) => ({
+            exists: records.has(ref.path),
+            data: () => records.get(ref.path),
+          }),
+          create: (ref: {path: string}, value: Record<string, unknown>) => {
+            assert.equal(records.has(ref.path), false);
+            writes.push({path: ref.path, value});
+          },
+          update: (ref: {path: string}, value: Record<string, unknown>) => {
+            assert.equal(records.has(ref.path), true);
+            writes.push({path: ref.path,
+              value: {...records.get(ref.path), ...value}});
+          },
+          set: (ref: {path: string}, value: Record<string, unknown>) => {
+            writes.push({path: ref.path, value});
+          },
+        };
+        await run(tx);
+        for (const write of writes) records.set(write.path, write.value);
+      });
+    const body = readFixture(
+      "fixtures/valid/join_waitlist_request_whatsapp.json") as
+      Record<string, unknown>;
+    const whatsapp = body.whatsapp as Record<string, unknown>;
+    let attempt = 0;
+    const submit = async (payload: unknown) => {
+      let status = 0;
+      let result: unknown;
+      const response = {
+        set: () => undefined,
+        status: (value: number) => {
+          status = value; return response;
+        },
+        json: (value: unknown) => {
+          result = value; return response;
+        },
+        send: () => undefined,
+      };
+      await joinWaitlist({method: "POST",
+        body: payload,
+        ip: `synthetic-whatsapp-test-${++attempt}`,
+        get: () => undefined} as never, response as never);
+      return {status, result};
+    };
+
+    assert.deepEqual(await submit({...body,
+      whatsapp: {...whatsapp, phone: "+91 98123-45678"}}),
+    {status: 200, result: {ok: true, alreadyJoined: false}});
+    const id = whatsappLaunchNoticeId("+919812345678", "Pune");
+    const notice = records.get(`launchWaitlist/${id}`)!;
+    assert.equal(notice.channel, "whatsapp");
+    assert.equal(notice.phone, "+919812345678");
+    assert.equal(notice.city, "Pune");
+    assert.equal(notice.email, null);
+    assert.equal(notice.fullName, null);
+    assert.equal(notice.status, "pending");
+    const consents = notice.consents as
+      Record<string, Record<string, unknown>>;
+    assert.equal(consents.launchNotice.granted, true);
+    assert.equal(consents.launchNotice.channel, "whatsapp");
+    assert.equal(consents.marketing.granted, false);
+    assert.equal(consents.marketing.consentVersion, "city-launch-whatsapp-v1");
+    assert.equal(
+      records.get(`marketingConversionEvents/${id}`)?.eventName,
+      "waitlist_submitted");
+
+    // Asking again updates the same request; a choice made later replaces it.
+    assert.deepEqual(await submit({...body,
+      whatsapp: {...whatsapp, marketing: true}}),
+    {status: 200, result: {ok: true, alreadyJoined: true}});
+    const again = records.get(`launchWaitlist/${id}`)!;
+    assert.equal(
+      (again.consents as typeof consents).marketing.granted, true);
+    assert.equal(again.status, "pending");
+
+    // Another city is its own request.
+    await submit({...body, city: "Jaipur"});
+    assert.equal([...records.keys()].filter(
+      (key) => key.startsWith("launchWaitlist/")).length, 2);
+
+    const before = records.size;
+    for (const rejected of [
+      {...body, whatsapp: {...whatsapp, phone: "98123"}},
+      {...body, role: "host"},
+      {...body, city: ""},
+      {...body, whatsapp: {...whatsapp, launchNotice: false}},
+      {...body, whatsapp: {...whatsapp, marketing: undefined}},
+    ]) {
+      assert.equal((await submit(rejected)).status, 400);
+    }
+    assert.equal(records.size, before);
+  });
 
 test("join waitlist response schema distinguishes success and errors", () => {
   assert.equal(

@@ -12,17 +12,6 @@
       "count": 3
     }
   },
-  "src/styles/consumer-event.css": {
-    "declaration-property-unit-allowed-list": {
-      "count": 59
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 6
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 2
-    }
-  },
   "src/styles/consumer-home.css": {
     "declaration-property-unit-allowed-list": {
       "count": 191
@@ -36,10 +25,10 @@
   },
   "src/styles/event-detail.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 51
+      "count": 19
     },
     "declaration-property-value-allowed-list": {
-      "count": 13
+      "count": 6
     },
     "media-feature-name-value-allowed-list": {
       "count": 1
@@ -146,10 +135,10 @@
   },
   "src/styles/organizers.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 140
+      "count": 125
     },
     "declaration-property-value-allowed-list": {
-      "count": 54
+      "count": 45
     },
     "media-feature-name-value-allowed-list": {
       "count": 2
@@ -168,7 +157,7 @@
   },
   "src/styles/responsive.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 3
+      "count": 2
     },
     "media-feature-name-value-allowed-list": {
       "count": 4

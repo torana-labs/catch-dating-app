@@ -85566,6 +85566,14 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['organizer', 'event', 'campaign'],
   );
 
+  static const getOrganizerClaimVerificationOptionsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getOrganizerClaimVerificationOptionsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const getOrganizerContactDetailCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallablePayload.contactId',
     maxLength: 180,
@@ -95491,7 +95499,6 @@ abstract final class CatchContractConstraints {
   static const joinWaitlistHTTPRequestEmail = CatchContractFieldConstraints(
     path: 'joinWaitlistHTTPRequest.email',
     maxLength: 320,
-    required: true,
     valueTypes: <String>['string'],
     format: 'email',
   );
@@ -95685,6 +95692,31 @@ abstract final class CatchContractConstraints {
     path: 'joinWaitlistHTTPRequest.website',
     maxLength: 512,
     valueTypes: <String>['string'],
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappConsentVersion = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.consentVersion',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z0-9-]{1,40}\$',
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappLaunchNotice = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.launchNotice',
+    required: true,
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappMarketing = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.marketing',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const joinWaitlistHTTPRequestWhatsappPhone = CatchContractFieldConstraints(
+    path: 'joinWaitlistHTTPRequest.whatsapp.phone',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
   );
 
   static const joinWaitlistHTTPResponseAlreadyJoined = CatchContractFieldConstraints(
@@ -108481,6 +108513,106 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerClaimInstagramCodeDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimInstagramCodeDocumentCode = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.code',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{6}\$',
+  );
+
+  static const organizerClaimInstagramCodeDocumentConsumedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.consumedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimInstagramCodeDocumentConsumedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.consumedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimInstagramCodeDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimInstagramCodeDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimInstagramCodeDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramCodeDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimInstagramMessageDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimInstagramMessageDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimInstagramMessageDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimInstagramMessageDocumentMessageKey = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.messageKey',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerClaimInstagramMessageDocumentOutcome = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['verified', 'wrongSender', 'expiredCode', 'codeAlreadyUsed', 'unknownCode', 'claimUnavailable', 'senderUnknown', 'rateLimited'],
+  );
+
+  static const organizerClaimInstagramMessageDocumentReceivedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.receivedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimInstagramMessageDocumentReceivedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimInstagramMessageDocument.receivedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const organizerClaimRequestDocumentBusinessEmail = CatchContractFieldConstraints(
     path: 'organizerClaimRequestDocument.businessEmail',
     maxLength: 320,
@@ -108622,6 +108754,225 @@ abstract final class CatchContractConstraints {
     path: 'organizerClaimRequestDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentClaimRequestId = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.claimRequestId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentCode = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.code',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{6}\$',
+  );
+
+  static const organizerClaimVerificationDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentEvidenceMessageKey = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.evidence.messageKey',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerClaimVerificationDocumentEvidenceObservedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.evidence.observedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentEvidenceObservedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.evidence.observedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentEvidenceObservedIdentity = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.evidence.observedIdentity',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentEvidenceSource = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.evidence.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagramMessage', 'lumaDescription'],
+  );
+
+  static const organizerClaimVerificationDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentLastRejectionAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.lastRejection.at._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentLastRejectionAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.lastRejection.at._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentLastRejectionReason = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.lastRejection.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['wrongSender', 'codeNotFound'],
+  );
+
+  static const organizerClaimVerificationDocumentMethod = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.method',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagramMessage', 'lumaDescription'],
+  );
+
+  static const organizerClaimVerificationDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentProofTarget = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.proofTarget',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentRequesterUid = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.requesterUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['awaitingProof', 'verified', 'expired', 'superseded'],
+  );
+
+  static const organizerClaimVerificationDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationDocumentVerifiedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.verifiedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerClaimVerificationDocumentVerifiedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationDocument.verifiedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseCatchInstagramHandle = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.catchInstagramHandle',
+    maxLength: 30,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseMethods = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.methods',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 2,
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseMethodsItemsAvailable = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.methods.items.available',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseMethodsItemsMethod = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.methods.items.method',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagramMessage', 'lumaDescription'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseMethodsItemsProofTarget = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.methods.items.proofTarget',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseMethodsItemsUnavailableReason = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.methods.items.unavailableReason',
+    valueTypes: <String>['string'],
+    enumValues: <String>['turnedOff', 'noSourceOnListing'],
+  );
+
+  static const organizerClaimVerificationOptionsCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerClaimVerificationOptionsCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const organizerCommunicationPermissionReceiptDocumentActorClass = CatchContractFieldConstraints(
@@ -159328,6 +159679,72 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const startOrganizerClaimVerificationCallablePayloadMethod = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallablePayload.method',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagramMessage', 'lumaDescription'],
+  );
+
+  static const startOrganizerClaimVerificationCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseAttemptId = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.attemptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseCatchInstagramHandle = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.catchInstagramHandle',
+    maxLength: 30,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseCode = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.code',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{6}\$',
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseExpiresAt = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.expiresAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseMethod = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.method',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagramMessage', 'lumaDescription'],
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const startOrganizerClaimVerificationCallableResponseProofTarget = CatchContractFieldConstraints(
+    path: 'startOrganizerClaimVerificationCallableResponse.proofTarget',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const startOrganizerContactConversationCallablePayloadContactId = CatchContractFieldConstraints(
     path: 'startOrganizerContactConversationCallablePayload.contactId',
     maxLength: 180,
@@ -185449,6 +185866,7 @@ abstract final class CatchContractConstraints {
     'getOrganizerApplicationDetailCallableResponse.submittedAtMillis': getOrganizerApplicationDetailCallableResponseSubmittedAtMillis,
     'getOrganizerApplicationDetailCallableResponse.targetId': getOrganizerApplicationDetailCallableResponseTargetId,
     'getOrganizerApplicationDetailCallableResponse.targetKind': getOrganizerApplicationDetailCallableResponseTargetKind,
+    'getOrganizerClaimVerificationOptionsCallablePayload.organizerId': getOrganizerClaimVerificationOptionsCallablePayloadOrganizerId,
     'getOrganizerContactDetailCallablePayload.contactId': getOrganizerContactDetailCallablePayloadContactId,
     'getOrganizerContactDetailCallablePayload.includeHistory': getOrganizerContactDetailCallablePayloadIncludeHistory,
     'getOrganizerContactDetailCallablePayload.organizerId': getOrganizerContactDetailCallablePayloadOrganizerId,
@@ -186857,6 +187275,10 @@ abstract final class CatchContractConstraints {
     'joinWaitlistHTTPRequest.instagram': joinWaitlistHTTPRequestInstagram,
     'joinWaitlistHTTPRequest.role': joinWaitlistHTTPRequestRole,
     'joinWaitlistHTTPRequest.website': joinWaitlistHTTPRequestWebsite,
+    'joinWaitlistHTTPRequest.whatsapp.consentVersion': joinWaitlistHTTPRequestWhatsappConsentVersion,
+    'joinWaitlistHTTPRequest.whatsapp.launchNotice': joinWaitlistHTTPRequestWhatsappLaunchNotice,
+    'joinWaitlistHTTPRequest.whatsapp.marketing': joinWaitlistHTTPRequestWhatsappMarketing,
+    'joinWaitlistHTTPRequest.whatsapp.phone': joinWaitlistHTTPRequestWhatsappPhone,
     'joinWaitlistHTTPResponse.alreadyJoined': joinWaitlistHTTPResponseAlreadyJoined,
     'joinWaitlistHTTPResponse.error': joinWaitlistHTTPResponseError,
     'joinWaitlistHTTPResponse.hostLead.eventId': joinWaitlistHTTPResponseHostLeadEventId,
@@ -188612,6 +189034,20 @@ abstract final class CatchContractConstraints {
     'organizerCampaignWebhookReceiptDocument.payloadHash': organizerCampaignWebhookReceiptDocumentPayloadHash,
     'organizerCampaignWebhookReceiptDocument.provider': organizerCampaignWebhookReceiptDocumentProvider,
     'organizerCampaignWebhookReceiptDocument.providerEventId': organizerCampaignWebhookReceiptDocumentProviderEventId,
+    'organizerClaimInstagramCodeDocument.attemptId': organizerClaimInstagramCodeDocumentAttemptId,
+    'organizerClaimInstagramCodeDocument.code': organizerClaimInstagramCodeDocumentCode,
+    'organizerClaimInstagramCodeDocument.consumedAt._nanoseconds': organizerClaimInstagramCodeDocumentConsumedAtNanoseconds,
+    'organizerClaimInstagramCodeDocument.consumedAt._seconds': organizerClaimInstagramCodeDocumentConsumedAtSeconds,
+    'organizerClaimInstagramCodeDocument.expiresAt._nanoseconds': organizerClaimInstagramCodeDocumentExpiresAtNanoseconds,
+    'organizerClaimInstagramCodeDocument.expiresAt._seconds': organizerClaimInstagramCodeDocumentExpiresAtSeconds,
+    'organizerClaimInstagramCodeDocument.organizerId': organizerClaimInstagramCodeDocumentOrganizerId,
+    'organizerClaimInstagramMessageDocument.attemptId': organizerClaimInstagramMessageDocumentAttemptId,
+    'organizerClaimInstagramMessageDocument.expiresAt._nanoseconds': organizerClaimInstagramMessageDocumentExpiresAtNanoseconds,
+    'organizerClaimInstagramMessageDocument.expiresAt._seconds': organizerClaimInstagramMessageDocumentExpiresAtSeconds,
+    'organizerClaimInstagramMessageDocument.messageKey': organizerClaimInstagramMessageDocumentMessageKey,
+    'organizerClaimInstagramMessageDocument.outcome': organizerClaimInstagramMessageDocumentOutcome,
+    'organizerClaimInstagramMessageDocument.receivedAt._nanoseconds': organizerClaimInstagramMessageDocumentReceivedAtNanoseconds,
+    'organizerClaimInstagramMessageDocument.receivedAt._seconds': organizerClaimInstagramMessageDocumentReceivedAtSeconds,
     'organizerClaimRequestDocument.businessEmail': organizerClaimRequestDocumentBusinessEmail,
     'organizerClaimRequestDocument.businessPhone': organizerClaimRequestDocumentBusinessPhone,
     'organizerClaimRequestDocument.createdAt._nanoseconds': organizerClaimRequestDocumentCreatedAtNanoseconds,
@@ -188632,6 +189068,37 @@ abstract final class CatchContractConstraints {
     'organizerClaimRequestDocument.status': organizerClaimRequestDocumentStatus,
     'organizerClaimRequestDocument.updatedAt._nanoseconds': organizerClaimRequestDocumentUpdatedAtNanoseconds,
     'organizerClaimRequestDocument.updatedAt._seconds': organizerClaimRequestDocumentUpdatedAtSeconds,
+    'organizerClaimVerificationDocument.attemptId': organizerClaimVerificationDocumentAttemptId,
+    'organizerClaimVerificationDocument.claimRequestId': organizerClaimVerificationDocumentClaimRequestId,
+    'organizerClaimVerificationDocument.code': organizerClaimVerificationDocumentCode,
+    'organizerClaimVerificationDocument.createdAt._nanoseconds': organizerClaimVerificationDocumentCreatedAtNanoseconds,
+    'organizerClaimVerificationDocument.createdAt._seconds': organizerClaimVerificationDocumentCreatedAtSeconds,
+    'organizerClaimVerificationDocument.evidence.messageKey': organizerClaimVerificationDocumentEvidenceMessageKey,
+    'organizerClaimVerificationDocument.evidence.observedAt._nanoseconds': organizerClaimVerificationDocumentEvidenceObservedAtNanoseconds,
+    'organizerClaimVerificationDocument.evidence.observedAt._seconds': organizerClaimVerificationDocumentEvidenceObservedAtSeconds,
+    'organizerClaimVerificationDocument.evidence.observedIdentity': organizerClaimVerificationDocumentEvidenceObservedIdentity,
+    'organizerClaimVerificationDocument.evidence.source': organizerClaimVerificationDocumentEvidenceSource,
+    'organizerClaimVerificationDocument.expiresAt._nanoseconds': organizerClaimVerificationDocumentExpiresAtNanoseconds,
+    'organizerClaimVerificationDocument.expiresAt._seconds': organizerClaimVerificationDocumentExpiresAtSeconds,
+    'organizerClaimVerificationDocument.lastRejection.at._nanoseconds': organizerClaimVerificationDocumentLastRejectionAtNanoseconds,
+    'organizerClaimVerificationDocument.lastRejection.at._seconds': organizerClaimVerificationDocumentLastRejectionAtSeconds,
+    'organizerClaimVerificationDocument.lastRejection.reason': organizerClaimVerificationDocumentLastRejectionReason,
+    'organizerClaimVerificationDocument.method': organizerClaimVerificationDocumentMethod,
+    'organizerClaimVerificationDocument.organizerId': organizerClaimVerificationDocumentOrganizerId,
+    'organizerClaimVerificationDocument.proofTarget': organizerClaimVerificationDocumentProofTarget,
+    'organizerClaimVerificationDocument.requesterUid': organizerClaimVerificationDocumentRequesterUid,
+    'organizerClaimVerificationDocument.status': organizerClaimVerificationDocumentStatus,
+    'organizerClaimVerificationDocument.updatedAt._nanoseconds': organizerClaimVerificationDocumentUpdatedAtNanoseconds,
+    'organizerClaimVerificationDocument.updatedAt._seconds': organizerClaimVerificationDocumentUpdatedAtSeconds,
+    'organizerClaimVerificationDocument.verifiedAt._nanoseconds': organizerClaimVerificationDocumentVerifiedAtNanoseconds,
+    'organizerClaimVerificationDocument.verifiedAt._seconds': organizerClaimVerificationDocumentVerifiedAtSeconds,
+    'organizerClaimVerificationOptionsCallableResponse.catchInstagramHandle': organizerClaimVerificationOptionsCallableResponseCatchInstagramHandle,
+    'organizerClaimVerificationOptionsCallableResponse.methods': organizerClaimVerificationOptionsCallableResponseMethods,
+    'organizerClaimVerificationOptionsCallableResponse.methods.items.available': organizerClaimVerificationOptionsCallableResponseMethodsItemsAvailable,
+    'organizerClaimVerificationOptionsCallableResponse.methods.items.method': organizerClaimVerificationOptionsCallableResponseMethodsItemsMethod,
+    'organizerClaimVerificationOptionsCallableResponse.methods.items.proofTarget': organizerClaimVerificationOptionsCallableResponseMethodsItemsProofTarget,
+    'organizerClaimVerificationOptionsCallableResponse.methods.items.unavailableReason': organizerClaimVerificationOptionsCallableResponseMethodsItemsUnavailableReason,
+    'organizerClaimVerificationOptionsCallableResponse.organizerId': organizerClaimVerificationOptionsCallableResponseOrganizerId,
     'organizerCommunicationPermissionReceiptDocument.actorClass': organizerCommunicationPermissionReceiptDocumentActorClass,
     'organizerCommunicationPermissionReceiptDocument.actorUid': organizerCommunicationPermissionReceiptDocumentActorUid,
     'organizerCommunicationPermissionReceiptDocument.channel': organizerCommunicationPermissionReceiptDocumentChannel,
@@ -195639,6 +196106,15 @@ abstract final class CatchContractConstraints {
     'startClubHostConversationCallablePayload.hostUid': startClubHostConversationCallablePayloadHostUid,
     'startEventSuccessFirstHelloMissionCallablePayload.eventId': startEventSuccessFirstHelloMissionCallablePayloadEventId,
     'startEventSuccessFirstHelloMissionCallablePayload.venueSessionToken': startEventSuccessFirstHelloMissionCallablePayloadVenueSessionToken,
+    'startOrganizerClaimVerificationCallablePayload.method': startOrganizerClaimVerificationCallablePayloadMethod,
+    'startOrganizerClaimVerificationCallablePayload.organizerId': startOrganizerClaimVerificationCallablePayloadOrganizerId,
+    'startOrganizerClaimVerificationCallableResponse.attemptId': startOrganizerClaimVerificationCallableResponseAttemptId,
+    'startOrganizerClaimVerificationCallableResponse.catchInstagramHandle': startOrganizerClaimVerificationCallableResponseCatchInstagramHandle,
+    'startOrganizerClaimVerificationCallableResponse.code': startOrganizerClaimVerificationCallableResponseCode,
+    'startOrganizerClaimVerificationCallableResponse.expiresAt': startOrganizerClaimVerificationCallableResponseExpiresAt,
+    'startOrganizerClaimVerificationCallableResponse.method': startOrganizerClaimVerificationCallableResponseMethod,
+    'startOrganizerClaimVerificationCallableResponse.organizerId': startOrganizerClaimVerificationCallableResponseOrganizerId,
+    'startOrganizerClaimVerificationCallableResponse.proofTarget': startOrganizerClaimVerificationCallableResponseProofTarget,
     'startOrganizerContactConversationCallablePayload.contactId': startOrganizerContactConversationCallablePayloadContactId,
     'startOrganizerContactConversationCallablePayload.organizerId': startOrganizerContactConversationCallablePayloadOrganizerId,
     'startOrganizerConversationCallablePayload.eventId': startOrganizerConversationCallablePayloadEventId,

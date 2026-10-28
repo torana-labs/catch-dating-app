@@ -1,6 +1,6 @@
 import {CatchBadge} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {ActivityMark, BadgeRow, ButtonLink, ContentGrid, ListingEventEvidenceList, ListingFactGrid, ListingFormatRow, ListingPolaroid, ListingProfileLayout, ListingProfilePrimary, ListingProfileRail, ListingRailActions, ListingRailIdentity, ListingRailLinkList, ListingRailSection, ListingReviewLanes, ListingReviewSummary, ListingReviewWorkspace, ListingSection, ListingSectionIntro, ListingStatusLedger, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, ReviewSignalLane, type ActivityMeta, type PublicReviewCardModel} from "../shared/ui/primitives";
+import {ActivityMark, BadgeRow, ButtonLink, ContentGrid, ListingEventEvidenceList, ListingFactGrid, ListingFormatRow, ListingPolaroid, ListingProfileLayout, ListingProfilePrimary, ListingProfileRail, ListingRailActions, ListingRailIdentity, ListingRailLinkList, ListingRailSection, ListingSection, ListingSectionIntro, ListingStatusLedger, OrganizerEventHighlights, OrganizerResultCardBody, OrganizerResultCardFooter, OrganizerResultCardShell, OrganizerResultCardTopline, type ActivityMeta} from "../shared/ui/primitives";
 
 const listingRouteIds = ["organizer_listing_canonical", "organizer_listing_legacy"];
 
@@ -15,34 +15,6 @@ const runActivity: ActivityMeta = {
   short: "SR",
   token: "var(--activity-run)",
 };
-
-const reviewCards: PublicReviewCardModel[] = [
-  {
-    id: "verified-guest-review",
-    comment: "Thoughtful seating and a host response before the event made the room feel considered.",
-    createdAtLabel: "2 weeks ago",
-    rating: 5,
-    reviewerName: "Verified guest",
-    sourceLabel: "Catch review",
-    verificationLabel: "Verified attendee",
-    verified: true,
-    ownerResponse: {
-      hostName: "Sunday Table Club",
-      message: "We tune the table mix after every dinner and keep safety notes in the owner console.",
-      updatedAtLabel: "Responded 3 days ago",
-    },
-  },
-  {
-    id: "public-source-review",
-    comment: "The run was beginner-friendly and had a clear meetup point.",
-    createdAtLabel: "Last month",
-    rating: 4,
-    reviewerName: "Public source",
-    sourceLabel: "Imported signal",
-    verificationLabel: "Public source",
-    verified: false,
-  },
-];
 
 const meta = {
   title: "Marketing Website/Shared/Listing Primitives",
@@ -248,42 +220,6 @@ export const ListingEventSectionShellStory: Story = {
         ]}
       />
     </ListingSection>
-  ),
-};
-
-export const ListingReviewShellStory: Story = {
-  name: "Listing review shell",
-  parameters: {
-    a11y: {test: "todo"},
-    catchComponent: {
-      id: "shared_listing_review_shell",
-      routeIds: listingRouteIds,
-      states: ["review-summary", "review-lanes", "empty-lane"],
-    },
-  },
-  render: () => (
-    <ListingReviewWorkspace>
-      <ListingReviewSummary>
-        <h3>Reviews separate verified attendee feedback from imported public signals.</h3>
-        <p>Listing review shells keep owner responses, empty lanes, and review badges aligned.</p>
-      </ListingReviewSummary>
-      <ListingReviewLanes>
-        <ReviewSignalLane
-          title="Verified reviews"
-          body="Attendee feedback that Catch can connect to app-created events."
-          emptyTitle="No verified reviews yet"
-          emptyBody="Verified attendee reviews appear here after the organizer runs Catch events."
-          reviews={reviewCards.filter((review) => review.verified)}
-        />
-        <ReviewSignalLane
-          title="Public signals"
-          body="Imported source notes are shown separately from verified Catch reviews."
-          emptyTitle="No public signals yet"
-          emptyBody="Approved public review sources will appear here after intake."
-          reviews={reviewCards.filter((review) => !review.verified)}
-        />
-      </ListingReviewLanes>
-    </ListingReviewWorkspace>
   ),
 };
 

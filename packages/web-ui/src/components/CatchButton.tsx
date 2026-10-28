@@ -18,6 +18,8 @@ export type CatchButtonEmphasis = "dismiss" | "alternative" | "commit";
 interface CatchButtonWeb {
   /** Web only: renders a link with the button's look. */
   href?: string;
+  /** Web only: opens the link in a new tab, without an opener. */
+  newTab?: boolean;
   /** Web only: the native button type; defaults to button. */
   type?: "button" | "submit" | "reset";
 }
@@ -218,7 +220,14 @@ export function CatchButton(props: CatchButtonProps) {
 
   if (props.href !== undefined) {
     return (
-      <a {...shared} aria-disabled={!enabled || undefined} href={enabled ? props.href : undefined} onClick={onClick}>
+      <a
+        {...shared}
+        aria-disabled={!enabled || undefined}
+        href={enabled ? props.href : undefined}
+        onClick={onClick}
+        rel={props.newTab ? "noopener noreferrer" : undefined}
+        target={props.newTab ? "_blank" : undefined}
+      >
         {content}
       </a>
     );

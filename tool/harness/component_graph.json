@@ -1156,7 +1156,7 @@
     {
       "id": "flutter.l10n",
       "owner": "app_platform",
-      "inputs": ["lib/l10n/app_en.arb", "l10n.yaml", "tool/harness/lib/check_flutter_l10n_generated.mjs"],
+      "inputs": ["lib/l10n/app_en.arb", "l10n.yaml", "pubspec.yaml", "tool/ci/toolchain.env", "tool/harness/lib/check_flutter_l10n_generated.mjs"],
       "outputs": ["lib/l10n/generated/app_localizations.dart", "lib/l10n/generated/app_localizations_en.dart"],
       "checkCommand": "node tool/harness/lib/check_flutter_l10n_generated.mjs --check",
       "writeCommand": "flutter gen-l10n",
