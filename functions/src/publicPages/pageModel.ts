@@ -225,36 +225,25 @@ export function without<T extends object, K extends string>(
 /** Today's listing without events; pages hold the events in sections. */
 function compatListing(listing: HostListing): CompatListing {
   return {
-    ...without(listing,
-      ["catchEvents", "externalEvents", "eventSuccessSummary"]),
+    ...without(listing, ["catchEvents", "externalEvents"]),
     catchEvents: [],
     reviews: [],
   } as CompatListing;
 }
 
 /**
- * Catch is not a dating product (CAT-247): public pages never carry the
- * balanced admission label, the rotations experience, the singlesMixer
- * activity or an Event Success scorecard.
+ * Catch is not a dating product (CAT-247). The public listing schema has no
+ * balanced admission label, rotations experience or Event Success
+ * scorecard, and the projector never produces them. The activity kind is
+ * open text, so a singlesMixer event is shown as an open activity.
  */
 export function withoutDatingFraming(
   event: PublicCatchEvent
 ): PublicCatchEvent {
-  const {admissionLabels, catchExperienceActivities} = event;
-  const rest = without(event,
-    ["admissionLabels", "catchExperienceActivities", "scorecard"]);
-  const labels = (admissionLabels ?? [])
-    .filter((label) => label !== "balanced");
-  const experience = (catchExperienceActivities ?? [])
-    .filter((activity) => activity !== "rotations");
-  const mixer = rest.activityKind === "singlesMixer";
+  if (event.activityKind !== "singlesMixer") return event;
   return {
-    ...rest,
-    ...(mixer ? {activityKind: "openActivity"} : {}),
-    ...(mixer && rest.title === "Singles mixer" ?
-      {title: "Hosted event"} : {}),
-    ...(labels.length ? {admissionLabels: labels} : {}),
-    ...(experience.length ? {catchExperienceActivities: experience} : {}),
+    ...event, activityKind: "openActivity",
+    ...(event.title === "Singles mixer" ? {title: "Hosted event"} : {}),
   };
 }
 

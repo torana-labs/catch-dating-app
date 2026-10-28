@@ -282,7 +282,7 @@ function readModelWorld(): {world: World; now: number} {
   }};
 }
 
-/** The read models drop dating framing (CAT-247); the source route still shows it. */
+/** The read models show a mixer as an open activity (CAT-247); the source route still shows it. */
 function withoutDatingFraming(listing: Row): Row {
   const events = (listing.catchEvents as Row[]).map((event) => {
     const next: Row = {...event};
@@ -290,10 +290,6 @@ function withoutDatingFraming(listing: Row): Row {
       next.activityKind = "openActivity";
       if (next.title === "Singles mixer") next.title = "Hosted event";
     }
-    const labels = ((next.admissionLabels ?? []) as string[]).filter((label) => label !== "balanced");
-    if (labels.length) next.admissionLabels = labels; else delete next.admissionLabels;
-    const experience = ((next.catchExperienceActivities ?? []) as string[]).filter((item) => item !== "rotations");
-    if (experience.length) next.catchExperienceActivities = experience; else delete next.catchExperienceActivities;
     return next;
   });
   return {...listing, catchEvents: events};
