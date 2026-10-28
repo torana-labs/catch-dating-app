@@ -143,7 +143,7 @@ export function PublicPaidRegistrationView(
       ) : (
         <>
           <CatchGap size="related">
-            <CatchText as="h3" variant="titleS">{display.title}</CatchText>
+            <CatchText as="h2" variant="titleS">{display.title}</CatchText>
             <CatchText as="p" variant="bodyM">{display.body}</CatchText>
             {quote || payment ? (
               <>
