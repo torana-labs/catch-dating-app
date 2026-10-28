@@ -142,31 +142,29 @@ void main() {
       programAudience: audience,
     );
 
-    test('filters whatsapp by guest contactId and catch by linked uid', () {
-      final result = programCompose(
-        catches: [preview('c1', 'guest-uid'), preview('c2', 'not-a-guest')],
-        whatsapp: [
-          wa('w1', 'contact-a', uid: 'guest-uid'),
-          wa('w2', 'contact-b'),
-          wa('w3', 'contact-z', uid: 'guest-uid'),
-        ],
-      );
-      expect(result.people, hasLength(2));
-      final guest = result.people.singleWhere(
-        (p) => p.personId == 'uid:guest-uid',
-      );
-      expect(guest.catchThreads.single.matchId, 'c1');
-      expect(guest.whatsappThreads.single.threadId, 'w1');
-      final unlinked = result.people.singleWhere(
-        (p) => p.personId == 'contact:contact-b',
-      );
-      expect(unlinked.whatsappThreads.single.threadId, 'w2');
-      expect(unlinked.booked, isNull);
-      expect(result.unclassifiedCount, 0);
-      expect(
-        result.people.expand((p) => p.whatsappThreads).map((t) => t.threadId),
-        isNot(contains('w3')),
-      );
+    test('shared guest membership proves no historical message purpose', () {
+      for (final programId in ['program-a', 'program-b']) {
+        final result = composeHostInboxPeople(
+          organizerId: 'org',
+          scope: HostInboxScope.program(programId),
+          segment: HostInboxAudienceSegment.booked,
+          catchThreads: [preview('private-a', 'guest-uid')],
+          whatsappThreads: [
+            wa(
+              'private-a',
+              'contact-a',
+              uid: 'guest-uid',
+              events: ['event-a', 'event-b'],
+            ),
+          ],
+          participations: null,
+          programAudience: audience,
+        );
+        expect(result.people, isEmpty, reason: programId);
+        expect(result.bookedCount, 0);
+        expect(result.prospectiveCount, 0);
+        expect(result.unclassifiedCount, 0);
+      }
     });
 
     test('missing audience yields an empty inbox, never all threads', () {

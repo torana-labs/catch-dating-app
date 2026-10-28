@@ -467,6 +467,20 @@
     },
     {
       "authority": "marketing_routes",
+      "authorityId": "refunds",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Published static refund and cancellation policy is governed by the route, metadata and published-legal-content contracts; checkout owns the enforced cancellation behavior."
+    },
+    {
+      "authority": "marketing_routes",
+      "authorityId": "contact",
+      "status": "excluded",
+      "priority": "P4",
+      "reason": "Published static operator contact page is governed by the route, metadata and published-legal-content contracts; there is no stateful product action orchestration to duplicate here."
+    },
+    {
+      "authority": "marketing_routes",
       "authorityId": "not_found",
       "status": "excluded",
       "priority": "P4",

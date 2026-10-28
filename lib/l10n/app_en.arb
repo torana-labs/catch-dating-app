@@ -31998,5 +31998,9 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_operations.host_clubs_scaffold"
-  }
+  },
+  "hostInboxProgramPurposeUnresolvedTitle": "Program conversations unavailable",
+  "@hostInboxProgramPurposeUnresolvedTitle": {"description": "Safe state when historical message purpose cannot be verified for the requested program.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostInboxProgramPurposeUnresolvedBody": "We can’t verify which messages belong to this program. Conversation history and replies are unavailable here.",
+  "@hostInboxProgramPurposeUnresolvedBody": {"description": "Explains why guest membership alone cannot expose conversation history or replies in a program Inbox.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"}
 }

@@ -7114,7 +7114,7 @@
       "command": "node tool/audit/check_fn_readme_inventory.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Diffs functions/src/index.ts exports against functions/README.md inventory and ratchets existing omissions.",
+      "description": "Diffs current functions/README.md inventory rows and functions/src/index.ts exports in both directions while ratcheting existing omissions.",
       "checks": [
         "node --check tool/audit/check_fn_readme_inventory.mjs",
         "node --test tool/audit/check_fn_readme_inventory.test.mjs",
@@ -7135,7 +7135,8 @@
         "contains": [
           "scanFunctionReadmeInventory flags exports missing from README",
           "scanFunctionReadmeInventory passes documented exports",
-          "scanFunctionReadmeInventory ratchets baseline findings"
+          "scanFunctionReadmeInventory ratchets baseline findings",
+          "scanFunctionReadmeInventory rejects stale active rows but permits historical mentions"
         ]
       },
       "ciRequirements": {
@@ -8445,7 +8446,7 @@
       "command": "node tool/design/generate_icon_catalog.mjs --check",
       "safety": "local-writes-generated",
       "status": "active",
-      "description": "Validates the shared icon-role catalog against the vendored Flutter font, locked React family version and activity kinds, and verifies generated CatchIcons.",
+      "description": "Validates the shared icon-role catalog against the vendored Flutter font, locked React family version and activity kinds, and verifies the generated Flutter CatchIcons and @catch/web-ui role maps.",
       "checks": [
         "node --check tool/design/generate_icon_catalog.mjs",
         "node --test tool/design/generate_icon_catalog.test.mjs",
@@ -8458,7 +8459,8 @@
         "design/tokens/catch.icons.legacy_flutter.json",
         "contracts/shared/event_common.schema.json",
         "package-lock.json",
-        "website/package.json",
+        "packages/web-ui/package.json",
+        "packages/web-ui/src/icons/**",
         "packages/catch_ui/assets/fonts/**",
         "packages/catch_ui/lib/src/foundations/catch_icons.dart",
         "packages/catch_ui/lib/src/foundations/catch_icons.g.dart"

@@ -26,12 +26,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:package_info_plus/package_info_plus.dart';
 
 Future<void> runCatchApp({
   required AppRole appRole,
   required Widget app,
   AppEnvironment? environment,
+  List<Override> rootOverrides = const [],
 }) async {
   AppConfig.configureEntrypointRole(appRole);
   if (environment != null) {
@@ -47,7 +49,7 @@ Future<void> runCatchApp({
     isWeb: kIsWeb,
     platform: defaultTargetPlatform,
   )) {
-    final container = ProviderContainer(observers: [_asyncErrorLogger()]);
+    final container = createCatchAppContainer(overrides: rootOverrides);
     _AppPackageInfo? appPackageInfo;
     runApp(
       UncontrolledProviderScope(
@@ -96,7 +98,7 @@ Future<void> runCatchApp({
     return;
   }
 
-  final container = ProviderContainer(observers: [_asyncErrorLogger()]);
+  final container = createCatchAppContainer(overrides: rootOverrides);
   await _initializeCatchServices(
     container: container,
     preloadAppPackageInfo: false,
@@ -114,6 +116,12 @@ Future<void> runCatchApp({
     ),
   );
 }
+
+/// Creates the provider root used by both animated and standard app startup.
+@visibleForTesting
+ProviderContainer createCatchAppContainer({
+  List<Override> overrides = const [],
+}) => ProviderContainer(overrides: overrides, observers: [_asyncErrorLogger()]);
 
 AsyncErrorLogger _asyncErrorLogger() {
   return AsyncErrorLogger(

@@ -31,10 +31,8 @@ import 'support/cat151_razorpay_attempt_ledger.dart';
 
 Future<void> main() => runCatchApp(
   appRole: AppRole.consumer,
-  app: ProviderScope(
-    overrides: consumerPlatformOverrides(),
-    child: const _Cat151AcceptanceApp(),
-  ),
+  rootOverrides: consumerPlatformOverrides(),
+  app: const _Cat151AcceptanceApp(),
 );
 
 class _Cat151AcceptanceApp extends StatelessWidget {

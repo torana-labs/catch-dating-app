@@ -61,6 +61,8 @@ export type {
 } from "./components/CatchCodeInput";
 export {CatchDateTile} from "./components/CatchDateTile";
 export type {CatchDateTileProps} from "./components/CatchDateTile";
+export {ButtonControl} from "./components/ButtonControl";
+export type {ButtonControlProps} from "./components/ButtonControl";
 export {CatchBadge} from "./components/CatchBadge";
 export type {
   CatchBadgeEmphasis,
@@ -107,6 +109,13 @@ export {CatchGroundCard} from "./components/CatchGroundCard";
 export type {CatchGroundCardElement, CatchGroundCardPadding, CatchGroundCardProps} from "./components/CatchGroundCard";
 export {CatchHeroImage} from "./components/CatchHeroImage";
 export type {CatchHeroImageProps} from "./components/CatchHeroImage";
+export {CatchIcon, catchIconSizes} from "./components/CatchIcon";
+export type {CatchIconProps, CatchIconSizeName, CatchIconTone} from "./components/CatchIcon";
+export {catchIconGlyphs, catchIconStrokeWidth} from "./icons/catchIconGlyphs";
+export type {CatchActivityKind, CatchIconName} from "./icons/catchIconGlyphs";
+export {catchIconNodes} from "./icons/catchIconNodes";
+export type {CatchIconNode, CatchIconNodeName} from "./icons/catchIconNodes";
+export {activityIconName, catchIconSvgMarkup} from "./icons/catchIcons";
 export {CatchIndexRow} from "./components/CatchIndexRow";
 export type {CatchIndexRowProps} from "./components/CatchIndexRow";
 export {CatchInset} from "./components/CatchInset";
@@ -188,7 +197,6 @@ export type {
   CatchTextVariant,
 } from "./components/CatchText";
 export {
-  ButtonControl,
   CheckboxControl,
   DataTableControl,
   EmptyStateControl,
@@ -199,7 +207,6 @@ export {
   classNames,
 } from "./primitives";
 export type {
-  ButtonControlProps,
   CheckboxControlProps,
   DataTableControlProps,
   EmptyStateAnnouncement,

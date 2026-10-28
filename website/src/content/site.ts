@@ -8,7 +8,9 @@ export const ownerGatedSiteDestinations = {
 export const siteFooterLegalLinks = [
   {href: "/privacy/", label: "Privacy"},
   {href: "/terms/", label: "Terms"},
+  {href: "/refunds/", label: "Refunds"},
   {href: "/help/", label: "Help"},
+  {href: "/contact/", label: "Contact"},
 ] as const;
 
 // One authored owner for the public header and footer on every route.

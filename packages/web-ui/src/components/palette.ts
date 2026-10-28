@@ -12,6 +12,7 @@ export const paletteNeutrals = [
   "inkSecondary",
   "paper",
   "white",
+  "black",
   "nightSurface",
   "nightInk",
   "nightSecondary",

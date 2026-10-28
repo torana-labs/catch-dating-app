@@ -20,6 +20,7 @@ const strokeDart = read(`${tokensRoot}/src/primitives/catch_stroke.dart`);
 const tokensDart = read(`${tokensRoot}/src/semantic/catch_tokens.dart`);
 const badgeDart = read("../../../catch_ui/lib/src/components/catch_badge.dart");
 const badgeCss = read("./CatchBadge.module.css");
+const generatedCss = read("../../../web-config/generated/catch-tokens.css");
 
 function dartValue(source: string, name: string): string {
   const match = source.match(new RegExp(`static const (?:double |Color )?${name}\\s*=\\s*([^;]+);`));
@@ -58,7 +59,7 @@ describe("CatchBadge parity", () => {
     }
   });
 
-  it("uses CatchTokens' editorial white and black", () => {
+  it("reads CatchTokens' editorial white and black from the palette tokens", () => {
     const hex = (name: string) => {
       const literal = dartValue(tokensDart, name).match(/Color\(0x[fF]{2}([0-9a-fA-F]{6})\)/)?.[1];
       expect(literal, `${name} is not an opaque Color literal`).toBeDefined();
@@ -66,8 +67,14 @@ describe("CatchBadge parity", () => {
     };
     const expand = (value: string) => value.replace(/^#([0-9a-f])([0-9a-f])([0-9a-f])$/i, "#$1$1$2$2$3$3")
       .slice(1).toLowerCase();
-    expect(expand(cssValue("--catch-badge-editorial-white"))).toBe(hex("editorialWhite"));
-    expect(expand(cssValue("--catch-badge-editorial-black"))).toBe(hex("editorialBlack"));
+    const token = (property: string, name: string) => {
+      expect(cssValue(property)).toBe(`var(--catch-palette-${name})`);
+      const value = generatedCss.match(new RegExp(`--catch-palette-${name}:\\s*([^;]+);`))?.[1];
+      expect(value, `missing generated --catch-palette-${name}`).toBeDefined();
+      return value!.trim();
+    };
+    expect(expand(token("--catch-badge-editorial-white", "white"))).toBe(hex("editorialWhite"));
+    expect(expand(token("--catch-badge-editorial-black", "black"))).toBe(hex("editorialBlack"));
   });
 
   it("sizes the action badge and its icons as CatchLayout and CatchIconSize", () => {

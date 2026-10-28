@@ -261,7 +261,7 @@ void main() {
       },
     );
 
-    test('program scope lists only verified linked catch threads', () {
+    test('program scope with linked guests withholds unresolved history', () {
       final workspace = HostInboxViewModel.compose(
         events: [live],
         inbox: _inbox([
@@ -284,8 +284,8 @@ void main() {
       expect(workspace.isProgram, isTrue);
       expect(workspace.isGeneral, isFalse);
       expect(workspace.selectedProgram?.programId, 'program-1');
-      expect(workspace.threads.single.preview.otherUid, 'guest-uid');
-      expect(workspace.threads.single.statusLabel, 'Program guest');
+      expect(workspace.threads, isEmpty);
+      expect(workspace.unfilteredSelectedThreadCount, 0);
       expect(
         workspace.scopeOptions,
         containsAll([

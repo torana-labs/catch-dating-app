@@ -28,7 +28,7 @@ export function LegalPage({page, effectiveDate, contact = fallbackPublicContact}
             <LegalDocumentEyebrow>{page.eyebrow}</LegalDocumentEyebrow>
             <h1>{page.title}</h1>
             <LegalDocumentSummary>{page.summary}</LegalDocumentSummary>
-            <LegalDocumentEffective>{ui.effectivePrefix} {effectiveDate}</LegalDocumentEffective>
+            <LegalDocumentEffective>{ui.effectivePrefix} {page.effectiveDate ?? effectiveDate}</LegalDocumentEffective>
           </LegalDocumentHeader>
           <LegalDocumentSections>
             {page.sections.map((section) => (
