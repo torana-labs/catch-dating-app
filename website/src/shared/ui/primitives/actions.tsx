@@ -12,7 +12,7 @@ import type {
 import {ButtonControl, classNames} from "@catch/web-ui";
 import type {AppDownloadStorePlatform} from "./marketing";
 
-import {StatStrip, actionGroupClassNames} from "./foundation";
+import {actionGroupClassNames} from "./foundation";
 import {UiLabel} from "./layout";
 
 export {ButtonLink, PlainButton, PlainLink} from "./actionControls";
