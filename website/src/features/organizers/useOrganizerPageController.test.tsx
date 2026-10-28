@@ -66,6 +66,26 @@ describe("useOrganizerPageController", () => {
     expect(result.current.follow.following).toBe(false);
   });
 
+  it("resumes the requested follow after account completion", async () => {
+    accountApi.read.mockResolvedValue({uid: "one", accountReady: false, following: false, displayName: "", profileRevision: 0, eventAge: null});
+    const {result} = renderController();
+    await waitFor(() => expect(accountApi.read).toHaveBeenCalled());
+    await waitFor(() => expect(result.current.follow.pending).toBe(false));
+    act(() => result.current.follow.press());
+    expect(accountApi.follow).not.toHaveBeenCalled();
+    accountApi.read.mockResolvedValue({uid: "one", accountReady: true, following: false, displayName: "Ada", profileRevision: 1, eventAge: null});
+    await act(async () => {await result.current.follow.account?.refresh();});
+    await waitFor(() => expect(result.current.follow.following).toBe(true));
+    expect(accountApi.follow).toHaveBeenCalledTimes(1);
+  });
+
+  it("reads an existing follow on a new page mount", async () => {
+    accountApi.read.mockResolvedValue({uid: "one", accountReady: true, following: true, displayName: "Ada", profileRevision: 1, eventAge: null});
+    const {result} = renderController();
+    await waitFor(() => expect(result.current.follow.following).toBe(true));
+    expect(accountApi.follow).not.toHaveBeenCalled();
+  });
+
   it("follows by phone through its backend once one is provided", async () => {
     const backends: OrganizerPageBackends = {followByPhone: {sendCode: vi.fn(async () => undefined), confirm: vi.fn(async () => undefined)},
       submitReview: null};
