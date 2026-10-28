@@ -81,6 +81,7 @@ describe("organizerPageView", () => {
       ["Strava club", false, "route", "Every run, logged"],
       ["Club tees and caps", false, "pricing", "Ships across India"],
     ]);
+    expect(links[1].analytics).toEqual({eventName: "linkClick", source: "organizer_page", linkId: "whatsapp"});
     const expired = organizerPageView(claimedOrganizerPage, Date.parse("2026-11-20T00:00:00Z")).links;
     expect(expired.map((link) => link.title)).not.toContain("Lantern Night · Sat 14 Nov");
   });
