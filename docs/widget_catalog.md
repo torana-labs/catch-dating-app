@@ -662,11 +662,11 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventDetailCalloutCard</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:207</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHostsSection</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:340</code> | — | — | Compact host identity, with all affordances derived from available actions. |
 | <code>GuestBookDock</code> | <code>lib/events/presentation/widgets/event_detail_body.dart:318</code> | — | — | No class documentation or registry summary. |
-| <code>EventBookingDock</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:25</code> | — | — | Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states. |
-| <code>EventDetailDock</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:80</code> | — | — | No class documentation or registry summary. |
-| <code>EventDockStatusText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:525</code> | — | — | No class documentation or registry summary. |
-| <code>EventPriceText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:443</code> | — | — | No class documentation or registry summary. |
-| <code>WaitlistOfferNotice</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:481</code> | — | — | No class documentation or registry summary. |
+| <code>EventBookingDock</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:26</code> | — | — | Provider-free booking dock renderer for eligible, paid, booked, waitlist, waitlist-offer, attended, past, disabled, pending, and error states. |
+| <code>EventDetailDock</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:81</code> | — | — | No class documentation or registry summary. |
+| <code>EventDockStatusText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:540</code> | — | — | No class documentation or registry summary. |
+| <code>EventPriceText</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:458</code> | — | — | No class documentation or registry summary. |
+| <code>WaitlistOfferNotice</code> | <code>lib/events/presentation/widgets/event_detail_dock.dart:496</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailFactList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:347</code> | — | — | Flat Event Detail fact rows with structural stacked and inline modes. |
 | <code>EventDetailGoodToKnowList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:314</code> | — | — | Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows. |
 | <code>EventDetailHintList</code> | <code>lib/events/presentation/widgets/event_detail_fact_list.dart:81</code> | — | — | Why-you-might-click hint list derived from event format and activity context. |
@@ -947,13 +947,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCampaignReportSection</code> | <code>lib/hosts/presentation/inbox/host_campaign_editor.dart:578</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventAnnouncementField</code> | <code>lib/hosts/presentation/inbox/host_event_announcement_field.dart:26</code> | — | — | No class documentation or registry summary. |
 | <code>HostFollowerUpdateComposerSheet</code> | <code>lib/hosts/presentation/inbox/host_follower_update_composer_sheet.dart:44</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxPersonPageBody</code> | <code>lib/hosts/presentation/inbox/host_inbox_person_page_body.dart:19</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxPersonPageBody</code> | <code>lib/hosts/presentation/inbox/host_inbox_person_page_body.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostInboxScopeMenu</code> | <code>lib/hosts/presentation/inbox/host_inbox_scope_menu.dart:12</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxAudienceInput</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:333</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxEmptyState</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:484</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxPeopleSection</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:387</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxAudienceInput</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:352</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxEmptyState</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:503</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxPeopleSection</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:406</code> | — | — | No class documentation or registry summary. |
 | <code>HostInboxWorkspaceSection</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostMessagingWorkspaceTabBar</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:301</code> | — | — | No class documentation or registry summary. |
+| <code>HostMessagingWorkspaceTabBar</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:320</code> | — | — | No class documentation or registry summary. |
 | <code>HostManualSendList</code> | <code>lib/hosts/presentation/inbox/host_manual_send_list.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>HostManualSendListBody</code> | <code>lib/hosts/presentation/inbox/host_manual_send_list.dart:163</code> | — | — | No class documentation or registry summary. |
 | <code>HostManualSendTaskSheet</code> | <code>lib/hosts/presentation/inbox/host_manual_send_list.dart:247</code> | — | — | One manual send: the recipient, the prepared message and its delivery actions. |
@@ -1250,7 +1250,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
-| <code>ConsumerPlatformApp</code> | <code>apps/consumer/lib/consumer_platform_app.dart:12</code> | — | — | Consumer-owned native capability bindings around the shared Consumer UI. |
+| <code>ConsumerPlatformApp</code> | <code>apps/consumer/lib/consumer_platform_app.dart:12</code> | — | — | Consumer routing shell; entrypoints install native bindings at bootstrap. |
 | <code>HostPlatformApp</code> | <code>apps/host/lib/host_platform_app.dart:6</code> | — | — | Host-owned app root selecting only the Host router and default capabilities. |
 | <code>ForceUpdateCheckErrorScreen</code> | <code>lib/app.dart:224</code> | — | — | No class documentation or registry summary. |
 | <code>MyApp</code> | <code>lib/app.dart:42</code> | — | — | No class documentation or registry summary. |
