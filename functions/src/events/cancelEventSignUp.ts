@@ -45,6 +45,8 @@ import {
   prepareUserEventScheduleClaimInTransaction,
   releaseUserEventScheduleInTransaction,
 } from "./scheduleConflicts";
+import {isPublicPaymentBooking} from
+  "./publicRegistration/catchBookingBridge";
 import {readSeatMigrationWriterFence} from "./seatMigrationPaged";
 import {FirestoreSeatIdentityAuthority,
   prepareCatchUidSeatIdentity} from "./seatIdentityAuthority";
@@ -199,8 +201,16 @@ export async function cancelEventSignUpHandler(
       "UserProfileDocument"
     );
     const participation = participationSnap.exists ?
-        participationSnap.data() as {status?: string; cohortAtSignup?: string} :
+        participationSnap.data() as {status?: string; cohortAtSignup?: string;
+          paymentId?: string | null} :
       null;
+    // An organizer-routed paid booking is refunded from the organizer's
+    // account under its frozen terms; Catch's native refund cannot release it.
+    if (participation?.status === "signedUp" &&
+        isPublicPaymentBooking(participation.paymentId)) {
+      throw new HttpsError("failed-precondition",
+        "Cancel this paid booking from its payment details.");
+    }
 
     if (payments.docs.length > 1) {
       throw new HttpsError("failed-precondition",

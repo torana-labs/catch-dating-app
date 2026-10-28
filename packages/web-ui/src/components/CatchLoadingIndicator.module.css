@@ -3,7 +3,8 @@
  * indicator with a 2px stroke in the theme primary, its arc growing and
  * shrinking as it turns. Dots: three 6px dots 4px apart at 40%, 60% and 80%
  * of the colour, with no motion. Inline: the loader-circle glyph at 16px, one
- * turn every 800ms. Reduced motion holds every recipe still.
+ * turn per --catch-motion-spinner-period (800ms). Reduced motion holds every
+ * recipe still.
  */
 .indicator {
   --catch-loading-color: currentColor;
@@ -52,7 +53,7 @@
 .indicator[data-recipe="inline"] .glyph {
   stroke-width: 2;
   stroke-linejoin: round;
-  animation: catch-loading-turn 800ms linear infinite;
+  animation: catch-loading-turn var(--catch-motion-spinner-period) linear infinite;
 }
 
 .indicator[data-recipe="dots"] { gap: var(--catch-space-s1); }

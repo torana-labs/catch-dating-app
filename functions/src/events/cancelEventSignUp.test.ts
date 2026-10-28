@@ -1110,3 +1110,25 @@ for (const blocked of [
       assert.equal(h.firestore.get("events/event-1")?.waitlistedCount, 1);
     });
 }
+
+test("an organizer-routed paid booking is not cancelled natively",
+  async () => {
+    const h = harness({
+      "events/event-1": event({priceInPaise: 25000, bookedCount: 1}),
+      "users/runner-1": user(),
+      "eventParticipations/event-1_runner-1": {
+        ...participation("runner-1", "signedUp"),
+        paymentId: "pp_0123456789abcdef0123456789abcdef",
+      },
+    });
+    await assert.rejects(
+      cancelEventSignUpHandler(request("runner-1"), h.deps),
+      /Cancel this paid booking from its payment details/u,
+    );
+    assert.equal(
+      h.firestore.get("eventParticipations/event-1_runner-1")?.status,
+      "signedUp",
+    );
+    assert.equal(h.firestore.get("events/event-1")?.bookedCount, 1);
+    assert.deepEqual(h.refunds, []);
+  });

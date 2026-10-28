@@ -53,6 +53,8 @@ export {EventThumbnail} from "./components/EventThumbnail";
 export type {EventThumbnailProps} from "./components/EventThumbnail";
 export {MapPreview} from "./components/MapPreview";
 export type {MapPreviewCoordinate, MapPreviewProps} from "./components/MapPreview";
+export {CatchChoiceTile} from "./components/CatchChoiceTile";
+export type {CatchChoiceTileProps} from "./components/CatchChoiceTile";
 export {CatchCodeInput} from "./components/CatchCodeInput";
 export type {
   CatchCodeInputProps,

@@ -4,9 +4,9 @@
   "logicalName": "catch-installable-app-targets",
   "reason": "Catch ships Consumer and Host as independent store products. Their runtime composition, native identity, Firebase registration, capabilities, links, force-update policy, and release ownership must resolve from one checked contract.",
   "appleNativeDependencies": {
-    "firebaseCoreFlutterVersion": "4.15.0",
-    "cloudFirestoreFlutterVersion": "6.10.0",
-    "firebaseAppleSdkVersion": "12.19.0",
+    "firebaseCoreFlutterVersion": "4.15.2",
+    "cloudFirestoreFlutterVersion": "6.10.2",
+    "firebaseAppleSdkVersion": "12.19.3",
     "podProjects": [
       {
         "podfile": "apps/consumer/ios/Podfile",
