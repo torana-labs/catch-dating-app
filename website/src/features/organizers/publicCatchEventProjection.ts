@@ -1,3 +1,4 @@
+import {withoutDatingFraming} from "./publicDatingFraming";
 import {publicExperienceActivities} from "./publicExperience";
 import {matchesJsonSchema} from "../../shared/contracts/jsonSchema";
 import {publicEventDisplaySchemas as displaySchemas} from "../../shared/contracts/generated/publicEventDisplaySchemas";
@@ -114,7 +115,8 @@ export function projectPublicCatchEventSnapshot(snapshot: {
   if (snapshot.metadata.fromCache || snapshot.metadata.hasPendingWrites || snapshot.size > 400) return null;
   return snapshot.docs.flatMap((document) => {
     const projected = projectLivePublicCatchEvent(document.id, document.data());
-    return projected ? [projected] : [];
+    // A live listing arranges events for a page, as the server repositories do.
+    return projected ? [{...projected, event: withoutDatingFraming(projected.event)}] : [];
   });
 }
 
