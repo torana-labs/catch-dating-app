@@ -6,6 +6,7 @@ import test from "node:test";
 import {
   checkFlutterL10n,
   compareGeneratedFiles,
+  languageVersion,
 } from "./lib/check_flutter_l10n_generated.mjs";
 
 function withTempDir(callback) {
@@ -44,14 +45,19 @@ test("checker generates only inside a disposable project and compares tracked ou
     fs.mkdirSync(expectedDir, {recursive: true});
     fs.writeFileSync(path.join(sourceDir, "app_en.arb"), "{}");
     fs.writeFileSync(path.join(repositoryRoot, "l10n.yaml"), "arb-dir: lib/l10n\noutput-dir: lib/l10n/generated\n");
+    fs.writeFileSync(path.join(repositoryRoot, "pubspec.yaml"), "name: app\nenvironment:\n  sdk: ^3.12.0\n");
     fs.writeFileSync(path.join(expectedDir, "app_localizations.dart"), "one");
     fs.writeFileSync(path.join(expectedDir, "app_localizations_en.dart"), "two");
 
     let generatorCwd = null;
+    let generatorPubspec = null;
+    let generatorPackageConfig = null;
     const result = checkFlutterL10n({
       repositoryRoot,
       runGenerator({cwd}) {
         generatorCwd = cwd;
+        generatorPubspec = fs.readFileSync(path.join(cwd, "pubspec.yaml"), "utf8");
+        generatorPackageConfig = JSON.parse(fs.readFileSync(path.join(cwd, ".dart_tool", "package_config.json"), "utf8"));
         const outputDir = path.join(cwd, "lib", "l10n", "generated");
         fs.mkdirSync(outputDir, {recursive: true});
         fs.writeFileSync(path.join(outputDir, "app_localizations.dart"), "one");
@@ -64,5 +70,13 @@ test("checker generates only inside a disposable project and compares tracked ou
     assert.notEqual(generatorCwd, repositoryRoot);
     assert.equal(generatorCwd.startsWith(os.tmpdir()), true);
     assert.equal(fs.existsSync(generatorCwd), false);
+    assert.match(generatorPubspec, /^ {2}sdk: \^3\.12\.0$/mu);
+    assert.equal(generatorPackageConfig.packages[0].languageVersion, "3.12");
   });
+});
+
+test("the disposable project takes the app's language version from its SDK lower bound", () => {
+  assert.equal(languageVersion("name: app\nenvironment:\n  sdk: ^3.12.0\n  flutter: '>=3.47.0'\n"), "3.12");
+  assert.equal(languageVersion("name: app\nenvironment:\n  flutter: any\n  sdk: \">=3.12.1 <4.0.0\"\n"), "3.12");
+  assert.throws(() => languageVersion("name: app\ndependencies:\n  sdk: flutter\n"), /no environment\.sdk/u);
 });

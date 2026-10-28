@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-10-19",
   "sourceDigest": "sha256:9394b74224b2769b388fea06049361fe75a179a3222d77a209c19fad57a4b21d",
-  "resolvedDigest": "sha256:dc909e6fca2d1b68d9281108fa021f531a404e53412e74186d50d49e1f213448",
+  "resolvedDigest": "sha256:80b0d159c38b08cc47ccabaab065b1da3b4984cb34f0efcaf13eda78867ef72e",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -3114,7 +3114,8 @@
                 "claimed",
                 "generated",
                 "share-open",
-                "follow-by-phone"
+                "follow-by-phone",
+                "follow-account-step"
               ]
             }
           },
