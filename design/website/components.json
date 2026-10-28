@@ -1720,10 +1720,6 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "BadgeRow",
-      "comparedWith": [
-        "catch.badge"
-      ],
-      "comparisonReason": "Wrapping row that lays out listing badges; each badge is the library CatchBadge.",
       "css": [
         "website/src/styles/organizers.css"
       ],
@@ -4231,7 +4227,8 @@
       "id": "web_ui_catch_chip",
       "kind": "supporting-component",
       "routeIds": [
-        "home"
+        "home",
+        "visitor_discovery"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchChip.tsx",
@@ -4252,7 +4249,8 @@
       "id": "web_ui_catch_choice_input",
       "kind": "supporting-component",
       "routeIds": [
-        "home"
+        "home",
+        "visitor_discovery"
       ],
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchChoiceInput.tsx",
@@ -4268,6 +4266,28 @@
         ]
       },
       "notes": "The library's catch.chip.field twin: the homepage's format filter and Explore's view, format and date choices."
+    },
+    {
+      "id": "web_ui_catch_empty_state",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "visitor_discovery"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchEmptyState.tsx",
+      "exportName": "CatchEmptyState",
+      "componentId": "catch.empty_state",
+      "css": [
+        "packages/web-ui/src/components/CatchEmptyState.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "The library's catch.empty_state twin: Explore's no-results and unavailable states."
     }
   ]
 }

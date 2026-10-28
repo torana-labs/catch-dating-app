@@ -141,7 +141,7 @@ export function ExplorePageSections({explore}: {explore: Explore}) {
           <ExploreHeading explore={explore} />
           <ExploreFilterBar explore={explore} />
           <CatchGap size="section">
-            <CatchText aria-live="polite" as="p" color="ink2" variant="bodyM">{explore.summary}</CatchText>
+            <CatchText aria-live="polite" as="h2" color="ink2" variant="titleS">{explore.summary}</CatchText>
             <ExploreResults explore={explore} />
           </CatchGap>
         </CatchGap>
