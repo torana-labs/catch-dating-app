@@ -6,8 +6,6 @@ export type HostListing = WebsiteHostListingProjection;
 export type HostListingReview = HostListing["reviews"][number];
 export type HostListingCatchEvent = NonNullable<HostListing["catchEvents"]>[number];
 export type HostListingExternalEvent = NonNullable<HostListing["externalEvents"]>[number];
-export type HostListingEventSuccessSummary =
-  NonNullable<HostListing["eventSuccessSummary"]>;
 
 export interface HostListingRoute {
   listing: HostListing;

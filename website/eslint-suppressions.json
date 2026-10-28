@@ -190,13 +190,13 @@
   },
   "src/shared/ui/primitives/actions.tsx": {
     "react/forbid-component-props": {
-      "count": 3
+      "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 5
+      "count": 1
     },
     "react/forbid-elements": {
-      "count": 7
+      "count": 1
     }
   },
   "src/shared/ui/primitives/actions2.tsx": {
@@ -258,7 +258,7 @@
   },
   "src/shared/ui/primitives/feedback.tsx": {
     "react/forbid-component-props": {
-      "count": 2
+      "count": 1
     },
     "react/forbid-dom-props": {
       "count": 10
@@ -269,7 +269,7 @@
   },
   "src/shared/ui/primitives/forms.tsx": {
     "react/forbid-component-props": {
-      "count": 4
+      "count": 2
     },
     "react/forbid-dom-props": {
       "count": 3
@@ -375,13 +375,13 @@
   },
   "src/shared/ui/primitives/organizer.tsx": {
     "react/forbid-component-props": {
-      "count": 5
+      "count": 4
     },
     "react/forbid-dom-props": {
-      "count": 18
+      "count": 17
     },
     "react/forbid-elements": {
-      "count": 36
+      "count": 33
     }
   },
   "src/shared/ui/primitives/organizer2.tsx": {
@@ -394,13 +394,13 @@
   },
   "src/shared/ui/primitives/organizer3.tsx": {
     "react/forbid-component-props": {
-      "count": 3
+      "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 23
+      "count": 22
     },
     "react/forbid-elements": {
-      "count": 49
+      "count": 45
     }
   },
   "src/shared/ui/primitives/publicForms.tsx": {

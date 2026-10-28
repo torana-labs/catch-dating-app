@@ -262,10 +262,6 @@ export function activityForKind(kind: string): ActivityMeta {
   return activityMeta.open;
 }
 
-export function absoluteListingUrl(listing: HostListing) {
-  return `${window.location.origin}${listing.path}`;
-}
-
 export function eventAnchorId(event: HostListingCatchEvent) {
   return `event-${event.id}`;
 }

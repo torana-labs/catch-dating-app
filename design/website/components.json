@@ -385,8 +385,8 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/actions.tsx",
-      "exportName": "EventActionCard",
+      "source": "website/src/shared/ui/primitives/organizer2.tsx",
+      "exportName": "ListingEventEvidenceList",
       "css": [
         "website/src/styles/home.css",
         "website/src/styles/organizers.css",
@@ -400,7 +400,7 @@
           "event-evidence"
         ]
       },
-      "notes": "Shared website organizer listing event-section primitives for event action cards, configured download panels, and event evidence lists; raw event-action-card shells and direct ListingEventDownload/Stack/Card/Meta/Facts composition are blocked by web:react-component-governance."
+      "notes": "Shared website organizer listing event-section primitives for configured download panels and event evidence lists; raw event-action-card shells and direct ListingEventDownload/Stack/Card/Meta/Facts composition are blocked by web:react-component-governance."
     },
     {
       "id": "shared_listing_hero_shell",

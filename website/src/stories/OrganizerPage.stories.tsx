@@ -155,28 +155,55 @@ export const NextUp: Story = {
   render: () => <SectionStory column="rail" render={(controller) => <OrganizerNextUpSection controller={controller} />} />,
 };
 
-/** Owner links with one pinned, then the public pages a generated listing came from. */
+// The sections below each name their landmark, so one story draws one page;
+// two pages on one canvas would repeat those landmarks.
+
+/** Owner links with one pinned. */
 export const Links: Story = {
-  parameters: {catchComponent: {id: "organizer_links_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["owner-links", "source-links"]}},
-  render: () => <SectionStory column="rail" render={(controller) => <OrganizerLinksSection controller={controller} />} />,
+  parameters: {catchComponent: {id: "organizer_links_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["owner-links"]}},
+  render: () => <SectionStory column="rail" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerLinksSection controller={controller} />} />,
+};
+
+/** The public pages a generated listing came from. */
+export const LinksGenerated: Story = {
+  parameters: {catchComponent: {id: "organizer_links_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["source-links"]}},
+  render: () => <SectionStory column="rail" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerLinksSection controller={controller} />} />,
 };
 
 /** Catch and Luma events in one list, each with where it is sold. */
 export const ComingUp: Story = {
-  parameters: {catchComponent: {id: "organizer_events_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["catch-and-luma", "luma-only"]}},
-  render: () => <SectionStory column="main" render={(controller) => <OrganizerEventsSection controller={controller} />} />,
+  parameters: {catchComponent: {id: "organizer_events_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["catch-and-luma"]}},
+  render: () => <SectionStory column="main" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerEventsSection controller={controller} />} />,
 };
 
-/** Past photos and figures, or what a generated page found. */
+/** A generated page's events, all sold on Luma. */
+export const ComingUpGenerated: Story = {
+  parameters: {catchComponent: {id: "organizer_events_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["luma-only"]}},
+  render: () => <SectionStory column="main" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerEventsSection controller={controller} />} />,
+};
+
+/** Past photos and figures. */
 export const Moments: Story = {
-  parameters: {catchComponent: {id: "organizer_moments_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["photos-and-figures", "generated-figures"]}},
-  render: () => <SectionStory column="main" render={(controller) => <OrganizerMomentsSection controller={controller} />} />,
+  parameters: {catchComponent: {id: "organizer_moments_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["photos-and-figures"]}},
+  render: () => <SectionStory column="main" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerMomentsSection controller={controller} />} />,
 };
 
-/** Verified and unverified reviews with replies; a generated page cannot reply yet. */
+/** What a generated page found. */
+export const MomentsGenerated: Story = {
+  parameters: {catchComponent: {id: "organizer_moments_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["generated-figures"]}},
+  render: () => <SectionStory column="main" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerMomentsSection controller={controller} />} />,
+};
+
+/** Verified and unverified reviews with replies. */
 export const Reviews: Story = {
-  parameters: {catchComponent: {id: "organizer_reviews_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["verified-and-unverified", "unclaimed-notes"]}},
-  render: () => <SectionStory column="main" render={(controller) => <OrganizerReviewsSection controller={controller} />} />,
+  parameters: {catchComponent: {id: "organizer_reviews_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["verified-and-unverified"]}},
+  render: () => <SectionStory column="main" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerReviewsSection controller={controller} />} />,
+};
+
+/** A generated page's reviews, which it cannot reply to yet. */
+export const ReviewsGenerated: Story = {
+  parameters: {catchComponent: {id: "organizer_reviews_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["unclaimed-notes"]}},
+  render: () => <SectionStory column="main" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerReviewsSection controller={controller} />} />,
 };
 
 /** Anyone's review, which production shows once CAT-169 lands. */
@@ -196,8 +223,14 @@ export const ReviewForm: Story = {
 
 /** The organiser's own words, formats, facts and host. */
 export const About: Story = {
-  parameters: {catchComponent: {id: "organizer_about_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["claimed", "generated"]}},
-  render: () => <SectionStory column="main" render={(controller) => <OrganizerAboutSection controller={controller} />} />,
+  parameters: {catchComponent: {id: "organizer_about_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["claimed"]}},
+  render: () => <SectionStory column="main" pages={[claimedOrganizerPage]} render={(controller) => <OrganizerAboutSection controller={controller} />} />,
+};
+
+/** What a generated page summarised from public sources. */
+export const AboutGenerated: Story = {
+  parameters: {catchComponent: {id: "organizer_about_section", routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"], states: ["generated"]}},
+  render: () => <SectionStory column="main" pages={[generatedOrganizerPage]} render={(controller) => <OrganizerAboutSection controller={controller} />} />,
 };
 
 /** "Made with Catch", or where a generated page came from. */
