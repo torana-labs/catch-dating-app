@@ -1,5 +1,4 @@
-import {CatchField} from "@catch/web-ui";
-import {ArrowDown, ArrowUp, Link2, Plus, Trash2} from "lucide-react";
+import {CatchField, CatchIcon} from "@catch/web-ui";
 import {
   AdminButton,
   AdminEditorSection,
@@ -43,7 +42,7 @@ function OrganizerLinksEditor({
     <AdminEditorSection>
       <legend>Page links</legend>
       <AlertRow
-        icon={<Link2 size={16} strokeWidth={1.9} />}
+        icon={<CatchIcon icon="link" size="xs" />}
         title="Shown as tiles on the organizer page"
         tone="neutral"
       >
@@ -106,7 +105,7 @@ function OrganizerLinksEditor({
             <AdminButton
               aria-label={`Move link ${index + 1} up`}
               disabled={index === 0}
-              icon={<ArrowUp size={15} strokeWidth={1.9} />}
+              icon={<CatchIcon icon="moveUp" size="sm" />}
               onClick={() => move(index, -1)}
             >
               Up
@@ -114,14 +113,14 @@ function OrganizerLinksEditor({
             <AdminButton
               aria-label={`Move link ${index + 1} down`}
               disabled={index === links.length - 1}
-              icon={<ArrowDown size={15} strokeWidth={1.9} />}
+              icon={<CatchIcon icon="moveDown" size="sm" />}
               onClick={() => move(index, 1)}
             >
               Down
             </AdminButton>
             <AdminButton
               aria-label={`Remove link ${index + 1}`}
-              icon={<Trash2 size={15} strokeWidth={1.9} />}
+              icon={<CatchIcon icon="delete" size="sm" />}
               onClick={() => onChange(links.filter((_, at) => at !== index))}
             >
               Remove
@@ -132,7 +131,7 @@ function OrganizerLinksEditor({
       <AdminToolbar compact>
         <AdminButton
           disabled={links.length >= maxOrganizerOwnerLinks}
-          icon={<Plus size={15} strokeWidth={1.9} />}
+          icon={<CatchIcon icon="add" size="sm" />}
           onClick={() => onChange([...links, emptyOrganizerOwnerLinkDraft()])}
         >
           Add link
