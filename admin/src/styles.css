@@ -1202,7 +1202,7 @@ button {
   font-stretch: 78%;
   font-size: var(--catch-typography-web-display-medium-size);
   font-weight: var(--catch-typography-brand-kicker-weight);
-  line-height: var(--catch-typography-brand-headline-s-line-height);
+  line-height: var(--catch-typography-brand-display-xs-line-height);
   letter-spacing: 0;
 }
 
@@ -1273,7 +1273,7 @@ button {
   overflow: hidden;
   font-size: var(--catch-typography-web-status-size);
   font-weight: var(--catch-typography-brand-kicker-weight);
-  line-height: var(--catch-typography-brand-headline-s-line-height);
+  line-height: var(--catch-typography-brand-display-xs-line-height);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1681,7 +1681,7 @@ select {
   font-family: var(--catch-font-head);
   font-stretch: 78%;
   font-size: var(--catch-typography-web-secondary-size);
-  line-height: var(--catch-typography-brand-headline-s-line-height);
+  line-height: var(--catch-typography-brand-display-xs-line-height);
 }
 
 .panel-header > span {
@@ -3057,7 +3057,7 @@ th {
 .marketing-composer-header h3 {
   margin: var(--catch-space-s2) 0 0;
   font-size: var(--catch-typography-web-display-small-size);
-  line-height: var(--catch-typography-brand-headline-s-line-height);
+  line-height: var(--catch-typography-brand-display-xs-line-height);
 }
 
 .marketing-composer-header p {

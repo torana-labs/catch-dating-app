@@ -66,7 +66,8 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
     final programPagesState = programPagesAsync == null
         ? null
         : catchAsyncStateFromAsyncValue(programPagesAsync);
-    if (programPagesState?.hasError == true) {
+    if (programPagesState?.hasError == true ||
+        programPagesState?.hasStaleError == true) {
       return CatchLocalizedSliverErrorState(
         programPagesState!.error!,
         context: AppErrorContext.chat,
@@ -149,6 +150,24 @@ class HostInboxWorkspaceSection extends ConsumerWidget {
           );
     if (loading || workspace == null) {
       return const ChatsListSkeleton();
+    }
+    if (workspace.hasUnresolvedPurpose) {
+      return SliverMainAxisGroup(
+        slivers: [
+          HostInboxScopeMenu(
+            workspace: workspace,
+            now: now,
+            onChanged: onScopeChanged,
+          ),
+          CatchStateViewport.sliver(
+            child: CatchEmptyState(
+              icon: CatchIcons.chat,
+              title: context.l10n.hostInboxProgramPurposeUnresolvedTitle,
+              message: context.l10n.hostInboxProgramPurposeUnresolvedBody,
+            ),
+          ),
+        ],
+      );
     }
     final people = composeHostInboxPeople(
       organizerId: club.id,

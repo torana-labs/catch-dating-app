@@ -30,10 +30,12 @@
 .name,
 .monogram {
   font-family: var(--catch-font-voice), sans-serif;
-  font-size: var(--catch-typography-brand-headline-s-size);
-  font-weight: var(--catch-typography-brand-headline-s-weight);
-  line-height: var(--catch-typography-brand-headline-s-line-height);
-  letter-spacing: var(--catch-typography-brand-headline-s-tracking);
+  font-size: var(--catch-typography-brand-display-xs-size);
+  font-weight: var(--catch-typography-brand-display-xs-weight);
+  font-stretch: 78%;
+  font-variation-settings: "wdth" 78;
+  line-height: var(--catch-typography-brand-display-xs-line-height);
+  letter-spacing: var(--catch-typography-brand-display-xs-tracking);
 }
 
 .name {

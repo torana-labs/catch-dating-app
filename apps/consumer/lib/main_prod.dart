@@ -6,6 +6,7 @@ Future<void> main() {
   return runCatchApp(
     appRole: AppRole.consumer,
     app: const ConsumerPlatformApp(),
+    rootOverrides: consumerPlatformOverrides(),
     environment: AppEnvironment.prod,
   );
 }

@@ -311,6 +311,24 @@ function CanonicalMarketingRouteShell() {
             )}
           />
           <Route
+            path={marketingRoutePaths.refunds}
+            element={(
+              <LegalPage
+                page={publishedLegalContent.pages.refunds}
+                effectiveDate={publishedLegalContent.effectiveDate}
+              />
+            )}
+          />
+          <Route
+            path={marketingRoutePaths.contact}
+            element={(
+              <LegalPage
+                page={publishedLegalContent.pages.contact}
+                effectiveDate={publishedLegalContent.effectiveDate}
+              />
+            )}
+          />
+          <Route
             path={marketingRoutePaths.not_found}
             element={<NotFoundPage />}
           />

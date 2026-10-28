@@ -136,7 +136,7 @@
     },
     "roleNoun": {
       "enum": [
-        "Button", "IconAction", "Field", "FieldLanes", "Section", "SectionList",
+        "Button", "Icon", "IconAction", "Field", "FieldLanes", "Section", "SectionList",
         "Tile", "Row", "Chip", "Badge", "Banner", "Sheet", "Dialog",
         "Notice", "EmptyState", "ErrorState", "Skeleton", "Indicator", "TopBar",
         "Header", "HeaderTitle", "Scaffold", "PageBody", "ScrollView", "TabBar",

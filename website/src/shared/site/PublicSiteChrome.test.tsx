@@ -27,7 +27,7 @@ describe("canonical public chrome", () => {
     render(<PublicSiteFooter />);
     const footer = screen.getByRole("navigation", {name: "Footer"});
     expect(within(footer).getAllByRole("link").map((link) => link.textContent))
-      .toEqual([...globalLabels, "Privacy", "Terms", "Help"]);
+      .toEqual([...globalLabels, "Privacy", "Terms", "Refunds", "Help", "Contact"]);
     expect(screen.getAllByText(publicSiteCopy.footerOperator)).toHaveLength(1);
     expect(screen.queryByRole("navigation", {name: "Related links"})).toBeNull();
   });

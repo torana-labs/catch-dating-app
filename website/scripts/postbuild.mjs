@@ -77,6 +77,14 @@ writeRoute("/delete-account/", {
   ...staticRouteMeta(websiteMeta, "account_deletion", baseUrl),
   bodyHtml: buildLegalStaticBody(legalContent.pages.account_deletion, legalContent.effectiveDate),
 });
+writeRoute("/refunds/", {
+  ...staticRouteMeta(websiteMeta, "refunds", baseUrl),
+  bodyHtml: buildLegalStaticBody(legalContent.pages.refunds, legalContent.effectiveDate),
+});
+writeRoute("/contact/", {
+  ...staticRouteMeta(websiteMeta, "contact", baseUrl),
+  bodyHtml: buildLegalStaticBody(legalContent.pages.contact, legalContent.effectiveDate),
+});
 writeRoute("/404/", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 writeStaticHtml("404.html", staticRouteMeta(websiteMeta, "not_found", baseUrl));
 
@@ -297,7 +305,7 @@ function buildLegalStaticBody(page, effectiveDate) {
     `<header><p>${escapeHtml(String(page.eyebrow))}</p>`,
     `<h1>${escapeHtml(String(page.title))}</h1>`,
     `<p>${escapeHtml(String(page.summary))}</p>`,
-    `<p>Effective ${escapeHtml(String(effectiveDate))}</p></header>`,
+    `<p>Effective ${escapeHtml(String(page.effectiveDate ?? effectiveDate))}</p></header>`,
     sections,
     "</main>",
   ].join("");

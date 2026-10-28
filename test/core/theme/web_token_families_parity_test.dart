@@ -155,10 +155,7 @@ void main() {
         builder: (context) {
           const color = Color(0xFF000000);
           roles = {
-            // D19 retired the Flutter `display` and `headlineS` roles. Their
-            // web tokens leave catch.tokens.json in the token promotion, when
-            // the display steps move there; until then the web display steps
-            // are pinned by packages/web-ui foundationParity.test.ts.
+            // The D19 display steps track in em; the next test pins them.
             'kicker': CatchTextStyles.kicker(context, color: color),
             'kickerLg': CatchTextStyles.kickerLg(context, color: color),
             'fieldSectionKicker': CatchTextStyles.fieldSectionKicker(
@@ -192,6 +189,49 @@ void main() {
         reason: role,
       );
     }
+  });
+
+  testWidgets('brand display steps match CatchTextStyles (D19)', (
+    tester,
+  ) async {
+    late Map<String, TextStyle> steps;
+    await tester.pumpWidget(
+      Builder(
+        builder: (context) {
+          const color = Color(0xFF000000);
+          steps = {
+            'displayXs': CatchTextStyles.displayXs(context, color: color),
+            'displayS': CatchTextStyles.displayS(context, color: color),
+            'displayM': CatchTextStyles.displayM(context, color: color),
+            'displayL': CatchTextStyles.displayL(context, color: color),
+            'displayXl': CatchTextStyles.displayXl(context, color: color),
+            'displayXxl': CatchTextStyles.displayXxl(context, color: color),
+          };
+          return const SizedBox.shrink();
+        },
+      ),
+    );
+    for (final MapEntry(key: step, value: style) in steps.entries) {
+      final prefix = 'catch-typography-brand-${kebab(step)}';
+      expect(number('$prefix-size'), style.fontSize, reason: step);
+      expect(number('$prefix-line-height'), style.height, reason: step);
+      expect(number('$prefix-weight'), style.fontWeight!.value, reason: step);
+      final tracking = value('$prefix-tracking');
+      expect(tracking, endsWith('em'), reason: step);
+      expect(
+        double.parse(tracking.replaceFirst(RegExp(r'em$'), '')) *
+            style.fontSize!,
+        moreOrLessEquals(style.letterSpacing!, epsilon: 1e-9),
+        reason: step,
+      );
+    }
+  });
+
+  test('palette white and black match the editorial colours', () {
+    String hex(Color color) =>
+        '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+    expect(value('catch-palette-white'), hex(CatchTokens.editorialWhite));
+    expect(value('catch-palette-black'), hex(CatchTokens.editorialBlack));
   });
 
   test('every colour role has a theme role in light and dark', () {

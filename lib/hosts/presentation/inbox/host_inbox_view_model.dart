@@ -147,17 +147,8 @@ class HostInboxViewModel {
         .toList(growable: false);
 
     if (effectiveScope.isProgram) {
-      final linkedUids = programAudience?.linkedUids ?? const <String>{};
-      final programThreads = allThreads
-          .where((preview) => linkedUids.contains(preview.otherUid))
-          .map(
-            (preview) => HostInboxThreadRowData(
-              preview: preview,
-              statusLabel: 'Program guest',
-            ),
-          )
-          .toList(growable: false);
-      final filtered = _filterRows(programThreads, query);
+      // Guest membership and contact event unions do not establish the purpose
+      // of historical messages. Keep the requested scope without disclosing them.
       return HostInboxViewModel(
         events: orderedEvents,
         programs: List.unmodifiable(programs),
@@ -166,12 +157,12 @@ class HostInboxViewModel {
         selectedEvent: null,
         selectedProgram: selectedProgram,
         selectedSegment: selectedSegment,
-        threads: List.unmodifiable(filtered),
+        threads: const [],
         bookedThreadCount: 0,
         prospectiveThreadCount: 0,
         bookedAudienceCount: 0,
         prospectiveAudienceCount: 0,
-        unfilteredSelectedThreadCount: programThreads.length,
+        unfilteredSelectedThreadCount: 0,
         query: query.trim(),
         broadcastLifecycleAvailable: false,
       );
@@ -280,6 +271,7 @@ class HostInboxViewModel {
 
   bool get isGeneral => selectedScope.isGeneral;
   bool get isProgram => selectedScope.isProgram;
+  bool get hasUnresolvedPurpose => isProgram;
   bool get hasSearchResults => threads.isNotEmpty;
   bool get hasUnfilteredThreads => unfilteredSelectedThreadCount > 0;
   int get selectedAudienceCount =>

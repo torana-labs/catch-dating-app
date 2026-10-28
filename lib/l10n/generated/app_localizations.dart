@@ -40838,6 +40838,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Permanently delete your Catch account and Host profile? You’ll lose organizer access. Shared business records and required safety/payment records remain. Transfer organizer ownership first if needed.'**
   String get hostAccountDeletionConfirmation;
+
+  /// Safe state when historical message purpose cannot be verified for the requested program.
+  ///
+  /// In en, this message translates to:
+  /// **'Program conversations unavailable'**
+  String get hostInboxProgramPurposeUnresolvedTitle;
+
+  /// Explains why guest membership alone cannot expose conversation history or replies in a program Inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'We can’t verify which messages belong to this program. Conversation history and replies are unavailable here.'**
+  String get hostInboxProgramPurposeUnresolvedBody;
 }
 
 class _AppLocalizationsDelegate

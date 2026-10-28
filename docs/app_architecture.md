@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.86.2
-updated: 2026-10-25
+version: 1.87.0
+updated: 2026-10-26
 owner: app_architecture
 status: active
 ---
@@ -1248,9 +1248,13 @@ version the website's `lucide-react` resolves. Its groups are interface roles,
 one role per event `activityKind`, and the Playbook marks with their badge.
 A role records a `note` where the family has no good match.
 
-`node tool/design/generate_icon_catalog.mjs` writes `CatchIcons` in
-`packages/catch_ui/lib/src/foundations/catch_icons.g.dart` from the catalog.
-The stable `catch_icons.dart` facade exports the generated class.
+`node tool/design/generate_icon_catalog.mjs` writes both icon layers from the
+catalog. Flutter gets `CatchIcons` in
+`packages/catch_ui/lib/src/foundations/catch_icons.g.dart`, exported by the
+stable `catch_icons.dart` facade. `@catch/web-ui` gets `catchIconGlyphs` (role
+to `lucide-react` component) in `packages/web-ui/src/icons/`, plus SVG node
+data for the activity and Playbook roles so server-rendered artwork can draw
+them (`catchIconSvgMarkup`, `activityIconName`).
 Each role is a getter returning const `IconData` in the Lucide font vendored
 under `packages/catch_ui/assets/fonts/lucide/`, so release builds keep only the
 glyphs in use. The generator's `--check` mode fails when:
@@ -1258,9 +1262,17 @@ glyphs in use. The generator's `--check` mode fails when:
 - a glyph is missing from the vendored font or from the React package;
 - the font's hash, the catalog's version and the locked React version disagree;
 - an `activityKind` has no role, or has more than one;
-- the generated class is stale.
+- a generated output is stale.
 
 Every role draws at one stroke weight, the family's default.
+
+`CatchIcon` (`catch.icon`, T1) draws one role in both frameworks:
+`CatchIcon(CatchIcons.back, size: CatchIconSize.md, tone: CatchIconTone.muted)`
+in Flutter, `<CatchIcon icon="back" size="md" tone="muted" />` in React. It
+takes a `CatchIconSize` step and a semantic tone, and is decorative unless it
+has a `semanticLabel`. A component's icon slot takes `CatchIcons.<role>`
+(`IconData`) in Flutter and `<CatchIcon icon="<role>" />` (`ReactNode`) in
+React; features never import an icon family.
 
 To change a glyph, edit its role in the catalog and regenerate. To change the
 family, change the catalog's `family` block and glyph names, vendor that
@@ -2756,7 +2768,7 @@ or implementation technique cannot justify a second shared implementation.
   consolidation review. Flags do not approve exceptions or establish conformance.
   App bootstrap classes and app-core adapters are not feature UI.
 - **Role nouns (closed; extend only via component-registry review):** Button,
-  IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, Chip,
+  Icon, IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, Chip,
   Badge, Banner, Sheet, Dialog, Notice, EmptyState, ErrorState,
   Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
   ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
