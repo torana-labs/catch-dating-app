@@ -401,11 +401,12 @@ class CatchFieldInput extends StatelessWidget {
 
         final input = effectiveShowLabel
             ? sizedInputShell
-            : MergeSemantics(
-                child: Semantics(
-                  label: effectiveSemanticLabel ?? _title,
-                  child: sizedInputShell,
-                ),
+            : Semantics(
+                // Keep the label separate from neighboring row captions while
+                // letting the native input manage its descendant semantics.
+                container: true,
+                label: effectiveSemanticLabel ?? _title,
+                child: sizedInputShell,
               );
 
         if (rowBody) {
