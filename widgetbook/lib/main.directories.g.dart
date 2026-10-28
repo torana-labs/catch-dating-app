@@ -171,6 +171,8 @@ import 'package:widgetbook_workspace/events/catalog/sharing.dart'
     as _widgetbook_workspace_events_catalog_sharing;
 import 'package:widgetbook_workspace/events/catalog/social.dart'
     as _widgetbook_workspace_events_catalog_social;
+import 'package:widgetbook_workspace/events/organizer_payment_method_use_cases.dart'
+    as _widgetbook_workspace_events_organizer_payment_method_use_cases;
 import 'package:widgetbook_workspace/explore/catalog/activity.dart'
     as _widgetbook_workspace_explore_catalog_activity;
 import 'package:widgetbook_workspace/explore/catalog/body.dart'
@@ -9159,6 +9161,27 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_specimens_structure
                             .eventSuccessStrictEventSuccessStructureConfigEditor,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Events',
+        children: [
+          _widgetbook.WidgetbookFolder(
+            name: 'Booking',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'OrganizerPaymentMethodSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Quote with and without a refund deadline',
+                    builder:
+                        _widgetbook_workspace_events_organizer_payment_method_use_cases
+                            .organizerPaymentMethodSheetPreview,
                   ),
                 ],
               ),

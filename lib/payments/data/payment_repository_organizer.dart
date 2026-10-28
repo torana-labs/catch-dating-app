@@ -3,16 +3,86 @@ part of 'payment_repository.dart';
 /// Organizer-routed paid bookings. Kept beside [PaymentRepository] so it
 /// shares the attempt lease, deadline and session-ownership checks.
 extension OrganizerPaymentCheckout on PaymentRepository {
-  /// Books a paid event whose organizer collects through their own Razorpay
-  /// account. The order, signature check, admission and any refund stay on
-  /// the organizer's connection; Catch's merchant account is never involved.
-  Future<PaymentConfirmationData> processOrganizerPayment({
+  /// Resumes or prepares the guest's organizer-routed payment. The server
+  /// quote fixes the amount and refund deadline the payment page shows; the
+  /// order belongs to the organizer's own Razorpay account.
+  Future<OrganizerCheckoutSession> prepareOrganizerCheckout({
     required String eventId,
+    required String displayName,
+  }) async {
+    if (!supportsPaidBookings) {
+      throw const PaidBookingUnsupportedException();
+    }
+    _requireCurrentSession();
+    // The UID-owned ledger survives app restarts: resume it before quoting.
+    var response = await _organizerCheckout({
+      'action': 'find',
+      'eventId': eventId,
+    }, eventId: eventId);
+    var payment = response.payment;
+    if (!response.admitted && (payment == null || payment.isClosed)) {
+      _requireCurrentSession();
+      final quoted = await _organizerCheckout({
+        'action': 'quote',
+        'eventId': eventId,
+      }, eventId: eventId);
+      final quote = quoted.quote;
+      if (quote == null) {
+        throw const PaymentFailedException(
+          'This event is not taking paid bookings right now.',
+        );
+      }
+      _requireCurrentSession();
+      response = await _organizerCheckout({
+        'action': 'prepare',
+        'eventId': eventId,
+        'requestId': _newOrganizerRequestId(),
+        'displayName': displayName.trim(),
+        'reviewedQuote': quote,
+        'inviteToken': null,
+      }, eventId: eventId);
+      payment = response.payment;
+    }
+    _requireCurrentSession();
+    if (payment == null) {
+      throw const PaymentFailedException(
+        'Your payment is being checked. Open the event again in a moment.',
+      );
+    }
+    if (!response.admitted && payment.checkout == null) {
+      throw const PaymentFailedException(
+        'Your payment is being checked. Open the event again in a moment.',
+      );
+    }
+    return OrganizerCheckoutSession(
+      eventId: eventId,
+      payment: payment,
+      admitted: response.admitted,
+    );
+  }
+
+  /// Confirmation for a session the server already admitted.
+  PaymentConfirmationData organizerConfirmation(
+    OrganizerCheckoutSession session,
+  ) => PaymentConfirmationData(
+    paymentId: session.payment.paymentId,
+    orderId: session.payment.checkout?.orderId ?? session.payment.paymentId,
+    amountInPaise: session.payment.amountPaise,
+    currency: session.payment.currency,
+    eventId: session.eventId,
+  );
+
+  /// Opens Razorpay's secure checkout for the method the guest chose on
+  /// Catch's payment page, keyed to the organizer's account.
+  Future<PaymentConfirmationData> payOrganizerCheckout({
+    required OrganizerCheckoutSession session,
+    required OrganizerPaymentMethod method,
     required String displayName,
     required String description,
     required String userEmail,
     required String userContact,
   }) async {
+    if (session.admitted) return organizerConfirmation(session);
     if (!supportsPaidBookings) {
       throw const PaidBookingUnsupportedException();
     }
@@ -22,11 +92,13 @@ extension OrganizerPaymentCheckout on PaymentRepository {
         'Another payment is already in progress.',
       );
     }
-    final attempt = _PaymentAttempt(eventId);
+    final attempt = _PaymentAttempt(session.eventId);
     _activeAttempt = attempt;
     unawaited(
       _openOrganizerCheckout(
         attempt,
+        session.payment,
+        method: method,
         displayName: displayName,
         description: description,
         userEmail: userEmail,
@@ -66,56 +138,18 @@ extension OrganizerPaymentCheckout on PaymentRepository {
   }
 
   Future<void> _openOrganizerCheckout(
-    _PaymentAttempt attempt, {
+    _PaymentAttempt attempt,
+    OrganizerCheckoutPayment payment, {
+    required OrganizerPaymentMethod method,
     required String displayName,
     required String description,
     required String userEmail,
     required String userContact,
   }) async {
-    final eventId = attempt.eventId;
     try {
       final checkout = _razorpayFactory!();
       attempt.checkout = checkout;
-      // The UID-owned ledger survives app restarts: resume it before quoting.
-      var response = await _organizerCheckout({
-        'action': 'find',
-        'eventId': eventId,
-      }, eventId: eventId);
-      if (!_ownsAttempt(attempt)) return;
-      var payment = response.payment;
-      if (!response.admitted && (payment == null || payment.isClosed)) {
-        final quoted = await _organizerCheckout({
-          'action': 'quote',
-          'eventId': eventId,
-        }, eventId: eventId);
-        if (!_ownsAttempt(attempt)) return;
-        final quote = quoted.quote;
-        if (quote == null) {
-          throw const PaymentFailedException(
-            'This event is not taking paid bookings right now.',
-          );
-        }
-        response = await _organizerCheckout({
-          'action': 'prepare',
-          'eventId': eventId,
-          'requestId': _newRequestId(),
-          'displayName': displayName.trim(),
-          'reviewedQuote': quote,
-          'inviteToken': null,
-        }, eventId: eventId);
-        if (!_ownsAttempt(attempt)) return;
-        payment = response.payment;
-      }
-      if (response.admitted && payment != null) {
-        _completeOrganizerAttempt(attempt, payment);
-        return;
-      }
-      final order = payment?.checkout;
-      if (payment == null || order == null) {
-        throw const PaymentFailedException(
-          'Your payment is being checked. Open the event again in a moment.',
-        );
-      }
+      final order = payment.checkout!;
       if (order.expiresAtMillis <= DateTime.now().millisecondsSinceEpoch) {
         throw const PaymentFailedException(
           'This checkout has expired. Please try again.',
@@ -123,7 +157,7 @@ extension OrganizerPaymentCheckout on PaymentRepository {
       }
       checkout.configure(
         onSuccess: (result) =>
-            _onOrganizerSuccess(attempt, payment!, order, result),
+            _onOrganizerSuccess(attempt, payment, order, result),
         onFailure: (result) => _onError(attempt, result),
       );
       if (!_ownsAttempt(attempt)) return;
@@ -146,10 +180,14 @@ extension OrganizerPaymentCheckout on PaymentRepository {
           'name': displayName,
           'email': userEmail,
           'contact': userContact,
+          'method': method.razorpayMethod,
         },
+        'config': method.razorpayDisplayConfig(),
         'theme': {'color': '#16140F'},
       });
     } catch (error, stackTrace) {
+      // The caller awaits the attempt result, not this unawaited task;
+      // _failAttempt forwards the normalized error and stack to that result.
       _failAttempt(
         attempt,
         _normalizePaymentError(
@@ -216,6 +254,8 @@ extension OrganizerPaymentCheckout on PaymentRepository {
         orderId: order.orderId,
       );
     } catch (error, stackTrace) {
+      // The caller awaits the attempt result, not this SDK callback;
+      // _failAttempt forwards the normalized error and stack to that result.
       _failAttempt(
         attempt,
         _normalizePaymentError(
@@ -273,12 +313,12 @@ extension OrganizerPaymentCheckout on PaymentRepository {
       throw const PaymentVerificationFailedException();
     }
   }
+}
 
-  static String _newRequestId() {
-    final random = Random.secure();
-    return [
-      for (var i = 0; i < 16; i++)
-        random.nextInt(256).toRadixString(16).padLeft(2, '0'),
-    ].join();
-  }
+String _newOrganizerRequestId() {
+  final random = Random.secure();
+  return [
+    for (var i = 0; i < 16; i++)
+      random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+  ].join();
 }

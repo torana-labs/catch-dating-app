@@ -34,6 +34,7 @@ final class OrganizerCheckoutPayment {
     required this.currency,
     this.checkout,
     this.refundQuotePaise,
+    this.refundDeadlineMillis,
   });
 
   final String paymentId;
@@ -44,6 +45,9 @@ final class OrganizerCheckoutPayment {
 
   /// Server-quoted guest refund; null when the guest can no longer cancel.
   final int? refundQuotePaise;
+
+  /// Frozen full-refund deadline for this payment's cancellation terms.
+  final int? refundDeadlineMillis;
 
   /// The ledger can no longer admit; a new attempt needs a fresh quote.
   bool get isClosed =>
@@ -137,6 +141,7 @@ final class OrganizerCheckoutResponse {
         );
       }
       final cancellationQuote = rawPayment['cancellationQuote'];
+      final cancellationPolicy = rawPayment['cancellationPolicy'];
       payment = OrganizerCheckoutPayment(
         paymentId: id,
         status: status,
@@ -145,6 +150,9 @@ final class OrganizerCheckoutResponse {
         checkout: checkout,
         refundQuotePaise: cancellationQuote is Map
             ? _int(cancellationQuote['refundAmountPaise'])
+            : null,
+        refundDeadlineMillis: cancellationPolicy is Map
+            ? _int(cancellationPolicy['refundDeadlineMillis'])
             : null,
       );
     }
@@ -160,6 +168,58 @@ final class OrganizerCheckoutResponse {
       admitted: admission != null,
     );
   }
+}
+
+/// A prepared (or already admitted) organizer-routed payment for one event.
+final class OrganizerCheckoutSession {
+  const OrganizerCheckoutSession({
+    required this.eventId,
+    required this.payment,
+    required this.admitted,
+  });
+
+  final String eventId;
+  final OrganizerCheckoutPayment payment;
+  final bool admitted;
+}
+
+/// The method a guest picks on Catch's payment page. Razorpay's secure
+/// checkout then opens on that method alone; card details never touch Catch.
+enum OrganizerPaymentMethod {
+  googlePay('upi', 'google_pay'),
+  phonePe('upi', 'phonepe'),
+  paytm('upi', 'paytm'),
+  otherUpi('upi', null),
+  card('card', null),
+  netbanking('netbanking', null);
+
+  const OrganizerPaymentMethod(this.razorpayMethod, this._upiApp);
+
+  /// Razorpay `prefill.method` and instrument method.
+  final String razorpayMethod;
+  final String? _upiApp;
+
+  /// Standard Checkout `config` that shows only this method's block.
+  Map<String, Object?> razorpayDisplayConfig() => {
+    'display': {
+      'blocks': {
+        'catch': {
+          'name': 'Pay',
+          'instruments': [
+            {
+              'method': razorpayMethod,
+              if (_upiApp case final app?) ...{
+                'flows': ['intent'],
+                'apps': [app],
+              },
+            },
+          ],
+        },
+      },
+      'sequence': ['block.catch'],
+      'preferences': {'show_default_blocks': false},
+    },
+  };
 }
 
 final class OrganizerCheckoutFormatException implements Exception {

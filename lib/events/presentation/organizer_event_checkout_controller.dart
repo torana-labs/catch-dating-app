@@ -32,10 +32,44 @@ class OrganizerEventCheckoutController
   @override
   void build() {}
 
-  Future<PaymentConfirmationData> book({
+  /// Resumes or prepares the server-quoted organizer payment for [event].
+  Future<OrganizerCheckoutSession> prepare({
     required Event event,
     required UserProfile user,
   }) {
+    _requireBookingSession(user);
+    return ref
+        .read(paymentRepositoryProvider)
+        .prepareOrganizerCheckout(eventId: event.id, displayName: user.name);
+  }
+
+  /// Pays a prepared session with the method chosen on Catch's payment page.
+  Future<PaymentConfirmationData> pay({
+    required Event event,
+    required UserProfile user,
+    required OrganizerCheckoutSession session,
+    required OrganizerPaymentMethod method,
+  }) {
+    _requireBookingSession(user);
+    return ref
+        .read(paymentRepositoryProvider)
+        .payOrganizerCheckout(
+          session: session,
+          method: method,
+          displayName: user.name,
+          description:
+              // copy:allow-inline(Composes governed event title and date separator copy)
+              '${event.title}${StructuredDomainCopy.eventTitleDateSeparator}${event.shortDateLabel}',
+          userEmail: user.email,
+          userContact: user.phoneNumber,
+        );
+  }
+
+  /// Confirmation for a booking the server already admitted.
+  PaymentConfirmationData alreadyBooked(OrganizerCheckoutSession session) =>
+      ref.read(paymentRepositoryProvider).organizerConfirmation(session);
+
+  void _requireBookingSession(UserProfile user) {
     final session = ref.read(authenticatedSessionProvider);
     final current = session.asData?.value;
     if (session.isLoading ||
@@ -44,17 +78,6 @@ class OrganizerEventCheckoutController
         current.uid != user.uid) {
       throw const SignInRequiredException('book an event');
     }
-    return ref
-        .read(paymentRepositoryProvider)
-        .processOrganizerPayment(
-          eventId: event.id,
-          displayName: user.name,
-          description:
-              // copy:allow-inline(Composes governed event title and date separator copy)
-              '${event.title}${StructuredDomainCopy.eventTitleDateSeparator}${event.shortDateLabel}',
-          userEmail: user.email,
-          userContact: user.phoneNumber,
-        );
   }
 
   Future<void> cancel({

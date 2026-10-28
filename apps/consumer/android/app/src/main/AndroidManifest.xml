@@ -77,5 +77,10 @@
             <data
                 android:mimeType="vnd.android.cursor.item/event"/>
         </intent>
+        <!-- Razorpay UPI intent: lets checkout list and open installed UPI apps. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="upi" android:host="pay"/>
+        </intent>
     </queries>
 </manifest>

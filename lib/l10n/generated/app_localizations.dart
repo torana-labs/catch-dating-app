@@ -40850,6 +40850,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We can’t verify which messages belong to this program. Conversation history and replies are unavailable here.'**
   String get hostInboxProgramPurposeUnresolvedBody;
+
+  /// Payment page title with the server-quoted ticket amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount}'**
+  String paymentMethodSheetTitle({required String amount});
+
+  /// Payment page: who receives the money under the organiser-routed checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment goes to the event’s organiser. Catch doesn’t hold your money.'**
+  String get paymentMethodSheetSeller;
+
+  /// Payment page: the frozen full-refund deadline for this booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Full refund if you cancel by {deadline}.'**
+  String paymentMethodSheetRefundBy({required String deadline});
+
+  /// Payment page: heading for UPI app choices.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI'**
+  String get paymentMethodSheetUpiHeading;
+
+  /// Payment page: pay with the Google Pay UPI app.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Pay'**
+  String get paymentMethodGooglePay;
+
+  /// Payment page: pay with the PhonePe UPI app.
+  ///
+  /// In en, this message translates to:
+  /// **'PhonePe'**
+  String get paymentMethodPhonePe;
+
+  /// Payment page: pay with the Paytm UPI app.
+  ///
+  /// In en, this message translates to:
+  /// **'Paytm'**
+  String get paymentMethodPaytm;
+
+  /// Payment page: pay with any other UPI app, UPI ID or QR.
+  ///
+  /// In en, this message translates to:
+  /// **'Other UPI app or UPI ID'**
+  String get paymentMethodOtherUpi;
+
+  /// Payment page: heading for card and net banking.
+  ///
+  /// In en, this message translates to:
+  /// **'Other ways to pay'**
+  String get paymentMethodSheetOtherHeading;
+
+  /// Payment page: pay by card on Razorpay's secure form.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit or debit card'**
+  String get paymentMethodCard;
+
+  /// Payment page: pay through the guest's bank.
+  ///
+  /// In en, this message translates to:
+  /// **'Net banking'**
+  String get paymentMethodNetbanking;
+
+  /// Payment page footer: Razorpay processes payments; card details never touch Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments are processed securely by Razorpay. Card details are entered on Razorpay’s form, never in Catch.'**
+  String get paymentMethodSheetSecureNote;
 }
 
 class _AppLocalizationsDelegate

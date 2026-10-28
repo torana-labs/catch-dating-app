@@ -14,6 +14,8 @@ import 'package:catch_dating_app/events/presentation/organizer_event_checkout_co
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
+import 'package:catch_dating_app/payments/data/organizer_event_checkout.dart';
+import 'package:catch_dating_app/payments/presentation/organizer_payment_method_sheet.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -257,19 +259,58 @@ class EventDetailDock extends ConsumerWidget {
       EventBookingController.bookMutation.run(ref, (tx) async {
         // Paid seats in an organizer-collected event go to the organizer's
         // own Razorpay account; free seats keep the native booking path.
-        final data = priceInPaise > 0 && usesOrganizerCheckout(event)
-            ? await tx
-                  .get(organizerEventCheckoutControllerProvider.notifier)
-                  .book(event: event, user: userProfile)
-            : await tx
-                  .get(eventBookingControllerProvider.notifier)
-                  .book(
-                    event: event,
-                    user: userProfile,
-                    quotedPriceInPaise: viewer.quotedPriceInPaise,
-                    inviteCode: inviteCode,
-                    inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
-                  );
+        if (priceInPaise > 0 && usesOrganizerCheckout(event)) {
+          final checkout = tx.get(
+            organizerEventCheckoutControllerProvider.notifier,
+          );
+          final session = await checkout.prepare(
+            event: event,
+            user: userProfile,
+          );
+          if (!session.admitted) {
+            if (!navigator.mounted) return;
+            // Catch's payment page uses the server quote, not a local price.
+            final deadlineMillis = session.payment.refundDeadlineMillis;
+            final method = await showCatchBottomSheet<OrganizerPaymentMethod>(
+              context: navigator.context,
+              builder: (_) => OrganizerPaymentMethodSheet(
+                amountPaise: session.payment.amountPaise,
+                currency: session.payment.currency,
+                refundDeadline: deadlineMillis == null
+                    ? null
+                    : DateTime.fromMillisecondsSinceEpoch(deadlineMillis),
+              ),
+            );
+            if (method == null) return;
+            final paid = await checkout.pay(
+              event: event,
+              user: userProfile,
+              session: session,
+              method: method,
+            );
+            handleBookingCompletion(
+              router: router,
+              navigator: navigator,
+              paymentData: paid,
+            );
+            return;
+          }
+          handleBookingCompletion(
+            router: router,
+            navigator: navigator,
+            paymentData: checkout.alreadyBooked(session),
+          );
+          return;
+        }
+        final data = await tx
+            .get(eventBookingControllerProvider.notifier)
+            .book(
+              event: event,
+              user: userProfile,
+              quotedPriceInPaise: viewer.quotedPriceInPaise,
+              inviteCode: inviteCode,
+              inviteLinkId: participation?.inviteLinkId ?? inviteLinkId,
+            );
         handleBookingCompletion(
           router: router,
           navigator: navigator,

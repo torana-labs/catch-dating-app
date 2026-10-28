@@ -105,13 +105,22 @@ void main() {
     functions.callables['managePublicEventCheckout'] = checkout;
   });
 
-  Future<Object?> book() => repository.processOrganizerPayment(
-    eventId: _eventId,
-    displayName: ' Ada Guest ',
-    description: 'Sunday Run · Sun 1 Nov',
-    userEmail: 'ada@example.com',
-    userContact: '+919876543210',
-  );
+  Future<Object?> book([
+    OrganizerPaymentMethod method = OrganizerPaymentMethod.googlePay,
+  ]) async {
+    final session = await repository.prepareOrganizerCheckout(
+      eventId: _eventId,
+      displayName: ' Ada Guest ',
+    );
+    return repository.payOrganizerCheckout(
+      session: session,
+      method: method,
+      displayName: 'Ada Guest',
+      description: 'Sunday Run · Sun 1 Nov',
+      userEmail: 'ada@example.com',
+      userContact: '+919876543210',
+    );
+  }
 
   test(
     'a new booking pays the organizer account and admits on the server',
@@ -134,6 +143,11 @@ void main() {
       expect(prepare['requestId'], matches(RegExp(r'^[0-9a-f]{32}$')));
       final options = razorpay.openCalls.single;
       expect(options['key'], 'rzp_test_oauth_organizer');
+      expect((options['prefill'] as Map)['method'], 'upi');
+      expect(
+        options['config'],
+        OrganizerPaymentMethod.googlePay.razorpayDisplayConfig(),
+      );
       expect(options['order_id'], 'order_organizer1');
       expect(options['amount'], 10000);
 
@@ -272,6 +286,44 @@ void main() {
     );
     expect(commands.map((c) => c['action']), ['status']);
   });
+
+  test('each payment-page choice narrows Razorpay to that method', () {
+    Map<Object?, Object?> instrument(OrganizerPaymentMethod method) {
+      final display = method.razorpayDisplayConfig()['display']! as Map;
+      final blocks = display['blocks']! as Map;
+      final block = blocks['catch']! as Map;
+      expect(display['sequence'], ['block.catch']);
+      expect(display['preferences'], {'show_default_blocks': false});
+      return (block['instruments']! as List).single as Map;
+    }
+
+    expect(instrument(OrganizerPaymentMethod.googlePay), {
+      'method': 'upi',
+      'flows': ['intent'],
+      'apps': ['google_pay'],
+    });
+    expect(instrument(OrganizerPaymentMethod.phonePe)['apps'], ['phonepe']);
+    expect(instrument(OrganizerPaymentMethod.paytm)['apps'], ['paytm']);
+    expect(instrument(OrganizerPaymentMethod.otherUpi), {'method': 'upi'});
+    expect(instrument(OrganizerPaymentMethod.card), {'method': 'card'});
+    expect(instrument(OrganizerPaymentMethod.netbanking), {
+      'method': 'netbanking',
+    });
+  });
+
+  test(
+    'prepare carries the frozen refund deadline to the payment page',
+    () async {
+      replies['find'] = (_) => _response(payment: _payment());
+      final session = await repository.prepareOrganizerCheckout(
+        eventId: _eventId,
+        displayName: 'Ada',
+      );
+      expect(session.admitted, isFalse);
+      expect(session.payment.refundDeadlineMillis, 50);
+      expect(razorpay.openCalls, isEmpty);
+    },
+  );
 
   test('only organizer ledger ids mark an organizer booking', () {
     expect(isOrganizerPaymentId('pp_abc'), isTrue);
