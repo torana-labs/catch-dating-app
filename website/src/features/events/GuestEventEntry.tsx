@@ -1,5 +1,6 @@
 import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchText} from "@catch/web-ui";
 import {useState} from "react";
+import {offerCodeSent} from "../../content/eventOffer";
 import {approvalNotificationCopy as notificationCopy, eventPageCopy, guestEventCopy as copy} from "../../content/events";
 import type {User} from "../../firebase";
 import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
@@ -78,22 +79,11 @@ function PhoneStep({c}: {c: Controller}) {
   return (
     <Form noValidate onSubmit={c.submit} pending={c.pending}>
       <CatchGap size="related">
-        <CatchField
-          autoComplete="tel"
-          errorText={c.codeSent ? null : c.message || null}
-          helperText={eventPageCopy.booking.phoneNote}
-          id={`${c.recaptchaId}-phone`}
-          inputMode={c.pending || c.codeSent ? "inactive" : "editable"}
-          keyboardType="phone"
-          onChanged={(value) => c.setPhone(value)}
-          recipe="input"
-          title={copy.phone}
-          value={c.phone}
-        />
         {c.codeSent ? (
           <CatchField
             autoComplete="one-time-code"
             errorText={c.message || null}
+            helperText={offerCodeSent(c.phone)}
             id={`${c.recaptchaId}-code`}
             keyboardType="number"
             maxLength={6}
@@ -102,7 +92,20 @@ function PhoneStep({c}: {c: Controller}) {
             title={copy.code}
             value={c.code}
           />
-        ) : null}
+        ) : (
+          <CatchField
+            autoComplete="tel"
+            errorText={c.message || null}
+            helperText={eventPageCopy.booking.phoneNote}
+            id={`${c.recaptchaId}-phone`}
+            inputMode={c.pending ? "inactive" : "editable"}
+            keyboardType="phone"
+            onChanged={(value) => c.setPhone(value)}
+            recipe="input"
+            title={copy.phone}
+            value={c.phone}
+          />
+        )}
         <div id={c.recaptchaId} />
         <CatchButton fullWidth label={c.codeSent ? copy.verify : copy.continue} onPressed={noop}
           status={c.pending ? "loading" : "idle"} type="submit" />
