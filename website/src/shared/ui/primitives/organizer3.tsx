@@ -1,10 +1,6 @@
 import type {FormHTMLAttributes, HTMLAttributes, ReactNode} from "react";
-import type {StatStripItem} from "./foundation";
-import type {ListingSuccessMetricGridItem} from "./organizer";
-import {ButtonLink} from "./actions";
 import {Form} from "./forms";
-import {StatStrip, classNames} from "./foundation";
-import {SuccessGrid} from "./layout";
+import {classNames} from "./foundation";
 
 export function OrganizerResultCardFooter({
   children,
@@ -144,108 +140,6 @@ export function OwnerUnlockBoard({
           <p>{item.body}</p>
         </article>
       ))}
-    </div>
-  );
-}
-
-export function ListingSuccessMetricGrid({
-  className,
-  items,
-  reveal = true,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  items: ListingSuccessMetricGridItem[];
-  reveal?: boolean;
-}) {
-  return (
-    <SuccessGrid
-      {...props}
-      className={className}
-      reveal={reveal}
-      variant="listing"
-    >
-      {items.map((item, index) => (
-        <div key={typeof item.label === "string" ? item.label : index}>
-          <strong>{item.value}</strong>
-          <span>{item.label}</span>
-        </div>
-      ))}
-    </SuccessGrid>
-  );
-}
-
-export function ClaimBandSection({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <section {...props} className={classNames("claim-band", className)}>
-      {children}
-    </section>
-  );
-}
-
-export function ClaimBandGrid({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("claim-band__grid", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function ClaimBandRail({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("claim-band__rail", className)}>
-      {children}
-    </div>
-  );
-}
-
-export function ClaimRequestPanel({
-  children,
-  className,
-  reveal = false,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames("claim-request-panel", className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
-export function ClaimRequestPanelHeading({
-  children,
-  className,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("claim-request-panel__heading", className)}>
-      {children}
     </div>
   );
 }
