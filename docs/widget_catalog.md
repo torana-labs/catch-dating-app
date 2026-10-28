@@ -707,6 +707,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventPinsFallbackMap</code> | <code>lib/events/presentation/widgets/event_pins_map.dart:638</code> | — | — | No class documentation or registry summary. |
 | <code>EventPinsMap</code> | <code>lib/events/presentation/widgets/event_pins_map.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>MapOverlayTopBar</code> | <code>lib/events/presentation/widgets/map_overlay_top_bar.dart:5</code> | — | — | No class documentation or registry summary. |
+| <code>OrganizerPaymentMethodSheet</code> | <code>lib/events/presentation/widgets/organizer_payment_method_sheet.dart:12</code> | — | — | Catch's own payment page for an organizer-routed booking. It shows the server-quoted amount and refund deadline, then returns the method the guest picks; Razorpay's secure checkout opens on that method alone. |
 | <code>SwipeWindowBanner</code> | <code>lib/events/presentation/widgets/who_is_going_section.dart:238</code> | — | — | No class documentation or registry summary. |
 | <code>WhoIsGoingBody</code> | <code>lib/events/presentation/widgets/who_is_going_section.dart:80</code> | — | — | No class documentation or registry summary. |
 | <code>WhoIsGoingEmptyState</code> | <code>lib/events/presentation/widgets/who_is_going_section.dart:181</code> | — | — | No class documentation or registry summary. |
@@ -1072,7 +1073,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>WelcomeSceneLayout</code> | <code>lib/onboarding/presentation/pages/onboarding_welcome_body.dart:222</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingStepLayout</code> | <code>lib/onboarding/shared/onboarding_step_layout.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerAuthorityBadge</code> | <code>lib/organizers/presentation/organizer_authority_badge.dart:21</code> | — | — | No class documentation or registry summary. |
-| <code>OrganizerPaymentMethodSheet</code> | <code>lib/payments/presentation/organizer_payment_method_sheet.dart:12</code> | — | — | Catch's own payment page for an organizer-routed booking. It shows the server-quoted amount and refund deadline, then returns the method the guest picks; Razorpay's secure checkout opens on that method alone. |
 | <code>PaymentCheckoutHeader</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:196</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentCheckoutSheet</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:261</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentConfirmationBody</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:497</code> | — | — | No class documentation or registry summary. |
