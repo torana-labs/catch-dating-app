@@ -95,6 +95,40 @@ void main() {
       report.trend.single.metrics.keys.toSet(),
       HostAnalyticsTrendKeys.values,
     );
+    expect(report.linkSummary.links, isEmpty);
+  });
+
+  test('HostAnalyticsReport parses owner link clicks and their sources', () {
+    final report = HostAnalyticsReport.fromCallableData({
+      'generatedAt': '2026-06-18T12:00:00.000Z',
+      'discoverySummary': const {'linkClicks': 7},
+      'linkSummary': const {
+        'links': [
+          {
+            'organizerId': 'org',
+            'linkId': 'tickets',
+            'label': 'Tickets',
+            'clicks': 5,
+          },
+          {'organizerId': 'org', 'linkId': 'gone', 'label': null, 'clicks': 2},
+        ],
+        'trafficSources': [
+          {'source': 'instagram', 'clicks': 4},
+          {'source': 'other', 'clicks': 3},
+          {'source': 'raw-referrer.example', 'clicks': 9},
+        ],
+      },
+    });
+
+    expect(report.discoverySummary.linkClicks, 7);
+    expect(report.linkSummary.links.map((link) => (link.label, link.clicks)), [
+      ('Tickets', 5),
+      (null, 2),
+    ]);
+    expect(report.linkSummary.trafficSources, {
+      HostAnalyticsTrafficSource.instagram: 4,
+      HostAnalyticsTrafficSource.other: 3,
+    });
   });
 
   test('HostAnalyticsEventRow parses full backend event metrics', () {
