@@ -4163,7 +4163,7 @@
           "courts",
           "nights-out",
           "pressed",
-          "artwork",
+          "accent-only",
           "photo",
           "link",
           "coming-soon",
@@ -4191,7 +4191,7 @@
         "exportName": "Plans",
         "states": [
           "photo",
-          "artwork",
+          "poster",
           "formats",
           "full",
           "no-format",
