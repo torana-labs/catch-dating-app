@@ -29,8 +29,19 @@
         "eventSave",
         "contactClick",
         "claimClick",
-        "outboundClick"
+        "outboundClick",
+        "linkClick"
       ]
+    },
+    "linkId": {
+      "description": "The owner link a linkClick opened, one of the organizer's ownerLinks ids. Other events send null.",
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "trafficSource": {
+      "$ref": "#/definitions/trafficSource"
     },
     "pagePath": {
       "type": "string",
@@ -48,6 +59,13 @@
     "platform": {
       "type": ["string", "null"],
       "maxLength": 40
+    }
+  },
+  "definitions": {
+    "trafficSource": {
+      "type": ["string", "null"],
+      "enum": ["instagram", "whatsapp", "facebook", "google", "qr", "email", "direct", "other", null],
+      "description": "Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent."
     }
   }
 }
