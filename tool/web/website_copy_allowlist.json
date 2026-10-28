@@ -39,11 +39,6 @@
       "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
     },
     {
-      "file": "website/src/shared/ui/primitives/actions.tsx",
-      "text": "${String(event.title)} event counts",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
       "file": "website/src/shared/ui/primitives/layout.tsx",
       "text": "host-preview-section host-preview-after",
       "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."

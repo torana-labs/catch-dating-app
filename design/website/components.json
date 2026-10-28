@@ -1,6 +1,6 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 112,
+  "version": 113,
   "updated": "2026-10-26",
   "owner": "marketing_website",
   "sourceOfTruth": {
@@ -385,8 +385,8 @@
         "organizer_listing_legacy"
       ],
       "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/actions.tsx",
-      "exportName": "EventActionCard",
+      "source": "website/src/shared/ui/primitives/organizer2.tsx",
+      "exportName": "ListingEventEvidenceList",
       "css": [
         "website/src/styles/home.css",
         "website/src/styles/organizers.css",
@@ -400,7 +400,7 @@
           "event-evidence"
         ]
       },
-      "notes": "Shared website organizer listing event-section primitives for event action cards, configured download panels, and event evidence lists; raw event-action-card shells and direct ListingEventDownload/Stack/Card/Meta/Facts composition are blocked by web:react-component-governance."
+      "notes": "Shared website organizer listing event-section primitives for configured download panels and event evidence lists; raw event-action-card shells and direct ListingEventDownload/Stack/Card/Meta/Facts composition are blocked by web:react-component-governance."
     },
     {
       "id": "shared_listing_hero_shell",
@@ -558,23 +558,20 @@
       "source": "website/src/features/organizers/HostListingPage.tsx",
       "exportName": "HostListingPage",
       "css": [
-        "website/src/styles/site-shell.css",
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/organiser-profile.css"
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "website/src/styles/site-shell.css"
       ],
       "storybook": {
         "status": "ready",
         "story": "website/src/stories/MarketingRoutes.stories.tsx",
         "exportName": "OrganizerListing",
         "states": [
-          "claimable-unclaimed",
-          "missing-evidence",
-          "listing-reviews"
+          "generated-from-listing",
+          "claim-pitch"
         ]
       },
-      "notes": "Generated organizer listing route story uses a checked hostListings fixture and the website Query provider because reviews and claim panels are query-backed."
+      "notes": "Organiser page route (CAT-251): a link-in-bio page that renders the organizerPublicPage read model, or the same record built from the listing until every page has one and in the static build. Generated pages keep the site header; claimed pages are the organiser's own. The route story renders a generated listing fixture; OrganizerPage.stories.tsx covers the board states."
     },
     {
       "id": "route_event_detail",
@@ -750,18 +747,262 @@
       "source": "website/src/features/organizers/sections/HostListingSections.tsx",
       "exportName": "HostListingSections",
       "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchBand.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGap.module.css"
       ],
       "storybook": {
         "status": "ready",
-        "story": "website/src/stories/RouteShellPrimitives.stories.tsx",
-        "exportName": "ListingSectionsAssemblyStory",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "Guest",
         "states": [
-          "route-assembly"
+          "guest-page",
+          "first-phone-screen"
         ]
       },
-      "notes": "Thin organizer listing route-section assembler; visible child sections own Storybook coverage."
+      "notes": "Arranges the organiser page (CAT-251): the rail holds identity, follow and share, the next event and the links, which together fill the first phone screen; the main column holds the claim pitch on a generated page, the calendar, past moments, reviews, about and the footer. Composes library parts only (D18)."
+    },
+    {
+      "id": "organizer_identity_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerIdentitySection.tsx",
+      "exportName": "OrganizerIdentitySection",
+      "css": [
+        "packages/web-ui/src/components/CatchProfileHeader.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchQrCode.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchCodeInput.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "Identity",
+        "states": [
+          "claimed",
+          "generated",
+          "share-open",
+          "follow-by-phone"
+        ]
+      },
+      "notes": "Profile header with follow and share; the share card holds the page's QR code and copy action. Follow uses the visitor's account until follow by phone (CAT-253) lands; its sheet is built and hidden behind OrganizerPageBackends.followByPhone."
+    },
+    {
+      "id": "organizer_next_up_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerRailSections.tsx",
+      "exportName": "OrganizerNextUpSection",
+      "css": [
+        "packages/web-ui/src/components/CatchPreviewCard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "NextUp",
+        "states": [
+          "catch-event",
+          "luma-event"
+        ]
+      },
+      "notes": "The next event wherever it is sold, as the preview card's feature size on ink, with a countdown, the source and the booking action."
+    },
+    {
+      "id": "organizer_links_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerRailSections.tsx",
+      "exportName": "OrganizerLinksSection",
+      "css": [
+        "packages/web-ui/src/components/CatchLinkTile.module.css",
+        "packages/web-ui/src/components/CatchGap.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "Links",
+        "states": [
+          "owner-links",
+          "source-links"
+        ]
+      },
+      "notes": "The organiser's links, pinned first and dropped after their show-until date; until owners can add links (CAT-254), the public pages a listing came from."
+    },
+    {
+      "id": "organizer_events_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerEventsSections.tsx",
+      "exportName": "OrganizerEventsSection",
+      "css": [
+        "packages/web-ui/src/components/CatchIndexRow.module.css",
+        "packages/web-ui/src/components/CatchDateTile.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "ComingUp",
+        "states": [
+          "catch-and-luma",
+          "luma-only",
+          "empty-calendar"
+        ]
+      },
+      "notes": "Catch and imported events in one list, soonest first; each row names where it is sold. Catch rows open the event page and imported rows open the source."
+    },
+    {
+      "id": "organizer_moments_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerEventsSections.tsx",
+      "exportName": "OrganizerMomentsSection",
+      "css": [
+        "packages/web-ui/src/components/CatchPhotoTile.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "Moments",
+        "states": [
+          "photos-and-figures",
+          "generated-figures"
+        ]
+      },
+      "notes": "Past moments: photos alternating with figures on a claimed page, or what a generated page found with a slot for photos."
+    },
+    {
+      "id": "organizer_reviews_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerReviewsSection.tsx",
+      "exportName": "OrganizerReviewsSection",
+      "css": [
+        "packages/web-ui/src/components/CatchRatingSummary.module.css",
+        "packages/web-ui/src/components/CatchReviewItem.module.css",
+        "packages/web-ui/src/components/CatchSplit.module.css",
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchStarInput.module.css",
+        "packages/web-ui/src/components/CatchField.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "Reviews",
+        "states": [
+          "verified-and-unverified",
+          "unclaimed-notes",
+          "no-reviews",
+          "review-form"
+        ]
+      },
+      "notes": "Rating over its distribution and the latest reviews, each marked Booked on Catch or Unverified. The review form (CAT-169) is built and hidden behind OrganizerPageBackends.submitReview."
+    },
+    {
+      "id": "organizer_about_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerAboutSections.tsx",
+      "exportName": "OrganizerAboutSection",
+      "css": [
+        "packages/web-ui/src/components/CatchFactTile.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchAvatar.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "About",
+        "states": [
+          "claimed",
+          "generated"
+        ]
+      },
+      "notes": "The organiser's description, formats, public facts and host. Intake review notes never show."
+    },
+    {
+      "id": "organizer_claim_section",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerAboutSections.tsx",
+      "exportName": "OrganizerClaimSection",
+      "css": [
+        "packages/web-ui/src/components/CatchGroundCard.module.css",
+        "packages/web-ui/src/components/CatchGrid.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "Generated",
+        "states": [
+          "generated-page",
+          "claim-pitch"
+        ]
+      },
+      "notes": "Generated pages only: what claiming the page gives the organiser, with the people already following and reviewing. The claim is free; the button opens /claim/ (CAT-256)."
+    },
+    {
+      "id": "organizer_page_footer",
+      "kind": "section",
+      "routeIds": [
+        "organizer_listing_canonical",
+        "organizer_listing_legacy"
+      ],
+      "owner": "features/organizers/sections",
+      "source": "website/src/features/organizers/sections/organizerPage/OrganizerAboutSections.tsx",
+      "exportName": "OrganizerPageFooter",
+      "css": [
+        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchButton.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/OrganizerPage.stories.tsx",
+        "exportName": "Footer",
+        "states": [
+          "claimed",
+          "generated"
+        ]
+      },
+      "notes": "\"Made with Catch · Make a page like this\" on a claimed page; where a generated page came from and how to report a mistake."
     },
     {
       "id": "host_application_flow",
@@ -1524,11 +1765,6 @@
       "owner": "shared/ui",
       "source": "website/src/shared/ui/primitives/feedback.tsx",
       "exportName": "AuthStatusRow",
-      "comparedWith": [
-        "catch.meta_row",
-        "catch.index_row"
-      ],
-      "comparisonReason": "Sign-in state sentence with an inline action; not passive metadata and not navigation.",
       "css": [
         "website/src/styles/flows.css",
         "website/src/styles/organizers.css"
@@ -2034,255 +2270,6 @@
       "notes": "Organizer result-list section including empty state coverage; configures shared scanner-enforced organizer search section shell primitives instead of rendering raw section shells."
     },
     {
-      "id": "listing_hero_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
-      "exportName": "ListingHeroSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/organiser-profile.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/organiser-profile.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingHero",
-        "states": [
-          "claimable-unclaimed"
-        ]
-      },
-      "notes": "Community identity, approved imagery or activity fallback, and accessible profile section navigation."
-    },
-    {
-      "id": "listing_hero_rail_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
-      "exportName": "ListingHeroRailSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/organiser-profile.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingHeroRail",
-        "states": [
-          "claim-enabled"
-        ]
-      },
-      "notes": "Follow and share lead the visitor actions; ownership requests remain capability gated in a disclosure."
-    },
-    {
-      "id": "listing_facts_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingFactsSection.tsx",
-      "exportName": "ListingFactsSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingFacts",
-        "states": [
-          "claimable-unclaimed",
-          "app-created"
-        ]
-      },
-      "notes": "Generated organizer About and format section for both source-backed and app-created profile shapes; provenance and ownership status stay in the hero ledger."
-    },
-    {
-      "id": "listing_catch_events_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
-      "exportName": "ListingCatchEventsSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingCatchEvents",
-        "states": [
-          "app-created-events"
-        ]
-      },
-      "notes": "App-created generated listing event section backed by Catch event supply."
-    },
-    {
-      "id": "listing_events_rail_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
-      "exportName": "ListingEventsRailSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingEventsRail",
-        "states": [
-          "empty"
-        ]
-      },
-      "notes": "Compact organizer action-rail event summary with a truthful empty state and a link to the detailed event sections when published supply exists."
-    },
-    {
-      "id": "listing_reviews_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingReviewsSection.tsx",
-      "exportName": "ListingReviewsSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingReviews",
-        "states": [
-          "verified",
-          "public-form",
-          "empty"
-        ]
-      },
-      "notes": "Query-backed generated listing reviews section; Storybook coverage wraps it in the website Query provider. Configures shared scanner-enforced listing review shell primitives instead of rendering raw review signal, owner-response, or review form shells."
-    },
-    {
-      "id": "listing_event_success_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
-      "exportName": "ListingEventSuccessSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingEventSuccess",
-        "states": [
-          "app-created-aggregate"
-        ]
-      },
-      "notes": "App-created generated listing Event Success aggregate section."
-    },
-    {
-      "id": "listing_sources_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingSourcesSection.tsx",
-      "exportName": "ListingSourcesSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingSources",
-        "states": [
-          "source-ledger",
-          "claimable-unclaimed"
-        ]
-      },
-      "notes": "Compact organizer action-rail source list with outbound analytics; source-backed provenance remains separate from ownership verification."
-    },
-    {
-      "id": "listing_missing_evidence_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingClaimSections.tsx",
-      "exportName": "ListingMissingEvidenceSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingMissingEvidence",
-        "states": [
-          "claim-unavailable",
-          "missing-evidence"
-        ]
-      },
-      "notes": "Generated unclaimed listing missing-evidence and embedded claim panel section; Storybook coverage wraps it in the website Query provider."
-    },
-    {
-      "id": "listing_recommended_organizers_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/RecommendedOrganizersSection.tsx",
-      "exportName": "RecommendedOrganizersSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingRecommendedOrganizers",
-        "states": [
-          "verified-nearby"
-        ]
-      },
-      "notes": "Generated unclaimed listing recommendation section pointing toward verified organizer profiles."
-    },
-    {
       "id": "marketing_consent_banner_adapter",
       "kind": "supporting-component",
       "routeIds": [
@@ -2371,54 +2358,6 @@
         ]
       },
       "notes": "Domain adapter that maps HostListing claim/source state to the shared StatusBadge primitive tone and copy."
-    },
-    {
-      "id": "listing_external_events_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
-      "exportName": "ListingExternalEventsSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/site-shell.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingExternalEvents",
-        "states": [
-          "source-attributed-events"
-        ]
-      },
-      "notes": "Conditional listing route section for read-only external event evidence. It reuses shared ListingSection, ContentGrid, and EventActionCard primitives."
-    },
-    {
-      "id": "listing_event_evidence_section",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingEventsSections.tsx",
-      "exportName": "ListingEventEvidenceSection",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/site-shell.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ListingEventEvidence",
-        "states": [
-          "public-event-evidence"
-        ]
-      },
-      "notes": "Conditional listing route section for public event evidence rows. Visual row ownership stays in shared ListingEventEvidenceList."
     },
     {
       "id": "route_event_runtime",
@@ -3251,34 +3190,6 @@
       "notes": "The sole Host pilot intake page: the Host page chrome and section row, one heading, then the existing application controller."
     },
     {
-      "id": "listing_profile_information",
-      "kind": "section",
-      "routeIds": [
-        "organizer_listing_canonical",
-        "organizer_listing_legacy"
-      ],
-      "owner": "features/organizers/sections",
-      "source": "website/src/features/organizers/sections/ListingHeroSection.tsx",
-      "exportName": "ListingProfileInformation",
-      "css": [
-        "website/src/styles/organizers.css",
-        "website/src/styles/responsive.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/organiser-profile.css",
-        "website/src/styles/consumer-home.css",
-        "website/src/styles/organiser-profile.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/OrganizerListingSections.stories.tsx",
-        "exportName": "ProfileInformation",
-        "states": [
-          "unclaimed"
-        ]
-      },
-      "notes": "Disclosure retains source count, freshness, visibility and ownership without leading the guest experience."
-    },
-    {
       "id": "shared_app_capture_image",
       "kind": "supporting-component",
       "routeIds": [
@@ -3586,7 +3497,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon."
+      "notes": "Website T4 under D18 (CAT-249). A calendar date on a palette ground: weekday, a displayS day and month in one time element, 72 x 78px and 56 x 66px on a phone. Search aliases: DateBadge, CalendarTile, DateBlock, DateChip, EventDate, CalendarIcon.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "A calendar date on a ground; it sets its weekday, day and month in CatchText roles rather than being a text role."
     },
     {
       "id": "shared_fact_tile",
@@ -3618,7 +3533,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A label, its value and an optional note on a ground: the event page facts (When, Where, Price) and, as a stat on the displayS step, the owner view numbers with a positive change note. Nearest concept: catch.metric_strip (CatchMetricSection and CatchMetricTile), which sets the value above its label in the mono or metric role; the v2 tile leads with the label, so it is not a CatchMetricTile recipe. Search aliases: MetricTile, StatTile, StatCard, FactCard, KpiTile, InfoTile, KeyFact."
+      "notes": "Website T4 under D18 (CAT-249). A label, its value and an optional note on a ground: the event page facts (When, Where, Price) and, as a stat on the displayS step, the owner view numbers with a positive change note. Nearest concept: catch.metric_strip (CatchMetricSection and CatchMetricTile), which sets the value above its label in the mono or metric role; the v2 tile leads with the label, so it is not a CatchMetricTile recipe. Search aliases: MetricTile, StatTile, StatCard, FactCard, KpiTile, InfoTile, KeyFact.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "A labelled fact or stat on a ground; it arranges CatchText roles and is not a text role itself."
     },
     {
       "id": "shared_share_bar",
@@ -3673,7 +3592,13 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-251). The organiser page's identity: a cover photo or ground, an 88px monogram over its foot, the name with an optional verified seal, a tag, the headline, a meta line, a stats line and the caller's actions. Search aliases: ProfileHero, OrganiserHeader, ClubHeader, IdentityHeader, BioHeader."
+      "notes": "Website T4 under D18 (CAT-251). The organiser page's identity: a cover photo or ground, an 88px monogram over its foot, the name with an optional verified seal, a tag, the headline, a meta line, a stats line and the caller's actions. Search aliases: ProfileHero, OrganiserHeader, ClubHeader, IdentityHeader, BioHeader.",
+      "comparedWith": [
+        "catch.person_avatar",
+        "catch.detail_media",
+        "catch.text"
+      ],
+      "comparisonReason": "An organiser identity block that arranges a cover, a monogram avatar and copy; it is not itself an avatar, a detail media slot or a text role."
     },
     {
       "id": "shared_ground_card",
@@ -3733,7 +3658,11 @@
           "no-icon"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). One link in an organiser's link-in-bio list: an optional icon tile, title, subtitle, an optional owner stats line and an outward arrow; a pinned link takes an accent ground. A new-tab link carries rel noopener and a screen-reader note. Search aliases: LinkButton, LinkCard, LinkRow, BioLink, LinkInBio, LinkItem, LinktreeLink."
+      "notes": "Website T4 under D18 (CAT-249). One link in an organiser's link-in-bio list: an optional icon tile, title, subtitle, an optional owner stats line and an outward arrow; a pinned link takes an accent ground. A new-tab link carries rel noopener and a screen-reader note. Search aliases: LinkButton, LinkCard, LinkRow, BioLink, LinkInBio, LinkItem, LinktreeLink.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "One link-in-bio row with an optional icon tile and an outward arrow; its title and subtitle are CatchText roles inside the link."
     },
     {
       "id": "shared_rating_summary",
@@ -3761,7 +3690,11 @@
           "board-reference"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). An average rating in the displayXxl step over its star distribution: one coral bar per star count, scaled to the largest row and read by the caller's row label, with an optional policy note. Search aliases: RatingBreakdown, RatingHistogram, ReviewSummary, ScoreSummary, StarDistribution, RatingBars."
+      "notes": "Website T4 under D18 (CAT-249). An average rating in the displayXxl step over its star distribution: one coral bar per star count, scaled to the largest row and read by the caller's row label, with an optional policy note. Search aliases: RatingBreakdown, RatingHistogram, ReviewSummary, ScoreSummary, StarDistribution, RatingBars.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "An average over its star distribution with bars; the figures and note are CatchText roles, the bars are the part's own."
     },
     {
       "id": "shared_review_item",
@@ -3798,7 +3731,11 @@
           "board-reference-cards"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). One review as an article named by the reviewer: stars, a verification badge slot (Booked on Catch or Unverified), the text, the organiser's reply and a footer slot for Reply. The row recipe is the organiser page's hairline list; the card recipe is the event page's paper card. Search aliases: Review, ReviewCard, ReviewRow, Testimonial, CustomerReview, Comment."
+      "notes": "Website T4 under D18 (CAT-249). One review as an article named by the reviewer: stars, a verification badge slot (Booked on Catch or Unverified), the text, the organiser's reply and a footer slot for Reply. The row recipe is the organiser page's hairline list; the card recipe is the event page's paper card. Search aliases: Review, ReviewCard, ReviewRow, Testimonial, CustomerReview, Comment.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "One review with identity, stars, verification, text and reply; it arranges CatchText roles and is not a text role."
     },
     {
       "id": "shared_star_input",
@@ -3881,7 +3818,12 @@
           "placeholder"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile."
+      "notes": "Website T4 under D18 (CAT-249). A past moment: a graded photo under the detail-hero scrim (CatchHeroImage, the catch.detail_media twin) with white copy, or a ground when there is no photo, with an optional displayXl figure, a title and a caption at its foot. 220px tall, 170px below 840px. Nearest concept: catch.organizer_poster (CatchPoster), whose photo layout carries a kicker and a display title over the media; the v2 tile leads with a figure and a small title, so it is not a CatchPoster recipe. Search aliases: MomentTile, PhotoCard, StatTile, MediaTile, GalleryTile, HighlightTile.",
+      "comparedWith": [
+        "catch.detail_media",
+        "catch.text"
+      ],
+      "comparisonReason": "A past-moment tile that frames CatchHeroImage under a caption on a ground; it is neither the detail media slot nor a text role."
     },
     {
       "id": "shared_preview_card",
@@ -3915,7 +3857,12 @@
           "action"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-249). One link on a ground: a status-role label, a displayXs title and a meta line held to the foot, at least 150px tall (sized to its copy below 840px). The event page uses it for \"More from\" the organiser; the organiser page's \"Next up\" card is its feature size on ink, with a tag, a detail line and an action label (CAT-251). Nearest concepts: catch.event_card (EventCard, the app ticket with an activity backdrop and clock) and catch.organizer_poster (CatchPoster); the v2 card has no media, so it is neither. Search aliases: EventCard, EventTile, MoreCard, TeaserCard, SummaryCard, LinkCard."
+      "notes": "Website T4 under D18 (CAT-249). One link on a ground: a status-role label, a displayXs title and a meta line held to the foot, at least 150px tall (sized to its copy below 840px). The event page uses it for \"More from\" the organiser; the organiser page's \"Next up\" card is its feature size on ink, with a tag, a detail line and an action label (CAT-251). Nearest concepts: catch.event_card (EventCard, the app ticket with an activity backdrop and clock) and catch.organizer_poster (CatchPoster); the v2 card has no media, so it is neither. Search aliases: EventCard, EventTile, MoreCard, TeaserCard, SummaryCard, LinkCard.",
+      "comparedWith": [
+        "catch.text",
+        "catch.button"
+      ],
+      "comparisonReason": "A link card on a ground with a label, a display title, a detail line and an action label; the copy is CatchText roles and the action a static CatchButton inside one link, so it is neither a text role nor a button."
     },
     {
       "id": "shared_event_poster",

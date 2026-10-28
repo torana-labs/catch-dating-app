@@ -98,7 +98,8 @@ abstract final class CatchFieldTokens {
 
   static const double spinnerExtent = CatchSpacing.s4;
   static const double actionSpinnerExtent = 13;
-  static const Duration spinnerPeriod = Duration(milliseconds: 800);
+  static const Duration spinnerPeriod =
+      GeneratedCatchMotionTokens.spinnerPeriod;
 
   static const double focusRingWidth = CatchStroke.focusRing;
   static const double focusRingOffset = CatchSpacing.micro2;

@@ -488,7 +488,7 @@ export const OrganizerListing: Story = {
     catchComponent: {
       id: "route_organizer_listing",
       routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["claimable-unclaimed", "missing-evidence", "listing-reviews"],
+      states: ["generated-from-listing", "claim-pitch"],
     },
   },
   render: () => (

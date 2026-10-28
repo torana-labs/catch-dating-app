@@ -473,6 +473,7 @@ abstract final class GeneratedCatchMotionTokens {
   static const Duration pageStep = Duration(milliseconds: 280);
   static const Duration calendarScroll = Duration(milliseconds: 320);
   static const Duration slow = Duration(milliseconds: 420);
+  static const Duration spinnerPeriod = Duration(milliseconds: 800);
   static const Curve standardCurve = Cubic(0.2, 0.0, 0.0, 1.0);
   static const Curve springCurve = Cubic(0.34, 1.4, 0.64, 1.0);
 }

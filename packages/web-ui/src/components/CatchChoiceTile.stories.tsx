@@ -19,7 +19,15 @@ function States() {
       subtitle="The entire explanation stays inside the checked target without truncation or a separate nested action." onTap={noop} />
   </div></CatchGap>;
 }
-export const Contract: Story = {render: () => <><States /><div data-catch-theme="dark" style={{background: "var(--catch-theme-bg)"}}><States /></div></>};
+// Contract states: default, selected and disabled-by-null-action in each theme; the play
+// moves keyboard focus onto the first tile for the focused state.
+export const Contract: Story = {
+  render: () => <><States /><div data-catch-theme="dark" style={{background: "var(--catch-theme-bg)"}}><States /></div></>,
+  play: async ({canvasElement}) => {
+    await userEvent.tab();
+    await expect(within(canvasElement).getAllByRole("radio", {name: /Public activity/})[0]).toHaveFocus();
+  },
+};
 export const Unselected: Story = {render: (args) => <div role="radiogroup" aria-label="Visibility"><CatchChoiceTile {...args} /></div>};
 export const Selected: Story = {args: {selected: true}, render: Unselected.render};
 export const Disabled: Story = {args: {onTap: null}, render: Unselected.render};

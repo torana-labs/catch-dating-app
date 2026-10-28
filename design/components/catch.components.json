@@ -9378,6 +9378,23 @@
           "CatchChoiceTile"
         ]
       },
+      "react": {
+        "symbol": "CatchChoiceTile",
+        "file": "packages/web-ui/src/components/CatchChoiceTile.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchChoiceTile.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "selected",
+            "focused",
+            "disabled-by-null-action"
+          ]
+        },
+        "notes": "One checked choice drawn as a tile: a button with role radio and aria-checked, its title and subtitle naming and describing it. The caller groups tiles in role radiogroup with a label. A null onTap disables the tile, as in Flutter."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -9423,7 +9440,7 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?",
-            "tsType": "() => void"
+            "tsType": "(() => void) | null"
           }
         ],
         "states": [

@@ -43,6 +43,7 @@ import {
   publicAdmissionId,
 } from "./paymentLedger";
 import {assertPublicPaidAdmission} from "./admissionProof";
+import {prepareCatchBookingAdmission} from "./catchBookingBridge";
 
 type Result = "admitted" | "refundPending" | "unchanged";
 /** Only the provider processor may establish captured state. Its current,
@@ -183,6 +184,15 @@ export async function finalizePublicPayment(input: {
         },
         resolveIdentity: async () => guest.identity,
       });
+      // Reads before the first write: a Catch user's paid admission is also
+      // the Consumer booking edge, so the app shows and cancels this seat.
+      const catchBooking = await prepareCatchBookingAdmission({
+        db,
+        tx,
+        eventId,
+        uid,
+        paymentId,
+      });
       const now = Timestamp.fromMillis(nowMillis);
       const existing = guest.existing;
       const displayName = existing?.displayName ?? p.displayName;
@@ -253,6 +263,7 @@ export async function finalizePublicPayment(input: {
       tx.set(guest.attendeeRef, attendee);
       tx.update(db.collection("events").doc(eventId), {
         bookedCount: ledger.occupied + 1,
+        ...catchBooking?.eventCounts(event),
       });
       if (!draft.exists) {
         tx.create(
@@ -261,6 +272,7 @@ export async function finalizePublicPayment(input: {
         );
       }
       tx.create(receiptRef, receipt);
+      catchBooking?.apply(event);
       tx.update(paymentRef, {
         status: "admitted",
         admissionReceiptId: receiptId,

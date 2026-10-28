@@ -6,6 +6,7 @@ import {cache} from "react";
 import {activeEventLiveCities} from "../content/markets";
 import type {PublicCatalog} from "../app/next/publicCatalogTypes";
 import type {LivePublicCatchEvent} from "../features/organizers/publicCatchEventProjection";
+import {organizerPageRecord} from "../features/organizers/organizerPage";
 import type {HostListing} from "../features/organizers/types";
 import {withinReadDeadline, type PublicReader} from "./repositories/publicReader";
 import {
@@ -78,8 +79,8 @@ export interface PublicOrganizerDetail {
 }
 
 /**
- * One organizer page from its read model: one document holds the listing,
- * its events and reviews, and the recommendation rail. Until every
+ * One organizer page from its read model: one document holds the page the
+ * organiser route renders, with the listing its routing and metadata read. Until every
  * environment is backfilled (functions/scripts/backfill-public-pages.cjs
  * --check), a page without a read model is assembled from its sources under
  * the same publication rules, so a withdrawn page stays withdrawn either way.
@@ -91,7 +92,8 @@ export async function assembleOrganizerDetailCatalog(
     const read = await findOrganizerPage(db, pathname);
     if (read) {
       const listings = organizerPageListings(read.page, readAt);
-      return {catalog: {listings, readAt}, route: {listing: listings[0], isLegacyPath: read.isLegacyPath}};
+      return {catalog: {listings, readAt, organizerPage: organizerPageRecord(read.page, readAt)},
+        route: {listing: listings[0], isLegacyPath: read.isLegacyPath}};
     }
     return assembleOrganizerDetailFromSources(db, pathname, readAt);
   })());
