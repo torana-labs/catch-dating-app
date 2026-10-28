@@ -60,6 +60,14 @@ updates:
         update-types:
           - "minor"
           - "patch"
+        # Grouped pub updates pull in the FlutterFire 5 majors despite the
+        # ignore rules below, so these leave the group until CAT-281 lands.
+        exclude-patterns:
+          - "firebase_*"
+          - "cloud_firestore*"
+          - "cloud_functions*"
+          - "fake_cloud_firestore"
+          - "firebase_auth_mocks"
     ignore:
       - dependency-name: "*"
         update-types:
