@@ -46,11 +46,6 @@
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .listing-review-workspace {
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.52fr);
-    align-items: start;
-  }
-
   .claim-request-form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -83,14 +78,6 @@
 @media (max-width: 520px) {
   :root {
     --website-gutter: 32px;
-  }
-
-  .listing-review-summary {
-    grid-template-columns: 1fr;
-  }
-
-  .listing-review-summary > a {
-    min-width: 0;
   }
 
   .listing-review-empty {

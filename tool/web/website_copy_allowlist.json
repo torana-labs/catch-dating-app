@@ -107,11 +107,6 @@
       "file": "website/src/shared/ui/primitives/organizer2.tsx",
       "text": "Source",
       "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
-      "file": "website/src/shared/ui/primitives/organizer3.tsx",
-      "text": "${review.rating} out of 5 stars",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
     }
   ]
 }

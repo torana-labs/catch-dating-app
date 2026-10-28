@@ -1,7 +1,8 @@
-import {ConsumerEventPage} from "../shared/ui/primitives/consumerEvent";
+import {CatchBand, CatchSplit} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {EventDetailHeroSection, EventDetailFactsSection} from "../features/events/sections/EventDetailSections";
-import {catchEventDetailFixture} from "./fixtures/eventDetails";
+import {buildEventPageView} from "../features/events/eventPageModel";
+import {EventBookingCard} from "../features/events/sections/EventPageSections";
+import {eventPageFixtureNow, fullEventPage} from "./fixtures/eventPages";
 import {demoEventId} from "./fixtures/demoWorld";
 import {GuestEventEntryView} from "../features/events/GuestEventEntry";
 const noop = () => undefined;
@@ -11,7 +12,6 @@ const controller = {user: null, phone: "", setPhone: noop, code: "", setCode: no
   refresh: async () => ({}), changePhone: noop, changeAccount: async () => undefined,
 } as unknown as Parameters<typeof GuestEventEntryView>[0]["controller"];
 const meta = {title: "Events/Guest entry", component: GuestEventEntryView,
-  decorators: [(Story) => <ConsumerEventPage><Story /></ConsumerEventPage>],
   parameters: {a11y: {test: "error"}},
   args: {eventId: demoEventId, controller},
 } satisfies Meta<typeof GuestEventEntryView>;
@@ -28,15 +28,20 @@ export const GuestStatus: Story = {parameters: {
 export const Unavailable: Story = {args: {controller: {...controller,
   user: {uid: "preview", phoneNumber: "+919000000000"}, error: true} as typeof controller}};
 
-const invitation = {title: catchEventDetailFixture.title, price: catchEventDetailFixture.priceLabel};
+// Each guest state in the event page's booking card.
+const view = buildEventPageView(fullEventPage, eventPageFixtureNow);
+const invitation = {title: view.title, price: view.priceLabel};
 function invitationState(action?: string, extra = {}) {
   const value = action ? {...controller, user: {uid: "preview", phoneNumber: "+919000000000"},
     viewer: {guest: {action, expiresAtMillis: 9e12, ...extra}}} as typeof controller : controller;
-  return <><EventDetailHeroSection event={catchEventDetailFixture}
-    guestEntry={<GuestEventEntryView eventId={demoEventId} controller={value} invitation={invitation} />} />
-    <EventDetailFactsSection event={catchEventDetailFixture} /></>;
+  return <CatchBand as="main" pt="compact"><CatchSplit end={<EventBookingCard
+    catchEntry={<GuestEventEntryView eventId={demoEventId} controller={value} invitation={invitation} />}
+    externalAction={(button) => button} onExternalClick={noop} view={view} />} railSide="end" ratio="narrowRail" start={null} /></CatchBand>;
 }
-export const Invitation: Story = {render: () => invitationState()};
+export const Invitation: Story = {parameters: {
+  catchComponent: {id: "shared_event_booking_controls", routeIds: ["event_detail_canonical"],
+    states: ["catch-native", "guest-states", "mobile-sticky-action"]}},
+render: () => invitationState()};
 export const ApprovalRequired: Story = {render: () => invitationState("apply", {publicFormId: "preview-form"})};
 export const ApprovalPending: Story = {render: () => invitationState("applicationPending")};
 export const ApprovedAwaitingOffer: Story = {render: () => invitationState("awaitingOffer")};
@@ -45,6 +50,3 @@ export const SeatWaitlisted: Story = {render: () => invitationState("seatWaitlis
 export const ConfirmedWithRuntime: Story = {render: () => invitationState("registered", {runtimeId: "preview-runtime"})};
 export const PaymentRecovery: Story = {render: () => invitationState("recoverPayment", {publicPaymentId: "preview-payment"})};
 export const RegistrationClosed: Story = {render: () => invitationState("closed")};
-export const SparseEvent: Story = {render: () => <><EventDetailHeroSection event={{...catchEventDetailFixture,
-  photoUrl: null, itinerary: [], summary: "", accessibility: "", requirements: "", locationDetails: "", priceLabel: "Free"}} />
-  <EventDetailFactsSection event={{...catchEventDetailFixture, itinerary: [], summary: "", accessibility: "", requirements: ""}} /></>};

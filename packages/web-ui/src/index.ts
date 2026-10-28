@@ -65,6 +65,8 @@ export {ClubPlaceholderCover} from "./components/ClubPlaceholderCover";
 export type {ClubPlaceholderCoverProps} from "./components/ClubPlaceholderCover";
 export {EventBackdropImage} from "./components/EventBackdropImage";
 export type {EventBackdropImageProps} from "./components/EventBackdropImage";
+export {CatchEventPoster} from "./components/CatchEventPoster";
+export type {CatchEventPosterProps} from "./components/CatchEventPoster";
 export {EventThumbnail} from "./components/EventThumbnail";
 export type {EventThumbnailProps} from "./components/EventThumbnail";
 export {MapPreview} from "./components/MapPreview";

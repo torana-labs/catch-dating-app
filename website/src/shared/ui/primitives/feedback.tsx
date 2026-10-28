@@ -11,8 +11,7 @@ export type EmptyStateVariant =
   | "default"
   | "listing-review"
   | "organizer-results"
-  | "public-event"
-  | "review-signal-lane";
+  | "public-event";
 
 export interface MarketingConsentBannerShellProps
   extends Omit<HTMLAttributes<HTMLElement>, "children"> {
@@ -222,5 +221,4 @@ export const emptyStateClassNames: Record<EmptyStateVariant, string | null> = {
   "listing-review": "listing-review-empty",
   "organizer-results": "empty-results",
   "public-event": "public-event-empty",
-  "review-signal-lane": "review-signal-lane__empty",
 };

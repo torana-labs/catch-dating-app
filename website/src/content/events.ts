@@ -216,3 +216,94 @@ export const approvalNotificationCopy = {
   verificationSent: "Check your email for the verification link, then return here and refresh. Email updates remain off until you select and save them.",
   verifyFirst: "Verify an email on this account to enable email updates.",
 } as const;
+
+/**
+ * The event page (CAT-252). Imported events carry only title, time, place,
+ * price and description, so every other section has a quiet absence.
+ * Refund windows match functions/src/events/eventPolicy.ts.
+ */
+export const eventPageCopy = {
+  back: (organizer: string) => `Back to ${organizer}`,
+  /** Replaces the old default title of a mixer, as the read model does (CAT-247). */
+  hostedEvent: "Hosted event",
+  share: "Share",
+  shareCopied: "Link copied",
+  shareFailed: "Couldn’t copy the link. Copy it from the address bar.",
+  hostedBy: "Hosted by",
+  verified: "Verified organiser",
+  rating: (rating: string, count: number) => `${rating} ★ from ${count} ${count === 1 ? "review" : "reviews"}`,
+  importedKind: (activity: string, source: string) => `${activity} · imported from ${source}`,
+  photoAlt: (title: string) => `Photo for ${title}`,
+  facts: {when: "When", where: "Where", price: "Price"},
+  timeRange: (start: string, end: string) => `${start} to ${end}`,
+  perPerson: "Per person",
+  ticketsOn: (source: string) => `Tickets on ${source}`,
+  moments: {
+    label: "Coming on your own?",
+    title: "You won’t be standing around.",
+    introductions: {
+      title: "A first hello",
+      body: "Your host makes introductions at the start, so you have an easy reason to say hello.",
+    },
+    sharedActivities: {
+      title: "Something to do together",
+      body: "The activity gives every conversation a starting point, even if you arrive knowing nobody.",
+    },
+  },
+  plan: {morning: "The plan for the morning", afternoon: "The plan for the afternoon", evening: "The plan for the evening", day: "The plan"},
+  offset: (minutes: number) => minutes === 0 ? "Start" : `+${minutes} min`,
+  distance: (kilometres: string) => `${kilometres} km`,
+  where: {
+    title: "Where",
+    openMaps: "Open in Google Maps",
+    mapAlt: (place: string) => `Map of ${place}`,
+    externalNote: (source: string) => `The exact meeting point is on the ${source} page.`,
+  },
+  goodToKnow: {
+    title: "Good to know",
+    included: "What’s included",
+    bring: "What to bring",
+    accessibility: "Accessibility",
+    cancellation: "Cancellation",
+    joining: "How to join",
+  },
+  joining: {
+    approval: "The organiser reviews requests before confirming places.",
+    invitation: "You need an invitation or access code.",
+    membership: "This event is for the organiser’s members.",
+  },
+  cancellation: {
+    flexible: "Full refund if you cancel at least 6 hours before the start.",
+    standard: "Full refund if you cancel at least 24 hours before the start.",
+    strict: "Full refund if you cancel at least 72 hours before the start.",
+  },
+  going: {
+    title: (going: number, left: number) => `${going} going · ${left} ${left === 1 ? "spot" : "spots"} left`,
+    full: (going: number) => `${going} going · full`,
+    privacy: "Guest names stay private.",
+    waitlist: "Guest names stay private. You can join the waitlist when you book.",
+  },
+  organizer: {
+    see: "See their page",
+    followers: (count: string) => `${count} followers`,
+    upcoming: (count: number) => `${count} upcoming ${count === 1 ? "event" : "events"}`,
+    summary: (category: string, city: string) => city ? `${category} in ${city}` : category,
+  },
+  reviews: {
+    title: "What people say",
+    note: (organizer: string) => `About ${organizer}, from their page`,
+    verified: "Booked on Catch",
+    unverified: "Unverified",
+    stars: (rating: number) => `${rating} out of 5`,
+    replied: "replied:",
+  },
+  more: {
+    title: (organizer: string) => `More from ${organizer}`,
+    onCatch: "On Catch",
+  },
+  booking: {
+    externalNote: (source: string) => `Tickets for this event are sold on ${source}. You’ll finish booking there.`,
+    externalAction: (source: string) => `Get tickets on ${source}`,
+    closed: "Booking is closed for this event.",
+  },
+} as const;
