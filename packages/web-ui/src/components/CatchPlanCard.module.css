@@ -1,0 +1,68 @@
+/*
+ * Website v2 plan card (CAT-260): a white raised card, 170px media above the
+ * copy. Below 840px it turns into a row with a 112px media column.
+ */
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: calc(var(--catch-radius-lg) * 1.1);
+  background: var(--catch-palette-white);
+  box-shadow: var(--catch-elevation-card);
+  color: var(--catch-palette-ink);
+  text-decoration: none;
+  transition: box-shadow var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.card:hover {
+  box-shadow: var(--catch-elevation-raised);
+}
+
+.card:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-palette-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.media {
+  display: block;
+  flex: none;
+  height: 170px;
+  overflow: hidden;
+}
+
+.body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--catch-space-micro6);
+  min-width: 0;
+  padding: var(--catch-space-s4);
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--catch-space-s2);
+  margin-top: auto;
+  padding-top: var(--catch-space-s2);
+}
+
+@container catch-page (width < 840px) {
+  .card {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .media {
+    width: 112px;
+    height: auto;
+    min-height: 124px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}

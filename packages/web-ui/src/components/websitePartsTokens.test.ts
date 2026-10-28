@@ -12,6 +12,9 @@ const tokens = read("../../../web-config/generated/catch-tokens.css");
 const parts = [
   "CatchDateTile", "CatchLinkTile", "CatchQrCode", "CatchRatingSummary", "CatchReviewItem", "CatchStarInput",
   "CatchStarRating", "CatchStoreButton",
+  // The homepage parts (CAT-260).
+  "CatchDeviceFrame", "CatchFormatTile", "CatchHeroShowcase", "CatchOrganizerCard", "CatchPlanCard",
+  "CatchSiteFooter", "CatchSiteHeader",
 ];
 const sheets: Record<string, string> = Object.fromEntries([
   ...parts.map((name) => [name, strip(read(`./${name}.module.css`))]),
