@@ -28,7 +28,7 @@ on:
       - "tool/ci/package_web_hosting.mjs"
       - "tool/env/check_web_hosting_env.mjs"
       - "tool/firebase/check_client_callable_dependencies.mjs"
-      - "tool/firebase/firebase_project_resolver.mjs"
+      - "tool/lib/firebase_project.mjs"
       - "tool/firebase_with_env.sh"
       - "tool/design/check_component_lexicon.mjs"
       - "tool/web/check_shared_web_ui_adoption.mjs"

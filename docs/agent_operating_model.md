@@ -1,7 +1,7 @@
 ---
 doc_id: agent_operating_model
-version: 3.7.0
-updated: 2026-10-23
+version: 3.8.0
+updated: 2026-10-29
 owner: agent_operating_model
 status: active
 ---
@@ -107,7 +107,13 @@ commit, not a downloaded/generated snapshot whose origin or completeness is
 unverified. If push is unavailable, retain the commit and report the exact
 publication barrier to the integration owner. Every ready PR runs CI without
 the queue-only macOS and app-build lanes, and the merge queue validates the
-combined source with every lane before `main` moves. A
+combined source with every lane before `main` moves. When a task's PR is
+ready, its owner turns on auto-merge (`gh pr merge --auto` or the equivalent
+API call) in the same step that marks it ready: GitHub queues it once Required
+CI passes and the merge queue lands it after its own run, so no one clicks
+merge. A draft is the only hold: keep a PR in draft while it still waits on
+owner input, a live-provider gate or another PR, and say which. Do not turn on
+auto-merge for a PR you did not open unless its owner asks. A
 draft intentionally skips CI until it is marked ready: report the draft state as
 the blocker, give the integration owner the readiness action, and do not call
 the skipped lanes test failures. A disconnected
@@ -467,8 +473,9 @@ and connected task tooling, only within the user's authorized scope:
 1. Move work from **Ready for execution** into execution with an agreed outcome,
    scope, and acceptance criteria; use the guarded task worktree.
 2. When publication is authorized, open or update the PR, complete its required
-   reviews and CI gates against the exact head, and obtain any required merge
-   approval. For a batch, retain each task's commit, acceptance criteria,
+   reviews and CI gates against the exact head, and turn on auto-merge when it
+   is ready; obtain a separate merge approval only where branch protection or
+   the owner requires one. For a batch, retain each task's commit, acceptance criteria,
    focused test results, and independent revert mapping in the existing PR/task
    tooling. If squash is required, map each task to its incorporated paths and
    behavior in the squash commit and record how to revert that task safely.

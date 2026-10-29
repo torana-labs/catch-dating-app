@@ -6,7 +6,7 @@ import test from "node:test";
 import {
   isFirebaseProductionTarget,
   resolveFirebaseProjectId,
-} from "./firebase_project_resolver.mjs";
+} from "./firebase_project.mjs";
 
 test("resolveFirebaseProjectId reads project aliases from .firebaserc", () => {
   const firebaseRcPath = writeFirebaseRc({

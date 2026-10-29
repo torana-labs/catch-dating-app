@@ -200,6 +200,47 @@ test("listings run through the workflow as review-only work items that satisfy t
     {code: "CANONICAL_PROJECTION_INVALID"});
 });
 
+test("a listing that duplicates a listed organizer is flagged for the reviewer, never blocked", async () => {
+  const source = await staticSource({
+    "https://luma.com/1dfd73wq": page("luma-event"),
+    "https://luma.com/blrdroid": page("luma-organizer"),
+  });
+  const gathered = await gatherIntakeEvidence({request: request(), pageSource: source, now: NOW});
+  const unchecked = buildIntakeListing({request: request(), gathered, now: NOW});
+  assert.equal("duplicateCheck" in unchecked, false, "no inventory, no check");
+
+  const fresh = buildIntakeListing({request: request(), gathered, now: NOW,
+    existingOrganizers: [{organizerId: "org-other", name: "Pune Photowalks", markets: ["pune"]}]});
+  assert.equal(fresh.duplicateCheck.verdict, "none");
+  assert.equal(fresh.gaps.includes("possible_duplicate_organizer"), false);
+
+  const listing = buildIntakeListing({request: request(), gathered, now: NOW, existingOrganizers: [
+    {organizerId: "org-blrdroid", name: "BLR Droid", markets: ["bengaluru"], links: ["https://lu.ma/calendar/blrdroid"]},
+    {organizerId: "org-other", name: "Pune Photowalks", markets: ["pune"]},
+  ]});
+  assert.equal(listing.duplicateCheck.verdict, "match");
+  assert.equal(listing.duplicateCheck.authority, "advisory");
+  assert.deepEqual(listing.duplicateCheck.candidates.map((candidate) => candidate.organizerId), ["org-blrdroid"]);
+  assert.ok(listing.duplicateCheck.candidates[0].signals.includes("shared_identity_key"));
+  assert.ok(listing.gaps.includes("possible_duplicate_organizer"));
+  assert.equal(listing.researchNeeded, false, "research cannot close a duplicate question");
+  assert.notEqual(listing.contentHash, unchecked.contentHash);
+
+  const workflow = new SupplyIntakeWorkflow({inputSnapshotLoader: async () => intakeInputSnapshot({listing})});
+  const plan = await workflow.createPlan({market: "bengaluru", through: "2026-12-31", now: NOW});
+  const store = await new FileOperationsStore(await temporaryDirectory("catch-ops-dedupe-")).initialize();
+  const {run} = await new OperationsEngine({store, workflow, clock, workerId: "dedupe-test"}).start(plan);
+  const items = await store.listWorkItems({runId: run.runId});
+  const listingItem = items.find((item) => item.adminProjection?.recordType === "organizer_listing_draft");
+  assert.equal(listingItem.primaryStage, "verify");
+  assert.deepEqual(listingItem.blockers, []);
+  assert.ok(listingItem.taskFlags.includes("possible_duplicate"));
+  assert.ok(listingItem.adminProjection.listing.gaps.includes("possible_duplicate_organizer"));
+  const projection = buildAdminProjection(await store.requireRun(run.runId), items,
+    await store.listActions(run.runId), await store.listCheckpoints(run.runId));
+  await validateCanonicalProjection({repoRoot: REPO_ROOT, projection, requireContracts: true});
+});
+
 test("live page fetching stays off until policy, an accepted decision and ledgers allow it", async () => {
   // The shipped policy cites the owner's accepted decision (CAT-266) within caps.
   const shipped = await loadSupplyAcquisitionPolicy();
