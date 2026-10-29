@@ -6,9 +6,8 @@ and run tools by stable id instead of memorizing file paths.
 
 Durable business workflows do not belong here. Resumable workflow runs, work
 items, leases, budgets, agent decisions, and receipts live in `operations/` and
-are governed by `docs/operations_platform.md`. Organizer-intake remains a
-bounded reviewed-migration utility and event-guide remains a Marketing
-packager; neither is a Supply Intake runtime input. Stable workflow checks remain discoverable through
+are governed by `docs/operations_platform.md`; the retired organizer-intake and
+event-guide trees must not return. Stable workflow checks remain discoverable through
 `operations:boundaries` and `operations:workflow-manifest` in
 `tools_manifest.json`. `remote_ops_manifest.json` remains the separate inventory
 for commands that can touch external systems.

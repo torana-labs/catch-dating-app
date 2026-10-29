@@ -80,8 +80,7 @@
     {"path": "codex_audit", "scope": "evidence", "reason": "Retired root audit residue"},
     {"path": ".audit_work", "scope": "evidence", "reason": "Temporary audit workspace"},
     {"path": "test/goldens/failures", "scope": "evidence", "reason": "Failed golden diff output", "retentionDays": 14},
-    {"path": "docs/visual_references", "scope": "evidence", "reason": "Review evidence older than retention", "retentionDays": 14, "contentsOnly": true},
-    {"path": "tool/organizer_intake/raw_artifacts", "scope": "evidence", "reason": "Raw intake evidence older than retention", "retentionDays": 14, "contentsOnly": true}
+    {"path": "docs/visual_references", "scope": "evidence", "reason": "Review evidence older than retention", "retentionDays": 14, "contentsOnly": true}
   ],
   "protectedPaths": [".git", ".claude", ".env", ".env.local", "firebase", "tool/env", "tool/ci/toolchain.env"]
 }

@@ -354,7 +354,7 @@ jobs:
           - name: contracts-data
             categories: contracts data demo firebase operations
           - name: platform-env
-            categories: env platform generator
+            categories: env platform generator cloudflare
           - name: marketing-design
             categories: marketing ui-capture design analytics
           - name: organizer-intake
