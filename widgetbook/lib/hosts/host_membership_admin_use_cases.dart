@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_admin.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/hosts/domain/host_membership_admin.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_membership_rules_section.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_event_membership_rules_controller.dart';

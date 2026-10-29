@@ -1,5 +1,3 @@
-import 'package:catch_dating_app/contexts/payments/payments.dart';
-
 /// Auth-scoped observation from the canonical viewer read. It never grants a
 /// reservation; each booking command rechecks its own current authority.
 enum EventViewerMembership { notRequired, none, active, revoked, unavailable }
@@ -100,8 +98,10 @@ final class EventViewerState {
   final String? policyHash;
   final int? inventoryRevision, capacityRevision, migrationRevision;
 
-  /// Paid host membership facts; null when the server omitted them.
-  final EventHostMembershipFacts? hostMembership;
+  /// The server's paid host membership facts for this event, unparsed; null
+  /// when it omitted them. The payments context owns their shape, so the
+  /// event screen parses them with `EventHostMembershipFacts.fromMap`.
+  final Map<Object?, Object?>? hostMembership;
 
   bool get hasAdmission => admission != EventViewerAdmission.none;
   bool get canBook => allowed && route != EventViewerRoute.catchWaitlistOffer;
@@ -176,11 +176,7 @@ final class EventViewerState {
       inventoryRevision: _integerOrNull(basis['inventoryRevision']),
       capacityRevision: _integerOrNull(basis['capacityRevision']),
       migrationRevision: _integerOrNull(basis['migrationRevision']),
-      hostMembership: hasMembershipFacts
-          ? EventHostMembershipFacts.fromMap(
-              _object(v['hostMembership'], EventHostMembershipFacts.keys),
-            )
-          : null,
+      hostMembership: hasMembershipFacts ? _map(v['hostMembership']) : null,
     );
   }
 }
@@ -192,6 +188,11 @@ Map<Object?, Object?> _object(Object? value, Set<String> keys) {
     throw const FormatException('Invalid event viewer object');
   }
   return Map<Object?, Object?>.from(value);
+}
+
+Map<Object?, Object?> _map(Object? value) {
+  if (value is! Map) throw const FormatException('Invalid event viewer object');
+  return Map<Object?, Object?>.unmodifiable(value);
 }
 
 T _enum<T extends Enum>(Object? value, List<T> values) => values.firstWhere(

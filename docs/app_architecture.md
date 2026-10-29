@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.91.0
+version: 1.91.1
 updated: 2026-10-29
 owner: app_architecture
 status: active
@@ -312,7 +312,7 @@ when this table and the map disagree.
 | 4 | `formats` | What each format is and how it is set up: playbooks, modules, structures, questionnaires, activity profiles and the default settings an organiser or event picks. |
 | 5 | `events` | Events, schedules, venues and event policies. |
 | 6 | `organizers` | Organisers, their team and roles, organiser pages, follows and claims. |
-| 7 | `payments` | Guest payments, refunds, an organiser's Razorpay connection and the Catch bill. |
+| 7 | `payments` | Guest payments, refunds, an organiser's Razorpay connection, paid organiser memberships and the Catch bill. |
 | 8 | `bookings` | Bookings, waitlists, tickets, the door, attendance and guest lists. |
 | 9 | `reviews` | Ratings after an event. |
 | 10 | `audience` | The people a host knows: groups, tags, notes and imports. |

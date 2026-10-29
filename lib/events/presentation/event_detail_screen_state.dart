@@ -224,7 +224,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
     currentViewer: currentViewer,
     mutationState: mutationState,
   );
-  final facts = currentViewer?.hostMembership;
+  final facts = _membershipFacts(currentViewer?.hostMembership);
   if (!state.visible ||
       facts == null ||
       currentViewer!.hasAdmission ||
@@ -719,4 +719,15 @@ String? _hostMeta(Club club, AppLocalizations l10n) {
     );
   }
   return parts.isEmpty ? null : parts.join(' · ');
+}
+
+/// Parses the viewer's membership facts. Malformed facts show no membership
+/// offer; the server rechecks entitlement on every booking.
+EventHostMembershipFacts? _membershipFacts(Map<Object?, Object?>? raw) {
+  if (raw == null) return null;
+  try {
+    return EventHostMembershipFacts.fromMap(raw);
+  } on FormatException {
+    return null;
+  }
 }
