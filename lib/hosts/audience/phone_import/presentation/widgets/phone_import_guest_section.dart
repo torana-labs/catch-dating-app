@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/programmes/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

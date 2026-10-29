@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_editor.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_test/flutter_test.dart';

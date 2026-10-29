@@ -88,7 +88,9 @@ const personTone = (name: string) => [...name].reduce((sum, character) => sum + 
 /**
  * Flutter's `CatchAvatar`: a photo or initials in a circle or square, with an
  * optional ring and online dot, plus the count, veiled and monogram recipes.
- * Avatars are decorative: the name beside them carries the identity.
+ * Avatars are decorative: the name beside them carries the identity. Initials
+ * are drawn from CSS so they stay out of the visible text of a control an
+ * avatar sits in, which must match that control's name (axe-core 4.14).
  */
 export function CatchAvatar(props: CatchAvatarProps) {
   const [failed, setFailed] = useState<string | null>(null);
@@ -124,7 +126,7 @@ export function CatchAvatar(props: CatchAvatarProps) {
       const label = props.initials ?? catchAvatarInitialsOf(props.name ?? "");
       // D19: initials of 24px and up take the display voice.
       const display = (props.size - borderWidth * 2) * personInitialsScale >= displayMinimumSize;
-      surface = <span className={styles.monogram} data-display={display || undefined} data-ground={props.ground}>{label}</span>;
+      surface = <span className={styles.monogram} data-display={display || undefined} data-ground={props.ground} data-initials={label} />;
       break;
     }
     default: {
@@ -134,12 +136,11 @@ export function CatchAvatar(props: CatchAvatarProps) {
         <span
           className={styles.activity}
           data-dim={props.dim || undefined}
+          data-initials={label}
           style={{"--catch-avatar-accent": props.colors.accent, "--catch-avatar-deep": props.colors.deep} as CSSProperties}
-        >
-          {label}
-        </span>
+        />
       ) : (
-        <span className={styles.person} style={{"--catch-avatar-tone": personTone(name)} as CSSProperties}>{label}</span>
+        <span className={styles.person} data-initials={label} style={{"--catch-avatar-tone": personTone(name)} as CSSProperties} />
       );
       const photo = props.imageUrl && failed !== props.imageUrl ? props.imageUrl : null;
       surface = photo

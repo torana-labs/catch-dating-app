@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 NotificationsListState buildNotificationsListState({

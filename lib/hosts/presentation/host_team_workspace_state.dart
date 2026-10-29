@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 
 final class HostTeamWorkspaceState {
   const HostTeamWorkspaceState({

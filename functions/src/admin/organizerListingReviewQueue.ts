@@ -33,9 +33,10 @@ const defaultDeps: ListingReviewDeps = {
 /**
  * One page of listings Supply Intake built that staff have not approved yet,
  * newest first, each with what a reviewer needs to approve it: the listing's
- * evidence-backed fields and links, its gaps, how many pages were read, and
- * the content hash approval must quote. A request whose listing cannot be read
- * is counted, not shown.
+ * evidence-backed fields and links, its gaps, how many pages were read, how
+ * it compares with the organizers Catch already lists, and the content hash
+ * approval must quote. A request whose listing cannot be read is counted, not
+ * shown.
  */
 export async function adminListOrganizerListingReviewsHandler(
   request: CallableRequest<unknown>,
@@ -129,6 +130,33 @@ async function reviewRow(db: FirebaseFirestore.Firestore, requestId: string,
       pageCount: pages.length,
       fetchedPageCount: pages.filter((page) => page?.outcome === "fetched").length,
     },
+    // Only the check recorded with this very build: a request's result and its
+    // listing work item agree on the contentHash the reviewer will approve.
+    duplicateCheck: result.listingContentHash === listing.contentHash ? duplicateCheckRow(result.duplicateCheck) : null,
+  };
+}
+
+const VERDICTS = new Set(["match", "ambiguous", "none"]);
+const BANDS = new Set(["match", "probable", "review", "low"]);
+
+function duplicateCheckRow(value: unknown): Row["duplicateCheck"] {
+  const check = recordValue(value);
+  const inventory = recordValue(check?.inventory);
+  if (!check || !inventory || !VERDICTS.has(String(check.verdict)) || !Array.isArray(check.candidates)) return null;
+  return {
+    verdict: check.verdict as NonNullable<Row["duplicateCheck"]>["verdict"],
+    organizersCompared: nonNegative(check.organizersCompared),
+    citySlug: text(inventory.citySlug, 80),
+    truncated: inventory.truncated === true,
+    candidates: check.candidates.flatMap((entry) => {
+      const candidate = recordValue(entry);
+      const score = Number(candidate?.score);
+      if (!candidate || typeof candidate.organizerId !== "string" || !candidate.organizerId ||
+          !Number.isFinite(score) || score < 0 || score > 1 || !BANDS.has(String(candidate.band))) return [];
+      return [{organizerId: candidate.organizerId.slice(0, 200), name: text(candidate.name, 500), score,
+        band: candidate.band as NonNullable<Row["duplicateCheck"]>["candidates"][number]["band"],
+        rationale: typeof candidate.rationale === "string" ? candidate.rationale.slice(0, 2000) : ""}];
+    }).slice(0, 12),
   };
 }
 

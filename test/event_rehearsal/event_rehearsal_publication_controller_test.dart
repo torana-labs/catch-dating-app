@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_publication.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_destination.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_publication.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_editor.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

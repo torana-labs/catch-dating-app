@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 
 /// Minimum club rating that counts as "high rated" for the Explore filters.

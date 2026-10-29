@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

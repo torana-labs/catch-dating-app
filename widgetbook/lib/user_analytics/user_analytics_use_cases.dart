@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/insights/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
-import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:catch_dating_app/user_analytics/shared/user_analytics_section.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

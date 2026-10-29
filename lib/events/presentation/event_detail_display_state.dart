@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:flutter/foundation.dart';
 
 enum EventDetailCompanionStatus { hidden, loading, available, error }

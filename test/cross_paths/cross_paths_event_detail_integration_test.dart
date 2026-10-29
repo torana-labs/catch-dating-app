@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
-import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/connections/data/cross_paths_repository.dart';
+import 'package:catch_dating_app/contexts/connections/domain/cross_paths_event_consent.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
-import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

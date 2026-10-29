@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/phone_contact_picker.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/phone_contact.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/phone_import_batch.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/data/phone_contact_picker.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_batch.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_review_screen.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_controller.dart';

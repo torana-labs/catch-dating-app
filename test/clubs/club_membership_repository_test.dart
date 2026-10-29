@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,15 +1,16 @@
-import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
-import 'package:catch_dating_app/chats/domain/event_chat.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_directory.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_section.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
+import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_section.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/event_chat_entry_section.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/event_chat_message_tile.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_directory.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
 import '../support/widgetbook_harness.dart';
 import 'preview.dart';
 

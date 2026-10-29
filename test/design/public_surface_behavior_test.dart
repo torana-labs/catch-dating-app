@@ -1,23 +1,23 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_constraints.dart';
-import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_club_display_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
-import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

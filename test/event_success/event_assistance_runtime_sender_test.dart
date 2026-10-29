@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/contexts/live/data/event_assistance_runtime_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_parsing.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_configuration.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_result.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_sender.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_assistance_runtime_config_callable_payload.g.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_runtime_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_result.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_sender.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_setting.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

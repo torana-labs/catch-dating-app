@@ -1,13 +1,13 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/domain/external_event.dart';
-import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
+import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
-import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 class ExploreFeedViewModel {
   const ExploreFeedViewModel({

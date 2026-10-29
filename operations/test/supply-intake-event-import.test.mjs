@@ -108,6 +108,29 @@ test("missing facts block, and only governed blockers can be resolved or waived 
   assert.equal(unbacked.document, null, "nothing is drafted before the organizer exists");
 });
 
+test("a reviewer-supplied map location clears the coordinate blocker; a resolved note alone does not", () => {
+  const unlocated = event({venue: null, address: null, latitude: null, longitude: null});
+  const noted = plan({event: unlocated, review: review({blockerResolutions: [
+    {blockerCode: "missing_exact_coordinates", outcome: "resolved", policyGapDecisionId: null,
+      note: "Checked the venue."}]})});
+  assert.ok(noted.blockers.includes("missing_exact_coordinates"), "resolving needs the coordinates themselves");
+  const located = plan({event: unlocated, review: review({location: {name: "Cubbon Park bandstand",
+    address: "Kasturba Road, Bengaluru", placeId: "ChIJbandstand", latitude: 12.9763, longitude: 77.5929}})});
+  assert.deepEqual([located.status, located.blockers], ["write_ready", []],
+    "coordinates clear the map blocker, and the venue name clears the location-detail blocker");
+  assert.equal(validateExternalEvent(located.document), true, JSON.stringify(validateExternalEvent.errors));
+  assert.deepEqual(located.document.meetingLocation, {name: "Cubbon Park bandstand",
+    address: "Kasturba Road, Bengaluru", placeId: "ChIJbandstand", latitude: 12.9763, longitude: 77.5929,
+    notes: "Kasturba Road, Bengaluru\nhttps://luma.com/1dfd73wq"});
+  // The page's own venue and address win; the reviewer's coordinates replace the page's.
+  const corrected = plan({review: review({location: {name: "Elsewhere", address: null, placeId: null,
+    latitude: 12.97, longitude: 77.59}})});
+  assert.deepEqual([corrected.document.meetingLocation.name, corrected.document.meetingLocation.latitude,
+    corrected.document.meetingLocation.longitude], ["Thoughtworks", 12.97, 77.59]);
+  assert.throws(() => plan({review: review({location: {name: null, address: null, placeId: null,
+    latitude: 91, longitude: 77.59}})}), /latitude and longitude in range/u);
+});
+
 test("events that cannot be published say why", () => {
   for (const [label, overrides, blocker] of [
     ["unpublished organizer", {organizer: null}, "organizer_listing_pending"],

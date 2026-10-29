@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_photo_recovery.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/celebration/celebration_screen.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_attendee.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/hosts/domain/event_photo_recovery.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_photo_recovery_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';

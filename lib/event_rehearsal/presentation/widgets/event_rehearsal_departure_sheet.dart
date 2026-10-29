@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_draft.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_departure_draft.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventAssistanceDepartureSection, EventAssistanceDeparturePhase;
 import 'package:catch_dating_app/l10n/l10n.dart';

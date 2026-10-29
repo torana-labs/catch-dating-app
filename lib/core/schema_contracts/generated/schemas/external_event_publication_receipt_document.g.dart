@@ -14,7 +14,7 @@ const schemaExternalEventPublicationReceiptDocumentSchema = <String, Object?>{
   'x-firestore-collection': 'externalEventPublicationReceipts',
   'x-firestore-path': 'externalEventPublicationReceipts/{receiptId}',
   'x-document-id-field': 'receiptId',
-  'x-owner': 'adminPublishExternalEvent and adminTakedownExternalEvent callables',
+  'x-owner': 'adminPublishListingEvents and adminTakedownExternalEvent callables and the onSupplyIntakeListingApproved trigger',
   'required': <Object?>[
     'schemaVersion',
     'receiptId',

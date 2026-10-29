@@ -1,15 +1,15 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
+import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,11 +1,13 @@
 /* eslint-disable max-len */
 import type {Firestore} from "firebase-admin/firestore";
 import {importShadowProjection, type ProjectionImportWriter} from "../projectionImporter";
+import {loadOrganizerInventory, type OrganizerInventory} from "./organizerInventory";
 import {
   packagedIntake,
   runSupplyIntake,
   type AcquisitionPolicy,
   type IntakeCaptureReceipt,
+  type IntakeDuplicateCheck,
   type IntakePageSnapshot,
   type IntakePageSource,
   type SupplyIntakeRequest,
@@ -67,10 +69,13 @@ export async function processSupplyIntakeRequest(deps: SupplyIntakeWorkerDeps, r
   try {
     const runtime = await packagedIntake();
     const policy = await runtime.loadSupplyAcquisitionPolicy();
+    // Read before any page fetch is reserved, so a failed read costs no budget.
+    const inventory = await loadOrganizerInventory(deps.db, request, runtime.organizerReferenceFromDocument);
     const {source, settle} = await pageSourceFor(deps, policy);
     let result;
     try {
-      result = await runSupplyIntake({request, pageSource: source, now: deps.now});
+      result = await runSupplyIntake({request, pageSource: source, now: deps.now,
+        existingOrganizers: inventory?.organizers ?? null});
     } finally {
       await settle();
     }
@@ -94,6 +99,7 @@ export async function processSupplyIntakeRequest(deps: SupplyIntakeWorkerDeps, r
           artifactHash: imported.artifactHash,
           snapshotRefs,
           captureReceipts: result.receipts.map(receiptRecord),
+          duplicateCheck: duplicateCheckRecord(result.listing.duplicateCheck, inventory),
         },
         failure: null,
         updatedAt: deps.now().toISOString(),
@@ -161,6 +167,26 @@ async function pageSourceFor(deps: SupplyIntakeWorkerDeps, policy: AcquisitionPo
           updatedAt: deps.now().toISOString()});
       });
     },
+  };
+}
+
+/**
+ * The listing's duplicate check as the reviewer reads it, with the scope of
+ * the inventory it was compared with. It is a copy of what the listing's
+ * contentHash already covers, so approving that hash approves this check.
+ */
+function duplicateCheckRecord(check: IntakeDuplicateCheck | undefined, inventory: OrganizerInventory | null) {
+  if (!check || !inventory) return null;
+  return {
+    policyId: check.policyId,
+    authority: check.authority,
+    verdict: check.verdict,
+    reasons: [...check.reasons],
+    organizersCompared: check.organizersCompared,
+    inventoryHash: check.inventoryHash,
+    inventory: {citySlug: inventory.citySlug, limit: inventory.limit, truncated: inventory.truncated},
+    candidates: check.candidates.map((candidate) => ({...candidate, signals: [...candidate.signals],
+      conflicts: [...candidate.conflicts], rationale: candidate.rationale.slice(0, 2_000)})),
   };
 }
 

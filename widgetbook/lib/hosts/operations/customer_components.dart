@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tab_bar.dart';

@@ -34,10 +34,7 @@ import {
   sampleUserAnalyticsReport,
 } from "../shared/api/sampleData";
 import type {EventPublishingController} from "../features/events/controllers/useEventPublishingController";
-import {
-  buildExternalEventImportReview,
-  formFromEventProfile,
-} from "../features/events/controllers/eventPublishingHelpers";
+import {formFromEventProfile} from "../features/events/controllers/eventPublishingHelpers";
 import {EventPublishingWorkspace} from "../features/events/ui/EventPublishingScreen";
 import {
   sampleEventIntakeBridge,
@@ -95,8 +92,6 @@ import {
   type AdminEventDetails,
   type AdminEventListRow,
   type AdminAccessApplicationDetails,
-  type AdminExternalEventListRow,
-  type AdminGetEventSupplyReadinessResponse,
   type AdminQueueItem,
   type EventIntakeBridge,
   type EventIntakeCandidate,
@@ -105,7 +100,6 @@ import {
   type AdminRoleAssignmentRow,
   type AdminRoleClaim,
   type AdminUserRoleRecord,
-  type ExternalEventImportAction,
   type HostAnalyticsTrendPoint,
   type UserAnalyticsGranularity,
   type UserAnalyticsQueryPayload,
@@ -151,10 +145,6 @@ const eventRows: AdminEventListRow[] =
   Object.values(sampleEventDetails).map(eventListRowFromDetails);
 const externalEventRows = sampleExternalEventRows;
 const selectedExternalEvent = externalEventRows[1] ?? externalEventRows[0] ?? null;
-const eventSupplyReadiness = buildEventSupplyReadiness(
-  selectedExternalEvent,
-  "2026-07-03T09:58:00.000Z"
-);
 const eventController: EventPublishingController = {
   backToList: () => {
     noop();
@@ -177,30 +167,17 @@ const eventController: EventPublishingController = {
   isExternalListLoading: false,
   isListLoading: false,
   isSaving: false,
-  isSupplyReadinessLoading: false,
   isTakingDownExternalEvent: false,
   listGeneratedAt: "2026-07-03T09:55:00.000Z",
   openExternalSupply: () => {
     noop();
   },
-  openReadiness: () => {
-    noop();
-  },
-  publishExternalEvent: async (_request) => {
-    noop();
-    return false;
-  },
-  publishingExternalActionId: null,
   query: "",
   refreshExternalList: async () => {
     noop();
     return true;
   },
   refreshList: async () => {
-    noop();
-    return true;
-  },
-  refreshSupplyReadiness: async () => {
     noop();
     return true;
   },
@@ -215,17 +192,8 @@ const eventController: EventPublishingController = {
   selectExternalEvent: (_value) => {
     noop();
   },
-  selectReadinessAction: (_value) => {
-    noop();
-  },
   selectedExternalEvent,
   selectedExternalEventId: selectedExternalEvent?.eventId ?? null,
-  selectedExternalImportReview: buildExternalEventImportReview(
-    selectedExternalEvent,
-    eventSupplyReadiness.importPlan,
-    eventSupplyReadiness.executionPlan
-  ),
-  selectedReadinessActionId: null,
   setEventId: (_value) => {
     noop();
   },
@@ -244,7 +212,6 @@ const eventController: EventPublishingController = {
   setQuery: (_value) => {
     noop();
   },
-  supplyReadiness: eventSupplyReadiness,
   takedownExternalEvent: async (_request) => {
     noop();
     return false;
@@ -361,8 +328,6 @@ const organizerIntakeController: OrganizerIntakeController = {
   curationInFlight: {},
   decisionInFlight: {},
   decisionNotes: {},
-  eventDecisionInFlight: {},
-  eventDecisionNotes: {},
   handleAttachCandidate: async (_candidate) => {
     noop();
     return true;
@@ -374,13 +339,7 @@ const organizerIntakeController: OrganizerIntakeController = {
     noop();
     return true;
   },
-  handleEventDecision: async (_candidate, _decision) => {
-    noop();
-  },
   handleItemCuration: async (_item, _form) => {
-    noop();
-  },
-  handleLocationResolution: async (_task) => {
     noop();
   },
   handleOpenOrganizerDraft: (_organizerId) => {
@@ -395,13 +354,9 @@ const organizerIntakeController: OrganizerIntakeController = {
   },
   localCuration: {},
   localDecisions: {},
-  localEventDecisions: {},
-  localLocationResolutions: {},
   localOrganizerDrafts: {},
   localSalesLinks: {},
   localPolicyDecisions: {},
-  locationResolutionForms: {},
-  locationResolutionInFlight: {},
   manualReportAcknowledgements: {},
   metrics: [
     {
@@ -447,12 +402,6 @@ const organizerIntakeController: OrganizerIntakeController = {
     noop();
   },
   setDecisionNotes: (_value) => {
-    noop();
-  },
-  setEventDecisionNotes: (_value) => {
-    noop();
-  },
-  setLocationResolutionForms: (_value) => {
     noop();
   },
   setManualReportAcknowledgements: (_value) => {
@@ -949,24 +898,6 @@ const dataQualityRows: DataQualityRow[] = [
     owningWorkflowPath: "/organizers/claims",
   },
   {
-    id: "event-supply-readiness-preflight",
-    sourceId: "event-supply-readiness",
-    source: "Event supply readiness",
-    category: "Preflight result",
-    label: "External event import blockers",
-    state: "partial",
-    severity: "warning",
-    detail: "12 candidates, 8 write-ready, 4 blocked by location or schema checks.",
-    stateDefinition: "Counts come from generated preflight plans, not write receipts.",
-    owner: "Events intake",
-    runbook: "admin > Events > External import readiness",
-    nextAction: "Resolve review, location, schema, or projection blockers before publishing readiness again.",
-    updatedAt: "2026-07-03T07:45:00.000Z",
-    freshness: "current",
-    timestampLabel: "Current by 7-day heuristic",
-    owningWorkflowPath: "/events/readiness",
-  },
-  {
     id: "host-analytics-booking-window",
     sourceId: "host-analytics",
     source: "Host analytics",
@@ -1011,7 +942,7 @@ const dataQualityController: DataQualityController = {
   isUnavailable: false,
   metrics: dataQualityMetrics(dataQualityRows),
   ownerFilter: "all",
-  ownerOptions: ["Admin ops", "Events intake", "Growth ops", "Marketing ops"],
+  ownerOptions: ["Admin ops", "Growth ops", "Marketing ops"],
   query: "",
   rows: dataQualityRows,
   selected: null,
@@ -1023,7 +954,6 @@ const dataQualityController: DataQualityController = {
     "host-analytics",
     "marketing-bridge",
     "event-intake",
-    "event-supply-readiness",
   ].map((sourceId) => ({
     sourceId: sourceId as DataQualityRow["sourceId"],
     label: sourceId.replaceAll("-", " "),
@@ -1476,158 +1406,6 @@ function organizerListRowFromDetails(club: AdminClubDetails): AdminClubListRow {
       "missing",
     sourceConfidence: club.provenance.sourceConfidence,
     verificationStatus: club.provenance.verificationStatus,
-  };
-}
-
-function buildEventSupplyReadiness(
-  row: AdminExternalEventListRow | null,
-  generatedAt: string
-): AdminGetEventSupplyReadinessResponse {
-  const importAction = row ? buildExternalEventImportAction(row) : null;
-  return {
-    generatedAt,
-    source: "sample",
-    importPlan: {
-      actions: importAction ? [importAction] : [],
-      commands: {
-        plan: "node tool/organizer_intake/publish_event_supply_readiness.mjs --dry-run",
-        write: "node tool/organizer_intake/publish_event_supply_readiness.mjs --write",
-      },
-      generatedFrom: {
-        batches: ["storybook-event-supply"],
-        externalEventCandidateQueue: "externalEventCandidateQueue/current",
-        reviewDecisionBatches: ["storybook-review-batch"],
-        locationResolutionBatches: ["storybook-location-batch"],
-      },
-      guardrails: [
-        "No writes to canonical events/{id}",
-        "External supply remains outbound-link only",
-      ],
-      policy: {
-        reason: "Storybook fixture keeps importer writes disabled.",
-        status: "disabled",
-        writeEnabled: false,
-      },
-      summary: {
-        actionsByPlatform: row ? {[row.platform]: 1} : {},
-        actionsByStatus: row ? {waiting_review: 1} : {},
-        blocked: 0,
-        candidates: row ? 1 : 0,
-        duplicateEventKeys: row?.duplicateCandidateCount ?? 0,
-        proposedCreates: 0,
-        proposedReadOnlyEvents: row ? 1 : 0,
-        rejected: 0,
-        waitingReview: row ? 1 : 0,
-        writeReady: 0,
-      },
-    },
-    executionPlan: {
-      actions: [],
-      commands: {
-        plan: "node tool/organizer_intake/verify_event_import_preflight.mjs --dry-run",
-        write: "not enabled in Storybook fixture",
-      },
-      generatedFrom: {
-        externalEventImportPlan: "externalEventImportPlan/storybook",
-        importPlanGeneratedFrom: {
-          source: "storybook",
-        },
-      },
-      guardrails: [
-        "Preflight must pass before adminPublishExternalEvent can write",
-      ],
-      policy: {
-        authorityModel: "preflight",
-        reason: "Storybook fixture is read-only.",
-        status: "disabled",
-        writeEnabled: false,
-      },
-      summary: {
-        actionsByStatus: {},
-        blocked: 0,
-        createActions: 0,
-        importActions: 0,
-        payloadInvalid: 0,
-        payloadValid: 0,
-        projectionInvalid: 0,
-        projectionInvalidCount: 0,
-        projectionValid: 0,
-        readOnlyActions: 0,
-        schemaInvalid: 0,
-        skipped: 0,
-        wouldCreate: 0,
-        wouldPublishReadOnly: 0,
-      },
-    },
-  };
-}
-
-function buildExternalEventImportAction(
-  row: AdminExternalEventListRow
-): ExternalEventImportAction {
-  return {
-    action: "publish_read_only_external_event",
-    actionId: `storybook:${row.candidateId}`,
-    blockers: row.importPolicyAcknowledged && row.ownerSafeCopyReviewed ? [] : [
-      "import_policy_acknowledgement_required",
-      "owner_safe_copy_review_required",
-    ],
-    candidateId: row.candidateId,
-    duplicateCandidateIds: [],
-    entityId: row.eventId,
-    importState: "waiting_review",
-    normalizedEventKey: row.normalizedEventKey,
-    platform: row.platform,
-    proposedReadOnlyEventDraft: {
-      activity: {
-        activityKind: row.activityKind,
-        interactionModel: row.interactionModel,
-        source: row.activitySource,
-        version: 1,
-      },
-      booking: {
-        catchBookingEnabled: false,
-        catchPaymentsEnabled: false,
-        catchReservationsEnabled: false,
-        catchWaitlistEnabled: false,
-        externalLinks: [{
-          candidateId: row.candidateId,
-          linkType: "primary",
-          platform: row.platform,
-          primary: true,
-          sourceEventKey: row.sourceEventKey,
-          url: row.primaryExternalUrl ?? row.eventUrl ?? row.sourceUrl ?? "",
-        }],
-        mode: "external",
-      },
-      canonicalHostId: row.canonicalHostId,
-      compatibilityClubId: row.compatibilityClubId,
-      description: "Read-only external supply preview for Storybook.",
-      endTime: row.endTime,
-      eventId: row.eventId,
-      locationDetails: null,
-      meetingPoint: row.meetingPoint,
-      photoUrl: null,
-      price: {
-        currency: row.currency,
-        displayText: row.priceDisplayText,
-        parsedPriceInPaise: row.parsedPriceInPaise,
-      },
-      startTime: row.startTime ?? "2026-07-08T13:30:00.000Z",
-      timezone: row.timezone,
-      title: row.title,
-    },
-    reviewStatus: "waiting_review",
-    source: {
-      batchId: row.reviewBatchId ?? "storybook-review-batch",
-      eventUrl: row.eventUrl,
-      sourceStatus: row.status,
-      sourceUrl: row.sourceUrl,
-      surfaceId: "storybook",
-    },
-    sourceEventKey: row.sourceEventKey,
-    status: "waiting_review",
-    targetPath: row.targetPath,
   };
 }
 

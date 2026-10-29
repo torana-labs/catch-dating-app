@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_trip_export.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
-import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
-import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
-import 'package:catch_dating_app/programs/data/program_work_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
-import 'package:catch_dating_app/programs/domain/program_trip_export.dart';
 import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

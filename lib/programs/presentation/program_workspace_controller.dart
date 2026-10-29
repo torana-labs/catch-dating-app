@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_workspace_controller.g.dart';

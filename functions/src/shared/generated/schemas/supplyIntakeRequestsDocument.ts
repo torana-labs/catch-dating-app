@@ -193,7 +193,7 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
           "format": "date-time"
         },
         "origin": {
-          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
+          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a message a registered nominator forwarded to Catch (id is the message's receipt id), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
           "anyOf": [
             {
               "type": "null"
@@ -211,6 +211,7 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
                   "enum": [
                     "admin_nomination",
                     "sales_inbound_intent",
+                    "message_nomination",
                     "discovery_run",
                     "admin_event_refresh"
                   ]
@@ -630,6 +631,152 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
                   }
                 }
               }
+            },
+            "duplicateCheck": {
+              "description": "The listing's advisory comparison with the organizers Catch already lists, copied from the listing its contentHash covers. Null when the request was not compared (an event_refresh names its organizer); absent on requests completed before the worker compared listings.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "policyId",
+                    "authority",
+                    "verdict",
+                    "reasons",
+                    "organizersCompared",
+                    "inventoryHash",
+                    "inventory",
+                    "candidates"
+                  ],
+                  "properties": {
+                    "policyId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "authority": {
+                      "const": "advisory"
+                    },
+                    "verdict": {
+                      "enum": [
+                        "match",
+                        "ambiguous",
+                        "none"
+                      ]
+                    },
+                    "reasons": {
+                      "type": "array",
+                      "maxItems": 8,
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                      }
+                    },
+                    "organizersCompared": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    },
+                    "inventoryHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "inventory": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "citySlug",
+                        "limit",
+                        "truncated"
+                      ],
+                      "properties": {
+                        "citySlug": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 80
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 10000
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "candidates": {
+                      "type": "array",
+                      "maxItems": 12,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "organizerId",
+                          "name",
+                          "score",
+                          "band",
+                          "signals",
+                          "conflicts",
+                          "rationale"
+                        ],
+                        "properties": {
+                          "organizerId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 500
+                          },
+                          "score": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "band": {
+                            "enum": [
+                              "match",
+                              "probable",
+                              "review",
+                              "low"
+                            ]
+                          },
+                          "signals": {
+                            "type": "array",
+                            "maxItems": 12,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                            }
+                          },
+                          "conflicts": {
+                            "type": "array",
+                            "maxItems": 12,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                            }
+                          },
+                          "rationale": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
             }
           }
         }
@@ -740,6 +887,148 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 240,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,79}$"
+    },
+    "duplicateCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "authority",
+        "verdict",
+        "reasons",
+        "organizersCompared",
+        "inventoryHash",
+        "inventory",
+        "candidates"
+      ],
+      "properties": {
+        "policyId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "authority": {
+          "const": "advisory"
+        },
+        "verdict": {
+          "enum": [
+            "match",
+            "ambiguous",
+            "none"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,79}$"
+          }
+        },
+        "organizersCompared": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "inventoryHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inventory": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "citySlug",
+            "limit",
+            "truncated"
+          ],
+          "properties": {
+            "citySlug": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "name",
+              "score",
+              "band",
+              "signals",
+              "conflicts",
+              "rationale"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              },
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "band": {
+                "enum": [
+                  "match",
+                  "probable",
+                  "review",
+                  "low"
+                ]
+              },
+              "signals": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                }
+              },
+              "conflicts": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                }
+              },
+              "rationale": {
+                "type": "string",
+                "maxLength": 2000
+              }
+            }
+          }
+        }
+      }
     },
     "hash": {
       "type": "string",

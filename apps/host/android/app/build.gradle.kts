@@ -78,10 +78,10 @@ if (releaseBuildRequested && releaseStoreFile != null && !releaseStoreFile.exist
     )
 }
 
-// Guard: google-services.json is an environment working copy swapped by
-// ./tool/use_firebase_environment.sh. Building a flavor whose package is not in
-// the active file otherwise fails deep inside the google-services plugin with a
-// cryptic "No matching client" error. Fail early with an actionable message.
+// Guard: each flavor reads its own src/<flavor>/google-services.json, a link to
+// the canonical file under firebase/<env>/. A missing or wrong link otherwise
+// fails deep inside the google-services plugin with a cryptic "No matching
+// client" error. Fail early with an actionable message.
 fun jsonObject(value: Any?, label: String): Map<*, *> =
     value as? Map<*, *> ?: throw GradleException("$label must be a JSON object")
 
@@ -137,26 +137,19 @@ val requestedFlavor = requestedAppTarget?.let { target ->
     jsonString(androidTarget, "flavor", "${target["id"]}.android")
 }
 if (requestedFlavor != null) {
-    val googleServicesFiles = listOf(
-        project.file("google-services.json"),
-        project.file("src/$requestedFlavor/google-services.json"),
-    )
+    val googleServicesFile = project.file("src/$requestedFlavor/google-services.json")
     val expectedApplicationId = flavorApplicationIds.getValue(requestedFlavor)
-    for (googleServicesFile in googleServicesFiles) {
-        if (!googleServicesFile.exists()) {
-            continue
-        }
-        val packagePattern =
-            Regex("\"package_name\"\\s*:\\s*\"" + Regex.escape(expectedApplicationId) + "\"")
-        if (!packagePattern.containsMatchIn(googleServicesFile.readText())) {
-            throw GradleException(
-                "${googleServicesFile.path} does not contain the '$requestedFlavor' " +
-                    "flavor package ($expectedApplicationId). The checked-in file is an " +
-                    "environment working copy — run " +
-                    "./tool/use_firebase_environment.sh for the requested app target before building " +
-                    "the $requestedFlavor flavor, or use ./tool/flutter_with_env.sh."
-            )
-        }
+    val packagePattern =
+        Regex("\"package_name\"\\s*:\\s*\"" + Regex.escape(expectedApplicationId) + "\"")
+    if (!googleServicesFile.exists() ||
+        !packagePattern.containsMatchIn(googleServicesFile.readText())
+    ) {
+        throw GradleException(
+            "${googleServicesFile.path} is missing or does not contain the " +
+                "'$requestedFlavor' flavor package ($expectedApplicationId). It must link to " +
+                "the flavor's file under firebase/; check with " +
+                "./tool/validate_firebase_environment.sh."
+        )
     }
 }
 

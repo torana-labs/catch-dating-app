@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:math' as math;
+
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
-import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
-import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';

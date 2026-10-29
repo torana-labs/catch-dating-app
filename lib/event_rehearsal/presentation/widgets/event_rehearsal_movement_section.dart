@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_departure_history_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_departure_sheet.dart';

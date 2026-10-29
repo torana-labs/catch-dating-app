@@ -256,14 +256,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
-  cli_util:
-    dependency: transitive
-    description:
-      name: cli_util
-      sha256: ff6785f7e9e3c38ac98b2fb035701789de90154024a75b6cb926445e83197d1c
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.2"
   clock:
     dependency: transitive
     description:
@@ -396,10 +388,10 @@ packages:
     dependency: "direct main"
     description:
       name: crypto
-      sha256: c8ea0233063ba03258fbcf2ca4d6dadfefe14f02fab57702265467a19f27fadf
+      sha256: e3626ae6270383c9e3a549f34c9e4cd26c09ae6a9adaab2bf4737a00340efdc4
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.7"
+    version: "3.0.8"
   csslib:
     dependency: transitive
     description:
@@ -818,14 +810,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_launcher_icons:
-    dependency: "direct dev"
-    description:
-      name: flutter_launcher_icons
-      sha256: "10f13781741a2e3972126fae08393d3c4e01fa4cd7473326b94b72cf594195e7"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.14.4"
   flutter_lints:
     dependency: "direct dev"
     description:

@@ -1195,11 +1195,11 @@
         },
         {
           "path": "tool/use_firebase_environment.sh",
-          "role": "manifest-resolved Firebase app activation",
+          "role": "manifest-resolved Firebase web service worker activation",
           "status": "aligned"
         },
         {
-          "path": "lib/force_update/data/app_version_config_provider.dart",
+          "path": "lib/contexts/account/data/app_version_config_provider.dart",
           "role": "role-prefixed compatibility and store policy",
           "status": "aligned"
         },
@@ -1372,12 +1372,12 @@
           "status": "aligned"
         },
         {
-          "path": "lib/event_success/domain/event_success_models.dart",
+          "path": "lib/contexts/formats/domain/event_success_models.dart",
           "role": "Flutter-independent Event Success display metadata from generated structured copy",
           "status": "aligned"
         },
         {
-          "path": "lib/user_profile/domain/profile_validation.dart",
+          "path": "lib/contexts/profiles/domain/profile_validation.dart",
           "role": "Flutter-independent profile validation copy from generated structured constants",
           "status": "aligned"
         },
@@ -1615,8 +1615,8 @@
       "status": "reference",
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-provider-001-feature-owned-startup-orchestration",
       "prototypeFiles": [
-        "lib/user_profile/data/profile_location_initializer.dart",
-        "lib/user_profile/data/profile_location_initializer.g.dart",
+        "lib/contexts/profiles/data/profile_location_initializer.dart",
+        "lib/contexts/profiles/data/profile_location_initializer.g.dart",
         "lib/app.dart",
         "test/user_profile/profile_location_initializer_test.dart",
         "tool/architecture/provider_graph.dart",
@@ -1624,7 +1624,7 @@
       ],
       "adopters": [
         {
-          "path": "lib/user_profile/data/profile_location_initializer.dart",
+          "path": "lib/contexts/profiles/data/profile_location_initializer.dart",
           "role": "reference feature-owned keepAlive startup provider that combines current-profile state with feature-neutral device-location and city services before writing through the owning repository",
           "status": "aligned"
         },
@@ -1655,33 +1655,33 @@
       "status": "reference",
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-provider-codegen-001-generated-auto-dispose-provider-family",
       "prototypeFiles": [
-        "lib/clubs/data/club_name_lookup.dart",
-        "lib/clubs/data/club_name_lookup.g.dart",
+        "lib/contexts/organizers/data/club_name_lookup.dart",
+        "lib/contexts/organizers/data/club_name_lookup.g.dart",
         "test/architecture/generated_provider_family_test.dart"
       ],
       "adopters": [
         {
-          "path": "lib/clubs/data/club_name_lookup.dart",
+          "path": "lib/contexts/organizers/data/club_name_lookup.dart",
           "role": "reference generated Future provider family keyed by a value-equality club-id query",
           "status": "aligned"
         },
         {
-          "path": "lib/event_success/event_success_companion_clock.dart",
+          "path": "lib/contexts/live/data/event_success_companion_clock.dart",
           "role": "generated auto-dispose Stream provider for the Event Success companion clock",
           "status": "aligned"
         },
         {
-          "path": "lib/explore/data/explore_recommendations_repository.dart",
+          "path": "lib/contexts/discovery/data/explore_recommendations_repository.dart",
           "role": "generated Future provider family keyed by a value-equality Explore recommendation query",
           "status": "aligned"
         },
         {
-          "path": "lib/public_profile/data/public_profiles_lookup.dart",
+          "path": "lib/contexts/profiles/data/public_profiles_lookup.dart",
           "role": "generated Future provider family keyed by a value-equality batched public-profile query",
           "status": "aligned"
         },
         {
-          "path": "lib/swipes/data/swipe_candidate_repository.dart",
+          "path": "lib/contexts/connections/data/swipe_candidate_repository.dart",
           "role": "generated Future provider family keyed by event id that resolves server-owned post-event candidate projections without exposing the attendance roster",
           "status": "aligned"
         },
@@ -1705,7 +1705,7 @@
       "requiredBackPropagation": "When a handwritten feature-owned async provider family is migrated, preserve its provider name, family call shape, value-equality key semantics, lifecycle, .future access, and override contracts; regenerate adjacent output and remove the matching planned manual-provider review decision.",
       "requiredChecks": [
         "flutter test test/architecture/generated_provider_family_test.dart",
-        "flutter analyze --no-fatal-infos lib/clubs/data/club_name_lookup.dart lib/event_success/event_success_companion_clock.dart lib/explore/data/explore_recommendations_repository.dart lib/public_profile/data/public_profiles_lookup.dart lib/swipes/data/swipe_candidate_repository.dart test/architecture/generated_provider_family_test.dart",
+        "flutter analyze --no-fatal-infos lib/contexts/organizers/data/club_name_lookup.dart lib/contexts/live/data/event_success_companion_clock.dart lib/contexts/discovery/data/explore_recommendations_repository.dart lib/contexts/profiles/data/public_profiles_lookup.dart lib/contexts/connections/data/swipe_candidate_repository.dart test/architecture/generated_provider_family_test.dart",
         "dart run tool/architecture/provider_graph.dart --check",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
@@ -1800,12 +1800,12 @@
       ],
       "adopters": [
         {
-          "path": "lib/events/data/event_discovery_repository.dart",
+          "path": "lib/contexts/discovery/data/event_discovery_repository.dart",
           "role": "reference internal discovery page retaining a raw document cursor through exact availability and distance post-filtering",
           "status": "aligned"
         },
         {
-          "path": "lib/events/data/external_event_repository.dart",
+          "path": "lib/contexts/events/data/external_event_repository.dart",
           "role": "reference external discovery page sharing the same bounded Firestore window contract",
           "status": "aligned"
         },
@@ -1815,27 +1815,27 @@
           "status": "aligned"
         },
         {
-          "path": "lib/chats/data/chat_repository.dart",
+          "path": "lib/contexts/messaging/data/chat_repository.dart",
           "role": "bounded newest-message stream plus explicit older-message cursor page",
           "status": "aligned"
         },
         {
-          "path": "lib/matches/data/match_repository.dart",
+          "path": "lib/contexts/connections/data/match_repository.dart",
           "role": "two-branch participant query with a compound cursor and branch-exhaustion state",
           "status": "aligned"
         },
         {
-          "path": "lib/reviews/data/reviews_repository.dart",
+          "path": "lib/contexts/reviews/data/reviews_repository.dart",
           "role": "bounded club, event, and reviewer streams with document-cursor history pages",
           "status": "aligned"
         },
         {
-          "path": "lib/notifications/data/activity_notification_repository.dart",
+          "path": "lib/contexts/messaging/data/activity_notification_repository.dart",
           "role": "bounded visible activity stream plus document-cursor history page",
           "status": "aligned"
         },
         {
-          "path": "lib/payments/data/payment_history_repository.dart",
+          "path": "lib/contexts/payments/data/payment_history_repository.dart",
           "role": "bounded newest-payment stream plus document-cursor history page",
           "status": "aligned"
         }
@@ -2088,12 +2088,12 @@
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-cross-paths-consent-001-fail-closed-layered-consent",
       "prototypeFiles": [
         "lib/cross_paths/cross_paths.dart",
-        "lib/cross_paths/data/cross_paths_repository.dart",
-        "lib/cross_paths/domain/cross_paths_suggestion.dart",
+        "lib/contexts/connections/data/cross_paths_repository.dart",
+        "lib/contexts/connections/domain/cross_paths_suggestion.dart",
         "lib/explore/presentation/explore_cross_paths_provider.dart",
         "lib/cross_paths/presentation/cross_paths_explore_card.dart",
-        "lib/cross_paths/domain/cross_paths_invitation.dart",
-        "lib/cross_paths/domain/cross_paths_pair_hold.dart",
+        "lib/contexts/connections/domain/cross_paths_invitation.dart",
+        "lib/contexts/connections/domain/cross_paths_pair_hold.dart",
         "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
         "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
         "lib/events/shared/event_detail_route_transition.dart",
@@ -2101,7 +2101,7 @@
         "lib/cross_paths/presentation/cross_paths_event_consent_controller.dart",
         "lib/cross_paths/presentation/cross_paths_event_consent_state.dart",
         "lib/cross_paths/presentation/cross_paths_event_consent_section.dart",
-        "lib/events/domain/event.dart",
+        "lib/contexts/events/domain/event.dart",
         "functions/src/crossPaths/pilotPolicy.ts",
         "functions/src/crossPaths/setCrossPathsEventConsent.ts",
         "functions/src/crossPaths/invitations.ts",
@@ -2135,7 +2135,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/events/domain/event.dart and functions/src/crossPaths/pilotPolicy.ts",
+          "path": "lib/contexts/events/domain/event.dart and functions/src/crossPaths/pilotPolicy.ts",
           "role": "shared default-false event field plus canonical Mumbai selected-event policy; synthetic bypass is limited to explicit demo records",
           "status": "aligned"
         },
@@ -2151,7 +2151,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/cross_paths/data/cross_paths_repository.dart",
+          "path": "lib/contexts/connections/data/cross_paths_repository.dart",
           "role": "caller-scoped consent read, callable-only consent write, and sanitized batched suggestion seam; never an attendee-roster source",
           "status": "aligned"
         },
@@ -2172,7 +2172,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/cross_paths/domain/cross_paths_invitation.dart and lib/cross_paths/data/cross_paths_repository.dart and lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
+          "path": "lib/contexts/connections/domain/cross_paths_invitation.dart and lib/contexts/connections/data/cross_paths_repository.dart and lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
           "role": "typed participant invitation stream plus callable-only send, respond, and cancel mutation boundary",
           "status": "aligned"
         },
@@ -2187,7 +2187,7 @@
           "status": "aligned"
         },
         {
-          "path": "functions/src/crossPaths/pairHolds.ts and functions/src/events/eventPolicy.ts and functions/src/events/signUpUserForEvent.ts and lib/cross_paths/domain/cross_paths_pair_hold.dart",
+          "path": "functions/src/crossPaths/pairHolds.ts and functions/src/events/eventPolicy.ts and functions/src/events/signUpUserForEvent.ts and lib/contexts/connections/domain/cross_paths_pair_hold.dart",
           "role": "organizer-configured companion admission, participant-readable server-owned holds, canonical booking conversion, and idempotent lifecycle release without waitlist reordering",
           "status": "aligned"
         },
@@ -2300,8 +2300,8 @@
         "functions/src/communications/organizerCommunicationPlan.test.ts",
         "functions/src/organizers/organizerCommunicationPlans.ts",
         "functions/src/organizers/organizerCommunicationPlans.test.ts",
-        "lib/hosts/data/crm/host_communication_repository.dart",
-        "lib/hosts/domain/crm/host_communication_plan.dart",
+        "lib/contexts/audience/data/crm/host_communication_repository.dart",
+        "lib/contexts/audience/domain/crm/host_communication_plan.dart",
         "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
         "lib/hosts/presentation/customers/host_customer_detail_card.dart",
         "test/hosts/host_crm_repository_test.dart",
@@ -2319,7 +2319,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/domain/crm/host_communication_plan.dart",
+          "path": "lib/contexts/audience/domain/crm/host_communication_plan.dart",
           "role": "typed callable parser that rejects contradictory, duplicate, incomplete, or unavailable recommended routes",
           "status": "aligned"
         },
@@ -2375,8 +2375,8 @@
         "functions/src/organizers/organizerSavedAudiences.ts",
         "functions/src/organizers/organizerSavedAudiences.test.ts",
         "functions/src/organizers/organizerCampaigns.ts",
-        "lib/hosts/data/crm/host_saved_audience_repository.dart",
-        "lib/hosts/domain/crm/host_saved_audience.dart",
+        "lib/contexts/audience/data/crm/host_saved_audience_repository.dart",
+        "lib/contexts/audience/domain/crm/host_saved_audience.dart",
         "lib/hosts/presentation/customers/host_customers_screen.dart",
         "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
         "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
@@ -2542,8 +2542,8 @@
         "contracts/callables/prepare_organizer_manual_send_task_payload.schema.json",
         "functions/src/organizers/organizerManualSendTasks.ts",
         "functions/src/organizers/organizerManualSendTasks.test.ts",
-        "lib/hosts/data/crm/host_communication_repository.dart",
-        "lib/hosts/domain/crm/host_manual_send_task.dart",
+        "lib/contexts/audience/data/crm/host_communication_repository.dart",
+        "lib/contexts/audience/domain/crm/host_manual_send_task.dart",
         "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
         "lib/hosts/presentation/inbox/host_manual_send_list.dart",
         "test/hosts/host_crm_repository_test.dart",
@@ -2561,12 +2561,12 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/domain/crm/host_manual_send_task.dart",
+          "path": "lib/contexts/audience/domain/crm/host_manual_send_task.dart",
           "role": "typed task and re-plan parser that rejects a managed-delivery task representation",
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/data/crm/host_communication_repository.dart",
+          "path": "lib/contexts/audience/data/crm/host_communication_repository.dart",
           "role": "generated callable payload boundaries for revision-bound manual tasks and route re-planning",
           "status": "aligned"
         },

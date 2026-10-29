@@ -1,18 +1,18 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/conversation_repository.dart';
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
-import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

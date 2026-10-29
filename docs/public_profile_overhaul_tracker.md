@@ -21,14 +21,14 @@ The next direction is to move away from the deck/card paradigm entirely. Now tha
 - Redesigned `ProfileCard` toward the approved Option A direction: large hero photo, light editorial sections, running as a supporting differentiator.
 - Made meaningful profile blocks individually likeable/commentable.
 - Replaced the generic bio with structured profile prompts and photo prompts.
-- Added a source-of-truth prompt catalog in `lib/user_profile/domain/profile_prompts.dart`.
+- Added a source-of-truth prompt catalog in `lib/contexts/profiles/domain/profile_prompts.dart`.
 - Migrated legacy bio content into the prompt "A perfect run with me looks like...".
 
 ## Implementation Log
 
 ### 2026-05-14: Confidence, Identity, Compatibility Slice
 
-- Added `lib/public_profile/domain/profile_insights.dart` as the pure scoring and insight layer.
+- Added `lib/contexts/profiles/domain/profile_insights.dart` as the pure scoring and insight layer.
 - Added profile quality scoring for photos, prompts, captions, relationship goal, running details, background facts, and lifestyle facts.
 - Added owner-only profile quality guidance at the top of Edit Profile.
 - Added derived/selected emotional run tags on the running identity card.

@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/contexts/programmes/data/phone_import_retry_store.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/phone_contact.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/phone_import_batch.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_storage_sqlite.dart';
 import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/data/phone_import_retry_store.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_batch.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_draft.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 

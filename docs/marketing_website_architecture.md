@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.17.1
-updated: 2026-10-28
+version: 0.17.3
+updated: 2026-10-29
 owner: marketing_website
 status: active
 ---
@@ -350,7 +350,6 @@ The website is already split out of the old monolithic shell:
   `website/src/shared/ui/primitives/` as `ProcessStatusPanel`. Claim route
   sections own state-specific copy and CTA analytics callbacks, but configure
   the shared panel instead of rendering raw `process-status-panel` shells.
-- `website/src/features/host/HostPages.tsx` is a compatibility re-export only.
 - `website/src/features/home/HomePage.tsx` is now a thin home route shell.
   Visible Home route sections live in
   `website/src/features/home/sections/consumerHomeSections.tsx`, with route and
@@ -469,7 +468,7 @@ The website is already split out of the old monolithic shell:
   controller-local. Safety Triage queue and detail reads now use explicit query
   keys while filters, selection, review notes, assignment notes, and recent
   session receipts remain local to the controller. Event Publishing canonical
-  list, external supply list, supply readiness, and selected-detail reads now
+  list, external supply list, and selected-detail reads now
   use explicit query keys while query inputs, filters, active view, selected
   external row, and edited event form state remain local to the controller.
   Listing public reviews are the first website reference migration for remote
@@ -959,10 +958,11 @@ website/src/
 
 3. Keep `HostPages` split.
 
-   `/host/` and `/host/preview/` now live in route-specific files. Shared host
-   sections live under `features/host/sections/`, the host application flow
-   lives under `features/host/application/`, and `HostPages.tsx` remains only as
-   a compatibility barrel.
+   `/host/` and `/host/apply/` now live in route-specific files
+   (`HostPage.tsx`, `HostApplicationPage.tsx`). Shared host sections live under
+   `features/host/sections/` and the host application flow lives under
+   `features/host/application/`. No `HostPages` barrel remains; import the
+   route files directly.
 
 4. Keep shared site primitives split.
 
@@ -1048,9 +1048,9 @@ website/src/
    selected detail, assignment mutation, and decision mutation use shared query
    keys and mutation pending state. `Event Publishing` keeps query inputs,
    filters, active view, selected external row, and edited event form state
-   local while canonical list, external list, supply readiness, selected detail,
-   save mutation, and external publish mutation use shared query keys and
-   mutation pending state. Organizer Intake, Event Intake, and Marketing Ops
+   local while canonical list, external list, selected detail, save mutation,
+   and external takedown mutation use shared query keys and mutation pending
+   state. Organizer Intake, Event Intake, and Marketing Ops
    row-level pending state is derived from TanStack mutation state through named
    mutation keys. `web:react-query-state` ratchets manual
    loading/saving/submitting/in-flight state in feature controllers and feature

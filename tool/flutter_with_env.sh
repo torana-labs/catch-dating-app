@@ -622,7 +622,6 @@ EOF
 fi
 
 extra_dart_defines=()
-extra_dart_defines+=("--dart-define=CATCH_APP_ROLE=${app_role}")
 if [[ "$local_emulators" != true ]]; then
   if [[ -n "${FIREBASE_APP_CHECK_DEBUG_TOKEN:-}" ]]; then
     extra_dart_defines+=(

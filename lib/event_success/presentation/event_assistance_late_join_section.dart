@@ -1,10 +1,10 @@
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_destination.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_draft.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_rules.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setup.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_draft.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_rules.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setup.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_rules_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

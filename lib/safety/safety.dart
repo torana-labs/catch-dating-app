@@ -11,10 +11,10 @@
 library;
 
 // ── Domain models ───────────────────────────────────────────────────────────
-export 'domain/blocked_user.dart';
+export 'package:catch_dating_app/contexts/safety/domain/blocked_user.dart';
 
 // ── Data ────────────────────────────────────────────────────────────────────
-export 'data/safety_repository.dart';
+export 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 
 // ── Presentation — screens ──────────────────────────────────────────────────
 export 'presentation/settings_screen.dart'; // public-api: route entry point exposed to app routing

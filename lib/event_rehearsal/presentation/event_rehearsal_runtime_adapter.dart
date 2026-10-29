@@ -1,24 +1,24 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_accountability.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_attendee.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_profile.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_configuration.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 
 /// A read-only projection of one rehearsal session into the canonical Event
 /// Success host runtime. Mutations remain owned by [EventRehearsalController].

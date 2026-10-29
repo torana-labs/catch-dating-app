@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/presentation/adaptive_tab_scaffold.dart';
@@ -10,7 +11,6 @@ import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/hosts.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/notifications/notifications.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
 import 'package:cloud_functions/cloud_functions.dart';

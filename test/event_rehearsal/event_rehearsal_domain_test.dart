@@ -1,14 +1,14 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_profile.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

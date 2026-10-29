@@ -742,19 +742,19 @@ bool _isCandidate(
     return false;
   }
   if (relative ==
-      'lib/event_success/domain/event_success_compatibility_response/questionnaire_packs.dart') {
+      'lib/contexts/formats/domain/event_success_compatibility_response/questionnaire_packs.dart') {
     return false;
   }
-  if (relative == 'lib/event_success/domain/event_success_coach.dart' ||
+  if (relative == 'lib/contexts/formats/domain/event_success_coach.dart' ||
       relative ==
-          'lib/event_success/domain/event_success_playbooks/library.dart' ||
+          'lib/contexts/formats/domain/event_success_playbooks/library.dart' ||
       relative ==
-          'lib/event_success/domain/event_success_playbooks/modules.dart' ||
+          'lib/contexts/formats/domain/event_success_playbooks/modules.dart' ||
       relative ==
-          'lib/event_success/domain/event_success_playbooks/metrics.dart' ||
-      relative == 'lib/event_policies/domain/event_policy/cancellation.dart' ||
-      relative == 'lib/event_policies/domain/event_policy/cohort.dart' ||
-      relative == 'lib/event_policies/domain/event_policy/settlement.dart') {
+          'lib/contexts/formats/domain/event_success_playbooks/metrics.dart' ||
+      relative == 'lib/contexts/events/domain/event_policy/cancellation.dart' ||
+      relative == 'lib/contexts/events/domain/event_policy/cohort.dart' ||
+      relative == 'lib/contexts/events/domain/event_policy/settlement.dart') {
     return false;
   }
   if (relative.startsWith('lib/l10n/') ||

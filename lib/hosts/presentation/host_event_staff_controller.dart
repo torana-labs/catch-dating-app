@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/data/host_event_staff_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/host_event_staff_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_event_staff_controller.g.dart';

@@ -1,11 +1,11 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_delivery_reviews.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schemas;
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

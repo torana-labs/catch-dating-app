@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
-import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

@@ -10,6 +10,11 @@ import type {CatchReplyOperation} from "./whatsappReply";
 import {CATCH_REPLY_OPERATIONS, readCatchOperation} from "./whatsappReplyStore";
 import {CATCH_RECEIPTS, readCatchReceipt, isCatchStopReceipt,
   persistCatchStopReceipt} from "./whatsappEndpointStops";
+import type {CatchReceipt} from "./whatsappEndpointStops";
+import {getAuth} from "firebase-admin/auth";
+import {logger} from "firebase-functions";
+import {defaultMessageNominationDeps, processWhatsappNomination} from
+  "../operations/supplyIntake/messageNominations";
 
 export interface CatchReceiptScope {wabaId: string; phoneNumberId: string}
 function inScope(scope: CatchReceiptScope,
@@ -20,9 +25,14 @@ function inScope(scope: CatchReceiptScope,
     scope.phoneNumberId === value.phoneNumberId;
 }
 
-/** Receipt-created dispatcher; no provider I/O or send claims. */
+/**
+ * Receipt-created dispatcher; no provider I/O or send claims. routeInbound,
+ * when supplied, receives each in-scope inbound non-STOP receipt (Supply
+ * Intake reads nominations out of them); it never sees STOPs or statuses.
+ */
 export async function processCatchWhatsappReceipt(db: Firestore,
-  eventId: string, scope: CatchReceiptScope, nowMillis: number):
+  eventId: string, scope: CatchReceiptScope, nowMillis: number,
+  routeInbound?: (receipt: CatchReceipt) => Promise<unknown>):
   Promise<"applied" | "unchanged" | "unmatched" | "deferred"> {
   if (!/^cwhe_[a-f0-9]{64}$/u.test(eventId) || !safeMillis(nowMillis)) {
     throw new Error("Invalid Catch receipt identity");
@@ -37,7 +47,12 @@ export async function processCatchWhatsappReceipt(db: Firestore,
     await persistCatchStopReceipt(db, event, nowMillis);
     return "applied";
   }
-  if (event.eventKind !== "status") return "unchanged";
+  if (event.eventKind !== "status") {
+    if (event.eventKind === "inbound" && routeInbound) {
+      await routeInbound(event);
+    }
+    return "unchanged";
+  }
   const candidates = await db.collection(CATCH_REPLY_OPERATIONS)
     .where("wabaId", "==", event.wabaId)
     .where("phoneNumberId", "==", event.phoneNumberId)
@@ -162,6 +177,11 @@ function configuredConsumerScope(): CatchReceiptScope | null {
   return scope;
 }
 
+// Separate from the receipt gate: nominations need receipts, and they also
+// need the owner to switch message nominations on.
+const messageNominationsEnabled = defineBoolean(
+  "SUPPLY_MESSAGE_NOMINATIONS_ENABLED", {default: false});
+
 /** Only newly saved provider identity needs the early-receipt companion. */
 export function needsCatchStatusReconciliation(
   before: Record<string, unknown> | undefined,
@@ -179,8 +199,19 @@ export const onCatchWhatsappWebhookEventCreated = onDocumentCreated({
 }, async (event) => {
   const scope = configuredConsumerScope();
   if (!scope || !event.data) return;
-  await processCatchWhatsappReceipt(getFirestore(), event.params.eventId,
-    scope, Date.now());
+  const db = getFirestore();
+  const routeInbound = messageNominationsEnabled.value() ?
+    async (receipt: CatchReceipt) => {
+      const outcome = await processWhatsappNomination(
+        defaultMessageNominationDeps(db, (uid) => getAuth().getUser(uid)),
+        receipt);
+      if (outcome !== "not_nominator" && outcome !== "ignored") {
+        logger.info("WhatsApp nomination routed.", {outcome});
+      }
+    } :
+    undefined;
+  await processCatchWhatsappReceipt(db, event.params.eventId, scope,
+    Date.now(), routeInbound);
 });
 
 export const onCatchWhatsappReplyOperationWritten = onDocumentWritten({

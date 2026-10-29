@@ -1,5 +1,0 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Host intentionally inherits only the common permissions and activities
-         from src/main. Consumer Health Connect and public-link capabilities
-         live in the consumer overlay. -->
-</manifest>

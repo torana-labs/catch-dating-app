@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/hosts/domain/host_report_export.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/insights/domain/host_report_export.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   checkSpecTable,
+  legacyContextFileFinding,
   loadContextMap,
   placePath,
   scanContextMap,
@@ -190,6 +191,22 @@ test("loadContextMap rejects undeclared contexts and duplicate placements", () =
   /declares events twice/u);
   assert.throws(() => loadContextMap(JSON.stringify({...base,
     contexts: [{id: "events", owns: ""}]})), /must say what it owns/u);
+});
+
+test("legacyContextFileFinding keeps legacy folders to screens and barrels once forbidden", () => {
+  const strict = loadContextMap(JSON.stringify({
+    ...JSON.parse(fixtureMapSource),
+    forbidLegacyContextFiles: true,
+  }));
+  assert.equal(strict.forbidLegacyContextFiles, true);
+  assert.deepEqual(
+    legacyContextFileFinding("lib/events/domain/event.dart", strict).map((f) => f.rule),
+    ["legacyContextFile"],
+  );
+  assert.deepEqual(legacyContextFileFinding("lib/events/events.dart", strict), []);
+  assert.deepEqual(legacyContextFileFinding("lib/events/presentation/event_screen.dart", strict), []);
+  assert.deepEqual(legacyContextFileFinding("lib/contexts/events/domain/event.dart", strict), []);
+  assert.equal(map.forbidLegacyContextFiles, false);
 });
 
 test("checkSpecTable fails when the spec's context table drifts from the map", () => {

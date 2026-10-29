@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_saved_audience_members_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';

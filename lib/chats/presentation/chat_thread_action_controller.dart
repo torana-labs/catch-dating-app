@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatThreadActionController {

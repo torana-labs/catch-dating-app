@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:flutter/foundation.dart';
 
 enum HostEventEntryIntent {

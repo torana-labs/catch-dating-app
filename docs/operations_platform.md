@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.36.0
-updated: 2026-10-28
+version: 1.37.1
+updated: 2026-10-29
 owner: operations_platform
 status: active
 ---
@@ -24,15 +24,14 @@ This boundary keeps three concerns separate:
 | `tool/` | Repository checks, generators, migrations, deploy helpers, data repair, and compatibility producers consumed by operations adapters | Long-running business workflow state or agent orchestration |
 | `tool/remote_ops_manifest.json` | Inventory and preconditions for commands that can read or mutate external systems | Workflow queues, run state, or autonomous scheduling |
 
-Organizer-intake and event-guide tools remain bounded compatibility producers
-for reviewed migrations and Marketing packaging. Supply Intake no longer reads
-their committed generated artifacts, and the retired host-discovery tree has
-been removed. New orchestration belongs in `operations/`; do not extend legacy
-folders with another workflow engine.
+The organizer-intake, event-guide, weekly event guide PoC and host-discovery
+tool trees are retired (2026-10-29); Supply Intake replaces them, and the
+boundary check fails if their paths return. New orchestration belongs in
+`operations/`; do not extend `tool/` with another workflow engine.
 `operations-tool-boundary-v3` scans every code file under `tool/` for direct
 operations-runtime imports and for durable-workflow signals aggregated by tool
-subtree. File-count ceilings remain as an additional ratchet for the remaining
-known compatibility producers.
+subtree. `legacyRoots` file-count ceilings remain available as an additional
+ratchet; no tool subtree currently needs one.
 
 Supply Intake's `manifest.json#compatibilityInputs` is empty. The legacy
 adapter, host-discovery corpus, and Event Intake bridge publisher are retired
@@ -72,8 +71,8 @@ ledger, not process memory or committed search-run JSON.
 The other time bounds answer different questions and do not override fetch
 cadence:
 
-- `<city>/<week>/` event-guide folders define Marketing publication weeks.
-  They are not operational inputs and do not set supply freshness.
+- Marketing publication weeks (`<city>/<week>`) are not operational inputs
+  and do not set supply freshness.
 - Supply Intake snapshots freeze normalized reviewed evidence into each plan.
   The snapshot timestamp is provenance, not permission to refetch a provider.
 - Per-kind freshness decides whether a planned query or source surface is
@@ -91,7 +90,7 @@ JSON payload plus bounded provenance. The workflow never constructs a network
 client, and the React admin has no acquisition or model client.
 
 Two adapters implement that port (on-demand page fetching for intake
-requests is a separate channel, described below):
+requests and batch web search are separate channels, described below):
 
 - `manual_file` reads the same reviewed JSON payloads used by the existing
   compatibility capture commands. It consumes no network allowance and
@@ -110,6 +109,18 @@ provider injection, an unplanned/fresh `runKey`, or either exhausted ceiling
 fails closed before the provider runs. The monthly ledger is a trusted-runtime
 port and must be initialized from durable usage for its calendar-month window;
 it is never inferred from browser state.
+
+Batch web search (`sources/search/`) is the third channel. A reviewed search
+capture (SerpAPI `organic_results`, Google Custom Search `items`, or a plain
+result list) for one planned discovery query becomes a bounded result batch,
+then organizer search candidates for `ingest-input`, one per organizer surface.
+A capture a person saved goes through `manual_file` and needs no decision.
+`GuardedWebSearchPort` runs live searches through an injected search client
+only when `acquisition_policy.json` enables `webSearch`, cites an accepted
+`batch_web_search_policy` decision, and freezes positive per-run and monthly
+query caps. It sends only `web_search` queries the frozen plan scheduled, and
+reserves each query against both ledgers before the client runs. No runtime
+injects a client yet, so the channel is off.
 
 Raw payloads remain in the acquisition result long enough for deterministic
 normalization or approved external-artifact storage. They are never part of an
@@ -177,7 +188,7 @@ outcome, hashes, sizes and budget window.
 
 #### Front doors
 
-Four front doors create requests today, all through one in-transaction
+Five front doors create requests today, all through one in-transaction
 service (`functions/src/operations/supplyIntake/requests.ts`). Each door
 derives its request id deterministically, so a retried submission finds its
 own request, and the same id with different content is refused rather than
@@ -193,6 +204,25 @@ overwritten. Every request records its `origin`.
   organizer or a link into a request: a `self_submission` for the website, a
   `nomination` credited to the partner for a partner. Applicant name and email
   stay on the intent; only the organizer name, link, city and notes travel.
+- **Message nominations.** A sales associate or partner forwards organizers to
+  Catch's WhatsApp number from their phone: a profile shared from Instagram, a
+  Luma link, a website or an `@handle`. Staff register who may do this with
+  `adminSetSupplyNominator` (roles `admin`, `adminOwner`), which checks the
+  account holds a sales role or a current partner membership and stores the
+  number only as the WhatsApp endpoint hash plus its last four digits
+  (`supplyNominators/{nominatorId}`). The receipt dispatcher hands each
+  inbound, complete, non-STOP text to the router, which re-checks the
+  nominator's role on every message, rate-limits them to 60 messages an hour
+  and parses the text with
+  `operations/src/workflows/supply-intake/message-nomination.mjs`: each line
+  with links is one organizer, and lines without links are notes for the
+  organizer above. A city named on a line places it; otherwise the
+  nominator's default city does. Each organizer becomes a `nomination` with
+  origin `message_nomination` (the receipt id), credited to the nominator, and
+  its id is keyed on the message and line so a redelivery adds nothing.
+  Messages from anyone else stay ordinary support traffic. It runs only while
+  `SUPPLY_MESSAGE_NOMINATIONS_ENABLED` and the receipt consumers are on, and
+  sends no reply yet.
 - **Event refresh.** `adminRefreshOrganizerEvents` (roles `admin`,
   `adminOwner`, `support`, `salesStaff`) reads new events for an unclaimed
   organizer Catch already lists, from links staff give or the event-calendar
@@ -266,8 +296,11 @@ transaction then:
 An associate who nominated the organizer owns its Sales work; otherwise the
 approver does. Approval is idempotent per listing: an identical retry replays,
 and a different approval of the same listing is refused. Indexing and app
-discovery remain later decisions, after the organizer is verified. Matching a
-listing to an organizer Catch already lists is the reviewer's check for now.
+discovery remain later decisions, after the organizer is verified. Supply
+Intake can compare a listing with the organizers Catch already lists
+(`organizer-matching/`) and, given that inventory, records a `duplicateCheck`
+and a `possible_duplicate_organizer` gap. The worker does not pass the
+inventory yet, so matching stays the reviewer's check until it does.
 
 #### Imported events
 
@@ -301,7 +334,11 @@ withdrawn, ready, needing a check, or blocked, with the reasons.
 Staff publish waiting events with `adminPublishListingEvents` (roles `admin`,
 `adminOwner`, `support`): they confirm the outbound links, that Catch takes no
 booking, payment or waitlist, and the copy, and add a note for each governed
-blocker they accept (or cite an accepted policy waiver). Each event is planned
+blocker they accept (or cite an accepted policy waiver). An event whose page
+gave no map location takes the reviewer's coordinates (`eventLocations`), plus
+a venue name or address when the page had none; that clears the coordinate and
+location-detail blockers, while a note alone does not. An event with no fixed
+place is waived under the external event location policy instead. Each event is planned
 and written in its own transaction with a receipt keyed on the reviewer's
 idempotency key, so a retry replays and one blocked event never holds back the
 rest. A published event is never overwritten by a later import, and one staff
@@ -315,10 +352,11 @@ booking posture.
 
 #### Owner decisions
 
-Four Supply Intake capabilities stay off until the owner records a decision:
+Five Supply Intake capabilities stay off until the owner records a decision:
 fetching the pages a request names (`on_demand_page_fetch_policy`),
 scheduled refresh through a crawl provider (`recurring_event_crawl_policy`),
-agent research (`agent_research_policy`) and model extraction
+finding organizers through web search (`batch_web_search_policy`), agent
+research (`agent_research_policy`) and model extraction
 (`llm_extraction_fallback_policy`). Admin Organizer Intake lists them under
 "Supply Intake policies" (`adminListSupplyIntakePolicies`): what each would
 do, its limits, the recorded decision and whether its policy file switches it
@@ -333,7 +371,7 @@ on 28 October 2026 (CAT-266), and `acquisition_policy.json` cites it with at
 most 12 pages per nomination and 600 a month. Every environment's worker
 reads its own copy of the decision, so dev and staging hold the same accepted
 record as production; without it a nomination fails closed with
-`ACQUISITION_POLICY_DECISION_REQUIRED`. The other three capabilities stay off.
+`ACQUISITION_POLICY_DECISION_REQUIRED`. The other four capabilities stay off.
 
 ## Reference Layout
 

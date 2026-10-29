@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
-import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

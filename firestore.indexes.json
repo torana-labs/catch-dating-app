@@ -4153,6 +4153,10 @@
           "mode": "ASCENDING"
         },
         {
+          "fieldPath": "appVisibility",
+          "mode": "ASCENDING"
+        },
+        {
           "fieldPath": "createdAt",
           "mode": "DESCENDING"
         }
@@ -4178,6 +4182,10 @@
       "fields": [
         {
           "fieldPath": "locationMarketId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "appVisibility",
           "mode": "ASCENDING"
         },
         {

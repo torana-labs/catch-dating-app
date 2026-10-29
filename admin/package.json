@@ -32,31 +32,31 @@
   "dependencies": {
     "@catch/web-config": "0.1.0",
     "@catch/web-ui": "0.1.0",
-    "@tanstack/react-query": "^5.104.1",
+    "@tanstack/react-query": "^5.104.5",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "firebase": "^12.19.0",
-    "lucide-react": "^1.55.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "react-router": "^8.4.0"
+    "lucide-react": "^1.61.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-router": "^8.5.0"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^10.6.1",
-    "@storybook/addon-vitest": "^10.6.2",
-    "@storybook/react-vite": "^10.6.1",
+    "@storybook/addon-a11y": "^10.6.3",
+    "@storybook/addon-vitest": "^10.6.3",
+    "@storybook/react-vite": "^10.6.3",
     "@testing-library/react": "^16.3.3",
-    "@testing-library/user-event": "^14.6.7",
+    "@testing-library/user-event": "^14.6.8",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
-    "@vitest/browser-playwright": "^4.1.11",
+    "@vitest/browser-playwright": "^4.1.12",
     "jsdom": "^28.1.0",
-    "playwright": "^1.64.0",
+    "playwright": "^1.64.1",
     "storybook": "^10.6.2",
     "stylelint": "17.16.0",
     "typescript": "^6.0.3",
-    "vite": "^8.3.4",
+    "vite": "^8.3.5",
     "vitest": "^4.1.11"
   }
 }

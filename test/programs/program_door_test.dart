@@ -1,8 +1,8 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_access_policy.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_operations.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
-import 'package:catch_dating_app/programs/domain/program_access_policy.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
-import 'package:catch_dating_app/programs/domain/program_operations.dart';
 import 'package:catch_dating_app/programs/presentation/program_door_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -166,25 +166,23 @@ void main() {
   });
 
   group('door function access policy', () {
-    ProgramDutyAssignment door(Set<String> functionIds, {DateTime? expiresAt}) =>
-        ProgramDutyAssignment(
-          duty: ProgramStaffDuty.functionCheckIn,
-          pickupPointIds: const {},
-          hotelIds: const {},
-          functionIds: functionIds,
-          expiresAt: expiresAt ?? now.add(const Duration(hours: 6)),
-        );
+    ProgramDutyAssignment door(
+      Set<String> functionIds, {
+      DateTime? expiresAt,
+    }) => ProgramDutyAssignment(
+      duty: ProgramStaffDuty.functionCheckIn,
+      pickupPointIds: const {},
+      hotelIds: const {},
+      functionIds: functionIds,
+      expiresAt: expiresAt ?? now.add(const Duration(hours: 6)),
+    );
 
     test('scoped check-in reads only assigned functions', () {
-      final work = access([door(const {'a'})]);
-      expect(
-        canReadProgramFunction(work, 'a', now: now),
-        isTrue,
-      );
-      expect(
-        canReadProgramFunction(work, 'b', now: now),
-        isFalse,
-      );
+      final work = access([
+        door(const {'a'}),
+      ]);
+      expect(canReadProgramFunction(work, 'a', now: now), isTrue);
+      expect(canReadProgramFunction(work, 'b', now: now), isFalse);
     });
 
     test('empty function scope means every function', () {

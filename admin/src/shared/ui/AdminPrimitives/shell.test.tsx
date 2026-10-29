@@ -23,7 +23,7 @@ describe("AdminAccountMenu", () => {
       />
     );
 
-    const trigger = screen.getByRole("button", {name: "Account menu"});
+    const trigger = screen.getByRole("button", {name: "+91 91314 04263, account menu"});
     expect(trigger.getAttribute("aria-expanded")).toBe("false");
     expect(trigger.textContent).toContain("+91 91314 04263");
     expect(trigger.textContent).not.toContain("Admin");
@@ -55,7 +55,7 @@ describe("AdminAccountMenu", () => {
     );
 
     expect(screen.queryByText(/Local preview data/u)).toBeNull();
-    await user.click(screen.getByRole("button", {name: "Account menu"}));
+    await user.click(screen.getByRole("button", {name: "Local preview, account menu"}));
     expect(screen.getByText(/Local preview data/u)).not.toBeNull();
   });
 

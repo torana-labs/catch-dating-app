@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
-import 'package:catch_dating_app/chats/domain/event_chat.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_participant.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_timing.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_participant.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_timing.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -88,7 +88,8 @@ class EventChatParticipantsController
         person.uid == current.uid ||
         person.isHost ||
         !current.page.items.any(
-          (row) => row.uid == person.uid &&
+          (row) =>
+              row.uid == person.uid &&
               row.membershipRevision == person.membershipRevision &&
               row.membershipStatus == person.membershipStatus,
         )) {
@@ -114,14 +115,16 @@ class EventChatParticipantsController
     _timer?.cancel();
     state = const AsyncLoading();
     try {
-      await ref.read(eventChatRepositoryProvider).manageMember(
-        uid!,
-        current.access!,
-        person.uid,
-        action,
-        person.membershipRevision,
-        requestId,
-      );
+      await ref
+          .read(eventChatRepositoryProvider)
+          .manageMember(
+            uid!,
+            current.access!,
+            person.uid,
+            action,
+            person.membershipRevision,
+            requestId,
+          );
       _requests.remove(key);
       await refresh();
       return true;

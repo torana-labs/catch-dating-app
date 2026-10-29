@@ -27,7 +27,6 @@ import {
   AdminIntakeSection,
   AdminIntakeSectionTitle,
   AdminIntakeSourceList,
-  AdminIntakeStateGrid,
   AdminIntakeStageRail,
   AdminIntakeTaskToolbar,
   AdminIntakeWorkspaceFrame,
@@ -325,10 +324,10 @@ export const AdminIntakeLayoutStory: Story = {
             <strong>Summary</strong>
             <span>12 candidates ready for review</span>
           </AdminIntakeSectionTitle>
-          <AdminIntakeStateGrid>
+          <AdminOrganizerIntakeSurfaceGrid>
             <AdminStateRow label="Ready" value="8" />
             <AdminStateRow label="Blocked" value="4" />
-          </AdminIntakeStateGrid>
+          </AdminOrganizerIntakeSurfaceGrid>
         </AdminIntakeSection>
         <AdminOrganizerIntakeList>
           <AdminOrganizerIntakeCard>Candidate list item</AdminOrganizerIntakeCard>
@@ -378,25 +377,6 @@ export const AdminIntakeSectionTitleStory: Story = {
         <strong>Policy gates</strong>
         <span>4 warnings</span>
       </AdminIntakeSectionTitle>
-    </AdminWorkspace>
-  ),
-};
-
-export const AdminIntakeStateGridStory: Story = {
-  name: "State grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_admin_intake_state_grid",
-      states: ["metrics"],
-    },
-  },
-  render: () => (
-    <AdminWorkspace>
-      <AdminIntakeStateGrid>
-        <AdminStateRow label="Reviewed" value="24" />
-        <AdminStateRow label="Ready" value="8" />
-        <AdminStateRow label="Suppressed" value="2" />
-      </AdminIntakeStateGrid>
     </AdminWorkspace>
   ),
 };

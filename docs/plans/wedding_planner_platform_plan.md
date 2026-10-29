@@ -58,11 +58,11 @@ Status: approved plan, not yet implemented. Delivery slices W0–W5 in §8 are t
 | Event workspace | `HostEventManageSection { setup, guests, live, report }`; lifecycle picks one phase. | `lib/hosts/presentation/host_event_manage_screen_state.dart` |
 | Org authority | `organizerTeamMemberships.role ∈ {owner, manager}` — org-wide only. | `contracts/firestore/organizer_team_memberships.schema.json` |
 | Event staff | `eventStaffGrants.role ∈ {checkInOperator, eventOperator}`, `permissions ⊆ {viewRoster, setAttendance, reviewRuntimeClaims, publishLiveLocation}`, 14-day expiry, 50/event. Restricted route `/host/operator/:eventId`. | `contracts/firestore/event_staff_grants.schema.json`, `docs/host_product.md:643` |
-| Roster | `eventAttendees` is the one operational roster (`status ∈ invited/registered/waitlisted/checkedIn/cancelled`, `source`, `arrivalGroup`, import provenance). Attendance outbox exists for offline check-in. | `contracts/firestore/event_attendees.schema.json`, `lib/hosts/data/host_attendance_outbox.dart` |
+| Roster | `eventAttendees` is the one operational roster (`status ∈ invited/registered/waitlisted/checkedIn/cancelled`, `source`, `arrivalGroup`, import provenance). Attendance outbox exists for offline check-in. | `contracts/firestore/event_attendees.schema.json`, `lib/contexts/bookings/data/host_attendance_outbox.dart` |
 | Forms | Versioned forms, responses, reviewed conversion; targets are organizer/event/campaign. | `docs/host_forms.md`, `functions/src/organizers/organizerForms.ts` |
 | Messaging | `organizerCampaigns` (WhatsApp/SMS via connected sender, saved-audience recipients, `scheduledAt` absolute one-shot, preview→approve→dispatch). Event-assistance operational notices for plan changes. | `contracts/firestore/organizer_campaigns.schema.json` |
 | Automations | `organizer_form_automation_rules/runs` — triggered by form responses, not by time. | `contracts/firestore/organizer_form_automation_rules.schema.json` |
-| Calendar | Consumer-only `MethodChannel('catch/calendar').addToCalendar(title, description, location, start, end)`. No scheduling logic. | `lib/events/data/event_calendar_links.dart` |
+| Calendar | Consumer-only `MethodChannel('catch/calendar').addToCalendar(title, description, location, start, end)`. No scheduling logic. | `lib/contexts/events/data/event_calendar_links.dart` |
 | Late arrivals | `eventSuccessLateArrivals` is a *pairing* re-slot for Event Success rounds, not a logistics concept. | `contracts/firestore/event_success_late_arrivals.schema.json` |
 | Money | Consumer ticket checkout (`payments`, Stripe). No organizer billing, subscription, entitlement or invoice concept. | `contracts/firestore/payments.schema.json` |
 

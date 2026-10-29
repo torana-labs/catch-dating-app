@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
-import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
-import 'package:catch_dating_app/programs/data/program_work_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_attention_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_now_next_screen.dart';
 import 'package:flutter/material.dart';

@@ -6,9 +6,8 @@ and run tools by stable id instead of memorizing file paths.
 
 Durable business workflows do not belong here. Resumable workflow runs, work
 items, leases, budgets, agent decisions, and receipts live in `operations/` and
-are governed by `docs/operations_platform.md`. Organizer-intake remains a
-bounded reviewed-migration utility and event-guide remains a Marketing
-packager; neither is a Supply Intake runtime input. Stable workflow checks remain discoverable through
+are governed by `docs/operations_platform.md`; the retired organizer-intake and
+event-guide trees must not return. Stable workflow checks remain discoverable through
 `operations:boundaries` and `operations:workflow-manifest` in
 `tools_manifest.json`. `remote_ops_manifest.json` remains the separate inventory
 for commands that can touch external systems.
@@ -171,7 +170,7 @@ execution; the Harness itself never runs them.
 ```sh
 node tool/harness.mjs validate
 node tool/harness.mjs coverage --json
-node tool/harness.mjs explain --paths lib/features/explore/presentation/explore_page.dart --json
+node tool/harness.mjs explain --paths lib/core/app_config.dart --json
 node tool/harness.mjs plan --base origin/main --head HEAD --json
 ```
 
@@ -1099,15 +1098,9 @@ formats staged Dart, and runs only the triggered committed-output freshness
 checks. It never runs the analyzer or a broad test lane, and it refuses to
 re-stage partially staged Dart files.
 
-The following legacy evidence paths were deleted and must remain absent:
-
-- `docs/audit_registry/files.jsonl`
-- `docs/audit_registry/passes.jsonl`
-- `docs/audit_registry/agent_metrics.jsonl`
-- `docs/audit_registry/doc_versions.json`
-- `docs/agent_regression_ledger.json`
-
-Repository hygiene prevents their return. Active invariants belong in tests,
+Repository hygiene (`tool/check_repository_root_hygiene.mjs`) keeps the
+deleted `docs/audit_registry/` ledgers and `docs/agent_regression_ledger.json`
+from returning. Active invariants belong in tests,
 linters, component risk gates, or explicitly manual owner-runbook checks. Git
 and CI provide the durable proof of work.
 

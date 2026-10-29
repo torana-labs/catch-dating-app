@@ -40,15 +40,6 @@
     },
     {
       "rule": "manualProviderDeclaration",
-      "path": "lib/programs/data/program_inventory_repository.dart",
-      "symbol": "programInventoryRepositoryProvider",
-      "operation": "Provider",
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "Existing Programs declaration reviewed as CAT156 migration debt; preserve value-equality scope, disposal, idempotency/journal and test overrides until its bounded codegen migration."
-    },
-    {
-      "rule": "manualProviderDeclaration",
       "path": "lib/programs/presentation/program_events_controller.dart",
       "symbol": "programCreateControllerProvider",
       "operation": "FutureProvider.autoDispose.family",

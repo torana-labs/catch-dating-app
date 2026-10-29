@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen_state.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,14 +1,16 @@
 import 'dart:io';
 import 'dart:ui' as ui;
+
+import 'package:catch_dating_app/contexts/safety/domain/messaging_permission.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/safety/domain/messaging_permission.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_controller.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_screen.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 
@@ -133,11 +135,10 @@ void main() {
       status: MessagingPermissionStatus.optedOut,
       receiptId: 'old-stop',
       purposes: {
-        MessagingPermissionPurpose.eventOperations:
-            MessagingPurposeDecision(
-              status: MessagingPermissionStatus.optedIn,
-              receiptId: 'fresh-grant',
-            ),
+        MessagingPermissionPurpose.eventOperations: MessagingPurposeDecision(
+          status: MessagingPermissionStatus.optedIn,
+          receiptId: 'fresh-grant',
+        ),
       },
     );
     final state = MessagingPermissionsState(
@@ -163,7 +164,7 @@ Future<void> _pump(
   MessagingPermissionsState state,
   ValueChanged<MessagingPermission> onWithdraw, {
   void Function(MessagingPermission, MessagingPermissionPurpose)?
-      onWithdrawPurpose,
+  onWithdrawPurpose,
   bool dark = false,
   double scale = 1,
 }) async {

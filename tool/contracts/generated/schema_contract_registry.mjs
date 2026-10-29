@@ -30965,7 +30965,7 @@ export const supplyIntakeRequestSchema = {
       "format": "date-time"
     },
     "origin": {
-      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
+      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a message a registered nominator forwarded to Catch (id is the message's receipt id), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
       "anyOf": [
         {
           "type": "null"
@@ -30983,6 +30983,7 @@ export const supplyIntakeRequestSchema = {
               "enum": [
                 "admin_nomination",
                 "sales_inbound_intent",
+                "message_nomination",
                 "discovery_run",
                 "admin_event_refresh"
               ]
@@ -31325,7 +31326,7 @@ export const supplyIntakeRequestsDocumentSchema = {
           "format": "date-time"
         },
         "origin": {
-          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
+          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a message a registered nominator forwarded to Catch (id is the message's receipt id), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
           "anyOf": [
             {
               "type": "null"
@@ -31343,6 +31344,7 @@ export const supplyIntakeRequestsDocumentSchema = {
                   "enum": [
                     "admin_nomination",
                     "sales_inbound_intent",
+                    "message_nomination",
                     "discovery_run",
                     "admin_event_refresh"
                   ]
@@ -31762,6 +31764,152 @@ export const supplyIntakeRequestsDocumentSchema = {
                   }
                 }
               }
+            },
+            "duplicateCheck": {
+              "description": "The listing's advisory comparison with the organizers Catch already lists, copied from the listing its contentHash covers. Null when the request was not compared (an event_refresh names its organizer); absent on requests completed before the worker compared listings.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "policyId",
+                    "authority",
+                    "verdict",
+                    "reasons",
+                    "organizersCompared",
+                    "inventoryHash",
+                    "inventory",
+                    "candidates"
+                  ],
+                  "properties": {
+                    "policyId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "authority": {
+                      "const": "advisory"
+                    },
+                    "verdict": {
+                      "enum": [
+                        "match",
+                        "ambiguous",
+                        "none"
+                      ]
+                    },
+                    "reasons": {
+                      "type": "array",
+                      "maxItems": 8,
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                      }
+                    },
+                    "organizersCompared": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    },
+                    "inventoryHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "inventory": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "citySlug",
+                        "limit",
+                        "truncated"
+                      ],
+                      "properties": {
+                        "citySlug": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 80
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 10000
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "candidates": {
+                      "type": "array",
+                      "maxItems": 12,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "organizerId",
+                          "name",
+                          "score",
+                          "band",
+                          "signals",
+                          "conflicts",
+                          "rationale"
+                        ],
+                        "properties": {
+                          "organizerId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 500
+                          },
+                          "score": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "band": {
+                            "enum": [
+                              "match",
+                              "probable",
+                              "review",
+                              "low"
+                            ]
+                          },
+                          "signals": {
+                            "type": "array",
+                            "maxItems": 12,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                            }
+                          },
+                          "conflicts": {
+                            "type": "array",
+                            "maxItems": 12,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                            }
+                          },
+                          "rationale": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
             }
           }
         }
@@ -31872,6 +32020,148 @@ export const supplyIntakeRequestsDocumentSchema = {
       "minLength": 1,
       "maxLength": 240,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,79}$"
+    },
+    "duplicateCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "authority",
+        "verdict",
+        "reasons",
+        "organizersCompared",
+        "inventoryHash",
+        "inventory",
+        "candidates"
+      ],
+      "properties": {
+        "policyId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "authority": {
+          "const": "advisory"
+        },
+        "verdict": {
+          "enum": [
+            "match",
+            "ambiguous",
+            "none"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,79}$"
+          }
+        },
+        "organizersCompared": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "inventoryHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inventory": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "citySlug",
+            "limit",
+            "truncated"
+          ],
+          "properties": {
+            "citySlug": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "name",
+              "score",
+              "band",
+              "signals",
+              "conflicts",
+              "rationale"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              },
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "band": {
+                "enum": [
+                  "match",
+                  "probable",
+                  "review",
+                  "low"
+                ]
+              },
+              "signals": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                }
+              },
+              "conflicts": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                }
+              },
+              "rationale": {
+                "type": "string",
+                "maxLength": 2000
+              }
+            }
+          }
+        }
+      }
     },
     "hash": {
       "type": "string",
@@ -32068,6 +32358,97 @@ export const supplyIntakeUsageDocumentSchema = {
     "updatedAt": {
       "type": "string",
       "format": "date-time"
+    }
+  }
+};
+
+export const supplyNominatorDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/supply_nominators.schema.json",
+  "title": "SupplyNominatorDocument",
+  "description": "A person staff have allowed to nominate organizers by messaging Catch. A WhatsApp nominator is keyed by the hash of their number, which is the same endpoint hash the WhatsApp receipts use, so the number itself is never stored; only its last four digits are kept so staff can tell entries apart. Each message from an active nominator becomes Supply Intake nominations credited to their Catch account. Their authority (a sales role, or a current partner membership) is checked again on every message.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supplyNominators",
+  "x-firestore-path": "supplyNominators/{nominatorId}",
+  "x-document-id-field": "nominatorId",
+  "x-owner": "Admin nominator registry callables",
+  "required": [
+    "schemaVersion",
+    "nominatorId",
+    "channel",
+    "endpointHash",
+    "phoneLast4",
+    "role",
+    "uid",
+    "displayName",
+    "defaultMarket",
+    "active",
+    "createdAt",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "nominatorId": {
+      "type": "string",
+      "pattern": "^whatsapp-[a-f0-9]{64}$"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "whatsapp"
+      ]
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "phoneLast4": {
+      "type": "string",
+      "pattern": "^[0-9]{4}$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "associate",
+        "partner"
+      ]
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "defaultMarket": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   }
 };
@@ -147606,7 +147987,7 @@ export const externalEventPublicationReceiptDocumentSchema = {
   "x-firestore-collection": "externalEventPublicationReceipts",
   "x-firestore-path": "externalEventPublicationReceipts/{receiptId}",
   "x-document-id-field": "receiptId",
-  "x-owner": "adminPublishExternalEvent and adminTakedownExternalEvent callables",
+  "x-owner": "adminPublishListingEvents and adminTakedownExternalEvent callables and the onSupplyIntakeListingApproved trigger",
   "required": [
     "schemaVersion",
     "receiptId",
@@ -252514,416 +252895,6 @@ export const organizerIntakeFieldCorrectionDocumentSchema = {
   }
 };
 
-export const organizerEventCandidateReviewDecisionDocumentSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/organizer_event_candidate_review_decisions.schema.json",
-  "title": "OrganizerEventCandidateReviewDecisionDocument",
-  "description": "Latest admin event-candidate review decision stored at organizerEventCandidateReviewDecisions/{decisionId}. Raw provider event evidence and imported events are not stored here.",
-  "type": "object",
-  "additionalProperties": false,
-  "x-firestore-collection": "organizerEventCandidateReviewDecisions",
-  "x-firestore-path": "organizerEventCandidateReviewDecisions/{decisionId}",
-  "x-document-id-field": "decisionId",
-  "x-owner": "adminDecideOrganizerEventCandidate callable",
-  "required": [
-    "schemaVersion",
-    "decisionId",
-    "candidateId",
-    "decision",
-    "decisionStatus",
-    "checklist",
-    "note",
-    "reviewedByUid",
-    "reviewedAt",
-    "updatedAt",
-    "importState"
-  ],
-  "properties": {
-    "schemaVersion": {
-      "type": "integer",
-      "const": 1
-    },
-    "decisionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "candidateId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "approve_for_import",
-        "hold",
-        "reject"
-      ]
-    },
-    "decisionStatus": {
-      "type": "string",
-      "enum": [
-        "approved_for_import",
-        "held",
-        "rejected"
-      ]
-    },
-    "checklist": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "identityReviewed",
-        "sourceEventReviewed",
-        "timeReviewed",
-        "locationReviewed",
-        "dedupeReviewed",
-        "ownerSafeCopyReviewed",
-        "importPolicyAcknowledged"
-      ],
-      "properties": {
-        "identityReviewed": {
-          "type": "boolean"
-        },
-        "sourceEventReviewed": {
-          "type": "boolean"
-        },
-        "timeReviewed": {
-          "type": "boolean"
-        },
-        "locationReviewed": {
-          "type": "boolean"
-        },
-        "dedupeReviewed": {
-          "type": "boolean"
-        },
-        "ownerSafeCopyReviewed": {
-          "type": "boolean"
-        },
-        "importPolicyAcknowledged": {
-          "type": "boolean"
-        }
-      }
-    },
-    "blockerResolutions": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "title": "ExternalEventBlockerResolution",
-        "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "blockerCode",
-          "outcome",
-          "policyGapDecisionId",
-          "note"
-        ],
-        "properties": {
-          "blockerCode": {
-            "type": "string",
-            "enum": [
-              "missing_exact_coordinates",
-              "missing_end_time",
-              "missing_location_detail",
-              "requires_event_defaults_policy",
-              "requires_owner_safe_copy_review",
-              "duplicate_normalized_event_key"
-            ]
-          },
-          "outcome": {
-            "type": "string",
-            "enum": [
-              "resolved",
-              "waived"
-            ]
-          },
-          "policyGapDecisionId": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "note": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1000
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "outcome": {
-                  "const": "waived"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "policyGapDecisionId": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "outcome": {
-                  "const": "resolved"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "policyGapDecisionId": {
-                  "type": "null"
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-    "note": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    },
-    "reviewedByUid": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "reviewedAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      }
-    },
-    "updatedAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      }
-    },
-    "importState": {
-      "type": "string",
-      "enum": [
-        "blocked_by_policy",
-        "not_importable",
-        "pending_import"
-      ]
-    }
-  }
-};
-
-export const organizerEventLocationResolutionDecisionDocumentSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/organizer_event_location_resolution_decisions.schema.json",
-  "title": "OrganizerEventLocationResolutionDecisionDocument",
-  "description": "Latest admin-reviewed event location resolution stored at organizerEventLocationResolutionDecisions/{resolutionId}. Raw provider lookup responses and imported events are not stored here.",
-  "type": "object",
-  "additionalProperties": false,
-  "x-firestore-collection": "organizerEventLocationResolutionDecisions",
-  "x-firestore-path": "organizerEventLocationResolutionDecisions/{resolutionId}",
-  "x-document-id-field": "resolutionId",
-  "x-owner": "adminResolveOrganizerEventLocation callable",
-  "required": [
-    "schemaVersion",
-    "resolutionId",
-    "candidateId",
-    "location",
-    "checklist",
-    "note",
-    "reviewedByUid",
-    "reviewedAt",
-    "updatedAt",
-    "resolutionStatus"
-  ],
-  "properties": {
-    "schemaVersion": {
-      "type": "integer",
-      "const": 1
-    },
-    "resolutionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "candidateId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    },
-    "location": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "name",
-        "latitude",
-        "longitude"
-      ],
-      "properties": {
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "address": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 500
-        },
-        "placeId": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1,
-          "maxLength": 256
-        },
-        "latitude": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "minimum": -90,
-          "maximum": 90
-        },
-        "longitude": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "minimum": -180,
-          "maximum": 180
-        },
-        "notes": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      }
-    },
-    "checklist": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "sourceLocationReviewed",
-        "coordinatesReviewed",
-        "placeIdentityReviewed",
-        "importSafetyReviewed"
-      ],
-      "properties": {
-        "sourceLocationReviewed": {
-          "type": "boolean"
-        },
-        "coordinatesReviewed": {
-          "type": "boolean"
-        },
-        "placeIdentityReviewed": {
-          "type": "boolean"
-        },
-        "importSafetyReviewed": {
-          "type": "boolean"
-        }
-      }
-    },
-    "note": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    },
-    "reviewedByUid": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "reviewedAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      }
-    },
-    "updatedAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      }
-    },
-    "resolutionStatus": {
-      "type": "string",
-      "enum": [
-        "resolved"
-      ]
-    }
-  }
-};
-
 export const organizerPolicyGapReviewDecisionDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_policy_gap_review_decisions.schema.json",
@@ -261532,161 +261503,6 @@ export const adminRecordActionExecutionCallablePayloadSchema = {
   }
 };
 
-export const adminDecideOrganizerEventCandidateCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
-  "title": "AdminDecideOrganizerEventCandidateCallablePayload",
-  "description": "Callable payload accepted by adminDecideOrganizerEventCandidate. This records a manual admin review decision for a private external event candidate without importing the event.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "candidateId",
-    "decision",
-    "checklist",
-    "blockerResolutions",
-    "note"
-  ],
-  "properties": {
-    "candidateId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "approve_for_import",
-        "hold",
-        "reject"
-      ]
-    },
-    "checklist": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "identityReviewed",
-        "sourceEventReviewed",
-        "timeReviewed",
-        "locationReviewed",
-        "dedupeReviewed",
-        "ownerSafeCopyReviewed",
-        "importPolicyAcknowledged"
-      ],
-      "properties": {
-        "identityReviewed": {
-          "type": "boolean"
-        },
-        "sourceEventReviewed": {
-          "type": "boolean"
-        },
-        "timeReviewed": {
-          "type": "boolean"
-        },
-        "locationReviewed": {
-          "type": "boolean"
-        },
-        "dedupeReviewed": {
-          "type": "boolean"
-        },
-        "ownerSafeCopyReviewed": {
-          "type": "boolean"
-        },
-        "importPolicyAcknowledged": {
-          "type": "boolean"
-        }
-      }
-    },
-    "blockerResolutions": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "title": "ExternalEventBlockerResolution",
-        "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "blockerCode",
-          "outcome",
-          "policyGapDecisionId",
-          "note"
-        ],
-        "properties": {
-          "blockerCode": {
-            "type": "string",
-            "enum": [
-              "missing_exact_coordinates",
-              "missing_end_time",
-              "missing_location_detail",
-              "requires_event_defaults_policy",
-              "requires_owner_safe_copy_review",
-              "duplicate_normalized_event_key"
-            ]
-          },
-          "outcome": {
-            "type": "string",
-            "enum": [
-              "resolved",
-              "waived"
-            ]
-          },
-          "policyGapDecisionId": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "note": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1000
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "outcome": {
-                  "const": "waived"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "policyGapDecisionId": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "outcome": {
-                  "const": "resolved"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "policyGapDecisionId": {
-                  "type": "null"
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-    "note": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    }
-  }
-};
-
 export const adminNominateOrganizerCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_nominate_organizer_payload.schema.json",
@@ -261981,7 +261797,8 @@ export const adminListOrganizerListingReviewsCallableResponseSchema = {
           "origin",
           "market",
           "suggestedSlug",
-          "listing"
+          "listing",
+          "duplicateCheck"
         ],
         "properties": {
           "requestId": {
@@ -262152,6 +261969,96 @@ export const adminListOrganizerListingReviewsCallableResponseSchema = {
                 "minimum": 0
               }
             }
+          },
+          "duplicateCheck": {
+            "description": "How the listing compares with the organizers Catch already lists. Advisory: it never blocks approval. Null when the listing was not compared, or was built before listings were compared.",
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "verdict",
+                  "organizersCompared",
+                  "citySlug",
+                  "truncated",
+                  "candidates"
+                ],
+                "properties": {
+                  "verdict": {
+                    "enum": [
+                      "match",
+                      "ambiguous",
+                      "none"
+                    ]
+                  },
+                  "organizersCompared": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "citySlug": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80,
+                    "description": "The city the comparison was limited to; null when it compared every city."
+                  },
+                  "truncated": {
+                    "type": "boolean",
+                    "description": "Whether more published organizers existed than were compared."
+                  },
+                  "candidates": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "organizerId",
+                        "name",
+                        "score",
+                        "band",
+                        "rationale"
+                      ],
+                      "properties": {
+                        "organizerId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        "name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 500
+                        },
+                        "score": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "band": {
+                          "enum": [
+                            "match",
+                            "probable",
+                            "review",
+                            "low"
+                          ]
+                        },
+                        "rationale": {
+                          "type": "string",
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
           }
         }
       }
@@ -262676,11 +262583,253 @@ export const adminPublishListingEventsCallablePayloadSchema = {
           }
         }
       }
+    },
+    "eventLocations": {
+      "type": "array",
+      "maxItems": 60,
+      "description": "Map locations the reviewer supplied for events whose source page gave none. The coordinates clear missing_exact_coordinates; a venue name or address fills one the page left out.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventWorkItemId",
+          "name",
+          "address",
+          "placeId",
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "eventWorkItemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "address": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "placeId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          }
+        }
+      }
     }
   },
   "x-callable-aliases": [
     "adminPublishListingEvents"
   ]
+};
+
+export const adminSetSupplyNominatorCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_set_supply_nominator_payload.schema.json",
+  "title": "AdminSetSupplyNominatorCallablePayload",
+  "description": "Adds or updates someone who may nominate organizers by sending links to Catch's WhatsApp number. Messages from this number become Supply Intake nominations credited to the uid. The uid must hold a sales role (associate) or a current partner membership (partner). Setting active to false stops new messages counting; nothing is deleted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "phoneE164",
+    "uid",
+    "role",
+    "displayName",
+    "defaultMarket",
+    "active"
+  ],
+  "properties": {
+    "phoneE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "uid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "associate",
+        "partner"
+      ]
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "defaultMarket": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "active": {
+      "type": "boolean"
+    }
+  },
+  "x-callable-aliases": [
+    "adminSetSupplyNominator"
+  ]
+};
+
+export const adminSetSupplyNominatorCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_set_supply_nominator_response.schema.json",
+  "title": "AdminSetSupplyNominatorCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nominatorId",
+    "created",
+    "phoneLast4",
+    "defaultMarket",
+    "active"
+  ],
+  "properties": {
+    "nominatorId": {
+      "type": "string",
+      "pattern": "^whatsapp-[a-f0-9]{64}$"
+    },
+    "created": {
+      "type": "boolean"
+    },
+    "phoneLast4": {
+      "type": "string",
+      "pattern": "^[0-9]{4}$"
+    },
+    "defaultMarket": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    },
+    "active": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const adminListSupplyNominatorsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_supply_nominators_payload.schema.json",
+  "title": "AdminListSupplyNominatorsCallablePayload",
+  "description": "Lists everyone who may nominate organizers by messaging Catch, active or not. Numbers appear only as their last four digits.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "x-callable-aliases": [
+    "adminListSupplyNominators"
+  ]
+};
+
+export const adminListSupplyNominatorsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_supply_nominators_response.schema.json",
+  "title": "AdminListSupplyNominatorsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nominators"
+  ],
+  "properties": {
+    "nominators": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "nominatorId",
+          "channel",
+          "phoneLast4",
+          "role",
+          "uid",
+          "displayName",
+          "defaultMarket",
+          "active",
+          "updatedAt"
+        ],
+        "properties": {
+          "nominatorId": {
+            "type": "string",
+            "pattern": "^whatsapp-[a-f0-9]{64}$"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "whatsapp"
+            ]
+          },
+          "phoneLast4": {
+            "type": "string",
+            "pattern": "^[0-9]{4}$"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "associate",
+              "partner"
+            ]
+          },
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "defaultMarket": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-z][a-z0-9-]{1,49}$"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
 };
 
 export const adminListSupplyIntakePoliciesCallablePayloadSchema = {
@@ -263090,111 +263239,6 @@ export const adminDecideOrganizerPolicyGapCallablePayloadSchema = {
           "type": "boolean"
         },
         "behaviorStillDisabledAcknowledged": {
-          "type": "boolean"
-        }
-      }
-    },
-    "note": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    }
-  }
-};
-
-export const adminResolveOrganizerEventLocationCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
-  "title": "AdminResolveOrganizerEventLocationCallablePayload",
-  "description": "Callable payload accepted by adminResolveOrganizerEventLocation. This records reviewed coordinates for a private external event candidate without importing the event.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "candidateId",
-    "location",
-    "checklist",
-    "note"
-  ],
-  "properties": {
-    "candidateId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    },
-    "location": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "name",
-        "latitude",
-        "longitude"
-      ],
-      "properties": {
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "address": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 500
-        },
-        "placeId": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1,
-          "maxLength": 256
-        },
-        "latitude": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "minimum": -90,
-          "maximum": 90
-        },
-        "longitude": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "minimum": -180,
-          "maximum": 180
-        },
-        "notes": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      }
-    },
-    "checklist": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "sourceLocationReviewed",
-        "coordinatesReviewed",
-        "placeIdentityReviewed",
-        "importSafetyReviewed"
-      ],
-      "properties": {
-        "sourceLocationReviewed": {
-          "type": "boolean"
-        },
-        "coordinatesReviewed": {
-          "type": "boolean"
-        },
-        "placeIdentityReviewed": {
-          "type": "boolean"
-        },
-        "importSafetyReviewed": {
           "type": "boolean"
         }
       }
@@ -265479,76 +265523,6 @@ export const adminUpdateEventDetailsCallablePayloadSchema = {
               "minimum": 0
             }
           }
-        }
-      }
-    }
-  }
-};
-
-export const adminPublishExternalEventCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
-  "title": "AdminPublishExternalEventCallablePayload",
-  "description": "Callable payload accepted by adminPublishExternalEvent. This publishes one preflight-approved read-only externalEvents/{eventId} document from eventSupplyReadiness/current.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "sourceActionId",
-    "targetPath",
-    "executionMode",
-    "idempotencyKey",
-    "reviewNote",
-    "checklist"
-  ],
-  "properties": {
-    "sourceActionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    },
-    "targetPath": {
-      "type": "string",
-      "pattern": "^externalEvents/[A-Za-z0-9_-]{1,180}$"
-    },
-    "executionMode": {
-      "type": "string",
-      "enum": [
-        "dry_run",
-        "apply"
-      ]
-    },
-    "idempotencyKey": {
-      "type": "string",
-      "minLength": 8,
-      "maxLength": 180,
-      "pattern": "^[A-Za-z0-9:_-]+$"
-    },
-    "reviewNote": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    },
-    "checklist": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "preflightActionReviewed",
-        "outboundLinksReviewed",
-        "noCatchBookingPaymentsWaitlist",
-        "ownerSafeCopyReviewed"
-      ],
-      "properties": {
-        "preflightActionReviewed": {
-          "type": "boolean"
-        },
-        "outboundLinksReviewed": {
-          "type": "boolean"
-        },
-        "noCatchBookingPaymentsWaitlist": {
-          "type": "boolean"
-        },
-        "ownerSafeCopyReviewed": {
-          "type": "boolean"
         }
       }
     }

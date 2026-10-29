@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_late_join_setting_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_destination.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_template.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_late_join_setting_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_template.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_sheet.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

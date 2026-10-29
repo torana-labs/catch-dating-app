@@ -233,25 +233,25 @@ test("capture freshness must execute successfully when selected", () => {
   }
 });
 
-test("merge-queue reuse accepts only skipped pure-validation lanes with a queue run", () => {
+test("merge-queue reuse accepts skipped lanes only with a cited queue run", () => {
   const plan = {operations: {ciTargets: ["flutter", "functions", "tools", "visual_integration"]}};
-  const needs = {plan: {result: "success"}, flutter: {result: "skipped"}, functions: {result: "success"},
+  const needs = {plan: {result: "success"}, flutter: {result: "skipped"}, functions: {result: "skipped"},
     tools: {result: "skipped"}, "visual-integration": {result: "skipped"}};
   assert.doesNotThrow(() => requireValidationLanes(plan, needs, {queueVerifiedRun: "39822205436"}));
   assert.throws(() => requireValidationLanes(plan, needs), /Selected lane flutter did not succeed/u);
   assert.throws(() => requireValidationLanes(plan, needs, {queueVerifiedRun: "abc"}), /Invalid merge-queue run/u);
-  const delivery = structuredClone(needs);
-  delivery.functions.result = "skipped";
-  assert.throws(() => requireValidationLanes(plan, delivery, {queueVerifiedRun: "39822205436"}),
-    /Selected lane functions did not succeed/u);
   const failed = structuredClone(needs);
   failed.flutter.result = "failure";
   assert.throws(() => requireValidationLanes(plan, failed, {queueVerifiedRun: "39822205436"}));
+  const cancelled = structuredClone(needs);
+  cancelled.functions.result = "cancelled";
+  assert.throws(() => requireValidationLanes(plan, cancelled, {queueVerifiedRun: "39822205436"}));
 });
 
-test("jobs that produce delivery evidence are never merge-queue reusable", () => {
-  for (const lane of ["functions", "firestore_rules", "contracts", "marketing", "capture_freshness",
-    "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke"]) {
-    assert.ok(!queueReusableLanes.includes(lane), `${lane} feeds delivery and must always run on main`);
+test("a successful queue run of the exact source proves every validation lane", () => {
+  for (const lane of ["admin", "capture_freshness", "contracts", "docs", "firestore_rules", "flutter",
+    "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke",
+    "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"]) {
+    assert.ok(queueReusableLanes.includes(lane), `${lane} must not re-run on main after the queue proved it`);
   }
 });

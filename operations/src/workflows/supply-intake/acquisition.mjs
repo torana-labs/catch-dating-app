@@ -22,6 +22,10 @@ const schemaPath = path.join(
 export const MANUAL_FILE_ACQUISITION_ADAPTER_ID = "manual_file";
 export const PAGE_FETCH_ADAPTER_ID = "page_fetch";
 export const PAGE_FETCH_POLICY_GAP_ID = "on_demand_page_fetch_policy";
+// Batch web search (sources/search/): planned discovery queries sent to a
+// search API. Off until the owner accepts batch_web_search_policy.
+export const WEB_SEARCH_ADAPTER_ID = "serp_api";
+export const WEB_SEARCH_POLICY_GAP_ID = "batch_web_search_policy";
 export const RAW_PAYLOAD_PERSISTENCE =
   "external_artifact_store_only";
 
@@ -383,6 +387,14 @@ export function assertPolicy(policy) {
       policy.pageFetch.maxRequestsPerIntake >= 0 &&
       Number.isSafeInteger(policy.pageFetch.maxRequestsPerMonth) &&
       policy.pageFetch.maxRequestsPerMonth >= 0 &&
+      typeof policy.webSearch?.enabled === "boolean" &&
+      policy.webSearch.policyGapId === WEB_SEARCH_POLICY_GAP_ID &&
+      Number.isSafeInteger(policy.webSearch.maxResultsPerQuery) &&
+      policy.webSearch.maxResultsPerQuery > 0 &&
+      Number.isSafeInteger(policy.webSearch.maxQueriesPerRun) &&
+      policy.webSearch.maxQueriesPerRun >= 0 &&
+      Number.isSafeInteger(policy.webSearch.maxQueriesPerMonth) &&
+      policy.webSearch.maxQueriesPerMonth >= 0 &&
       policy.rawPayload?.firestorePersistenceAllowed === false &&
       policy.rawPayload?.persistence ===
         RAW_PAYLOAD_PERSISTENCE,
@@ -410,6 +422,26 @@ export function assertPolicy(policy) {
         policy.pageFetch.maxRequestsPerMonth > 0,
       "ACQUISITION_POLICY_DECISION_REQUIRED",
       "Enabled page fetching requires its adapter, decision, and positive caps."
+    );
+  }
+  if (policy.webSearch.enabled) {
+    invariant(
+      policy.webSearch.adapterId === WEB_SEARCH_ADAPTER_ID &&
+        typeof policy.webSearch.decisionId === "string" &&
+        policy.webSearch.decisionId.length > 0 &&
+        policy.webSearch.maxQueriesPerRun > 0 &&
+        policy.webSearch.maxQueriesPerMonth > 0,
+      "ACQUISITION_POLICY_DECISION_REQUIRED",
+      "Enabled web search requires its adapter, decision, and positive caps."
+    );
+  } else {
+    invariant(
+      policy.webSearch.adapterId === null &&
+        policy.webSearch.decisionId === null &&
+        policy.webSearch.maxQueriesPerRun === 0 &&
+        policy.webSearch.maxQueriesPerMonth === 0,
+      "INVALID_ACQUISITION_POLICY",
+      "Disabled web search carries no adapter, decision, or allowance."
     );
   }
 }
@@ -443,7 +475,7 @@ function assertRunKey(value) {
   requiredString(value, "acquisition runKey", 500);
 }
 
-function assertJsonPayload(value) {
+export function assertJsonPayload(value) {
   invariant(
     value !== null &&
       typeof value === "object" &&

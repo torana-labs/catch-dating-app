@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'attendance_sheet_view_model.g.dart';

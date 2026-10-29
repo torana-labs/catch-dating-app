@@ -149,34 +149,12 @@ payments, reservations, or waitlists, and remain separate from canonical
 Catch-hosted `events/{id}` documents until a policy-owned importer exists.
 External supply rows are selectable so operators can inspect source attribution,
 candidate ids, normalized duplicate keys, review batch state, and owner-safe
-copy/import-policy checks without opening raw artifacts. The selected row also
-joins against the current import plan and execution preflight, when present, so
-operators can see whether that external event is already published supply,
-preflight-ready but write-disabled, blocked, waiting for review, rejected,
-merged as a duplicate link, or absent from the current readiness snapshot. The
-Events workspace also reads `eventSupplyReadiness/current` through
-`adminGetEventSupplyReadiness` in live mode, with generated
-`admin/src/generated/` snapshots as sample fallback. Operators publish that
-read-only dashboard document from reviewed generated artifacts with:
-
-```bash
-node tool/organizer_intake/publish_event_supply_readiness.mjs --env dev
-node tool/organizer_intake/publish_event_supply_readiness.mjs --env dev --apply
-```
-
-This exposes read-only draft counts, blockers, guardrails, source files, and
-regeneration commands without enabling Firestore import writes. The readiness
-panel includes a searchable/filterable import action directory capped to the
-first 50 visible rows, with Needs action, Write-ready, Blocked, Waiting,
-Rejected, and All filters so large generated plans are operable without turning
-the Events tab into a bulk importer. When the readiness policy explicitly sets
-`writeEnabled: true` and `authorityModel: admin_import_service`, operators can
-publish one preflight-ready row at a time through `adminPublishExternalEvent`.
-The UI requires a review note plus preflight, outbound-link, no-Catch-booking,
-and owner-safe-copy checklist gates before the per-row action enables. It
-performs and displays a server dry run before apply. The callable creates only
-`externalEvents/{id}` outbound supply, snapshots the organizer capability
-ceiling, and refuses canonical `events/{id}` writes.
+copy/import-policy checks without opening raw artifacts. Imported events
+publish from Organizer Intake's "Imported events" panels through
+`adminPublishListingEvents`; the Events workspace only inspects and takes down
+external supply. The readiness workspace that read `eventSupplyReadiness/current`
+and published one row through `adminPublishExternalEvent` was retired on
+2026-10-29, and old `/events/readiness` links open the directory.
 
 Organizer Intake requires an explicit Resolved or Waived choice for every
 governed event-import blocker. Waived choices must name the accepted matching
@@ -209,11 +187,10 @@ they are exposed here.
 
 The Data quality tab is a read-only operations workspace over
 `adminGetOverview`, `adminGetHostAnalytics`, `adminGetMarketingOpsDashboard`,
-`adminGetEventIntakeDashboard`, and `adminGetEventSupplyReadiness`.
+and `adminGetEventIntakeDashboard`.
 It groups quality rows by source, owner, runbook, state, and next action, and
 checks generated marketing bridge freshness, Event Intake dashboard freshness,
-external event import readiness freshness/preflight blockers, source crawl run
-plan health, and external event import execution-policy health. It does not
+and source crawl run plan health. It does not
 trigger backfills, inspect scheduler last-run telemetry, or acknowledge
 incidents until each source has a safe backend tool and audit contract.
 

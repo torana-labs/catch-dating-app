@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 
 ChatThreadPreview preview(
   String id,

@@ -2434,6 +2434,43 @@ export interface SupplyIntakeRequestsDocument {
       rawPayloadPersistence: "external_artifact_store_only";
       firestorePersistenceAllowed: false;
     }[];
+    /**
+     * The listing's advisory comparison with the organizers Catch already lists, copied from the listing its contentHash covers. Null when the request was not compared (an event_refresh names its organizer); absent on requests completed before the worker compared listings.
+     */
+    duplicateCheck?: null | {
+      policyId: string;
+      authority: "advisory";
+      verdict: "match" | "ambiguous" | "none";
+      /**
+       * @maxItems 8
+       */
+      reasons: string[];
+      organizersCompared: number;
+      inventoryHash: string;
+      inventory: {
+        citySlug: string | null;
+        limit: number;
+        truncated: boolean;
+      };
+      /**
+       * @maxItems 12
+       */
+      candidates: {
+        organizerId: string;
+        name: string | null;
+        score: number;
+        band: "match" | "probable" | "review" | "low";
+        /**
+         * @maxItems 12
+         */
+        signals: string[];
+        /**
+         * @maxItems 12
+         */
+        conflicts: string[];
+        rationale: string;
+      }[];
+    };
   };
   failure: null | {
     code: string;
@@ -2464,6 +2501,25 @@ export interface SupplyIntakeUsageDocument {
   monthKey: string;
   networkRequests: number;
   updatedAt: string;
+}
+
+/**
+ * A person staff have allowed to nominate organizers by messaging Catch. A WhatsApp nominator is keyed by the hash of their number, which is the same endpoint hash the WhatsApp receipts use, so the number itself is never stored; only its last four digits are kept so staff can tell entries apart. Each message from an active nominator becomes Supply Intake nominations credited to their Catch account. Their authority (a sales role, or a current partner membership) is checked again on every message.
+ */
+export interface SupplyNominatorDocument {
+  schemaVersion: 1;
+  nominatorId: string;
+  channel: "whatsapp";
+  endpointHash: string;
+  phoneLast4: string;
+  role: "associate" | "partner";
+  uid: string;
+  displayName: string;
+  defaultMarket: string | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  updatedByUid: string;
 }
 
 /**
@@ -19935,63 +19991,6 @@ export interface OrganizerIntakeFieldCorrectionDocument {
   reviewNote: string;
   correctedByUid: string;
   correctedAt: FirebaseFirestore.Timestamp;
-}
-
-/**
- * Latest admin event-candidate review decision stored at organizerEventCandidateReviewDecisions/{decisionId}. Raw provider event evidence and imported events are not stored here.
- */
-export interface OrganizerEventCandidateReviewDecisionDocument {
-  schemaVersion: 1;
-  decisionId: string;
-  candidateId: string;
-  decision: "approve_for_import" | "hold" | "reject";
-  decisionStatus: "approved_for_import" | "held" | "rejected";
-  checklist: {
-    identityReviewed: boolean;
-    sourceEventReviewed: boolean;
-    timeReviewed: boolean;
-    locationReviewed: boolean;
-    dedupeReviewed: boolean;
-    ownerSafeCopyReviewed: boolean;
-    importPolicyAcknowledged: boolean;
-  };
-  /**
-   * @maxItems 6
-   */
-  blockerResolutions?: ExternalEventBlockerResolution[];
-  note: string;
-  reviewedByUid: string;
-  reviewedAt: FirebaseFirestore.Timestamp;
-  updatedAt: FirebaseFirestore.Timestamp;
-  importState: "blocked_by_policy" | "not_importable" | "pending_import";
-}
-
-/**
- * Latest admin-reviewed event location resolution stored at organizerEventLocationResolutionDecisions/{resolutionId}. Raw provider lookup responses and imported events are not stored here.
- */
-export interface OrganizerEventLocationResolutionDecisionDocument {
-  schemaVersion: 1;
-  resolutionId: string;
-  candidateId: string;
-  location: {
-    name: string;
-    address?: string | null;
-    placeId?: string | null;
-    latitude: number | null;
-    longitude: number | null;
-    notes?: string | null;
-  };
-  checklist: {
-    sourceLocationReviewed: boolean;
-    coordinatesReviewed: boolean;
-    placeIdentityReviewed: boolean;
-    importSafetyReviewed: boolean;
-  };
-  note: string;
-  reviewedByUid: string;
-  reviewedAt: FirebaseFirestore.Timestamp;
-  updatedAt: FirebaseFirestore.Timestamp;
-  resolutionStatus: "resolved";
 }
 
 /**
