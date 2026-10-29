@@ -2304,6 +2304,9 @@ function applySampleClubDetailsPatch(
   if (fields.publicProfile) {
     Object.assign(club.publicProfile, fields.publicProfile);
   }
+  if (fields.ownerLinks) {
+    club.ownerLinks = fields.ownerLinks.map((link) => ({...link}));
+  }
 }
 
 function applySampleEventDetailsPatch(

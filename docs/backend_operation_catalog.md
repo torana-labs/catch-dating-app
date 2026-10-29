@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.108.0
-updated: 2026-10-28
+version: 1.109.0
+updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -239,7 +239,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `reviewOrganizerApplication` | Callable | Host Application detail review actions | Atomic application status/note/reviewer update and, on approval, create-or-link organizer contact with source origin and CRM projection | Approval reuses a unique active contact or creates an unverified organizer-only contact; conflicting endpoint matches fail without a partial approval. Exact retries are idempotent. Generic form applications require their current submitted source response; legacy native applications require their exact participant grant. No verified identity, messaging permission or event booking is created. |
 | `requestOrganizerClaim` / `adminDecideOrganizerClaim` | Callable | Website claim flow / admin claim queue | `organizerClaimRequests`, canonical organizer ownership/claim fields, team membership, notifications, legacy shadows | Claim submission never grants access; role-gated admin decision owns transfer. |
 | `getOrganizerClaimVerificationOptions` / `startOrganizerClaimVerification` | Callable | Website claim page | Reads the organizer listing; writes `organizerClaimVerifications/{attemptId}` and reserves `organizerClaimInstagramCodes/{code}` | Signed-in accounts with a name and verified phone only. Shows a 30-minute six-digit code bound to one listing, account and method. Hidden until `CATCH_INSTAGRAM_CLAIMS_ENABLED` is on. Grants nothing by itself. |
-| `instagramClaimWebhook` | HTTPS (Meta webhook) | Instagram direct messages to Catch's account | `organizerClaimInstagramMessages/{messageKey}` receipts, the attempt, then the shared claim approval (`organizerClaimRequests`, organizer ownership, team membership, notification) | Verify-token handshake on GET. On POST, an `X-Hub-Signature-256` check, one receipt per message id and a per-sender limit. The Graph API username must match the listing's handle. Replies in the thread. |
+| `instagramClaimWebhook` | HTTPS (Meta webhook) | Instagram direct messages to Catch's account | `organizerClaimInstagramMessages/{messageKey}` receipts, the attempt, then the shared claim approval (`organizerClaimRequests`, organizer ownership, team membership, notification) | Dormant: deploys skip it until the Meta app exists. Verify-token handshake on GET. On POST, an `X-Hub-Signature-256` check, one receipt per message id and a per-sender limit. The Graph API username must match the listing's handle. Replies in the thread. |
 | `createPublicOrganizerReview` / `listPublicOrganizerReviews` | Callable | Public website listing | `reviews/{reviewId}` with `organizerId` and compatibility `clubId` | Public review scope is bound to a published canonical organizer route. |
 | `adminGetOrganizerDetails` / `adminListOrganizerDetails` / `adminUpdateOrganizerDetails` | Callable | React admin Organizers workspace | canonical organizer read/update projections plus audited legacy shadow | Organizer-named admin wire contract; internal `AdminClub*` adapters are transitional only. |
 | `adminDecideOrganizerEventCandidate` | Callable | React Organizer Intake review | `organizerEventCandidateReviewDecisions/{candidateId}` | Records approve/reject plus one explicit resolved/waived decision for every governed import blocker. A waiver must reference the accepted matching policy-gap decision. |

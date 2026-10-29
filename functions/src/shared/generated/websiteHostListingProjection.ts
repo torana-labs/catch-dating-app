@@ -62,13 +62,9 @@ export interface WebsiteHostListingProjection {
      * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
      *
      * @minItems 1
-     * @maxItems 3
+     * @maxItems 2
      */
-    catchExperienceActivities?: (
-      | "introductions"
-      | "sharedActivities"
-      | "rotations"
-    )[];
+    catchExperienceActivities?: ("introductions" | "sharedActivities")[];
     id: string;
     role: string;
     title: string;
@@ -118,9 +114,9 @@ export interface WebsiteHostListingProjection {
     included?: string;
     registrationAccess?: "open" | "restricted" | "app";
     /**
-     * @maxItems 4
+     * @maxItems 3
      */
-    admissionLabels?: ("approval" | "invitation" | "membership" | "balanced")[];
+    admissionLabels?: ("approval" | "invitation" | "membership")[];
     waitlistAvailable?: boolean;
     cancellationPolicy?: "notApplicable" | "flexible" | "standard" | "strict";
     capacityLimit: number;
@@ -132,9 +128,6 @@ export interface WebsiteHostListingProjection {
     amountPaise?: number;
     currency?: string;
     priceLabel: string;
-    scorecard?: {
-      [k: string]: unknown;
-    } | null;
   }[];
   externalEvents?: {
     id: string;
@@ -156,14 +149,6 @@ export interface WebsiteHostListingProjection {
     externalLinkCount: number;
     dedupeKey: string;
   }[];
-  eventSuccessSummary?: {
-    bookedCount: number;
-    checkedInCount: number;
-    mutualMatchCount: number;
-    chatStartedCount: number;
-    catchSentCount: number;
-    safetyIncidentCount: number;
-  } | null;
   eventEvidence: {
     title: string;
     date: string;

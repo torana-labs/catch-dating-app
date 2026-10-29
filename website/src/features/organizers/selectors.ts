@@ -238,7 +238,6 @@ export function listingProfileStrength(listing: HostListing) {
   if (isVerifiedListing(listing)) {
     let value = 72;
     if (listing.catchEvents?.length) value += 8;
-    if (listing.eventSuccessSummary) value += 8;
     if (canReadPublicReviews && (listing.metrics?.reviewCount ?? 0) > 0) {
       value += 7;
     }

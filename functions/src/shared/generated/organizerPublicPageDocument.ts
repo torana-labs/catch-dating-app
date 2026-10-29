@@ -49,14 +49,30 @@ export interface OrganizerPublicPageDocument {
     indexing: "index, follow" | "noindex, follow";
   };
   /**
-   * Owner links in display order. Empty until owner link editing ships (CAT-254).
+   * The owner's live links from organizers/{id}.ownerLinks (CAT-254): pinned first, otherwise in the owner's order, without links whose showUntil had passed when the page was built. Readers also hide links that have since expired.
    *
    * @maxItems 20
    */
   links: {
     id: string;
     label: string;
+    subtitle: string | null;
     url: string;
+    /**
+     * What an owner link is for, which picks its icon. Null lets the page infer one from the URL.
+     */
+    icon:
+      | "link"
+      | "website"
+      | "community"
+      | "social"
+      | "tickets"
+      | "calendar"
+      | "shop"
+      | "partner"
+      | "video"
+      | "route"
+      | null;
     pinned: boolean;
     showUntil: {
       _seconds: number;
@@ -74,20 +90,16 @@ export interface OrganizerPublicPageDocument {
         eventId: string;
         path: string;
         /**
-         * The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.
+         * The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.
          */
         event: {
           /**
            * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
            *
            * @minItems 1
-           * @maxItems 3
+           * @maxItems 2
            */
-          catchExperienceActivities?: (
-            | "introductions"
-            | "sharedActivities"
-            | "rotations"
-          )[];
+          catchExperienceActivities?: ("introductions" | "sharedActivities")[];
           id: string;
           role: string;
           title: string;
@@ -143,14 +155,9 @@ export interface OrganizerPublicPageDocument {
           included?: string;
           registrationAccess?: "open" | "restricted" | "app";
           /**
-           * @maxItems 4
+           * @maxItems 3
            */
-          admissionLabels?: (
-            | "approval"
-            | "invitation"
-            | "membership"
-            | "balanced"
-          )[];
+          admissionLabels?: ("approval" | "invitation" | "membership")[];
           waitlistAvailable?: boolean;
           cancellationPolicy?:
             | "notApplicable"
@@ -166,9 +173,6 @@ export interface OrganizerPublicPageDocument {
           amountPaise?: number;
           currency?: string;
           priceLabel: string;
-          scorecard?: {
-            [k: string]: unknown;
-          } | null;
         };
         /**
          * A Catch-native event books on its Catch event page. Live terms are rechecked by the booking callables, never trusted from this snapshot.
@@ -228,20 +232,16 @@ export interface OrganizerPublicPageDocument {
         eventId: string;
         path: string;
         /**
-         * The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.
+         * The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.
          */
         event: {
           /**
            * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
            *
            * @minItems 1
-           * @maxItems 3
+           * @maxItems 2
            */
-          catchExperienceActivities?: (
-            | "introductions"
-            | "sharedActivities"
-            | "rotations"
-          )[];
+          catchExperienceActivities?: ("introductions" | "sharedActivities")[];
           id: string;
           role: string;
           title: string;
@@ -297,14 +297,9 @@ export interface OrganizerPublicPageDocument {
           included?: string;
           registrationAccess?: "open" | "restricted" | "app";
           /**
-           * @maxItems 4
+           * @maxItems 3
            */
-          admissionLabels?: (
-            | "approval"
-            | "invitation"
-            | "membership"
-            | "balanced"
-          )[];
+          admissionLabels?: ("approval" | "invitation" | "membership")[];
           waitlistAvailable?: boolean;
           cancellationPolicy?:
             | "notApplicable"
@@ -320,9 +315,6 @@ export interface OrganizerPublicPageDocument {
           amountPaise?: number;
           currency?: string;
           priceLabel: string;
-          scorecard?: {
-            [k: string]: unknown;
-          } | null;
         };
         /**
          * A Catch-native event books on its Catch event page. Live terms are rechecked by the booking callables, never trusted from this snapshot.

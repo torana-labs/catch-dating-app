@@ -258,6 +258,80 @@ export const adminUpdateClubDetailsCallablePayloadSchema: Record<string, unknown
             }
           }
         },
+        "ownerLinks": {
+          "type": "array",
+          "maxItems": 20,
+          "description": "Replaces the organizer page links, in display order. An empty array removes them.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "An owner link as an admin edit sends it. showUntil is an ISO date-time; the server checks the URL against the owner-link policy before saving.",
+            "required": [
+              "id",
+              "label",
+              "subtitle",
+              "url",
+              "icon",
+              "pinned",
+              "showUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "subtitle": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 4096,
+                "pattern": "^https://"
+              },
+              "icon": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "link",
+                  "website",
+                  "community",
+                  "social",
+                  "tickets",
+                  "calendar",
+                  "shop",
+                  "partner",
+                  "video",
+                  "route",
+                  null
+                ],
+                "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
+              },
+              "pinned": {
+                "type": "boolean"
+              },
+              "showUntil": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            }
+          }
+        },
         "publicProfile": {
           "type": "object",
           "additionalProperties": false,

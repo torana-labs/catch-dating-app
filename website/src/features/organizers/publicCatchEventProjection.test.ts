@@ -92,8 +92,9 @@ it("cannot restore moderated artwork through the legacy cover URL", () => {
   }
 });
 it("publishes the badge only for explicit participation declarations", () => {
-  expect(project("event", {...base(), catchExperienceActivities: ["introductions", "rotations"]})?.event.catchExperienceActivities).toEqual(["introductions", "rotations"]);
-  for (const value of [undefined, [], ["checkIn"], ["rotations", "logistics"], ["rotations", "rotations"]]) {
+  // Rotations is a valid declaration but dating framing, so it is never public (CAT-247).
+  expect(project("event", {...base(), catchExperienceActivities: ["introductions", "rotations"]})?.event.catchExperienceActivities).toEqual(["introductions"]);
+  for (const value of [undefined, [], ["checkIn"], ["rotations"], ["rotations", "logistics"], ["rotations", "rotations"]]) {
     expect(project("event", {...base(), catchExperienceActivities:value, eventFormat:{activityKind:"singlesMixer",defaultModuleIds:["firstHello"]}})?.event.catchExperienceActivities).toBeUndefined();
   }
 });

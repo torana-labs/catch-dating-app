@@ -14,7 +14,7 @@ type Story = StoryObj<typeof meta>;
 
 // catchComponent names the website registry entry (design/website/components.json).
 export const AllActivities: Story = {
-  parameters: {catchComponent: {id: "shared_event_backdrop_image", routeIds: ["home", "visitor_discovery", "event_detail_canonical"], states: ["activity-pigment", "full-artwork"]}},
+  parameters: {catchComponent: {id: "shared_event_backdrop_image", routeIds: ["home", "visitor_discovery"], states: ["activity-pigment", "full-artwork"]}},
   render: () => (
     <div
       aria-label="Activity artwork gallery"
@@ -33,7 +33,7 @@ export const AllActivities: Story = {
 };
 
 export const Dense: Story = {
-  parameters: {catchComponent: {id: "shared_event_backdrop_image", routeIds: ["home", "visitor_discovery", "event_detail_canonical"], states: ["dense"]}},
+  parameters: {catchComponent: {id: "shared_event_backdrop_image", routeIds: ["home", "visitor_discovery"], states: ["dense"]}},
   args: {activityKind: "dinner", dense: true},
   decorators: [Story => <div style={{inlineSize: 360, blockSize: 240}}><Story /></div>],
 };
