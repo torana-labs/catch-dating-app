@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.17.1
-updated: 2026-10-28
+version: 0.17.2
+updated: 2026-10-29
 owner: marketing_website
 status: active
 ---
@@ -350,7 +350,6 @@ The website is already split out of the old monolithic shell:
   `website/src/shared/ui/primitives/` as `ProcessStatusPanel`. Claim route
   sections own state-specific copy and CTA analytics callbacks, but configure
   the shared panel instead of rendering raw `process-status-panel` shells.
-- `website/src/features/host/HostPages.tsx` is a compatibility re-export only.
 - `website/src/features/home/HomePage.tsx` is now a thin home route shell.
   Visible Home route sections live in
   `website/src/features/home/sections/consumerHomeSections.tsx`, with route and
@@ -960,10 +959,11 @@ website/src/
 
 3. Keep `HostPages` split.
 
-   `/host/` and `/host/preview/` now live in route-specific files. Shared host
-   sections live under `features/host/sections/`, the host application flow
-   lives under `features/host/application/`, and `HostPages.tsx` remains only as
-   a compatibility barrel.
+   `/host/` and `/host/apply/` now live in route-specific files
+   (`HostPage.tsx`, `HostApplicationPage.tsx`). Shared host sections live under
+   `features/host/sections/` and the host application flow lives under
+   `features/host/application/`. No `HostPages` barrel remains; import the
+   route files directly.
 
 4. Keep shared site primitives split.
 

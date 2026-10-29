@@ -12,7 +12,7 @@ import {profilePhotoPolicy} from "../contracts/generated/schema_contract_registr
 import {
   isFirebaseProductionTarget,
   resolveFirebaseProjectId,
-} from "../firebase/firebase_project_resolver.mjs";
+} from "../lib/firebase_project.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
