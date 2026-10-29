@@ -261704,7 +261704,8 @@ export const adminListOrganizerListingReviewsCallableResponseSchema = {
           "origin",
           "market",
           "suggestedSlug",
-          "listing"
+          "listing",
+          "duplicateCheck"
         ],
         "properties": {
           "requestId": {
@@ -261875,6 +261876,96 @@ export const adminListOrganizerListingReviewsCallableResponseSchema = {
                 "minimum": 0
               }
             }
+          },
+          "duplicateCheck": {
+            "description": "How the listing compares with the organizers Catch already lists. Advisory: it never blocks approval. Null when the listing was not compared, or was built before listings were compared.",
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "verdict",
+                  "organizersCompared",
+                  "citySlug",
+                  "truncated",
+                  "candidates"
+                ],
+                "properties": {
+                  "verdict": {
+                    "enum": [
+                      "match",
+                      "ambiguous",
+                      "none"
+                    ]
+                  },
+                  "organizersCompared": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "citySlug": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80,
+                    "description": "The city the comparison was limited to; null when it compared every city."
+                  },
+                  "truncated": {
+                    "type": "boolean",
+                    "description": "Whether more published organizers existed than were compared."
+                  },
+                  "candidates": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "organizerId",
+                        "name",
+                        "score",
+                        "band",
+                        "rationale"
+                      ],
+                      "properties": {
+                        "organizerId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        "name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 500
+                        },
+                        "score": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "band": {
+                          "enum": [
+                            "match",
+                            "probable",
+                            "review",
+                            "low"
+                          ]
+                        },
+                        "rationale": {
+                          "type": "string",
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
           }
         }
       }

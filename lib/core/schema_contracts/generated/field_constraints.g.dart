@@ -8280,6 +8280,74 @@ abstract final class CatchContractConstraints {
     maxItems: 50,
   );
 
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidates = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsBand = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.band',
+    required: true,
+    enumValues: <String>['match', 'probable', 'review', 'low'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsName = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.name',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.organizerId',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsRationale = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.rationale',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsScore = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCitySlug = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.citySlug',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckOrganizersCompared = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.organizersCompared',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckTruncated = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckVerdict = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.verdict',
+    required: true,
+    enumValues: <String>['match', 'ambiguous', 'none'],
+  );
+
   static const adminListOrganizerListingReviewsCallableResponseRowsItemsKind = CatchContractFieldConstraints(
     path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.kind',
     required: true,
@@ -175072,6 +175140,16 @@ abstract final class CatchContractConstraints {
     'adminListOrganizerListingReviewsCallableResponse.canApprove': adminListOrganizerListingReviewsCallableResponseCanApprove,
     'adminListOrganizerListingReviewsCallableResponse.nextCursor': adminListOrganizerListingReviewsCallableResponseNextCursor,
     'adminListOrganizerListingReviewsCallableResponse.rows': adminListOrganizerListingReviewsCallableResponseRows,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidates,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.band': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsBand,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.name': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsName,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.organizerId': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsOrganizerId,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.rationale': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsRationale,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.score': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsScore,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.citySlug': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCitySlug,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.organizersCompared': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckOrganizersCompared,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.truncated': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckTruncated,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.verdict': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckVerdict,
     'adminListOrganizerListingReviewsCallableResponse.rows.items.kind': adminListOrganizerListingReviewsCallableResponseRowsItemsKind,
     'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.categories': adminListOrganizerListingReviewsCallableResponseRowsItemsListingCategories,
     'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.categories.items': adminListOrganizerListingReviewsCallableResponseRowsItemsListingCategoriesItems,

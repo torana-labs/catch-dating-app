@@ -51,6 +51,31 @@ export interface AdminListOrganizerListingReviewsCallableResponse {
       pageCount: number;
       fetchedPageCount: number;
     };
+    /**
+     * How the listing compares with the organizers Catch already lists. Advisory: it never blocks approval. Null when the listing was not compared, or was built before listings were compared.
+     */
+    duplicateCheck: null | {
+      verdict: "match" | "ambiguous" | "none";
+      organizersCompared: number;
+      /**
+       * The city the comparison was limited to; null when it compared every city.
+       */
+      citySlug: string | null;
+      /**
+       * Whether more published organizers existed than were compared.
+       */
+      truncated: boolean;
+      /**
+       * @maxItems 12
+       */
+      candidates: {
+        organizerId: string;
+        name: string | null;
+        score: number;
+        band: "match" | "probable" | "review" | "low";
+        rationale: string;
+      }[];
+    };
   }[];
   nextCursor: string | null;
   /**
