@@ -12,7 +12,8 @@ it("lets search engines and link previews in, and turns every other crawler away
     {userAgent: [...ALLOWED_CRAWLERS], allow: "/", disallow: [...PRIVATE_PATHS]},
     {userAgent: "*", disallow: "/"},
   ]);
-  expect(ALLOWED_CRAWLERS).toEqual(expect.arrayContaining(["Googlebot", "Bingbot", "facebookexternalhit", "WhatsApp"]));
+  expect(ALLOWED_CRAWLERS).toEqual(expect.arrayContaining(["Googlebot", "Bingbot", "facebookexternalhit", "WhatsApp",
+    "OAI-SearchBot", "PerplexityBot", "Claude-SearchBot"]));
   // AI-training and archive crawlers are never named, so the catch-all applies.
   for (const crawler of ["GPTBot", "CCBot", "ClaudeBot", "Google-Extended", "Applebot-Extended", "Bytespider",
     "meta-externalagent"]) {
