@@ -5,7 +5,7 @@ import {organizerPageCopy} from "../../content/organizerPage";
 import {trackMarketingEvent} from "../../analytics";
 import {setWebsiteOrganizerFollow} from "../../firebase";
 import {useWebsiteAccountController} from "../account/useWebsiteAccountController";
-import {observeOrganizerPageView, trackOrganizerAnalytics} from "./analytics";
+import {observeOrganizerPageView, trackOrganizerAnalytics, trackOrganizerLinkClick} from "./analytics";
 import {observeOrganizerProviders} from "./observeOrganizerProviders";
 import type {OrganizerPageRecord} from "./organizerPage";
 import {organizerPageView, type OrganizerEventView, type OrganizerLinkView} from "./organizerPageView";
@@ -218,7 +218,9 @@ export function useOrganizerPageController({backends = organizerPageBackends, li
       done: reviewDone,
       submit: () => void submitReview(),
     } : null,
-    openLink: (link: OrganizerLinkView) => trackOrganizerAnalytics(listing, link.analytics.eventName, link.analytics.source),
+    openLink: ({analytics}: OrganizerLinkView) => analytics.eventName === "linkClick" ?
+      trackOrganizerLinkClick(listing, analytics.linkId, analytics.source) :
+      trackOrganizerAnalytics(listing, analytics.eventName, analytics.source),
     openEvent: (event: OrganizerEventView) => trackOrganizerAnalytics(listing, "outboundClick",
       event.source === "external" ? "external_event_booking" : "catch_event_card", event.eventId),
     openClaim: () => trackOrganizerAnalytics(listing, "claimClick", "claim_unlocks_panel"),

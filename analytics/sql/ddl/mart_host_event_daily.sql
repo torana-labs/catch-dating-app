@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `%s.%s.mart_host_event_daily` (
   claim_clicks INT64,
   outbound_clicks INT64,
   outbound_booking_clicks INT64,
+  link_clicks INT64,
   refreshed_at TIMESTAMP NOT NULL
 )
 PARTITION BY date
@@ -70,4 +71,27 @@ ADD COLUMN IF NOT EXISTS checkout_dropoff_count INT64
 EXECUTE IMMEDIATE FORMAT("""
 ALTER TABLE `%s.%s.mart_host_event_daily`
 ADD COLUMN IF NOT EXISTS outbound_booking_clicks INT64
+""", analytics_project, analytics_dataset);
+
+EXECUTE IMMEDIATE FORMAT("""
+ALTER TABLE `%s.%s.mart_host_event_daily`
+ADD COLUMN IF NOT EXISTS link_clicks INT64
+""", analytics_project, analytics_dataset);
+
+-- Owner link clicks per organizer, link and traffic source (CAT-254), for the
+-- per-link roll-up the event-grain mart cannot hold.
+EXECUTE IMMEDIATE FORMAT("""
+CREATE TABLE IF NOT EXISTS `%s.%s.mart_host_link_daily` (
+  date DATE NOT NULL,
+  club_id STRING NOT NULL,
+  link_id STRING NOT NULL,
+  traffic_source STRING NOT NULL,
+  link_clicks INT64 NOT NULL,
+  refreshed_at TIMESTAMP NOT NULL
+)
+PARTITION BY date
+CLUSTER BY club_id, link_id
+OPTIONS(
+  description = 'Owner link clicks at daily organizer/link/traffic-source grain, derived from host_analytics_events.'
+)
 """, analytics_project, analytics_dataset);

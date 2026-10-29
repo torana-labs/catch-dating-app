@@ -537,12 +537,15 @@ abstract final class GeneratedCatchOpacityTokens {
   static const double controlOverlayHover = 0.04;
   static const double activityArtworkPattern = 0.22;
   static const double activityArtworkGlyph = 0.2;
+  static const double groundCardOutline = 0.12;
 }
 
 abstract final class GeneratedCatchFieldTokens {
   static const double activeTintAlpha = 0.04;
   static const double pressedTintAlpha = 0.06;
   static const double disabledOpacity = 0.4;
+  static const double restLineAlpha = 0.25;
+  static const double restTintOnDarkAlpha = 0.04;
 }
 
 abstract final class GeneratedCatchThemeElevationTokens {

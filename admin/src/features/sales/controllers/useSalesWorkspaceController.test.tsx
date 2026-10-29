@@ -177,7 +177,8 @@ describe("useSalesWorkspaceController", () => {
       expect(toLocalDateTimeInput(new Date("2026-09-28T00:00:00.000Z")))
         .toBe("2026-09-28T05:30");
     } finally {
-      process.env.TZ = originalTimezone;
+      if (originalTimezone === undefined) delete process.env.TZ;
+      else process.env.TZ = originalTimezone;
     }
   });
 

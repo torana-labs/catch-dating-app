@@ -1,16 +1,16 @@
 import {CatchBand, CatchNotice, CatchNoticeRegion, CatchSplit, type CatchNoticeData} from "@catch/web-ui";
-import {useEffect, useMemo, useRef, useState, type ReactNode} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {eventPageCopy as copy, guestEventCopy} from "../../content/events";
 import {recordEventInviteLinkOpen} from "../../firebase";
 import {eventInviteSessionId, eventInviteTokenFromLocation} from "../../shared/eventInviteAttribution";
 import {PublicSiteFooter, PublicSiteHeader} from "../../shared/site";
-import {EventGuestActions} from "../../shared/ui/primitives/eventDetail";
 import {observeOrganizerPageView, trackOrganizerAnalytics} from "../organizers/analytics";
 import {observeOrganizerProviders, trackOrganizerProviderOutboundClick} from "../organizers/observeOrganizerProviders";
 import type {HostListing} from "../organizers/types";
+import {EventBooking} from "./EventBooking";
 import {GuestEventEntry} from "./GuestEventEntry";
 import {buildEventPageView, type EventPageData} from "./eventPageModel";
-import {EventBookingCard, EventPageHeader, EventPageMain} from "./sections/EventPageSections";
+import {EventPageHeader, EventPageMain} from "./sections/EventPageSections";
 
 /**
  * The public event page, rendered from its eventPublicPage read model.
@@ -35,6 +35,7 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
     }).catch(() => undefined);
   }, [eventId, inviteToken]);
   const notices = useNotice();
+  const paid = page.item.source === "catch" && page.item.event.registrationMode === "paid";
 
   async function share() {
     const url = `${window.location.origin}${view.path}`;
@@ -65,10 +66,11 @@ export function EventDetailPage({page, listing, mapImageUrl}: {
       </CatchBand>
       <CatchBand as="main" id="event-detail" pt="compact">
         <CatchSplit
+          align="stretch"
           end={(
-            <EventBookingCard
-              catchEntry={<GuestEventEntry eventId={eventId} invitation={{price: view.priceLabel, title: view.title}} key={eventId} />}
-              externalAction={(button: ReactNode, note: string) => <EventGuestActions price={view.priceLabel} status={note}>{button}</EventGuestActions>}
+            <EventBooking
+              catchEntry={<GuestEventEntry eventId={eventId} key={eventId}
+                startLabel={paid ? guestEventCopy.book : guestEventCopy.register} />}
               onExternalClick={trackBookingClick}
               view={view}
             />

@@ -65,7 +65,7 @@ dependencies:
     sdk: flutter
   image_picker: ^1.2.4
   image: ^4.12.0
-  geolocator: ^14.1.1
+  geolocator: ^14.1.2
   package_info_plus: ^10.2.2
   url_launcher: ^6.3.3
   firebase_app_check: ^0.4.9
@@ -88,7 +88,7 @@ dependencies:
   flutter_native_splash: ^2.4.7
   flutter_timezone: ^5.1.1
   xml: ^7.0.1
-  sqlite3: ^3.5.2
+  sqlite3: ^3.8.0
   idb_shim: ^2.10.1+1
   path_provider: ^2.1.6
   timezone: ^0.11.2
@@ -113,7 +113,7 @@ dev_dependencies:
   catch_ui_lints:
     path: packages/catch_ui_lints
   freezed: ^3.0.0
-  json_serializable: ^6.14.0
+  json_serializable: ^6.15.2
   riverpod: ^3.3.2
   flutter_launcher_icons: ^0.14.4
   fake_cloud_firestore: ^4.3.0

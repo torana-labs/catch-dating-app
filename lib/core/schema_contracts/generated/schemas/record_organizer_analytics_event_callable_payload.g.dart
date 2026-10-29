@@ -50,7 +50,39 @@ const schemaRecordOrganizerAnalyticsEventCallablePayloadSchema = <String, Object
         'contactClick',
         'claimClick',
         'outboundClick',
+        'linkClick',
       ],
+    },
+    'linkId': <String, Object?>{
+      'description': 'The owner link a linkClick opened, one of the organizer\'s ownerLinks ids. Other events send null.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'trafficSource': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'instagram',
+        'whatsapp',
+        'facebook',
+        'google',
+        'qr',
+        'email',
+        'direct',
+        'other',
+        null,
+      ],
+      'description': 'Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent.',
     },
     'pagePath': <String, Object?>{
       'type': 'string',
@@ -77,6 +109,26 @@ const schemaRecordOrganizerAnalyticsEventCallablePayloadSchema = <String, Object
         'null',
       ],
       'maxLength': 40,
+    },
+  },
+  'definitions': <String, Object?>{
+    'trafficSource': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'instagram',
+        'whatsapp',
+        'facebook',
+        'google',
+        'qr',
+        'email',
+        'direct',
+        'other',
+        null,
+      ],
+      'description': 'Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent.',
     },
   },
 };

@@ -38,7 +38,8 @@
         "eventSave",
         "contactClick",
         "claimClick",
-        "outboundClick"
+        "outboundClick",
+        "linkClick"
       ]
     },
     "club_id": {
@@ -66,6 +67,16 @@
     "platform": {
       "type": ["string", "null"],
       "maxLength": 40
+    },
+    "link_id": {
+      "description": "The owner link a linkClick opened; null for other events.",
+      "anyOf": [
+        {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        {"type": "null"}
+      ]
+    },
+    "traffic_source": {
+      "$ref": "../callables/record_organizer_analytics_event_payload.schema.json#/definitions/trafficSource"
     },
     "ingested_at": {
       "type": "string",

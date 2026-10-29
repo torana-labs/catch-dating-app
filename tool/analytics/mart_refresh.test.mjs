@@ -7,29 +7,37 @@ import {fromRepo} from "../lib/repo_paths.mjs";
 const read = (path) => fs.readFileSync(fromRepo(path), "utf8");
 const marts = ["host_event", "user_analytics"];
 const source = (mart) => read(`analytics/sql/marts/refresh_mart_${mart}_daily.sql`);
-const columns = (mart) => read(`analytics/sql/ddl/mart_${mart}_daily.sql`)
-  .match(/CREATE TABLE IF NOT EXISTS `[^`]+` \(([\s\S]+?)\n\)/)[1];
+// Every published table a refresh replaces, in its one transaction. The host
+// refresh also replaces the per-link click roll-up (CAT-254).
+const published = {
+  host_event: ["mart_host_event_daily", "mart_host_link_daily"],
+  user_analytics: ["mart_user_analytics_daily"],
+};
+const columns = (mart, table = `mart_${mart}_daily`) => read(`analytics/sql/ddl/mart_${mart}_daily.sql`)
+  .match(new RegExp(`CREATE TABLE IF NOT EXISTS \`%s\\.%s\\.${table}\` \\(([\\s\\S]+?)\\n\\)`))[1];
 
 for (const mart of marts) {
   test(`${mart}: compute first, replace within one transaction, propagate failure`, () => {
     const sql = source(mart);
-    const stage = sql.indexOf(`CREATE TEMP TABLE refreshed_${mart}_daily AS`);
     const begin = sql.indexOf("BEGIN TRANSACTION;");
-    const deletion = sql.indexOf("DELETE FROM");
-    const insertion = sql.indexOf(`INSERT INTO \`%s.%s.mart_${mart}_daily\``);
     const commit = sql.indexOf("COMMIT TRANSACTION;");
-    assert.ok(stage > 0 && stage < begin && begin < deletion &&
-      deletion < insertion && insertion < commit);
-    assert.equal(sql.match(/DELETE FROM/g).length, 1);
+    assert.equal(sql.match(/DELETE FROM/g).length, published[mart].length);
     assert.equal(sql.match(/BEGIN TRANSACTION;/g).length, 1);
     assert.match(sql.slice(commit), /EXCEPTION WHEN ERROR THEN\s+ROLLBACK TRANSACTION;\s+RAISE;\s+END;/);
-    assert.match(sql.slice(deletion, insertion), /WHERE date BETWEEN @refresh_start AND @refresh_end/);
-    const insert = sql.slice(insertion, commit);
-    const projection = insert.match(/` \(([\s\S]+?)\)\s+SELECT\s+([\s\S]+?)\s+FROM refreshed_/);
-    const list = (text) => text.split(",").map((value) => value.trim());
-    assert.deepEqual(list(projection[1]), list(projection[2]));
-    assert.deepEqual(list(projection[1]), columns(mart).trim().split(/,\n/)
-      .map((column) => column.trim().split(/\s+/)[0]));
+    for (const table of published[mart]) {
+      const stage = sql.indexOf(`CREATE TEMP TABLE ${table.replace(/^mart_/, "refreshed_")} AS`);
+      const deletion = sql.indexOf(`DELETE FROM \`%s.%s.${table}\``);
+      const insertion = sql.indexOf(`INSERT INTO \`%s.%s.${table}\``);
+      assert.ok(stage > 0 && stage < begin && begin < deletion &&
+        deletion < insertion && insertion < commit, table);
+      assert.match(sql.slice(deletion, insertion), /WHERE date BETWEEN @refresh_start AND @refresh_end/);
+      const insert = sql.slice(insertion, commit);
+      const projection = insert.match(/` \(([\s\S]+?)\)\s+SELECT\s+([\s\S]+?)\s+FROM refreshed_/);
+      const list = (text) => text.split(",").map((value) => value.trim());
+      assert.deepEqual(list(projection[1]), list(projection[2]), table);
+      assert.deepEqual(list(projection[1]), columns(mart, table).trim().split(/,\n/)
+        .map((column) => column.trim().split(/\s+/)[0]), table);
+    }
   });
 }
 
@@ -65,7 +73,7 @@ function fixture(mart, failure = null) {
     saved_events_raw_latest: "data STRING",
     event_success_scorecards_raw_latest: "document_id STRING, data STRING",
     participant_signal_facts_raw_latest: "data STRING",
-    host_analytics_events: "event_date DATE, club_id STRING, target_event_id STRING, event_name STRING",
+    host_analytics_events: "event_date DATE, club_id STRING, target_event_id STRING, event_name STRING, analytics_event_id STRING, source STRING, link_id STRING, traffic_source STRING",
     user_profile_exposure_events: "event_date DATE, subject_uid STRING, viewer_uid STRING, event_id STRING, photo_id STRING, event_name STRING, dwell_ms INT64",
     "events_*": "_TABLE_SUFFIX STRING, event_date STRING, event_name STRING, user_id STRING, user_pseudo_id STRING, event_timestamp INT64, event_params ARRAY<STRUCT<key STRING, value STRUCT<string_value STRING, int_value INT64, float_value FLOAT64, double_value FLOAT64>>>",
   };
@@ -77,7 +85,7 @@ function fixture(mart, failure = null) {
     "SELECT TRUE /* %s.%s */");
   const touched = new Set();
   sql = sql.replace(/`%s\.%s\.([^`]+)`/g, (_, name) => {
-    assert.ok(name === `mart_${mart}_daily` || Object.hasOwn(fixtureSources, name), name);
+    assert.ok(published[mart].includes(name) || Object.hasOwn(fixtureSources, name), name);
     touched.add(name);
     return `fixture_${name.replace("*", "ga4")} /* %s.%s */`;
   });
@@ -85,11 +93,16 @@ function fixture(mart, failure = null) {
   const identity = mart === "host_event" ? "club_id" : "uid";
   const seed = ["DECLARE caught BOOL DEFAULT FALSE;", "DECLARE caught_message STRING;"];
   for (const name of touched) {
-    seed.push(`CREATE TEMP TABLE fixture_${name.replace("*", "ga4")} (${name === `mart_${mart}_daily` ? columns(mart) : fixtureSources[name]});`);
+    seed.push(`CREATE TEMP TABLE fixture_${name.replace("*", "ga4")} (${published[mart].includes(name) ? columns(mart, name) : fixtureSources[name]});`);
   }
   seed.push(`INSERT INTO ${table} (date, ${identity}, refreshed_at) VALUES
     (DATE_SUB(CURRENT_DATE('Asia/Kolkata'), INTERVAL 500 DAY), 'history', CURRENT_TIMESTAMP()),
     (CURRENT_DATE('Asia/Kolkata'), 'previous', CURRENT_TIMESTAMP());`);
+  if (mart === "host_event") {
+    seed.push(`INSERT INTO fixture_mart_host_link_daily (date, club_id, link_id, traffic_source, link_clicks, refreshed_at) VALUES
+    (DATE_SUB(CURRENT_DATE('Asia/Kolkata'), INTERVAL 500 DAY), 'history', 'link', 'direct', 1, CURRENT_TIMESTAMP()),
+    (CURRENT_DATE('Asia/Kolkata'), 'previous', 'link', 'direct', 1, CURRENT_TIMESTAMP());`);
+  }
   if (mart === "host_event") {
     const records = [
       {id: "canonical", organizerId: "canonical"},
@@ -121,7 +134,14 @@ function fixture(mart, failure = null) {
       seed.push(`INSERT INTO fixture_events_ga4 (_TABLE_SUFFIX, event_date, event_name, event_params)
         VALUES (FORMAT_DATE('%Y%m%d', CURRENT_DATE('Asia/Kolkata')), FORMAT_DATE('%Y%m%d', CURRENT_DATE('Asia/Kolkata')), 'organizer_listingView', [${params}]);`);
     }
-    seed.push("INSERT INTO fixture_host_analytics_events VALUES (CURRENT_DATE('Asia/Kolkata'), 'canonical', NULL, 'listingView');");
+    // One listing view, then link clicks: a repeated delivery, an unlisted
+    // traffic source, and a click without a link that the roll-up must drop.
+    seed.push(`INSERT INTO fixture_host_analytics_events (event_date, club_id, target_event_id, event_name, analytics_event_id, link_id, traffic_source) VALUES
+      (CURRENT_DATE('Asia/Kolkata'), 'canonical', NULL, 'listingView', 'view', NULL, NULL),
+      (CURRENT_DATE('Asia/Kolkata'), 'canonical', NULL, 'linkClick', 'click-1', 'tickets', 'instagram'),
+      (CURRENT_DATE('Asia/Kolkata'), 'canonical', NULL, 'linkClick', 'click-1', 'tickets', 'instagram'),
+      (CURRENT_DATE('Asia/Kolkata'), 'canonical', NULL, 'linkClick', 'click-2', 'tickets', 'tiktok'),
+      (CURRENT_DATE('Asia/Kolkata'), 'canonical', NULL, 'linkClick', 'click-3', NULL, 'direct');`);
   } else {
     seed.push(`INSERT INTO fixture_event_participations_raw_latest VALUES (
       JSON_SET(JSON '{"uid":"member","status":"signedUp"}', '$.signedUpAt._seconds', UNIX_SECONDS(CURRENT_TIMESTAMP())).to_json_string());`);
@@ -166,6 +186,15 @@ ASSERT NOT EXISTS (${previous} EXCEPT DISTINCT ${current}) AS 'no lost metric ro
   seed.push(`ASSERT caught = ${failure !== null ? "TRUE" : "FALSE"} AS 'unexpected refresh outcome';`);
   seed.push(`ASSERT (SELECT COUNT(*) FROM ${table} WHERE ${identity} = 'history') = 1 AS 'history must survive';`);
   seed.push(`ASSERT (SELECT COUNT(*) FROM ${table} WHERE ${identity} = 'previous') = ${failure ? 1 : 0} AS 'old window must survive a failure only';`);
+  if (mart === "host_event") {
+    const links = "fixture_mart_host_link_daily";
+    seed.push(`ASSERT (SELECT COUNT(*) FROM ${links} WHERE club_id = 'history') = 1 AS 'link history must survive';`);
+    seed.push(`ASSERT (SELECT COUNT(*) FROM ${links} WHERE club_id = 'previous') = ${failure ? 1 : 0} AS 'old link window must survive a failure only';`);
+    if (!failure) {
+      seed.push(`ASSERT (SELECT COUNT(*) FROM ${links} WHERE club_id = 'canonical') = 2 AS 'one row per link and traffic source';`);
+      seed.push(`ASSERT (SELECT SUM(link_clicks) FROM ${links} WHERE club_id = 'canonical' AND link_id = 'tickets' AND traffic_source IN ('instagram', 'other')) = 2 AS 'deduplicated clicks with unlisted sources as other';`);
+    }
+  }
   if (!failure && mart === "host_event") {
     seed.push(`ASSERT (SELECT COUNT(DISTINCT club_id) FROM ${table} WHERE club_id != 'history') = 5 AS 'canonical and historical identities';`);
     seed.push(`ASSERT (SELECT COUNT(*) FROM ${table} WHERE club_id IN ('wrong', 'missing')) = 0 AS 'invalid identities excluded';`);

@@ -302,8 +302,15 @@ export const eventPageCopy = {
     onCatch: "On Catch",
   },
   booking: {
+    label: "Booking",
+    close: "Close",
+    book: "Book",
+    getTickets: "Get tickets",
+    details: "Details",
     externalNote: (source: string) => `Tickets for this event are sold on ${source}. You’ll finish booking there.`,
     externalAction: (source: string) => `Get tickets on ${source}`,
     closed: "Booking is closed for this event.",
+    phoneNote: "Your pass and updates come by text. No account needed.",
+    securePayment: "Secure payment by Razorpay.",
   },
 } as const;

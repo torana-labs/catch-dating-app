@@ -42,7 +42,8 @@ export const hostAnalyticsEventSchema: Record<string, unknown> = {
         "eventSave",
         "contactClick",
         "claimClick",
-        "outboundClick"
+        "outboundClick",
+        "linkClick"
       ]
     },
     "club_id": {
@@ -87,6 +88,37 @@ export const hostAnalyticsEventSchema: Record<string, unknown> = {
         "null"
       ],
       "maxLength": 40
+    },
+    "link_id": {
+      "description": "The owner link a linkClick opened; null for other events.",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "traffic_source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "instagram",
+        "whatsapp",
+        "facebook",
+        "google",
+        "qr",
+        "email",
+        "direct",
+        "other",
+        null
+      ],
+      "description": "Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent."
     },
     "ingested_at": {
       "type": "string",

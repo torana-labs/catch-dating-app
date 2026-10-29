@@ -423,7 +423,6 @@
       "exportName": "EventDetailPage",
       "css": [
         "website/src/styles/site-shell.css",
-        "website/src/styles/event-detail.css",
         "website/src/styles/responsive.css",
         "website/src/styles/consumer-home.css"
       ],
@@ -452,8 +451,11 @@
       "source": "website/src/features/events/PublicEventRegistration.tsx",
       "exportName": "PublicEventRegistration",
       "css": [
-        "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "planned",
@@ -465,31 +467,6 @@
         ]
       },
       "notes": "Event-scoped phone verification and registration form. It creates or links only an operational attendee row, privately seeds name and verified phone for optional later onboarding, never requires or synthesizes a Consumer profile, and collects independent unchecked organizer WhatsApp/SMS permissions without granting Catch advertising permission."
-    },
-    {
-      "id": "shared_event_booking_controls",
-      "kind": "supporting-component",
-      "routeIds": [
-        "event_detail_canonical"
-      ],
-      "owner": "shared/ui",
-      "source": "website/src/shared/ui/primitives/eventDetail.tsx",
-      "exportName": "EventGuestActions",
-      "css": [
-        "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
-      ],
-      "storybook": {
-        "status": "ready",
-        "story": "website/src/stories/GuestEventEntry.stories.tsx",
-        "exportName": "Invitation",
-        "states": [
-          "catch-native",
-          "guest-states",
-          "mobile-sticky-action"
-        ]
-      },
-      "notes": "The guest entry's booking controls: the action with its status and a docked phone bar, the accessible dialog, and the registration form, consents and privacy note. They stay until booking moves into the sticky aside (CAT-252 slice 2); the event page itself is drawn by @catch/web-ui. Guest state and transaction controllers stay feature-owned."
     },
     {
       "id": "event_page_header",
@@ -550,6 +527,33 @@
       "notes": "Every event section from the eventPublicPage read model, each present only when the event has it; the story toggles all ten optional fields as the WebEventV2 board does. Hosted moments carry no dating wording, and reviews are labelled as the organiser's. Library parts only."
     },
     {
+      "id": "event_booking",
+      "kind": "section",
+      "routeIds": [
+        "event_detail_canonical"
+      ],
+      "owner": "features/events",
+      "source": "website/src/features/events/EventBooking.tsx",
+      "exportName": "EventBooking",
+      "css": [
+        "packages/web-ui/src/components/CatchStickyAside.module.css",
+        "packages/web-ui/src/components/CatchDock.module.css",
+        "packages/web-ui/src/components/CatchSheet.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "website/src/stories/EventPage.stories.tsx",
+        "exportName": "PhoneSheet",
+        "states": [
+          "sticky-aside",
+          "docked-bar",
+          "phone-sheet",
+          "external-source"
+        ]
+      },
+      "notes": "The event page's booking in the library sticky aside: from 840px the booking card sticks beside the page, and on a phone a docked bar shows the price with the spots left, the date or the ticket source, and opens the card in a sheet."
+    },
+    {
       "id": "event_booking_card",
       "kind": "section",
       "routeIds": [
@@ -560,8 +564,7 @@
       "exportName": "EventBookingCard",
       "css": [
         "packages/web-ui/src/components/CatchGroundCard.module.css",
-        "packages/web-ui/src/components/CatchButton.module.css",
-        "website/src/styles/event-detail.css"
+        "packages/web-ui/src/components/CatchButton.module.css"
       ],
       "storybook": {
         "status": "ready",
@@ -573,7 +576,7 @@
           "closed"
         ]
       },
-      "notes": "The price, the time and where to book: the guest entry for a Catch event, the source link for an imported one, and a closed note after the event."
+      "notes": "The price, the time and where to book: the booking steps for a Catch event, the source link and its note for an imported one, and a closed note after the event."
     },
     {
       "id": "listing_sections_assembly",
@@ -842,7 +845,7 @@
           "generated"
         ]
       },
-      "notes": "\"Made with Catch · Make a page like this\" on a claimed page; where a generated page came from and how to report a mistake."
+      "notes": "\"Made with Catch \u00b7 Make a page like this\" on a claimed page; where a generated page came from and how to report a mistake."
     },
     {
       "id": "host_application_flow",
@@ -2884,20 +2887,23 @@
       "source": "website/src/features/events/GuestEventEntry.tsx",
       "exportName": "GuestEventEntry",
       "css": [
-        "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "ready",
         "story": "website/src/stories/GuestEventEntry.stories.tsx",
-        "exportName": "GuestEntry",
+        "exportName": "Steps",
         "states": [
+          "start",
           "phone",
-          "status",
-          "unavailable"
+          "code",
+          "paid-review"
         ]
       },
-      "notes": "Authenticated guest status and next actions use the canonical viewer contract; no consumer profile is required."
+      "notes": "A Catch event's booking steps in the booking card: the start, the guest's phone and code, the existing free registration or paid checkout, then their place. The steps run in place because the card sticks beside the page or opens in a sheet on a phone. A booking is one place; the places stepper waits on CAT-282."
     },
     {
       "id": "event_guest_entry_view",
@@ -2910,20 +2916,23 @@
       "source": "website/src/features/events/GuestEventEntry.tsx",
       "exportName": "GuestEventEntryView",
       "css": [
-        "website/src/styles/event-detail.css",
-        "website/src/styles/responsive.css"
+        "packages/web-ui/src/components/CatchButton.module.css",
+        "packages/web-ui/src/components/CatchCheckboxInput.module.css",
+        "packages/web-ui/src/components/CatchField.module.css",
+        "packages/web-ui/src/components/CatchGap.module.css",
+        "packages/web-ui/src/components/CatchText.module.css"
       ],
       "storybook": {
         "status": "ready",
         "story": "website/src/stories/GuestEventEntry.stories.tsx",
-        "exportName": "GuestStatus",
+        "exportName": "GuestStates",
         "states": [
-          "phone",
           "status",
-          "unavailable"
+          "unavailable",
+          "booked"
         ]
       },
-      "notes": "Authenticated guest status and next actions use the canonical viewer contract; no consumer profile is required."
+      "notes": "Authenticated guest status and next actions from the canonical viewer contract: a state the guest cannot book from here says what it means and links to its next step. No consumer profile is required."
     },
     {
       "id": "route_host_apply",
@@ -3264,6 +3273,12 @@
       "owner": "shared/layout",
       "source": "packages/web-ui/src/components/CatchStickyAside.tsx",
       "exportName": "CatchStickyAside",
+      "comparedWith": [
+        "catch.bottom_action",
+        "catch.button",
+        "catch.sheet"
+      ],
+      "comparisonReason": "A website T4 layout that places one booking card beside the page, or behind a docked bar that opens it in a sheet. It composes CatchDock, CatchSheet and CatchButton and implements none of their contracts.",
       "css": [
         "packages/web-ui/src/components/CatchStickyAside.module.css"
       ],
@@ -3433,7 +3448,7 @@
           "boxed-fields"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-251). A rounded card on one Website v2 ground that holds what the page arranges in it: the share card, a form step, the claim pitch and its points. Library text inside takes the ground's inks, ink resolves through the dark theme, and an outlined card draws the emphasis stroke in its ground's ink at 12% (the boards' white cards). Nearest concept: catch.surface (CatchSurface), whose tones are theme surfaces, not palette grounds. Search aliases: GroundPanel, ColorCard, PitchCard, TintCard, Callout."
+      "notes": "Website T4 under D18 (CAT-251). A rounded card on one Website v2 ground that holds what the page arranges in it: the share card, a form step, the claim pitch and its points. Library text inside takes the ground's inks, ink resolves through the dark theme, and an outlined card draws the emphasis stroke in its ground's ink at opacity.groundCardOutline (the boards' white cards). Field contract: a CatchField in the card draws the boards' boxed input at rest (a white fill and the emphasis stroke at field.restLineAlpha; a field.restTintOnDarkAlpha tint on ink) through --catch-field-rest-*; outside a card a field stays the quiet row. Nearest concept: catch.surface (CatchSurface), whose tones are theme surfaces, not palette grounds. Search aliases: GroundPanel, ColorCard, PitchCard, TintCard, Callout."
     },
     {
       "id": "shared_link_tile",

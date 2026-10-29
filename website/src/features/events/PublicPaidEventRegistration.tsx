@@ -1,7 +1,9 @@
-import {CatchField, CatchGap} from "@catch/web-ui";
+import {CatchButton, CatchField, CatchGap, CatchLoadingIndicator, CatchText} from "@catch/web-ui";
+import {useEffect, useRef} from "react";
 import { usePublicCheckoutController } from "./usePublicCheckoutController";
 import {
   eventDetailCopy,
+  eventPageCopy,
   publicCheckoutCopy as copy,
 } from "../../content/events";
 import {
@@ -12,17 +14,12 @@ import {
   offerCancellationRefund,
   offerPaymentCopy,
 } from "../../content/eventOffer";
-import {
-  Button,
-  ButtonLink,
-  FormStatus,
-  EventRuntimeLoading,
-  EventRuntimeForm,
-  EventRuntimeModule,
-} from "../../shared/ui/primitives";
+import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
+import {Form} from "../../shared/ui/primitives";
 import { EventSmsPreferencePanel } from "../eventMessaging/EventSmsPreferencePanel";
 import { EventRcsPreferencesPanel } from "../eventMessaging/EventRcsPreferencesPanel";
 import { EventWhatsappPreferencesPanel } from "../eventMessaging/EventWhatsappPreferencesPanel";
+const noop = () => undefined;
 const money = (amount: number) =>
   new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format(
     amount / 100,
@@ -62,6 +59,13 @@ export function PublicPaidRegistrationView(
   c: ReturnType<typeof usePublicCheckoutController>,
 ) {
   const { phase, pending, quote, payment, admission, cancellationReview } = c;
+  // Links hold while a booking or payment request is in flight.
+  const go = usePendingRequestNavigationBlocked() ? null : noop;
+  // A cancellation review opens on the choice that keeps the place.
+  const keep = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (cancellationReview) keep.current?.querySelector("button")?.focus();
+  }, [cancellationReview]);
   const policy = payment?.cancellationPolicy ?? quote?.cancellationPolicy;
   const display = cancellationReview
     ? {
@@ -89,119 +93,84 @@ export function PublicPaidRegistrationView(
   return (
     <CatchGap size="section">
       {!c.allowNewBookings && (phase === "phone" || phase === "otp") ? (
-        <p>{copy.closedRecovery}</p>
+        <CatchText as="p" variant="bodyM">{copy.closedRecovery}</CatchText>
       ) : null}
       {phase === "phone" || phase === "otp" ? (
-        <EventRuntimeForm
-          pending={pending}
-          onSubmit={phase === "phone" ? c.sendCode : c.verifyCode}
-        >
-          {phase === "phone" ? (
-            <CatchField
-              recipe="input"
-              id={`${c.recaptchaId}-phone`}
-              title={text.phoneLabel}
-              autoComplete="tel"
-              inputHint={text.phonePlaceholder}
-              value={c.phone}
-              onChanged={(value) => c.setPhone(value.replace(/\s/gu, ""))}
-              keyboardType="phone"
-            />
-          ) : (
-            <>
-              <p>{offerCodeSent(c.phone)}</p>
+        <Form noValidate onSubmit={phase === "phone" ? c.sendCode : c.verifyCode} pending={pending}>
+          <CatchGap size="related">
+            {phase === "phone" ? (
               <CatchField
                 recipe="input"
-                id={`${c.recaptchaId}-code`}
-                title={text.codeLabel}
-                autoComplete="one-time-code"
-                maxLength={6}
-                value={c.code}
-                onChanged={(value) => c.setCode(value.replace(/\D/gu, ""))}
-                keyboardType="number"
+                id={`${c.recaptchaId}-phone`}
+                title={text.phoneLabel}
+                autoComplete="tel"
+                helperText={eventPageCopy.booking.phoneNote}
+                inputHint={text.phonePlaceholder}
+                value={c.phone}
+                onChanged={(value) => c.setPhone(value.replace(/\s/gu, ""))}
+                keyboardType="phone"
               />
-            </>
-          )}
-          <div id={c.recaptchaId} />
-          <Button
-            type="submit"
-            loading={pending}
-            loadingLabel={phase === "phone" ? text.sending : text.verifying}
-            disabled={phase === "otp" && c.code.length !== 6}
-          >
-            {phase === "phone" ? text.send : text.verify}
-          </Button>
-          {phase === "otp" ? (
-            <Button
-              type="button"
-              variant="ghost"
-              disabled={pending}
-              onClick={c.changePhone}
-            >
-              {text.changeNumber}
-            </Button>
-          ) : null}
-        </EventRuntimeForm>
+            ) : (
+              <>
+                <CatchText as="p" color="ink2" variant="bodyS">{offerCodeSent(c.phone)}</CatchText>
+                <CatchField
+                  recipe="input"
+                  id={`${c.recaptchaId}-code`}
+                  title={text.codeLabel}
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={c.code}
+                  onChanged={(value) => c.setCode(value.replace(/\D/gu, ""))}
+                  keyboardType="number"
+                />
+              </>
+            )}
+            <div id={c.recaptchaId} />
+            <CatchButton fullWidth label={phase === "phone" ? text.send : text.verify} type="submit"
+              onPressed={phase === "otp" && c.code.length !== 6 ? null : noop} status={pending ? "loading" : "idle"} />
+            {phase === "otp" ? (
+              <CatchButton fullWidth label={text.changeNumber} onPressed={pending ? null : c.changePhone} variant="quiet" />
+            ) : null}
+          </CatchGap>
+        </Form>
       ) : phase === "loading" || phase === "unavailable" ? (
-        <>
-          {pending || !c.status.message ? (
-            <EventRuntimeLoading label={copy.loading} />
-          ) : null}
+        <CatchGap size="related">
+          {pending || !c.status.message ? <CatchLoadingIndicator label={copy.loading} /> : null}
           {c.status.message ? (
-            <Button
-              type="button"
-              disabled={pending}
-              onClick={() => void c.load()}
-            >
-              {text.retry}
-            </Button>
+            <CatchButton fullWidth label={text.retry} onPressed={pending ? null : () => void c.load()} />
           ) : null}
-        </>
+        </CatchGap>
       ) : (
         <>
-          <EventRuntimeModule title={display.title}>
-            <p>{display.body}</p>
+          <CatchGap size="related">
+            <CatchText as="h2" variant="titleS">{display.title}</CatchText>
+            <CatchText as="p" variant="bodyM">{display.body}</CatchText>
             {quote || payment ? (
               <>
-                <p>
-                  <strong>
-                    {money(payment?.amountPaise ?? quote!.amountPaise)}
-                  </strong>
-                </p>
-                <p>
-                  {date(payment?.startTimeMillis ?? quote!.startTimeMillis)}
-                </p>
-                {payment?.mode === "test" ? (
-                  <p role="status">{text.testMode}</p>
-                ) : null}
+                <CatchText as="p" variant="sectionTitle">{money(payment?.amountPaise ?? quote!.amountPaise)}</CatchText>
+                <CatchText as="p" variant="bodyM">{date(payment?.startTimeMillis ?? quote!.startTimeMillis)}</CatchText>
+                {payment?.mode === "test" ? <CatchText as="p" role="status" variant="bodyS">{text.testMode}</CatchText> : null}
                 {payment?.checkout ? (
-                  <p>{offerHoldEnds(date(payment.expiresAtMillis))}</p>
+                  <CatchText as="p" color="ink2" variant="bodyS">{offerHoldEnds(date(payment.expiresAtMillis))}</CatchText>
                 ) : null}
               </>
             ) : null}
             {policy && !cancellationReview ? (
-              <p>
-                <strong>{text.cancellationTerms}</strong>
-                <br />
-                {offerRefundDeadline(date(policy.refundDeadlineMillis))}
-              </p>
+              <>
+                <CatchText as="p" variant="supportingStrong">{text.cancellationTerms}</CatchText>
+                <CatchText as="p" color="ink2" variant="bodyS">{offerRefundDeadline(date(policy.refundDeadlineMillis))}</CatchText>
+              </>
             ) : null}
-          </EventRuntimeModule>
+          </CatchGap>
           {c.previousPayment ? (
-            <>
-              <p>
-                {copy.previousCheckout(money(c.previousPayment.amountPaise))}
-              </p>
-              <ButtonLink
-                href={`/booking/${encodeURIComponent(c.previousPayment.eventId)}/?payment=${c.previousPayment.paymentId}`}
-                variant="ghost"
-              >
-                {copy.previousBookingLink}
-              </ButtonLink>
-            </>
+            <CatchGap size="related">
+              <CatchText as="p" variant="bodyS">{copy.previousCheckout(money(c.previousPayment.amountPaise))}</CatchText>
+              <CatchButton fullWidth href={`/booking/${encodeURIComponent(c.previousPayment.eventId)}/?payment=${c.previousPayment.paymentId}`}
+                label={copy.previousBookingLink} onPressed={go} variant="quiet" />
+            </CatchGap>
           ) : null}
           {quote && !admission ? (
-            <>
+            <CatchGap size="related">
               <CatchField
                 recipe="input"
                 id={`${c.recaptchaId}-name`}
@@ -212,132 +181,61 @@ export function PublicPaidRegistrationView(
                 value={c.name}
                 onChanged={(value) => c.setName(value)}
               />
-              <p>{copy.signedIn(c.user?.phoneNumber ?? c.phone)}</p>
-            </>
+              <CatchText as="p" color="ink2" variant="bodyS">{copy.signedIn(c.user?.phoneNumber ?? c.phone)}</CatchText>
+            </CatchGap>
           ) : null}
-          <CatchGap direction="horizontal" size="related" wrap
-            key={cancellationReview ? "cancel" : "checkout"}
-          >
+          <CatchGap key={cancellationReview ? "cancel" : "checkout"} size="related">
             {cancellationReview ? (
               <>
-                <Button
-                  type="button"
-                  loading={pending}
-                  loadingLabel={text.cancelling}
-                  onClick={() => void c.cancelAdmission()}
-                >
-                  {text.confirmCancellation}
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  disabled={pending}
-                  autoFocus
-                  onClick={c.dismissCancellation}
-                >
-                  {text.keepAdmission}
-                </Button>
+                <CatchButton fullWidth label={text.confirmCancellation} onPressed={() => void c.cancelAdmission()}
+                  status={pending ? "loading" : "idle"} variant="danger" />
+                <div ref={keep}>
+                  <CatchButton fullWidth label={text.keepAdmission} onPressed={pending ? null : c.dismissCancellation}
+                    variant="secondary" />
+                </div>
               </>
             ) : (
               <>
-                {c.allowNewBookings &&
-                payment &&
-                ["expired", "refunded", "cancelled"].includes(
-                  payment.status,
-                ) ? (
-                  <Button
-                    type="button"
-                    disabled={pending}
-                    onClick={() => void c.startAgain()}
-                  >
-                    {copy.startAgain}
-                  </Button>
-                ) : null}
-                {!payment && !admission ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    disabled={pending}
-                    onClick={c.changePhone}
-                  >
-                    {text.verifyAnother}
-                  </Button>
-                ) : null}
-                {quote && c.status.tone === "is-error" ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    disabled={pending}
-                    onClick={() => void c.load(true)}
-                  >
-                    {copy.reviewCurrentTerms}
-                  </Button>
+                {!admission && (quote || payment?.checkout) ? (
+                  <CatchButton fullWidth label={payment ? text.continueCheckout : copy.pay(money(quote!.amountPaise))}
+                    onPressed={() => void c.pay()} status={pending ? "loading" : "idle"} />
                 ) : null}
                 {!admission && (quote || payment?.checkout) ? (
-                  <Button
-                    type="button"
-                    loading={pending}
-                    loadingLabel={text.checkingPayment}
-                    onClick={() => void c.pay()}
-                  >
-                    {payment
-                      ? text.continueCheckout
-                      : copy.pay(money(quote!.amountPaise))}
-                  </Button>
+                  <CatchText as="p" color="ink2" variant="bodyS">{eventPageCopy.booking.securePayment}</CatchText>
                 ) : null}
-                {payment ? (
-                  <ButtonLink
-                    href={`/booking/${encodeURIComponent(payment.eventId)}/?payment=${payment.paymentId}`}
-                    variant="ghost"
-                  >
-                    {copy.bookingLink}
-                  </ButtonLink>
+                {c.allowNewBookings && payment && ["expired", "refunded", "cancelled"].includes(payment.status) ? (
+                  <CatchButton fullWidth label={copy.startAgain} onPressed={pending ? null : () => void c.startAgain()} />
                 ) : null}
-                {payment ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    disabled={pending}
-                    onClick={() => void c.check()}
-                  >
-                    {text.refresh}
-                  </Button>
+                {admission ? <CatchButton fullWidth href={`/booking/${encodeURIComponent(admission.eventId)}/`}
+                  label={copy.eventAccess} onPressed={go} /> : null}
+                {payment ? <CatchButton fullWidth href={`/booking/${encodeURIComponent(payment.eventId)}/?payment=${payment.paymentId}`}
+                  label={copy.bookingLink} onPressed={go} variant="secondary" /> : null}
+                {quote && c.status.tone === "is-error" ? (
+                  <CatchButton fullWidth label={copy.reviewCurrentTerms} onPressed={pending ? null : () => void c.load(true)}
+                    variant="secondary" />
                 ) : null}
-                {admission ? <ButtonLink href={`/booking/${encodeURIComponent(admission.eventId)}/`}>
-                  {copy.eventAccess}
-                </ButtonLink> : null}
+                {payment ? <CatchButton fullWidth label={text.refresh} onPressed={pending ? null : () => void c.check()}
+                  variant="quiet" /> : null}
                 {admission && payment?.cancellationQuote ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    disabled={pending}
-                    onClick={() => void c.reviewCancellation()}
-                  >
-                    {text.cancelAdmission}
-                  </Button>
+                  <CatchButton fullWidth label={text.cancelAdmission} onPressed={pending ? null : () => void c.reviewCancellation()}
+                    variant="quiet" />
+                ) : null}
+                {!payment && !admission ? (
+                  <CatchButton fullWidth label={text.verifyAnother} onPressed={pending ? null : c.changePhone} variant="quiet" />
                 ) : null}
               </>
             )}
           </CatchGap>
           {admission && !cancellationReview ? (
             <>
-              <EventSmsPreferencePanel
-                eventId={admission.eventId}
-                attendeeId={admission.attendeeId}
-              />
-              <EventRcsPreferencesPanel
-                eventId={admission.eventId}
-                attendeeId={admission.attendeeId}
-              />
-              <EventWhatsappPreferencesPanel
-                eventId={admission.eventId}
-                attendeeId={admission.attendeeId}
-              />
+              <EventSmsPreferencePanel eventId={admission.eventId} attendeeId={admission.attendeeId} />
+              <EventRcsPreferencesPanel eventId={admission.eventId} attendeeId={admission.attendeeId} />
+              <EventWhatsappPreferencesPanel eventId={admission.eventId} attendeeId={admission.attendeeId} />
             </>
           ) : null}
         </>
       )}
-      <FormStatus status={c.status} />
+      <CatchText as="p" color={c.status.tone === "is-error" ? "danger" : "ink2"} role="status" variant="bodyS">{c.status.message}</CatchText>
     </CatchGap>
   );
 }

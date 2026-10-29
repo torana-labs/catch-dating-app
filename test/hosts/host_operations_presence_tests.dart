@@ -182,8 +182,32 @@ void _registerHostOperationsPresenceTests() {
                 'listingViews': 17,
                 'eventViews': 8,
                 'outboundClicks': 3,
+                'linkClicks': 6,
               })
             : baseline.discoverySummary,
+        linkSummary: populated
+            ? HostAnalyticsLinkSummary.fromMap({
+                'links': [
+                  {
+                    'organizerId': 'org',
+                    'linkId': 'tickets',
+                    'label': 'Diwali run tickets',
+                    'clicks': 4,
+                  },
+                  {
+                    'organizerId': 'org',
+                    'linkId': 'gone',
+                    'label': null,
+                    'clicks': 2,
+                  },
+                ],
+                'trafficSources': [
+                  {'source': 'instagram', 'clicks': 5},
+                  {'source': 'qr', 'clicks': 1},
+                  {'source': 'utm_campaign', 'clicks': 9},
+                ],
+              })
+            : const HostAnalyticsLinkSummary(),
         dataQuality: missing
             ? const [
                 HostAnalyticsDataQuality(
@@ -214,20 +238,37 @@ void _registerHostOperationsPresenceTests() {
       );
       final presence = find.byKey(const ValueKey('host-analytics-presence'));
       final metrics = tester.widget<CatchMetricSection>(
-        find.descendant(
-          of: presence,
-          matching: find.byType(CatchMetricSection),
-        ),
+        find
+            .descendant(of: presence, matching: find.byType(CatchMetricSection))
+            .first,
       );
       expect(
         metrics.items.map((item) => item.value),
-        populated ? ['17', '8', '3'] : everyElement(missing ? '—' : '0'),
+        populated ? ['17', '8', '3', '6'] : everyElement(missing ? '—' : '0'),
       );
       expect(metrics.items.map((item) => item.label), [
         'Profile views',
         'Event views',
         'Outbound source clicks',
+        'Link clicks',
       ]);
+      final linkClicks = find.byKey(
+        const ValueKey('host-analytics-link-clicks'),
+      );
+      expect(linkClicks, populated ? findsOneWidget : findsNothing);
+      if (populated) {
+        expect(
+          tester
+              .widget<CatchMetricSection>(linkClicks)
+              .items
+              .map((item) => (item.label, item.value)),
+          [('Diwali run tickets', '4'), ('Removed link', '2')],
+        );
+        expect(
+          find.text('Link clicks came from Instagram 5, QR codes 1.'),
+          findsOneWidget,
+        );
+      }
       expect(
         find.text(
           missing

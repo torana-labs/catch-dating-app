@@ -2,7 +2,7 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 import {waitFor} from "@testing-library/react";
 import {setMarketingConsent} from "../../analytics";
 import {hostListings} from "./data";
-import {observeOrganizerPageView, trackOrganizerAnalytics} from "./analytics";
+import {observeOrganizerPageView, trackOrganizerAnalytics, trackOrganizerLinkClick, trafficSourceOf} from "./analytics";
 
 const record = vi.hoisted(() => vi.fn());
 vi.mock("../../firebase", () => ({recordOrganizerAnalyticsEvent: record}));
@@ -111,4 +111,53 @@ describe("first-party organizer presence", () => {
     await waitFor(() => expect(sessionStorage.getItem("catch_host_analytics_views_v1")).toContain("external-test"));
   });
 
+});
+
+describe("owner link clicks", () => {
+  it("maps ?via= and the referrer host to the fixed traffic sources", () => {
+    const origin = "https://catchdates.com";
+    expect([
+      trafficSourceOf("https://l.instagram.com/?u=x", "", origin),
+      trafficSourceOf("", "?via=QR", origin),
+      trafficSourceOf("https://www.google.co.in/", "?via=ig", origin),
+      trafficSourceOf("https://wa.me/", "", origin),
+      trafficSourceOf("https://m.facebook.com/", "", origin),
+      trafficSourceOf("https://mail.google.com/mail/u/0/", "", origin),
+      trafficSourceOf("https://www.google.com/", "", origin),
+      trafficSourceOf("", "", origin),
+      trafficSourceOf("https://catchdates.com/explore/", "", origin),
+      trafficSourceOf("https://blog.example.org/post", "", origin),
+      trafficSourceOf("", "?via=summer_sale_utm", origin),
+      trafficSourceOf("not a url", "", origin),
+    ]).toEqual(["instagram", "qr", "instagram", "whatsapp", "facebook", "email", "google", "direct", "other", "other",
+      "other", "other"]);
+  });
+
+  it("sends the link and the visit's source only with analytics consent", async () => {
+    window.history.replaceState(null, "", "/organizers/lantern/?via=qr");
+    trackOrganizerLinkClick(listing, "tickets", "organizer_page");
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(record).not.toHaveBeenCalled();
+    expect(sessionStorage.length).toBe(0);
+    setMarketingConsent("analytics");
+    trackOrganizerLinkClick(listing, "tickets", "organizer_page");
+    await waitFor(() => expect(record).toHaveBeenCalledTimes(1));
+    expect(record.mock.calls[0][0]).toMatchObject({eventName: "linkClick", linkId: "tickets", trafficSource: "qr",
+      source: "organizer_page", pagePath: "/organizers/lantern/"});
+    // The landing source holds for the tab session, then leaves with consent.
+    window.history.replaceState(null, "", "/organizers/lantern/");
+    trackOrganizerLinkClick(listing, "tickets", "organizer_page");
+    await waitFor(() => expect(record).toHaveBeenCalledTimes(2));
+    expect(record.mock.calls[1][0].trafficSource).toBe("qr");
+    setMarketingConsent("essential");
+    expect(sessionStorage.getItem("catch_host_analytics_traffic_source_v1")).toBeNull();
+  });
+
+  it("keeps link fields off every other event", async () => {
+    setMarketingConsent("analytics");
+    trackOrganizerAnalytics(listing, "outboundClick", "source_website");
+    await waitFor(() => expect(record).toHaveBeenCalledTimes(1));
+    expect(record.mock.calls[0][0]).not.toHaveProperty("linkId");
+    expect(record.mock.calls[0][0]).not.toHaveProperty("trafficSource");
+  });
 });

@@ -3,13 +3,18 @@
  * inside a card and 28px for a pitch, which steps down to 20px below 840px.
  * The card stacks what it holds with no gap of its own; the caller arranges
  * the contents with CatchGap. An outlined card draws the emphasis stroke in
- * its ground's ink at 12%. Fields in a card take the boards' boxed input at
- * rest: a white fill and the emphasis stroke in the ground's ink at 25%.
+ * its ground's ink at opacity.groundCardOutline.
+ *
+ * Field contract: a card gives the CatchFields it holds the boards' boxed input
+ * at rest (WebOrgV2 .finput) through --catch-field-rest-fill, -line and -stroke:
+ * a white fill and the emphasis stroke in the ground's ink at
+ * field.restLineAlpha. CatchField reads them and stays a quiet row elsewhere.
  */
 .card {
   composes: ground from "./grounds.module.css";
-  --catch-field-rest-fill: var(--catch-palette-white);
-  --catch-field-rest-line: color-mix(in srgb, var(--catch-on-ground-ink) 25%, transparent);
+  --catch-field-rest-fill: var(--catch-ground-white-fill);
+  --catch-field-rest-line: color-mix(in srgb, var(--catch-on-ground-ink)
+    calc(var(--catch-field-rest-line-alpha) * 100%), transparent);
   --catch-field-rest-stroke: var(--catch-stroke-emphasis);
 
   display: flex;
@@ -22,11 +27,13 @@
 
 /* On the dark ground a white field would hide its light ink. */
 .card[data-ground="ink"] {
-  --catch-field-rest-fill: color-mix(in srgb, var(--catch-on-ground-ink) 8%, transparent);
+  --catch-field-rest-fill: color-mix(in srgb, var(--catch-on-ground-ink)
+    calc(var(--catch-field-rest-tint-on-dark-alpha) * 100%), transparent);
 }
 
 .card[data-outlined] {
-  border: var(--catch-stroke-emphasis) solid color-mix(in srgb, var(--catch-on-ground-ink) 12%, transparent);
+  border: var(--catch-stroke-emphasis) solid color-mix(in srgb, var(--catch-on-ground-ink)
+    calc(var(--catch-opacity-ground-card-outline) * 100%), transparent);
 }
 
 .card[data-padding="compact"] {
