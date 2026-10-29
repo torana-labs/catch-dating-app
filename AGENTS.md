@@ -1,6 +1,6 @@
 ---
 doc_id: agent_entrypoint
-version: 3.6.1
+version: 3.7.0
 updated: 2026-10-29
 owner: agent_operating_model
 status: active
@@ -69,6 +69,7 @@ accountable owner and next action.
 | Widget consolidation or dedupe | `docs/design_parity/widget_consolidation/consolidation_rules.md`, `docs/design_parity/widget_consolidation/decisions.json` | Apply only exact K/R/D rules; escalate unmatched identity or visual trade-offs; keep the decision ledger current |
 | Tooling or automation | `tool/README.md`, `tool/tools_manifest.json` | `node tool/run.mjs check --manifest-only` plus focused tool tests |
 | Parallel worktrees | `docs/agent_operating_model.md` | Ordinary Git plus the optional thin `tool/git/worktree_guard.mjs` safety wrapper |
+| Tasks, plans, strategy, decisions | GitHub Issues in this repo for tasks (`status:`, `priority:` and `project:` labels, sub-issues, the torana-labs **Catch** board); [torana-labs/catch-knowledge](https://github.com/torana-labs/catch-knowledge) for plans, strategy, research and decisions that need not change with code | File and update issues, never repo task lists; Linear is retired (`migrated-from-linear` issues link to their originals) |
 
 ## Removed Evidence Layer
 
@@ -132,7 +133,7 @@ the code. Each was resolved by measuring the thing itself.
 
 A local contribution is ready for handoff when its intended changes are present,
 focused checks pass, compile-critical generated outputs are current, and the
-exact commit is preserved. Shipping, Linear status and retirement of the task's
+exact commit is preserved. Shipping, issue status and retirement of the task's
 own worktree follow the mandatory checklist in
 [`docs/agent_operating_model.md`](docs/agent_operating_model.md#completion).
 Ordinary product work must not recreate or replace the removed evidence layer.
