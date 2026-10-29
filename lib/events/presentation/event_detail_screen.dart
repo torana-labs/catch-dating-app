@@ -34,7 +34,8 @@ import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/platform/device/external_share.dart';
-import 'package:catch_dating_app/platform/errors/app_error_context.dart' as app_ops;
+import 'package:catch_dating_app/platform/errors/app_error_context.dart'
+    as app_ops;
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';

@@ -25,7 +25,8 @@ import 'package:catch_dating_app/kernel/country_markets.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/platform/device/clipboard.dart';
 import 'package:catch_dating_app/platform/device/connectivity_service.dart';
-import 'package:catch_dating_app/platform/errors/app_error_context.dart' as app_ops;
+import 'package:catch_dating_app/platform/errors/app_error_context.dart'
+    as app_ops;
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';

@@ -13,7 +13,8 @@ import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/platform/errors/app_error_context.dart' as operation;
+import 'package:catch_dating_app/platform/errors/app_error_context.dart'
+    as operation;
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_tokens/catch_tokens.dart';

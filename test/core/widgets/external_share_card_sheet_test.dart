@@ -120,9 +120,8 @@ Widget _subject({
 }) => ProviderScope(
   child: MaterialApp(
     theme: AppTheme.light,
-    builder: (context, child) => CatchNoticeOverlay(
-      child: child ?? const SizedBox.shrink(),
-    ),
+    builder: (context, child) =>
+        CatchNoticeOverlay(child: child ?? const SizedBox.shrink()),
     home: Scaffold(
       body: CatchExternalShareSheet(
         share: share,

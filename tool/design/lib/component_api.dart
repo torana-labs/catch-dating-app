@@ -17,7 +17,10 @@ Map<String, Object?> collectComponentApi({
   final paths =
       files ??
       [
-        for (final root in ['packages/catch_ui/lib', 'lib/platform/riverpod_ui'])
+        for (final root in [
+          'packages/catch_ui/lib',
+          'lib/platform/riverpod_ui',
+        ])
           if (Directory.fromUri(rootUri.resolve(root)).existsSync())
             for (final file in Directory(
               rootUri.resolve(root).toFilePath(),

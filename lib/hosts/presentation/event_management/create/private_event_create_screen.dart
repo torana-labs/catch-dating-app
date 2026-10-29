@@ -25,7 +25,8 @@ import 'package:catch_dating_app/hosts/presentation/event_management/host_create
 import 'package:catch_dating_app/hosts/presentation/widgets/host_draft_exit_dialog.dart';
 import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/platform/errors/app_error_context.dart' as app_ops;
+import 'package:catch_dating_app/platform/errors/app_error_context.dart'
+    as app_ops;
 import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/platform/errors/error_logger.dart';
