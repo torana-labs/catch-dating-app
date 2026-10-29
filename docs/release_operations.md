@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.20.0
+version: 2.20.1
 updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
@@ -239,14 +239,17 @@ short enough to be read before a deploy.
 
 ## Native Splash Assets
 
-The native splash is generated from the `flutter_native_splash:` block in
-`pubspec.yaml`; edit that config and run `dart run flutter_native_splash:create`
-instead of hand-editing platform drawables/storyboards. Before regenerating,
+The Consumer native splash is generated from the `flutter_native_splash:` block
+in `apps/consumer/pubspec.yaml`; edit that config and run
+`dart run flutter_native_splash:create` from `apps/consumer` instead of
+hand-editing platform drawables/storyboards. Host splash assets come only from
+the brand generator below. Before regenerating,
 verify the configured splash image is a transparent mark that composites cleanly
 on both `#F4F4F1` and `#0F0E10`; a baked app-icon tile is not an acceptable
 native splash image. The native splash mark is generated as transparent output
 by `tool/branding/generate_catch_icon.swift` and is a separate asset from the
-opaque launcher icon; edit the generator and `pubspec.yaml`, then re-run the
+opaque launcher icon; edit the generator and `apps/consumer/pubspec.yaml`, then
+re-run the
 Swift generator and `flutter_native_splash:create`. Finally run
 `dart run tool/branding/generate_native_brand_assets.dart`: it reapplies the
 Consumer-only iOS responsive launch constraints that align `Catch_` with the
