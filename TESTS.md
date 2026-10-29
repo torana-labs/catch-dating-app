@@ -35,8 +35,8 @@ whole list.
 change and publishes an LCOV plus feature-level Markdown coverage artifact.
 `.github/workflows/visual-integration-ci.yml` runs desktop goldens with the
 checked 0.30% macOS raster tolerance, deterministic headless app-shell wrappers,
-and a bounded native macOS app-shell smoke sequentially for relevant changes,
-on weekdays, and on manual dispatch. CI sets `CATCH_GOLDEN_REPORT`, so golden
+and a bounded native macOS app-shell smoke as parallel jobs. `ci.yml` calls it
+for relevant changes, in the daily scheduled run, and on manual dispatch. CI sets `CATCH_GOLDEN_REPORT`, so golden
 pixel changes and missing baselines are listed in the job summary with their
 images retained as CI artifacts instead of failing; render errors and
 non-golden expectations still fail. Local `flutter test test/goldens` without

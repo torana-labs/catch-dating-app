@@ -40,3 +40,4 @@ flutter:
     - assets/branding/catch_hosts_logo.png
     - assets/audio/event_success/
     - assets/audio/celebration/
+    - assets/motion/event_success/
