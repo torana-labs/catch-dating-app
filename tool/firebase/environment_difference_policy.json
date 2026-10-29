@@ -20,6 +20,7 @@
     "CATCH_PRIVACY_POLICY_URL": {"class": "feature-gate"},
     "CATCH_TERMS_URL": {"class": "feature-gate"},
     "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY": {"class": "feature-gate"},
+    "CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION": {"class": "identity"},
     "CATCH_WHATSAPP_PHONE_NUMBER_ID": {"class": "identity"},
     "CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED": {"class": "feature-gate"},
     "CATCH_WHATSAPP_REPLIES_ENABLED": {"class": "feature-gate"},
