@@ -634,6 +634,152 @@ const schemaSupplyIntakeRequestsDocumentSchema = <String, Object?>{
                 },
               },
             },
+            'duplicateCheck': <String, Object?>{
+              'description': 'The listing\'s advisory comparison with the organizers Catch already lists, copied from the listing its contentHash covers. Null when the request was not compared (an event_refresh names its organizer); absent on requests completed before the worker compared listings.',
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'null',
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'policyId',
+                    'authority',
+                    'verdict',
+                    'reasons',
+                    'organizersCompared',
+                    'inventoryHash',
+                    'inventory',
+                    'candidates',
+                  ],
+                  'properties': <String, Object?>{
+                    'policyId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 80,
+                    },
+                    'authority': <String, Object?>{
+                      'const': 'advisory',
+                    },
+                    'verdict': <String, Object?>{
+                      'enum': <Object?>[
+                        'match',
+                        'ambiguous',
+                        'none',
+                      ],
+                    },
+                    'reasons': <String, Object?>{
+                      'type': 'array',
+                      'maxItems': 8,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'pattern': '^[a-z][a-z0-9_]{0,79}\$',
+                      },
+                    },
+                    'organizersCompared': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 10000,
+                    },
+                    'inventoryHash': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^[a-f0-9]{64}\$',
+                    },
+                    'inventory': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'citySlug',
+                        'limit',
+                        'truncated',
+                      ],
+                      'properties': <String, Object?>{
+                        'citySlug': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 80,
+                        },
+                        'limit': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 10000,
+                        },
+                        'truncated': <String, Object?>{
+                          'type': 'boolean',
+                        },
+                      },
+                    },
+                    'candidates': <String, Object?>{
+                      'type': 'array',
+                      'maxItems': 12,
+                      'items': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'organizerId',
+                          'name',
+                          'score',
+                          'band',
+                          'signals',
+                          'conflicts',
+                          'rationale',
+                        ],
+                        'properties': <String, Object?>{
+                          'organizerId': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 200,
+                          },
+                          'name': <String, Object?>{
+                            'type': <Object?>[
+                              'string',
+                              'null',
+                            ],
+                            'maxLength': 500,
+                          },
+                          'score': <String, Object?>{
+                            'type': 'number',
+                            'minimum': 0,
+                            'maximum': 1,
+                          },
+                          'band': <String, Object?>{
+                            'enum': <Object?>[
+                              'match',
+                              'probable',
+                              'review',
+                              'low',
+                            ],
+                          },
+                          'signals': <String, Object?>{
+                            'type': 'array',
+                            'maxItems': 12,
+                            'items': <String, Object?>{
+                              'type': 'string',
+                              'pattern': '^[a-z][a-z0-9_]{0,79}\$',
+                            },
+                          },
+                          'conflicts': <String, Object?>{
+                            'type': 'array',
+                            'maxItems': 12,
+                            'items': <String, Object?>{
+                              'type': 'string',
+                              'pattern': '^[a-z][a-z0-9_]{0,79}\$',
+                            },
+                          },
+                          'rationale': <String, Object?>{
+                            'type': 'string',
+                            'maxLength': 2000,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
           },
         },
       ],
@@ -743,6 +889,148 @@ const schemaSupplyIntakeRequestsDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 240,
       'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+    },
+    'code': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-z][a-z0-9_]{0,79}\$',
+    },
+    'duplicateCheck': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'policyId',
+        'authority',
+        'verdict',
+        'reasons',
+        'organizersCompared',
+        'inventoryHash',
+        'inventory',
+        'candidates',
+      ],
+      'properties': <String, Object?>{
+        'policyId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 80,
+        },
+        'authority': <String, Object?>{
+          'const': 'advisory',
+        },
+        'verdict': <String, Object?>{
+          'enum': <Object?>[
+            'match',
+            'ambiguous',
+            'none',
+          ],
+        },
+        'reasons': <String, Object?>{
+          'type': 'array',
+          'maxItems': 8,
+          'items': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[a-z][a-z0-9_]{0,79}\$',
+          },
+        },
+        'organizersCompared': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 10000,
+        },
+        'inventoryHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'inventory': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'citySlug',
+            'limit',
+            'truncated',
+          ],
+          'properties': <String, Object?>{
+            'citySlug': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'maxLength': 80,
+            },
+            'limit': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 10000,
+            },
+            'truncated': <String, Object?>{
+              'type': 'boolean',
+            },
+          },
+        },
+        'candidates': <String, Object?>{
+          'type': 'array',
+          'maxItems': 12,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'organizerId',
+              'name',
+              'score',
+              'band',
+              'signals',
+              'conflicts',
+              'rationale',
+            ],
+            'properties': <String, Object?>{
+              'organizerId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 200,
+              },
+              'name': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 500,
+              },
+              'score': <String, Object?>{
+                'type': 'number',
+                'minimum': 0,
+                'maximum': 1,
+              },
+              'band': <String, Object?>{
+                'enum': <Object?>[
+                  'match',
+                  'probable',
+                  'review',
+                  'low',
+                ],
+              },
+              'signals': <String, Object?>{
+                'type': 'array',
+                'maxItems': 12,
+                'items': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-z][a-z0-9_]{0,79}\$',
+                },
+              },
+              'conflicts': <String, Object?>{
+                'type': 'array',
+                'maxItems': 12,
+                'items': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-z][a-z0-9_]{0,79}\$',
+                },
+              },
+              'rationale': <String, Object?>{
+                'type': 'string',
+                'maxLength': 2000,
+              },
+            },
+          },
+        },
+      },
     },
     'hash': <String, Object?>{
       'type': 'string',

@@ -2434,6 +2434,43 @@ export interface SupplyIntakeRequestsDocument {
       rawPayloadPersistence: "external_artifact_store_only";
       firestorePersistenceAllowed: false;
     }[];
+    /**
+     * The listing's advisory comparison with the organizers Catch already lists, copied from the listing its contentHash covers. Null when the request was not compared (an event_refresh names its organizer); absent on requests completed before the worker compared listings.
+     */
+    duplicateCheck?: null | {
+      policyId: string;
+      authority: "advisory";
+      verdict: "match" | "ambiguous" | "none";
+      /**
+       * @maxItems 8
+       */
+      reasons: string[];
+      organizersCompared: number;
+      inventoryHash: string;
+      inventory: {
+        citySlug: string | null;
+        limit: number;
+        truncated: boolean;
+      };
+      /**
+       * @maxItems 12
+       */
+      candidates: {
+        organizerId: string;
+        name: string | null;
+        score: number;
+        band: "match" | "probable" | "review" | "low";
+        /**
+         * @maxItems 12
+         */
+        signals: string[];
+        /**
+         * @maxItems 12
+         */
+        conflicts: string[];
+        rationale: string;
+      }[];
+    };
   };
   failure: null | {
     code: string;
