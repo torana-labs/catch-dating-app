@@ -140,11 +140,14 @@ class ClubsRepository {
     ),
   );
 
+  /// Search matches resolve by id, one read per organizer: Firestore rules
+  /// check an id-list query against every matched document, so one hidden
+  /// organizer among the ids would deny the whole query. Hidden organizers
+  /// are then dropped here.
   Stream<List<Club>> watchClubsByIds({required List<String> clubIds}) =>
-      watchDocumentsByIds(
+      watchDocumentsOneByOne(
         ids: clubIds,
-        collection: _clubsRef.where('appVisibility', isEqualTo: _discoverable),
-        idOf: (club) => club.id,
+        collection: _clubsRef,
         transform: _appDiscoverableClubs,
         context: const BackendErrorContext(
           service: BackendService.firestore,

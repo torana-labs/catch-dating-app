@@ -11,11 +11,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 ///
 /// The result preserves the caller's stable ID order, de-duplicates chunk
 /// emissions, and waits until every chunk has emitted before publishing.
-/// [collection] may carry filters, such as the equality a Firestore list rule
-/// requires; they apply to every chunk.
 Stream<List<T>> watchDocumentsByIds<T>({
   required List<String> ids,
-  required Query<T> collection,
+  required CollectionReference<T> collection,
   required String Function(T value) idOf,
   required BackendErrorContext context,
   List<T> Function(List<T> values)? transform,
@@ -88,6 +86,7 @@ Stream<List<T>> watchDocumentsOneByOne<T>({
   required List<String> ids,
   required CollectionReference<T> collection,
   required BackendErrorContext context,
+  List<T> Function(List<T> values)? transform,
 }) {
   final uniqueIds = ids.toSet().toList()..sort();
   if (uniqueIds.isEmpty) return Stream.value(const []);
@@ -99,11 +98,12 @@ Stream<List<T>> watchDocumentsOneByOne<T>({
 
   void emit() {
     if (valuesById.length < uniqueIds.length || controller.isClosed) return;
+    final ordered = <T>[
+      for (final id in uniqueIds)
+        if (valuesById[id] != null) valuesById[id] as T,
+    ];
     controller.add(
-      List.unmodifiable(<T>[
-        for (final id in uniqueIds)
-          if (valuesById[id] != null) valuesById[id] as T,
-      ]),
+      List.unmodifiable(transform == null ? ordered : transform(ordered)),
     );
   }
 
