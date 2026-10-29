@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  checkSpecTable,
   loadContextMap,
   placePath,
   scanContextMap,
@@ -28,6 +29,21 @@ const fixtureMapSource = JSON.stringify({
   ],
 });
 const map = loadContextMap(fixtureMapSource);
+const fixtureSpec = [
+  "# Spec",
+  "",
+  "## Bounded Context Contract",
+  "",
+  "| # | Context | Owns |",
+  "|---|---|---|",
+  "| 1 | `events` | Events. |",
+  "| 2 | `bookings` | Bookings. |",
+  "",
+  "## Dependency Direction",
+  "",
+  "| 3 | `ignored` | Outside the section. |",
+  "",
+].join("\n");
 
 function rules(relativePath, source) {
   return scanFile({relativePath, source, map}).map((finding) => finding.rule);
@@ -176,10 +192,23 @@ test("loadContextMap rejects undeclared contexts and duplicate placements", () =
     contexts: [{id: "events", owns: ""}]})), /must say what it owns/u);
 });
 
+test("checkSpecTable fails when the spec's context table drifts from the map", () => {
+  assert.deepEqual(checkSpecTable({source: fixtureSpec, map}), []);
+  const reordered = fixtureSpec.replace("| 1 | `events`", "| 9 | `events`");
+  assert.deepEqual(checkSpecTable({source: reordered, map}).map((f) => f.rule),
+    ["specOutOfSync"]);
+  const reworded = fixtureSpec.replace("Bookings. |", "Tickets. |");
+  assert.match(checkSpecTable({source: reworded, map})[0].reason,
+    /expected 2 bookings: Bookings\./u);
+  assert.deepEqual(checkSpecTable({source: null, map}).map((f) => f.rule),
+    ["specOutOfSync"]);
+});
+
 function createFixtureSnapshot(files) {
   const sources = new Map(Object.entries({
     ...files,
     "tool/architecture/context_map.json": fixtureMapSource,
+    "docs/app_architecture.md": fixtureSpec,
   }));
   return {
     listFiles({prefix = ""} = {}) {

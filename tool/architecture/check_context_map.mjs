@@ -8,6 +8,8 @@ import {scanDartSource} from "../lib/dart_source.mjs";
 
 const contextMapPath = "tool/architecture/context_map.json";
 const defaultBaselinePath = "tool/architecture/context_map_baseline.json";
+const specPath = "docs/app_architecture.md";
+const specHeading = "## Bounded Context Contract";
 const appPackage = "package:catch_dating_app/";
 
 // Lower rank may be imported by higher rank. Contexts are additionally ordered
@@ -15,6 +17,7 @@ const appPackage = "package:catch_dating_app/";
 const layerRank = {kernel: 0, platform: 1, context: 2, pages: 3, app: 4};
 const hardGateRules = new Set([
   "contextBarrelBypass",
+  "specOutOfSync",
   "unknownContext",
   "unmappedFile",
 ]);
@@ -68,7 +71,7 @@ export function loadContextMap(source) {
     legacy.push(entry);
   }
   legacy.sort((a, b) => b.path.length - a.path.length);
-  return {roots, contextRank, legacy};
+  return {roots, contexts, contextRank, legacy};
 }
 
 // Returns where a lib/ path sits: {layer, context, legacy}. Target roots win;
@@ -111,7 +114,7 @@ export function scanContextMap({snapshot, baseline = emptyBaseline()}) {
   if (files.length === 0) {
     throw new Error("Context map check cannot pass without handwritten lib Dart files.");
   }
-  const sources = snapshot.readTexts([...files, contextMapPath]);
+  const sources = snapshot.readTexts([...files, contextMapPath, specPath]);
   const mapSource = sources.get(contextMapPath);
   if (mapSource == null) {
     throw new Error(`Required repository path is missing: ${contextMapPath}`);
@@ -126,6 +129,7 @@ export function scanContextMap({snapshot, baseline = emptyBaseline()}) {
     }
     allFindings.push(...scanFile({relativePath: file, source, map}));
   }
+  allFindings.push(...checkSpecTable({source: sources.get(specPath), map}));
 
   const baselineKeys = new Set((baseline.allowedFindings ?? []).map(findingKey));
   const findings = [];
@@ -192,6 +196,25 @@ export function scanFile({relativePath, source, map}) {
     findings.push({...finding, path: relativePath, import: uri, line});
   }
   return findings;
+}
+
+// The spec's context table must list the map's contexts, in order, with the
+// same ownership sentence.
+export function checkSpecTable({source, map}) {
+  const finding = (reason) => [{rule: "specOutOfSync", path: specPath, line: 1, reason}];
+  if (source == null) return finding(`${specPath} is missing`);
+  const start = source.indexOf(`\n${specHeading}\n`);
+  if (start < 0) return finding(`${specPath} has no "${specHeading}" section`);
+  const end = source.indexOf("\n## ", start + specHeading.length + 2);
+  const section = source.slice(start, end < 0 ? source.length : end);
+  const rows = [...section.matchAll(/^\|\s*(\d+)\s*\|\s*`([a-z_]+)`\s*\|\s*(.+?)\s*\|\s*$/gmu)]
+    .map((match) => `${match[1]} ${match[2]}: ${match[3]}`);
+  const expected = [...map.contexts.entries()]
+    .map(([index, context]) => `${index + 1} ${context.id}: ${context.owns}`);
+  const missing = expected.filter((row) => !rows.includes(row));
+  const extra = rows.filter((row) => !expected.includes(row));
+  if (missing.length === 0 && extra.length === 0) return [];
+  return finding(`the context table in "${specHeading}" disagrees with ${contextMapPath}; expected ${missing.join("; ") || "nothing"}; found extra ${extra.join("; ") || "nothing"}`);
 }
 
 function classifyImport({from, to, target, map}) {
@@ -366,6 +389,7 @@ Places every handwritten lib/**/*.dart file with ${contextMapPath} and checks:
 - a context imports only contexts declared before it;
 - files under lib/contexts/ cross contexts only through the public API file
   lib/contexts/<name>/<name>.dart.
+- the context table in ${specPath} matches the map.
 
 Legacy UI under presentation/ and shared/ counts as app composition. Debt in
 legacy folders ratchets in ${defaultBaselinePath}; files under the target
