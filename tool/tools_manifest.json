@@ -1467,7 +1467,7 @@
       "command": "node tool/architecture/check_dependency_direction.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Checks Dart dependency direction, public barrel seams, provider-free state-file naming, route-boundary provider leaks, keepAlive rationale markers, manual provider declarations, hidden display-state classes, and multi-screen presentation files.",
+      "description": "Checks Dart dependency direction, public barrel seams, provider-free state-file naming, route-boundary provider leaks, keepAlive rationale markers, manual provider declarations, hidden display-state classes, and multi-screen presentation files, by layer placement across legacy features, the bounded-context roots and app packages.",
       "checks": [
         "node --test tool/architecture/check_dependency_direction.test.mjs",
         "node --check tool/architecture/check_dependency_direction.mjs",
@@ -1501,7 +1501,12 @@
           "scanFile flags manual provider declarations outside core",
           "scanFile flags display state classes misplaced outside state files",
           "scanFile flags presentation files with multiple route screens",
-          "scanDependencyDirection flags untracked state adapters as a hard gate"
+          "scanDependencyDirection flags untracked state adapters as a hard gate",
+          "scanFile holds context domain and kernel files to the domain rules",
+          "scanFile flags context data and domain imports of actions, parts and screens",
+          "scanFile flags provider-coupled context parts as a hard gate",
+          "scanFile applies screen rules to app-package destinations and shared pages",
+          "scanDependencyDirection scans app packages and never baselines the context roots"
         ]
       },
       "impactPaths": [
