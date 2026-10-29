@@ -21446,7 +21446,7 @@
             "symbol": "CalendarHomeState"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/events/data/booked_events_repository.dart",
             "symbol": "watchSignedUpEvents"
           },
           {

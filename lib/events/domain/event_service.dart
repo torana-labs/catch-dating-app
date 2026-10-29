@@ -1,14 +1,14 @@
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_eligibility.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_profile_requirements.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 /// Pure Dart service class for Event domain business logic.
 ///
-/// Keeps service-level logic out of the data model so [Event] and
-/// [EventParticipation] remain focused on shape and serialization.
+/// Keeps service-level logic out of the data model so [Event] remains focused
+/// on shape and serialization. Participation rules live with
+/// `ParticipationStatusSnapshot` in the bookings model.
 class EventService {
   EventService._();
 
@@ -67,65 +67,4 @@ class EventService {
     }
     return const GenderCapacityReached();
   }
-
-  /// Returns a snapshot of participation eligibility booleans for
-  /// [participation], optionally evaluated against [now] instead of the
-  /// system clock.
-  static ParticipationStatusSnapshot participationStatus(
-    EventParticipation participation, {
-    required DateTime now,
-  }) {
-    return ParticipationStatusSnapshot(
-      hasHostApproval:
-          participation.hostApprovalStatus == EventJoinRequestStatus.approved ||
-          _isWaitlistOfferAcceptedAt(participation, now),
-      hasOpenWaitlistOffer:
-          participation.waitlistOfferStatus ==
-              EventWaitlistOfferStatus.active ||
-          participation.waitlistOfferStatus ==
-              EventWaitlistOfferStatus.accepted,
-      isWaitlistOfferActive: _isWaitlistOfferActiveAt(participation, now),
-      isWaitlistOfferAccepted: _isWaitlistOfferAcceptedAt(participation, now),
-    );
-  }
-
-  static bool _isWaitlistOfferActiveAt(
-    EventParticipation participation,
-    DateTime now,
-  ) =>
-      participation.status == EventParticipationStatus.waitlisted &&
-      participation.waitlistOfferStatus == EventWaitlistOfferStatus.active &&
-      _offerExpiresAfter(participation, now);
-
-  static bool _isWaitlistOfferAcceptedAt(
-    EventParticipation participation,
-    DateTime now,
-  ) =>
-      participation.status == EventParticipationStatus.waitlisted &&
-      participation.waitlistOfferStatus == EventWaitlistOfferStatus.accepted &&
-      _offerExpiresAfter(participation, now);
-
-  static bool _offerExpiresAfter(
-    EventParticipation participation,
-    DateTime now,
-  ) =>
-      participation.waitlistOfferExpiresAt != null &&
-      participation.waitlistOfferExpiresAt!.isAfter(now);
-}
-
-/// The result of [EventService.participationStatus], bundling all participation
-/// eligibility booleans into a single value so callers don't need to query the
-/// service repeatedly.
-class ParticipationStatusSnapshot {
-  final bool hasHostApproval;
-  final bool hasOpenWaitlistOffer;
-  final bool isWaitlistOfferActive;
-  final bool isWaitlistOfferAccepted;
-
-  const ParticipationStatusSnapshot({
-    required this.hasHostApproval,
-    required this.hasOpenWaitlistOffer,
-    required this.isWaitlistOfferActive,
-    required this.isWaitlistOfferAccepted,
-  });
 }
