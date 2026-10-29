@@ -75,8 +75,8 @@
       ],
       "notes": [
         "Environment aliases are defined in .firebaserc.",
-        "Active checked-in config files are copied from firebase/<env> or firebase/<env>/host by tool/use_firebase_environment.sh.",
-        "The Android source-set google-services.json at apps/<role>/android/app/src/<env>/ is also an active working copy and must match the selected app role."
+        "Android flavors read apps/<role>/android/app/src/<flavor>/google-services.json, a committed link to firebase/<env>[/host]/android; the iOS/macOS build phase copies firebase/<env>[/host]/<platform>/GoogleService-Info.plist into the built app.",
+        "Only the web service worker is copied into the app project, by tool/use_firebase_environment.sh."
       ]
     },
     {
