@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
+import 'package:catch_dating_app/host_memberships/data/host_membership_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -557,6 +558,9 @@ ProviderContainer _settingsContainer({
       if (analytics != null)
         appAnalyticsProvider.overrideWith((ref) => analytics),
       uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+      watchMyHostMembershipsProvider(
+        user.uid,
+      ).overrideWith((ref) => Stream.value(const [])),
       appPackageInfoProvider.overrideWith(
         (ref) async => (version: '1.0.1', buildNumber: '3'),
       ),

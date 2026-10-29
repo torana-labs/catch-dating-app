@@ -339,11 +339,34 @@ class HostCustomerIdentitySection extends StatelessWidget {
                           context.l10n.hostCustomersNotSaved,
                       ].join(' · '),
                 badges: [
+                  if (customer.traits.membership case final membership?
+                      when membership.status != HostMembershipStatus.expired)
+                    CatchRowBadge(
+                      label: context.l10n.membershipsBadgeMemberOf(
+                        planName: membership.planName,
+                      ),
+                      tone: CatchBadgeTone.gold,
+                    ),
                   if (segmentLabel != null)
                     CatchRowBadge(label: segmentLabel, tone: segmentTone),
                 ],
               ),
             ),
+            if (customer.traits.membership case final membership?)
+              CatchField.read(
+                copy: catchFieldCopy(context.l10n),
+                key: const ValueKey('host-customer-membership'),
+                title: context.l10n.hostMembershipsCustomerMembership,
+                valueText: membership.planName,
+                body: [
+                  hostMembershipStatusLabelFor(context.l10n, membership.status),
+                  if (membership.memberSince case final since?)
+                    context.l10n.hostMembershipsCustomerMemberSince(
+                      date: AppTimeFormatters.shortDate(since),
+                    ),
+                ].join(' · '),
+                icon: CatchIcons.membership,
+              ),
           ],
         ),
         Wrap(

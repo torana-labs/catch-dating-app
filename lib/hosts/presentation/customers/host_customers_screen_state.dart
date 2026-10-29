@@ -12,6 +12,10 @@ enum HostCustomerTag {
   highImpactAdvocate,
   whatsappReachable,
   smsReachable,
+  activeMember,
+  lapsedMember,
+  memberNoRecentAttendance,
+  frequentNonMember,
 }
 
 enum HostCustomerFilter {
@@ -27,7 +31,11 @@ enum HostCustomerFilter {
   advocate,
   highImpactAdvocate,
   whatsappReachable,
-  smsReachable;
+  smsReachable,
+  activeMember,
+  lapsedMember,
+  memberNoRecentAttendance,
+  frequentNonMember;
 
   HostCustomerTag? get tag => switch (this) {
     HostCustomerFilter.all => null,
@@ -43,10 +51,21 @@ enum HostCustomerFilter {
     HostCustomerFilter.highImpactAdvocate => HostCustomerTag.highImpactAdvocate,
     HostCustomerFilter.whatsappReachable => HostCustomerTag.whatsappReachable,
     HostCustomerFilter.smsReachable => HostCustomerTag.smsReachable,
+    HostCustomerFilter.activeMember => HostCustomerTag.activeMember,
+    HostCustomerFilter.lapsedMember => HostCustomerTag.lapsedMember,
+    HostCustomerFilter.memberNoRecentAttendance =>
+      HostCustomerTag.memberNoRecentAttendance,
+    HostCustomerFilter.frequentNonMember => HostCustomerTag.frequentNonMember,
   };
 }
 
-enum HostCustomerFilterGroup { attendance, reliability, advocacy, reachable }
+enum HostCustomerFilterGroup {
+  attendance,
+  reliability,
+  advocacy,
+  reachable,
+  membership,
+}
 
 enum HostCustomerSort { lastSeen, mostAttended, name }
 

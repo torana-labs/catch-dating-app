@@ -257,6 +257,13 @@
       "screenId": "screen.payments.history"
     },
     {
+      "routeId": "myMembershipsScreen",
+      "status": "contracted",
+      "priority": "P3",
+      "reason": "Covered by screen.memberships.mine as the current-user paid membership list route.",
+      "screenId": "screen.memberships.mine"
+    },
+    {
       "routeId": "paymentConfirmationScreen",
       "status": "excluded",
       "priority": "P3",
@@ -679,6 +686,13 @@
       "status": "contracted",
       "priority": "P2",
       "reason": "Covered by screen.host.clubs as the owner-only Payments spoke reached from Club settings.",
+      "screenId": "screen.host.clubs"
+    },
+    {
+      "routeId": "hostClubMembershipsScreen",
+      "status": "contracted",
+      "priority": "P2",
+      "reason": "Covered by screen.host.clubs as the Memberships spoke reached from Club settings.",
       "screenId": "screen.host.clubs"
     },
     {

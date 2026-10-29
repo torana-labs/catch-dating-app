@@ -129,6 +129,7 @@ import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/featured_event_poster.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/host_memberships/data/host_membership_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
@@ -8149,6 +8150,9 @@ List<Object> _settingsAccountProviderOverrides({
   );
   return <Object>[
     uidProvider.overrideWithValue(const AsyncData(_captureViewerUid)),
+    watchMyHostMembershipsProvider(
+      _captureViewerUid,
+    ).overrideWith((ref) => Stream.value(const [])),
     watchUserProfileProvider.overrideWith(
       (ref) => profileStream ?? Stream.value(_captureViewer),
     ),

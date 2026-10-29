@@ -29,6 +29,7 @@ import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
+import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_screen.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/hosts/events/domain/organizer_moment.dart';
@@ -280,6 +281,11 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
           path: Routes.paymentHistoryScreen.path,
           name: Routes.paymentHistoryScreen.name,
           builder: (context, state) => const PaymentHistoryScreen(),
+        ),
+        GoRoute(
+          path: Routes.myMembershipsScreen.path,
+          name: Routes.myMembershipsScreen.name,
+          builder: (context, state) => const MyMembershipsScreen(),
         ),
         GoRoute(
           path: Routes.reviewsHistoryScreen.path,
@@ -899,6 +905,14 @@ List<HostWorkspaceDestination> _hostWorkspaceDestinationRoutes() => [
     path: Routes.hostClubPaymentsScreen.path,
     name: Routes.hostClubPaymentsScreen.name,
     builder: (context, state) => HostClubPaymentsScreen(
+      clubId: state.uri.queryParameters['clubId'] ?? '',
+    ),
+  ),
+  HostWorkspaceDestination(
+    root: HostWorkspaceRoot.organizer,
+    path: Routes.hostClubMembershipsScreen.path,
+    name: Routes.hostClubMembershipsScreen.name,
+    builder: (context, state) => HostClubMembershipsScreen(
       clubId: state.uri.queryParameters['clubId'] ?? '',
     ),
   ),

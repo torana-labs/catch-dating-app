@@ -58,6 +58,7 @@ import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
+import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_section.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_razorpay_connection_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_observed_stages_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_presence_section.dart';
@@ -92,6 +93,7 @@ part 'host_operations/host_club_live_guide_screen.dart';
 part 'host_operations/host_club_team_screen.dart';
 part 'host_operations/host_team_hosted_clubs_section.dart';
 part 'host_operations/host_club_payments_screen.dart';
+part 'host_operations/host_club_memberships_screen.dart';
 part 'host_operations/host_club_edit_helpers.dart';
 part 'host_operations/host_club_insights_section.dart';
 part 'host_operations/host_analytics_trend_section.dart';

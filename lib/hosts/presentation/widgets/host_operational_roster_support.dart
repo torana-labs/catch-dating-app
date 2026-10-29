@@ -3,10 +3,13 @@ part of 'host_operational_roster_section.dart';
 List<HostRosterInsightSignal> _displayInsightSignals(
   HostEventRosterInsight? insight,
 ) {
+  final member =
+      insight?.signals.contains(HostRosterInsightSignal.member) ?? false;
   if (insight?.availability != HostRosterInsightAvailability.ready) {
-    return const [];
+    return member ? const [HostRosterInsightSignal.member] : const [];
   }
   const priority = [
+    HostRosterInsightSignal.member,
     HostRosterInsightSignal.highImpactAdvocate,
     HostRosterInsightSignal.topCatchSpender,
     HostRosterInsightSignal.firstTime,
@@ -48,6 +51,7 @@ String _insightFilterLabel(
       context.l10n.hostsOperationalRosterInsightAdvocate,
     HostRosterInsightFilter.topCatchSpender =>
       context.l10n.hostsOperationalRosterInsightTopCatchSpender,
+    HostRosterInsightFilter.member => context.l10n.hostMembershipsRosterMembers,
   },
   count: count,
 );
@@ -76,6 +80,7 @@ String _insightSignalLabel(
     context.l10n.hostsOperationalRosterInsightCatchSpender,
   HostRosterInsightSignal.topCatchSpender =>
     context.l10n.hostsOperationalRosterInsightTopCatchSpender,
+  HostRosterInsightSignal.member => context.l10n.membershipsBadgeMember,
 };
 
 CatchBadgeTone _insightSignalTone(HostRosterInsightSignal signal) =>
@@ -90,6 +95,7 @@ CatchBadgeTone _insightSignalTone(HostRosterInsightSignal signal) =>
       HostRosterInsightSignal.highImpactAdvocate ||
       HostRosterInsightSignal.topCatchSpender => CatchBadgeTone.gold,
       HostRosterInsightSignal.knownCatchSpender => CatchBadgeTone.neutral,
+      HostRosterInsightSignal.member => CatchBadgeTone.gold,
     };
 
 String? _nullableText(String value) {

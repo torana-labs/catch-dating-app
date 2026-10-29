@@ -377,6 +377,12 @@ String _customerFilterLabel(
   HostCustomerFilter.whatsappReachable =>
     context.l10n.hostsHostAudienceSegmentWhatsapp,
   HostCustomerFilter.smsReachable => context.l10n.hostsHostAudienceSegmentSms,
+  HostCustomerFilter.activeMember => context.l10n.hostMembershipsSegmentActive,
+  HostCustomerFilter.lapsedMember => context.l10n.hostMembershipsSegmentLapsed,
+  HostCustomerFilter.memberNoRecentAttendance =>
+    context.l10n.hostMembershipsSegmentNoRecentAttendance,
+  HostCustomerFilter.frequentNonMember =>
+    context.l10n.hostMembershipsSegmentFrequentNonMember,
 };
 
 String _customerSortLabel(BuildContext context, HostCustomerSort sort) =>
@@ -399,6 +405,7 @@ String _customerFilterGroupLabel(
     context.l10n.hostCustomersFilterGroupAdvocacy,
   HostCustomerFilterGroup.reachable =>
     context.l10n.hostCustomersFilterGroupReachable,
+  HostCustomerFilterGroup.membership => context.l10n.hostMembershipsFilterGroup,
 };
 
 String _customerPeopleCountLabel(

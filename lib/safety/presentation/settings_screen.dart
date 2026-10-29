@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
+import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -330,6 +331,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             Routes.paymentHistoryScreen.name,
                           ),
                   ),
+                  const HostMembershipProfileSection(),
                   CatchField.nav(
                     copy: catchFieldCopy(context.l10n),
                     key: SettingsKeys.hostAppRow,

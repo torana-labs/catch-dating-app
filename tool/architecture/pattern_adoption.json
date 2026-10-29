@@ -957,6 +957,28 @@
           "status": "aligned"
         },
         {
+          "path": "lib/host_memberships/presentation/my_memberships_state.dart",
+          "role": "provider-free My memberships adapter ordering current memberships first and summing unreleased member-priced savings per membership",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/host_memberships/host_membership_domain_test.dart",
+          "role": "My memberships ordering and savings behavior coverage",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/memberships/host_memberships_state.dart",
+          "role": "provider-free Host memberships settings adapter pairing the program view with its plan list",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "test/hosts/memberships/host_memberships_section_test.dart",
+          "role": "Host memberships program, payout gate and plan list behavior coverage",
+          "status": "aligned"
+        },
+        {
           "path": "lib/explore/presentation/widgets/explore_screen_empty_state.dart",
           "role": "provider-free Explore empty-state renderer receiving the route-owned recovery state and callbacks; distinct from the provider-owned directory empty state",
           "providerFree": true,

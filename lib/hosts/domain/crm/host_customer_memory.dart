@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/host_memberships/domain/host_membership.dart';
 import 'package:catch_dating_app/hosts/domain/crm/crm_response_fields.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
@@ -13,6 +14,7 @@ class HostCustomerTraits {
     required this.segments,
     required this.whatsappStatus,
     required this.sourceCoverage,
+    this.membership,
   });
 
   factory HostCustomerTraits.fromMap(Map<Object?, Object?> map) =>
@@ -37,6 +39,11 @@ class HostCustomerTraits {
           crmRequiredString(map, 'sourceCoverage'),
           'sourceCoverage',
         ),
+        membership: map['membership'] == null
+            ? null
+            : HostCustomerMembership.fromMap(
+                crmRequiredMap(map['membership'], 'customer membership'),
+              ),
       );
 
   final int expectedEventCount;
@@ -48,6 +55,32 @@ class HostCustomerTraits {
   final Set<HostAudienceSegment> segments;
   final HostAudiencePermissionStatus whatsappStatus;
   final HostAudienceSourceCoverage sourceCoverage;
+
+  /// The linked account's paid membership with this organizer, if any.
+  final HostCustomerMembership? membership;
+}
+
+/// CRM view of one customer's paid membership: tier, status and since.
+class HostCustomerMembership {
+  const HostCustomerMembership({
+    required this.planName,
+    required this.status,
+    required this.memberSince,
+    required this.entitled,
+  });
+
+  factory HostCustomerMembership.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerMembership(
+        planName: crmRequiredString(map, 'planName'),
+        status: HostMembershipStatus.fromWire(crmRequiredString(map, 'status')),
+        memberSince: crmDateTimeFromMillis(map['memberSinceMillis']),
+        entitled: crmRequiredBool(map, 'entitled'),
+      );
+
+  final String planName;
+  final HostMembershipStatus status;
+  final DateTime? memberSince;
+  final bool entitled;
 }
 
 class HostCustomerNote {
@@ -204,11 +237,15 @@ class HostCustomerWhatsappPermission {
   final DateTime? decisionAt;
   final String? identityStrength;
   final Map<String, HostCustomerWhatsappPurposePermission> purposes;
-  HostAudiencePermissionStatus get effectiveStatus => purposes.values.any(
-    (decision) => decision.status == HostAudiencePermissionStatus.optedIn &&
-        decision.evidenceStatus ==
-            HostCustomerPermissionEvidenceStatus.complete,
-  ) ? HostAudiencePermissionStatus.optedIn : status;
+  HostAudiencePermissionStatus get effectiveStatus =>
+      purposes.values.any(
+        (decision) =>
+            decision.status == HostAudiencePermissionStatus.optedIn &&
+            decision.evidenceStatus ==
+                HostCustomerPermissionEvidenceStatus.complete,
+      )
+      ? HostAudiencePermissionStatus.optedIn
+      : status;
 }
 
 Map<String, HostCustomerWhatsappPurposePermission> _parseWhatsappPurposes(

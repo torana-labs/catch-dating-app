@@ -136,6 +136,11 @@ HostAudienceSegment? hostAudienceSegmentForCustomerFilter(
     HostAudienceSegment.highImpactAdvocate,
   HostCustomerFilter.whatsappReachable => HostAudienceSegment.whatsappReachable,
   HostCustomerFilter.smsReachable => HostAudienceSegment.smsReachable,
+  HostCustomerFilter.activeMember => HostAudienceSegment.activeMember,
+  HostCustomerFilter.lapsedMember => HostAudienceSegment.lapsedMember,
+  HostCustomerFilter.memberNoRecentAttendance =>
+    HostAudienceSegment.memberNoRecentAttendance,
+  HostCustomerFilter.frequentNonMember => HostAudienceSegment.frequentNonMember,
 };
 
 HostSavedAudienceDefinition? hostSavedAudienceDefinitionForCustomerSelection({
@@ -250,6 +255,11 @@ HostCustomerFilter hostCustomerFilterForAudienceSegment(
     HostCustomerFilter.highImpactAdvocate,
   HostAudienceSegment.whatsappReachable => HostCustomerFilter.whatsappReachable,
   HostAudienceSegment.smsReachable => HostCustomerFilter.smsReachable,
+  HostAudienceSegment.activeMember => HostCustomerFilter.activeMember,
+  HostAudienceSegment.lapsedMember => HostCustomerFilter.lapsedMember,
+  HostAudienceSegment.memberNoRecentAttendance =>
+    HostCustomerFilter.memberNoRecentAttendance,
+  HostAudienceSegment.frequentNonMember => HostCustomerFilter.frequentNonMember,
 };
 
 bool hostCrmSmsReachableAvailable(HostCrmChannelReadiness? readiness) =>
@@ -287,6 +297,12 @@ hostCustomerFilterGroupsForSmsReadiness(HostCrmChannelReadiness? smsReadiness) {
     HostCustomerFilterGroup.reachable: [
       HostCustomerFilter.whatsappReachable,
       HostCustomerFilter.smsReachable,
+    ].where(filters.contains).toList(growable: false),
+    HostCustomerFilterGroup.membership: [
+      HostCustomerFilter.activeMember,
+      HostCustomerFilter.lapsedMember,
+      HostCustomerFilter.memberNoRecentAttendance,
+      HostCustomerFilter.frequentNonMember,
     ].where(filters.contains).toList(growable: false),
   };
 }
@@ -344,6 +360,11 @@ HostCustomerTag? _customerTag(HostAudienceSegment segment) => switch (segment) {
   HostAudienceSegment.highImpactAdvocate => HostCustomerTag.highImpactAdvocate,
   HostAudienceSegment.whatsappReachable => HostCustomerTag.whatsappReachable,
   HostAudienceSegment.smsReachable => HostCustomerTag.smsReachable,
+  HostAudienceSegment.activeMember => HostCustomerTag.activeMember,
+  HostAudienceSegment.lapsedMember => HostCustomerTag.lapsedMember,
+  HostAudienceSegment.memberNoRecentAttendance =>
+    HostCustomerTag.memberNoRecentAttendance,
+  HostAudienceSegment.frequentNonMember => HostCustomerTag.frequentNonMember,
 };
 
 HostCustomerDirectoryCoverage _directoryCoverage(

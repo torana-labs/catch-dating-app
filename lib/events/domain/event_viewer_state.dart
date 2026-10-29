@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/host_memberships/domain/host_membership_event_facts.dart';
+
 /// Auth-scoped observation from the canonical viewer read. It never grants a
 /// reservation; each booking command rechecks its own current authority.
 enum EventViewerMembership { notRequired, none, active, revoked, unavailable }
@@ -33,6 +35,12 @@ enum EventViewerRestriction {
   past,
   cancelled,
   unsupportedRoute,
+
+  /// The event is for paid members of a plan with members-only access.
+  paidMembershipRequired,
+
+  /// Paid members are booking early; general sale has not opened.
+  memberEarlyAccess,
 }
 
 enum EventViewerPayment {
@@ -72,6 +80,7 @@ final class EventViewerState {
     required this.inventoryRevision,
     required this.capacityRevision,
     required this.migrationRevision,
+    required this.hostMembership,
   });
 
   final String eventId, organizerId;
@@ -91,6 +100,9 @@ final class EventViewerState {
   final String? policyHash;
   final int? inventoryRevision, capacityRevision, migrationRevision;
 
+  /// Paid host membership facts; null when the server omitted them.
+  final EventHostMembershipFacts? hostMembership;
+
   bool get hasAdmission => admission != EventViewerAdmission.none;
   bool get canBook => allowed && route != EventViewerRoute.catchWaitlistOffer;
   bool get canAcceptOffer =>
@@ -98,7 +110,7 @@ final class EventViewerState {
 
   factory EventViewerState.fromResponse(Object? data) {
     final envelope = _object(data, {'viewer'});
-    final v = _object(envelope['viewer'], {
+    const viewerKeys = {
       'eventId',
       'organizerId',
       'observedAtMillis',
@@ -112,7 +124,14 @@ final class EventViewerState {
       'route',
       'quotedPriceInPaise',
       'basis',
-    });
+    };
+    final rawViewer = envelope['viewer'];
+    final hasMembershipFacts =
+        rawViewer is Map && rawViewer.containsKey('hostMembership');
+    final v = _object(
+      rawViewer,
+      hasMembershipFacts ? {...viewerKeys, 'hostMembership'} : viewerKeys,
+    );
     final m = _object(v['membership'], {'state', 'revision', 'decisionId'});
     final future = _object(v['futureBooking'], {'allowed', 'reason'});
     final basis = _object(v['basis'], {
@@ -157,6 +176,11 @@ final class EventViewerState {
       inventoryRevision: _integerOrNull(basis['inventoryRevision']),
       capacityRevision: _integerOrNull(basis['capacityRevision']),
       migrationRevision: _integerOrNull(basis['migrationRevision']),
+      hostMembership: hasMembershipFacts
+          ? EventHostMembershipFacts.fromMap(
+              _object(v['hostMembership'], EventHostMembershipFacts.keys),
+            )
+          : null,
     );
   }
 }

@@ -628,6 +628,12 @@
       "reason": "Launch Access captures cover the editable application, application-stream loading/error/offline, signed-out permission state, approved status, text scale 2.0, and reduced motion on the normal Consumer route."
     },
     {
+      "routeId": "myMembershipsScreen",
+      "status": "planned",
+      "priority": "P3",
+      "reason": "My memberships is new with the host memberships MVP; widget tests cover the provider-free list. Add routed empty, active-with-savings, host-paused and signed-out captures once memberships leave test mode."
+    },
+    {
       "routeId": "paymentHistoryScreen",
       "status": "captured",
       "priority": "P3",
@@ -1172,6 +1178,12 @@
       "status": "planned",
       "priority": "P2",
       "reason": "The owner-only Payments spoke has loaded Widgetbook coverage; add routed payout-ready and restricted captures in the next Host Clubs capture refresh."
+    },
+    {
+      "routeId": "hostClubMembershipsScreen",
+      "status": "planned",
+      "priority": "P2",
+      "reason": "The Memberships spoke is new with host memberships MVP; widget tests cover the provider-free section. Add routed payout-blocked, plan-list and billing-paused captures in the next Host Clubs capture refresh."
     },
     {
       "routeId": "hostClubDetailScreen",

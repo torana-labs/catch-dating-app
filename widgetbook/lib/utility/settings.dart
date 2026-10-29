@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_dating_app/host_memberships/data/host_membership_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../host_memberships/fixtures.dart';
 import '../support/page_preview.dart';
 import '../support/widgetbook_harness.dart';
 import 'fixtures.dart';
@@ -428,6 +430,9 @@ class _SettingsScope extends StatelessWidget {
         uidProvider.overrideWith(
           (ref) => Stream<String?>.value(widgetbookUtilityViewerUid),
         ),
+        watchMyHostMembershipsProvider(
+          widgetbookUtilityViewerUid,
+        ).overrideWith((ref) => Stream.value([widgetbookMembership()])),
         watchUserProfileProvider.overrideWith(
           (ref) =>
               profileStream ??

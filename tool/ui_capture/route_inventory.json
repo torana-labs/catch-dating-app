@@ -4,12 +4,12 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "routeContractSha256": "de888a3ab26623446b23982ebbfaf59afcbceba16b13e62f84fdb8b5d6fdb068",
-    "goRouteCount": 127,
+    "routeContractSha256": "4fb81bb773ebddccf8ec1b0be2f7d66f7c3e30392a750be00b698a2981ccf005",
+    "goRouteCount": 129,
     "shellBranchCount": 9,
-    "enumRouteCount": 112,
-    "referencedRouteCount": 112,
-    "runtimeRouteCount": 112,
+    "enumRouteCount": 114,
+    "referencedRouteCount": 114,
+    "runtimeRouteCount": 114,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_sharedEventWorkspaceRoutes",
@@ -614,6 +614,21 @@
       "renderKind": "builder",
       "presentationExpression": "(context,state)=>const PaymentHistoryScreen()",
       "presentationTarget": "PaymentHistoryScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "myMembershipsScreen",
+      "path": "/memberships",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/memberships",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.myMembershipsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>const MyMembershipsScreen()",
+      "presentationTarget": "MyMembershipsScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
     },
@@ -1637,6 +1652,21 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostClubMembershipsScreen",
+      "path": "/host/organizers/memberships",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/organizers/memberships",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostClubMembershipsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostClubMembershipsScreen(clubId:state.uri.queryParameters['clubId']??'')",
+      "presentationTarget": "HostClubMembershipsScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostClubDetailScreen",
       "path": "/host/organizers/:clubId",
       "pathParameters": [
@@ -2017,6 +2047,7 @@
     "hostClubDetailScreen",
     "hostClubEventDefaultsScreen",
     "hostClubLiveGuideScreen",
+    "hostClubMembershipsScreen",
     "hostClubPaymentsScreen",
     "hostClubsScreen",
     "hostClubTeamScreen",
@@ -2080,6 +2111,7 @@
     "loadingScreen",
     "matchesListScreen",
     "messagingPermissionsScreen",
+    "myMembershipsScreen",
     "notificationsScreen",
     "onboardingScreen",
     "paymentConfirmationScreen",

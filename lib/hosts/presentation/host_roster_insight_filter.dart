@@ -10,6 +10,7 @@ enum HostRosterInsightFilter {
   needsConfirmation,
   advocate,
   topCatchSpender,
+  member,
 }
 
 bool hostRosterInsightMatches(
@@ -17,6 +18,10 @@ bool hostRosterInsightMatches(
   HostEventRosterInsight? insight,
 ) {
   if (filter == HostRosterInsightFilter.all) return true;
+  // Paid members are labeled even before attendance history is available.
+  if (filter == HostRosterInsightFilter.member) {
+    return insight?.signals.contains(HostRosterInsightSignal.member) ?? false;
+  }
   if (insight?.availability != HostRosterInsightAvailability.ready) {
     return false;
   }
@@ -46,6 +51,9 @@ bool hostRosterInsightMatches(
           signals.contains(HostRosterInsightSignal.highImpactAdvocate),
     HostRosterInsightFilter.topCatchSpender => signals.contains(
       HostRosterInsightSignal.topCatchSpender,
+    ),
+    HostRosterInsightFilter.member => signals.contains(
+      HostRosterInsightSignal.member,
     ),
   };
 }

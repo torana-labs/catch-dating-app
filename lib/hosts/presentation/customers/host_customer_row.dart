@@ -46,6 +46,11 @@ CatchPersonLayout hostCustomerPersonLayout(
         ? context.l10n.hostsHostAudienceContactConsentPaused
         : null,
     badges: [
+      if (contact.tags.contains(HostCustomerTag.activeMember))
+        CatchRowBadge(
+          label: context.l10n.membershipsBadgeMember,
+          tone: CatchBadgeTone.gold,
+        ),
       if (lifecycle != null)
         CatchRowBadge(label: lifecycle.label, tone: lifecycle.tone),
     ],

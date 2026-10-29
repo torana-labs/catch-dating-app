@@ -1,7 +1,7 @@
 ---
 doc_id: host_memberships_spec
-version: 0.1.0
-updated: 2026-10-28
+version: 0.2.0
+updated: 2026-10-29
 owner: host_tooling
 status: proposed
 ---
@@ -329,10 +329,11 @@ plans.
 
 ### 5.5 Upsell
 
-The upsell offer is computed for non-members and for members whose own plan
-gives no discount on the event. It is the cheapest published plan, with spare
-capacity, whose resulting member price is lower than the current price. If two
-plans tie, the one with the lower monthly price wins. Plans that require
+The upsell offer is computed only for viewers with no current membership of the
+organizer; a current member is never upsold a second plan from the same host
+([D-16](#decisions)). It is the cheapest published plan, with spare capacity,
+whose resulting member price is lower than the current price. If two plans tie,
+the one with the lower monthly-equivalent price wins. Plans that grant
 `membersOnlyAccess` or `earlyAccess` are offered when they would lift the
 current restriction.
 
@@ -537,8 +538,14 @@ The CRM projection works as follows:
   `projectOrganizerCommunicationPreference`.
 - `refreshHostMembershipSegments` runs daily at 03:10 IST. It rebuilds traits for
   contacts whose time-window segments may have changed: contacts with a
-  membership, and contacts with `attended60DayCount > 0`. It runs in bounded
-  batches with a cursor, so the 30-day and 60-day windows stay correct.
+  membership, and contacts with `attended60DayCount > 0`. Each run is bounded to
+  2,000 documents of each kind, pages of 200 and an 8-minute budget; projection
+  receipts keyed by the run make retries idempotent. Beyond that bound a
+  contact is refreshed on the next run or by its next organic rebuild.
+- Traits written before version 4 have no `attended60DayCount`, so the second
+  query cannot find them. Such a contact enters `frequent_non_member` at its
+  next organic rebuild (any booking, check-in or CRM write), not on the first
+  nightly run.
 - `organizerAudienceDefinitionVersion` is bumped from 3 to 4, which invalidates
   the stored definitions.
 
@@ -568,8 +575,16 @@ Segments never use dating-private data. They follow the guardrails in
 - **My memberships** (`/memberships`), reached from the profile:
   - each membership's status chip, plan, price and interval, next renewal or end
     date, and member-since;
-  - **Saved so far**, the sum of `savingsInPaise`;
-  - actions: Pause, Resume, and Cancel at period end, with confirmation sheets.
+  - **Saved so far**, the sum of `savingsInPaise` over unreleased benefit uses;
+  - actions, with a confirmation dialog for Pause and Cancel. They are offered
+    only where the server accepts them:
+
+    | Status | Actions |
+    | --- | --- |
+    | `active`, `trialing` | Pause, Cancel at period end |
+    | `paused` by the member | Resume |
+    | `past_due` | Cancel at period end |
+    | `paused` by the host, `canceling`, `expired` | None |
 - **Event dock:**
   - an entitled member sees "Member price" with the list price struck through,
     or "Included with membership";
@@ -577,8 +592,9 @@ Segments never use dating-private data. They follow the guardrails in
     Sunday Runners for ₹499/mo". It opens the plan sheet.
   - The restriction copy reads "Members-only event" or "Member early access ·
     general sale opens Tue 6 pm".
-- **Profile.** A member badge row ("Member · Sunday Runners") on the own-profile
-  screen, plus a "My memberships" entry.
+- **Settings.** A "Memberships" row in the account section of Settings, after
+  Payment history, shows one badge per current membership ("Member · Sunday
+  Runners") and opens My memberships ([D-17](#decisions)).
 
 ### 9.2 Host (`apps/host`, `lib/hosts/presentation/memberships/**`)
 
@@ -594,7 +610,10 @@ Segments never use dating-private data. They follow the guardrails in
   It shows the computed general-sale time. It saves through
   `manageEventMembershipRules`.
 - **Badges.** A `member` roster insight signal shows a "Member" badge on
-  operator/check-in rows and manage-roster rows.
+  operator/check-in rows and manage-roster rows. Like viewer state, the signal
+  is returned only when the request sets `includeHostMembership: true`, so older
+  Host builds keep parsing the strict response ([Q-6](#open-questions)). The
+  member badge sorts first and shows even before the roster is check-in ready.
 - **CRM.** The filter group, row badge and detail row from [§8](#8-crm-fields-and-segments).
 
 ## 10. Security rules
@@ -651,8 +670,8 @@ Functions unit tests use `node:test` beside the source:
   - a charge creates the transfer;
   - `pending` makes it `past_due`;
   - `cancelled` makes it `expired`.
-- `checkout.test.ts`, `plans.test.ts`, `selfServe.test.ts`, `program.test.ts`:
-  authority, validation, cap and pause gates.
+- `callables.test.ts`: program, plan, checkout, self-serve and event-rules
+  callables, covering authority, validation, cap and pause gates.
 - `organizerAudienceModel.test.ts` additions: the four segments and window
   boundaries.
 - `publicRegistration/policy` additions: the member-price quote and the refusal
@@ -675,11 +694,14 @@ Flutter tests:
   - the pricing hint;
   - viewer-state parsing of the new fields and restrictions.
 - Widget tests:
-  - My memberships, for loading, empty, list and actions;
-  - the plan editor validation;
-  - the event dock upsell and member price;
+  - My memberships, for list, savings and actions;
+  - plan draft validation and the Host Memberships section (payout gate,
+    billing pause, plan list);
+  - the event dock upsell, member price, restrictions and booking-cap note;
   - CRM filter mapping exhaustiveness;
   - the roster member badge.
+- Widgetbook previews for every new public widget, with an offline render test
+  in `widgetbook/test/host_membership_previews_test.dart`.
 - Goldens are required only for new public `Catch*` primitives under
   `lib/core/widgets`. This feature adds none.
 - New public feature widgets get Widgetbook use cases (`design:new-widget-inventory`).
@@ -729,8 +751,9 @@ Manual QA, in Razorpay **test mode** only:
       and audience projection;
    4. the Host and Consumer apps.
 
-   Both older apps ignore the new viewer-state fields only if the strict Dart
-   parser tolerates them. See [Open questions](#open-questions) Q-6.
+   Older app builds keep working: the new viewer-state and roster fields are
+   returned only to clients that send `includeHostMembership: true`
+   ([Q-6](#open-questions)).
 4. Hosts enable memberships per organizer. No global flag is needed, because
    nothing changes until a program is enabled and a plan is published.
 
@@ -797,6 +820,17 @@ review.
 - **D-15 Own webhook endpoint.** Membership events use their own Razorpay
   webhook and function, so the form and event inbox (`organizerFormPaymentWebhook`)
   and its receipt-prefix dispatch stay unchanged.
+- **D-16 No second-plan upsell.** A current member of the organizer, including
+  one whose plan gives no discount on the event, is not shown an upsell. This
+  avoids offering a second concurrent subscription to the same host; plan
+  switching is phase 2.
+- **D-17 Badge in Settings.** The consumer app's own-profile surface is the
+  dating profile editor, so the member badges and the My memberships entry sit
+  in Settings next to Payment history instead. This keeps [D-11](#decisions).
+- **D-18 Account deletion ends memberships.** Account deletion cancels each
+  live subscription immediately through the provider and expires the
+  membership. A provider failure is logged for operator recovery and never
+  blocks deletion.
 
 ## Open questions
 
@@ -814,10 +848,11 @@ review.
 - **Q-5 Trial authorization.** Razorpay may charge a refundable authorization
   amount for trials. Should the copy say so? This needs to be confirmed in test
   mode.
-- **Q-6 Old app builds.** `EventViewerState.fromResponse` validates keys
-  strictly. New response fields should be added only behind a request flag
-  (`includeMembership: true`), so older builds keep working. The build takes
-  this approach.
+- **Q-6 Old app builds.** *Resolved in the build.* `EventViewerState.fromResponse`
+  and the roster-insights parser validate keys strictly, so the new fields are
+  returned only behind the request flag `includeHostMembership: true`. Older
+  builds instead receive the generic `membershipRequired` or `eventUnavailable`
+  restriction for a members-only or early-access event.
 - **Q-7 Crowd-out.** Should members-only or included events reserve a minimum
   number of non-member seats by default? This is proposed as a phase-2 capacity
   share.

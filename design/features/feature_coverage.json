@@ -322,6 +322,15 @@
       "featureContract": "feature.payments"
     },
     {
+      "authority": "flutter_screens",
+      "authorityId": "screen.memberships.mine",
+      "status": "planned",
+      "priority": "P3",
+      "reason": "My memberships ships with the host memberships MVP behind Razorpay test mode; compile the cross-surface membership feature (plans, checkout, self-serve, CRM) once routed captures and live-mode evidence exist.",
+      "targetFeature": "feature.host_memberships",
+      "debtId": "HOST-MEMBERSHIPS-FEATURE-001"
+    },
+    {
       "authority": "marketing_routes",
       "authorityId": "visitor_discovery",
       "status": "contracted",
