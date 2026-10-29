@@ -92,20 +92,6 @@ export function AdminIntakeSectionTitle({
   );
 }
 
-export function AdminIntakeStateGrid({
-  children,
-  className = "",
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-}) {
-  return (
-    <div {...props} className={classNames("intake-state-grid", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function AdminOrganizerIntakeList({
   children,
   className = "",

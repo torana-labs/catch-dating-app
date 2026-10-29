@@ -58,7 +58,7 @@
   ],
   "knownConsumers": [
     "functions/src/shared/organizerSupplyCapabilities.ts",
-    "functions/src/admin/externalEventPublishing.ts",
+    "functions/src/operations/supplyIntake/eventPublication.ts",
     "functions/src/admin/externalEventTakedown.ts",
     "lib/organizers/domain/organizer_supply_capabilities.dart",
     "lib/contexts/events/domain/external_event.dart",

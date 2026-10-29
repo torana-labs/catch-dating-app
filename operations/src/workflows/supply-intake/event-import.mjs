@@ -4,13 +4,15 @@ import {normalizeOrganizerSurfaceUrl} from "./sources/surfaces.mjs";
 
 // The import plan for one reviewed listing event: the read-only externalEvents
 // document it would publish, and every blocker that stops it. Ported from the
-// retired organizer-intake event import plan (event_import_plan_core.mjs, last
-// present at 30e5d7abd) so its governed blockers, read-only booking posture
-// and outbound-link merge keep working. The input is now a Supply Intake
-// listing_event_candidate projection rather than a JSON queue file.
+// retired organizer-intake event import plan (event_import_plan_core.mjs;
+// the readiness path built on it last existed at acb66a698) so its governed
+// blockers, read-only booking posture and outbound-link merge keep working.
+// The input is now a Supply Intake listing_event_candidate projection rather
+// than a JSON queue file.
 //
-// Publishing stays a staff decision: this module never writes. A plan with
-// no blockers is write-ready; adminPublishExternalEvent performs the write.
+// Publishing stays a staff or policy decision: this module never writes. A
+// plan with no blockers is write-ready; adminPublishListingEvents, or the
+// onSupplyIntakeListingApproved policy trigger, performs the write.
 
 // The externalEvents contract's platform enum. Urbanaut listings plan but stay
 // blocked until that enum (and the app's ExternalEventPlatform) gains it.
@@ -143,8 +145,9 @@ function externalEventDocument({event, eventId, organizer, review, duplicates, c
 
 /**
  * A reviewer may supply the map location the source page left out, as the
- * retired organizer-intake location resolution did. Its coordinates replace
- * the page's; its venue name and address fill only what the page lacked.
+ * retired adminResolveOrganizerEventLocation did (last present at acb66a698).
+ * Its coordinates replace the page's; its venue name and address fill only
+ * what the page lacked.
  */
 function withStaffLocation(event, location) {
   if (location === null) return event;

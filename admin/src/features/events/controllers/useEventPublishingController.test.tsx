@@ -21,8 +21,6 @@ const repository = vi.hoisted(() => ({
   listExternalEventProfiles: vi.fn(),
   listEventProfiles: vi.fn(),
   loadEventProfile: vi.fn(),
-  loadEventSupplyReadiness: vi.fn(),
-  publishExternalEventProfile: vi.fn(),
   saveEventProfile: vi.fn(),
   takedownExternalEventProfile: vi.fn(),
 }));
@@ -43,7 +41,6 @@ describe("useEventPublishingController", () => {
     Object.values(repository).forEach((mock) => mock.mockReset());
     repository.listEventProfiles.mockResolvedValue({generatedAt: null, rows: []});
     repository.listExternalEventProfiles.mockResolvedValue({generatedAt: null, rows: []});
-    repository.loadEventSupplyReadiness.mockResolvedValue(null);
   });
 
   it("loads only the active directory boundary without eagerly loading detail", async () => {
@@ -59,12 +56,11 @@ describe("useEventPublishingController", () => {
       buildEventListPayload("launchCities", "")
     );
     expect(repository.listExternalEventProfiles).not.toHaveBeenCalled();
-    expect(repository.loadEventSupplyReadiness).not.toHaveBeenCalled();
     expect(repository.loadEventProfile).not.toHaveBeenCalled();
     expect(result.current.view).toBe("list");
   });
 
-  it("loads only the selected non-directory workspace", async () => {
+  it("loads only the external workspace when it is selected", async () => {
     const external = renderHook(
       () => useEventPublishingController({
         activeWorkspace: "external",
@@ -78,23 +74,7 @@ describe("useEventPublishingController", () => {
       expect(repository.listExternalEventProfiles).toHaveBeenCalled();
     });
     expect(repository.listEventProfiles).not.toHaveBeenCalled();
-    expect(repository.loadEventSupplyReadiness).not.toHaveBeenCalled();
     expect(external.result.current.view).toBe("external");
-
-    repository.listExternalEventProfiles.mockClear();
-    const readiness = renderHook(
-      () => useEventPublishingController({
-        activeWorkspace: "readiness",
-        onError: vi.fn(),
-        onNotice: vi.fn(),
-      }),
-      {wrapper: createWrapper()}
-    );
-    await waitFor(() => {
-      expect(repository.loadEventSupplyReadiness).toHaveBeenCalled();
-    });
-    expect(repository.listExternalEventProfiles).not.toHaveBeenCalled();
-    expect(readiness.result.current.view).toBe("readiness");
   });
 
   it("loads a route-selected event even when the directory query is disabled", async () => {
@@ -114,48 +94,6 @@ describe("useEventPublishingController", () => {
     expect(repository.listEventProfiles).not.toHaveBeenCalled();
     expect(repository.loadEventProfile).toHaveBeenCalledWith({eventId: event.eventId});
     expect(result.current.view).toBe("detail");
-  });
-
-  it("dry-runs before applying external publication", async () => {
-    repository.publishExternalEventProfile
-      .mockResolvedValueOnce({outcome: "would_publish", writeApplied: false})
-      .mockResolvedValueOnce({
-        outcome: "published",
-        targetPath: "externalEvents/event-1",
-        writeApplied: true,
-      });
-    const onNotice = vi.fn();
-    const {result} = renderHook(
-      () => useEventPublishingController({
-        activeWorkspace: "readiness",
-        onError: vi.fn(),
-        onNotice,
-      }),
-      {wrapper: createWrapper()}
-    );
-
-    await act(async () => {
-      expect(await result.current.publishExternalEvent({
-        sourceActionId: "source-action-1",
-        targetPath: "externalEvents/event-1",
-        reviewNote: "Reviewed source and owner-safe copy.",
-        checklist: {
-          preflightActionReviewed: true,
-          outboundLinksReviewed: true,
-          noCatchBookingPaymentsWaitlist: true,
-          ownerSafeCopyReviewed: true,
-        },
-      })).toBe(true);
-    });
-
-    expect(repository.publishExternalEventProfile).toHaveBeenCalledTimes(2);
-    expect(repository.publishExternalEventProfile.mock.calls[0]?.[0])
-      .toMatchObject({executionMode: "dry_run"});
-    expect(repository.publishExternalEventProfile.mock.calls[1]?.[0])
-      .toMatchObject({executionMode: "apply"});
-    expect(onNotice).toHaveBeenCalledWith(
-      "Published externalEvents/event-1 as read-only external supply."
-    );
   });
 
   it("dry-runs before applying an external-event takedown", async () => {
@@ -370,7 +308,7 @@ describe("useEventPublishingController", () => {
     }
   );
 
-  it.each(["detail", "readiness"] as const)(
+  it.each(["detail", "directory"] as const)(
     "ignores a held inventory refresh failure after navigating to %s",
     async (destination) => {
       const row = sampleExternalEventRows.find((entry) => entry.publicationStatus === "public")!;
@@ -383,12 +321,12 @@ describe("useEventPublishingController", () => {
       const onNotice = vi.fn();
       const {result, rerender} = renderHook(
         ({selectedId, workspace}: {
-          selectedId: string | null; workspace: "external" | "readiness";
+          selectedId: string | null; workspace: "external" | "directory";
         }) => useEventPublishingController({
           activeWorkspace: workspace, selectedExternalEventId: selectedId, onError, onNotice,
         }),
         {wrapper: createWrapper(), initialProps: {
-          selectedId: null as string | null, workspace: "external" as "external" | "readiness",
+          selectedId: null as string | null, workspace: "external" as "external" | "directory",
         }}
       );
       await waitFor(() => expect(result.current.externalRows).toEqual([row]));
@@ -397,11 +335,11 @@ describe("useEventPublishingController", () => {
       await waitFor(() => expect(repository.listExternalEventProfiles).toHaveBeenCalledTimes(2));
       rerender(destination === "detail" ?
         {selectedId: row.eventId, workspace: "external"} :
-        {selectedId: null, workspace: "readiness"});
+        {selectedId: null, workspace: "directory"});
       if (destination === "detail") {
         await waitFor(() => expect(result.current.selectedExternalEvent).toEqual(row));
       } else {
-        await waitFor(() => expect(repository.loadEventSupplyReadiness).toHaveBeenCalledTimes(1));
+        await waitFor(() => expect(repository.listEventProfiles).toHaveBeenCalledTimes(1));
       }
       onError.mockClear();
       await act(async () => {

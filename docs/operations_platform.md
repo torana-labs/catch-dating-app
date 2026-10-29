@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.36.0
-updated: 2026-10-28
+version: 1.37.0
+updated: 2026-10-29
 owner: operations_platform
 status: active
 ---
@@ -91,7 +91,7 @@ JSON payload plus bounded provenance. The workflow never constructs a network
 client, and the React admin has no acquisition or model client.
 
 Two adapters implement that port (on-demand page fetching for intake
-requests is a separate channel, described below):
+requests and batch web search are separate channels, described below):
 
 - `manual_file` reads the same reviewed JSON payloads used by the existing
   compatibility capture commands. It consumes no network allowance and
@@ -110,6 +110,18 @@ provider injection, an unplanned/fresh `runKey`, or either exhausted ceiling
 fails closed before the provider runs. The monthly ledger is a trusted-runtime
 port and must be initialized from durable usage for its calendar-month window;
 it is never inferred from browser state.
+
+Batch web search (`sources/search/`) is the third channel. A reviewed search
+capture (SerpAPI `organic_results`, Google Custom Search `items`, or a plain
+result list) for one planned discovery query becomes a bounded result batch,
+then organizer search candidates for `ingest-input`, one per organizer surface.
+A capture a person saved goes through `manual_file` and needs no decision.
+`GuardedWebSearchPort` runs live searches through an injected search client
+only when `acquisition_policy.json` enables `webSearch`, cites an accepted
+`batch_web_search_policy` decision, and freezes positive per-run and monthly
+query caps. It sends only `web_search` queries the frozen plan scheduled, and
+reserves each query against both ledgers before the client runs. No runtime
+injects a client yet, so the channel is off.
 
 Raw payloads remain in the acquisition result long enough for deterministic
 normalization or approved external-artifact storage. They are never part of an
@@ -266,8 +278,11 @@ transaction then:
 An associate who nominated the organizer owns its Sales work; otherwise the
 approver does. Approval is idempotent per listing: an identical retry replays,
 and a different approval of the same listing is refused. Indexing and app
-discovery remain later decisions, after the organizer is verified. Matching a
-listing to an organizer Catch already lists is the reviewer's check for now.
+discovery remain later decisions, after the organizer is verified. Supply
+Intake can compare a listing with the organizers Catch already lists
+(`organizer-matching/`) and, given that inventory, records a `duplicateCheck`
+and a `possible_duplicate_organizer` gap. The worker does not pass the
+inventory yet, so matching stays the reviewer's check until it does.
 
 #### Imported events
 
@@ -301,7 +316,11 @@ withdrawn, ready, needing a check, or blocked, with the reasons.
 Staff publish waiting events with `adminPublishListingEvents` (roles `admin`,
 `adminOwner`, `support`): they confirm the outbound links, that Catch takes no
 booking, payment or waitlist, and the copy, and add a note for each governed
-blocker they accept (or cite an accepted policy waiver). Each event is planned
+blocker they accept (or cite an accepted policy waiver). An event whose page
+gave no map location takes the reviewer's coordinates (`eventLocations`), plus
+a venue name or address when the page had none; that clears the coordinate and
+location-detail blockers, while a note alone does not. An event with no fixed
+place is waived under the external event location policy instead. Each event is planned
 and written in its own transaction with a receipt keyed on the reviewer's
 idempotency key, so a retry replays and one blocked event never holds back the
 rest. A published event is never overwritten by a later import, and one staff
@@ -315,10 +334,11 @@ booking posture.
 
 #### Owner decisions
 
-Four Supply Intake capabilities stay off until the owner records a decision:
+Five Supply Intake capabilities stay off until the owner records a decision:
 fetching the pages a request names (`on_demand_page_fetch_policy`),
 scheduled refresh through a crawl provider (`recurring_event_crawl_policy`),
-agent research (`agent_research_policy`) and model extraction
+finding organizers through web search (`batch_web_search_policy`), agent
+research (`agent_research_policy`) and model extraction
 (`llm_extraction_fallback_policy`). Admin Organizer Intake lists them under
 "Supply Intake policies" (`adminListSupplyIntakePolicies`): what each would
 do, its limits, the recorded decision and whether its policy file switches it
@@ -333,7 +353,7 @@ on 28 October 2026 (CAT-266), and `acquisition_policy.json` cites it with at
 most 12 pages per nomination and 600 a month. Every environment's worker
 reads its own copy of the decision, so dev and staging hold the same accepted
 record as production; without it a nomination fails closed with
-`ACQUISITION_POLICY_DECISION_REQUIRED`. The other three capabilities stay off.
+`ACQUISITION_POLICY_DECISION_REQUIRED`. The other four capabilities stay off.
 
 ## Reference Layout
 

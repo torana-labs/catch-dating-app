@@ -5031,7 +5031,7 @@
       "command": "node tool/organizer_intake/publish_event_supply_readiness.mjs",
       "safety": "remote-firestore-write-guarded",
       "status": "retired",
-      "description": "Publishes generated external event import-plan and preflight snapshots to eventSupplyReadiness/current for the live Events admin tab; dry-run by default and does not write externalEvents/{id}.",
+      "description": "Publishes generated external event import-plan and preflight snapshots to eventSupplyReadiness/current; dry-run by default and does not write externalEvents/{id}. Nothing reads that snapshot since adminGetEventSupplyReadiness and the Events readiness workspace were retired on 2026-10-29.",
       "checks": [
         "node --check tool/organizer_intake/lib/event_supply_readiness_publish_core.mjs",
         "node --check tool/organizer_intake/publish_event_supply_readiness.mjs",
@@ -5124,7 +5124,7 @@
       "command": "node tool/organizer_intake/export_event_review_decisions_from_firestore.mjs",
       "safety": "remote-read-local-write-guarded",
       "status": "retired",
-      "description": "Exports live admin external event-candidate review decisions from Firestore into repo-backed event review batches.",
+      "description": "Exports admin external event-candidate review decisions from Firestore into repo-backed event review batches. Nothing writes them since adminDecideOrganizerEventCandidate was retired on 2026-10-29.",
       "checks": [
         "node --check tool/organizer_intake/export_event_review_decisions_from_firestore.mjs",
         "node --test tool/organizer_intake/export_event_review_decisions_from_firestore.test.mjs",
@@ -5139,7 +5139,7 @@
       "command": "node tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs",
       "safety": "remote-read-local-write-guarded",
       "status": "retired",
-      "description": "Exports live admin external event-location resolutions from Firestore into repo-backed location resolution batches.",
+      "description": "Exports admin external event-location resolutions from Firestore into repo-backed location resolution batches. Nothing writes them since adminResolveOrganizerEventLocation was retired on 2026-10-29.",
       "checks": [
         "node --check tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs",
         "node --test tool/organizer_intake/export_event_location_resolutions_from_firestore.test.mjs",

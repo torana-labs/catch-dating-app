@@ -1,7 +1,7 @@
 ---
 doc_id: admin_dashboard_user_stories_and_component_catalogue
-version: 0.2.27
-updated: 2026-10-17
+version: 0.3.0
+updated: 2026-10-29
 owner: admin_console
 status: active
 ---
@@ -131,12 +131,10 @@ old analytics/intake/marketing registry: the root Events tab is now a canonical
 `adminListEventDetails`, `adminGetEventDetails`, and audited
 `adminUpdateEventDetails` writes. It also lists read-only external event supply
 from `externalEvents/{id}` through `adminListExternalEventDetails`, keeping
-source-backed candidate supply separate from Catch-hosted event documents. It
-now also exposes external import-plan and execution-preflight snapshots from
-`eventSupplyReadiness/current`; explicit sample mode uses typed synthetic
-fixtures, so operators can
-see read-only draft counts, blockers, guardrails, and regeneration commands
-before any importer exists. Its
+source-backed candidate supply separate from Catch-hosted event documents.
+Imported events publish from Organizer Intake's "Imported events" panels
+through `adminPublishListingEvents`; the retired `eventSupplyReadiness/current`
+readiness workspace is gone. Its
 Indore + Mumbai default uses the same bounded launch-city pattern.
 Safety, Launch access, Growth, Users, Finance, Data quality, and Admin roles now
 use task-first, URL-owned directory/detail or exact-lookup workflows. Their
@@ -154,10 +152,10 @@ placeholder screen structure.
 | Marketing | `features/marketing` | immutable marketing ops bridge snapshot plus session working copies | URL-owned board/composer/libraries/activity/diagnostics, draft creation, edit, rights confirmation, review, manual export-ready decisions | Complete approved content-studio workflow; arbitrary edits remain session-only and direct social publishing/autosave remain absent |
 | Intake | `features/intake` | Event Intake reads `adminGetEventIntakeDashboard` and writes `adminRecordEventIntakeReviewDecision`; Organizer Intake and Automation read canonical operations records through `adminListIntakeOperations`; reviewed organizer candidates create fail-closed drafts through `adminCreateOrganizerDraftFromCandidate`; typed synthetic records support sample/Storybook views without operational snapshots | review event and organizer intake, create an unclaimed hidden organizer draft, inspect persisted shadow runs and human exceptions | Strong but dense; candidate handoffs persist through curation receipts, while Automation remains read-only and publication/crawling/ownership stay separately gated |
 | Organizers | `features/organizers` | canonical `organizers/{id}` plus `clubs/{id}` compatibility list/detail and bounded claims queue via admin callables | URL-owned Directory/Claims, receive an Intake draft handoff, inspect one record, edit governed enum and launch-market fields, follow field-targeted blockers and evidence-checklist tasks, diff, validate, save, publish/index through dedicated callable, review one claim | Complete approved canonical publishing workflow; Intake can scaffold a hidden draft but cannot publish, index, crawl, or assign ownership |
-| Events | `features/events` | canonical `events/{id}` list/detail, bounded `externalEvents/{id}` supply, and `eventSupplyReadiness/current` snapshots | URL-owned canonical/readiness/external workspaces, URL filters, safe listing edits, backed performance, preflight evidence, publication checklist | Complete approved event workflow; external point read, organizer-owned lifecycle mutations, and Intake handoff remain contract-first |
+| Events | `features/events` | canonical `events/{id}` list/detail and bounded `externalEvents/{id}` supply | URL-owned canonical/external workspaces, URL filters, safe listing edits, backed performance, audited external-event takedown | Complete approved event workflow; external point read, organizer-owned lifecycle mutations, and Intake handoff remain contract-first |
 | Users | `features/users` | one exact-UID `adminGetUserAnalytics` aggregate response | validate exact UID, mask prior UID while loading, inspect four outcomes and accessible activity summary with explicit missing/forbidden/stale/partial states | Complete approved read-only analytics lookup; broad identity search and account, safety, payment, or support actions remain absent |
 | Finance | `features/finance` | independent overview and fixed 30-day host-analytics responses | inspect scoped issue counts, partial-source state, prioritized read-only issue evidence, inferred/unknown fields, malformed-row count, and manual provider handoff | Complete approved read-only reconciliation workflow; typed issue model, point reads, finance-role repair, and all money movement remain contract-first |
-| Data quality | `features/data-quality` | five independently loaded overview, analytics, marketing, intake, and supply-readiness sources | inspect source-health dimensions, retry one failed source, filter severity/owner, open URL-owned signal detail or validated owning workflow | Complete approved data-trust register; scheduler receipts, acknowledgement, backfill, and remediation remain absent |
+| Data quality | `features/data-quality` | four independently loaded overview, analytics, marketing, and intake sources | inspect source-health dimensions, retry one failed source, filter severity/owner, open URL-owned signal detail or validated owning workflow | Complete approved data-trust register; scheduler receipts, acknowledgement, backfill, and remediation remain absent |
 | Admin roles | `features/admin-roles` | bounded 50-row assignment register plus exact Firebase Auth UID read and audited role mutation | local search, URL-owned UID detail, six governed role policies, before/after diff, self-owner lock, high-risk confirmation, save receipt and token-refresh guidance | Complete approved owner-only role workflow; broad Auth search, pagination, account state, session revocation, and non-admin claims remain absent |
 
 ## Auth And Admin Roles
@@ -611,8 +609,6 @@ Acceptance criteria:
 - Searchable canonical `events/{id}` directory with launch-city filters.
 - Read-only external `externalEvents/{id}` supply directory with launch-city
   filters and source attribution.
-- Read-only external event import-plan and execution-preflight status so
-  operators can see deterministic blockers before enabling any write path.
 - Detail view sourced from the same event document the app reads.
 - Safe editable fields with validation and before/after diff.
 - Read-only visibility into schedule, capacity, price, status, availability,
@@ -642,32 +638,11 @@ Current adherence:
   search and filter state. The canonical table can focus on Full or Search
   issues without making the external supply queue look empty, while the
   external table defaults to the open Indore + Mumbai review queue.
-- Good: the selected external supply row now joins against the current import
-  plan and execution preflight snapshot, exposing whether the row is published
-  external supply, preflight-ready but write-disabled, blocked, waiting review,
-  rejected, merged as a duplicate link, or missing from the current readiness
-  snapshot.
-- Good: the tab now reads external event import plan and execution preflight
-  snapshots through `adminGetEventSupplyReadiness` from
-  `eventSupplyReadiness/current` in live mode. Explicit sample mode uses typed
-  synthetic fixtures and is never a live-data fallback.
-  Read-only draft counts, blockers, guardrails, source files, and operator
-  commands are visible next to the external supply table.
-- Good: import-plan actions now render as a searchable/filterable directory
-  over the readiness snapshot instead of a short fixed slice. Operators can
-  focus on Needs action, Write-ready, Blocked, Waiting, Rejected, or All actions
-  without enabling Firestore writes.
-- Good: `adminPublishExternalEvent` now provides a gated one-row publish path
-  from a preflight-approved action into read-only `externalEvents/{id}` supply.
-  The UI requires a review note and preflight, outbound-link,
-  no-Catch-booking/payment/waitlist, and owner-safe-copy checklist confirmations
-  before enabling a row's Publish action. The callable still refuses disabled
-  readiness policy, blocked actions, invalid projections, existing documents,
-  and canonical `events/{id}` writes.
-- Good: `tool/organizer_intake/publish_event_supply_readiness.mjs` gives ops a
-  dry-run-first, prod-guarded way to publish the generated plan/preflight
-  artifacts into the live Events admin read model without writing
-  `externalEvents/{id}`.
+- Retired 2026-10-29: the readiness workspace, which read
+  `eventSupplyReadiness/current` through `adminGetEventSupplyReadiness` and
+  published one row through `adminPublishExternalEvent`. Imported events now
+  publish from Organizer Intake's "Imported events" panels through
+  `adminPublishListingEvents`.
 - Good: the launch-city default sends `citySlugs: ["indore", "mumbai"]` to the
   backend with `status: "active"` and `timeWindow: "upcoming"`, avoiding
   incomplete client-filtered batches and arbitrary limited result slices once
@@ -685,9 +660,8 @@ Current adherence:
   availability, age, and gate projections aligned with safe admin changes.
 - Good: the route wrapper now delegates its rendered body to registered
   `EventPublishingWorkspace`, giving Storybook deterministic route/workspace
-  coverage for canonical directory metrics, launch-city event rows, external
-  supply counts, read-only import readiness, and disabled importer policy
-  state without live reads or writes in previews.
+  coverage for canonical directory metrics, launch-city event rows, and
+  external supply counts without live reads or writes in previews.
 - Good: existing live events created before this projection can be repaired
   with dry-run-first `tool/data/backfill_event_admin_search.mjs`.
 - Weak: schedule, capacity, price, event policy, cancellation, attendance,
@@ -695,10 +669,10 @@ Current adherence:
   Those still need dedicated flows because the host event mutation code has
   schedule-lock, participant, private access, policy, payment, and notification
   side effects.
-- Weak: bulk or scheduled imports are still not enabled. Admin can publish one
-  preflight-ready `externalEvents/{id}` row only after the readiness authority
-  policy is explicitly enabled; recurring importer defaults, rollback, and app
-  outbound-link behavior still need production review.
+- Weak: scheduled imports are still not enabled. Imported events publish per
+  approved listing from Organizer Intake through `adminPublishListingEvents`;
+  recurring importer defaults, rollback, and app outbound-link behavior still
+  need production review.
 
 Recommended next work:
 
@@ -814,9 +788,8 @@ Current adherence:
 - Good: Data quality is feature-owned under `features/data-quality` and has a
   dedicated read-only operations workspace.
 - Good: it combines overview quality rows, host analytics quality rows,
-  generated marketing bridge freshness, Event Intake dashboard freshness, event
-  supply readiness freshness/preflight blockers, source crawl run-plan health,
-  and external event import execution-policy health.
+  generated marketing bridge freshness, Event Intake dashboard freshness, and
+  source crawl run-plan health.
 - Good: disabled/not-configured crawl and import policies are visible as
   separate rows, so stale generated artifacts are not mistaken for failed live
   schedulers.
@@ -825,13 +798,13 @@ Current adherence:
 - Good: the route wrapper now delegates its rendered body to registered
   `DataQualityWorkspace`, giving Storybook deterministic route/workspace
   coverage without running live query fetches in previews.
-- Weak: generated bridge/readiness metadata is still partly assembled in the
+- Weak: generated bridge metadata is still partly assembled in the
   frontend; there is still no scheduler last-run/last-error telemetry, backfill
   status, acknowledgement, or remediation workflow.
 
 Recommended next work:
 
-- Move generated bridge/readiness freshness and run-policy rows into
+- Move generated bridge freshness and run-policy rows into
   source-owned admin contracts.
 - Add scheduler last-run/backfill metadata and remediation actions only after
   each source has documented safe tooling.

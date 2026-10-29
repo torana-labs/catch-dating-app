@@ -20,7 +20,7 @@ import {
   AdminIntakeLayout,
   AdminIntakeSectionTitle,
   AdminIntakeSourceList,
-  AdminIntakeStateGrid,
+  AdminOrganizerIntakeSurfaceGrid,
   AdminMetricCard,
   AdminMetricGrid,
   AdminOrganizerIntakeCurationPanel,
@@ -56,22 +56,14 @@ function OrganizerIntakeDiagnostics({
     curationInFlight,
     decisionInFlight,
     decisionNotes,
-    eventDecisionInFlight,
-    eventDecisionNotes,
     handleAttachCandidate,
     handleDecision,
-    handleEventDecision,
     handleItemCuration,
-    handleLocationResolution,
     handlePendingInputDecision,
     handlePolicyGapDecision,
     localCuration,
     localDecisions,
-    localEventDecisions,
-    localLocationResolutions,
     localPolicyDecisions,
-    locationResolutionForms,
-    locationResolutionInFlight,
     manualReportAcknowledgements,
     metrics,
     policyDecisionInFlight,
@@ -79,8 +71,6 @@ function OrganizerIntakeDiagnostics({
     publicationPacketByEntity,
     setCurationForms,
     setDecisionNotes,
-    setEventDecisionNotes,
-    setLocationResolutionForms,
     setManualReportAcknowledgements,
     setPolicyDecisionNotes,
     selectedMatchByCandidate,
@@ -183,31 +173,6 @@ function OrganizerIntakeDiagnostics({
             queue={bridge.searchCandidates}
           />
         </Panel>
-        <Panel span={2} icon={<Activity size={18} />} title="External event candidates" action={bridge.externalEventCandidates.policy.status}>
-          <organizerIntakeEventPanels.OrganizerExternalEventCandidateQueueView
-            decisionInFlight={eventDecisionInFlight}
-            localDecisions={localEventDecisions}
-            notes={eventDecisionNotes}
-            onDecision={(candidate, decision, blockerResolutions) =>
-              void handleEventDecision(
-                candidate,
-                decision,
-                blockerResolutions
-              )}
-            onNoteChange={(candidateId, note) => setEventDecisionNotes((current) => ({...current, [candidateId]: note}))}
-            queue={bridge.externalEventCandidates}
-          />
-        </Panel>
-        <Panel span={2} icon={<FolderSearch size={18} />} title="External event location resolution" action={`${bridge.externalEventLocationResolution.summary.tasks} tasks`}>
-          <organizerIntakeEventPanels.OrganizerExternalEventLocationResolutionView
-            forms={locationResolutionForms}
-            inFlight={locationResolutionInFlight}
-            localResolutions={localLocationResolutions}
-            onFormChange={(taskId, form) => setLocationResolutionForms((current) => ({...current, [taskId]: form}))}
-            onResolve={(task) => void handleLocationResolution(task)}
-            queue={bridge.externalEventLocationResolution}
-          />
-        </Panel>
         <Panel span={2} icon={<Database size={18} />} title="External event import plan" action={bridge.externalEventImportPlan.policy.status}>
           <organizerIntakeEventPanels.OrganizerExternalEventImportPlanView plan={bridge.externalEventImportPlan} />
         </Panel>
@@ -229,12 +194,12 @@ function OrganizerIntakeDiagnostics({
           </AdminIntakeSourceList>
           <AdminOrganizerIntakeCurationPanel>
             <AdminIntakeSectionTitle>Dedupe curation</AdminIntakeSectionTitle>
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Operations" value={String(bridge.curation.summary.operations)} />
               <StateRow label="Attached" value={String(bridge.curation.summary.attachedSurfaces ?? 0)} />
               <StateRow label="Merges" value={String(bridge.curation.summary.merges)} />
               <StateRow label="Surface decisions" value={String(bridge.curation.summary.surfaceDecisions)} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
             <AdminCommandStack>
               {Object.entries(bridge.curation.commands).map(([label, command]) => (
                 <AdminCommandRow key={label}><span>{label}</span><code>{command}</code></AdminCommandRow>
@@ -243,12 +208,12 @@ function OrganizerIntakeDiagnostics({
           </AdminOrganizerIntakeCurationPanel>
         </Panel>
         <Panel icon={<Activity size={18} />} title="Event crawl readiness" action={bridge.crawlPlan.policy.status}>
-          <AdminIntakeStateGrid>
+          <AdminOrganizerIntakeSurfaceGrid>
             <StateRow label="Scheduler" value={bridge.crawlPlan.policy.schedulerEnabled ? "enabled" : "disabled"} />
             <StateRow label="Default policy" value={bridge.crawlPlan.policy.defaultSurfacePolicy} />
             <StateRow label="Capable" value={String(bridge.crawlPlan.summary.crawlCapableSurfaces)} />
             <StateRow label="Blocked" value={String(bridge.crawlPlan.summary.blockedSurfaces)} />
-          </AdminIntakeStateGrid>
+          </AdminOrganizerIntakeSurfaceGrid>
           <AdminTagList>
             {Object.entries(bridge.crawlPlan.summary.platforms).map(([platform, count]) => (
               <CatchBadge key={platform} label={`${platform} x${count}`} />
