@@ -1,13 +1,13 @@
 import 'dart:math';
 
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment_features.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_assignment_features.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_assignment_feature_rule_sheet.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -37,13 +37,15 @@ class EventSuccessAssignmentFeaturesSection extends StatefulWidget {
     required String eventId,
     required List<EventSuccessAssignmentFeatureRule> rules,
     required List<String> sourceFormIds,
-  }) onPreview;
+  })
+  onPreview;
   final Future<EventSuccessAssignmentFeatureSaveResult> Function({
     required String eventId,
     required int expectedRevision,
     required String requestId,
     required List<EventSuccessAssignmentFeatureRule> rules,
-  }) onSave;
+  })
+  onSave;
 
   @override
   State<EventSuccessAssignmentFeaturesSection> createState() =>
@@ -67,12 +69,17 @@ class _EventSuccessAssignmentFeaturesSectionState
   BuildContext? _ownedSheetContext;
 
   bool get _canRead =>
-      _resumed && widget.viewerUid != null && widget.enabled &&
+      _resumed &&
+      widget.viewerUid != null &&
+      widget.enabled &&
       !widget.sequenceUnsupported;
 
   bool _isCurrent(int generation, String eventId, String? uid) =>
-      mounted && generation == _generation && _canRead &&
-      widget.eventId == eventId && widget.viewerUid == uid;
+      mounted &&
+      generation == _generation &&
+      _canRead &&
+      widget.eventId == eventId &&
+      widget.viewerUid == uid;
 
   @override
   void initState() {
@@ -136,7 +143,8 @@ class _EventSuccessAssignmentFeaturesSectionState
   void _dismissOwnedSheet() {
     final sheet = _ownedSheetContext;
     _ownedSheetContext = null;
-    if (sheet != null && sheet.mounted &&
+    if (sheet != null &&
+        sheet.mounted &&
         ModalRoute.of(sheet)?.isCurrent == true) {
       Navigator.of(sheet).pop();
     }
@@ -148,7 +156,8 @@ class _EventSuccessAssignmentFeaturesSectionState
     final eventId = widget.eventId;
     final uid = widget.viewerUid;
     final sourceIds = _selectedFormId == null
-        ? const <String>[] : <String>[_selectedFormId!];
+        ? const <String>[]
+        : <String>[_selectedFormId!];
     final draft = List<EventSuccessAssignmentFeatureRule>.of(_rules);
     setState(() {
       _loading = true;
@@ -244,8 +253,7 @@ class _EventSuccessAssignmentFeaturesSectionState
 
   String _newRequestId() {
     final random = Random.secure();
-    return 'afreq_${List.generate(20, (_) =>
-      random.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
+    return 'afreq_${List.generate(20, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
   }
 
   Future<void> _chooseForm() async {
@@ -253,7 +261,8 @@ class _EventSuccessAssignmentFeaturesSectionState
     final generation = _generation;
     final eventId = widget.eventId;
     final uid = widget.viewerUid;
-    final forms = widget.formsState.value
+    final forms =
+        widget.formsState.value
             ?.where((form) => form.activeVersionId != null)
             .toList(growable: false) ??
         const <HostFormSummary>[];
@@ -293,8 +302,10 @@ class _EventSuccessAssignmentFeaturesSectionState
       },
     );
     _ownedSheetContext = null;
-    if (selected == null || !_isCurrent(generation, eventId, uid) ||
-        _loading || _saving) {
+    if (selected == null ||
+        !_isCurrent(generation, eventId, uid) ||
+        _loading ||
+        _saving) {
       return;
     }
     setState(() => _selectedFormId = selected);
@@ -310,24 +321,28 @@ class _EventSuccessAssignmentFeaturesSectionState
     final generation = _generation;
     final eventId = widget.eventId;
     final uid = widget.viewerUid;
-    final updated = await showCatchBottomSheet<EventSuccessAssignmentFeatureRule>(
-      context: context,
-      builder: (sheetContext) {
-        _ownedSheetContext = sheetContext;
-        return EventSuccessAssignmentFeatureRuleSheet(
-          source: source,
-          question: question,
-          current: current,
+    final updated =
+        await showCatchBottomSheet<EventSuccessAssignmentFeatureRule>(
+          context: context,
+          builder: (sheetContext) {
+            _ownedSheetContext = sheetContext;
+            return EventSuccessAssignmentFeatureRuleSheet(
+              source: source,
+              question: question,
+              current: current,
+            );
+          },
         );
-      },
-    );
     _ownedSheetContext = null;
-    if (updated == null || !_isCurrent(generation, eventId, uid) ||
-        _loading || _saving) {
+    if (updated == null ||
+        !_isCurrent(generation, eventId, uid) ||
+        _loading ||
+        _saving) {
       return;
     }
-    final next = _rules.where((item) => item.featureId != updated.featureId)
-        .toList()..add(updated);
+    final next =
+        _rules.where((item) => item.featureId != updated.featureId).toList()
+          ..add(updated);
     _changeRules(next);
   }
 
@@ -336,12 +351,21 @@ class _EventSuccessAssignmentFeaturesSectionState
     if (!_resumed || widget.viewerUid == null) return const SizedBox.shrink();
     final l10n = context.l10n;
     final preview = _preview;
-    final sources = preview?.sources ?? const <EventSuccessAssignmentFeatureSource>[];
-    final selectedSources = sources.where((source) =>
-        source.formId == _selectedFormId && source.isActiveVersion).toList();
+    final sources =
+        preview?.sources ?? const <EventSuccessAssignmentFeatureSource>[];
+    final selectedSources = sources
+        .where(
+          (source) =>
+              source.formId == _selectedFormId && source.isActiveVersion,
+        )
+        .toList();
     final selected = selectedSources.isEmpty ? null : selectedSources.first;
-    final coverage = {for (final row in preview?.coverage ??
-        const <EventSuccessAssignmentFeatureCoverage>[]) row.featureId: row};
+    final coverage = {
+      for (final row
+          in preview?.coverage ??
+              const <EventSuccessAssignmentFeatureCoverage>[])
+        row.featureId: row,
+    };
 
     return CatchSection.fieldRows(
       title: l10n.eventMatchingHostTitle,
@@ -380,9 +404,11 @@ class _EventSuccessAssignmentFeaturesSectionState
             CatchLocalizedErrorBanner(_error!, context: AppErrorContext.event),
           if (widget.formsState.hasError)
             CatchLocalizedErrorBanner(
-              widget.formsState.error!, context: AppErrorContext.event,
+              widget.formsState.error!,
+              context: AppErrorContext.event,
             ),
-          if (!_loading && widget.formsState.hasData &&
+          if (!_loading &&
+              widget.formsState.hasData &&
               (widget.formsState.value?.isEmpty ?? true))
             CatchField.content(
               copy: catchFieldCopy(l10n),
@@ -407,22 +433,38 @@ class _EventSuccessAssignmentFeaturesSectionState
                 copy: catchFieldCopy(l10n),
                 title: question.label,
                 body: l10n.eventMatchingHostActiveVersion,
-                valueText: _rules.any((item) =>
-                    item.formId == selected.formId &&
-                    item.versionId == selected.versionId &&
-                    item.questionId == question.questionId)
-                    ? l10n.eventMatchingHostSavedRules : null,
-                onTap: _loading || _saving ||
-                    (_rules.length >= 8 && !_rules.any((item) =>
-                    item.formId == selected.formId &&
-                    item.versionId == selected.versionId &&
-                    item.questionId == question.questionId))
+                valueText:
+                    _rules.any(
+                      (item) =>
+                          item.formId == selected.formId &&
+                          item.versionId == selected.versionId &&
+                          item.questionId == question.questionId,
+                    )
+                    ? l10n.eventMatchingHostSavedRules
+                    : null,
+                onTap:
+                    _loading ||
+                        _saving ||
+                        (_rules.length >= 8 &&
+                            !_rules.any(
+                              (item) =>
+                                  item.formId == selected.formId &&
+                                  item.versionId == selected.versionId &&
+                                  item.questionId == question.questionId,
+                            ))
                     ? null
-                    : () => _editRule(selected, question,
-                        _rules.where((item) =>
-                            item.formId == selected.formId &&
-                            item.versionId == selected.versionId &&
-                            item.questionId == question.questionId).firstOrNull),
+                    : () => _editRule(
+                        selected,
+                        question,
+                        _rules
+                            .where(
+                              (item) =>
+                                  item.formId == selected.formId &&
+                                  item.versionId == selected.versionId &&
+                                  item.questionId == question.questionId,
+                            )
+                            .firstOrNull,
+                      ),
               ),
           ],
           if (_rules.length >= 8)
@@ -431,28 +473,31 @@ class _EventSuccessAssignmentFeaturesSectionState
               title: l10n.eventMatchingHostLimit,
               body: l10n.eventMatchingHostDescription,
             ),
-          for (final rule in _rules)
-            ...[
-              CatchField.content(
-                copy: catchFieldCopy(l10n),
-                title: _questionLabel(sources, rule) ??
-                    l10n.eventMatchingUnavailable,
-                body: _modeLabel(context, rule.mode),
-                valueText: coverage[rule.featureId] == null ? null :
-                    l10n.eventMatchingHostCoverage(
+          for (final rule in _rules) ...[
+            CatchField.content(
+              copy: catchFieldCopy(l10n),
+              title:
+                  _questionLabel(sources, rule) ??
+                  l10n.eventMatchingUnavailable,
+              body: _modeLabel(context, rule.mode),
+              valueText: coverage[rule.featureId] == null
+                  ? null
+                  : l10n.eventMatchingHostCoverage(
                       usable: coverage[rule.featureId]!.usableCount,
                       roster: preview!.rosterCount,
                     ),
-              ),
-              CatchField.nav(
-                copy: catchFieldCopy(l10n),
-                title: l10n.eventMatchingHostRemove,
-                body: _questionLabel(sources, rule) ??
-                    l10n.eventMatchingUnavailable,
-                onTap: _loading || _saving ? null :
-                    () => _removeRule(rule.featureId),
-              ),
-            ],
+            ),
+            CatchField.nav(
+              copy: catchFieldCopy(l10n),
+              title: l10n.eventMatchingHostRemove,
+              body:
+                  _questionLabel(sources, rule) ??
+                  l10n.eventMatchingUnavailable,
+              onTap: _loading || _saving
+                  ? null
+                  : () => _removeRule(rule.featureId),
+            ),
+          ],
           CatchField.content(
             copy: catchFieldCopy(l10n),
             title: l10n.eventMatchingHostCoverageNote,
@@ -460,15 +505,17 @@ class _EventSuccessAssignmentFeaturesSectionState
           ),
           CatchButton(
             label: l10n.eventMatchingHostRefresh,
-            onPressed: _loading || _saving ? null :
-                () => _load(resetDraft: !_conflict),
+            onPressed: _loading || _saving
+                ? null
+                : () => _load(resetDraft: !_conflict),
           ),
           if (_dirty)
             CatchButton(
               label: l10n.eventMatchingHostSave,
               fullWidth: true,
               onPressed: _preview == null || _loading || _saving || _conflict
-                  ? null : _save,
+                  ? null
+                  : _save,
             ),
         ],
       ],
@@ -480,8 +527,7 @@ class _EventSuccessAssignmentFeaturesSectionState
     EventSuccessAssignmentFeatureRule rule,
   ) {
     for (final source in sources) {
-      if (source.formId != rule.formId ||
-          source.versionId != rule.versionId) {
+      if (source.formId != rule.formId || source.versionId != rule.versionId) {
         continue;
       }
       for (final question in source.questions) {

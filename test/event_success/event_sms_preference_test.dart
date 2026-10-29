@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/live/domain/event_sms_preference.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_assistance_sms_preference_callable_response.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_assistance_sms_preference_callable_payload.g.dart';
-import 'package:catch_dating_app/event_success/domain/event_sms_preference.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

@@ -1168,25 +1168,6 @@ const componentFamilies = [
     guidance: "Use AdminIntakeSection, AdminIntakeSectionTitle, and AdminSearchCandidate* primitives instead of rendering admin intake/search-candidate shells directly.",
   },
   {
-    family: "admin-intake-state-grid",
-    surfaces: ["admin"],
-    sourcePatterns: [
-      {
-        pattern: /["'`][^"'`]*\bintake-state-grid\b[^"'`]*["'`]/gu,
-        description: "raw admin intake state grid class string",
-      },
-    ],
-    jsxPatterns: [
-      {
-        pattern:
-          /<div\b[^>]*\bclassName=\{?["'`][^"'`]*\bintake-state-grid\b[^"'`]*["'`]\}?/gu,
-        description: "raw admin intake state grid",
-      },
-    ],
-    createElementPattern: null,
-    guidance: "Use AdminIntakeStateGrid instead of rendering admin intake state-grid shells directly.",
-  },
-  {
     family: "admin-row-tag-shell",
     surfaces: ["admin"],
     sourcePatterns: [

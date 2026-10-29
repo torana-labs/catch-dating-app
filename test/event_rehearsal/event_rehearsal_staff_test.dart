@@ -1,22 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff_change.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schemas;
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_accountability.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_membership.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_membership_change.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

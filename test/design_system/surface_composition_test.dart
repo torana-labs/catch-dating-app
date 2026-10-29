@@ -1,19 +1,20 @@
 import 'dart:async';
-import 'package:catch_dating_app/clubs/domain/club.dart';
+
+import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
+import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_entry_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_entry_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
-import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_section.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
-import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,13 +1,14 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
-import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-export 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart'
+export 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart'
     show HostEventOfferGateway, HostOfferCommitOutbox, HostOfferMutationOutbox;
+
 part 'host_event_offer_controller.g.dart';
 
 /// The gateway is bound to manager-only callables after shared contracts land.

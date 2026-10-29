@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/chats/domain/event_chat_profile.dart';
-import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 EventProfileSettings settingsFixture({
@@ -118,11 +118,15 @@ void main() {
       termsVersion: 'event-profile-sharing-v2',
     );
     final first = EventProfileDraft(
-      settingsFixture(selection: saved, membershipRevision: 1), null);
+      settingsFixture(selection: saved, membershipRevision: 1),
+      null,
+    );
     expect(first.selection()!.firstName, 'Mira');
     expect(first.selection()!.introduction, 'I like coffee.');
-    expect(EventProfileDraft(settingsFixture(
-      selection: saved), null).selection(), isNull);
+    expect(
+      EventProfileDraft(settingsFixture(selection: saved), null).selection(),
+      isNull,
+    );
   });
   test('a core-only choice does not dereference a missing card', () {
     final saved = selectionFixture(withCard: false);
@@ -165,9 +169,11 @@ void main() {
       expect(eventCardFields(cardFixture(), 'rsvp').map((f) => f.questionId), [
         'drink',
       ]);
-      expect(cardFixture().fields.map((f) => f.questionId),
+      expect(
+        cardFixture().fields.map((f) => f.questionId),
         contains('private'),
-        reason: 'The private owner review retains answers omitted from rooms');
+        reason: 'The private owner review retains answers omitted from rooms',
+      );
     },
   );
   test('payload snapshots are immutable after the editor changes', () {

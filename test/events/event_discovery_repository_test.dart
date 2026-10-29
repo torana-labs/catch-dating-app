@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/contexts/discovery/data/event_discovery_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/events/data/event_discovery_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

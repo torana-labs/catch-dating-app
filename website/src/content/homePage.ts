@@ -102,7 +102,7 @@ export const homePageCopy = {
     unclaimed: "Not claimed yet",
     joining: "Joining at launch",
     seePage: "See their plans",
-    seePageLabel: "See {name}’s plans",
+    seePageLabel: "See their plans: {name}",
     claim: "Is this you? Claim it",
     claimBand: "Run something in {city}?",
     claimBandBody: "Claim your page, or list your first plan. Setting up is free.",

@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_delivery_reviews.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_delivery_controller.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'

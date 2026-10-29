@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
-import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
 import 'package:catch_dating_app/hosts/presentation/validators.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
-import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

@@ -17,6 +17,7 @@ const {
   increment,
   limit,
   orderBy,
+  or,
   query,
   serverTimestamp,
   startAfter,
@@ -948,6 +949,45 @@ describe("firestore.rules", () => {
       await assertFails(
         deleteDoc(doc(authedDb("owner-1"), "organizers", "organizer-1")),
       );
+    });
+
+    it("lists only organizers the app shows, or ones the reader hosts or owns", async () => {
+      await seed(["organizers", "shown"], club({appVisibility: "discoverable", locationMarketId: "mumbai",
+        hostUserIds: ["host-1"]}));
+      await seed(["organizers", "draft"], club({appVisibility: "hidden", locationMarketId: "mumbai",
+        hostUserId: null, ownerUserId: null, hostUserIds: [], provenance: {source: "supply_intake"}}));
+      await seed(["organizers", "mine"], club({appVisibility: "hidden", locationMarketId: "mumbai",
+        hostUserId: "host-2", ownerUserId: "host-2", hostUserIds: ["host-2"]}));
+      const anonymous = testEnv.unauthenticatedContext().firestore();
+
+      // Browse lists must ask for discoverable organizers.
+      const shown = await assertSucceeds(getDocs(query(collection(anonymous, "organizers"),
+        where("locationMarketId", "==", "mumbai"), where("appVisibility", "==", "discoverable"))));
+      assert.deepEqual(shown.docs.map((document) => document.id), ["shown"]);
+      await assertFails(getDocs(query(collection(anonymous, "organizers"),
+        where("locationMarketId", "==", "mumbai"))));
+      await assertFails(getDocs(collection(authedDb("member-1"), "organizers")));
+      // An id-list query is checked against each matched document, so it
+      // cannot reach a hidden organizer; the app reads by single id instead.
+      await assertFails(getDocs(query(collection(anonymous, "organizers"),
+        where(documentId(), "in", ["shown", "draft"]))));
+
+      // Hosts and owners list their own organizers, hidden ones included.
+      const hosted = await assertSucceeds(getDocs(query(collection(authedDb("host-2"), "organizers"),
+        where("hostUserIds", "array-contains", "host-2"))));
+      assert.deepEqual(hosted.docs.map((document) => document.id), ["mine"]);
+      await assertSucceeds(getDocs(query(collection(authedDb("host-2"), "organizers"),
+        where("ownerUserId", "==", "host-2"))));
+      // The host app's own queries, as the repository sends them.
+      await assertSucceeds(getDocs(query(collection(authedDb("host-2"), "organizers"),
+        or(where("hostUserId", "==", "host-2"), where("hostUserIds", "array-contains", "host-2")))));
+      await assertSucceeds(getDocs(query(collection(authedDb("host-2"), "organizers"),
+        or(where("hostUserId", "==", "host-2"), where("ownerUserId", "==", "host-2")))));
+      await assertFails(getDocs(query(collection(authedDb("member-1"), "organizers"),
+        where("hostUserIds", "array-contains", "host-2"))));
+
+      // A single organizer by id stays readable, so chats and deep links resolve.
+      await assertSucceeds(getDoc(doc(anonymous, "organizers", "draft")));
     });
 
     it("scopes team and follow reads while keeping writes callable-owned", async () => {

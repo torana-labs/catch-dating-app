@@ -19,7 +19,7 @@ type Story = StoryObj<typeof meta>;
 const storyRoutes = ["home", "visitor_discovery"];
 
 const follow = (name: string, following = false) => (
-  <CatchButton label={following ? "Following" : "Follow"} onPressed={() => undefined} semanticsLabel={`${following ? "Unfollow" : "Follow"} ${name}`}
+  <CatchButton label={following ? "Following" : "Follow"} onPressed={() => undefined} semanticsLabel={`${following ? "Following" : "Follow"} ${name}`}
     size="md" variant={following ? "primary" : "secondary"} />
 );
 

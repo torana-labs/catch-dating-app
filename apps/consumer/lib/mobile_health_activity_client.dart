@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/health_activity/data/health_activity_client.dart';
-import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
+import 'package:catch_dating_app/contexts/bookings/data/health_activity_client.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/runner_activity.dart';
 import 'package:health/health.dart' as health;
 
 enum MobileHealthDevicePlatform { ios, android, unsupported }

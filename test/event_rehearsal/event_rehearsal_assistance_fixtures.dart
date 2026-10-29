@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_plan.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_rules.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_destination.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_rules.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_configuration.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_plan.dart';
 import 'package:crypto/crypto.dart';
 
 final practiceMessageId = 'outbox:${'a' * 64}';

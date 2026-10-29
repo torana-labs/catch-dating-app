@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:catch_dating_app/event_success/data/event_attendance_disposition_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
-import 'package:catch_dating_app/event_success/domain/event_attendance_disposition.dart';
+import 'package:catch_dating_app/contexts/live/data/event_attendance_disposition_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_attendance_disposition.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_dating_app/event_success/presentation/event_attendance_disposition_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_attendance_report_provider.dart';

@@ -14,7 +14,7 @@ import {supplyIntakeCollections} from "./worker";
 
 const UNMAPPED_MARKET = "unassigned";
 
-export function supplyIntakeRequestId(prefix: "nom" | "intent" | "discovery" | "refresh", parts: readonly string[]): string {
+export function supplyIntakeRequestId(prefix: "nom" | "intent" | "msg" | "discovery" | "refresh", parts: readonly string[]): string {
   return `${prefix}-${createHash("sha256").update(JSON.stringify(parts)).digest("hex").slice(0, 40)}`;
 }
 

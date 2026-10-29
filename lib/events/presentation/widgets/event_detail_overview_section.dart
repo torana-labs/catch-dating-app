@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_fact_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_route_section.dart';

@@ -1,9 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/conversation_repository.dart';
-import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
-import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/chat_conversation_context.dart';
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_controller.dart';
@@ -19,6 +15,11 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/suvbot_dock.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
@@ -26,7 +27,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

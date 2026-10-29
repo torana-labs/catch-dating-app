@@ -2,17 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_checkpoint_repository.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_departure_history_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_departure_history.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_checkpoint_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_history_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../event_rehearsal/event_rehearsal_movement_fixtures.dart';

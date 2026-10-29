@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

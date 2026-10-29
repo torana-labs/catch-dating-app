@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:catch_dating_app/contexts/programmes/data/program_lodging_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
-import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
-import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -291,15 +291,10 @@ void main() {
         _Snapshots(),
         () => 'actor',
       );
-      await repository.propose(
-        'program',
-        review.proposal,
-        [
-          for (final p in review.proposal.placements)
-            Map<String, Object?>.from(p),
-        ],
-        expectedRevisions: lodgingJsonMap(review.snapshot['revisions']),
-      );
+      await repository.propose('program', review.proposal, [
+        for (final p in review.proposal.placements)
+          Map<String, Object?>.from(p),
+      ], expectedRevisions: lodgingJsonMap(review.snapshot['revisions']));
       expect(
         (functions.payload as Map)['expectedRevisions'],
         review.snapshot['revisions'],

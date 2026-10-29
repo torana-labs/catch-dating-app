@@ -1,14 +1,14 @@
 import 'dart:math';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_lodging_providers.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_lodging_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_board.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/programs/data/program_lodging_providers.dart';
-import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
-import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
-import 'package:catch_dating_app/programs/domain/program_lodging_board.dart';
-import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
-import 'package:catch_dating_app/programs/domain/program_lodging_setup.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_lodging_controller.g.dart';

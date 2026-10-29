@@ -2,21 +2,21 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/marketing_home.feature.json",
-  "generatedFor": "2026-10-20",
-  "sourceDigest": "sha256:f0c3315dd6c8a6f5122973f276957f2492d4f422417899a092b0d3a616ff9414",
-  "resolvedDigest": "sha256:6cc6f1d6e4822e12ead6d552a6a82ac7316d864ca53edb8f1c279780759c92ed",
+  "generatedFor": "2026-10-29",
+  "sourceDigest": "sha256:77c4337569d82bc68dc55af3c76871bdc0e54df67281ebc2ff94e1c6b56c2a7b",
+  "resolvedDigest": "sha256:a78a1e807e97c1b04d3afdfc88b793c8ffd9bb693c2ac6ba33b1c79fd83241b6",
   "feature": {
     "id": "feature.marketing_home",
     "name": "Marketing Home",
     "owner": "marketing_website",
     "status": "pilot",
-    "description": "Consumer homepage and full event discovery with public city/format filters, catalogue failure and empty states, and explicit Catch Experience participation eligibility."
+    "description": "Website v2 homepage and full event discovery: a city's plans from its cityPlans read model or its launching-soon state, format filters, the city picker, catalogue failure, and Explore's public city/format filters with explicit Catch Experience participation eligibility."
   },
   "coverage": {
     "surfaces": 2,
-    "states": 12,
-    "scenarios": 12,
-    "actionCases": 12,
+    "states": 13,
+    "scenarios": 13,
+    "actionCases": 13,
     "actions": 4,
     "captures": 0,
     "previews": 2,
@@ -494,68 +494,74 @@
         "id": "home"
       },
       "actionScope": {
-        "included": "Public discovery filter selection and recovery; source availability, empty results and Catch Experience eligibility remain explicit.",
+        "included": "Homepage format filtering and city selection; a live city, a launching-soon city, a city too thin to fill a page and an unreadable catalogue remain distinct.",
         "excluded": [
-          "Event/profile/Host link navigation, native disclosure controls, catalogue retry and mobile-menu focus/navigation retain their existing link, presentation and shared-chrome owners."
+          "Plan, organiser, Explore and Host link navigation, store buttons, FAQ disclosure and the launching-soon WhatsApp signup (useLaunchNoticeController) retain their existing link, presentation and form owners."
         ]
       },
       "bindings": {
         "previewSources": [
-          "website/src/stories/MarketingRoutes.stories.tsx"
+          "website/src/stories/HomePage.stories.tsx"
         ],
         "actionOwners": [
           {
-            "id": "discovery_controller",
+            "id": "home_controller",
             "language": "typescript",
-            "file": "website/src/features/home/useConsumerHomeController.ts",
-            "symbol": "useConsumerHomeController"
+            "file": "website/src/features/home/useHomePageController.ts",
+            "symbol": "useHomePageController"
           }
         ],
         "componentContracts": [
           "route_home"
         ],
         "dataContracts": [
+          "contracts/firestore/city_plans.schema.json",
           "contracts/public/website_host_listing_projection.schema.json"
         ],
         "testEvidence": {
-          "default": [
+          "mumbai-live": [
             "website/src/features/home/HomePage.test.tsx",
-            "website/src/features/home/useConsumerHomeController.test.tsx"
+            "website/src/features/home/useHomePageController.test.tsx"
           ],
-          "empty-city": [
+          "launching-soon": [
             "website/src/features/home/HomePage.test.tsx",
-            "website/src/features/home/useConsumerHomeController.test.tsx"
+            "website/src/features/home/useHomePageController.test.tsx"
+          ],
+          "thin-city": [
+            "website/src/features/home/HomePage.test.tsx",
+            "website/src/features/home/useHomePageController.test.tsx"
           ],
           "catalog-unavailable": [
             "website/src/features/home/HomePage.test.tsx",
-            "website/src/features/home/useConsumerHomeController.test.tsx"
+            "website/src/features/home/useHomePageController.test.tsx"
           ],
-          "city-and-format": [
+          "format-filter": [
             "website/src/features/home/HomePage.test.tsx",
-            "website/src/features/home/useConsumerHomeController.test.tsx"
+            "website/src/features/home/useHomePageController.test.tsx"
           ],
-          "mobile-menu": [
-            "website/src/shared/site/PublicSiteChrome.test.tsx"
+          "city-picker": [
+            "website/src/features/home/HomePage.test.tsx",
+            "website/src/features/home/useHomePageController.test.tsx"
           ]
         }
       },
       "coverage": {
-        "states": 5,
-        "scenarios": 5,
-        "actionCases": 5,
+        "states": 6,
+        "scenarios": 6,
+        "actionCases": 6,
         "actions": 2,
         "captures": 0,
         "previews": 1,
-        "testFiles": 3,
+        "testFiles": 2,
         "evidenceExceptions": 0
       },
       "dimensions": {
         "content": {
-          "default": "populated",
+          "default": "live",
           "values": [
-            "populated",
-            "empty_city",
-            "no_results"
+            "live",
+            "launching_soon",
+            "thin_city"
           ]
         },
         "load": {
@@ -565,26 +571,26 @@
             "unavailable"
           ]
         },
-        "navigation": {
-          "default": "closed",
-          "values": [
-            "closed",
-            "mobile_menu"
-          ]
-        },
         "filters": {
           "default": "default",
           "values": [
             "default",
-            "active"
+            "format"
+          ]
+        },
+        "navigation": {
+          "default": "closed",
+          "values": [
+            "closed",
+            "city_picker"
           ]
         }
       },
       "actions": [
         {
           "id": "select_city",
-          "owner": "discovery_controller",
-          "codeValue": "selectCity",
+          "owner": "home_controller",
+          "codeValue": "chooseCity",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -594,20 +600,20 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "default",
-                "empty-city",
-                "catalog-unavailable",
-                "city-and-format"
+                "mumbai-live",
+                "launching-soon",
+                "thin-city",
+                "catalog-unavailable"
               ]
             }
           ],
-          "description": "Changes the discovery city and clears the format choice for the new city.",
+          "description": "Loads the chosen city's server-rendered homepage (/?city=<slug>), which shows that city live, launching soon or unavailable.",
           "implementationStatus": "implemented"
         },
         {
           "id": "select_format",
-          "owner": "discovery_controller",
-          "codeValue": "setCategory",
+          "owner": "home_controller",
+          "codeValue": "setFilter",
           "cardinality": "unbounded",
           "scopeKeys": [
             "routeInstanceId",
@@ -617,48 +623,46 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "default",
-                "empty-city",
-                "catalog-unavailable",
-                "city-and-format"
+                "mumbai-live",
+                "format-filter"
               ]
             }
           ],
-          "description": "Filters the event preview and retains the selected format in the Explore destination.",
+          "description": "Filters this week's plans by format from the tiles or chips; choosing the active format again clears it.",
           "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [],
       "scenarios": [
         {
-          "id": "default",
-          "stateId": "default",
+          "id": "mumbai_live",
+          "stateId": "mumbai-live",
           "kind": "route_state",
           "status": "previewed",
           "dimensions": {
-            "content": "populated",
+            "content": "live",
             "load": "ready",
-            "navigation": "closed",
-            "filters": "default"
+            "filters": "default",
+            "navigation": "closed"
           },
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_home/Home"
+              "route_home/MumbaiLive1280"
             ],
             "tests": [
               "website/src/features/home/HomePage.test.tsx",
-              "website/src/features/home/useConsumerHomeController.test.tsx"
+              "website/src/features/home/useHomePageController.test.tsx"
             ]
           },
           "actionCases": [
             {
               "id": "default",
               "dimensions": {
-                "content": "populated",
+                "content": "live",
                 "load": "ready",
-                "navigation": "closed",
-                "filters": "default"
+                "filters": "default",
+                "navigation": "closed"
               },
               "actions": {
                 "enabled": [
@@ -672,34 +676,75 @@
           ]
         },
         {
-          "id": "empty_city",
-          "stateId": "empty-city",
+          "id": "launching_soon",
+          "stateId": "launching-soon",
           "kind": "route_state",
           "status": "previewed",
           "dimensions": {
-            "content": "empty_city",
+            "content": "launching_soon",
             "load": "ready",
-            "navigation": "closed",
-            "filters": "default"
+            "filters": "default",
+            "navigation": "closed"
           },
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_home/Home"
+              "route_home/MumbaiLive1280"
             ],
             "tests": [
               "website/src/features/home/HomePage.test.tsx",
-              "website/src/features/home/useConsumerHomeController.test.tsx"
+              "website/src/features/home/useHomePageController.test.tsx"
             ]
           },
           "actionCases": [
             {
               "id": "default",
               "dimensions": {
-                "content": "empty_city",
+                "content": "launching_soon",
                 "load": "ready",
-                "navigation": "closed",
-                "filters": "default"
+                "filters": "default",
+                "navigation": "closed"
+              },
+              "actions": {
+                "enabled": [
+                  "select_city",
+                  "select_format"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "thin_city",
+          "stateId": "thin-city",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "content": "thin_city",
+            "load": "ready",
+            "filters": "default",
+            "navigation": "closed"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_home/MumbaiLive1280"
+            ],
+            "tests": [
+              "website/src/features/home/HomePage.test.tsx",
+              "website/src/features/home/useHomePageController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "thin_city",
+                "load": "ready",
+                "filters": "default",
+                "navigation": "closed"
               },
               "actions": {
                 "enabled": [
@@ -718,29 +763,29 @@
           "kind": "route_state",
           "status": "previewed",
           "dimensions": {
-            "content": "populated",
+            "content": "live",
             "load": "unavailable",
-            "navigation": "closed",
-            "filters": "default"
+            "filters": "default",
+            "navigation": "closed"
           },
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_home/Home"
+              "route_home/MumbaiLive1280"
             ],
             "tests": [
               "website/src/features/home/HomePage.test.tsx",
-              "website/src/features/home/useConsumerHomeController.test.tsx"
+              "website/src/features/home/useHomePageController.test.tsx"
             ]
           },
           "actionCases": [
             {
               "id": "default",
               "dimensions": {
-                "content": "populated",
+                "content": "live",
                 "load": "unavailable",
-                "navigation": "closed",
-                "filters": "default"
+                "filters": "default",
+                "navigation": "closed"
               },
               "actions": {
                 "enabled": [
@@ -754,34 +799,34 @@
           ]
         },
         {
-          "id": "city_and_format",
-          "stateId": "city-and-format",
+          "id": "format_filter",
+          "stateId": "format-filter",
           "kind": "route_state",
-          "status": "manual",
+          "status": "previewed",
           "dimensions": {
-            "content": "populated",
+            "content": "live",
             "load": "ready",
-            "navigation": "closed",
-            "filters": "active"
+            "filters": "format",
+            "navigation": "closed"
           },
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_home/Home"
+              "route_home/MumbaiLive1280"
             ],
             "tests": [
               "website/src/features/home/HomePage.test.tsx",
-              "website/src/features/home/useConsumerHomeController.test.tsx"
+              "website/src/features/home/useHomePageController.test.tsx"
             ]
           },
           "actionCases": [
             {
               "id": "default",
               "dimensions": {
-                "content": "populated",
+                "content": "live",
                 "load": "ready",
-                "navigation": "closed",
-                "filters": "active"
+                "filters": "format",
+                "navigation": "closed"
               },
               "actions": {
                 "enabled": [
@@ -795,41 +840,42 @@
           ]
         },
         {
-          "id": "mobile_menu",
-          "stateId": "mobile-menu",
+          "id": "city_picker",
+          "stateId": "city-picker",
           "kind": "route_state",
-          "status": "manual",
+          "status": "previewed",
           "dimensions": {
-            "content": "populated",
+            "content": "live",
             "load": "ready",
-            "navigation": "mobile_menu",
-            "filters": "default"
+            "filters": "default",
+            "navigation": "city_picker"
           },
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_home/Home"
+              "route_home/MumbaiLive1280"
             ],
             "tests": [
-              "website/src/shared/site/PublicSiteChrome.test.tsx"
+              "website/src/features/home/HomePage.test.tsx",
+              "website/src/features/home/useHomePageController.test.tsx"
             ]
           },
           "actionCases": [
             {
               "id": "default",
               "dimensions": {
-                "content": "populated",
+                "content": "live",
                 "load": "ready",
-                "navigation": "mobile_menu",
-                "filters": "default"
+                "filters": "default",
+                "navigation": "city_picker"
               },
               "actions": {
-                "enabled": [],
-                "disabled": [],
-                "notAllowed": [
+                "enabled": [
                   "select_city",
                   "select_format"
-                ]
+                ],
+                "disabled": [],
+                "notAllowed": []
               }
             }
           ]
@@ -849,20 +895,21 @@
             "exportName": "HomePage",
             "storybook": {
               "status": "ready",
-              "story": "website/src/stories/MarketingRoutes.stories.tsx",
-              "exportName": "Home",
+              "story": "website/src/stories/HomePage.stories.tsx",
+              "exportName": "MumbaiLive1280",
               "states": [
-                "default",
-                "empty-city",
+                "mumbai-live",
+                "launching-soon",
+                "thin-city",
                 "catalog-unavailable",
-                "city-and-format",
-                "mobile-menu"
+                "format-filter",
+                "city-picker"
               ]
             }
           }
         ],
         "previews": [
-          "route_home/Home"
+          "route_home/MumbaiLive1280"
         ]
       }
     }

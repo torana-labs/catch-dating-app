@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';

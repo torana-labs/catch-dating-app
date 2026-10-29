@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_runtime_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_result.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_runtime_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_result.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_setting.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_senders.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';

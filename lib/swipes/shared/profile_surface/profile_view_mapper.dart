@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_card_content.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 

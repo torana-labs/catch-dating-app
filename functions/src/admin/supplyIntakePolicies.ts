@@ -33,6 +33,8 @@ interface PackagedPolicies {
     provider: {enabled: boolean; policyGapId: string; decisionId: string | null};
     pageFetch: {enabled: boolean; policyGapId: string; decisionId: string | null;
       maxRequestsPerIntake: number; maxRequestsPerMonth: number};
+    webSearch: {enabled: boolean; policyGapId: string; decisionId: string | null;
+      maxQueriesPerRun: number; maxQueriesPerMonth: number};
   }>;
   loadResearchAgentPolicy: () => Promise<{agent?: Record<string, unknown>; [key: string]: unknown}>;
   loadSupplyModelPolicy: () => Promise<{provider?: Record<string, unknown>; [key: string]: unknown}>;
@@ -50,6 +52,12 @@ const policyText: Record<string, {label: string; enables: string; configPath: st
     label: "Check listed organizers for new events on a schedule",
     enables: "A provider re-reads listed organizers' calendars on a schedule so their pages stay current.",
     configPath: "operations/src/workflows/supply-intake/config/acquisition_policy.json (provider)",
+  },
+  batch_web_search_policy: {
+    label: "Find new organizers through web search",
+    enables: "Catch sends its planned discovery searches (for example \"run club Bengaluru\") to a search API and " +
+      "turns the results into organizer candidates for review. Nothing is listed without a person approving it.",
+    configPath: "operations/src/workflows/supply-intake/config/acquisition_policy.json (webSearch)",
   },
   agent_research_policy: {
     label: "Research gaps with the agent",
@@ -136,6 +144,9 @@ async function loadConfigs(): Promise<PolicyConfig[]> {
       {label: "Pages per nomination", value: acquisitionPolicy.pageFetch.maxRequestsPerIntake},
       {label: "Pages per month", value: acquisitionPolicy.pageFetch.maxRequestsPerMonth}]},
     {...switchOf(acquisitionPolicy.provider), limits: []},
+    {...switchOf(acquisitionPolicy.webSearch), limits: [
+      {label: "Searches per run", value: acquisitionPolicy.webSearch.maxQueriesPerRun},
+      {label: "Searches per month", value: acquisitionPolicy.webSearch.maxQueriesPerMonth}]},
     {...switchOf(agentPolicy.agent ?? agentPolicy), limits: []},
     {...switchOf(modelPolicy.provider ?? modelPolicy), limits: []},
   ];

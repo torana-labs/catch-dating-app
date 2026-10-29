@@ -75,7 +75,7 @@ describe("homepage", {timeout: 20_000}, () => {
   it("links organisers to their pages, and an unclaimed listing to its claim", () => {
     render(<HomePage catalog={mumbaiLiveCatalog} />);
     const organisers = within(screen.getByRole("region", {name: "The people behind the plans."}));
-    expect(organisers.getByRole("link", {name: "See Carter Road Runners’s plans"}).getAttribute("href")).toBe("/organizers/carter-road-runners/");
+    expect(organisers.getByRole("link", {name: "See their plans: Carter Road Runners"}).getAttribute("href")).toBe("/organizers/carter-road-runners/");
     expect(organisers.getByText("212 followers")).toBeTruthy();
     expect(organisers.getByRole("link", {name: "Is this you? Claim it"}).getAttribute("href")).toBe("/organizers/bandra-book-swap/#claim");
     expect(organisers.getByText("Next: Fri 6:30 AM · Carter Road Social Run")).toBeTruthy();

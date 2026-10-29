@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/chats/data/chat_repository.dart';
-import 'package:catch_dating_app/chats/data/conversation_repository.dart';
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
-import 'package:catch_dating_app/matches/data/match_repository.dart';
+import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

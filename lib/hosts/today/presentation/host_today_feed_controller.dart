@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
-import 'package:catch_dating_app/hosts/today/data/host_attention_repository.dart';
-import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/contexts/bookings/data/host_attendance_outbox.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/insights/data/host_attention_repository.dart';
+import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

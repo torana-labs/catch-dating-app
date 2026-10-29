@@ -129,6 +129,65 @@ export const adminPublishListingEventsCallablePayloadSchema: Record<string, unkn
           }
         }
       }
+    },
+    "eventLocations": {
+      "type": "array",
+      "maxItems": 60,
+      "description": "Map locations the reviewer supplied for events whose source page gave none. The coordinates clear missing_exact_coordinates; a venue name or address fills one the page left out.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventWorkItemId",
+          "name",
+          "address",
+          "placeId",
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "eventWorkItemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "address": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "placeId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          }
+        }
+      }
     }
   },
   "x-callable-aliases": [

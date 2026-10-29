@@ -181,12 +181,18 @@ node operations/src/cli/main.mjs learn propose --source cntraveller
 node operations/src/cli/main.mjs learn evaluate --proposal PROPOSAL_ID
 node operations/src/cli/main.mjs learn canary --proposal PROPOSAL_ID
 node operations/src/cli/main.mjs learn status
+
+# Offline hand-run search: a saved SerpAPI/CSE capture for one planned query
+# becomes a new ingest-input snapshot file (no network, no store writes).
+node operations/src/cli/search-capture-input.mjs --capture RAW.json \
+  --plan PLAN.json --run-key RUN_KEY --captured-at 2026-07-24 --output SNAPSHOT.json
+node operations/src/cli/normalize-surface-url.mjs URL --expect-platform instagram
 ```
 
 Useful common flags:
 
 ```text
---repo-root PATH    repository containing the legacy artifacts
+--repo-root PATH    repository root whose contracts/ validate projections
 --state-dir PATH    local durable state root
 --now ISO_TIME      deterministic workflow-evidence clock for replay/tests;
                     lease ownership always uses the live system clock
@@ -342,7 +348,8 @@ seams.
 
 External-event publication is also outside the Operations writer boundary.
 Supply Intake may carry explicit resolved/waived blocker evidence into its
-reviewed projection, but `adminPublishExternalEvent` and
+reviewed projection, but `adminPublishListingEvents` (with the
+`onSupplyIntakeListingApproved` policy trigger through the same writer) and
 `adminTakedownExternalEvent` are the only mutation authorities. Both use
 dry-run/apply execution, immutable idempotency receipts, and a server-side
 recheck of market, organizer ceiling, candidate snapshot, and policy-gap

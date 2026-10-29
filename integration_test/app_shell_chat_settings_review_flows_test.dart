@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/contexts/connections/domain/match.dart';
+import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/reviews/shared/review_keys.dart';
-import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart' show TextField;

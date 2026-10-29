@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';

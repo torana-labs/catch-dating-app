@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
+import 'package:catch_dating_app/contexts/connections/data/cross_paths_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

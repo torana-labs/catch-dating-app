@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 
 final checkpointGroup = EventAssistanceGroupScope(
   organizerId: 'org-1',

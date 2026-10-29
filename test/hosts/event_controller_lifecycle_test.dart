@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
+
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_publication_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_preferences_controller.dart';
@@ -10,6 +11,7 @@ import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'event_publication_test.dart' show publicationEvent;
 
 enum _Kind { privatePreferences, offerPreferences, publication, defaults }

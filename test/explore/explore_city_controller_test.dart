@@ -1,6 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
@@ -8,8 +10,6 @@ import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

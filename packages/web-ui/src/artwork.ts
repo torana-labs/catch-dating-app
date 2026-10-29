@@ -1,6 +1,7 @@
 // CSS-free entry point (@catch/web-ui/artwork) for the cover artwork, so a
 // server route such as a link-preview ImageResponse can render the same SVG
-// without importing React components or CSS modules.
+// without importing React components or CSS modules. Server code that needs
+// an activity kind's format (the homepage's server catalog) reads it here too.
 export {
   activityArtworkMarks,
   activityArtworkPatterns,
@@ -21,3 +22,4 @@ export type {
 export {activityArtworkTokenValues, resolveActivityArtworkToken} from "./components/activityArtworkTokens";
 export {clubMonogram, clubPlaceholderCover, clubPlaceholderCoverLayout} from "./components/clubCoverArtwork";
 export type {ClubPlaceholderCoverInput, ClubPlaceholderCoverLayout} from "./components/clubCoverArtwork";
+export {catchFormatOf} from "./components/palette";

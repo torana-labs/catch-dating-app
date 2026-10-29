@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/conversation_repository.dart';
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

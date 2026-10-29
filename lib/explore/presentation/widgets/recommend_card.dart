@@ -1,9 +1,9 @@
+import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recommendation.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_capacity_labels.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/core/widgets/event_card.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/shared/event_price_copy.dart';
-import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';

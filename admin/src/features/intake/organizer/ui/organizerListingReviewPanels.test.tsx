@@ -13,6 +13,7 @@ const listing = (overrides: Record<string, unknown> = {}) => ({
   listing: {name: "Afterfly", description: "Weekly social nights.", categories: ["social"],
     links: [{platform: "luma", url: "https://lu.ma/afterfly"}], gaps: ["seed_page_unreadable"], eventCount: 3,
     researchNeeded: true, contentHash: "a".repeat(64), pageCount: 1, fetchedPageCount: 0},
+  duplicateCheck: null,
   ...overrides,
 });
 
@@ -43,6 +44,41 @@ describe("organizer listing review", () => {
       note: "Checked the Luma calendar.",
     })));
     await waitFor(() => expect(screen.queryByRole("button", {name: "Approve and publish unclaimed"})).toBeNull());
+  });
+
+  it("shows a likely duplicate with a link to the organizer Catch already lists", () => {
+    const duplicate = listing({
+      listing: {...listing().listing, gaps: ["possible_duplicate_organizer", "seed_page_unreadable"]},
+      duplicateCheck: {verdict: "match", organizersCompared: 42, citySlug: "mumbai", truncated: false, candidates: [
+        {organizerId: "org-afterfly", name: "Afterfly Socials", score: 0.94, band: "match",
+          rationale: "likely the same organizer (0.94): matches exact_name, same_market"},
+      ]},
+    });
+    render(<>{renderOrganizerListingReview(controller({rows: [duplicate] as never}))}</>);
+    expect(screen.getByText(/· possible duplicate/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", {name: "Review"}));
+    expect(screen.getByText("Possible duplicate organizer")).toBeTruthy();
+    expect(screen.getByText(/Catch may already list this organizer \(possible_duplicate_organizer\)/)).toBeTruthy();
+    expect(screen.getByText(/Compared with 42 published organizers in mumbai/)).toBeTruthy();
+    expect(screen.getByText("Likely the same · score 0.94")).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Afterfly Socials"}).getAttribute("href")).toBe("/organizers/org-afterfly");
+    expect(screen.getByText(/matches exact_name, same_market/)).toBeTruthy();
+    // Advisory: the reviewer can still approve a different organizer.
+    expect(screen.getByRole("button", {name: "Approve and publish unclaimed"})).toBeTruthy();
+  });
+
+  it("says when no listed organizer matched, and when the listing was never compared", () => {
+    const clean = listing({duplicateCheck: {verdict: "none", organizersCompared: 1, citySlug: null, truncated: true,
+      candidates: []}});
+    const {unmount} = render(<>{renderOrganizerListingReview(controller({rows: [clean] as never}))}</>);
+    fireEvent.click(screen.getByRole("button", {name: "Review"}));
+    expect(screen.getByText(/Compared with 1 published organizer across every city: none looks like the same/))
+      .toBeTruthy();
+    expect(screen.getByText(/Only the first ones were compared/)).toBeTruthy();
+    unmount();
+    render(<>{renderOrganizerListingReview(controller())}</>);
+    fireEvent.click(screen.getByRole("button", {name: "Review"}));
+    expect(screen.getByText(/was not compared with the organizers Catch/)).toBeTruthy();
   });
 
   it("asks for an open market when the organizer's city is not one yet", () => {

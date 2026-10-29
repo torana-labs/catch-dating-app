@@ -6,15 +6,15 @@
 library;
 
 /// ## Data
-export 'data/user_profile_repository.dart';
+export 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 
 /// ## Domain
-export 'domain/profile_photo.dart';
-export 'domain/profile_photo_policy.dart';
-export 'domain/profile_prompts.dart';
-export 'domain/profile_readiness.dart';
-export 'domain/profile_validation.dart';
-export 'domain/user_profile.dart';
+export 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
+export 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
+export 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
+export 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
+export 'package:catch_dating_app/contexts/profiles/domain/profile_validation.dart';
+export 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 
 /// ## Presentation (screens and shared widgets)
 export 'presentation/profile_edit_controller.dart'; // public-api: command seam for route-owned actions

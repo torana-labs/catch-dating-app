@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
-import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

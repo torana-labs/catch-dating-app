@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 
 Map<String, Object?> viewerResponse({
   String eventId = 'event-1',

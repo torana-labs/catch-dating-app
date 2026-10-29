@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
-import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
-import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';

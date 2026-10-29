@@ -66,5 +66,3 @@ export function useLaunchNoticeController(city: string, submit = postLaunchNotic
     handleSubmit,
   };
 }
-
-export type LaunchNoticeController = ReturnType<typeof useLaunchNoticeController>;

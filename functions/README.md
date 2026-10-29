@@ -71,8 +71,11 @@ evidence and scoped live approvals remain prerequisites for activation.
 
 These rows name current `src/index.ts` exports, including exports that remain
 dormant pending activation. Historical Function names belong in prose outside
-the inventory.
+the inventory. `node tool/audit/check_fn_readme_inventory.mjs --write` keeps the
+rows between the markers in step with `src/index.ts`: it drops removed exports
+and lists new ones under "Not yet described" for you to move and describe.
 
+<!-- fn-inventory:start (generated rows: node tool/audit/check_fn_readme_inventory.mjs --write) -->
 | Function | File | Purpose |
 |----------|------|---------|
 | `onHostContactSummaryChanged` / `onHostContactTraitsSummaryChanged` / `onHostContactChannelSummaryChanged` / `onHostContactVocabularySummaryChanged` / `onHostAudienceSummaryCoverageChanged` / `onHostFormSummaryChanged` / `onHostEventSummaryChanged` / `onHostGroupSummaryChanged` / `onHostResponseSummaryChanged` / `onHostApplicationSummaryChanged` / `onHostApplicationEvidenceSummaryChanged` / `onHostApplicationGrantSummaryChanged` / `onHostResponseConversionSummaryChanged` / `onHostResponseSourceLabelSummaryChanged` / `onHostResponseContactOriginChanged` | `src/hostReadModels/triggers.ts` | Current-source, organizer-scoped People/Forms/private Events/Groups/Responses read-model reconciliation; views are SDK-readable metadata, never mutation or permission authority. |
@@ -311,9 +314,8 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminPublishListingEvents` | `src/admin/listingEventImports.ts` | Admin, owner or support dry-run or publish chosen imported events of one approved listing as read-only, outbound-only external events; full checklist, per-event resolutions, one transaction and receipt per event |
 | `adminListSupplyIntakePolicies` | `src/admin/supplyIntakePolicies.ts` | Admin, owner or support read the Supply Intake capabilities that wait for the owner's decision, with the decision and whether the policy file switches each on |
 | `adminRefreshOrganizerEvents` | `src/operations/supplyIntake/organizerEventRefresh.ts` | Admin, owner, support or sales staff queue an event refresh for an unclaimed listed organizer, created with its approval; audited, rate-limited and idempotent per caller key |
+| `adminSetSupplyNominator` / `adminListSupplyNominators` | `src/operations/supplyIntake/nominators.ts` | Admin or owner registers a sales associate or partner whose WhatsApp messages to Catch become organizer nominations, or switches them off; stores only a hash of the number and its last four digits, audited and rate-limited. Sales staff can list the registry. Messages count only while `SUPPLY_MESSAGE_NOMINATIONS_ENABLED` and the receipt consumers are on, and only while the account keeps its sales role or partner membership |
 | `adminNominateOrganizer` | `src/operations/supplyIntake/nominations.ts` | Admin, owner or sales staff nominate an organizer; audited, rate-limited and idempotent per nominator request id. Creates a queued Supply Intake request; nothing is published until staff review the listing |
-| `adminGetEventSupplyReadiness` | `src/admin/eventSupplyReadiness.ts` | Admin read-only external event import plan and preflight snapshot |
-| `adminPublishExternalEvent` | `src/admin/externalEventPublishing.ts` | Admin audited publish of one preflight-approved read-only `externalEvents/{id}` document |
 | `adminTakedownExternalEvent` | `src/admin/externalEventTakedown.ts` | Admin audited dry-run/apply takedown of one published external event without deleting its source or publication receipts |
 | `adminGetMarketingOpsDashboard` | `src/admin/marketingOps.ts` | Admin read-only marketing ops dashboard bridge |
 | `adminRecordMarketingReviewDecision` | `src/admin/marketingOps.ts` | Admin audited marketing review decision, no publish |
@@ -420,6 +422,7 @@ enter previews.
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |
 | `organizerWhatsappWebhook` | `src/organizers/organizerWhatsappWebhook.ts` | Verify Meta webhook signatures and project delivery or STOP events without retaining message content |
+<!-- fn-inventory:end -->
 
 ## Shared modules
 

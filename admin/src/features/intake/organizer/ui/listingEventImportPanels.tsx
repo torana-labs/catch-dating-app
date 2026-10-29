@@ -59,6 +59,18 @@ const when = (iso: string) => new Date(iso).toLocaleString("en-IN",
 
 const selectable = (event: ImportedEvent) => event.state === "ready" || event.state === "needs_resolution";
 
+// The policy that lets staff publish an event with no map location, such as an online one.
+const locationWaiverPolicy = "policy-external-event-location-provider-policy";
+const needsMapLocation = (event: ImportedEvent) => event.resolvableBlockers.includes("missing_exact_coordinates");
+
+/** "19.0596, 72.8227", as Google Maps copies a dropped pin, or null when out of range. */
+export function parseMapLocation(text: string): {latitude: number; longitude: number} | null {
+  const match = /^\s*(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)\s*$/u.exec(text);
+  if (!match) return null;
+  const [latitude, longitude] = [Number(match[1]), Number(match[2])];
+  return Math.abs(latitude) <= 90 && Math.abs(longitude) <= 180 ? {latitude, longitude} : null;
+}
+
 function findingText(event: ImportedEvent): string | null {
   const reasons = event.automatedFindings.map((finding) => finding.check === "dating_framing" ?
     `its ${finding.field} says "${finding.match}"` : finding.check === "price_missing" ?
@@ -125,14 +137,19 @@ function ListingEvents({row, controller, onClose}: {
 }) {
   const [chosen, setChosen] = useState<Set<string>>(new Set());
   const [resolutionNotes, setResolutionNotes] = useState<Record<string, string>>({});
+  const [mapLocations, setMapLocations] = useState<Record<string, string>>({});
+  const [venueNames, setVenueNames] = useState<Record<string, string>>({});
+  const [noFixedPlace, setNoFixedPlace] = useState<Record<string, boolean>>({});
   const [checklist, setChecklist] = useState<Checklist>(uncheckedList);
   const [note, setNote] = useState("");
   const [withdrawing, setWithdrawing] = useState<string | null>(null);
   const [withdrawNote, setWithdrawNote] = useState("");
   const picked = row.events.filter((event) => chosen.has(event.eventWorkItemId));
   const needsNote = picked.filter((event) => event.resolvableBlockers.length > 0);
+  const located = (event: ImportedEvent) => parseMapLocation(mapLocations[event.eventWorkItemId] ?? "");
   const ready = picked.length > 0 && note.trim().length >= 10 && checklistItems.every(([key]) => checklist[key]) &&
-    needsNote.every((event) => (resolutionNotes[event.eventWorkItemId] ?? "").trim().length >= 10);
+    needsNote.every((event) => (resolutionNotes[event.eventWorkItemId] ?? "").trim().length >= 10) &&
+    picked.filter(needsMapLocation).every((event) => noFixedPlace[event.eventWorkItemId] || located(event));
   const toggle = (id: string, on: boolean) => setChosen((current) => {
     const next = new Set(current);
     if (on) next.add(id); else next.delete(id);
@@ -140,11 +157,28 @@ function ListingEvents({row, controller, onClose}: {
   });
   const submit = async () => {
     if (!ready) return;
+    const eventLocations = picked.filter(needsMapLocation).flatMap((event) => {
+      const point = noFixedPlace[event.eventWorkItemId] ? null : located(event);
+      return point ? [{eventWorkItemId: event.eventWorkItemId, name: venueNames[event.eventWorkItemId]?.trim() || null,
+        address: null, placeId: null, ...point}] : [];
+    });
+    const placed = new Set(eventLocations.map((entry) => entry.eventWorkItemId));
+    // A supplied location clears its blockers by itself; an event with no fixed place waives them.
+    const outcomeFor = (id: string, blockerCode: string): "resolved" | "waived" | null => {
+      if (blockerCode === "missing_exact_coordinates") return placed.has(id) ? null : "waived";
+      if (blockerCode === "missing_location_detail" && placed.has(id) && venueNames[id]?.trim()) return null;
+      if (blockerCode === "missing_location_detail" && noFixedPlace[id]) return "waived";
+      return "resolved";
+    };
+    const blockerResolutions = needsNote.flatMap((event) => event.resolvableBlockers.flatMap((blockerCode) => {
+      const outcome = outcomeFor(event.eventWorkItemId, blockerCode);
+      return outcome === null ? [] : [{eventWorkItemId: event.eventWorkItemId, blockerCode, outcome,
+        policyGapDecisionId: outcome === "waived" ? locationWaiverPolicy : null,
+        note: resolutionNotes[event.eventWorkItemId].trim()}];
+    }));
     const published = await controller.publish({intakeRequestId: row.intakeRequestId, checklist,
       eventWorkItemIds: picked.map((event) => event.eventWorkItemId), reviewNote: note.trim(),
-      blockerResolutions: needsNote.flatMap((event) => event.resolvableBlockers.map((blockerCode) => ({
-        eventWorkItemId: event.eventWorkItemId, blockerCode, outcome: "resolved" as const,
-        policyGapDecisionId: null, note: resolutionNotes[event.eventWorkItemId].trim()})))});
+      blockerResolutions, eventLocations});
     if (published) {
       setChosen(new Set());
       setChecklist(uncheckedList());
@@ -177,6 +211,22 @@ function ListingEvents({row, controller, onClose}: {
             onChanged={(value) => setResolutionNotes((current) => ({...current, [event.eventWorkItemId]: value}))}
             helperText={`Confirms ${event.resolvableBlockers.map((code) => blockerLabels[code] ?? code)
               .join(", ")} is acceptable for this event.`} /> : null}
+        {chosen.has(event.eventWorkItemId) && needsMapLocation(event) ? <>
+          <AdminOrganizerIntakeCheckboxField label={`${event.title ?? "This event"} has no fixed place`}
+            checked={noFixedPlace[event.eventWorkItemId] === true}
+            onChange={(on) => setNoFixedPlace((current) => ({...current, [event.eventWorkItemId]: on}))} />
+          {noFixedPlace[event.eventWorkItemId] ? null : <>
+            <CatchField recipe="input" title={`Map location for ${event.title ?? "this event"}`} maxLength={60}
+              value={mapLocations[event.eventWorkItemId] ?? ""}
+              onChanged={(value) => setMapLocations((current) => ({...current, [event.eventWorkItemId]: value}))}
+              helperText="Latitude, longitude as Google Maps copies a dropped pin, for example 19.0596, 72.8227." />
+            {event.venue === null && event.address === null ?
+              <CatchField recipe="input" title={`Venue for ${event.title ?? "this event"}`} maxLength={240}
+                value={venueNames[event.eventWorkItemId] ?? ""}
+                onChanged={(value) => setVenueNames((current) => ({...current, [event.eventWorkItemId]: value}))}
+                helperText="The place name guests will look for." /> : null}
+          </>}
+        </> : null}
         {event.state === "published" && event.eventId ? withdrawing === event.eventId ?
           <AdminForm onSubmit={(submitted) => {
             submitted.preventDefault();

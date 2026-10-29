@@ -1,5 +1,7 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
@@ -8,8 +10,6 @@ import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
-import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

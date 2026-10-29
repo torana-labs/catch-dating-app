@@ -1,14 +1,14 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_repository.dart';
+import 'package:catch_dating_app/contexts/connections/data/swipe_repository.dart';
+import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/connections/domain/swipe_queue_policy.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
-import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
-import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/swipes/domain/swipe_queue_policy.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

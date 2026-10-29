@@ -1,4 +1,4 @@
-import {catchFormatOf} from "@catch/web-ui";
+import {catchFormatOf} from "@catch/web-ui/artwork";
 import type {MarketCity} from "@content/markets/types";
 import {eligibleHomeCatchEvents} from "../organizers/homeEventEligibility";
 import {eventDeepLinkForListing} from "../organizers/publicDiscovery";

@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_filter_options.dart';
+import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 
 /// Display-only stories. These projections do not prove a backend submission.
 class HostAudienceJourneyFixture {

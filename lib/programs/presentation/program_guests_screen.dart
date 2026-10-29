@@ -1,3 +1,8 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/phone_import_access.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
@@ -7,12 +12,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_access.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
-import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
-import 'package:catch_dating_app/programs/data/program_work_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_controller.dart';

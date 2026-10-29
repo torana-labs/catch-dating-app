@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/explore/explore.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';

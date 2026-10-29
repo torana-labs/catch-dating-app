@@ -714,3 +714,114 @@ test("dependency CLI rejects relative and conditional violations but accepts lex
     assert.equal(fs.readFileSync(file, "utf8"), source);
   }
 });
+
+test("scanFile holds context domain and kernel files to the domain rules", () => {
+  const rules = (relativePath, source) =>
+    scanFile({relativePath, source}).map((finding) => finding.rule);
+
+  assert.deepEqual(rules("lib/contexts/events/domain/event.dart",
+    "import 'package:cloud_firestore/cloud_firestore.dart';\n"), ["domainFrameworkImport"]);
+  assert.deepEqual(rules("lib/kernel/ids.dart",
+    "import 'package:flutter/widgets.dart';\n"), ["domainFrameworkImport"]);
+  assert.deepEqual(rules("lib/kernel/clock.dart",
+    "bool isPast(DateTime at) => at.isBefore(DateTime.now());\n"), ["domainClockAccess"]);
+  assert.deepEqual(rules("lib/contexts/events/data/event_repository.dart",
+    "Stream<int> watch() => source.timeout(limit);\n"), ["dataStreamTimeout"]);
+});
+
+test("scanFile flags context data and domain imports of actions, parts and screens", () => {
+  for (const target of [
+    "package:catch_dating_app/contexts/bookings/actions/check_in_controller.dart",
+    "package:catch_dating_app/contexts/bookings/parts/guest_row.dart",
+    "package:catch_dating_app/pages/event_page/event_page_body.dart",
+    "../actions/check_in_controller.dart",
+  ]) {
+    const findings = scanFile({
+      relativePath: "lib/contexts/bookings/data/booking_repository.dart",
+      source: `import '${target}';\n`,
+    });
+    assert.deepEqual(findings.map((finding) => finding.rule),
+      ["dataDomainPresentationImport"], target);
+  }
+});
+
+test("scanFile flags provider-coupled context parts as a hard gate", () => {
+  const findings = scanFile({
+    relativePath: "lib/contexts/events/parts/event_row.dart",
+    source: "import 'package:flutter_riverpod/flutter_riverpod.dart';\n",
+  });
+  assert.deepEqual(findings.map((finding) => finding.rule), ["partsProviderCoupling"]);
+
+  const snapshot = createFixtureSnapshot({
+    "lib/contexts/events/parts/event_row.dart": "final row = ref.watch(eventProvider);\n",
+  });
+  const result = scanDependencyDirection({snapshot, baseline: {allowedFindings: [{
+    rule: "partsProviderCoupling",
+    path: "lib/contexts/events/parts/event_row.dart",
+  }]}});
+  assert.ok(result.findings.some((finding) => finding.rule === "partsProviderCoupling"));
+});
+
+test("scanFile lets context actions read repositories and plugins", () => {
+  assert.deepEqual(scanFile({
+    relativePath: "lib/contexts/bookings/actions/check_in.dart",
+    source: [
+      "import 'package:mobile_scanner/mobile_scanner.dart';",
+      "final repository = ref.read(bookingRepositoryProvider);",
+    ].join("\n"),
+  }), []);
+});
+
+test("scanFile applies screen rules to app-package destinations and shared pages", () => {
+  const rules = (relativePath, source) =>
+    scanFile({relativePath, source}).map((finding) => finding.rule);
+
+  assert.deepEqual(rules("apps/host/lib/today/widgets/today_needs_you.dart",
+    "final events = ref.watch(eventRepositoryProvider);\n"), ["widgetRepositoryProviderRead"]);
+  assert.deepEqual(rules("apps/host/lib/today/today_state.dart",
+    "import 'package:flutter_riverpod/flutter_riverpod.dart';\n"), ["stateFileProviderImport"]);
+  assert.deepEqual(rules("lib/pages/event_page/event_page_body.dart",
+    "List<Widget> rows(BuildContext context, WidgetRef ref) => [];\n"), ["widgetRefParameter"]);
+  assert.deepEqual(rules("apps/consumer/lib/explore/widgets/map_button.dart",
+    "import 'package:url_launcher/url_launcher.dart';\n"), ["presentationPluginImport"]);
+  assert.deepEqual(rules("apps/consumer/lib/razorpay_checkout_adapter.dart",
+    "import 'package:razorpay_flutter/razorpay_flutter.dart';\n"), []);
+});
+
+test("scanDependencyDirection scans app packages and never baselines the context roots", () => {
+  const snapshot = createFixtureSnapshot({
+    "lib/events/domain/event.dart": "class Event {}\n",
+    "apps/host/lib/today/widgets/today_list.dart":
+      "final events = ref.watch(eventRepositoryProvider);\n",
+    "apps/host/test/today_test.dart": "final x = ref.watch(eventRepositoryProvider);\n",
+    "lib/contexts/events/domain/event.dart":
+      "import 'package:cloud_firestore/cloud_firestore.dart';\n",
+  });
+  const result = scanDependencyDirection({snapshot, baseline: {allowedFindings: [
+    {
+      rule: "widgetRepositoryProviderRead",
+      path: "apps/host/lib/today/widgets/today_list.dart",
+    },
+    {
+      rule: "domainFrameworkImport",
+      path: "lib/contexts/events/domain/event.dart",
+      import: "package:cloud_firestore/cloud_firestore.dart",
+    },
+  ]}});
+
+  assert.equal(result.checkedFiles, 3);
+  assert.deepEqual(result.baselineFindings, []);
+  assert.deepEqual(result.findings.map(({rule, path: findingPath}) => `${rule} ${findingPath}`).sort(), [
+    "domainFrameworkImport lib/contexts/events/domain/event.dart",
+    "widgetRepositoryProviderRead apps/host/lib/today/widgets/today_list.dart",
+  ]);
+});
+
+test("manual provider declarations are allowed in the platform root like core", () => {
+  for (const relativePath of ["lib/core/firebase_providers.dart", "lib/platform/firebase_providers.dart"]) {
+    assert.deepEqual(scanFile({
+      relativePath,
+      source: "final firestoreProvider = Provider((ref) => FirebaseFirestore.instance);\n",
+    }), [], relativePath);
+  }
+});

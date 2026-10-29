@@ -1,13 +1,13 @@
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
-import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_hype_avatar_row.dart';
-import 'package:catch_dating_app/payments/data/payment_repository.dart';
-import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

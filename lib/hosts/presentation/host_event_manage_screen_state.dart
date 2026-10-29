@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
-import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/host_attendance_window.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 
 enum HostEventManageSection { setup, guests, live, report }

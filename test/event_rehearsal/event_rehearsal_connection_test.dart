@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

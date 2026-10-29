@@ -1,15 +1,15 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
-import 'package:catch_dating_app/programs/data/program_create_journal.dart';
-import 'package:catch_dating_app/programs/data/program_inventory_repository.dart';
-import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_timezone.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_create_journal.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_inventory_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_timezone.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_timezone_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

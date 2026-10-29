@@ -121,10 +121,12 @@ catch-dating-app
 # Deep semantic audit scratch artifacts
 .audit_work
 
-# Organizer intake raw provider payloads
-tool/organizer_intake/raw_artifacts/**
-!tool/organizer_intake/raw_artifacts/
-!tool/organizer_intake/raw_artifacts/README.md
-
 # Seeded lint-probe fixtures (tool/check_catch_ui_lints.sh); never committed.
 tool/catch_ui_lints_probe
+
+# fastlane and Bundler local output
+/vendor
+/.bundle
+/fastlane/report.xml
+/fastlane/README.md
+/fastlane/test_output

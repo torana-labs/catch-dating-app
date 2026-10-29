@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/event_success/data/event_assistance_accountability_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability_change.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_accountability_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability_change.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../event_rehearsal/event_rehearsal_checkpoint_visit_fixtures.dart';

@@ -43,50 +43,27 @@ if [[ ! -f "$destination_root/pubspec.yaml" ]]; then
   exit 1
 fi
 
-IFS=$'\t' read -r android_config ios_config macos_config web_config <<<"$(
+# Android flavors and the iOS/macOS build phases read their own environment's
+# file under firebase/ at build time. Flutter web has no flavors, so the web
+# service worker is the one file still copied into the app project.
+web_config="$(
   node "$repo_root/tool/platform/resolve_app_target.mjs" \
     --role "$app_role" \
     --environment "$environment" \
-    --fields 'firebase.android.configPath,firebase.ios.configPath,firebase.macos.configPath,firebase.web.configPath'
+    --fields firebase.web.configPath
 )"
+web_destination="$destination_root/web/firebase-messaging-sw.js"
 
-copy_specs=(
-  "$android_config|android/app/google-services.json"
-  "$ios_config|ios/Runner/GoogleService-Info.plist"
-  "$macos_config|macos/Runner/GoogleService-Info.plist"
-  "$web_config|web/firebase-messaging-sw.js"
-)
-
-missing=0
-for spec in "${copy_specs[@]}"; do
-  source_rel="${spec%%|*}"
-  dest_rel="${spec##*|}"
-  source_path="$repo_root/$source_rel"
-  destination_path="$destination_root/$dest_rel"
-  destination_parent="$(dirname "$destination_path")"
-  if [[ ! -f "$source_path" ]]; then
-    echo "Missing Firebase config file: $source_rel"
-    missing=1
-  elif [[ ! -d "$destination_parent" ]]; then
-    continue
-  fi
-done
-
-if [[ $missing -ne 0 ]]; then
+if [[ ! -f "$repo_root/$web_config" ]]; then
+  echo "Missing Firebase config file: $web_config"
   echo "See firebase/README.md for the expected directory layout."
   exit 1
 fi
 
-for spec in "${copy_specs[@]}"; do
-  source_rel="${spec%%|*}"
-  dest_rel="${spec##*|}"
-  destination_path="$destination_root/$dest_rel"
-  if [[ ! -d "$(dirname "$destination_path")" ]]; then
-    continue
-  fi
-  cp "$repo_root/$source_rel" "$destination_path"
-  echo "Applied $source_rel -> $project_root/$dest_rel"
-done
+if [[ -d "$(dirname "$web_destination")" ]]; then
+  cp "$repo_root/$web_config" "$web_destination"
+  echo "Applied $web_config -> $project_root/web/firebase-messaging-sw.js"
+fi
 
 bash "$repo_root/tool/validate_firebase_environment.sh" \
   "$environment" \

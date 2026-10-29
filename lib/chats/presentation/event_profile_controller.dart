@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_profile.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_timing.dart';
+
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_profile.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_timing.dart';
+import 'package:catch_dating_app/contexts/profiles/data/form_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/user_profile/data/form_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_profile_controller.g.dart';

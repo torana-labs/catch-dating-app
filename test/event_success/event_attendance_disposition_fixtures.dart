@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/event_success/data/event_attendance_disposition_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
-import 'package:catch_dating_app/event_success/domain/event_attendance_disposition.dart';
+import 'package:catch_dating_app/contexts/live/data/event_attendance_disposition_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_attendance_disposition.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 EventAssistanceGuestScope attendanceScope() => EventAssistanceGuestScope(

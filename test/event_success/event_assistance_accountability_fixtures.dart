@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 
 final accountabilityGroup = EventAssistanceGroupScope(
   organizerId: 'org-1',

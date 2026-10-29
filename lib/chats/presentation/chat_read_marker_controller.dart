@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/chats/data/conversation_repository.dart';
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_read_marker_state.dart';
+import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:flutter_riverpod/misc.dart';
 
 typedef ChatReadMarkerProviderReader =

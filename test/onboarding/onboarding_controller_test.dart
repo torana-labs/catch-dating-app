@@ -1,17 +1,17 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/data/onboarding_draft_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/onboarding_draft.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
-import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
