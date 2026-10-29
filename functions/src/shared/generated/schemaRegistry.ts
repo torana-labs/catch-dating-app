@@ -153,6 +153,7 @@ export {outreachDraftingSelectionSchema} from "./schemas/outreachDraftingSelecti
 export {supplyIntakeRequestSchema} from "./schemas/supplyIntakeRequest";
 export {supplyIntakeRequestsDocumentSchema} from "./schemas/supplyIntakeRequestsDocument";
 export {supplyIntakeUsageDocumentSchema} from "./schemas/supplyIntakeUsageDocument";
+export {supplyNominatorDocumentSchema} from "./schemas/supplyNominatorDocument";
 export {adminSalesIntelligenceGenerateCallablePayloadSchema} from "./schemas/adminSalesIntelligenceGenerateInput";
 export {salesOutreachJobsDocumentSchema} from "./schemas/salesOutreachJobsDocument";
 export {outreachDraftSchema} from "./schemas/outreachDraft";
@@ -896,6 +897,10 @@ export {adminApproveOrganizerListingCallableResponseSchema} from "./schemas/admi
 export {adminListListingEventImportsCallablePayloadSchema} from "./schemas/adminListListingEventImportsInput";
 export {adminListListingEventImportsCallableResponseSchema} from "./schemas/adminListListingEventImportsOutput";
 export {adminPublishListingEventsCallablePayloadSchema} from "./schemas/adminPublishListingEventsInput";
+export {adminSetSupplyNominatorCallablePayloadSchema} from "./schemas/adminSetSupplyNominatorInput";
+export {adminSetSupplyNominatorCallableResponseSchema} from "./schemas/adminSetSupplyNominatorOutput";
+export {adminListSupplyNominatorsCallablePayloadSchema} from "./schemas/adminListSupplyNominatorsInput";
+export {adminListSupplyNominatorsCallableResponseSchema} from "./schemas/adminListSupplyNominatorsOutput";
 export {adminListSupplyIntakePoliciesCallablePayloadSchema} from "./schemas/adminListSupplyIntakePoliciesInput";
 export {adminListSupplyIntakePoliciesCallableResponseSchema} from "./schemas/adminListSupplyIntakePoliciesOutput";
 export {adminRefreshOrganizerEventsCallablePayloadSchema} from "./schemas/adminRefreshOrganizerEventsInput";

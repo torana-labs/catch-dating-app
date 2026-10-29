@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.20.1
+version: 2.21.0
 updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
@@ -899,6 +899,42 @@ Before merging a workflow that requires this identity, verify the service
 account's project roles, its exact impersonation principal, and both GitHub
 environment variables. A repository-wide principal is not an acceptable
 substitute for the environment-scoped attribute.
+
+## Cloudflare edge for catchdates.com
+
+catchdates.com's DNS already lives on Cloudflare (`byron`/`carioca.ns.cloudflare.com`), with the apex A record and `www` CNAME set to DNS-only. Proxying them puts the Cloudflare free plan in front of the site:
+
+- Bot Fight Mode;
+- Cloudflare's AI-crawler block;
+- a managed challenge for scripted clients (curl, Python, headless Chrome and similar) on organizer, event and explore pages;
+- one rate-limit rule: 40 requests per 10 seconds per IP on organizer, event and preview-card paths.
+
+Verified search engines and link-preview fetchers pass. robots.txt stays ours (`website/app/robots.ts`), not Cloudflare's managed one.
+
+`tool/cloudflare/edge_policy.json` is the desired state, and `tool/cloudflare/apply_edge_policy.mjs` applies it. A run without `--apply` only reads and prints the plan. Rules whose description lacks the `catch-edge: ` prefix are kept exactly as they are.
+
+Token, created by the zone owner in the Cloudflare dashboard:
+- **Scope:** zone `catchdates.com` only.
+- **Permissions:** Zone Settings Edit, DNS Edit, Zone WAF Edit, Bot Management Edit, and Zone Read.
+
+```sh
+CLOUDFLARE_API_TOKEN=... node tool/cloudflare/apply_edge_policy.mjs           # plan
+CLOUDFLARE_API_TOKEN=... node tool/cloudflare/apply_edge_policy.mjs --apply   # make it so
+CLOUDFLARE_API_TOKEN=... node tool/cloudflare/apply_edge_policy.mjs           # expect 0 changes
+```
+
+TLS goes to Full (strict) before any record is proxied. Firebase Hosting already holds a certificate for both names, and it renews through the HTTP challenge, which still reaches Firebase through the proxy.
+
+After applying, verify:
+1. `curl -sI https://catchdates.com` shows a `cf-ray` header and a 200.
+2. A shared organizer link still previews in WhatsApp, Instagram, X and LinkedIn.
+3. Google Search Console's URL inspection fetches an organizer page.
+4. `curl -s -o /dev/null -w '%{http_code}' https://catchdates.com/organizers/` returns a challenge (403), while a browser loads the page.
+5. Sign-in, checkout and the forms still work.
+
+The production Firebase hosts (`catch-dating-app-64e51.web.app` and `.firebaseapp.com`) would otherwise bypass Cloudflare. The production website therefore answers them with a 301 to catchdates.com, except Firebase's `/__/` Auth handlers and `/api/`. Preview channels are not redirected.
+
+**Rollback:** set the two records back to DNS-only in the dashboard (or `PATCH` `proxied: false`). The site then serves directly from Firebase Hosting again. The Bot Fight Mode and rule settings can stay; they only act on proxied traffic.
 
 ## Custom form domain onboarding
 

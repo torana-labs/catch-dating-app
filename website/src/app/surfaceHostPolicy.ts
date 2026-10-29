@@ -20,6 +20,21 @@ export function requestHostname(authority: string | null): string | null {
   } catch {return null;}
 }
 
+/**
+ * The production site is also reachable on its Firebase Hosting domains, which
+ * bypass the Cloudflare protection in front of catchdates.com. A production
+ * runtime answers those hosts with a permanent redirect to the canonical
+ * domain. Firebase's reserved `/__/` paths (Auth handlers) and API calls are
+ * left alone; preview channels (`site--channel.web.app`) never redirect.
+ */
+export function canonicalProductionRedirect(hostname: string | null, pathname: string, search: string,
+  production: boolean): string | null {
+  if (!production || !hostname || !["catch-dating-app-64e51.web.app", "catch-dating-app-64e51.firebaseapp.com"]
+    .includes(hostname)) return null;
+  if (pathname.startsWith("/__/") || pathname.startsWith("/api/")) return null;
+  return `https://catchdates.com${pathname}${search}`;
+}
+
 /** Only canonical production domains may be indexed, even on a production image. */
 export function isCatchIndexingHost(hostname: string | null): boolean {
   return hostname === "catchdates.com" || hostname === "www.catchdates.com";

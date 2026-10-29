@@ -153,6 +153,7 @@ export {validateOutreachDraftingSelection} from "./validators/outreachDraftingSe
 export {validateSupplyIntakeRequest} from "./validators/supplyIntakeRequest";
 export {validateSupplyIntakeRequestsDocument} from "./validators/supplyIntakeRequestsDocument";
 export {validateSupplyIntakeUsageDocument} from "./validators/supplyIntakeUsageDocument";
+export {validateSupplyNominatorDocument} from "./validators/supplyNominatorDocument";
 export {validateAdminSalesIntelligenceGenerateCallablePayload} from "./validators/adminSalesIntelligenceGenerateInput";
 export {validateSalesOutreachJobsDocument} from "./validators/salesOutreachJobsDocument";
 export {validateOutreachDraft} from "./validators/outreachDraft";
@@ -896,6 +897,10 @@ export {validateAdminApproveOrganizerListingCallableResponse} from "./validators
 export {validateAdminListListingEventImportsCallablePayload} from "./validators/adminListListingEventImportsInput";
 export {validateAdminListListingEventImportsCallableResponse} from "./validators/adminListListingEventImportsOutput";
 export {validateAdminPublishListingEventsCallablePayload} from "./validators/adminPublishListingEventsInput";
+export {validateAdminSetSupplyNominatorCallablePayload} from "./validators/adminSetSupplyNominatorInput";
+export {validateAdminSetSupplyNominatorCallableResponse} from "./validators/adminSetSupplyNominatorOutput";
+export {validateAdminListSupplyNominatorsCallablePayload} from "./validators/adminListSupplyNominatorsInput";
+export {validateAdminListSupplyNominatorsCallableResponse} from "./validators/adminListSupplyNominatorsOutput";
 export {validateAdminListSupplyIntakePoliciesCallablePayload} from "./validators/adminListSupplyIntakePoliciesInput";
 export {validateAdminListSupplyIntakePoliciesCallableResponse} from "./validators/adminListSupplyIntakePoliciesOutput";
 export {validateAdminRefreshOrganizerEventsCallablePayload} from "./validators/adminRefreshOrganizerEventsInput";

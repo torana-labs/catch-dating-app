@@ -1017,6 +1017,39 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
+      "actionId": "sales.intake.set-message-nominator",
+      "callable": "adminSetSupplyNominator",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "admin",
+        "adminOwner"
+      ],
+      "summary": "Let a sales associate or partner nominate organizers by sending links to Catch's WhatsApp number, or stop their messages counting.",
+      "controlPlane": true
+    },
+    {
+      "actionId": "sales.intake.list-message-nominators",
+      "callable": "adminListSupplyNominators",
+      "workflowIds": [
+        "sales"
+      ],
+      "guiPath": "/sales/hosts",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "admin",
+        "adminOwner",
+        "salesStaff"
+      ],
+      "summary": "List who may nominate organizers by messaging Catch, with numbers shown only as their last four digits.",
+      "controlPlane": true
+    },
+    {
       "actionId": "sales.hosts.update",
       "callable": "adminUpdateSalesAccount",
       "workflowIds": [
@@ -2291,6 +2324,8 @@ export const adminActionCatalog = {
         "sales.evidence.list",
         "sales.hosts.create",
         "sales.intake.nominate-organizer",
+        "sales.intake.set-message-nominator",
+        "sales.intake.list-message-nominators",
         "sales.hosts.update",
         "sales.tasks.upsert",
         "sales.opportunities.upsert",
