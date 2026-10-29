@@ -328,6 +328,11 @@
       "source": "website/src/features/home/useHomePageController.ts",
       "test": "website/src/features/home/useHomePageController.test.tsx",
       "status": "required"
+    },
+    {
+      "source": "website/src/features/home/useLaunchNoticeController.ts",
+      "test": "website/src/features/home/useLaunchNoticeController.test.tsx",
+      "status": "required"
     }
   ]
 }

@@ -3,6 +3,7 @@ import type {MarketPack} from "./types";
 export const inMarket = {
   id: "in",
   countryCode: "IN",
+  dialCode: "+91",
   appStoreCountryCodes: ["IN"],
   locale: "en-IN",
   currencyCode: "INR",

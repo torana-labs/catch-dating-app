@@ -17,6 +17,8 @@ export interface MarketCity {
 export interface MarketPack {
   readonly id: string;
   readonly countryCode: string;
+  /** The phone dialling code, such as "+91", for numbers typed without one. */
+  readonly dialCode: string;
   readonly appStoreCountryCodes: readonly string[];
   readonly locale: string;
   readonly currencyCode: string;

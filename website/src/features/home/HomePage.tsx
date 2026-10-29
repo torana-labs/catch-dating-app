@@ -1,6 +1,5 @@
-import type {ReactNode} from "react";
 import {ExplorePageLayout} from "../../shared/ui/primitives/explore";
-import type {CaptureSlots} from "../../shared/media/MediaSlot";
+import type {CaptureSlots} from "../../shared/media/captureSlot";
 import {PublicSiteFooter, PublicSiteHeader, WebsitePageMain} from "../../shared/site";
 import type {ExploreFilters} from "./exploreDiscovery";
 import type {HomeCatalog} from "./homeTypes";
@@ -23,14 +22,12 @@ export function VisitorDiscoveryPage({routeState, onFiltersChange}: {captures: C
  * from its cityPlans read model, or its launching-soon state, around the
  * guest story and the host band.
  */
-export function HomePage({catalog, downloadUrl, navigate, signup}: {
+export function HomePage({catalog, downloadUrl, navigate}: {
   catalog: HomeCatalog;
   /** One link for both stores; the QR code appears once there is one (CAT-204). */
   downloadUrl?: string;
   navigate?: (href: string) => void;
-  /** The launching-soon signup form. */
-  signup?: ReactNode;
 }) {
   const home = useHomePageController(catalog, navigate);
-  return <HomePageSections downloadUrl={downloadUrl} home={home} signup={signup} />;
+  return <HomePageSections downloadUrl={downloadUrl} home={home} />;
 }
