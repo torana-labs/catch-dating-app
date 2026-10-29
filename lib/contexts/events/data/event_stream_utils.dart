@@ -77,6 +77,61 @@ Stream<List<T>> watchDocumentsByIds<T>({
   return withBackendErrorStream(() => controller.stream, context: context);
 }
 
+/// Realtime reads of individual documents by ID, for documents a list query
+/// may not return (Firestore list rules can be stricter than single reads).
+///
+/// The result preserves the caller's stable ID order, skips missing
+/// documents, and waits until every document has emitted before publishing.
+Stream<List<T>> watchDocumentsOneByOne<T>({
+  required List<String> ids,
+  required CollectionReference<T> collection,
+  required BackendErrorContext context,
+  List<T> Function(List<T> values)? transform,
+}) {
+  final uniqueIds = ids.toSet().toList()..sort();
+  if (uniqueIds.isEmpty) return Stream.value(const []);
+
+  var subscriptions = <StreamSubscription<DocumentSnapshot<T>>>[];
+  var closed = false;
+  late final StreamController<List<T>> controller;
+  final valuesById = <String, T?>{};
+
+  void emit() {
+    if (valuesById.length < uniqueIds.length || controller.isClosed) return;
+    final ordered = <T>[
+      for (final id in uniqueIds)
+        if (valuesById[id] != null) valuesById[id] as T,
+    ];
+    controller.add(
+      List.unmodifiable(transform == null ? ordered : transform(ordered)),
+    );
+  }
+
+  controller = StreamController<List<T>>(
+    onListen: () {
+      for (final id in uniqueIds) {
+        subscriptions.add(
+          collection.doc(id).snapshots().listen((snapshot) {
+            if (closed) return;
+            valuesById[id] = snapshot.exists ? snapshot.data() : null;
+            emit();
+          }, onError: controller.addError),
+        );
+      }
+    },
+    onCancel: () async {
+      closed = true;
+      for (final subscription in subscriptions) {
+        await subscription.cancel();
+      }
+      subscriptions = [];
+      if (!controller.isClosed) await controller.close();
+    },
+  );
+
+  return withBackendErrorStream(() => controller.stream, context: context);
+}
+
 /// Listens to [idStream] — a stream of event-ID lists — and reconciles them
 /// against the real-time document state from [eventsRef].
 ///

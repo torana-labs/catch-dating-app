@@ -1117,8 +1117,16 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // One organizer by its opaque id stays readable: deep links, event pages
+    // and chats resolve it. A list returns only organizers the app shows, or
+    // ones the reader hosts or owns, so nobody can enumerate hidden listings,
+    // unapproved drafts or the intake pipeline.
     match /organizers/{organizerId} {
-      allow read: if true;
+      allow get: if true;
+      allow list: if resource.data.appVisibility == 'discoverable'
+        || (isAuthed() && (resource.data.hostUserId == request.auth.uid
+          || resource.data.ownerUserId == request.auth.uid
+          || request.auth.uid in resource.data.hostUserIds));
       allow create, update, delete: if false;
     }
 

@@ -28,6 +28,10 @@ class ClubsRepository {
 
   static const _collectionPath = 'organizers';
 
+  /// Firestore rules let a list query return only organizers the app shows
+  /// (or ones the reader hosts or owns), so browse queries must filter on it.
+  static const _discoverable = 'discoverable';
+
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
 
@@ -68,6 +72,7 @@ class ClubsRepository {
       withBackendErrorStream(
         () => _clubsRef
             .where('locationMarketId', isEqualTo: location)
+            .where('appVisibility', isEqualTo: _discoverable)
             .orderBy('createdAt', descending: true)
             .limit(ReadLimitPolicy.directoryPage)
             .snapshots()
@@ -85,6 +90,7 @@ class ClubsRepository {
       withBackendErrorStream(
         () => _clubsRef
             .where('locationMarketId', isEqualTo: location)
+            .where('appVisibility', isEqualTo: _discoverable)
             .orderBy('rating', descending: true)
             .limit(ReadLimitPolicy.directoryPage)
             .snapshots()
@@ -134,27 +140,35 @@ class ClubsRepository {
     ),
   );
 
+  /// Search matches resolve by id, one read per organizer: Firestore rules
+  /// check an id-list query against every matched document, so one hidden
+  /// organizer among the ids would deny the whole query. Hidden organizers
+  /// are then dropped here.
   Stream<List<Club>> watchClubsByIds({required List<String> clubIds}) =>
-      _watchClubsByIds(clubIds: clubIds, discoverableOnly: true);
+      watchDocumentsOneByOne(
+        ids: clubIds,
+        collection: _clubsRef,
+        transform: _appDiscoverableClubs,
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch organizers by ids',
+          resource: _collectionPath,
+        ),
+      );
 
   /// Resolves conversation identity even when a club is intentionally hidden
   /// from discovery. Authorization still comes from the match and Firestore
   /// rules; app visibility must not degrade an existing thread to a fallback.
+  /// Hidden organizers are not returned by list queries, so each is read by
+  /// its ID.
   Stream<List<Club>> watchClubsForMessagingByIds({
     required List<String> clubIds,
-  }) => _watchClubsByIds(clubIds: clubIds, discoverableOnly: false);
-
-  Stream<List<Club>> _watchClubsByIds({
-    required List<String> clubIds,
-    required bool discoverableOnly,
-  }) => watchDocumentsByIds(
+  }) => watchDocumentsOneByOne(
     ids: clubIds,
     collection: _clubsRef,
-    idOf: (club) => club.id,
-    transform: discoverableOnly ? _appDiscoverableClubs : null,
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch organizers by ids',
+      action: 'watch organizers for messaging by ids',
       resource: _collectionPath,
     ),
   );
