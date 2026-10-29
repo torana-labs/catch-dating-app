@@ -250,9 +250,12 @@
   --catch-opacity-control-overlay-hover: 0.04;
   --catch-opacity-activity-artwork-pattern: 0.22;
   --catch-opacity-activity-artwork-glyph: 0.2;
+  --catch-opacity-ground-card-outline: 0.12;
   --catch-field-active-tint-alpha: 0.04;
   --catch-field-pressed-tint-alpha: 0.06;
   --catch-field-disabled-opacity: 0.4;
+  --catch-field-rest-line-alpha: 0.25;
+  --catch-field-rest-tint-on-dark-alpha: 0.04;
   --catch-font-voice: "Archivo";
   --catch-font-head: "Archivo";
   --catch-font-function: "system-ui";

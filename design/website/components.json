@@ -845,7 +845,7 @@
           "generated"
         ]
       },
-      "notes": "\"Made with Catch · Make a page like this\" on a claimed page; where a generated page came from and how to report a mistake."
+      "notes": "\"Made with Catch \u00b7 Make a page like this\" on a claimed page; where a generated page came from and how to report a mistake."
     },
     {
       "id": "host_application_flow",
@@ -3448,7 +3448,7 @@
           "boxed-fields"
         ]
       },
-      "notes": "Website T4 under D18 (CAT-251). A rounded card on one Website v2 ground that holds what the page arranges in it: the share card, a form step, the claim pitch and its points. Library text inside takes the ground's inks, ink resolves through the dark theme, and an outlined card draws the emphasis stroke in its ground's ink at 12% (the boards' white cards). Nearest concept: catch.surface (CatchSurface), whose tones are theme surfaces, not palette grounds. Search aliases: GroundPanel, ColorCard, PitchCard, TintCard, Callout."
+      "notes": "Website T4 under D18 (CAT-251). A rounded card on one Website v2 ground that holds what the page arranges in it: the share card, a form step, the claim pitch and its points. Library text inside takes the ground's inks, ink resolves through the dark theme, and an outlined card draws the emphasis stroke in its ground's ink at opacity.groundCardOutline (the boards' white cards). Field contract: a CatchField in the card draws the boards' boxed input at rest (a white fill and the emphasis stroke at field.restLineAlpha; a field.restTintOnDarkAlpha tint on ink) through --catch-field-rest-*; outside a card a field stays the quiet row. Nearest concept: catch.surface (CatchSurface), whose tones are theme surfaces, not palette grounds. Search aliases: GroundPanel, ColorCard, PitchCard, TintCard, Callout."
     },
     {
       "id": "shared_link_tile",
