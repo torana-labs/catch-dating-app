@@ -13,6 +13,10 @@
     "CATCH_HELP_URL": {"class": "feature-gate"},
     "CATCH_HOST_OPERATOR_ALERTS_ENABLED": {"class": "feature-gate"},
     "CATCH_HOST_OPERATOR_ALERTS_SINCE": {"class": "feature-gate"},
+    "CATCH_INSTAGRAM_ACCOUNT_ID": {"class": "identity"},
+    "CATCH_INSTAGRAM_CLAIMS_ENABLED": {"class": "feature-gate"},
+    "CATCH_INSTAGRAM_GRAPH_VERSION": {"class": "feature-gate"},
+    "CATCH_INSTAGRAM_HANDLE": {"class": "identity"},
     "CATCH_PRIVACY_POLICY_URL": {"class": "feature-gate"},
     "CATCH_TERMS_URL": {"class": "feature-gate"},
     "CATCH_WHATSAPP_ATOMIC_STOP_INGRESS_READY": {"class": "feature-gate"},
@@ -107,5 +111,13 @@
     "host_progressive_event_defaults_enabled": {"replacedBy": "always on", "allowedIn": [], "liveHold": {"environments": ["prod"], "value": "true", "reason": "Catch Host builds released before this removal (Host 1.0.1, build 202610200000357901, is in App Store review) still read this key with a bundled default of false. Deleting it or publishing the checked-in template, which replaces the whole live template, would switch the feature off for those installs.", "until": "every Catch Host build that predates this removal is retired: no longer distributed and blocked by the host_min_build_* force-update floors"}},
     "host_wedding_phone_import_enabled": {"replacedBy": "always on", "allowedIn": [], "liveHold": {"environments": ["prod"], "value": "true", "reason": "Catch Host builds released before this removal (Host 1.0.1, build 202610200000357901, is in App Store review) still read this key with a bundled default of false. Deleting it or publishing the checked-in template, which replaces the whole live template, would switch the feature off for those installs.", "until": "every Catch Host build that predates this removal is retired: no longer distributed and blocked by the host_min_build_* force-update floors"}}
   },
-  "allowedDifferences": []
+  "allowedDifferences": [
+    {
+      "switch": "CATCH_INSTAGRAM_CLAIMS_ENABLED",
+      "owner": "Suvrat Garg",
+      "reason": "Instagram claim verification goes live in dev first. Meta sends webhooks to one callback URL at a time, and until App Review only accounts with a role on the Meta app can message through the API, so dev is switched on for testing before staging and prod.",
+      "ticket": "CAT-256",
+      "expires": "2026-12-31"
+    }
+  ]
 }

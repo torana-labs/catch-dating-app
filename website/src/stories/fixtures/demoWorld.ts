@@ -60,7 +60,6 @@ const personas: readonly DemoPersona[] = personaJson.personas;
 export const demoEventId = world.events[0].id;
 export const demoEventName = world.events[0].name;
 export const demoOrganizerName = world.organizer.name;
-export const demoHost = {displayName: world.host.displayName, firstName: world.host.firstName};
 
 /** Guest counts and phase for an event at a named moment. */
 export function eventStateAt(eventId: string, moment: DemoMoment) {

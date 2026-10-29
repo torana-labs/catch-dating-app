@@ -11,8 +11,7 @@ export type EmptyStateVariant =
   | "default"
   | "listing-review"
   | "organizer-results"
-  | "public-event"
-  | "review-signal-lane";
+  | "public-event";
 
 export interface MarketingConsentBannerShellProps
   extends Omit<HTMLAttributes<HTMLElement>, "children"> {
@@ -130,13 +129,6 @@ export function EmptyState({
   );
 }
 
-export function ListingReviewEmptyState({
-  className,
-  ...props
-}: Parameters<typeof EmptyState>[0]) {
-  return <EmptyState {...props} variant="listing-review" className={className} />;
-}
-
 export interface BadgeRowItem {
   key?: string;
   label: string;
@@ -229,5 +221,4 @@ export const emptyStateClassNames: Record<EmptyStateVariant, string | null> = {
   "listing-review": "listing-review-empty",
   "organizer-results": "empty-results",
   "public-event": "public-event-empty",
-  "review-signal-lane": "review-signal-lane__empty",
 };

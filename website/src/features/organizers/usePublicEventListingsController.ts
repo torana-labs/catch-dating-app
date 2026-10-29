@@ -1,6 +1,7 @@
 import {createContext, useContext, useEffect, useMemo} from "react";
 import {skipToken, useQuery, useQueryClient} from "@tanstack/react-query";
 import {subscribePublicCatchEvents} from "../../firebase";
+import type {OrganizerPageRecord} from "./organizerPage";
 import {projectPublicCatchEventSnapshot, type LivePublicCatchEvent} from "./publicCatchEventProjection";
 import {hostListings} from "./data";
 import type {HostListing} from "./types";
@@ -11,7 +12,8 @@ export interface PublicEventFeed {
 }
 const emptyFeed: PublicEventFeed = {phase: "loading", rows: []};
 const queryKey = ["public-catch-event-feed"] as const;
-export const publicEventListingsContext = createContext<{listings: readonly HostListing[]; phase: PublicEventFeed["phase"]; readAt?: number}>({
+export const publicEventListingsContext = createContext<{listings: readonly HostListing[]; phase: PublicEventFeed["phase"]; readAt?: number;
+  organizerPage?: OrganizerPageRecord | null}>({
   listings: hostListings as readonly HostListing[], phase: "loading" as PublicEventFeed["phase"],
 });
 

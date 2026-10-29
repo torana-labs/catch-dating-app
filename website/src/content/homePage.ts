@@ -56,6 +56,22 @@ export const homePageCopy = {
     liveCityCount: "{count} plans are on this week.",
     liveCityAction: "See what’s on in {city}",
   },
+  notice: {
+    title: "Tell me when it opens",
+    lead: "One WhatsApp message on the day Catch opens in {city}. Nothing else unless you ask.",
+    phone: "WhatsApp number",
+    phoneHint: "98765 43210",
+    marketing: "Also send me news about new hosts and plans in {city}",
+    action: "Notify me",
+    consent: "Tapping Notify me means we’ll send that one WhatsApp message. We only send news if you tick the box above.",
+    /** Names this wording on every stored consent; change it whenever the wording changes. */
+    consentVersion: "city-launch-whatsapp-v1",
+    privacy: "Privacy policy",
+    invalidPhone: "Enter your 10-digit mobile number.",
+    failed: "That didn’t go through. Please try again in a moment.",
+    joined: "Done. We’ll message you on WhatsApp the day Catch opens in {city}.",
+    alreadyJoined: "You’re already on the list for {city}. We’ve kept your latest choice.",
+  },
   story: {
     eyebrow: "How a night works",
     title: "Come on your own. Leave knowing a few more people.",

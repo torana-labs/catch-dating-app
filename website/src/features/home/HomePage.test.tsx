@@ -53,6 +53,11 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(main.getAllByText("Joining at launch").length).toBe(2);
     expect(main.getByRole("link", {name: "See what’s on in Mumbai"}).getAttribute("href")).toBe("/?city=mumbai");
     expect(main.getAllByText("Coming to Pune").length).toBe(5);
+    // "Tell me when it opens": a WhatsApp number, and news only if ticked.
+    expect(main.getByRole("heading", {name: "Tell me when it opens"})).toBeTruthy();
+    expect(main.getByRole("textbox", {name: /WhatsApp number/})).toBeTruthy();
+    expect((main.getByRole("checkbox", {name: "Also send me news about new hosts and plans in Pune"}) as HTMLInputElement).checked).toBe(false);
+    expect(main.getByRole("button", {name: "Notify me"}).getAttribute("type")).toBe("submit");
   });
 
   it("reads a launched city too thin to fill a page as launching soon", () => {

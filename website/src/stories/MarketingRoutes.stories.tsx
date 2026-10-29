@@ -19,14 +19,10 @@ import type {HostListing} from "../features/organizers/types";
 import {WebsiteQueryProvider} from "../shared/query/queryClient";
 import {PageShell} from "../shared/site";
 import {marketingCaptures as captures} from "../app/marketingCaptures";
-import {
-  catchEventDetailFixture,
-  completeEventDetailFixture,
-  completePastEventDetailFixture,
-  externalEventDetailFixture,
-} from "./fixtures/eventDetails";
+import {bareEventPage, fullEventPage, importedEventPage} from "./fixtures/eventPages";
+import {organizerListingAt} from "./fixtures/demoWorldListing";
 import {demoEventId, demoEventName, eventTimesMillis, venueLabel} from "./fixtures/demoWorld";
-import type {EventDetailRecord} from "../features/events/eventDetailModel";
+import type {EventPageData} from "../features/events/eventPageModel";
 import {eventRuntimeCopy} from "../content/eventRuntime";
 import {
   Button,
@@ -416,7 +412,7 @@ export const OrganizerListing: Story = {
     catchComponent: {
       id: "route_organizer_listing",
       routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["claimable-unclaimed", "missing-evidence", "listing-reviews"],
+      states: ["generated-from-listing", "claim-pitch"],
     },
   },
   render: () => (
@@ -434,7 +430,7 @@ export const EventDetailCatch: Story = {
     a11y: {test: "error"},
     catchRoute: {
       id: "event_detail_canonical",
-      path: catchEventDetailFixture.path,
+      path: fullEventPage.path,
       reviewStates: [
         "catch-native",
         "web-otp-registration",
@@ -460,26 +456,33 @@ export const EventDetailCatch: Story = {
         "web-otp-registration",
         "external-source",
         "event-reviews",
-        "desktop-invitation",
+        "no-optional-fields",
         "mobile-sticky-action",
       ],
     },
   },
-  render: () => <EventDetailRouteStory event={{
-    ...catchEventDetailFixture,
-    registrationState: "webOtp",
-  }} />,
+  render: () => <EventDetailRouteStory page={fullEventPage} />,
 };
 
 export const EventDetailExternal: Story = {
   name: "/events/:eventId/ · external",
   parameters: {a11y: {test: "error"}},
-  render: () => <EventDetailRouteStory event={externalEventDetailFixture} />,
+  render: () => <EventDetailRouteStory page={importedEventPage} />,
 };
 
-function EventDetailRouteStory({event}: {event: EventDetailRecord}) {
-  useRevealAnimations("event_detail", event.eventId);
-  return <EventDetailPage event={event} />;
+export const EventDetailBare: Story = {
+  name: "/events/:eventId/ · No optional fields",
+  parameters: {a11y: {test: "error"}},
+  render: () => <EventDetailRouteStory page={bareEventPage} />,
+};
+
+// The fictional demo-world organiser stands in for the listing the page's
+// analytics read; the page itself renders only the read model.
+const analyticsListing = organizerListingAt("planning");
+
+function EventDetailRouteStory({page}: {page: EventPageData}) {
+  useRevealAnimations("event_detail", page.eventId);
+  return <EventDetailPage listing={analyticsListing} page={page} />;
 }
 
 function OrganizerListingRouteStory({listing}: {listing: HostListing}) {
@@ -517,28 +520,3 @@ export const OrganiserProfileEmpty: Story = {
   render: () => <WebsiteQueryProvider><MemoryRouter><OrganizerListingRouteStory listing={{...consumerHomeStoryListings[0], catchEvents: [], externalEvents: [], eventEvidence: []}} /></MemoryRouter></WebsiteQueryProvider>,
 };
 
-export const EventDetailExperience: Story = {
-  name: "/events/:eventId/ · Catch Experience",
-  parameters: {a11y: {test: "error"}},
-  render: () => <EventDetailRouteStory event={{...catchEventDetailFixture, catchExperienceActivities: ["introductions", "sharedActivities"]}} />,
-};
-export const EventDetailSparse: Story = {
-  name: "/events/:eventId/ · Sparse event",
-  parameters: {a11y: {test: "error"}},
-  render: () => <EventDetailRouteStory event={{...catchEventDetailFixture, photoUrl: null, itinerary: [], summary: "", requirements: "", accessibility: ""}} />,
-};
-
-export const EventDetailComplete: Story = {
-  name: "/events/:eventId/ · Fully populated preview",
-  parameters: {a11y: {test: "error"}, catchComponent: {id: "route_event_detail", routeIds: ["event_detail_canonical"], states: ["catch-native", "desktop-invitation", "mobile-sticky-action"]}},
-  render: () => <><aside aria-label="Preview disclosure" style={{padding: "14px 24px", background: "#e9ece3", color: "#16140f", fontSize: 14}}>
-    <strong>Design preview · fictional event.</strong> Artwork, venue information and organiser figures are examples. This uses the real page component with supplied fixture data; it does not prove the live data connection or complete a booking.
-  </aside><EventDetailRouteStory event={completeEventDetailFixture} /></>,
-};
-export const EventDetailCompletePast: Story = {
-  name: "/events/:eventId/ · Completed event with reviews",
-  parameters: {a11y: {test: "error"}, catchComponent: {id: "route_event_detail", routeIds: ["event_detail_canonical"], states: ["catch-native", "event-reviews"]}},
-  render: () => <><aside aria-label="Preview disclosure" style={{padding: "14px 24px", background: "#e9ece3", color: "#16140f", fontSize: 14}}>
-    <strong>Past-event design preview · all reviews are fictional.</strong> This demonstrates event-scoped reviews and a host reply using supplied fixture data. No reviews of a future event are implied; booking actions are not live acceptance evidence.
-  </aside><EventDetailRouteStory event={completePastEventDetailFixture} /></>,
-};

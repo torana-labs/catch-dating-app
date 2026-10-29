@@ -58,8 +58,8 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 20);
-  assert.equal(execution.report.requirementCount, 25);
+  assert.equal(execution.report.secretCount, 23);
+  assert.equal(execution.report.requirementCount, 28);
   assert.equal(commandCalls, 0);
 });
 
@@ -194,9 +194,9 @@ test("target and capability filtering selects only relevant prerequisites", () =
     selected("dev", ["functions"]).filter(
       (entry) => entry.kind === "secret-version",
     ).length,
-    18,
+    21,
   );
-  assert.equal(selected("dev", ["functions"]).length, 29);
+  assert.equal(selected("dev", ["functions"]).length, 32);
   for (const environment of ["dev", "staging", "prod"]) {
     for (const [target, secrets] of [
       ["refreshProgramTravelLeg", ["FLIGHT_PROVIDER_CONFIG_VERSION"]],
@@ -283,6 +283,27 @@ test("Catch webhook requires its own secrets and active receipt TTL", () => {
       "CATCH_WHATSAPP_APP_SECRET", "CATCH_WHATSAPP_WEBHOOK_VERIFY_TOKEN",
     ]);
     assert(requirements.every((entry) => entry.owner === "catch-messaging"));
+  }
+});
+
+test("Instagram claim webhook requires its three secrets", () => {
+  for (const environment of ["dev", "staging", "prod"]) {
+    const requirements = selectReadinessRequirements({
+      manifest, environment, targets: ["functions:instagramClaimWebhook"],
+      capabilities: [],
+    });
+    assert.deepEqual(requirements.map((entry) => entry.name).sort(), [
+      "CATCH_INSTAGRAM_ACCESS_TOKEN",
+      "CATCH_INSTAGRAM_APP_SECRET",
+      "CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN",
+    ]);
+    assert(requirements.every((entry) => entry.owner === "organizer-claims"));
+    // Code checks expiry itself; TTL only prunes, so starting needs nothing.
+    assert.deepEqual(selectReadinessRequirements({
+      manifest, environment,
+      targets: ["functions:startOrganizerClaimVerification"],
+      capabilities: [],
+    }), []);
   }
 });
 

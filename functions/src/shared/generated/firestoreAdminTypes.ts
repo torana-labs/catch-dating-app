@@ -8856,6 +8856,34 @@ export interface OrganizerDocument {
     }[];
   };
   /**
+   * Links the owner, or staff for them, put on the organizer page, in display order. Written only by adminUpdateOrganizerDetails after the owner-link URL policy in functions/src/organizers/organizerLinks.ts.
+   *
+   * @maxItems 20
+   */
+  ownerLinks?: {
+    id: string;
+    label: string;
+    subtitle: string | null;
+    url: string;
+    /**
+     * What an owner link is for, which picks its icon. Null lets the page infer one from the URL.
+     */
+    icon:
+      | "link"
+      | "website"
+      | "community"
+      | "social"
+      | "tickets"
+      | "calendar"
+      | "shop"
+      | "partner"
+      | "video"
+      | "route"
+      | null;
+    pinned: boolean;
+    showUntil: FirebaseFirestore.Timestamp | null;
+  }[];
+  /**
    * @maxItems 20
    */
   publicSources?: {
@@ -12730,6 +12758,94 @@ export interface OrganizerClaimRequestDocument {
 }
 
 /**
+ * One signed-in user's attempt to prove they run an organizer listing, stored at organizerClaimVerifications/{attemptId}. The requester reads their own attempt to show its code and to follow its status; a verified attempt records the evidence and the claim request it approved.
+ */
+export interface OrganizerClaimVerificationDocument {
+  attemptId: string;
+  organizerId: string;
+  requesterUid: string;
+  /**
+   * instagramMessage: the organiser sends the code to Catch's Instagram account from the listing's handle. lumaDescription: the organiser puts the code in the listing's Luma calendar description.
+   */
+  method: "instagramMessage" | "lumaDescription";
+  /**
+   * awaitingProof until the proof arrives. An attempt still awaitingProof after expiresAt has expired; readers treat it so.
+   */
+  status: "awaitingProof" | "verified" | "expired" | "superseded";
+  /**
+   * The one-time code the requester shows the proof surface. Only the requester and the server can read it.
+   */
+  code: string;
+  /**
+   * Where the proof must come from: the listing's Instagram username without @, or its Luma calendar URL.
+   */
+  proofTarget: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  verifiedAt: FirebaseFirestore.Timestamp | null;
+  claimRequestId: string | null;
+  /**
+   * What proved the claim. Null until verified.
+   */
+  evidence: {
+    source: "instagramMessage" | "lumaDescription";
+    /**
+     * The Instagram username Graph API returned for the sender, or the Luma calendar URL that showed the code.
+     */
+    observedIdentity: string;
+    /**
+     * SHA-256 of the Instagram message id. Null for Luma.
+     */
+    messageKey: string | null;
+    observedAt: FirebaseFirestore.Timestamp;
+  } | null;
+  /**
+   * The latest proof that arrived and did not verify, so the claim page can say what to fix.
+   */
+  lastRejection: {
+    reason: "wrongSender" | "codeNotFound";
+    at: FirebaseFirestore.Timestamp;
+  } | null;
+}
+
+/**
+ * Server-only reservation of a live Instagram claim code, stored at organizerClaimInstagramCodes/{code}. Keying by the code keeps live codes unique and lets the webhook find the attempt without a query. Firestore TTL deletes it after expiresAt.
+ */
+export interface OrganizerClaimInstagramCodeDocument {
+  code: string;
+  attemptId: string;
+  organizerId: string;
+  expiresAt: FirebaseFirestore.Timestamp;
+  /**
+   * Set when the code verified a claim or its attempt was superseded. A consumed code stays reserved until expiresAt, so a replay gets a clear answer.
+   */
+  consumedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Server-only receipt for one Instagram direct message the claim webhook handled, stored at organizerClaimInstagramMessages/{messageKey}. Meta retries deliveries, so the receipt makes each message count once. It keeps no message text or sender id. Firestore TTL deletes it after expiresAt.
+ */
+export interface OrganizerClaimInstagramMessageDocument {
+  /**
+   * SHA-256 of the Instagram message id.
+   */
+  messageKey: string;
+  outcome:
+    | "verified"
+    | "wrongSender"
+    | "expiredCode"
+    | "codeAlreadyUsed"
+    | "unknownCode"
+    | "claimUnavailable"
+    | "senderUnknown"
+    | "rateLimited";
+  attemptId: string | null;
+  receivedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned time-slot claim stored at organizerScheduleLocks/{organizerId_slot}.
  */
 export interface OrganizerScheduleLockDocument {
@@ -13178,14 +13294,30 @@ export interface OrganizerPublicPageDocument {
     indexing: "index, follow" | "noindex, follow";
   };
   /**
-   * Owner links in display order. Empty until owner link editing ships (CAT-254).
+   * The owner's live links from organizers/{id}.ownerLinks (CAT-254): pinned first, otherwise in the owner's order, without links whose showUntil had passed when the page was built. Readers also hide links that have since expired.
    *
    * @maxItems 20
    */
   links: {
     id: string;
     label: string;
+    subtitle: string | null;
     url: string;
+    /**
+     * What an owner link is for, which picks its icon. Null lets the page infer one from the URL.
+     */
+    icon:
+      | "link"
+      | "website"
+      | "community"
+      | "social"
+      | "tickets"
+      | "calendar"
+      | "shop"
+      | "partner"
+      | "video"
+      | "route"
+      | null;
     pinned: boolean;
     showUntil: FirebaseFirestore.Timestamp | null;
   }[];
@@ -13200,20 +13332,16 @@ export interface OrganizerPublicPageDocument {
         eventId: string;
         path: string;
         /**
-         * The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.
+         * The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.
          */
         event: {
           /**
            * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
            *
            * @minItems 1
-           * @maxItems 3
+           * @maxItems 2
            */
-          catchExperienceActivities?: (
-            | "introductions"
-            | "sharedActivities"
-            | "rotations"
-          )[];
+          catchExperienceActivities?: ("introductions" | "sharedActivities")[];
           id: string;
           role: string;
           title: string;
@@ -13269,14 +13397,9 @@ export interface OrganizerPublicPageDocument {
           included?: string;
           registrationAccess?: "open" | "restricted" | "app";
           /**
-           * @maxItems 4
+           * @maxItems 3
            */
-          admissionLabels?: (
-            | "approval"
-            | "invitation"
-            | "membership"
-            | "balanced"
-          )[];
+          admissionLabels?: ("approval" | "invitation" | "membership")[];
           waitlistAvailable?: boolean;
           cancellationPolicy?:
             | "notApplicable"
@@ -13292,9 +13415,6 @@ export interface OrganizerPublicPageDocument {
           amountPaise?: number;
           currency?: string;
           priceLabel: string;
-          scorecard?: {
-            [k: string]: unknown;
-          } | null;
         };
         /**
          * A Catch-native event books on its Catch event page. Live terms are rechecked by the booking callables, never trusted from this snapshot.
@@ -13354,20 +13474,16 @@ export interface OrganizerPublicPageDocument {
         eventId: string;
         path: string;
         /**
-         * The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.
+         * The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.
          */
         event: {
           /**
            * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
            *
            * @minItems 1
-           * @maxItems 3
+           * @maxItems 2
            */
-          catchExperienceActivities?: (
-            | "introductions"
-            | "sharedActivities"
-            | "rotations"
-          )[];
+          catchExperienceActivities?: ("introductions" | "sharedActivities")[];
           id: string;
           role: string;
           title: string;
@@ -13423,14 +13539,9 @@ export interface OrganizerPublicPageDocument {
           included?: string;
           registrationAccess?: "open" | "restricted" | "app";
           /**
-           * @maxItems 4
+           * @maxItems 3
            */
-          admissionLabels?: (
-            | "approval"
-            | "invitation"
-            | "membership"
-            | "balanced"
-          )[];
+          admissionLabels?: ("approval" | "invitation" | "membership")[];
           waitlistAvailable?: boolean;
           cancellationPolicy?:
             | "notApplicable"
@@ -13446,9 +13557,6 @@ export interface OrganizerPublicPageDocument {
           amountPaise?: number;
           currency?: string;
           priceLabel: string;
-          scorecard?: {
-            [k: string]: unknown;
-          } | null;
         };
         /**
          * A Catch-native event books on its Catch event page. Live terms are rechecked by the booking callables, never trusted from this snapshot.
@@ -13596,20 +13704,16 @@ export interface EventPublicPageDocument {
         eventId: string;
         path: string;
         /**
-         * The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.
+         * The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.
          */
         event: {
           /**
            * Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.
            *
            * @minItems 1
-           * @maxItems 3
+           * @maxItems 2
            */
-          catchExperienceActivities?: (
-            | "introductions"
-            | "sharedActivities"
-            | "rotations"
-          )[];
+          catchExperienceActivities?: ("introductions" | "sharedActivities")[];
           id: string;
           role: string;
           title: string;
@@ -13665,14 +13769,9 @@ export interface EventPublicPageDocument {
           included?: string;
           registrationAccess?: "open" | "restricted" | "app";
           /**
-           * @maxItems 4
+           * @maxItems 3
            */
-          admissionLabels?: (
-            | "approval"
-            | "invitation"
-            | "membership"
-            | "balanced"
-          )[];
+          admissionLabels?: ("approval" | "invitation" | "membership")[];
           waitlistAvailable?: boolean;
           cancellationPolicy?:
             | "notApplicable"
@@ -13688,9 +13787,6 @@ export interface EventPublicPageDocument {
           amountPaise?: number;
           currency?: string;
           priceLabel: string;
-          scorecard?: {
-            [k: string]: unknown;
-          } | null;
         };
         /**
          * A Catch-native event books on its Catch event page. Live terms are rechecked by the booking callables, never trusted from this snapshot.

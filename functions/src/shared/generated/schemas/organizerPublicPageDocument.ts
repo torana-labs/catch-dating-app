@@ -177,16 +177,18 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
     },
     "links": {
       "type": "array",
-      "description": "Owner links in display order. Empty until owner link editing ships (CAT-254).",
+      "description": "The owner's live links from organizers/{id}.ownerLinks (CAT-254): pinned first, otherwise in the owner's order, without links whose showUntil had passed when the page was built. Readers also hide links that have since expired.",
       "maxItems": 20,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "description": "One owner-managed link on the organizer page. Pinned links lead; a link with showUntil disappears after that time.",
+        "description": "One owner-managed link on the organizer page (CAT-254). Pinned links lead; a link with showUntil disappears after that time.",
         "required": [
           "id",
           "label",
+          "subtitle",
           "url",
+          "icon",
           "pinned",
           "showUntil"
         ],
@@ -200,11 +202,39 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
             "minLength": 1,
             "maxLength": 80
           },
+          "subtitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
           "url": {
             "type": "string",
             "format": "uri",
             "maxLength": 4096,
             "pattern": "^https://"
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "link",
+              "website",
+              "community",
+              "social",
+              "tickets",
+              "calendar",
+              "shop",
+              "partner",
+              "video",
+              "route",
+              null
+            ],
+            "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
           },
           "pinned": {
             "type": "boolean"
@@ -270,7 +300,7 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                 "pattern": "^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/$"
               },
               "event": {
-                "description": "The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.",
+                "description": "The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.",
                 "allOf": [
                   {
                     "type": "object",
@@ -296,15 +326,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                       "catchExperienceActivities": {
                         "type": "array",
                         "minItems": 1,
-                        "maxItems": 3,
+                        "maxItems": 2,
                         "uniqueItems": true,
                         "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                         "items": {
                           "type": "string",
                           "enum": [
                             "introductions",
-                            "sharedActivities",
-                            "rotations"
+                            "sharedActivities"
                           ]
                         }
                       },
@@ -565,15 +594,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                       },
                       "admissionLabels": {
                         "type": "array",
-                        "maxItems": 4,
+                        "maxItems": 3,
                         "uniqueItems": true,
                         "items": {
                           "type": "string",
                           "enum": [
                             "approval",
                             "invitation",
-                            "membership",
-                            "balanced"
+                            "membership"
                           ]
                         }
                       },
@@ -628,62 +656,18 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                       "priceLabel": {
                         "type": "string",
                         "minLength": 1
-                      },
-                      "scorecard": {
-                        "anyOf": [
-                          {
-                            "type": "object",
-                            "additionalProperties": true
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
                       }
                     }
                   }
                 ],
                 "not": {
-                  "anyOf": [
-                    {
-                      "properties": {
-                        "activityKind": {
-                          "const": "singlesMixer"
-                        }
-                      },
-                      "required": [
-                        "activityKind"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "admissionLabels": {
-                          "contains": {
-                            "const": "balanced"
-                          }
-                        }
-                      },
-                      "required": [
-                        "admissionLabels"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "catchExperienceActivities": {
-                          "contains": {
-                            "const": "rotations"
-                          }
-                        }
-                      },
-                      "required": [
-                        "catchExperienceActivities"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "scorecard"
-                      ]
+                  "properties": {
+                    "activityKind": {
+                      "const": "singlesMixer"
                     }
+                  },
+                  "required": [
+                    "activityKind"
                   ]
                 }
               },
@@ -916,7 +900,7 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                 "pattern": "^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/$"
               },
               "event": {
-                "description": "The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.",
+                "description": "The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.",
                 "allOf": [
                   {
                     "type": "object",
@@ -942,15 +926,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                       "catchExperienceActivities": {
                         "type": "array",
                         "minItems": 1,
-                        "maxItems": 3,
+                        "maxItems": 2,
                         "uniqueItems": true,
                         "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                         "items": {
                           "type": "string",
                           "enum": [
                             "introductions",
-                            "sharedActivities",
-                            "rotations"
+                            "sharedActivities"
                           ]
                         }
                       },
@@ -1211,15 +1194,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                       },
                       "admissionLabels": {
                         "type": "array",
-                        "maxItems": 4,
+                        "maxItems": 3,
                         "uniqueItems": true,
                         "items": {
                           "type": "string",
                           "enum": [
                             "approval",
                             "invitation",
-                            "membership",
-                            "balanced"
+                            "membership"
                           ]
                         }
                       },
@@ -1274,62 +1256,18 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                       "priceLabel": {
                         "type": "string",
                         "minLength": 1
-                      },
-                      "scorecard": {
-                        "anyOf": [
-                          {
-                            "type": "object",
-                            "additionalProperties": true
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
                       }
                     }
                   }
                 ],
                 "not": {
-                  "anyOf": [
-                    {
-                      "properties": {
-                        "activityKind": {
-                          "const": "singlesMixer"
-                        }
-                      },
-                      "required": [
-                        "activityKind"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "admissionLabels": {
-                          "contains": {
-                            "const": "balanced"
-                          }
-                        }
-                      },
-                      "required": [
-                        "admissionLabels"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "catchExperienceActivities": {
-                          "contains": {
-                            "const": "rotations"
-                          }
-                        }
-                      },
-                      "required": [
-                        "catchExperienceActivities"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "scorecard"
-                      ]
+                  "properties": {
+                    "activityKind": {
+                      "const": "singlesMixer"
                     }
+                  },
+                  "required": [
+                    "activityKind"
                   ]
                 }
               },
@@ -2267,15 +2205,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                     "catchExperienceActivities": {
                       "type": "array",
                       "minItems": 1,
-                      "maxItems": 3,
+                      "maxItems": 2,
                       "uniqueItems": true,
                       "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                       "items": {
                         "type": "string",
                         "enum": [
                           "introductions",
-                          "sharedActivities",
-                          "rotations"
+                          "sharedActivities"
                         ]
                       }
                     },
@@ -2536,15 +2473,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                     },
                     "admissionLabels": {
                       "type": "array",
-                      "maxItems": 4,
+                      "maxItems": 3,
                       "uniqueItems": true,
                       "items": {
                         "type": "string",
                         "enum": [
                           "approval",
                           "invitation",
-                          "membership",
-                          "balanced"
+                          "membership"
                         ]
                       }
                     },
@@ -2599,17 +2535,6 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                     "priceLabel": {
                       "type": "string",
                       "minLength": 1
-                    },
-                    "scorecard": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "additionalProperties": true
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
                     }
                   }
                 }
@@ -2710,51 +2635,6 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                     }
                   }
                 }
-              },
-              "eventSuccessSummary": {
-                "anyOf": [
-                  {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "bookedCount",
-                      "checkedInCount",
-                      "mutualMatchCount",
-                      "chatStartedCount",
-                      "catchSentCount",
-                      "safetyIncidentCount"
-                    ],
-                    "properties": {
-                      "bookedCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "checkedInCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "mutualMatchCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "chatStartedCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "catchSentCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "safetyIncidentCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      }
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
               },
               "eventEvidence": {
                 "type": "array",
@@ -3501,15 +3381,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                   "catchExperienceActivities": {
                     "type": "array",
                     "minItems": 1,
-                    "maxItems": 3,
+                    "maxItems": 2,
                     "uniqueItems": true,
                     "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                     "items": {
                       "type": "string",
                       "enum": [
                         "introductions",
-                        "sharedActivities",
-                        "rotations"
+                        "sharedActivities"
                       ]
                     }
                   },
@@ -3770,15 +3649,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                   },
                   "admissionLabels": {
                     "type": "array",
-                    "maxItems": 4,
+                    "maxItems": 3,
                     "uniqueItems": true,
                     "items": {
                       "type": "string",
                       "enum": [
                         "approval",
                         "invitation",
-                        "membership",
-                        "balanced"
+                        "membership"
                       ]
                     }
                   },
@@ -3833,17 +3711,6 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                   "priceLabel": {
                     "type": "string",
                     "minLength": 1
-                  },
-                  "scorecard": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "additionalProperties": true
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
                   }
                 }
               },
@@ -3938,44 +3805,6 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                   "dedupeKey": {
                     "type": "string",
                     "minLength": 1
-                  }
-                }
-              },
-              "eventSuccessSummary": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "bookedCount",
-                  "checkedInCount",
-                  "mutualMatchCount",
-                  "chatStartedCount",
-                  "catchSentCount",
-                  "safetyIncidentCount"
-                ],
-                "properties": {
-                  "bookedCount": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "checkedInCount": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "mutualMatchCount": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "chatStartedCount": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "catchSentCount": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "safetyIncidentCount": {
-                    "type": "integer",
-                    "minimum": 0
                   }
                 }
               },
@@ -4645,11 +4474,6 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
         "not": {
           "anyOf": [
             {
-              "required": [
-                "eventSuccessSummary"
-              ]
-            },
-            {
               "properties": {
                 "catchEvents": {
                   "minItems": 1
@@ -4958,15 +4782,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                   "catchExperienceActivities": {
                     "type": "array",
                     "minItems": 1,
-                    "maxItems": 3,
+                    "maxItems": 2,
                     "uniqueItems": true,
                     "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                     "items": {
                       "type": "string",
                       "enum": [
                         "introductions",
-                        "sharedActivities",
-                        "rotations"
+                        "sharedActivities"
                       ]
                     }
                   },
@@ -5227,15 +5050,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                   },
                   "admissionLabels": {
                     "type": "array",
-                    "maxItems": 4,
+                    "maxItems": 3,
                     "uniqueItems": true,
                     "items": {
                       "type": "string",
                       "enum": [
                         "approval",
                         "invitation",
-                        "membership",
-                        "balanced"
+                        "membership"
                       ]
                     }
                   },
@@ -5290,17 +5112,6 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                   "priceLabel": {
                     "type": "string",
                     "minLength": 1
-                  },
-                  "scorecard": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "additionalProperties": true
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
                   }
                 }
               }
@@ -5401,51 +5212,6 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                   }
                 }
               }
-            },
-            "eventSuccessSummary": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "bookedCount",
-                    "checkedInCount",
-                    "mutualMatchCount",
-                    "chatStartedCount",
-                    "catchSentCount",
-                    "safetyIncidentCount"
-                  ],
-                  "properties": {
-                    "bookedCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "checkedInCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "mutualMatchCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "chatStartedCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "catchSentCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "safetyIncidentCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    }
-                  }
-                },
-                {
-                  "type": "null"
-                }
-              ]
             },
             "eventEvidence": {
               "type": "array",
@@ -6192,15 +5958,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                 "catchExperienceActivities": {
                   "type": "array",
                   "minItems": 1,
-                  "maxItems": 3,
+                  "maxItems": 2,
                   "uniqueItems": true,
                   "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                   "items": {
                     "type": "string",
                     "enum": [
                       "introductions",
-                      "sharedActivities",
-                      "rotations"
+                      "sharedActivities"
                     ]
                   }
                 },
@@ -6461,15 +6226,14 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                 },
                 "admissionLabels": {
                   "type": "array",
-                  "maxItems": 4,
+                  "maxItems": 3,
                   "uniqueItems": true,
                   "items": {
                     "type": "string",
                     "enum": [
                       "approval",
                       "invitation",
-                      "membership",
-                      "balanced"
+                      "membership"
                     ]
                   }
                 },
@@ -6524,17 +6288,6 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                 "priceLabel": {
                   "type": "string",
                   "minLength": 1
-                },
-                "scorecard": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "additionalProperties": true
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
                 }
               }
             },
@@ -6629,44 +6382,6 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
                 "dedupeKey": {
                   "type": "string",
                   "minLength": 1
-                }
-              }
-            },
-            "eventSuccessSummary": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "bookedCount",
-                "checkedInCount",
-                "mutualMatchCount",
-                "chatStartedCount",
-                "catchSentCount",
-                "safetyIncidentCount"
-              ],
-              "properties": {
-                "bookedCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "checkedInCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "mutualMatchCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "chatStartedCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "catchSentCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "safetyIncidentCount": {
-                  "type": "integer",
-                  "minimum": 0
                 }
               }
             },
@@ -7335,11 +7050,6 @@ export const organizerPublicPageDocumentSchema: Record<string, unknown> = {
       ],
       "not": {
         "anyOf": [
-          {
-            "required": [
-              "eventSuccessSummary"
-            ]
-          },
           {
             "properties": {
               "catchEvents": {

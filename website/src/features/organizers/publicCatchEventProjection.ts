@@ -1,3 +1,4 @@
+import {withoutDatingFraming} from "./publicDatingFraming";
 import {publicExperienceActivities} from "./publicExperience";
 import {matchesJsonSchema} from "../../shared/contracts/jsonSchema";
 import {publicEventDisplaySchemas as displaySchemas} from "../../shared/contracts/generated/publicEventDisplaySchemas";
@@ -114,7 +115,8 @@ export function projectPublicCatchEventSnapshot(snapshot: {
   if (snapshot.metadata.fromCache || snapshot.metadata.hasPendingWrites || snapshot.size > 400) return null;
   return snapshot.docs.flatMap((document) => {
     const projected = projectLivePublicCatchEvent(document.id, document.data());
-    return projected ? [projected] : [];
+    // A live listing arranges events for a page, as the server repositories do.
+    return projected ? [{...projected, event: withoutDatingFraming(projected.event)}] : [];
   });
 }
 
@@ -147,7 +149,6 @@ function publicGuestDetails(data: Record<string, unknown>, format: Record<string
   if (admission?.manualApprovalRequired || admission?.format === "manualApproval") labels.push("approval");
   if (admission?.inviteRequired || admission?.format === "inviteOnly" || record(admission?.privateAccessPolicy)?.mode === "inviteCode") labels.push("invitation");
   if (admission?.membershipRequired || admission?.format === "membersOnly") labels.push("membership");
-  if (admission?.balancedRatioPolicy != null || admission?.format === "balancedRatio" || admission?.format === "fixedCohortCaps" || constraints?.maxMen != null || constraints?.maxWomen != null) labels.push("balanced");
   const waitlist = record(admission?.waitlistPolicy)?.mode;
   const cancellation = record(record(data.eventPolicy)?.cancellation)?.policyId;
   return {

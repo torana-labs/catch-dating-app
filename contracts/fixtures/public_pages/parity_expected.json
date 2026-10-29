@@ -105,8 +105,7 @@
           "capacityLimit": 12,
           "photoUrl": "https://cdn.example.com/approved.jpg",
           "catchExperienceActivities": [
-            "introductions",
-            "rotations"
+            "introductions"
           ],
           "meetingLocation": {
             "name": "Race Course Road gate",
@@ -188,9 +187,6 @@
             }
           ],
           "requirements": "Ages 25–40.",
-          "admissionLabels": [
-            "balanced"
-          ],
           "registrationAccess": "restricted",
           "bookedCount": 4,
           "checkedInCount": 0,

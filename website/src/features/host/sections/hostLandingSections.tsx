@@ -4,7 +4,8 @@ import {hostLandingCopy as copy, hostFormats} from "@content/hostLanding";
 import {hostProductCopy} from "@content/hostProduct";
 import {activeMarket} from "@content/markets";
 import {ButtonLink, PlainLink, DataTable} from "../../../shared/ui/primitives";
-import {MediaSlot, type CaptureSlots} from "../../../shared/media/MediaSlot";
+import {CatchAppCaptureImage} from "@catch/web-ui";
+import {captureSlot, type CaptureSlots} from "../../../shared/media/captureSlot";
 import {
   HostLandingHero, HostLandingHeroCopy, HostLandingMedia,
   HostLandingSection, HostLandingHeading, HostLandingNote, HostLandingActions,
@@ -30,6 +31,7 @@ export function renderHostLandingParticipation() {
 }
 
 export function renderHostLandingHero(captures: CaptureSlots) {
+  const capture = captureSlot(captures, "host-live-console", "eager");
   return <HostLandingHero aria-labelledby="host-title">
     <HostLandingHeroCopy>
       <h1 id="host-title">{copy.hero.title}</h1>
@@ -38,7 +40,7 @@ export function renderHostLandingHero(captures: CaptureSlots) {
       <HostLandingActions><ButtonLink href="/host/apply/">{copy.apply}<ArrowRight size={18} aria-hidden="true" /></ButtonLink><PlainLink href="#how-it-works">{copy.seeHow}<ArrowRight size={17} aria-hidden="true" /></PlainLink></HostLandingActions>
       <HostLandingNote>{copy.hero.note}</HostLandingNote>
     </HostLandingHeroCopy>
-    <HostLandingMedia variant="capture"><MediaSlot captures={captures} id="host-live-console" loading="eager" /></HostLandingMedia>
+    <HostLandingMedia variant="capture">{capture ? <CatchAppCaptureImage {...capture} /> : null}</HostLandingMedia>
   </HostLandingHero>;
 }
 
@@ -139,10 +141,11 @@ export function renderHostLandingAdoption() {
 // The questions sit beside the guest's phone-browser check-in, which answers
 // "Do my guests need to download an app?" at a glance.
 export function renderHostLandingFaq(captures: CaptureSlots) {
+  const capture = captureSlot(captures, "guest-join-phone");
   return <HostLandingSection variant="faq" aria-labelledby="host-faq-title"><h2 id="host-faq-title">{copy.faqTitle}</h2>
     <HostAdoptionLayout>
       <div>{copy.faqs.map(item => <HostLandingDetails key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></HostLandingDetails>)}</div>
-      <HostLandingMedia variant="capture"><MediaSlot captures={captures} id="guest-join-phone" /></HostLandingMedia>
+      <HostLandingMedia variant="capture">{capture ? <CatchAppCaptureImage {...capture} /> : null}</HostLandingMedia>
     </HostAdoptionLayout>
   </HostLandingSection>;
 }

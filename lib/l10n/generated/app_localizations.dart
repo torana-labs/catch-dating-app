@@ -736,6 +736,39 @@ abstract class AppLocalizations {
   /// **'Outbound source clicks'**
   String get hostsHostAnalyticsLabelOutboundSourceClicks;
 
+  /// Host insights public presence readout: clicks on the organiser's own page links.
+  ///
+  /// In en, this message translates to:
+  /// **'Link clicks'**
+  String get hostsHostAnalyticsLabelLinkClicks;
+
+  /// Stands in for the label of a page link the organiser has since removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed link'**
+  String get hostsHostAnalyticsLabelRemovedLink;
+
+  /// Where visitors who clicked a page link came from.
+  ///
+  /// In en, this message translates to:
+  /// **'{source, select, instagram{Instagram} whatsapp{WhatsApp} facebook{Facebook} google{Google} qr{QR codes} email{Email} direct{Direct visits} other{Other places}}'**
+  String hostsHostAnalyticsLabelTrafficSource({required String source});
+
+  /// Lists traffic sources with their click counts, such as 'Instagram 4, QR codes 1'.
+  ///
+  /// In en, this message translates to:
+  /// **'Link clicks came from {sources}.'**
+  String hostsHostAnalyticsTextLinkClicksBySource({required String sources});
+
+  /// One traffic source and its link clicks inside the by-source list.
+  ///
+  /// In en, this message translates to:
+  /// **'{source} {count}'**
+  String hostsHostAnalyticsTextTrafficSourceClicks({
+    required String source,
+    required String count,
+  });
+
   /// Host insights public presence readout.
   ///
   /// In en, this message translates to:
@@ -40850,6 +40883,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We can’t verify which messages belong to this program. Conversation history and replies are unavailable here.'**
   String get hostInboxProgramPurposeUnresolvedBody;
+
+  /// Payouts screen: title explaining that guest payments go to the organiser's own Razorpay account.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests pay you directly'**
+  String get hostPayoutsRazorpayIntroTitle;
+
+  /// Payouts screen: how money flows when the organiser connects Razorpay; mirrors the website organiser terms.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.'**
+  String get hostPayoutsRazorpayIntroBody;
+
+  /// Payouts screen: shown while Catch's Razorpay OAuth partner configuration is not set up.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting Razorpay isn’t available yet. Catch is finishing its Razorpay partner setup. Free events and forms work as usual.'**
+  String get hostPayoutsRazorpayUnavailable;
+
+  /// Payouts screen: heading for organisers without a Razorpay account.
+  ///
+  /// In en, this message translates to:
+  /// **'No Razorpay account yet?'**
+  String get hostPayoutsRazorpayNoAccountTitle;
+
+  /// Payouts screen: how an organiser without Razorpay gets started.
+  ///
+  /// In en, this message translates to:
+  /// **'Create one at razorpay.com and finish Razorpay’s verification, then connect it here.'**
+  String get hostPayoutsRazorpayNoAccountBody;
+
+  /// Payouts screen: disclosure of what the organiser authorises before the Razorpay OAuth consent page; mirrors the website organiser terms.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to Razorpay and approve Catch. This lets Catch create orders for your events and forms, check payment and refund status, set up payment notifications, and issue refunds under your cancellation policy. You can disconnect at any time.'**
+  String get hostPayoutsRazorpayConnectHelp;
+
+  /// Payouts screen: confirmation body when disconnecting the organiser's Razorpay account.
+  ///
+  /// In en, this message translates to:
+  /// **'This stops new checkouts for your events and forms. Catch can still finish refunds for bookings that are already paid.'**
+  String get hostPayoutsRazorpayDisconnectHelp;
+
+  /// Payouts screen: heading above the disclosure of what connecting Razorpay authorises Catch to do.
+  ///
+  /// In en, this message translates to:
+  /// **'What connecting allows'**
+  String get hostPayoutsRazorpayPermissionsTitle;
 }
 
 class _AppLocalizationsDelegate

@@ -630,6 +630,9 @@ export {organizerWhatsappThreadDocumentSchema} from "./schemas/organizerWhatsapp
 export {organizerWhatsappMessageDocumentSchema} from "./schemas/organizerWhatsappMessageDocument";
 export {organizerWhatsappReplyOperationDocumentSchema} from "./schemas/organizerWhatsappReplyOperationDocument";
 export {organizerClaimRequestDocumentSchema} from "./schemas/organizerClaimRequestDocument";
+export {organizerClaimVerificationDocumentSchema} from "./schemas/organizerClaimVerificationDocument";
+export {organizerClaimInstagramCodeDocumentSchema} from "./schemas/organizerClaimInstagramCodeDocument";
+export {organizerClaimInstagramMessageDocumentSchema} from "./schemas/organizerClaimInstagramMessageDocument";
 export {organizerScheduleLockDocumentSchema} from "./schemas/organizerScheduleLockDocument";
 export {clubPostDocumentSchema} from "./schemas/clubPostDocument";
 export {clubMembershipDocumentSchema} from "./schemas/clubMembershipDocument";
@@ -854,6 +857,10 @@ export {createOrganizerPostCallablePayloadSchema} from "./schemas/createOrganize
 export {createOrganizerPostCallableResponseSchema} from "./schemas/createOrganizerPostOutput";
 export {requestOrganizerClaimCallablePayloadSchema} from "./schemas/requestOrganizerClaimInput";
 export {requestOrganizerClaimCallableResponseSchema} from "./schemas/requestOrganizerClaimOutput";
+export {startOrganizerClaimVerificationCallablePayloadSchema} from "./schemas/startOrganizerClaimVerificationInput";
+export {startOrganizerClaimVerificationCallableResponseSchema} from "./schemas/startOrganizerClaimVerificationOutput";
+export {getOrganizerClaimVerificationOptionsCallablePayloadSchema} from "./schemas/getOrganizerClaimVerificationOptionsInput";
+export {organizerClaimVerificationOptionsCallableResponseSchema} from "./schemas/organizerClaimVerificationOptionsOutput";
 export {adminDecideOrganizerClaimCallablePayloadSchema} from "./schemas/adminDecideOrganizerClaimInput";
 export {createClubCallableResponseSchema} from "./schemas/createClubOutput";
 export {createClubPostCallablePayloadSchema} from "./schemas/createClubPostInput";

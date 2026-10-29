@@ -12,17 +12,6 @@
       "count": 3
     }
   },
-  "src/styles/consumer-event.css": {
-    "declaration-property-unit-allowed-list": {
-      "count": 59
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 6
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 2
-    }
-  },
   "src/styles/consumer-home.css": {
     "declaration-property-unit-allowed-list": {
       "count": 43
@@ -32,17 +21,6 @@
     },
     "media-feature-name-value-allowed-list": {
       "count": 2
-    }
-  },
-  "src/styles/event-detail.css": {
-    "declaration-property-unit-allowed-list": {
-      "count": 51
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 13
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 1
     }
   },
   "src/styles/event-runtime.css": {
@@ -69,13 +47,13 @@
   },
   "src/styles/home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 31
+      "count": 37
     },
     "declaration-property-value-allowed-list": {
-      "count": 11
+      "count": 12
     },
     "declaration-property-value-disallowed-list": {
-      "count": 1
+      "count": 4
     },
     "media-feature-name-value-allowed-list": {
       "count": 5
@@ -122,26 +100,12 @@
       "count": 1
     }
   },
-  "src/styles/organiser-profile.css": {
-    "declaration-property-unit-allowed-list": {
-      "count": 39
-    },
-    "declaration-property-value-allowed-list": {
-      "count": 6
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 3
-    }
-  },
   "src/styles/organizers.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 127
+      "count": 56
     },
     "declaration-property-value-allowed-list": {
-      "count": 48
-    },
-    "media-feature-name-value-allowed-list": {
-      "count": 2
+      "count": 21
     }
   },
   "src/styles/public-forms.css": {
@@ -157,7 +121,7 @@
   },
   "src/styles/responsive.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 3
+      "count": 2
     },
     "media-feature-name-value-allowed-list": {
       "count": 4

@@ -12,7 +12,7 @@ import type {
 import {ButtonControl, classNames} from "@catch/web-ui";
 import type {AppDownloadStorePlatform} from "./marketing";
 
-import {StatStrip, actionGroupClassNames} from "./foundation";
+import {actionGroupClassNames} from "./foundation";
 import {UiLabel} from "./layout";
 
 export {ButtonLink, PlainButton, PlainLink} from "./actionControls";
@@ -51,16 +51,6 @@ export interface EventActionCardModel {
   title: ReactNode;
 }
 
-export interface EventActionCardProps extends HTMLAttributes<HTMLElement> {
-  event: EventActionCardModel;
-  badge?: ReactNode;
-  onActionClick?: (
-    action: EventActionCardAction,
-    event: MouseEvent<HTMLAnchorElement>
-  ) => void;
-  reveal?: boolean;
-}
-
 export interface AppDownloadCtaItem {
   href: string;
   kicker: string;
@@ -91,66 +81,6 @@ export function Button({
     >
       {loading ? loadingLabel ?? children : children}
     </ButtonControl>
-  );
-}
-
-export function EventActionCard({
-  className,
-  event,
-  badge,
-  onActionClick,
-  reveal = true,
-  ...props
-}: EventActionCardProps) {
-  return (
-    <article
-      {...props}
-      className={classNames("event-action-card", className)}
-      data-reveal={reveal || undefined}
-      id={event.id}
-      style={{"--activity": event.activityToken, ...props.style} as CSSProperties}
-    >
-      <div className="event-action-card__lead">
-        {badge}
-        <UiLabel>{event.eyebrow}</UiLabel>
-        <h3>{event.title}</h3>
-        <p>{event.body}</p>
-      </div>
-      <dl className="event-action-card__meta">
-        {event.meta.map((item, index) => (
-          <div key={`${event.id}-meta-${index}`}>
-            <dt>{item.label}</dt>
-            <dd>{item.value}</dd>
-          </div>
-        ))}
-      </dl>
-      {event.counts.length ? (
-        <StatStrip
-          aria-label={`${String(event.title)} event counts`}
-          className="event-action-card__counts"
-          items={event.counts}
-        />
-      ) : null}
-      {event.actions.length ? (
-        <div className="event-action-card__actions">
-          {event.actions.map((action, index) => (
-            <ButtonLink
-              href={action.href}
-              key={`${action.href}-${index}`}
-              target={action.target}
-              rel={action.rel}
-              variant={action.variant === "secondary" ? "ghost" : "primary"}
-              onClick={(clickEvent) => {
-                onActionClick?.(action, clickEvent);
-                action.onClick?.();
-              }}
-            >
-              {action.label}
-            </ButtonLink>
-          ))}
-        </div>
-      ) : null}
-    </article>
   );
 }
 

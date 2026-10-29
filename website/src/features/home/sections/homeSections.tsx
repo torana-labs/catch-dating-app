@@ -3,8 +3,10 @@ import {
   CatchAvatar,
   CatchBand,
   CatchButton,
+  CatchCheckboxInput,
   CatchChoiceInput,
   CatchDeviceFrame,
+  CatchField,
   CatchFormatTile,
   CatchGap,
   CatchGrid,
@@ -25,8 +27,11 @@ import {
 import type {ReactNode} from "react";
 import {homeCityAreas, homeFormats, homePageCopy as copy} from "@content/homePage";
 import {interpolateContent as fill} from "@content/interpolate";
+import {activeMarket} from "@content/markets";
+import {Form} from "../../../shared/ui/primitives";
 import {useAppDownloadCtas, type AppDownloadCta} from "../../marketing/useAppDownloadCtas";
 import type {HomeFilter, HomePageController} from "../useHomePageController";
+import {useLaunchNoticeController} from "../useLaunchNoticeController";
 import {CitySiteChrome} from "./cityChrome";
 
 type Home = HomePageController;
@@ -140,7 +145,45 @@ function HomeThisWeek({home}: {home: Home}) {
   );
 }
 
-function HomeLaunchingSoon({home, signup}: {home: Home; signup?: ReactNode}) {
+/** "Tell me when it opens": one WhatsApp message on opening day, news only if ticked. */
+function HomeLaunchNotice({city}: {city: string}) {
+  const notice = useLaunchNoticeController(city);
+  return (
+    <CatchGap size="related">
+      <CatchText as="h3" variant="titleL">{copy.notice.title}</CatchText>
+      <CatchText as="p" color="ink2" variant="bodyM">{fill(copy.notice.lead, {city})}</CatchText>
+      {notice.joined ? null : (
+        <Form noValidate onSubmit={notice.handleSubmit} pending={notice.sending}>
+          <CatchGap size="related">
+            <CatchField
+              autoComplete="tel-national"
+              errorText={notice.status.tone === "is-error" ? notice.status.message : null}
+              inputHint={copy.notice.phoneHint}
+              inputMode={notice.sending ? "inactive" : "editable"}
+              keyboardType="phone"
+              labelMode="hidden"
+              onChanged={notice.setPhone}
+              prefixText={activeMarket.dialCode}
+              recipe="input"
+              required
+              title={copy.notice.phone}
+              value={notice.phone}
+            />
+            <CatchCheckboxInput label={fill(copy.notice.marketing, {city})}
+              onChanged={notice.sending ? null : notice.setMarketing} value={notice.marketing} />
+            <CatchButton fullWidth label={copy.notice.action} onPressed={follow}
+              status={notice.sending ? "loading" : "idle"} type="submit" />
+            <CatchText as="p" color="ink2" variant="bodyS">{copy.notice.consent}</CatchText>
+            <CatchButton href="/privacy/" label={copy.notice.privacy} onPressed={follow} size="sm" variant="quiet" />
+          </CatchGap>
+        </Form>
+      )}
+      <CatchText aria-live="polite" as="p" role="status" variant="bodyM">{notice.status.tone === "is-success" ? notice.status.message : ""}</CatchText>
+    </CatchGap>
+  );
+}
+
+function HomeLaunchingSoon({home}: {home: Home}) {
   const city = home.city.label;
   const areas = areasOf(home);
   const stores = useAppDownloadCtas({placement: "home_launching_soon"});
@@ -154,7 +197,7 @@ function HomeLaunchingSoon({home, signup}: {home: Home; signup?: ReactNode}) {
           end={
             <CatchGroundCard ground="white" padding="spacious">
               <CatchGap size="section">
-                {signup}
+                <HomeLaunchNotice city={city} />
                 <CatchGap size="related">
                   <CatchText as="h3" variant="titleS">{fill(copy.soon.knowHost, {city})}</CatchText>
                   <CatchButton href="/host/" label={copy.soon.knowHostAction} onPressed={follow} recipe="default" variant="quiet" />
@@ -398,12 +441,12 @@ function HomeSectionHeading({aside, eyebrow, eyebrowAccent, id, lead, title, tit
  * app band, the FAQ and the footer. It arranges library parts and binds the
  * controller's view of the city to them (D18).
  */
-export function HomePageSections({downloadUrl, home, signup}: {home: Home; downloadUrl?: string; signup?: ReactNode}) {
+export function HomePageSections({downloadUrl, home}: {home: Home; downloadUrl?: string}) {
   return (
     <CitySiteChrome appHref="#app" cities={home.cities} city={home.city} exploreHref={home.exploreHref} onChooseCity={home.chooseCity}>
       <HomeHero home={home} />
       <HomeFormats home={home} />
-      {home.live ? <HomeThisWeek home={home} /> : <HomeLaunchingSoon home={home} signup={signup} />}
+      {home.live ? <HomeThisWeek home={home} /> : <HomeLaunchingSoon home={home} />}
       <HomeStory />
       <HomeOrganisers home={home} />
       <HomeHostBand />

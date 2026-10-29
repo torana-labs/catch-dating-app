@@ -202,6 +202,20 @@ export interface HostAnalyticsResponse {
     contactClicks: number;
     claimClicks: number;
     outboundClicks: number;
+    linkClicks: number;
+  };
+  /** Owner link clicks by link and by traffic source (CAT-254). */
+  linkSummary: {
+    links: Array<{
+      organizerId: string;
+      linkId: string;
+      label: string | null;
+      clicks: number;
+    }>;
+    trafficSources: Array<{
+      source: "instagram" | "whatsapp" | "facebook" | "google" | "qr" | "email" | "direct" | "other";
+      clicks: number;
+    }>;
   };
   dataQuality: Array<{
     id: string;
@@ -809,6 +823,34 @@ export interface AdminClubDetails {
     sourceSummary: string | null;
     formats: string[];
   };
+  /** Organizer page links in display order, expired ones included. */
+  ownerLinks: AdminOrganizerOwnerLink[];
+}
+
+/** contracts/shared/public_page_common.schema.json ownerLinkIcon. */
+export type OrganizerOwnerLinkIcon =
+  | "link"
+  | "website"
+  | "community"
+  | "social"
+  | "tickets"
+  | "calendar"
+  | "shop"
+  | "partner"
+  | "video"
+  | "route";
+
+/** contracts/shared/public_page_common.schema.json ownerLinkInput. */
+export interface AdminOrganizerOwnerLink {
+  id: string;
+  label: string;
+  subtitle: string | null;
+  url: string;
+  /** Null lets the page infer an icon from the URL. */
+  icon: OrganizerOwnerLinkIcon | null;
+  pinned: boolean;
+  /** ISO time after which the page hides the link. */
+  showUntil: string | null;
 }
 
 export interface AdminGetClubDetailsPayload {
@@ -898,6 +940,8 @@ export interface AdminUpdateClubDetailsPayload {
       sourceSummary?: string | null;
       formats?: string[];
     };
+    /** Replaces every organizer page link; an empty list removes them. */
+    ownerLinks?: AdminOrganizerOwnerLink[];
   };
   reviewNote?: string | null;
 }

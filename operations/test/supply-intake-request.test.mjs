@@ -201,8 +201,19 @@ test("listings run through the workflow as review-only work items that satisfy t
 });
 
 test("live page fetching stays off until policy, an accepted decision and ledgers allow it", async () => {
-  const policy = await loadSupplyAcquisitionPolicy();
-  assert.equal(policy.pageFetch.enabled, false);
+  // The shipped policy cites the owner's accepted decision (CAT-266) within caps.
+  const shipped = await loadSupplyAcquisitionPolicy();
+  assert.deepEqual([shipped.pageFetch.enabled, shipped.pageFetch.adapterId, shipped.pageFetch.decisionId],
+    [true, "page_fetch", "policy-on-demand-page-fetch-policy"]);
+  assert.ok(shipped.pageFetch.maxRequestsPerIntake > 0 && shipped.pageFetch.maxRequestsPerIntake <= 12);
+  assert.ok(shipped.pageFetch.maxRequestsPerMonth > 0 && shipped.pageFetch.maxRequestsPerMonth <= 600);
+  assert.throws(() => new GuardedPageFetchPort({policy: shipped, policyDecision: null,
+    budgets: pageFetchBudgetLedgers({policy: shipped, monthKey: "2026-10"})}),
+  {code: "ACQUISITION_POLICY_DECISION_REQUIRED"});
+
+  const policy = structuredClone(shipped);
+  Object.assign(policy.pageFetch, {enabled: false, adapterId: null, decisionId: null,
+    maxRequestsPerIntake: 0, maxRequestsPerMonth: 0});
   assert.throws(() => new GuardedPageFetchPort({policy}), {code: "ACQUISITION_PROVIDER_DISABLED"});
 
   const enabled = structuredClone(policy);

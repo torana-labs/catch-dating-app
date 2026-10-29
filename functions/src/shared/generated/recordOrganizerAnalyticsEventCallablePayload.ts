@@ -17,7 +17,25 @@ export interface RecordOrganizerAnalyticsEventCallablePayload {
     | "eventSave"
     | "contactClick"
     | "claimClick"
-    | "outboundClick";
+    | "outboundClick"
+    | "linkClick";
+  /**
+   * The owner link a linkClick opened, one of the organizer's ownerLinks ids. Other events send null.
+   */
+  linkId?: string | null;
+  /**
+   * Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent.
+   */
+  trafficSource?:
+    | "instagram"
+    | "whatsapp"
+    | "facebook"
+    | "google"
+    | "qr"
+    | "email"
+    | "direct"
+    | "other"
+    | null;
   pagePath: string;
   source?: string | null;
   sessionId?: string | null;

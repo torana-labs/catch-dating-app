@@ -75,6 +75,7 @@ export async function recordOrganizerAnalyticsEventHandler(
 
   const db = deps.firestore();
   const organizer = await assertOrganizerScope(db, payload);
+  assertLinkScope(organizer, payload);
   // Preview by authenticated canonical staff is never visitor activity.
   if (request.auth && await isOrganizerPreview(db, organizer,
     payload.organizerId, request.auth.uid)) {
@@ -118,6 +119,8 @@ export async function recordOrganizerAnalyticsEventHandler(
         session_hash: scopedSessionHash,
         platform: ["web", "android", "ios"].includes(payload.platform ?? "") ?
           payload.platform : "web",
+        link_id: payload.linkId ?? null,
+        traffic_source: payload.trafficSource ?? null,
         ingested_at: occurredAt.toISOString(),
       },
     }]
@@ -193,6 +196,31 @@ async function assertOrganizerScope(
   return organizer;
 }
 
+/**
+ * A link click names one of the organizer's own links (CAT-254), and only
+ * link clicks carry a link or a traffic source. The traffic source is the
+ * contract's fixed list, so no referrer or campaign text reaches BigQuery.
+ * @param {OrganizerDocument} organizer The organizer the event is for.
+ * @param {RecordOrganizerAnalyticsEventCallablePayload} payload Event.
+ */
+function assertLinkScope(
+  organizer: OrganizerDocument,
+  payload: RecordOrganizerAnalyticsEventCallablePayload
+): void {
+  if (payload.eventName !== "linkClick") {
+    if (payload.linkId || payload.trafficSource) {
+      throw new HttpsError("invalid-argument",
+        "Only link clicks carry a link or traffic source.");
+    }
+    return;
+  }
+  const linkIds = (organizer.ownerLinks ?? []).map((link) => link.id);
+  if (!payload.linkId || !linkIds.includes(payload.linkId)) {
+    throw new HttpsError("invalid-argument",
+      "A link click needs one of the organizer's links.");
+  }
+}
+
 function normalizePayload(data: unknown): unknown {
   if (data == null || typeof data !== "object" || Array.isArray(data)) {
     return data;
@@ -208,6 +236,8 @@ function normalizePayload(data: unknown): unknown {
     source: nullableTrimmedString(input.source),
     sessionId: nullableTrimmedString(input.sessionId),
     platform: nullableTrimmedString(input.platform),
+    linkId: nullableTrimmedString(input.linkId),
+    trafficSource: nullableTrimmedString(input.trafficSource),
   };
 }
 

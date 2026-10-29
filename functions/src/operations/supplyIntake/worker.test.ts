@@ -8,6 +8,7 @@ import type {OperationRun, OperationWorkItem} from "../models";
 import type {ProjectionImportWriter} from "../projectionImporter";
 import {FakeFirestore} from "../testFirestore";
 import {validateSupplyIntakeRequestsDocument} from "../../shared/generated/validators/supplyIntakeRequestsDocument";
+import {acceptedPageFetchDecision, acceptPageFetch, notFoundTransport} from "./testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections, SUPPLY_INTAKE_MAX_ATTEMPTS} from "./worker";
 
 // The build post-step copies the Operations runtime into lib; tests use it.
@@ -53,20 +54,27 @@ function request(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function setup(stored: Record<string, unknown> = {}) {
+function setup(stored: Record<string, unknown> = {},
+  {decision = acceptedPageFetchDecision as Record<string, unknown> | null, transport = notFoundTransport} = {}) {
   const db = new FakeFirestore();
   db.write(`${supplyIntakeCollections.requests}/nom-afterfly-1`, {schemaVersion: 1, requestId: "nom-afterfly-1",
     request: request(), status: "queued", attempts: 0, leaseUntil: null, result: null, failure: null,
     approval: null, createdAt: NOW, updatedAt: NOW, ...stored});
+  if (decision) acceptPageFetch(db, decision);
   const writer = new MemoryWriter();
   const snapshots: string[] = [];
+  const requested: string[] = [];
   const deps = {db: db as unknown as Firestore, now: () => new Date(NOW), projectionWriter: writer,
+    transport: async (input: {url: URL}) => {
+      requested.push(input.url.href);
+      return transport(input);
+    },
     putSnapshot: async (requestId: string, snapshot: {contentHash: string}) => {
       const name = `supply-intake/snapshots/${requestId}/${snapshot.contentHash}.json`;
       snapshots.push(name);
       return name;
     }};
-  return {db, writer, snapshots, deps};
+  return {db, writer, snapshots, requested, deps};
 }
 
 test("a queued request becomes a reviewable listing in Firestore, once", async () => {
@@ -78,12 +86,12 @@ test("a queued request becomes a reviewable listing in Firestore, once", async (
     JSON.stringify(validateSupplyIntakeRequestsDocument.errors));
   assert.equal(stored.status, "completed");
   assert.equal(stored.leaseUntil, null);
-  // Live fetching is off by policy: the listing forms from the nomination and
-  // records the unread seed as a gap.
+  // The seed page can't be read: the listing still forms from the nomination
+  // and records the unread seed as a gap.
   assert.ok(stored.result.gaps.includes("seed_page_unreadable"));
   assert.equal(stored.result.researchNeeded, true);
   assert.deepEqual(stored.result.captureReceipts.map((receipt) => [receipt.adapterId, receipt.outcome]),
-    [["static_page", "not_captured"]]);
+    [["page_fetch", "http_error"]]);
   const listing = writer.items.get(stored.result.listingWorkItemId)!;
   assert.equal((listing.normalizedPayload as {intake?: {recordType?: string}}).intake?.recordType, "organizer_listing_draft");
   assert.ok(listing.taskFlags.includes("human_review_required"));
@@ -133,5 +141,30 @@ test("a request for a city discovery has not mapped still becomes a listing", as
     const listing = writer.items.get(stored.result.listingWorkItemId)!;
     assert.equal((listing.normalizedPayload as {intake?: {recordType?: string}}).intake?.recordType,
       "organizer_listing_draft", market);
+  }
+});
+
+test("the accepted page fetch policy reads the nominated page and books it against the month", async () => {
+  const html = "<html><head><title>Afterfly</title><meta property=\"og:title\" content=\"Afterfly\"></head><body></body></html>";
+  const {db, requested, deps} = setup({}, {transport: async ({url}) => url.pathname === "/robots.txt" ?
+    {status: 404, location: null, contentType: "text/plain", body: Buffer.alloc(0)} :
+    {status: 200, location: null, contentType: "text/html", body: Buffer.from(html)}});
+  const outcome = await processSupplyIntakeRequest(deps, "nom-afterfly-1");
+  const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+  assert.equal(outcome, "completed", JSON.stringify(stored.failure));
+  assert.deepEqual(stored.result.captureReceipts.map((receipt) => [receipt.adapterId, receipt.outcome]),
+    [["page_fetch", "fetched"]]);
+  assert.deepEqual(requested, ["https://luma.com/robots.txt", "https://luma.com/afterfly"], "lu.ma links resolve to luma.com");
+  // The month keeps only what the intake used, robots.txt included.
+  assert.equal((db.read(`${supplyIntakeCollections.usage}/2026-10`) as {networkRequests: number}).networkRequests, 2);
+});
+
+test("page fetch fails closed without the accepted decision, and never touches the network", async () => {
+  for (const decision of [null, {...acceptedPageFetchDecision, decision: "hold", decisionStatus: "held"}]) {
+    const {db, requested, deps} = setup({attempts: SUPPLY_INTAKE_MAX_ATTEMPTS - 1}, {decision});
+    assert.notEqual(await processSupplyIntakeRequest(deps, "nom-afterfly-1"), "completed");
+    const stored = db.read(`${supplyIntakeCollections.requests}/nom-afterfly-1`) as unknown as Stored;
+    assert.equal(stored.failure.code, "ACQUISITION_POLICY_DECISION_REQUIRED");
+    assert.deepEqual(requested, []);
   }
 });

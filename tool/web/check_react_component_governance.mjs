@@ -1595,7 +1595,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use SectionHeader instead of rendering website section-heading shells directly.",
+    guidance: "The section-heading shell and SectionHeader are retired; build section headings from @catch/web-ui parts such as CatchText inside the section.",
   },
   {
     family: "website-action-group",
@@ -2003,7 +2003,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use ReviewSignalLane, ReviewSignalCard, OwnerResponsePrompt, ListingReviewEmptyState, ListingReviewForm, and ListingReviewCheckbox instead of rendering organizer listing review shells directly.",
+    guidance: "The organizer listing review shells were retired in CAT-251 and CAT-252. Render reviews with CatchReviewItem from @catch/web-ui instead of reviving raw review-shell classes.",
   },
   {
     family: "website-listing-claim-shell",

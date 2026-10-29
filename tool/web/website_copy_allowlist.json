@@ -39,11 +39,6 @@
       "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
     },
     {
-      "file": "website/src/shared/ui/primitives/actions.tsx",
-      "text": "${String(event.title)} event counts",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
       "file": "website/src/shared/ui/primitives/layout.tsx",
       "text": "host-preview-section host-preview-after",
       "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
@@ -76,46 +71,6 @@
     {
       "file": "website/src/shared/ui/primitives/layout.tsx",
       "text": "host-preview-section host-preview-trust",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
-      "file": "website/src/shared/ui/primitives/layout.tsx",
-      "text": "listing-grid listing-grid--fit",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
-      "file": "website/src/shared/ui/primitives/layout.tsx",
-      "text": "listing-section listing-section--events",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
-      "file": "website/src/shared/ui/primitives/layout.tsx",
-      "text": "listing-section listing-section--reviews",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
-      "file": "website/src/shared/ui/primitives/layout.tsx",
-      "text": "listing-section listing-section--split",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
-      "file": "website/src/shared/ui/primitives/layout.tsx",
-      "text": "listing-section listing-section--success",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
-      "file": "website/src/shared/ui/primitives/organizer2.tsx",
-      "text": "Location",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
-      "file": "website/src/shared/ui/primitives/organizer2.tsx",
-      "text": "Source",
-      "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
-    },
-    {
-      "file": "website/src/shared/ui/primitives/organizer3.tsx",
-      "text": "${review.rating} out of 5 stars",
       "reason": "Reusable primitive technical class, label, or accessibility default; route copy remains caller-owned."
     }
   ]

@@ -12,6 +12,7 @@ import {marketingCaptures as captures} from "../marketingCaptures";
 import {usePublicHostListings} from "../../features/organizers/usePublicEventListingsController";
 import {getHostListingRouteForPath} from "../../features/organizers/routing";
 import {buildPublicEventDetailRecords, getEventDetailForPath} from "../../features/events/eventDetailModel";
+import {useEventPage} from "../../features/events/eventPageContext";
 import {publishedLegalContent} from "../../content/legal";
 import type {PublicContact} from "../../content/publicContact";
 import {MarketingConsentBanner} from "../../features/marketing/MarketingConsentBanner";
@@ -28,7 +29,8 @@ const Missing = dynamic(() => import("../../features/notFound/NotFoundPage").the
 
 export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt: number; contact?: PublicContact; home?: HomeCatalog}) {
   const location = useLocation();
-  const {listings, readAt: currentReadAt} = usePublicHostListings();
+  const {listings, readAt: currentReadAt, organizerPage} = usePublicHostListings();
+  const eventRoute = useEventPage();
   const navigate = useNavigate();
   useEffect(() => {
     const destination = retiredMarketingDestination(location);
@@ -47,7 +49,7 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
     const listing = getHostListingRouteForPath(location.pathname, listings)?.listing;
     if (listing) structured = {"@context": "https://schema.org", "@type": "Organization",
       name: listing.name, description: listing.description, url: `https://catchdates.com${listing.path}`};
-    content = listing ? <Listing listing={listing} /> : <Missing />;
+    content = listing ? <Listing listing={listing} page={organizerPage} readAt={currentReadAt ?? readAt} /> : <Missing />;
   } else if (page === "event_detail") {
     const event = getEventDetailForPath(location.pathname, buildPublicEventDetailRecords(listings, currentReadAt ?? readAt));
     if (event) structured = {"@context": "https://schema.org", "@type": "Event", name: event.title,
@@ -55,7 +57,8 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
       description: event.summary, url: `https://catchdates.com${event.path}`,
       location: {"@type": "Place", name: event.location},
       organizer: {"@type": "Organization", name: event.listing.name, url: `https://catchdates.com${event.listing.path}`}};
-    content = event ? <Event event={event} /> : <Missing />;
+    content = event && eventRoute?.page.eventId === event.eventId ?
+      <Event listing={event.listing} mapImageUrl={eventRoute.mapImageUrl} page={eventRoute.page} /> : <Missing />;
   } else if (page === "claim") {
     const state = claimRouteStateForLocation(location);
     state.listing = listings.find(item => item.id === state.lookup || item.slug === state.lookup || item.path === state.lookup || item.legacyPaths?.includes(state.lookup ?? "")) ?? null;
