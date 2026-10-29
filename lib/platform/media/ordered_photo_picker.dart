@@ -499,6 +499,23 @@ class OrderedPhotoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final failed = photo.status == OrderedPhotoStatus.failed;
+    final activelyUploading = photo.status == OrderedPhotoStatus.uploading;
+    final percent = photo.progress == null
+        ? null
+        : (photo.progress!.clamp(0, 1) * 100).round();
+    final statusLabel = failed
+        ? photo.error == null
+              ? context.l10n.coreOrderedPhotoPickerStatusUploadFailed
+              : appErrorMessage(photo.error!, l10n: context.l10n)
+        : photo.status == OrderedPhotoStatus.queued
+        ? context.l10n.coreOrderedPhotoPickerStatusQueued
+        : percent == null
+        ? context.l10n.coreOrderedPhotoPickerStatusUploading
+        : context.l10n.coreOrderedPhotoPickerStatusUploadingProgress(
+            percent: percent,
+          );
+    final retryLabel = context.l10n.coreOrderedPhotoPickerActionRetry;
 
     return Semantics(
       image: true,
@@ -615,87 +632,48 @@ class OrderedPhotoTile extends StatelessWidget {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  child: _OrderedPhotoStatusBanner(
+                  child: Semantics(
                     key: statusActionKey,
-                    status: photo.status,
-                    progress: photo.progress,
-                    error: photo.error,
-                    onRetry: onRetry,
+                    button: failed && onRetry != null,
+                    label: failed && onRetry != null
+                        ? '$statusLabel. $retryLabel'
+                        : statusLabel,
+                    child: CatchSurface(
+                      backgroundColor: (failed ? t.danger : t.ink).withValues(
+                        alpha: CatchOpacity.hostMediaStatusScrim,
+                      ),
+                      radius: CatchRadius.none,
+                      onTap: failed ? onRetry : null,
+                      duration: Duration.zero,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: CatchSpacing.s2,
+                          vertical: CatchSpacing.micro6,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (activelyUploading) ...[
+                              SizedBox.square(
+                                dimension: CatchIconSize.xs,
+                                child: CatchLoadingIndicator(color: t.surface),
+                              ),
+                              gapW6,
+                            ],
+                            Flexible(
+                              child: CatchMetadataText(
+                                failed && onRetry != null
+                                    ? '$statusLabel · $retryLabel'
+                                    : statusLabel,
+                                color: t.surface,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _OrderedPhotoStatusBanner extends StatelessWidget {
-  const _OrderedPhotoStatusBanner({
-    super.key,
-    required this.status,
-    this.progress,
-    this.error,
-    this.onRetry,
-  });
-
-  final OrderedPhotoStatus status;
-  final double? progress;
-  final Object? error;
-  final VoidCallback? onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final failed = status == OrderedPhotoStatus.failed;
-    final activelyUploading = status == OrderedPhotoStatus.uploading;
-    final percent = progress == null
-        ? null
-        : (progress!.clamp(0, 1) * 100).round();
-    final label = failed
-        ? error == null
-              ? context.l10n.coreOrderedPhotoPickerStatusUploadFailed
-              : appErrorMessage(error!, l10n: context.l10n)
-        : status == OrderedPhotoStatus.queued
-        ? context.l10n.coreOrderedPhotoPickerStatusQueued
-        : percent == null
-        ? context.l10n.coreOrderedPhotoPickerStatusUploading
-        : context.l10n.coreOrderedPhotoPickerStatusUploadingProgress(
-            percent: percent,
-          );
-    final retryLabel = context.l10n.coreOrderedPhotoPickerActionRetry;
-    return Semantics(
-      button: failed && onRetry != null,
-      label: failed && onRetry != null ? '$label. $retryLabel' : label,
-      child: CatchSurface(
-        backgroundColor: (failed ? t.danger : t.ink).withValues(
-          alpha: CatchOpacity.hostMediaStatusScrim,
-        ),
-        radius: CatchRadius.none,
-        onTap: failed ? onRetry : null,
-        duration: Duration.zero,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: CatchSpacing.s2,
-            vertical: CatchSpacing.micro6,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (activelyUploading) ...[
-                SizedBox.square(
-                  dimension: CatchIconSize.xs,
-                  child: CatchLoadingIndicator(color: t.surface),
-                ),
-                gapW6,
-              ],
-              Flexible(
-                child: CatchMetadataText(
-                  failed && onRetry != null ? '$label · $retryLabel' : label,
-                  color: t.surface,
-                ),
-              ),
             ],
           ),
         ),

@@ -133,10 +133,15 @@ class AppShell extends ConsumerWidget {
       }
     });
 
+    final selectedIndex = navigationShell.currentIndex;
     final authenticatedNavigationBar = isAuthenticated
-        ? appShellNavigationBar(
-            navigationShell: navigationShell,
+        ? AppShellNavigationBar(
+            currentIndex: selectedIndex,
             unreadCount: unreadCount,
+            onDestinationSelected: (index) => navigationShell.goBranch(
+              index,
+              initialLocation: index == selectedIndex,
+            ),
           )
         : null;
     return AdaptiveTabScaffold(
@@ -187,22 +192,6 @@ class GuestAuthCtaBar extends StatelessWidget {
       },
     ).toString();
   }
-}
-
-Widget appShellNavigationBar({
-  required StatefulNavigationShell navigationShell,
-  required int unreadCount,
-}) {
-  final selectedIndex = navigationShell.currentIndex;
-
-  return AppShellNavigationBar(
-    currentIndex: selectedIndex,
-    unreadCount: unreadCount,
-    onDestinationSelected: (index) => navigationShell.goBranch(
-      index,
-      initialLocation: index == selectedIndex,
-    ),
-  );
 }
 
 class AppShellNavigationBar extends StatelessWidget {

@@ -6335,6 +6335,152 @@
       }
     },
     {
+      "id": "catch.ordered_photo_picker",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Picker, tile and add-tile states are exercised by the Widgetbook photo catalog."
+      },
+      "name": "OrderedPhotoPicker",
+      "status": "active",
+      "kind": "composite",
+      "tier": "T3",
+      "aliases": [
+        "OrderedMediaEditor"
+      ],
+      "summary": "Ordered gallery editor for organizer and event media: an inline cover and thumbnail rail plus a full-screen manager for reorder, remove, retry and add.",
+      "dart": {
+        "symbol": "OrderedPhotoPicker",
+        "file": "lib/platform/media/ordered_photo_picker.dart",
+        "constructors": [
+          "OrderedPhotoPicker"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/OrderedPhotoPicker",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "OrderedPhotoPicker",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [],
+        "states": [
+          "empty",
+          "cover-and-rail",
+          "uploading",
+          "failed-with-retry",
+          "manager"
+        ],
+        "slots": [],
+        "tokens": [],
+        "dartRoles": [],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        },
+        "members": [
+          {
+            "id": "catch.ordered_photo_picker.manager_screen",
+            "symbol": "OrderedPhotoManagerScreen",
+            "file": "lib/platform/media/ordered_photo_picker.dart",
+            "summary": "Full-screen manager that owns long-list scrolling, set-cover, reorder, remove, add-more and explicit save or discard.",
+            "states": [
+              "reorder",
+              "remove",
+              "add-more"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.ordered_photo_picker",
+              "parentConceptId": "catch.ordered_photo_picker",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.ordered_photo_picker"
+            }
+          },
+          {
+            "id": "catch.ordered_photo_picker.photo_tile",
+            "symbol": "OrderedPhotoTile",
+            "file": "lib/platform/media/ordered_photo_picker.dart",
+            "summary": "One ordered photo with cover badge, remove or menu action, reorder handle and upload status.",
+            "states": [
+              "ready",
+              "queued",
+              "uploading",
+              "failed"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.ordered_photo_picker",
+              "parentConceptId": "catch.ordered_photo_picker",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.ordered_photo_picker"
+            },
+            "level": "L5",
+            "roleNoun": "Tile"
+          },
+          {
+            "id": "catch.ordered_photo_picker.add_tile",
+            "symbol": "OrderedPhotoAddTile",
+            "file": "lib/platform/media/ordered_photo_picker.dart",
+            "summary": "Add-photos tile that opens the caller's picker.",
+            "states": [
+              "enabled",
+              "disabled"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.ordered_photo_picker",
+              "parentConceptId": "catch.ordered_photo_picker",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.ordered_photo_picker"
+            },
+            "level": "L5",
+            "roleNoun": "Tile"
+          }
+        ]
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "One scalable editor serves organizer and event galleries in create and edit flows; host code does not reuse the consumer profile six-slot cap.",
+          "The caller owns uploads and the media transaction; the picker renders their state and reports intent through callbacks."
+        ]
+      },
+      "governance": {
+        "role": "composition",
+        "canonicalFamily": "catch.ordered_photo_picker",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "display-state-only",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "primitives-and-slots",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "decisionRef": "pattern-family:ordered-media-editor",
+        "conceptId": "catch.ordered_photo_picker"
+      }
+    },
+    {
       "id": "catch.typography",
       "enforcement": {
         "code": "catch_text_requires_style",
