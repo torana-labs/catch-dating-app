@@ -178,18 +178,25 @@ for (const result of ["failure", "cancelled", "skipped", undefined]) {
 }
 
 test("Required CI accepts merge-queue-proven lanes only when this source's queue run is cited", () => {
+  // A successful queue run of the exact source proves every lane and the
+  // source preflight, so main re-runs none of them.
   const needs = successfulNeeds();
-  for (const lane of ["flutter", "tools", "visual-integration", "admin", "operations", "docs-policy"]) {
-    needs[lane].result = "skipped";
-  }
-  for (const target of ["flutter", "tools", "visual_integration", "admin", "operations", "docs"]) {
-    needs.plan.outputs[target] = "true";
-  }
+  for (const lane of ["source-preflight", ...selectedLanes]) needs[lane].result = "skipped";
+  for (const target of graph.targets) needs.plan.outputs[target] = "true";
   passed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), QUEUE_RUN: "39822205436"}));
   failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(needs), QUEUE_RUN: ""}));
-  // Delivery producers always run on main, even after a successful queue run.
-  const delivery = successfulNeeds();
-  delivery.functions.result = "skipped";
-  delivery.plan.outputs.functions = "true";
-  failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(delivery), QUEUE_RUN: "39822205436"}));
+  // Without the queue proof, a skipped selected lane or preflight still fails.
+  const lane = successfulNeeds();
+  lane.functions.result = "skipped";
+  lane.plan.outputs.functions = "true";
+  failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(lane)}));
+  const preflight = successfulNeeds();
+  preflight["source-preflight"].result = "skipped";
+  failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(preflight)}));
+  // A queue run never excuses a failed or cancelled job.
+  for (const result of ["failure", "cancelled"]) {
+    const broken = structuredClone(needs);
+    broken["source-preflight"].result = result;
+    failed(run("Require every selected lane", {NEEDS_JSON: JSON.stringify(broken), QUEUE_RUN: "39822205436"}));
+  }
 });
