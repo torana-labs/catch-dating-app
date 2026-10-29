@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.89.0
+version: 1.90.0
 updated: 2026-10-29
 owner: app_architecture
 status: active
@@ -309,19 +309,27 @@ when this table and the map disagree.
 | 1 | `account` | Sign-in, session, app role, launch access and forced updates. |
 | 2 | `profiles` | A person's private profile, public projection, photos and saved answers. |
 | 3 | `safety` | Blocking, reporting and account deletion. |
-| 4 | `organizers` | Organisers, their team and roles, organiser pages, follows and claims. |
+| 4 | `formats` | What each format is and how it is set up: playbooks, modules, structures, questionnaires, activity profiles and the default settings an organiser or event picks. |
 | 5 | `events` | Events, schedules, venues and event policies. |
-| 6 | `payments` | Guest payments, refunds, an organiser's Razorpay connection and the Catch bill. |
-| 7 | `forms` | Questions, applications, responses and offers. |
+| 6 | `organizers` | Organisers, their team and roles, organiser pages, follows and claims. |
+| 7 | `payments` | Guest payments, refunds, an organiser's Razorpay connection and the Catch bill. |
 | 8 | `bookings` | Bookings, waitlists, tickets, the door, attendance and guest lists. |
 | 9 | `reviews` | Ratings after an event. |
 | 10 | `audience` | The people a host knows: groups, tags, notes and imports. |
-| 11 | `discovery` | Search, recommendations, maps, saved events and cities. |
-| 12 | `connections` | Staying in touch after an event: picks, mutual connections and cross paths. |
-| 13 | `messaging` | Chats, group chats, the inbox, broadcasts, scheduled messages and channels. |
-| 14 | `live` | The live formats engine: rotations, pods, teams, grouping, assistance, the guest companion and rehearsal. |
-| 15 | `programmes` | Multi-day programmes: functions, households, travel, stays, transport and crew. |
-| 16 | `insights` | Reports, stats and the alerts that need a host's attention. |
+| 11 | `forms` | Questions, applications, responses and offers. |
+| 12 | `discovery` | Search, recommendations, maps, saved events and cities. |
+| 13 | `connections` | Staying in touch after an event: picks, mutual connections and cross paths. |
+| 14 | `messaging` | Chats, group chats, the inbox, broadcasts, scheduled messages and channels. |
+| 15 | `live` | The live formats engine at runtime: rotations, pods, teams, grouping, assistance, the guest companion and rehearsal. |
+| 16 | `programmes` | Multi-day programmes: functions, households, travel, stays, transport and crew. |
+| 17 | `insights` | Reports, stats and the alerts that need a host's attention. |
+
+The order follows who embeds whose types. Formats sit low because organiser
+and event defaults embed format settings, and the live runtime builds on them.
+Organizers sit after events because an organiser's defaults embed event
+policies, while an event refers to its organiser only by id. Forms sit after
+audience because turning responses into contacts and offers acts on people and
+bookings.
 
 ### Inside a context
 
@@ -413,13 +421,24 @@ update in the PR that moves those files.
 #### Phase 3: move domain and data
 
 Move domain and data into contexts, and shared values out of `lib/core/` and
-`lib/activity/` into the kernel and platform, with no behavior change. Use one
-PR per context in table order: `git mv`, a scripted import rewrite, regenerated
-code and a green workspace analyze. Each PR removes its baseline entries and
-splits mixed files, such as `EventService`, which holds booking rules. The
-organizers move finishes the clubs-to-organizers rename. These PRs run one
-after another because each rewrites imports across the tree. The baseline is
-empty when this phase ends.
+`lib/activity/` into the kernel and platform, with no behavior change, in three
+PRs:
+
+1. **Untangle.** Fix every import that breaks the order and every misplaced
+   file, so the move itself is mechanical. This empties the baseline.
+2. **Move.** A committed script moves every context's `domain/` and `data/`
+   folders under `lib/contexts/<context>/`, rewrites every import and every
+   path mention outside Dart (contracts, generators, registries), writes each
+   context's public API file from what other contexts import, and removes the
+   map's legacy entries for moved files. A context's root files other than its
+   barrel go to `data/`; legacy feature barrels stay as re-exports for the
+   screens that still use them. The diff holds only renames and directive or
+   path lines; conflicts are resolved by rerunning the script on the latest
+   main, and its imports-only mode updates other open branches.
+3. **Finish.** Sort `lib/core/` into platform, kernel, pages and context parts,
+   and complete the Club to Organizer rename in code.
+
+The baseline is empty when this phase ends.
 
 #### Phase 4: move screens when they are redrawn
 
