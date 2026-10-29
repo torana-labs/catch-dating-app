@@ -1132,16 +1132,17 @@ read or mutation family without changing the surrounding UI contracts.
 
 ## Public sitemap and conversion ownership
 
-The consumer `/` leads with **Find events**, city and format filtering, an
-upcoming-event preview, optional participation tools, organiser profiles, FAQs
-and a concise Catch Host invitation. `content/consumerHome.ts` owns its copy;
-`useConsumerHomeController` derives cards from the existing public catalogue.
-`/explore/?city=…&format=…#events` retains those choices and shows all matching
-events. It also retains app availability and the member waitlist.
+The consumer `/` is the Website v2 homepage (CAT-260): one city's plans from its
+`cityPlans` read model, format tiles and chips that filter this week's plans, a
+city picker that loads `/?city=<slug>`, organisers, the host band, the app band
+and the FAQ. `content/homePage.ts` owns its copy; `useHomePageController` binds
+the city's read model to the sections. `/explore/?city=…&format=…#events`
+shows all matching events and retains app availability and the member
+waitlist.
 
-The empty-city state retains the editorial sections and identifies organiser
-suggestions as across Catch. Loading and unavailable catalogue states do not
-claim that a city has no events. Event cards use canonical detail URLs, public
+A city that has not launched, or has too few plans to fill a page, shows the
+launching-soon state instead of a sparse page. An unavailable catalogue does
+not claim that a launched city is launching soon or has no events. Event cards use canonical detail URLs, public
 publication policy and existing future-event eligibility. Illustrative fallback
 photographs are labelled. Catch Experience explains active guest participation;
 event badges and an Experience filter await an explicit eligibility field in
