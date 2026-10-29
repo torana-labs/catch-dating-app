@@ -44,43 +44,6 @@ export const adminReviewBridgeChannels = [
     firestoreCollection: "organizerIntakeCurationDecisions",
   },
   {
-    id: "external_event_candidate_review",
-    callableName: "adminDecideOrganizerEventCandidate",
-    adminApiWrapper: "decideOrganizerEventCandidate",
-    payloadType: "AdminDecideOrganizerEventCandidatePayload",
-    responseType: "AdminDecideOrganizerEventCandidateResponse",
-    handlerFile: "functions/src/admin/organizerEventIntake.ts",
-    handlerTest: "functions/src/admin/organizerEventIntake.test.ts",
-    payloadSchema:
-      "contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
-    firestoreSchema:
-      "contracts/firestore/organizer_event_candidate_review_decisions.schema.json",
-    generatedPayload:
-      "functions/src/shared/generated/adminDecideOrganizerEventCandidateCallablePayload.ts",
-    generatedDocument:
-      "functions/src/shared/generated/organizerEventCandidateReviewDecisionDocument.ts",
-    firestoreCollection: "organizerEventCandidateReviewDecisions",
-  },
-  {
-    id: "external_event_location_resolution",
-    callableName: "adminResolveOrganizerEventLocation",
-    adminApiWrapper: "resolveOrganizerEventLocation",
-    payloadType: "AdminResolveOrganizerEventLocationPayload",
-    responseType: "AdminResolveOrganizerEventLocationResponse",
-    controllerMutationToken: "resolveOrganizerEventLocation(payload)",
-    handlerFile: "functions/src/admin/organizerEventLocationResolution.ts",
-    handlerTest: "functions/src/admin/organizerEventLocationResolution.test.ts",
-    payloadSchema:
-      "contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
-    firestoreSchema:
-      "contracts/firestore/organizer_event_location_resolution_decisions.schema.json",
-    generatedPayload:
-      "functions/src/shared/generated/adminResolveOrganizerEventLocationCallablePayload.ts",
-    generatedDocument:
-      "functions/src/shared/generated/organizerEventLocationResolutionDecisionDocument.ts",
-    firestoreCollection: "organizerEventLocationResolutionDecisions",
-  },
-  {
     id: "organizer_policy_gap_review",
     callableName: "adminDecideOrganizerPolicyGap",
     adminApiWrapper: "decideOrganizerPolicyGap",
