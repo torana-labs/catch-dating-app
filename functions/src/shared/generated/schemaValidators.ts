@@ -86,6 +86,8 @@ export {validateDecideOrganizerCommunityMembershipCallableResponse} from "./vali
 export {validateWorkspaceFieldAssertionDocument} from "./validators/workspaceFieldAssertionDocument";
 export {validateWorkspaceFieldDecisionDocument} from "./validators/workspaceFieldDecisionDocument";
 export {validateCatchWhatsappWebhookEventDocument} from "./validators/catchWhatsappWebhookEventDocument";
+export {validateCatchWhatsappAutoReplyDocument} from "./validators/catchWhatsappAutoReplyDocument";
+export {validateCatchWhatsappClarificationDocument} from "./validators/catchWhatsappClarificationDocument";
 export {validateSalesImportHistoryRowDocument} from "./validators/salesImportHistoryRowDocument";
 export {validateSalesImportHistoryRecordDocument} from "./validators/salesImportHistoryRecordDocument";
 export {validateSalesPrivacyRestriction} from "./validators/salesPrivacyRestriction";

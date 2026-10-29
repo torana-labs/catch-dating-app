@@ -145,6 +145,16 @@ const schemaSpecs = [
     source: "firestore/catch_whatsapp_webhook_events.schema.json",
     typeOutput: "functions/src/shared/generated/catchWhatsappWebhookEventDocument.ts",
   },
+  {
+    name: "CatchWhatsappAutoReplyDocument",
+    source: "firestore/catch_whatsapp_auto_replies.schema.json",
+    typeOutput: "functions/src/shared/generated/catchWhatsappAutoReplyDocument.ts",
+  },
+  {
+    name: "CatchWhatsappClarificationDocument",
+    source: "firestore/catch_whatsapp_clarifications.schema.json",
+    typeOutput: "functions/src/shared/generated/catchWhatsappClarificationDocument.ts",
+  },
   {"name": "SalesImportHistoryRowDocument", "source": "firestore/sales_import_history_rows.schema.json", "typeOutput": "functions/src/shared/generated/salesImportHistoryRowDocument.ts"},
   {"name": "SalesImportHistoryRecordDocument", "source": "firestore/sales_import_history_records.schema.json", "typeOutput": "functions/src/shared/generated/salesImportHistoryRecordDocument.ts"},
   {"name": "SalesPrivacyRestriction", "source": "firestore/sales_privacy_restrictions.schema.json", "typeOutput": "functions/src/shared/generated/salesPrivacyRestriction.ts"},

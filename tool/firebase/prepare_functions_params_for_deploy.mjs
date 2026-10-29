@@ -41,6 +41,7 @@ export const materializedNonSecretParams = [
   "CATCH_INSTAGRAM_HANDLE",
   "CATCH_INSTAGRAM_GRAPH_VERSION",
   "SUPPLY_MESSAGE_NOMINATIONS_ENABLED",
+  "CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION",
   "EVENT_ASSISTANCE_RCS_ENABLED",
   "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED",
   "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED",
@@ -231,6 +232,13 @@ function normalizedProviderParams(environment = process.env, projectId) {
     environment, "SUPPLY_MESSAGE_NOMINATIONS_ENABLED");
   assert(messageNominationsEnabled === "false" || catchConsumersEnabled === "true",
     "SUPPLY_MESSAGE_NOMINATIONS_ENABLED requires CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED");
+  // Automatic replies to people messaging Catch use a pinned version of the
+  // Catch sender token. Blank keeps replies off; routing still works.
+  const autoReplyCredential = environment.CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION?.trim() || "";
+  const autoReplyPrefix = `projects/${projectId}/secrets/CATCH_WHATSAPP_ACCESS_TOKEN/versions/`;
+  assert(!autoReplyCredential || autoReplyCredential.startsWith(autoReplyPrefix) &&
+    /^[1-9][0-9]*$/.test(autoReplyCredential.slice(autoReplyPrefix.length)),
+  "CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION must pin CATCH_WHATSAPP_ACCESS_TOKEN in this project");
 
   const assistanceReferences = {};
   for (const [name, secret] of [["EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_GUEST_KEYS"],
@@ -284,6 +292,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     CATCH_INSTAGRAM_HANDLE: instagramHandle || " ",
     CATCH_INSTAGRAM_GRAPH_VERSION: instagramGraphVersion,
     SUPPLY_MESSAGE_NOMINATIONS_ENABLED: messageNominationsEnabled,
+    CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION: autoReplyCredential || " ",
     ...eventAssistance,
     // Blank preserves a fail-closed callable until hosting is provisioned.
     FORM_DOMAIN_CNAME_TARGET: formDomainTarget || " ",

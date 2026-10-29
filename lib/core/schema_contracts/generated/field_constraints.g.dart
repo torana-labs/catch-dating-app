@@ -20052,6 +20052,121 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const catchWhatsappAutoReplyDocumentCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const catchWhatsappAutoReplyDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAutoReplyDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const catchWhatsappAutoReplyDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const catchWhatsappAutoReplyDocumentKind = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['nomination_queued', 'nomination_without_links', 'nomination_rate_limited', 'clarification_question', 'support_acknowledged', 'listing_ready'],
+  );
+
+  static const catchWhatsappAutoReplyDocumentProviderMessageId = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.providerMessageId',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const catchWhatsappAutoReplyDocumentReplyId = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.replyId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^cwauto_[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAutoReplyDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.schemaVersion',
+    required: true,
+  );
+
+  static const catchWhatsappAutoReplyDocumentSourceEventId = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.sourceEventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^cwhe_[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappAutoReplyDocumentState = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.state',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['claimed', 'sent', 'unknown', 'skipped_stop', 'skipped_unavailable'],
+  );
+
+  static const catchWhatsappAutoReplyDocumentUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'catchWhatsappAutoReplyDocument.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const catchWhatsappClarificationDocumentAskedAtMillis = CatchContractFieldConstraints(
+    path: 'catchWhatsappClarificationDocument.askedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const catchWhatsappClarificationDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'catchWhatsappClarificationDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const catchWhatsappClarificationDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'catchWhatsappClarificationDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const catchWhatsappClarificationDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'catchWhatsappClarificationDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const catchWhatsappClarificationDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'catchWhatsappClarificationDocument.schemaVersion',
+    required: true,
+  );
+
+  static const catchWhatsappClarificationDocumentSourceEventId = CatchContractFieldConstraints(
+    path: 'catchWhatsappClarificationDocument.sourceEventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^cwhe_[a-f0-9]{64}\$',
+  );
+
   static const catchWhatsappEndpointStopDocumentEndpointHash = CatchContractFieldConstraints(
     path: 'catchWhatsappEndpointStopDocument.endpointHash',
     maxLength: 64,
@@ -176978,6 +177093,23 @@ abstract final class CatchContractConstraints {
     'catchWhatsappAppAuthorityDocument.state': catchWhatsappAppAuthorityDocumentState,
     'catchWhatsappAppAuthorityDocument.uid': catchWhatsappAppAuthorityDocumentUid,
     'catchWhatsappAppAuthorityDocument.updatedAtMillis': catchWhatsappAppAuthorityDocumentUpdatedAtMillis,
+    'catchWhatsappAutoReplyDocument.createdAtMillis': catchWhatsappAutoReplyDocumentCreatedAtMillis,
+    'catchWhatsappAutoReplyDocument.endpointHash': catchWhatsappAutoReplyDocumentEndpointHash,
+    'catchWhatsappAutoReplyDocument.expiresAt._nanoseconds': catchWhatsappAutoReplyDocumentExpiresAtNanoseconds,
+    'catchWhatsappAutoReplyDocument.expiresAt._seconds': catchWhatsappAutoReplyDocumentExpiresAtSeconds,
+    'catchWhatsappAutoReplyDocument.kind': catchWhatsappAutoReplyDocumentKind,
+    'catchWhatsappAutoReplyDocument.providerMessageId': catchWhatsappAutoReplyDocumentProviderMessageId,
+    'catchWhatsappAutoReplyDocument.replyId': catchWhatsappAutoReplyDocumentReplyId,
+    'catchWhatsappAutoReplyDocument.schemaVersion': catchWhatsappAutoReplyDocumentSchemaVersion,
+    'catchWhatsappAutoReplyDocument.sourceEventId': catchWhatsappAutoReplyDocumentSourceEventId,
+    'catchWhatsappAutoReplyDocument.state': catchWhatsappAutoReplyDocumentState,
+    'catchWhatsappAutoReplyDocument.updatedAtMillis': catchWhatsappAutoReplyDocumentUpdatedAtMillis,
+    'catchWhatsappClarificationDocument.askedAtMillis': catchWhatsappClarificationDocumentAskedAtMillis,
+    'catchWhatsappClarificationDocument.endpointHash': catchWhatsappClarificationDocumentEndpointHash,
+    'catchWhatsappClarificationDocument.expiresAt._nanoseconds': catchWhatsappClarificationDocumentExpiresAtNanoseconds,
+    'catchWhatsappClarificationDocument.expiresAt._seconds': catchWhatsappClarificationDocumentExpiresAtSeconds,
+    'catchWhatsappClarificationDocument.schemaVersion': catchWhatsappClarificationDocumentSchemaVersion,
+    'catchWhatsappClarificationDocument.sourceEventId': catchWhatsappClarificationDocumentSourceEventId,
     'catchWhatsappEndpointStopDocument.endpointHash': catchWhatsappEndpointStopDocumentEndpointHash,
     'catchWhatsappEndpointStopDocument.observedAtMillis': catchWhatsappEndpointStopDocumentObservedAtMillis,
     'catchWhatsappEndpointStopDocument.payloadHash': catchWhatsappEndpointStopDocumentPayloadHash,
