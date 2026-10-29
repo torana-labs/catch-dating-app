@@ -7,7 +7,7 @@ import {fromRepo} from "../lib/repo_paths.mjs";
 import {probeCallable} from
   "../firebase/check_client_callable_dependencies.mjs";
 import {resolveFirebaseProjectId} from
-  "../firebase/firebase_project_resolver.mjs";
+  "../lib/firebase_project.mjs";
 
 export function validateAdminLiveDataSources({
   contract,

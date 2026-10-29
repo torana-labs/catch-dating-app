@@ -38,7 +38,7 @@ node --check tool/data/repair_future_event_attendance.mjs
 node --check functions/scripts/backfill-profile-thumbnails.cjs
 node --test tool/demo/seed_demo_data_append.test.mjs \
   tool/demo/seed_demo_data_schema.test.mjs \
-  tool/firebase/firebase_project_resolver.test.mjs \
+  tool/lib/firebase_project.test.mjs \
   tool/data/recompute_public_profiles.test.mjs \
   tool/data/backfill_profile_photos.test.mjs \
   tool/data/repair_future_event_attendance.test.mjs
