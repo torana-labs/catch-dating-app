@@ -11,9 +11,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 ///
 /// The result preserves the caller's stable ID order, de-duplicates chunk
 /// emissions, and waits until every chunk has emitted before publishing.
+/// [collection] may carry filters, such as the equality a Firestore list rule
+/// requires; they apply to every chunk.
 Stream<List<T>> watchDocumentsByIds<T>({
   required List<String> ids,
-  required CollectionReference<T> collection,
+  required Query<T> collection,
   required String Function(T value) idOf,
   required BackendErrorContext context,
   List<T> Function(List<T> values)? transform,
@@ -62,6 +64,59 @@ Stream<List<T>> watchDocumentsByIds<T>({
               emit(valuesByChunk: valuesByChunk, chunkCount: chunks.length);
             }, onError: controller.addError);
         subscriptions.add(sub);
+      }
+    },
+    onCancel: () async {
+      closed = true;
+      for (final subscription in subscriptions) {
+        await subscription.cancel();
+      }
+      subscriptions = [];
+      if (!controller.isClosed) await controller.close();
+    },
+  );
+
+  return withBackendErrorStream(() => controller.stream, context: context);
+}
+
+/// Realtime reads of individual documents by ID, for documents a list query
+/// may not return (Firestore list rules can be stricter than single reads).
+///
+/// The result preserves the caller's stable ID order, skips missing
+/// documents, and waits until every document has emitted before publishing.
+Stream<List<T>> watchDocumentsOneByOne<T>({
+  required List<String> ids,
+  required CollectionReference<T> collection,
+  required BackendErrorContext context,
+}) {
+  final uniqueIds = ids.toSet().toList()..sort();
+  if (uniqueIds.isEmpty) return Stream.value(const []);
+
+  var subscriptions = <StreamSubscription<DocumentSnapshot<T>>>[];
+  var closed = false;
+  late final StreamController<List<T>> controller;
+  final valuesById = <String, T?>{};
+
+  void emit() {
+    if (valuesById.length < uniqueIds.length || controller.isClosed) return;
+    controller.add(
+      List.unmodifiable(<T>[
+        for (final id in uniqueIds)
+          if (valuesById[id] != null) valuesById[id] as T,
+      ]),
+    );
+  }
+
+  controller = StreamController<List<T>>(
+    onListen: () {
+      for (final id in uniqueIds) {
+        subscriptions.add(
+          collection.doc(id).snapshots().listen((snapshot) {
+            if (closed) return;
+            valuesById[id] = snapshot.exists ? snapshot.data() : null;
+            emit();
+          }, onError: controller.addError),
+        );
       }
     },
     onCancel: () async {
