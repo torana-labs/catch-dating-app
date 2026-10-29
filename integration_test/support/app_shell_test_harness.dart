@@ -31,6 +31,7 @@ import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart'
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club_draft.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
@@ -359,6 +360,16 @@ List<Object> appShellTestOverrides({
     ),
     uidProvider.overrideWith((ref) => Stream.value(uid)),
     watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+    // Organizer pages show signed-in guests the organizer's membership plans.
+    watchPublishedHostMembershipPlansProvider.overrideWith(
+      (ref, _) => Stream.value(const []),
+    ),
+    watchMyHostMembershipsProvider.overrideWith(
+      (ref, _) => Stream.value(const []),
+    ),
+    watchMyHostMembershipBenefitUsesProvider.overrideWith(
+      (ref, _) => Stream.value(const []),
+    ),
     watchClubsByLocationProvider(
       testShellCity.name,
     ).overrideWith((ref) => Stream.value(clubs)),
