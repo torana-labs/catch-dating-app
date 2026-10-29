@@ -941,6 +941,9 @@ test("metadata projections only request reference and activation fields, never t
   assert.match(format, /environmentVariables.FLIGHT_PROVIDER_CONFIG_VERSION/u);
   assert.doesNotMatch(format, /environmentVariables[,)]/u);
   assert.doesNotMatch(format, /payload|value|private_key/iu);
+  // Listing every function takes longer than a single describe; prod passed
+  // the 15 s per-call limit at 704 functions.
+  assert.equal(command.timeoutMs, 120_000);
 });
 
 test("a disabled gated consumer may retain a valid reference without checking its version", () => {
