@@ -1966,8 +1966,8 @@
     },
     {
       "id": "shared_admin_intake_state_grid",
-      "kind": "feature-component",
-      "owner": "features/intake",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminIntakeStateGrid",
       "css": [
@@ -4201,8 +4201,8 @@
     },
     {
       "id": "shared_admin_search_candidate_panel",
-      "kind": "feature-component",
-      "owner": "features/intake",
+      "kind": "shared-primitive",
+      "owner": "shared/ui",
       "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
       "exportName": "AdminSearchCandidatePanel",
       "css": [
