@@ -1,0 +1,29 @@
+{
+  "search_metadata": {
+    "id": "fixture-afterfly",
+    "status": "Success"
+  },
+  "search_parameters": {
+    "q": "\"AFTER FLY\" Luma"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "TAKEOFF Run & Rave by AFTER FLY",
+      "link": "https://luma.com/pxgmph3b?utm_source=google",
+      "snippet": "Public Luma event page for AFTER FLY in Indore."
+    },
+    {
+      "position": 2,
+      "title": "AFTER FLY on Instagram",
+      "link": "https://www.instagram.com/afterfly.in/?igshid=fixture",
+      "snippet": "Primary Instagram profile surfaced in search."
+    },
+    {
+      "position": 3,
+      "title": "Afterfly on Sort My Scene",
+      "link": "https://sortmyscene.com/organizers/afterfly",
+      "snippet": "Candidate organizer profile on Sort My Scene."
+    }
+  ]
+}

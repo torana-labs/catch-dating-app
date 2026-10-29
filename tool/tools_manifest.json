@@ -3548,13 +3548,13 @@
     {
       "id": "firebase:project-resolver",
       "category": "firebase",
-      "path": "tool/firebase/firebase_project_resolver.mjs",
-      "command": "node --test tool/firebase/firebase_project_resolver.test.mjs",
+      "path": "tool/lib/firebase_project.mjs",
+      "command": "node --test tool/lib/firebase_project.test.mjs",
       "safety": "local-test",
       "status": "active",
-      "description": "Shared Firebase project resolver compatibility module.",
+      "description": "Shared Firebase project alias resolver and production-target guard.",
       "checks": [
-        "node --test tool/firebase/firebase_project_resolver.test.mjs"
+        "node --test tool/lib/firebase_project.test.mjs"
       ],
       "role": "finder"
     },

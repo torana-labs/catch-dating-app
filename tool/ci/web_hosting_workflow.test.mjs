@@ -160,7 +160,7 @@ test("admin and marketing callers share one exact build and promotion path", () 
   for (const adminDependency of [
     "contracts/admin/admin_live_data_sources.json",
     "tool/firebase/check_client_callable_dependencies.mjs",
-    "tool/firebase/firebase_project_resolver.mjs",
+    "tool/lib/firebase_project.mjs",
     "tool/web/check_admin_live_data_sources.mjs",
   ]) assert.ok(admin.includes(`- "${adminDependency}"`), `admin is missing ${adminDependency}`);
 });
