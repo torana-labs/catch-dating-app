@@ -131,6 +131,13 @@ void _registerExploreScreenFiltersTests() {
       overrides: [
         clubsRepositoryProvider.overrideWith((ref) => fakeRepository),
         uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        // A signed-in guest sees the organizer's membership plans.
+        watchPublishedHostMembershipPlansProvider.overrideWith(
+          (ref, _) => Stream.value(const []),
+        ),
+        watchMyHostMembershipsProvider.overrideWith(
+          (ref, _) => Stream.value(const []),
+        ),
       ],
     );
     addTearDown(container.dispose);

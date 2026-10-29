@@ -22,6 +22,7 @@ import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
 import 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
