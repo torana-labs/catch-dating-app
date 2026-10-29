@@ -47,8 +47,40 @@ export const recordOrganizerAnalyticsEventCallablePayloadSchema: Record<string, 
         "eventSave",
         "contactClick",
         "claimClick",
-        "outboundClick"
+        "outboundClick",
+        "linkClick"
       ]
+    },
+    "linkId": {
+      "description": "The owner link a linkClick opened, one of the organizer's ownerLinks ids. Other events send null.",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "trafficSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "instagram",
+        "whatsapp",
+        "facebook",
+        "google",
+        "qr",
+        "email",
+        "direct",
+        "other",
+        null
+      ],
+      "description": "Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent."
     },
     "pagePath": {
       "type": "string",
@@ -75,6 +107,26 @@ export const recordOrganizerAnalyticsEventCallablePayloadSchema: Record<string, 
         "null"
       ],
       "maxLength": 40
+    }
+  },
+  "definitions": {
+    "trafficSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "instagram",
+        "whatsapp",
+        "facebook",
+        "google",
+        "qr",
+        "email",
+        "direct",
+        "other",
+        null
+      ],
+      "description": "Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent."
     }
   }
 } as const;

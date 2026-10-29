@@ -17,12 +17,30 @@ export interface HostAnalyticsEvent {
     | "eventSave"
     | "contactClick"
     | "claimClick"
-    | "outboundClick";
+    | "outboundClick"
+    | "linkClick";
   club_id: string;
   target_event_id?: string | null;
   page_path: string;
   source?: string | null;
   session_hash?: string | null;
   platform?: string | null;
+  /**
+   * The owner link a linkClick opened; null for other events.
+   */
+  link_id?: string | null;
+  /**
+   * Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent.
+   */
+  traffic_source?:
+    | "instagram"
+    | "whatsapp"
+    | "facebook"
+    | "google"
+    | "qr"
+    | "email"
+    | "direct"
+    | "other"
+    | null;
   ingested_at: string;
 }

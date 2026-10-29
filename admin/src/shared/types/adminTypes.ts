@@ -202,6 +202,20 @@ export interface HostAnalyticsResponse {
     contactClicks: number;
     claimClicks: number;
     outboundClicks: number;
+    linkClicks: number;
+  };
+  /** Owner link clicks by link and by traffic source (CAT-254). */
+  linkSummary: {
+    links: Array<{
+      organizerId: string;
+      linkId: string;
+      label: string | null;
+      clicks: number;
+    }>;
+    trafficSources: Array<{
+      source: "instagram" | "whatsapp" | "facebook" | "google" | "qr" | "email" | "direct" | "other";
+      clicks: number;
+    }>;
   };
   dataQuality: Array<{
     id: string;

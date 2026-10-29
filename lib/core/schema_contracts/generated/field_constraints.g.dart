@@ -89844,6 +89844,13 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const hostAnalyticsCallableResponseDiscoverySummaryLinkClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.discoverySummary.linkClicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const hostAnalyticsCallableResponseDiscoverySummaryListingViews = CatchContractFieldConstraints(
     path: 'hostAnalyticsCallableResponse.discoverySummary.listingViews',
     required: true,
@@ -89877,6 +89884,65 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryLinks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.links',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryLinksItemsClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.links.items.clicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryLinksItemsLabel = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.links.items.label',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryLinksItemsLinkId = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.links.items.linkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryLinksItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.links.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryTrafficSources = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.trafficSources',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryTrafficSourcesItemsClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.trafficSources.items.clicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryTrafficSourcesItemsSource = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.trafficSources.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagram', 'whatsapp', 'facebook', 'google', 'qr', 'email', 'direct', 'other'],
   );
 
   static const hostAnalyticsCallableResponseRangeEndDate = CatchContractFieldConstraints(
@@ -90371,7 +90437,7 @@ abstract final class CatchContractConstraints {
     path: 'hostAnalyticsEvent.event_name',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['listingView', 'searchAppearance', 'eventView', 'organizerSave', 'eventSave', 'contactClick', 'claimClick', 'outboundClick'],
+    enumValues: <String>['listingView', 'searchAppearance', 'eventView', 'organizerSave', 'eventSave', 'contactClick', 'claimClick', 'outboundClick', 'linkClick'],
   );
 
   static const hostAnalyticsEventIngestedAt = CatchContractFieldConstraints(
@@ -90379,6 +90445,13 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const hostAnalyticsEventLinkId = CatchContractFieldConstraints(
+    path: 'hostAnalyticsEvent.link_id',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const hostAnalyticsEventOccurredAt = CatchContractFieldConstraints(
@@ -90419,6 +90492,12 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsEventTrafficSource = CatchContractFieldConstraints(
+    path: 'hostAnalyticsEvent.traffic_source',
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagram', 'whatsapp', 'facebook', 'google', 'qr', 'email', 'direct', 'other'],
   );
 
   static const hostAnalyticsQueryCallablePayloadClubId = CatchContractFieldConstraints(
@@ -90584,6 +90663,13 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const hostAnalyticsSnapshotDocumentResponseDiscoverySummaryLinkClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.discoverySummary.linkClicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const hostAnalyticsSnapshotDocumentResponseDiscoverySummaryListingViews = CatchContractFieldConstraints(
     path: 'hostAnalyticsSnapshotDocument.response.discoverySummary.listingViews',
     required: true,
@@ -90617,6 +90703,65 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryLinks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.links',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.clicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsLabel = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.label',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsLinkId = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.linkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSources = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSourcesItemsClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources.items.clicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSourcesItemsSource = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagram', 'whatsapp', 'facebook', 'google', 'qr', 'email', 'direct', 'other'],
   );
 
   static const hostAnalyticsSnapshotDocumentResponseRangeEndDate = CatchContractFieldConstraints(
@@ -145604,7 +145749,14 @@ abstract final class CatchContractConstraints {
     path: 'recordOrganizerAnalyticsEventCallablePayload.eventName',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['listingView', 'searchAppearance', 'eventView', 'organizerSave', 'eventSave', 'contactClick', 'claimClick', 'outboundClick'],
+    enumValues: <String>['listingView', 'searchAppearance', 'eventView', 'organizerSave', 'eventSave', 'contactClick', 'claimClick', 'outboundClick', 'linkClick'],
+  );
+
+  static const recordOrganizerAnalyticsEventCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'recordOrganizerAnalyticsEventCallablePayload.linkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const recordOrganizerAnalyticsEventCallablePayloadOrganizerId = CatchContractFieldConstraints(
@@ -145639,6 +145791,12 @@ abstract final class CatchContractConstraints {
     path: 'recordOrganizerAnalyticsEventCallablePayload.source',
     maxLength: 80,
     valueTypes: <String>['string'],
+  );
+
+  static const recordOrganizerAnalyticsEventCallablePayloadTrafficSource = CatchContractFieldConstraints(
+    path: 'recordOrganizerAnalyticsEventCallablePayload.trafficSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagram', 'whatsapp', 'facebook', 'google', 'qr', 'email', 'direct', 'other'],
   );
 
   static const recordOrganizerAnalyticsEventCallableResponseAccepted = CatchContractFieldConstraints(
@@ -186258,11 +186416,20 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsCallableResponse.discoverySummary.contactClicks': hostAnalyticsCallableResponseDiscoverySummaryContactClicks,
     'hostAnalyticsCallableResponse.discoverySummary.eventSaves': hostAnalyticsCallableResponseDiscoverySummaryEventSaves,
     'hostAnalyticsCallableResponse.discoverySummary.eventViews': hostAnalyticsCallableResponseDiscoverySummaryEventViews,
+    'hostAnalyticsCallableResponse.discoverySummary.linkClicks': hostAnalyticsCallableResponseDiscoverySummaryLinkClicks,
     'hostAnalyticsCallableResponse.discoverySummary.listingViews': hostAnalyticsCallableResponseDiscoverySummaryListingViews,
     'hostAnalyticsCallableResponse.discoverySummary.organizerSaves': hostAnalyticsCallableResponseDiscoverySummaryOrganizerSaves,
     'hostAnalyticsCallableResponse.discoverySummary.outboundClicks': hostAnalyticsCallableResponseDiscoverySummaryOutboundClicks,
     'hostAnalyticsCallableResponse.discoverySummary.searchAppearances': hostAnalyticsCallableResponseDiscoverySummarySearchAppearances,
     'hostAnalyticsCallableResponse.generatedAt': hostAnalyticsCallableResponseGeneratedAt,
+    'hostAnalyticsCallableResponse.linkSummary.links': hostAnalyticsCallableResponseLinkSummaryLinks,
+    'hostAnalyticsCallableResponse.linkSummary.links.items.clicks': hostAnalyticsCallableResponseLinkSummaryLinksItemsClicks,
+    'hostAnalyticsCallableResponse.linkSummary.links.items.label': hostAnalyticsCallableResponseLinkSummaryLinksItemsLabel,
+    'hostAnalyticsCallableResponse.linkSummary.links.items.linkId': hostAnalyticsCallableResponseLinkSummaryLinksItemsLinkId,
+    'hostAnalyticsCallableResponse.linkSummary.links.items.organizerId': hostAnalyticsCallableResponseLinkSummaryLinksItemsOrganizerId,
+    'hostAnalyticsCallableResponse.linkSummary.trafficSources': hostAnalyticsCallableResponseLinkSummaryTrafficSources,
+    'hostAnalyticsCallableResponse.linkSummary.trafficSources.items.clicks': hostAnalyticsCallableResponseLinkSummaryTrafficSourcesItemsClicks,
+    'hostAnalyticsCallableResponse.linkSummary.trafficSources.items.source': hostAnalyticsCallableResponseLinkSummaryTrafficSourcesItemsSource,
     'hostAnalyticsCallableResponse.range.endDate': hostAnalyticsCallableResponseRangeEndDate,
     'hostAnalyticsCallableResponse.range.granularity': hostAnalyticsCallableResponseRangeGranularity,
     'hostAnalyticsCallableResponse.range.preset': hostAnalyticsCallableResponseRangePreset,
@@ -186334,12 +186501,14 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsEvent.event_date': hostAnalyticsEventEventDate,
     'hostAnalyticsEvent.event_name': hostAnalyticsEventEventName,
     'hostAnalyticsEvent.ingested_at': hostAnalyticsEventIngestedAt,
+    'hostAnalyticsEvent.link_id': hostAnalyticsEventLinkId,
     'hostAnalyticsEvent.occurred_at': hostAnalyticsEventOccurredAt,
     'hostAnalyticsEvent.page_path': hostAnalyticsEventPagePath,
     'hostAnalyticsEvent.platform': hostAnalyticsEventPlatform,
     'hostAnalyticsEvent.session_hash': hostAnalyticsEventSessionHash,
     'hostAnalyticsEvent.source': hostAnalyticsEventSource,
     'hostAnalyticsEvent.target_event_id': hostAnalyticsEventTargetEventId,
+    'hostAnalyticsEvent.traffic_source': hostAnalyticsEventTrafficSource,
     'hostAnalyticsQueryCallablePayload.clubId': hostAnalyticsQueryCallablePayloadClubId,
     'hostAnalyticsQueryCallablePayload.endDate': hostAnalyticsQueryCallablePayloadEndDate,
     'hostAnalyticsQueryCallablePayload.eventId': hostAnalyticsQueryCallablePayloadEventId,
@@ -186363,11 +186532,20 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsSnapshotDocument.response.discoverySummary.contactClicks': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryContactClicks,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.eventSaves': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryEventSaves,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.eventViews': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryEventViews,
+    'hostAnalyticsSnapshotDocument.response.discoverySummary.linkClicks': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryLinkClicks,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.listingViews': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryListingViews,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.organizerSaves': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryOrganizerSaves,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.outboundClicks': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryOutboundClicks,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.searchAppearances': hostAnalyticsSnapshotDocumentResponseDiscoverySummarySearchAppearances,
     'hostAnalyticsSnapshotDocument.response.generatedAt': hostAnalyticsSnapshotDocumentResponseGeneratedAt,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.links': hostAnalyticsSnapshotDocumentResponseLinkSummaryLinks,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.clicks': hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsClicks,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.label': hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsLabel,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.linkId': hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsLinkId,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.organizerId': hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsOrganizerId,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources': hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSources,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources.items.clicks': hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSourcesItemsClicks,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources.items.source': hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSourcesItemsSource,
     'hostAnalyticsSnapshotDocument.response.range.endDate': hostAnalyticsSnapshotDocumentResponseRangeEndDate,
     'hostAnalyticsSnapshotDocument.response.range.granularity': hostAnalyticsSnapshotDocumentResponseRangeGranularity,
     'hostAnalyticsSnapshotDocument.response.range.preset': hostAnalyticsSnapshotDocumentResponseRangePreset,
@@ -193952,11 +194130,13 @@ abstract final class CatchContractConstraints {
     'recordOrganizerAnalyticsEventCallablePayload.clubId': recordOrganizerAnalyticsEventCallablePayloadClubId,
     'recordOrganizerAnalyticsEventCallablePayload.eventId': recordOrganizerAnalyticsEventCallablePayloadEventId,
     'recordOrganizerAnalyticsEventCallablePayload.eventName': recordOrganizerAnalyticsEventCallablePayloadEventName,
+    'recordOrganizerAnalyticsEventCallablePayload.linkId': recordOrganizerAnalyticsEventCallablePayloadLinkId,
     'recordOrganizerAnalyticsEventCallablePayload.organizerId': recordOrganizerAnalyticsEventCallablePayloadOrganizerId,
     'recordOrganizerAnalyticsEventCallablePayload.pagePath': recordOrganizerAnalyticsEventCallablePayloadPagePath,
     'recordOrganizerAnalyticsEventCallablePayload.platform': recordOrganizerAnalyticsEventCallablePayloadPlatform,
     'recordOrganizerAnalyticsEventCallablePayload.sessionId': recordOrganizerAnalyticsEventCallablePayloadSessionId,
     'recordOrganizerAnalyticsEventCallablePayload.source': recordOrganizerAnalyticsEventCallablePayloadSource,
+    'recordOrganizerAnalyticsEventCallablePayload.trafficSource': recordOrganizerAnalyticsEventCallablePayloadTrafficSource,
     'recordOrganizerAnalyticsEventCallableResponse.accepted': recordOrganizerAnalyticsEventCallableResponseAccepted,
     'recordOrganizerContactOutreachCallablePayload.channel': recordOrganizerContactOutreachCallablePayloadChannel,
     'recordOrganizerContactOutreachCallablePayload.contactId': recordOrganizerContactOutreachCallablePayloadContactId,

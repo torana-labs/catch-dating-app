@@ -247396,7 +247396,8 @@ export const hostAnalyticsEventSchema = {
         "eventSave",
         "contactClick",
         "claimClick",
-        "outboundClick"
+        "outboundClick",
+        "linkClick"
       ]
     },
     "club_id": {
@@ -247441,6 +247442,37 @@ export const hostAnalyticsEventSchema = {
         "null"
       ],
       "maxLength": 40
+    },
+    "link_id": {
+      "description": "The owner link a linkClick opened; null for other events.",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "traffic_source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "instagram",
+        "whatsapp",
+        "facebook",
+        "google",
+        "qr",
+        "email",
+        "direct",
+        "other",
+        null
+      ],
+      "description": "Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent."
     },
     "ingested_at": {
       "type": "string",
@@ -250077,6 +250109,7 @@ export const hostAnalyticsSnapshotDocumentSchema = {
         "topEvents",
         "reviewSummary",
         "discoverySummary",
+        "linkSummary",
         "dataQuality"
       ],
       "properties": {
@@ -250504,7 +250537,8 @@ export const hostAnalyticsSnapshotDocumentSchema = {
             "eventSaves",
             "contactClicks",
             "claimClicks",
-            "outboundClicks"
+            "outboundClicks",
+            "linkClicks"
           ],
           "properties": {
             "listingViews": {
@@ -250538,6 +250572,90 @@ export const hostAnalyticsSnapshotDocumentSchema = {
             "outboundClicks": {
               "type": "integer",
               "minimum": 0
+            },
+            "linkClicks": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "linkSummary": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Owner link clicks in the range (CAT-254): each link's total, most clicked first, and where the clicking visitors came from. Event-scoped reports have none.",
+          "required": [
+            "links",
+            "trafficSources"
+          ],
+          "properties": {
+            "links": {
+              "type": "array",
+              "maxItems": 50,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "organizerId",
+                  "linkId",
+                  "label",
+                  "clicks"
+                ],
+                "properties": {
+                  "organizerId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "linkId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "label": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80,
+                    "description": "The link's current label; null once the owner has removed it."
+                  },
+                  "clicks": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "trafficSources": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "source",
+                  "clicks"
+                ],
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "instagram",
+                      "whatsapp",
+                      "facebook",
+                      "google",
+                      "qr",
+                      "email",
+                      "direct",
+                      "other"
+                    ]
+                  },
+                  "clicks": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
             }
           }
         },
@@ -258956,6 +259074,7 @@ export const hostAnalyticsCallableResponseSchema = {
     "topEvents",
     "reviewSummary",
     "discoverySummary",
+    "linkSummary",
     "dataQuality"
   ],
   "properties": {
@@ -259383,7 +259502,8 @@ export const hostAnalyticsCallableResponseSchema = {
         "eventSaves",
         "contactClicks",
         "claimClicks",
-        "outboundClicks"
+        "outboundClicks",
+        "linkClicks"
       ],
       "properties": {
         "listingViews": {
@@ -259417,6 +259537,90 @@ export const hostAnalyticsCallableResponseSchema = {
         "outboundClicks": {
           "type": "integer",
           "minimum": 0
+        },
+        "linkClicks": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "linkSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Owner link clicks in the range (CAT-254): each link's total, most clicked first, and where the clicking visitors came from. Event-scoped reports have none.",
+      "required": [
+        "links",
+        "trafficSources"
+      ],
+      "properties": {
+        "links": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "linkId",
+              "label",
+              "clicks"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "linkId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "label": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80,
+                "description": "The link's current label; null once the owner has removed it."
+              },
+              "clicks": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "trafficSources": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source",
+              "clicks"
+            ],
+            "properties": {
+              "source": {
+                "type": "string",
+                "enum": [
+                  "instagram",
+                  "whatsapp",
+                  "facebook",
+                  "google",
+                  "qr",
+                  "email",
+                  "direct",
+                  "other"
+                ]
+              },
+              "clicks": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
         }
       }
     },
@@ -280369,8 +280573,40 @@ export const recordOrganizerAnalyticsEventCallablePayloadSchema = {
         "eventSave",
         "contactClick",
         "claimClick",
-        "outboundClick"
+        "outboundClick",
+        "linkClick"
       ]
+    },
+    "linkId": {
+      "description": "The owner link a linkClick opened, one of the organizer's ownerLinks ids. Other events send null.",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "trafficSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "instagram",
+        "whatsapp",
+        "facebook",
+        "google",
+        "qr",
+        "email",
+        "direct",
+        "other",
+        null
+      ],
+      "description": "Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent."
     },
     "pagePath": {
       "type": "string",
@@ -280397,6 +280633,26 @@ export const recordOrganizerAnalyticsEventCallablePayloadSchema = {
         "null"
       ],
       "maxLength": 40
+    }
+  },
+  "definitions": {
+    "trafficSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "instagram",
+        "whatsapp",
+        "facebook",
+        "google",
+        "qr",
+        "email",
+        "direct",
+        "other",
+        null
+      ],
+      "description": "Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent."
     }
   }
 };

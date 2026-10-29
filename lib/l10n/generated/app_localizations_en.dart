@@ -393,6 +393,40 @@ class AppLocalizationsEn extends AppLocalizations {
       'Outbound source clicks';
 
   @override
+  String get hostsHostAnalyticsLabelLinkClicks => 'Link clicks';
+
+  @override
+  String get hostsHostAnalyticsLabelRemovedLink => 'Removed link';
+
+  @override
+  String hostsHostAnalyticsLabelTrafficSource({required String source}) {
+    String _temp0 = intl.Intl.selectLogic(source, {
+      'instagram': 'Instagram',
+      'whatsapp': 'WhatsApp',
+      'facebook': 'Facebook',
+      'google': 'Google',
+      'qr': 'QR codes',
+      'email': 'Email',
+      'direct': 'Direct visits',
+      'other': 'Other places',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostsHostAnalyticsTextLinkClicksBySource({required String sources}) {
+    return 'Link clicks came from $sources.';
+  }
+
+  @override
+  String hostsHostAnalyticsTextTrafficSourceClicks({
+    required String source,
+    required String count,
+  }) {
+    return '$source $count';
+  }
+
+  @override
   String get hostsHostAnalyticsTextPresenceUnavailable =>
       'Presence data is unavailable for this range. Missing data is shown as —.';
 
