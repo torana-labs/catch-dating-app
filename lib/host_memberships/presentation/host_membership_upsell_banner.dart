@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/host_memberships/domain/host_membership_event_facts.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';

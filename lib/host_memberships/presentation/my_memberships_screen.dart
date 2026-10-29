@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_copy.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_section.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_controller.dart';

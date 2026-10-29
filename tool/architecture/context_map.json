@@ -77,7 +77,6 @@
 
     {"path": "lib/payments/", "context": "payments"},
     {"path": "lib/host_memberships/", "context": "payments"},
-    {"path": "lib/hosts/data/host_membership_admin_repository.dart", "context": "payments"},
 
     {"path": "lib/reviews/", "context": "reviews"},
 

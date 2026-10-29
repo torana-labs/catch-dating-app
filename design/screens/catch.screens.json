@@ -27081,7 +27081,7 @@
             "symbol": "myMembershipsViewModel"
           },
           {
-            "file": "lib/host_memberships/data/host_membership_repository.dart",
+            "file": "lib/contexts/payments/data/host_membership_repository.dart",
             "symbol": "watchMyMemberships"
           },
           {

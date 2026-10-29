@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'host_membership_admin_repository.dart';
+part of '../../contexts/payments/data/host_membership_admin_repository.dart';
 
 // **************************************************************************
 // RiverpodGenerator

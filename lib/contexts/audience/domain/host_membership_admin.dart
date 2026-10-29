@@ -1,5 +1,4 @@
-import 'package:catch_dating_app/host_memberships/domain/host_membership_fields.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_plan.dart';
+import 'package:catch_dating_app/contexts/payments/payments.dart';
 
 enum HostMembershipBillingPauseState {
   active,

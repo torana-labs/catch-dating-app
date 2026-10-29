@@ -13677,7 +13677,7 @@
             "lib/host_memberships/presentation/my_memberships_state.dart",
             "lib/host_memberships/presentation/my_memberships_view_model.dart",
             "lib/host_memberships/presentation/host_membership_section.dart",
-            "lib/host_memberships/data/host_membership_repository.dart"
+            "lib/contexts/payments/data/host_membership_repository.dart"
           ],
           "componentIds": [
             "catch.badge",

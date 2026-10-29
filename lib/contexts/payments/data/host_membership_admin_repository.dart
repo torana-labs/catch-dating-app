@@ -1,13 +1,13 @@
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_fields.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_fields.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/hosts/domain/host_membership_admin.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'host_membership_admin_repository.g.dart';
+part '../../../hosts/data/host_membership_admin_repository.g.dart';
 
 enum HostMembershipProgramCommand {
   get,

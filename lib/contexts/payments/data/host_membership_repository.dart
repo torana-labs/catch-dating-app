@@ -1,11 +1,11 @@
+import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_benefit_use.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_checkout.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_benefit_use.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_checkout.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_plan.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/host_memberships/domain/host_membership_fields.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_fields.dart';
 
 /// One booking a member made at a member price.
 class HostMembershipBenefitUse {

@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/payments/data/host_membership_admin_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/host_memberships/host_memberships.dart';
-import 'package:catch_dating_app/hosts/data/host_membership_admin_repository.dart';
 import 'package:catch_dating_app/hosts/domain/host_membership_admin.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_membership_plan_editor_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_controller.dart';

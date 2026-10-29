@@ -1,12 +1,12 @@
+import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_checkout.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/host_memberships/data/host_membership_repository.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_checkout.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_copy.dart';
 import 'package:catch_dating_app/host_memberships/presentation/host_membership_join_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/host_memberships/domain/host_membership_event_facts.dart';
+import 'package:catch_dating_app/contexts/payments/payments.dart';
 
 /// Auth-scoped observation from the canonical viewer read. It never grants a
 /// reservation; each booking command rechecks its own current authority.

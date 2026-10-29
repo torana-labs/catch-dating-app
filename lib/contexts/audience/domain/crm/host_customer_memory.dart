@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/audience/domain/crm/crm_response_fields.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership.dart';
+import 'package:catch_dating_app/contexts/payments/payments.dart';
 
 class HostCustomerTraits {
   const HostCustomerTraits({

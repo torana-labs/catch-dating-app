@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/host_memberships/domain/host_membership.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_benefit_use.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_plan.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_benefit_use.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 
 const testPlanId = 'hmp_AbCdEfGhIjKlMnOpQrSt';
 const testMembershipId =

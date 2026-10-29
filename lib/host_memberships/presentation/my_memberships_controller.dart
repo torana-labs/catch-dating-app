@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/host_memberships/data/host_membership_repository.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership.dart';
+import 'package:catch_dating_app/contexts/payments/data/host_membership_repository.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

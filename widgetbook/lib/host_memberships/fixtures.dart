@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/host_memberships/domain/host_membership.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_benefit_use.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_event_facts.dart';
-import 'package:catch_dating_app/host_memberships/domain/host_membership_plan.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_benefit_use.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_event_facts.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/host_memberships/presentation/my_memberships_state.dart';
 import 'package:catch_dating_app/hosts/domain/host_membership_admin.dart';
 import 'package:catch_dating_app/hosts/presentation/memberships/host_memberships_state.dart';
