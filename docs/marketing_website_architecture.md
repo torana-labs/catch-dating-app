@@ -1,7 +1,7 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.17.0
-updated: 2026-10-25
+version: 0.17.1
+updated: 2026-10-28
 owner: marketing_website
 status: active
 ---
@@ -350,27 +350,19 @@ The website is already split out of the old monolithic shell:
   `website/src/shared/ui/primitives/` as `ProcessStatusPanel`. Claim route
   sections own state-specific copy and CTA analytics callbacks, but configure
   the shared panel instead of rendering raw `process-status-panel` shells.
-- Shared Event Success grids are configured through
-  `EventSuccessModuleGrid` and `ListingSuccessMetricGrid`.
-  `SuccessGrid` is an internal implementation detail; feature sections pass
-  module or metric arrays instead of composing `SuccessGrid` children directly.
 - `website/src/features/host/HostPages.tsx` is a compatibility re-export only.
 - `website/src/features/home/HomePage.tsx` is now a thin home route shell.
   Visible Home route sections live in
   `website/src/features/home/sections/consumerHomeSections.tsx`, with route and
   section Storybook coverage registered in `design/website/components.json`.
 - Shared marketing shells live in `website/src/shared/ui/primitives/` as
-  `MarketingLoopList` and `FeaturedOrganizerCardGrid`; feature sections
-  configure them with item arrays and route-specific copy.
+  `MarketingLoopList`; feature sections configure it with item arrays and
+  route-specific copy.
 - Shared marketing consent banner presentation lives in
   `website/src/shared/ui/primitives/` as `MarketingConsentBannerShell`.
   `website/src/features/marketing/MarketingConsentBanner.tsx` owns consent
   state and analytics choices, but configures the shared shell instead of
   rendering raw `consent-banner` markup.
-- Featured organizer cards use `FeaturedOrganizerCardGrid`; listing
-  recommendations provide card item config through
-  `featuredOrganizerCardItemForListing` rather than rendering feature-owned
-  mini-card shells.
 - App-download CTAs and store buttons were retired in CAT-218 (Linear
   CAT-224). `web:react-component-governance` still blocks raw
   `app-download-ctas` and `store-button` markup, so a rebuild goes through
@@ -388,52 +380,25 @@ The website is already split out of the old monolithic shell:
   organizer-owned search sections from
   `website/src/features/organizers/sections/OrganizerSearchSections.tsx`; the
   controller remains the URL/search-param state owner.
-- `website/src/features/organizers/HostListingPage.tsx` now uses
-  `website/src/features/organizers/useHostListingPageController.ts` for
-  listing-derived nav, claim CTA, save/share state, local persistence, and
-  listing analytics, and
-  `website/src/features/organizers/sections/HostListingSections.tsx` for the
-  ordered route-section assembly. The visible listing sections retain their own
-  Storybook/component-registry entries.
-- Shared organizer listing shells live in
-  `website/src/shared/ui/primitives/` as `ListingSection`,
-  `ListingSectionIntro`, `ListingFactGrid`, `ListingFormatRow`,
-  `ListingEventEvidenceList`, and `ListingReview*`.
-  Organizer sections configure those primitives; they do not render raw
-  `listing-*` structural shells or revealed intro wrappers directly.
-- `ListingFactsSection.tsx` owns the compact About and organizer-format
-  presentation beneath the polaroid.
-- `ListingEventsSections.tsx` owns event data selection and outbound analytics
-  behavior, but configures `ListingEventEvidenceList` instead of composing
-  event card/meta shells directly.
-- `ListingSourcesSection.tsx` owns source data and analytics event selection,
-  but configures the compact `ListingRailLinkList` so sources remain visible in
-  the sticky action rail without feature-owned anchor shells.
-- Shared organizer profile shells live in
-  `website/src/shared/ui/primitives/` as `ListingProfileLayout`,
-  `ListingProfilePrimary`, `ListingProfileRail`, `ListingPolaroid`,
-  `ListingStatusLedger`, and the `ListingRail*` slots. `ListingHeroSection`
-  owns listing data and the Catch polaroid presentation, while
-  `ListingHeroRailSection` owns capability-aware claim, save, share, and
-  ownership presentation. Organizer profiles use a white-mat polaroid with a
-  mono location caption and upright Archivo identity; event notches,
-  perforation, and ticket-stub typography remain exclusive to Event Detail.
-- Shared organizer listing review shells live in
-  `website/src/shared/ui/primitives/` as `ListingReviewSummary`,
-  `ListingReviewWorkspace`, `ListingReviewLanes`, `ReviewSignalLane`,
-  `ReviewSignalCard`, `OwnerResponsePrompt`, `ListingReviewEmptyState`,
-  `ListingReviewForm`, and `ListingReviewCheckbox`. `ListingReviewsSection`
-  owns review controller state, copy, submission behavior, and analytics
-  callbacks, but configures shared review shells instead of rendering raw
-  `review-signal-*`, `owner-response-prompt`, `listing-owner-response`, or
-  `listing-review-*` form/state markup.
-- Shared organizer listing claim shells live in
-  `website/src/shared/ui/primitives/` as `ClaimMissingEvidenceList` and
-  `ClaimRequestForm`, alongside the existing `ClaimBand*` and
-  `ClaimRequestPanel*` primitives. `ListingClaimSections.tsx` owns claim
-  controller state, auth actions, copy, and analytics, but configures shared
-  claim list/form shells instead of rendering raw `missing-list` or
-  `claim-request-form` markup.
+- `website/src/features/organizers/HostListingPage.tsx` renders the organiser
+  page, a link-in-bio page rebuilt in CAT-251 from the `organizerPublicPage`
+  read model. `organizerPage.ts` turns the read model (or, without one, the
+  listing) into an `OrganizerPageRecord`, and `organizerPageView.ts` derives
+  what the page shows at the read time.
+  `useOrganizerPageController.ts` owns the viewer role, follow, share and QR,
+  the hidden follow-by-phone and review seams, and the organiser analytics for
+  link, event and claim clicks.
+  `sections/HostListingSections.tsx` arranges the sections in
+  `sections/organizerPage/` on a `CatchSplit`: the identity, next-up and links
+  rail, then the claim pitch, events, past moments, reviews, about and footer.
+  Every visual part is a `@catch/web-ui` component (D18); the sections bind
+  data and copy only.
+- Organiser and event pages render reviews with `CatchReviewItem` from
+  `@catch/web-ui`, including the organiser's reply. The old listing review
+  shells (`ReviewSignalLane`, `ReviewSignalCard` and the `ListingReview*`
+  wrappers) were retired with those pages (CAT-251, CAT-252).
+- Claim request forms use `ClaimRequestForm` from
+  `website/src/shared/ui/primitives/`.
 - Shared organizer search result shells live in
   `website/src/shared/ui/primitives/` as `OrganizerResultCard*` and
   `OrganizerEventHighlights`. Organizer search sections configure those
@@ -473,7 +438,7 @@ The website is already split out of the old monolithic shell:
   `website/src/stories/HostSections.stories.tsx`, and
   `website/src/stories/ClaimSections.stories.tsx`,
   `website/src/stories/OrganizerSearchSections.stories.tsx`, and
-  `website/src/stories/OrganizerListingSections.stories.tsx` provide the first
+  `website/src/stories/OrganizerPage.stories.tsx` provide the first
   component-first workbench for route-linked and section-linked review.
 - Website CSS is split from the former `shared-core.css` aggregate into
   ordered ownership files under `website/src/styles/**`. `responsive.css`
@@ -571,7 +536,7 @@ aggregation points:
 | File | Current role | Refactor pressure |
 |---|---|---|
 | `website/src/features/home/HomePage.tsx` | Thin home route shell that wires site chrome to `consumerHomeSections` | Keep route assembly here; move future Home section edits into `features/home/sections/` and only promote neutral, repeated shells to shared UI. |
-| `website/src/features/organizers/HostListingPage.tsx` | Thin listing route shell that wires site chrome to `useHostListingPageController` and `HostListingSections` | Keep page-local sections under `features/organizers/sections/`; avoid moving listing-specific blocks into shared UI too early. |
+| `website/src/features/organizers/HostListingPage.tsx` | Thin organiser page shell that wires `useOrganizerPageController` to `HostListingSections`, with site chrome on generated pages only | Keep page sections under `features/organizers/sections/organizerPage/`; new visual parts go into `@catch/web-ui`, not feature code. |
 | `website/src/features/host/HostPage.tsx` | Canonical host assembly with core, supporting, and Playbook section imports | Keep the route file as a table of contents; section bodies stay under `features/host/sections/`. |
 | `website/src/features/claims/ClaimPage.tsx` | Thin claim route shell using injected `ClaimRouteState`, `useClaimFlowController`, and `ClaimPageSections` | Keep route URL parsing in `features/claims/claimRouting.ts` and the React Router shell; keep auth/submission behavior in the controller; keep visible route sections in `features/claims/sections/`. |
 | `website/src/shared/ui/primitives/` | Family-split governed visual primitives used by website feature sections | Keep repeated shell markup in the relevant family module; state, analytics, and domain mapping stay in feature controllers/adapters. |
@@ -857,21 +822,14 @@ website/src/
     organizers/
       OrganizerSearchPage.tsx
       HostListingPage.tsx
+      organizerPage.ts
+      organizerPageView.ts
       useOrganizerDirectoryController.ts
-      useHostListingPageController.ts
-      components/
-      data/
-        generatedListings.ts
-        publicDiscovery.ts
+      useOrganizerPageController.ts
       sections/
         OrganizerSearchSections.tsx
         HostListingSections.tsx
-        ListingHeroSection.tsx
-        ListingFactsSection.tsx
-        ListingEventsSections.tsx
-        ListingClaimSections.tsx
-        ListingReviewsSection.tsx
-        ListingSourcesSection.tsx
+        organizerPage/
       routing.ts
       selectors.ts
       types.ts
@@ -898,7 +856,6 @@ website/src/
     site/
       SiteHeader.tsx
       SiteFooter.tsx
-      SectionHeader.tsx
     ui/
       Button.tsx
       Field.tsx
@@ -980,31 +937,25 @@ website/src/
    metadata, lazy route chunks, and postbuild HTML before moving deeper URL state
    or adding component-first review.
 
-2. Keep `HostListingPage` decomposed.
+2. Keep the organiser page a table of contents.
 
-   `HostListingPage` crosses generated listings, legacy metadata, claim CTA
-   behavior, reviews, save/share, event cards, and public API state. Keep the
-   route file as site chrome plus `HostListingSections`, with
-   `useHostListingPageController` owning listing-derived nav, save/share state,
-   local persistence, and analytics side effects.
+   `HostListingPage` stays a thin shell. `useOrganizerPageController` owns
+   follow, share, the hidden backend seams and analytics, and
+   `HostListingSections` only arranges the sections in
+   `sections/organizerPage/`:
 
-   `HostListingSections` should remain the route-level table of contents for
-   page-local sections:
+   - `OrganizerIdentitySection`
+   - `OrganizerNextUpSection`
+   - `OrganizerLinksSection`
+   - `OrganizerClaimSection`
+   - `OrganizerEventsSection`
+   - `OrganizerMomentsSection`
+   - `OrganizerReviewsSection`
+   - `OrganizerAboutSection`
+   - `OrganizerPageFooter`
 
-   - `ListingHeroSection`
-   - `ListingFactsSection`
-   - `ListingCatchEventsSection`
-   - `ListingExternalEventsSection`
-   - `ListingEventEvidenceSection`
-   - `ListingReviewsSection`
-   - `ListingEventSuccessSection`
-   - `ListingSourcesSection`
-   - `ListingMissingEvidenceSection`
-   - `RecommendedOrganizersSection`
-
-   The page should continue to read as a table of contents, with business logic
-   staying in selectors/controllers and visible sections retaining their
-   component-registry and Storybook coverage.
+   Business logic stays in `organizerPageView.ts` and the controller, and each
+   section keeps its component-registry and Storybook coverage.
 
 3. Keep `HostPages` split.
 
@@ -1058,7 +1009,7 @@ website/src/
    `stateCoverage` synchronized with `routes.json`. `HostSections.stories.tsx`
    covers the shared host sections plus the Host Preview route section layer.
    `ClaimSections.stories.tsx`, `OrganizerSearchSections.stories.tsx`, and
-   `OrganizerListingSections.stories.tsx` cover the first claim/organizer
+   `OrganizerPage.stories.tsx` cover the first claim/organizer
    section layers. Add
    route plus section stories before smaller reusable component atoms.
 

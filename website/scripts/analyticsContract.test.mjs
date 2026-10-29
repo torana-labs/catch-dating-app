@@ -233,7 +233,7 @@ function installBrowserFixture() {
 test("event detail rendered views use the backend source vocabulary and shared public chrome", () => {
   const page = readFileSync(new URL("../src/features/events/EventDetailPage.tsx", import.meta.url), "utf8");
   const ingestion = readFileSync(new URL("../../functions/src/analytics/organizerAnalyticsEvents.ts", import.meta.url), "utf8");
-  const source = page.match(/observeOrganizerPageView\(event\.listing,\s*"eventView",\s*"([^"]+)"/u)?.[1];
+  const source = page.match(/observeOrganizerPageView\(listing,\s*"eventView",\s*"([^"]+)"/u)?.[1];
   assert.equal(source, "event_detail");
   const allowedSources = ingestion.match(/const publicSources = new Set\(\[([\s\S]*?)\]\);/u)?.[1];
   assert.ok(allowedSources?.includes(`"${source}"`), "rendered view source must survive backend normalization");

@@ -4,7 +4,6 @@
 @import "./styles/site-shell.css";
 @import "./styles/home.css";
 @import "./styles/organizers.css";
-@import "./styles/event-detail.css";
 @import "./styles/site-footer.css";
 @import "./styles/host-foundation.css";
 @import "./styles/reveal.css";
@@ -17,6 +16,4 @@
 @import "./styles/consumer-home.css";
 @import "./styles/explore.css";
 @import "./styles/organiser-directory.css";
-@import "./styles/organiser-profile.css";
-@import "./styles/consumer-event.css";
 @import "./styles/host-landing.css";

@@ -133,7 +133,9 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `addOrganizerManager` / `removeOrganizerManager` / `transferOrganizerOwnership` | `src/organizers/` | Organizer team and ownership management surface |
 | `followOrganizer` / `unfollowOrganizer` / `setOrganizerNotificationPreference` | `src/organizers/` | Follow/unfollow an organizer and manage follower notifications |
 | `createOrganizerPost` | `src/organizers/` | Moderated, idempotent organizer follower update with quota, durable delivery operation and bounded immediate fan-out |
-| `requestOrganizerClaim` / `adminDecideOrganizerClaim` | `src/organizers/organizerClaims.ts` | Canonical organizer claim submission and audited admin decision |
+| `requestOrganizerClaim` / `adminDecideOrganizerClaim` | `src/organizers/organizerClaims.ts` | Canonical organizer claim submission and audited admin decision; approval itself is `prepareOrganizerClaimApproval` in `src/organizers/organizerClaimApproval.ts` |
+| `getOrganizerClaimVerificationOptions` / `startOrganizerClaimVerification` | `src/organizers/organizerClaimVerification.ts` | Which proofs a listing offers, and a 30-minute claim code bound to one listing and account; Instagram stays off until `CATCH_INSTAGRAM_CLAIMS_ENABLED` |
+| `instagramClaimWebhook` | `src/organizers/instagramClaimWebhook.ts` | Dormant until the Meta app exists. Meta webhook for direct messages to Catch's Instagram account: signed, once per message, rate-limited per sender; a code from the listing's own account approves the claim |
 | `startOrganizerConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a viewer conversation with an organizer |
 | `sendEventBroadcast` | `src/events/` | Host-only, event-scoped Activity and preference-gated push broadcast with an idempotent receipt and organizer Sends projection |
 | `importEventAttendees` / `markEventAttendeeAttendance` | `src/events/eventAttendees.ts` | Import or manually add an external roster and manage operational check-in without Consumer booking |

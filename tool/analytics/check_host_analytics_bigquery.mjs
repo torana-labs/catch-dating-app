@@ -41,6 +41,7 @@ const expectedMartColumns = [
   "claim_clicks",
   "outbound_clicks",
   "outbound_booking_clicks",
+  "link_clicks",
   "refreshed_at",
 ];
 
@@ -84,12 +85,16 @@ const publicEvents = readText("functions/src/analytics/organizerAnalyticsEvents.
 requireText(ddlEvents, "CREATE TABLE IF NOT EXISTS `%s.%s.host_analytics_events`");
 requireText(ddlEvents, "PARTITION BY event_date");
 requireText(ddlEvents, "CLUSTER BY club_id, target_event_id, event_name");
+requireText(ddlEvents, "ADD COLUMN IF NOT EXISTS link_id STRING");
+requireText(ddlEvents, "ADD COLUMN IF NOT EXISTS traffic_source STRING");
 
 requireText(ddlMart, "CREATE TABLE IF NOT EXISTS `%s.%s.mart_host_event_daily`");
 requireText(ddlMart, "ADD COLUMN IF NOT EXISTS checkout_started_count INT64");
 requireText(ddlMart, "ADD COLUMN IF NOT EXISTS checkout_dropoff_count INT64");
 requireText(ddlMart, "PARTITION BY date");
 requireText(ddlMart, "CLUSTER BY club_id, event_id");
+requireText(ddlMart, "ADD COLUMN IF NOT EXISTS link_clicks INT64");
+requireText(ddlMart, "CREATE TABLE IF NOT EXISTS `%s.%s.mart_host_link_daily`");
 for (const column of expectedMartColumns) {
   requireText(ddlMart, `${column} `, `mart DDL missing column ${column}`);
 }
@@ -116,6 +121,9 @@ requireText(refresh, "direct_discovery_counts");
 requireText(refresh, "ga4_discovery_counts");
 requireText(refresh, "COUNT(DISTINCT analytics_event_id)");
 requireText(refresh, "FROM direct_discovery_counts");
+requireText(refresh, "SUM(u.link_clicks) AS link_clicks");
+requireText(refresh, "DELETE FROM `%s.%s.mart_host_link_daily`");
+requireText(refresh, "INSERT INTO `%s.%s.mart_host_link_daily`");
 forbidText(refresh, "FULL OUTER JOIN ga4_discovery_counts", "Ad events must not inflate first-party counters");
 
 requireText(deploy, "ddl/host_analytics_events.sql");
@@ -132,6 +140,7 @@ forbidText(
 
 requireText(bqSource, "mart_host_event_daily");
 requireText(bqSource, "HOST_ANALYTICS_MART_TABLE");
+requireText(bqSource, "mart_host_link_daily");
 requireText(publicEvents, "host_analytics_events");
 requireText(publicEvents, "sessionHash(");
 requireText(publicEvents, "assertOrganizerScope(");

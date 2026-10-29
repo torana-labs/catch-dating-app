@@ -262,10 +262,6 @@ export function activityForKind(kind: string): ActivityMeta {
   return activityMeta.open;
 }
 
-export function absoluteListingUrl(listing: HostListing) {
-  return `${window.location.origin}${listing.path}`;
-}
-
 export function eventAnchorId(event: HostListingCatchEvent) {
   return `event-${event.id}`;
 }
@@ -305,14 +301,7 @@ export function eventActionCardForListing(
     trackingLabel: "listing_event_open_details",
   }];
 
-  if (event.scorecard) {
-    actions.push({
-      href: "#event-success",
-      label: websiteCopy["publicdiscovery_0361"],
-      variant: "secondary",
-      trackingLabel: "listing_event_success",
-    });
-  } else if (organizerPolicyForListing(listing).canReadPublicReviews) {
+  if (organizerPolicyForListing(listing).canReadPublicReviews) {
     actions.push({
       href: "#reviews",
       label: organizerListingCopy.eventActions.readOrganizerReviews,

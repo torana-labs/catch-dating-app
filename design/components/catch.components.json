@@ -4609,7 +4609,7 @@
             "dark"
           ]
         },
-        "notes": "React implements CatchField.input and CatchField.select as recipe=\"input\" | \"select\" on one component. The input recipe takes a controlled value where Flutter passes a controller, renders a text area when maxLines is not 1, and adds native min, max, step, pattern and minLength. The select recipe keys options through itemValueBuilder because web options are strings, and takes labelMode where Flutter's select takes showLabel. Native form attributes (id, name, form, required, autoComplete) pass through."
+        "notes": "React implements CatchField.input and CatchField.select as recipe=\"input\" | \"select\" on one component. The input recipe takes a controlled value where Flutter passes a controller, renders a text area when maxLines is not 1, and adds native min, max, step, pattern and minLength. The select recipe keys options through itemValueBuilder because web options are strings, and takes labelMode where Flutter's select takes showLabel. Native form attributes (id, name, form, required, autoComplete) pass through. Inside a Website v2 CatchGroundCard the field takes the boards' boxed input at rest from the card's --catch-field-rest-fill, --catch-field-rest-line and --catch-field-rest-stroke (field.restLineAlpha, field.restTintOnDarkAlpha); elsewhere it stays the quiet row, matching Flutter."
       },
       "level": "L3",
       "roleNoun": "Field",
@@ -7139,7 +7139,7 @@
       "name": "CatchSheet",
       "status": "active",
       "kind": "composite",
-      "tier": "T3",
+      "tier": "T2",
       "aliases": ["BottomSheet", "ModalSheet", "ActionSheet", "DrawerSheet"],
       "summary": "Canonical sheet surface; standard recipe owns bounded whole-sheet scrolling, keyboard clearance, header, body and footer geometry.",
       "dart": {
@@ -7150,6 +7150,27 @@
           "CatchSheet.standard",
           "CatchSheet.filter"
         ]
+      },
+      "react": {
+        "symbol": "CatchSheet",
+        "file": "packages/web-ui/src/components/CatchSheet.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchSheet.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "plain",
+            "branded",
+            "badge",
+            "action",
+            "keyboard-safe",
+            "scrollable",
+            "without-grabber",
+            "filter"
+          ]
+        },
+        "notes": "A native modal dialog docked to the viewport's bottom edge, with the default, standard and filter recipes. Web props: open, and onClose on every recipe (Escape, the backdrop or the filter's Close dismiss it); children is Flutter's child; label names a sheet that has no title. keyboardSafe is accepted for parity, as the browser resizes the viewport for the keyboard itself. The header badge renders CatchBadge's functional recipe."
       },
       "design": {
         "figma": {
@@ -7173,57 +7194,66 @@
             "name": "child",
             "type": "widget",
             "required": true,
-            "dartType": "Widget"
+            "dartType": "Widget",
+            "tsType": "ReactNode"
           },
           {
             "name": "title",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "subtitle",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "footer",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "glyph",
             "type": "object",
             "required": false,
-            "dartType": "IconData?"
+            "dartType": "IconData?",
+            "tsType": "ReactNode"
           },
           {
             "name": "badge",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "trailing",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "grabber",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "keyboardSafe",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "mode",
@@ -7231,6 +7261,7 @@
             "required": false,
             "default": "content",
             "dartType": "CatchSheetMode",
+            "tsType": "CatchSheetMode",
             "values": [
               "content",
               "scrollable"
@@ -7242,6 +7273,7 @@
             "required": false,
             "default": "neutral",
             "dartType": "CatchBadgeTone",
+            "tsType": "CatchBadgeTone",
             "values": [
               "neutral",
               "brand",
@@ -7257,6 +7289,7 @@
             "type": "object",
             "required": false,
             "dartType": "EdgeInsetsGeometry?",
+            "tsType": "CSSProperties[\"padding\"]",
             "notes": "Bottom padding cannot undercut the sheet-owned terminal safe region."
           },
           {
@@ -7264,6 +7297,7 @@
             "type": "string",
             "required": false,
             "dartType": "String",
+            "tsType": "string",
             "notes": "Required on the filter recipe; localized dismissal label."
           },
           {
@@ -7271,6 +7305,7 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback",
+            "tsType": "() => void",
             "notes": "Required on the filter recipe; dismisses without committing."
           },
           {
@@ -7279,6 +7314,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
+            "tsType": "boolean",
             "notes": "Standard recipe only; filter always pins its owned secondary Close action."
           }
         ],
@@ -8080,6 +8116,31 @@
           "CatchMenu.anchored"
         ]
       },
+      "react": {
+        "symbol": "CatchMenu",
+        "file": "packages/web-ui/src/components/CatchMenu.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchMenu.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "action-row",
+            "choice-row",
+            "choice-row-selected",
+            "disabled-row",
+            "danger-row",
+            "with-icons",
+            "with-sublabels",
+            "sectioned",
+            "scrolling",
+            "anchored-selection",
+            "anchored-trigger"
+          ]
+        },
+        "notes": "Recipes panel (Flutter's CatchMenu) and anchored (CatchMenu.anchored). A menu whose rows are all choices is a listbox of options, otherwise a menu of items. Arrow keys, Home and End move between rows; Escape, Tab, a choice or an outside press close an anchored menu, and Escape returns focus to the trigger. The anchored panel opens on the side with more room inside a 16px viewport inset. Web additions: label names the menu for assistive technology, align picks the trigger edge, and the builder's controller (isOpen, open, close, toggle) adds triggerProps, the popup semantics, ref and keys to spread on the trigger; Flutter's builder child has no web use. Sublabels are ink2 because Flutter's ink3 is under 4.5:1. compact-selection-sheet is the CatchSelectionMenu member's adaptive sheet, which has no web member yet."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8124,7 +8185,7 @@
             "type": "callback",
             "required": false,
             "dartType": "CatchMenuBuilder",
-            "tsType": "(controller: {isOpen: boolean; open: () => void; close: () => void}, child: ReactNode) => ReactNode"
+            "tsType": "(controller: CatchMenuController) => ReactNode"
           },
           {
             "name": "controller",
@@ -16814,7 +16875,7 @@
       "name": "CatchDock",
       "status": "active",
       "kind": "composite",
-      "tier": "T3",
+      "tier": "T2",
       "aliases": ["BottomActionBar", "StickyFooter", "BottomBar", "ActionDock"],
       "summary": "Persistent docked controls with utility, platform-adaptive primary-action and embedded primary-content recipes.",
       "design": {
@@ -16840,6 +16901,7 @@
             "type": "string",
             "required": false,
             "dartType": "String",
+            "tsType": "string",
             "notes": "Required by primary and primaryContent."
           },
           {
@@ -16847,44 +16909,51 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?",
+            "tsType": "(() => void) | null",
             "notes": "Required by primary and primaryContent."
           },
           {
             "name": "leading",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "tsType": "ReactNode"
           },
           {
             "name": "buttonKey",
             "type": "object",
             "required": false,
-            "dartType": "Key?"
+            "dartType": "Key?",
+            "tsType": null
           },
           {
             "name": "isLoading",
             "type": "bool",
             "required": false,
             "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "backgroundColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "dividerColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "buttonAccentColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "buttonMode",
@@ -16892,6 +16961,7 @@
             "required": false,
             "default": "pill",
             "dartType": "CatchButtonMode",
+            "tsType": "CatchButtonMode",
             "values": [
               "pill",
               "rounded"
@@ -16901,45 +16971,52 @@
             "name": "catchLine",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "catchLineAccent",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "tsType": "string"
           },
           {
             "name": "footnote",
             "type": "string",
             "required": false,
-            "dartType": "String?"
+            "dartType": "String?",
+            "tsType": "string"
           },
           {
             "name": "child",
             "type": "widget",
             "required": false,
             "dartType": "Widget",
+            "tsType": "ReactNode",
             "notes": "Required by the default utility constructor."
           },
           {
             "name": "padding",
             "type": "object",
             "required": false,
-            "dartType": "EdgeInsetsGeometry"
+            "dartType": "EdgeInsetsGeometry",
+            "tsType": "CSSProperties[\"padding\"]"
           },
           {
             "name": "includeSafeArea",
             "type": "bool",
             "required": false,
             "default": true,
-            "dartType": "bool"
+            "dartType": "bool",
+            "tsType": "boolean"
           },
           {
             "name": "bottomPadding",
             "type": "number",
             "required": false,
             "dartType": "double",
+            "tsType": "number",
             "notes": "Available on primaryContent; its caller owns terminal clearance."
           }
         ],
@@ -17078,8 +17155,32 @@
         "constructors": [
           "CatchDock",
           "CatchDock.primary",
+          "CatchDock.pageAction",
           "CatchDock.primaryContent"
         ]
+      },
+      "react": {
+        "symbol": "CatchDock",
+        "file": "packages/web-ui/src/components/CatchDock.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchDock.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "android-anchored",
+            "leading-content",
+            "catch-line",
+            "footnote",
+            "loading",
+            "disabled",
+            "rounded-button",
+            "custom",
+            "custom-no-safe-area",
+            "embedded"
+          ]
+        },
+        "notes": "Recipes utility (Flutter's default constructor; children is Flutter's child), primary, pageAction and primaryContent. The web has no Cupertino floating chrome, so primary always draws the anchored recipe (ios-floating is Flutter-only), and the caller places the dock: CatchStickyAside fixes it to the bottom edge on phones. BottomActionOverlay (scroll-overlay) has no web member yet. buttonKey is a Flutter mechanism. The footnote is ink2 because Flutter's ink3 is under 4.5:1."
       },
       "level": "L3",
       "roleNoun": "Dock",

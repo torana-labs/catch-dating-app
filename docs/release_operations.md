@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.16.1
-updated: 2026-10-26
+version: 2.18.0
+updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -1370,6 +1370,49 @@ authority, retention policy and support owner. Enabling organizer WhatsApp must
 not make the Catch route active. Personal `wa.me` handoff requires no backend
 provider activation and generates no Catch delivery receipt.
 
+### Instagram claim verification activation
+
+Organisers prove a claim by sending a code from the listing's Instagram
+account to Catch's Instagram account. The method stays hidden, and
+`instagramClaimWebhook` stays out of every deploy plan as a dormant target in
+`tool/firebase/list_firebase_function_targets.mjs`, until the owner completes
+these steps:
+
+1. Create three secrets in Secret Manager in every project that deploys from
+   main. Readiness blocks any deploy that includes `instagramClaimWebhook`
+   until they exist:
+   - `CATCH_INSTAGRAM_APP_SECRET`: the app secret that signs webhooks. For
+     Instagram Login, that is the Instagram app secret shown under API setup
+     with Instagram login.
+   - `CATCH_INSTAGRAM_ACCESS_TOKEN`: a long-lived Instagram user token for
+     Catch's account, with `instagram_business_basic` and
+     `instagram_business_manage_messages`.
+   - `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: a random string of at least 32
+     characters.
+2. Set these GitHub environment variables:
+   - `CATCH_INSTAGRAM_ACCOUNT_ID`: the professional account id.
+   - `CATCH_INSTAGRAM_HANDLE`: the username, without @.
+   - `CATCH_INSTAGRAM_GRAPH_VERSION`: optional; the default is `v26.0`.
+3. Remove `functions:instagramClaimWebhook` from
+   `dormantFirebaseFunctionTargets` in a PR. Its merge deploys the webhook.
+4. In the Meta app dashboard, under API setup with Instagram login:
+   - Configure webhooks with the callback URL
+     `https://asia-south1-<project>.cloudfunctions.net/instagramClaimWebhook`
+     and the same verify token.
+   - Subscribe the `messages` field.
+   - Turn on the webhook subscription for Catch's account.
+   A Meta app has one callback URL, so only one environment receives these
+   messages at a time.
+5. On Catch's Instagram account, turn on Allow access to messages under
+   Message controls, Connected tools.
+6. Send a test message from an account with a role on the app. Check that the
+   webhook answers it, then set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` and
+   deploy again.
+
+Until App Review grants Advanced Access, only accounts with a role on the
+Meta app can message through the API. With the method switched off, the
+webhook still answers the handshake and acknowledges signed deliveries.
+
 ### Protected Catch WhatsApp operator CLI
 
 The CLI composes the merged operator planner, protected sources, Firestore
@@ -2259,7 +2302,8 @@ The required IAM is not optional. The Functions runtime service account needs
 `roles/bigquery.jobUser` at project scope plus access to `catch_analytics`
 because the public analytics callable inserts into
 `catch_analytics.host_analytics_events` and the host/admin callables read
-`catch_analytics.mart_host_event_daily`. The deployer or scheduled-query
+`catch_analytics.mart_host_event_daily` and `catch_analytics.mart_host_link_daily`.
+The deployer or scheduled-query
 identity needs `roles/bigquery.jobUser`, write access to `catch_analytics`, and
 read access to `catch_marketplace_metrics` for Event Success scorecard joins.
 The `bq-host-*` extension service accounts must retain write access to their
@@ -2434,9 +2478,12 @@ A smoke build can also emit a single canary event with
   `observability-evidence.yml` after the first daily table lands.
 - **Host analytics marts**: source-controlled DDL and refresh SQL live under
   `analytics/sql/**`. `getHostAnalytics` and `adminGetHostAnalytics` read
-  `catch_analytics.mart_host_event_daily`; `recordOrganizerAnalyticsEvent`
-  writes aggregate-safe discovery events to
-  `catch_analytics.host_analytics_events`. The mart also reads
+  `catch_analytics.mart_host_event_daily`, and the owner link roll-up reads
+  `catch_analytics.mart_host_link_daily`; `recordOrganizerAnalyticsEvent`
+  writes aggregate-safe discovery events, including owner `linkClick`s, to
+  `catch_analytics.host_analytics_events`. Apply the DDL before deploying
+  Functions that read the link mart; until then the roll-up reports a missing
+  `owner-link-clicks` data-quality row instead of failing. The mart also reads
   `analytics_526484083.events_*` for `organizer_<eventName>` GA4 exports when
   the dataset/tables exist, using the larger direct-vs-GA4 daily count per
   club/event/event-name key to avoid double-counting mirrored browser events.

@@ -473,6 +473,7 @@ abstract final class GeneratedCatchMotionTokens {
   static const Duration pageStep = Duration(milliseconds: 280);
   static const Duration calendarScroll = Duration(milliseconds: 320);
   static const Duration slow = Duration(milliseconds: 420);
+  static const Duration spinnerPeriod = Duration(milliseconds: 800);
   static const Curve standardCurve = Cubic(0.2, 0.0, 0.0, 1.0);
   static const Curve springCurve = Cubic(0.34, 1.4, 0.64, 1.0);
 }
@@ -536,12 +537,15 @@ abstract final class GeneratedCatchOpacityTokens {
   static const double controlOverlayHover = 0.04;
   static const double activityArtworkPattern = 0.22;
   static const double activityArtworkGlyph = 0.2;
+  static const double groundCardOutline = 0.12;
 }
 
 abstract final class GeneratedCatchFieldTokens {
   static const double activeTintAlpha = 0.04;
   static const double pressedTintAlpha = 0.06;
   static const double disabledOpacity = 0.4;
+  static const double restLineAlpha = 0.25;
+  static const double restTintOnDarkAlpha = 0.04;
 }
 
 abstract final class GeneratedCatchThemeElevationTokens {

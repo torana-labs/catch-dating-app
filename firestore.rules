@@ -1642,6 +1642,22 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // The claim page follows its own attempt to show the code and move on
+    // when the proof arrives. Functions own every write.
+    match /organizerClaimVerifications/{attemptId} {
+      allow get: if isAuthed()
+        && resource.data.requesterUid == request.auth.uid;
+      allow list, write: if false;
+    }
+
+    match /organizerClaimInstagramCodes/{code} {
+      allow read, write: if false;
+    }
+
+    match /organizerClaimInstagramMessages/{messageKey} {
+      allow read, write: if false;
+    }
+
     match /organizerScheduleLocks/{lockId} {
       allow read, write: if false;
     }

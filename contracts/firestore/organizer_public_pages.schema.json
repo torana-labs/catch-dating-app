@@ -113,7 +113,7 @@
     },
     "links": {
       "type": "array",
-      "description": "Owner links in display order. Empty until owner link editing ships (CAT-254).",
+      "description": "The owner's live links from organizers/{id}.ownerLinks (CAT-254): pinned first, otherwise in the owner's order, without links whose showUntil had passed when the page was built. Readers also hide links that have since expired.",
       "maxItems": 20,
       "items": {
         "$ref": "../shared/public_page_common.schema.json#/definitions/ownerLink"

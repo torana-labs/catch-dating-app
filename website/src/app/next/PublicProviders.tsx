@@ -4,6 +4,7 @@ import {Router, createPath, type To} from "react-router";
 import {WebsiteQueryProvider} from "../../shared/query/queryClient";
 import {PendingRequestProvider} from "../../shared/pendingRequest";
 import {publicEventListingsContext} from "../../features/organizers/usePublicEventListingsController";
+import {eventPageContext} from "../../features/events/eventPageContext";
 import type {PublicCatalog} from "./publicCatalogTypes";
 import {PUBLIC_PAGE_CACHE_SECONDS} from "./publicPageCache";
 
@@ -77,8 +78,11 @@ export function PublicProviders({children, catalog, pathname, initialSearch = ""
   }, []);
   return <Router location={location} navigator={navigator}>
     <WebsiteQueryProvider><PendingRequestProvider>
-      <publicEventListingsContext.Provider value={{listings: current?.listings ?? [], phase: current ? "ready" : "unavailable", readAt: current?.readAt}}>
-        {children}
+      <publicEventListingsContext.Provider value={{listings: current?.listings ?? [], phase: current ? "ready" : "unavailable", readAt: current?.readAt,
+        organizerPage: current?.organizerPage ?? null}}>
+        <eventPageContext.Provider value={current?.eventPage ? {page: current.eventPage, mapImageUrl: current.eventMap} : null}>
+          {children}
+        </eventPageContext.Provider>
       </publicEventListingsContext.Provider>
     </PendingRequestProvider></WebsiteQueryProvider>
   </Router>;

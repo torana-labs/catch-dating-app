@@ -6105,9 +6105,9 @@
       ],
       "evidence": [
         {
-          "path": "website/src/features/organizers/useHostListingPageController.test.tsx",
+          "path": "website/src/features/organizers/useOrganizerPageController.test.tsx",
           "contains": [
-            "persists account-backed follows and exposes event-aware navigation",
+            "follows through the visitor's account until follow by phone lands, and records the save",
             "resumes the requested follow after account completion",
             "reads an existing follow on a new page mount"
           ]
@@ -6152,7 +6152,7 @@
       "id": "web.eventDetail",
       "platform": "web",
       "coverageKind": "matrix",
-      "coverageRationale": "Public event details expose the server-owned web guest journey for Catch events and the official registration source for external events. Optional content and unavailable reviews are absent; verified reviews are scoped to the event. Organizer claims remain on the organizer page.",
+      "coverageRationale": "Public event details expose the server-owned web guest journey for Catch events and the official registration source for external events. Optional content and unreadable reviews are absent; the organiser's reviews are labelled as theirs with each review's verification. Organizer claims remain on the organizer page.",
       "routeIds": [
         "event_detail_canonical"
       ],
@@ -6208,7 +6208,7 @@
         {
           "id": "review.read",
           "kind": "content",
-          "description": "When review reading is enabled, show completed-event reviews or distinctly labelled organiser feedback on upcoming events. Preserve verification labels and read-failure states."
+          "description": "When review reading is enabled, show the organiser's latest reviews, labelled as the organiser's, with each review's verification."
         }
       ],
       "configurations": [
@@ -6351,11 +6351,12 @@
           ]
         },
         {
-          "path": "website/src/features/events/sections/EventDetailSections.test.tsx",
+          "path": "website/src/features/events/sections/EventPageSections.test.tsx",
           "contains": [
-            "keeps external events read-only and sends registration to the source",
-            "hands Catch booking to the web guest journey and renders only event-scoped reviews",
-            "omits absent optional content and unrelated reviews"
+            "sends an imported event to its source as a booking click",
+            "hands a Catch event to the guest entry",
+            "closes every optional section and keeps the page complete without them",
+            "completes an imported event with organiser reviews labelled as such"
           ]
         }
       ],

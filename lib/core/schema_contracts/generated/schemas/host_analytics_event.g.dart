@@ -45,6 +45,7 @@ const schemaHostAnalyticsEventSchema = <String, Object?>{
         'contactClick',
         'claimClick',
         'outboundClick',
+        'linkClick',
       ],
     },
     'club_id': <String, Object?>{
@@ -89,6 +90,37 @@ const schemaHostAnalyticsEventSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 40,
+    },
+    'link_id': <String, Object?>{
+      'description': 'The owner link a linkClick opened; null for other events.',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'traffic_source': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'enum': <Object?>[
+        'instagram',
+        'whatsapp',
+        'facebook',
+        'google',
+        'qr',
+        'email',
+        'direct',
+        'other',
+        null,
+      ],
+      'description': 'Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent.',
     },
     'ingested_at': <String, Object?>{
       'type': 'string',

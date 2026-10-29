@@ -19,6 +19,22 @@ const cssGate = "screens.web_page_css_lines";
 const sharedCss = new Set(["website/src/styles/base.css", "website/src/styles/catch-language.css"]);
 const object = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 const sorted = (values) => [...values].sort();
+const identityPattern = /^(?:website|admin|packages\/web-ui)\/src\/.+\.tsx::[A-Za-z_$][\w$]*$/u;
+
+/**
+ * Shared exports that retiring the old organiser page (CAT-251) left with one
+ * consumer, each with the ticket that retires it. The baseline's
+ * `strandedByRetirement` record may hold these and only these: it lets them
+ * enter the single-use allowance once, then may only shrink, and a name it
+ * drops never comes back. Delete this list with the record's last entry.
+ */
+export const strandedByRetirementCeiling = Object.freeze({
+  "screens.web_single_use_shared": Object.freeze({
+    "website/src/shared/ui/primitives/feedback.tsx::AuthStatusRow": "CAT-256",
+    "website/src/shared/ui/primitives/forms.tsx::ClaimRequestForm": "CAT-256",
+    "website/src/shared/ui/primitives/layout.tsx::ContentGrid": "CAT-256",
+  }),
+});
 
 /** Match the scorecard's source scope and exact newline count, per file. */
 export function pageCssBudgets(root) {
@@ -73,11 +89,49 @@ export function parseConsolidationBaseline(document) {
         !Number.isInteger(lines) || lines <= 0)) throw new Error(`Invalid CSS baseline: ${gate}`);
     } else if (!Array.isArray(entries) || new Set(entries).size !== entries.length || entries.some((id) =>
       typeof id !== "string" || (gate.startsWith("library.") ? !/^catch\.[a-z0-9_.]+$/u.test(id)
-        : !/^(?:website|admin|packages\/web-ui)\/src\/.+\.tsx::[A-Za-z_$][\w$]*$/u.test(id) || id.split("/").includes("..")))) {
+        : !identityPattern.test(id) || id.split("/").includes("..")))) {
       throw new Error(`Invalid identity baseline: ${gate}`);
     }
   }
+  if (document.strandedByRetirement !== undefined) {
+    if (!object(document.strandedByRetirement)) throw new Error("Invalid strandedByRetirement record");
+    for (const [gate, record] of Object.entries(document.strandedByRetirement)) {
+      const ceiling = strandedByRetirementCeiling[gate];
+      if (!ceiling || !object(record)) throw new Error(`Invalid strandedByRetirement gate: ${gate}`);
+      for (const [id, ticket] of Object.entries(record)) {
+        if (ceiling[id] !== ticket) throw new Error(`strandedByRetirement ${gate}: ${id} is not in the tool's closed list as ${ticket}`);
+        if (!document.gates[gate].includes(id)) throw new Error(`strandedByRetirement ${gate}: ${id} is not an allowance`);
+      }
+    }
+  }
   return document;
+}
+
+/** The record of stranded allowances that are still measured, or none. */
+function carryStranded(snapshot, recorded) {
+  const record = {};
+  for (const [gate, entries] of Object.entries(recorded?.strandedByRetirement ?? {})) {
+    record[gate] = Object.fromEntries(Object.entries(entries).filter(([id]) => snapshot.gates[gate].includes(id)).sort());
+  }
+  return Object.keys(record).length ? parseConsolidationBaseline({...snapshot, strandedByRetirement: record}) : snapshot;
+}
+
+/**
+ * A recorded stranded name is not new debt against the merge base, the first
+ * time it is recorded or while the merge base still records it. Once the
+ * merge base has a record, the record may only shrink.
+ */
+export function strandedDifferences(findings, proposed, previous) {
+  const extra = [];
+  const exempt = new Set();
+  for (const [gate, entries] of Object.entries(proposed.strandedByRetirement ?? {})) {
+    const before = previous.strandedByRetirement?.[gate];
+    for (const id of Object.keys(entries)) {
+      if (before && !(id in before)) extra.push(`new stranded name ${gate}: ${id}`);
+      else exempt.add(`new debt ${gate}: ${id}`);
+    }
+  }
+  return [...findings.filter((finding) => !exempt.has(finding)), ...extra].sort();
 }
 
 /** Growth is illegal; a fixed allowance must also disappear on ordinary checks. */
@@ -122,13 +176,13 @@ export function checkConsolidationRatchet({root, inventory, update = false}) {
   const recorded = fs.existsSync(file) ? parseConsolidationBaseline(JSON.parse(fs.readFileSync(file, "utf8"))) : null;
   const previous = previousConsolidationBaseline(root);
   if (!update && recorded === null) throw new Error(`Missing ${baselinePath}`);
-  const proposed = update ? actual : recorded;
+  const proposed = update ? carryStranded(actual, recorded) : recorded;
   const findings = [...new Set([
-    ...(previous ? consolidationDifferences(proposed, previous, {freshness: false}) : []),
+    ...(previous ? strandedDifferences(consolidationDifferences(proposed, previous, {freshness: false}), proposed, previous) : []),
     ...(update ? recorded ? consolidationDifferences(actual, recorded, {freshness: false}) : []
       : consolidationDifferences(actual, recorded)),
   ])];
-  if (update && findings.length === 0) fs.writeFileSync(file, `${JSON.stringify(actual, null, 2)}\n`);
+  if (update && findings.length === 0) fs.writeFileSync(file, `${JSON.stringify(proposed, null, 2)}\n`);
   return {findings, counts: Object.fromEntries(Object.entries(actual.gates).map(([gate, entries]) =>
     [gate, gate === cssGate ? Object.values(entries).reduce((sum, count) => sum + count, 0) : entries.length]))};
 }

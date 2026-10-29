@@ -11,7 +11,7 @@
   },
   "src/features/account/accountForm.tsx": {
     "react/forbid-elements": {
-      "count": 3
+      "count": 1
     }
   },
   "src/features/claims/DemoContinuationWorkspace.tsx": {
@@ -61,7 +61,7 @@
   },
   "src/features/events/GuestEventEntry.tsx": {
     "react/forbid-elements": {
-      "count": 9
+      "count": 1
     }
   },
   "src/features/events/PublicBookingPage.tsx": {
@@ -76,12 +76,7 @@
   },
   "src/features/events/PublicPaidEventRegistration.tsx": {
     "react/forbid-elements": {
-      "count": 13
-    }
-  },
-  "src/features/events/sections/EventDetailSections.tsx": {
-    "react/forbid-elements": {
-      "count": 35
+      "count": 2
     }
   },
   "src/features/forms/PublicFormPage.tsx": {
@@ -119,26 +114,6 @@
       "count": 5
     }
   },
-  "src/features/organizers/sections/HostListingSections.tsx": {
-    "react/forbid-elements": {
-      "count": 1
-    }
-  },
-  "src/features/organizers/sections/ListingClaimSections.tsx": {
-    "react/forbid-elements": {
-      "count": 8
-    }
-  },
-  "src/features/organizers/sections/ListingHeroSection.tsx": {
-    "react/forbid-elements": {
-      "count": 5
-    }
-  },
-  "src/features/organizers/sections/ListingReviewsSection.tsx": {
-    "react/forbid-elements": {
-      "count": 18
-    }
-  },
   "src/features/organizers/sections/OrganizerSearchSections.tsx": {
     "react/forbid-elements": {
       "count": 16
@@ -163,14 +138,6 @@
     },
     "react/forbid-elements": {
       "count": 2
-    }
-  },
-  "src/shared/site/SectionHeader.tsx": {
-    "react/forbid-dom-props": {
-      "count": 2
-    },
-    "react/forbid-elements": {
-      "count": 3
     }
   },
   "src/shared/site/SiteFooter.tsx": {
@@ -205,26 +172,18 @@
   },
   "src/shared/ui/primitives/actions.tsx": {
     "react/forbid-component-props": {
-      "count": 3
+      "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 5
+      "count": 1
     },
     "react/forbid-elements": {
-      "count": 7
+      "count": 1
     }
   },
   "src/shared/ui/primitives/actions2.tsx": {
     "react/forbid-component-props": {
       "count": 4
-    }
-  },
-  "src/shared/ui/primitives/consumerEvent.tsx": {
-    "react/forbid-dom-props": {
-      "count": 3
-    },
-    "react/forbid-elements": {
-      "count": 3
     }
   },
   "src/shared/ui/primitives/consumerHome.tsx": {
@@ -236,17 +195,6 @@
     },
     "react/forbid-elements": {
       "count": 7
-    }
-  },
-  "src/shared/ui/primitives/eventDetail.tsx": {
-    "react/forbid-component-props": {
-      "count": 1
-    },
-    "react/forbid-dom-props": {
-      "count": 21
-    },
-    "react/forbid-elements": {
-      "count": 46
     }
   },
   "src/shared/ui/primitives/eventRuntime.tsx": {
@@ -273,7 +221,7 @@
   },
   "src/shared/ui/primitives/feedback.tsx": {
     "react/forbid-component-props": {
-      "count": 2
+      "count": 1
     },
     "react/forbid-dom-props": {
       "count": 10
@@ -284,7 +232,7 @@
   },
   "src/shared/ui/primitives/forms.tsx": {
     "react/forbid-component-props": {
-      "count": 4
+      "count": 2
     },
     "react/forbid-dom-props": {
       "count": 3
@@ -306,10 +254,10 @@
   },
   "src/shared/ui/primitives/foundation.tsx": {
     "react/forbid-dom-props": {
-      "count": 3
+      "count": 2
     },
     "react/forbid-elements": {
-      "count": 8
+      "count": 5
     }
   },
   "src/shared/ui/primitives/host2.tsx": {
@@ -344,24 +292,21 @@
   },
   "src/shared/ui/primitives/layout.tsx": {
     "react/forbid-component-props": {
-      "count": 3
+      "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 2
+      "count": 1
     },
     "react/forbid-elements": {
-      "count": 2
+      "count": 1
     }
   },
   "src/shared/ui/primitives/layout2.tsx": {
     "react/forbid-component-props": {
       "count": 3
     },
-    "react/forbid-dom-props": {
-      "count": 1
-    },
     "react/forbid-elements": {
-      "count": 3
+      "count": 2
     }
   },
   "src/shared/ui/primitives/legal.tsx": {
@@ -388,42 +333,23 @@
       "count": 8
     }
   },
-  "src/shared/ui/primitives/organiserProfile.tsx": {
-    "react/forbid-dom-props": {
-      "count": 2
-    },
-    "react/forbid-elements": {
-      "count": 2
-    }
-  },
-  "src/shared/ui/primitives/organizer.tsx": {
-    "react/forbid-component-props": {
-      "count": 5
-    },
-    "react/forbid-dom-props": {
-      "count": 18
-    },
-    "react/forbid-elements": {
-      "count": 36
-    }
-  },
   "src/shared/ui/primitives/organizer2.tsx": {
     "react/forbid-dom-props": {
-      "count": 13
+      "count": 6
     },
     "react/forbid-elements": {
-      "count": 19
+      "count": 7
     }
   },
   "src/shared/ui/primitives/organizer3.tsx": {
     "react/forbid-component-props": {
-      "count": 3
+      "count": 1
     },
     "react/forbid-dom-props": {
-      "count": 23
+      "count": 10
     },
     "react/forbid-elements": {
-      "count": 49
+      "count": 17
     }
   },
   "src/shared/ui/primitives/publicForms.tsx": {

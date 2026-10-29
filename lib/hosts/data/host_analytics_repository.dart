@@ -54,6 +54,19 @@ enum HostAnalyticsMetricStatus { ready, partial, missing }
 
 enum HostAnalyticsDataQualityState { ok, partial, missing }
 
+/// Where visitors who clicked an owner link came from (CAT-254); the page
+/// maps its referrer or `?via=` to this fixed list.
+enum HostAnalyticsTrafficSource {
+  instagram,
+  whatsapp,
+  facebook,
+  google,
+  qr,
+  email,
+  direct,
+  other,
+}
+
 /// Wire keys for [HostAnalyticsTrendPoint.metrics], as emitted by
 /// `functions/src/analytics/hostAnalytics.ts`.
 abstract final class HostAnalyticsTrendKeys {
@@ -354,6 +367,7 @@ class HostAnalyticsDiscoverySummary {
     required this.contactClicks,
     required this.claimClicks,
     required this.outboundClicks,
+    this.linkClicks = 0,
   });
 
   factory HostAnalyticsDiscoverySummary.fromMap(Map<Object?, Object?> map) {
@@ -366,6 +380,7 @@ class HostAnalyticsDiscoverySummary {
       contactClicks: _int(map['contactClicks']),
       claimClicks: _int(map['claimClicks']),
       outboundClicks: _int(map['outboundClicks']),
+      linkClicks: _int(map['linkClicks']),
     );
   }
 
@@ -377,6 +392,59 @@ class HostAnalyticsDiscoverySummary {
   final int contactClicks;
   final int claimClicks;
   final int outboundClicks;
+  final int linkClicks;
+}
+
+/// One owner link's clicks in the range; [label] is null once it is removed.
+class HostAnalyticsLinkClicks {
+  const HostAnalyticsLinkClicks({
+    required this.organizerId,
+    required this.linkId,
+    required this.label,
+    required this.clicks,
+  });
+
+  factory HostAnalyticsLinkClicks.fromMap(Map<Object?, Object?> map) {
+    final label = _string(map['label']);
+    return HostAnalyticsLinkClicks(
+      organizerId: _string(map['organizerId']),
+      linkId: _string(map['linkId']),
+      label: label.isEmpty ? null : label,
+      clicks: _int(map['clicks']),
+    );
+  }
+
+  final String organizerId;
+  final String linkId;
+  final String? label;
+  final int clicks;
+}
+
+/// Owner link clicks by link, most clicked first, and by traffic source.
+class HostAnalyticsLinkSummary {
+  const HostAnalyticsLinkSummary({
+    this.links = const [],
+    this.trafficSources = const {},
+  });
+
+  factory HostAnalyticsLinkSummary.fromMap(Map<Object?, Object?> map) {
+    final sources = <HostAnalyticsTrafficSource, int>{};
+    for (final row in _mapList(map['trafficSources'], (row) => row)) {
+      final source = HostAnalyticsTrafficSource.values
+          .where((value) => value.name == _string(row['source']))
+          .firstOrNull;
+      if (source != null) sources[source] = _int(row['clicks']);
+    }
+    return HostAnalyticsLinkSummary(
+      links: _mapList(map['links'], HostAnalyticsLinkClicks.fromMap),
+      trafficSources: sources,
+    );
+  }
+
+  final List<HostAnalyticsLinkClicks> links;
+
+  /// Clicks per traffic source, most first.
+  final Map<HostAnalyticsTrafficSource, int> trafficSources;
 }
 
 class HostAnalyticsDataQuality {
@@ -408,6 +476,7 @@ class HostAnalyticsReport {
     required this.reviewSummary,
     required this.discoverySummary,
     required this.dataQuality,
+    this.linkSummary = const HostAnalyticsLinkSummary(),
     this.timezone = 'UTC',
   });
 
@@ -431,6 +500,7 @@ class HostAnalyticsReport {
           map['dataQuality'],
           HostAnalyticsDataQuality.fromMap,
         ),
+        linkSummary: HostAnalyticsLinkSummary.fromMap(_map(map['linkSummary'])),
         timezone: _string(map['timezone'], fallback: 'UTC'),
       );
     }
@@ -444,6 +514,7 @@ class HostAnalyticsReport {
   final HostAnalyticsReviewSummary reviewSummary;
   final HostAnalyticsDiscoverySummary discoverySummary;
   final List<HostAnalyticsDataQuality> dataQuality;
+  final HostAnalyticsLinkSummary linkSummary;
   final String timezone;
 }
 

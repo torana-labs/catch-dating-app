@@ -12,6 +12,8 @@ final class RecordOrganizerAnalyticsEventCallableRequest {
     this.clubId,
     this.eventId,
     required this.eventName,
+    this.linkId,
+    this.trafficSource,
     required this.pagePath,
     this.source,
     this.sessionId,
@@ -22,6 +24,8 @@ final class RecordOrganizerAnalyticsEventCallableRequest {
   final String? clubId;
   final String? eventId;
   final String eventName;
+  final String? linkId;
+  final String? trafficSource;
   final String pagePath;
   final String? source;
   final String? sessionId;
@@ -32,6 +36,8 @@ final class RecordOrganizerAnalyticsEventCallableRequest {
     'clubId': ?clubId,
     'eventId': ?eventId,
     'eventName': eventName,
+    'linkId': ?linkId,
+    'trafficSource': ?trafficSource,
     'pagePath': pagePath,
     'source': ?source,
     'sessionId': ?sessionId,

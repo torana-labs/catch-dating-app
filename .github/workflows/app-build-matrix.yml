@@ -78,6 +78,7 @@ jobs:
       - name: Fail-fast app structural gates
         run: >-
           node tool/run.mjs check
+          audit:context-map
           audit:dependency-direction
           audit:mutation-error-surfaces
           audit:route-string-literals

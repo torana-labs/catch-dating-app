@@ -628,6 +628,9 @@ import {
   organizerWhatsappMessageDocumentSchema,
   organizerWhatsappReplyOperationDocumentSchema,
   organizerClaimRequestDocumentSchema,
+  organizerClaimVerificationDocumentSchema,
+  organizerClaimInstagramCodeDocumentSchema,
+  organizerClaimInstagramMessageDocumentSchema,
   organizerScheduleLockDocumentSchema,
   clubPostDocumentSchema,
   clubMembershipDocumentSchema,
@@ -852,6 +855,10 @@ import {
   createOrganizerPostCallableResponseSchema,
   requestOrganizerClaimCallablePayloadSchema,
   requestOrganizerClaimCallableResponseSchema,
+  startOrganizerClaimVerificationCallablePayloadSchema,
+  startOrganizerClaimVerificationCallableResponseSchema,
+  getOrganizerClaimVerificationOptionsCallablePayloadSchema,
+  organizerClaimVerificationOptionsCallableResponseSchema,
   adminDecideOrganizerClaimCallablePayloadSchema,
   createClubCallableResponseSchema,
   createClubPostCallablePayloadSchema,
@@ -1919,6 +1926,9 @@ export const validateOrganizerWhatsappThreadDocument = ajv.compile(organizerWhat
 export const validateOrganizerWhatsappMessageDocument = ajv.compile(organizerWhatsappMessageDocumentSchema);
 export const validateOrganizerWhatsappReplyOperationDocument = ajv.compile(organizerWhatsappReplyOperationDocumentSchema);
 export const validateOrganizerClaimRequestDocument = ajv.compile(organizerClaimRequestDocumentSchema);
+export const validateOrganizerClaimVerificationDocument = ajv.compile(organizerClaimVerificationDocumentSchema);
+export const validateOrganizerClaimInstagramCodeDocument = ajv.compile(organizerClaimInstagramCodeDocumentSchema);
+export const validateOrganizerClaimInstagramMessageDocument = ajv.compile(organizerClaimInstagramMessageDocumentSchema);
 export const validateOrganizerScheduleLockDocument = ajv.compile(organizerScheduleLockDocumentSchema);
 export const validateClubPostDocument = ajv.compile(clubPostDocumentSchema);
 export const validateClubMembershipDocument = ajv.compile(clubMembershipDocumentSchema);
@@ -2143,6 +2153,10 @@ export const validateCreateOrganizerPostCallablePayload = ajv.compile(createOrga
 export const validateCreateOrganizerPostCallableResponse = ajv.compile(createOrganizerPostCallableResponseSchema);
 export const validateRequestOrganizerClaimCallablePayload = ajv.compile(requestOrganizerClaimCallablePayloadSchema);
 export const validateRequestOrganizerClaimCallableResponse = ajv.compile(requestOrganizerClaimCallableResponseSchema);
+export const validateStartOrganizerClaimVerificationCallablePayload = ajv.compile(startOrganizerClaimVerificationCallablePayloadSchema);
+export const validateStartOrganizerClaimVerificationCallableResponse = ajv.compile(startOrganizerClaimVerificationCallableResponseSchema);
+export const validateGetOrganizerClaimVerificationOptionsCallablePayload = ajv.compile(getOrganizerClaimVerificationOptionsCallablePayloadSchema);
+export const validateOrganizerClaimVerificationOptionsCallableResponse = ajv.compile(organizerClaimVerificationOptionsCallableResponseSchema);
 export const validateAdminDecideOrganizerClaimCallablePayload = ajv.compile(adminDecideOrganizerClaimCallablePayloadSchema);
 export const validateCreateClubCallableResponse = ajv.compile(createClubCallableResponseSchema);
 export const validateCreateClubPostCallablePayload = ajv.compile(createClubPostCallablePayloadSchema);

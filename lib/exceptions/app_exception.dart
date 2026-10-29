@@ -95,18 +95,11 @@ sealed class AppException implements Exception {
 class SignInRequiredException extends AppException {
   const SignInRequiredException(
     String action, {
-    String? debugMessage,
-    Object? cause,
-    StackTrace? stackTrace,
-    BackendErrorContext? context,
-  }) : super(
-         'sign-in-required',
-         'You need to be signed in to $action.',
-         debugMessage: debugMessage,
-         cause: cause,
-         stackTrace: stackTrace,
-         context: context,
-       );
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
+  }) : super('sign-in-required', 'You need to be signed in to $action.');
 }
 
 // ── Network ───────────────────────────────────────────────────────────────────
@@ -127,18 +120,11 @@ class NetworkException extends AppException {
 class PermissionException extends AppException {
   const PermissionException(
     String message, {
-    String? debugMessage,
-    Object? cause,
-    StackTrace? stackTrace,
-    BackendErrorContext? context,
-  }) : super(
-         'permission-denied',
-         message,
-         debugMessage: debugMessage,
-         cause: cause,
-         stackTrace: stackTrace,
-         context: context,
-       );
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
+  }) : super('permission-denied', message);
 }
 
 // ── Validation ────────────────────────────────────────────────────────────────
@@ -165,17 +151,13 @@ class ValidationException extends AppException {
 
 class PaymentCancelledException extends AppException {
   const PaymentCancelledException({
-    String? debugMessage,
-    Object? cause,
-    StackTrace? stackTrace,
-    BackendErrorContext? context,
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
   }) : super(
          'payment-cancelled',
          'Payment was cancelled.',
-         debugMessage: debugMessage,
-         cause: cause,
-         stackTrace: stackTrace,
-         context: context,
          severity: AppErrorSeverity.info,
        );
 }
@@ -183,33 +165,22 @@ class PaymentCancelledException extends AppException {
 class PaymentFailedException extends AppException {
   const PaymentFailedException(
     String detail, {
-    String? debugMessage,
-    Object? cause,
-    StackTrace? stackTrace,
-    BackendErrorContext? context,
-  }) : super(
-         'payment-failed',
-         'Payment failed: $detail',
-         debugMessage: debugMessage,
-         cause: cause,
-         stackTrace: stackTrace,
-         context: context,
-       );
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
+  }) : super('payment-failed', 'Payment failed: $detail');
 }
 
 class PaymentVerificationFailedException extends AppException {
   const PaymentVerificationFailedException({
-    String? debugMessage,
-    Object? cause,
-    StackTrace? stackTrace,
-    BackendErrorContext? context,
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
   }) : super(
          'payment-verification-failed',
          'Payment could not be verified. Please contact support.',
-         debugMessage: debugMessage,
-         cause: cause,
-         stackTrace: stackTrace,
-         context: context,
          severity: AppErrorSeverity.error,
        );
 }
@@ -219,35 +190,21 @@ class PaymentVerificationFailedException extends AppException {
 class PaidBookingUnsupportedException extends AppException {
   const PaidBookingUnsupportedException({
     String message = 'Paid bookings are only available on Android and iOS.',
-    String? debugMessage,
-    Object? cause,
-    StackTrace? stackTrace,
-    BackendErrorContext? context,
-  }) : super(
-         'paid-booking-unsupported',
-         message,
-         debugMessage: debugMessage,
-         cause: cause,
-         stackTrace: stackTrace,
-         context: context,
-       );
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
+  }) : super('paid-booking-unsupported', message);
 }
 
 class EventBookingFailedException extends AppException {
   const EventBookingFailedException(
     String message, {
-    String? debugMessage,
-    Object? cause,
-    StackTrace? stackTrace,
-    BackendErrorContext? context,
-  }) : super(
-         'event-booking-failed',
-         message,
-         debugMessage: debugMessage,
-         cause: cause,
-         stackTrace: stackTrace,
-         context: context,
-       );
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
+  }) : super('event-booking-failed', message);
 }
 
 // ── Backend / data layer ──────────────────────────────────────────────────────
@@ -277,18 +234,11 @@ class BackendOperationException extends AppException {
 class DocumentNotFoundException extends AppException {
   const DocumentNotFoundException(
     String resource, {
-    String? debugMessage,
-    Object? cause,
-    StackTrace? stackTrace,
-    BackendErrorContext? context,
-  }) : super(
-         'not-found',
-         'Could not find $resource.',
-         debugMessage: debugMessage,
-         cause: cause,
-         stackTrace: stackTrace,
-         context: context,
-       );
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
+  }) : super('not-found', 'Could not find $resource.');
 }
 
 // ── Storage ──────────────────────────────────────────────────────────────────
@@ -331,16 +281,9 @@ class StorageUploadPreflightException extends StorageException {
 class ExternalActionException extends AppException {
   const ExternalActionException(
     String message, {
-    String? debugMessage,
-    Object? cause,
-    StackTrace? stackTrace,
-    BackendErrorContext? context,
-  }) : super(
-         'external-action-error',
-         message,
-         debugMessage: debugMessage,
-         cause: cause,
-         stackTrace: stackTrace,
-         context: context,
-       );
+    super.debugMessage,
+    super.cause,
+    super.stackTrace,
+    super.context,
+  }) : super('external-action-error', message);
 }

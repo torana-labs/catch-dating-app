@@ -36,6 +36,10 @@ export const materializedNonSecretParams = [
   "CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256",
   "CATCH_WHATSAPP_WABA_ID",
   "CATCH_WHATSAPP_PHONE_NUMBER_ID",
+  "CATCH_INSTAGRAM_CLAIMS_ENABLED",
+  "CATCH_INSTAGRAM_ACCOUNT_ID",
+  "CATCH_INSTAGRAM_HANDLE",
+  "CATCH_INSTAGRAM_GRAPH_VERSION",
   "EVENT_ASSISTANCE_RCS_ENABLED",
   "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED",
   "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED",
@@ -201,6 +205,25 @@ function normalizedProviderParams(environment = process.env, projectId) {
   assert(!environment.FLIGHT_PROVIDER_POLICY?.trim(),
     "FLIGHT_PROVIDER_POLICY must remain unconfigured in this milestone");
 
+  // Instagram claim verification. The method stays hidden until the owner
+  // sets the account and turns it on; the secrets stay in Secret Manager.
+  const instagramClaimsEnabled = normalizedBooleanParam(
+    environment, "CATCH_INSTAGRAM_CLAIMS_ENABLED");
+  const instagramAccountId = environment.CATCH_INSTAGRAM_ACCOUNT_ID?.trim() ?? "";
+  const instagramHandle = environment.CATCH_INSTAGRAM_HANDLE?.trim()
+    .replace(/^@/, "").toLowerCase() ?? "";
+  const instagramGraphVersion =
+    environment.CATCH_INSTAGRAM_GRAPH_VERSION?.trim() || "v26.0";
+  assert(!instagramAccountId || /^[0-9]{1,32}$/.test(instagramAccountId),
+    "CATCH_INSTAGRAM_ACCOUNT_ID must be a numeric Instagram account id");
+  assert(!instagramHandle || /^[a-z0-9._]{1,30}$/.test(instagramHandle),
+    "CATCH_INSTAGRAM_HANDLE must be an Instagram username");
+  assert(/^v[1-9][0-9]*\.[0-9]+$/.test(instagramGraphVersion),
+    "CATCH_INSTAGRAM_GRAPH_VERSION must look like v26.0");
+  assert(instagramClaimsEnabled === "false" ||
+    (instagramAccountId && instagramHandle),
+  "CATCH_INSTAGRAM_CLAIMS_ENABLED requires the Instagram account id and handle");
+
   const assistanceReferences = {};
   for (const [name, secret] of [["EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_GUEST_KEYS"],
     ["EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEYS"]]) {
@@ -248,6 +271,10 @@ function normalizedProviderParams(environment = process.env, projectId) {
       catchReplyScope.CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256 || " ",
     CATCH_WHATSAPP_WABA_ID: catchWabaId || " ",
     CATCH_WHATSAPP_PHONE_NUMBER_ID: catchPhoneNumberId || " ",
+    CATCH_INSTAGRAM_CLAIMS_ENABLED: instagramClaimsEnabled,
+    CATCH_INSTAGRAM_ACCOUNT_ID: instagramAccountId || " ",
+    CATCH_INSTAGRAM_HANDLE: instagramHandle || " ",
+    CATCH_INSTAGRAM_GRAPH_VERSION: instagramGraphVersion,
     ...eventAssistance,
     // Blank preserves a fail-closed callable until hosting is provisioned.
     FORM_DOMAIN_CNAME_TARGET: formDomainTarget || " ",

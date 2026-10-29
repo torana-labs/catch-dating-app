@@ -9,7 +9,9 @@ import {
   buildPublicEventDetailRecords,
   getEventDetailForPath,
 } from "../events/eventDetailModel";
-import {EventDetailHeroSection, EventDetailFactsSection, EventDetailReviewsSection} from "../events/sections/EventDetailSections";
+import {eventPageFromListing} from "../events/eventPageFromListing";
+import {buildEventPageView} from "../events/eventPageModel";
+import {EventBookingCard, EventPageMain} from "../events/sections/EventPageSections";
 import {hostListings} from "./data";
 import {
   listingClaimPresentationFor,
@@ -286,7 +288,6 @@ function verifyEventDetail(
       checkedInCount: 0,
       waitlistedCount: 0,
       priceLabel: "₹1,500",
-      scorecard: null,
     }] : [],
     externalEvents: supply === "external" ? [{
       id: eventId,
@@ -331,21 +332,25 @@ function verifyEventDetail(
 
   // Exercise the same rendered sections as the page, so stale policy-only
   // expectations cannot keep an obsolete booking or claim action green.
+  const page = event ? eventPageFromListing(event.listing, event.eventId) : null;
+  const view = page ? buildEventPageView(page) : null;
   const root = document.createElement("div");
-  root.innerHTML = event ? renderToStaticMarkup(createElement(Fragment, null,
-    createElement(EventDetailHeroSection, {event}),
-    createElement(EventDetailFactsSection, {event}),
-    createElement(EventDetailReviewsSection, {event}),
+  root.innerHTML = view ? renderToStaticMarkup(createElement(Fragment, null,
+    createElement(EventPageMain, {view}),
+    createElement(EventBookingCard, {view, catchEntry: createElement("span", {"data-guest-entry": ""}),
+      onExternalClick: () => undefined}),
   )) : "";
-  expect(Boolean(root.querySelector(`a[href="/booking/${eventId}/"]`)))
+  expect(Boolean(root.querySelector("[data-guest-entry]")))
     .toBe(expectations["event.webGuestJourney"].disposition === "visibleWeb");
   expect(Boolean(root.querySelector('a[href="https://luma.com/matrix-event"]')))
     .toBe(expectations["event.officialSource"].disposition === "visibleExternal");
+  expect(Boolean(root.querySelector(`a[href="${event?.listing.path}"]`)))
+    .toBe(expectations["organizer.openDetail"].disposition === "visibleWeb");
   expect(root.querySelector('a[href^="/claim/"]')).toBeNull();
-  expect(Boolean(root.querySelector("#reviews")))
+  expect(Boolean(root.querySelector("#event-reviews")))
     .toBe(expectations["review.read"].disposition === "visibleReadOnly");
-  if (event) {
-    expect(renderToStaticMarkup(createElement(EventDetailReviewsSection,
-      {event: {...event, eventReviews: [], listing: {...event.listing, reviews: []}}}))).toBe("");
+  if (page) {
+    expect(renderToStaticMarkup(createElement(EventPageMain, {view: buildEventPageView({...page, reviews: []})})))
+      .not.toContain('id="event-reviews"');
   }
 }

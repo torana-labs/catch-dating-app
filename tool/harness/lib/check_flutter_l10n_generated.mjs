@@ -28,10 +28,21 @@ export function compareGeneratedFiles({expectedDir, actualDir, files = generated
   return errors;
 }
 
+// gen-l10n formats its output for the package's language version, which pub
+// takes from the SDK constraint's lower bound. Without a package config the
+// formatter falls back to the newest language version, so the disposable
+// project declares the app's version to match `flutter gen-l10n` in the repo.
+export function languageVersion(pubspec) {
+  const match = /^environment:[ \t]*\n(?:[ \t]+.*\n)*?[ \t]+sdk:[ \t]*["']?(?:\^|>=)?[ \t]*(\d+)\.(\d+)\./mu.exec(pubspec);
+  if (!match) throw new Error("pubspec.yaml declares no environment.sdk lower bound.");
+  return `${match[1]}.${match[2]}`;
+}
+
 export function checkFlutterL10n({
   repositoryRoot,
   runGenerator = defaultRunGenerator,
 }) {
+  const language = languageVersion(fs.readFileSync(path.join(repositoryRoot, "pubspec.yaml"), "utf8"));
   const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "catch-l10n-check-"));
   try {
     const arbDir = path.join(temporaryRoot, "lib", "l10n");
@@ -46,7 +57,15 @@ export function checkFlutterL10n({
     );
     fs.writeFileSync(
       path.join(temporaryRoot, "pubspec.yaml"),
-      "name: catch_l10n_check\nenvironment:\n  sdk: ^3.8.0\ndependencies:\n  flutter:\n    sdk: flutter\nflutter:\n  generate: true\n",
+      `name: catch_l10n_check\nenvironment:\n  sdk: ^${language}.0\ndependencies:\n  flutter:\n    sdk: flutter\nflutter:\n  generate: true\n`,
+    );
+    fs.mkdirSync(path.join(temporaryRoot, ".dart_tool"));
+    fs.writeFileSync(
+      path.join(temporaryRoot, ".dart_tool", "package_config.json"),
+      JSON.stringify({
+        configVersion: 2,
+        packages: [{name: "catch_l10n_check", rootUri: "../", packageUri: "lib/", languageVersion: language}],
+      }),
     );
 
     const generation = runGenerator({cwd: temporaryRoot});

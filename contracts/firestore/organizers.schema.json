@@ -822,6 +822,13 @@
       },
       "x-catch-ownership": "callable-owned"
     },
+    "ownerLinks": {
+      "type": "array",
+      "maxItems": 20,
+      "description": "Links the owner, or staff for them, put on the organizer page, in display order. Written only by adminUpdateOrganizerDetails after the owner-link URL policy in functions/src/organizers/organizerLinks.ts.",
+      "items": {"$ref": "../shared/public_page_common.schema.json#/definitions/ownerLink"},
+      "x-catch-ownership": "callable-owned"
+    },
     "publicSources": {
       "type": "array",
       "maxItems": 20,

@@ -91,6 +91,9 @@ import {
   updateOrganizerLaunchMarket,
 } from "../controllers/organizerPublishingHelpers";
 
+import {organizerLinksPanels} from "./organizerLinksEditor";
+
+const {OrganizerLinksEditor} = organizerLinksPanels;
 const defaultPublicSiteOrigin = "https://catchdates.com";
 const publicSiteOrigin = String(
   import.meta.env.VITE_ADMIN_PUBLIC_SITE_ORIGIN ?? defaultPublicSiteOrigin
@@ -709,6 +712,12 @@ function OrganizerEditor({
                 />
               </AdminFieldGrid>
             </AdminEditorSection>
+
+            <OrganizerLinksEditor
+              links={form.ownerLinks}
+              onChange={(links) => update("ownerLinks", links)}
+              targetIssue={targetIssue}
+            />
 
             <AdminEditorSection>
               <legend>Evidence and review note</legend>

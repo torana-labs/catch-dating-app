@@ -27,11 +27,6 @@
     },
     {
       "file": "website/src/stories/ListingPrimitives.stories.tsx",
-      "export": "ListingReviewShellStory",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
-      "file": "website/src/stories/ListingPrimitives.stories.tsx",
       "export": "OrganizerResultShellStory",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },
@@ -68,11 +63,6 @@
     {
       "file": "website/src/stories/RouteShellPrimitives.stories.tsx",
       "export": "HostPreviewShellStory",
-      "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
-    },
-    {
-      "file": "website/src/stories/OrganizerListingSections.stories.tsx",
-      "export": "ListingReviews",
       "reason": "Existing axe violation from the first blocking run; remediation requires a dedicated UI accessibility pass."
     },
     {

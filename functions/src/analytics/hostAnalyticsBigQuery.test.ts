@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {BigQueryHostAnalyticsSource, hostAnalyticsRowsSql} from
-  "./hostAnalyticsBigQuery";
+import {
+  BigQueryHostAnalyticsSource,
+  hostAnalyticsLinkRowsSql,
+  hostAnalyticsRowsSql,
+} from "./hostAnalyticsBigQuery";
 import {buildHostAnalyticsFromRecords, resolveAnalyticsRange} from
   "./hostAnalytics";
 import type {BigQueryClient} from "../shared/bigQuery";
@@ -60,3 +63,32 @@ test("optional-column SQL serializes the row " +
   assert.ok(sql.includes("SUM(booked_count) AS bookedCount"));
   assert.ok(sql.includes("club_id IN UNNEST(@clubIds)"));
 });
+
+test("link clicks read the additive column as zero before it exists", () => {
+  const sql = hostAnalyticsRowsSql("project.dataset.mart");
+  assert.ok(sql.includes("COALESCE(SUM(SAFE_CAST(JSON_VALUE(" +
+    "TO_JSON_STRING(martRow), '$.link_clicks') AS INT64)), 0) AS linkClicks"));
+  assert.doesNotMatch(sql, /SUM\(link_clicks\)/);
+});
+
+test("owner link rows come from the link mart for the organizers in scope",
+  async () => {
+    const queries: Array<{sql: string; params: unknown}> = [];
+    const source = new BigQueryHostAnalyticsSource({
+      async query<T>(sql: string, params: unknown) {
+        queries.push({sql, params});
+        return [{clubId: "org", linkId: "tickets", trafficSource: "qr",
+          linkClicks: "3"}] as T[];
+      },
+      async insertRows() {},
+    }, "project.dataset.mart", "project.dataset.links");
+    assert.deepEqual(await source.loadLinkRows(range, ["org"]), [
+      {clubId: "org", linkId: "tickets", trafficSource: "qr", linkClicks: 3},
+    ]);
+    assert.ok(queries[0].sql.includes("FROM `project.dataset.links`"));
+    assert.ok(queries[0].sql.includes("club_id IN UNNEST(@clubIds)"));
+    assert.deepEqual(await source.loadLinkRows(range, []), []);
+    assert.equal(queries.length, 1);
+    assert.match(hostAnalyticsLinkRowsSql("t"),
+      /GROUP BY club_id, link_id, traffic_source/u);
+  });

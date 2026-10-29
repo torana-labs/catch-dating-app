@@ -393,6 +393,40 @@ class AppLocalizationsEn extends AppLocalizations {
       'Outbound source clicks';
 
   @override
+  String get hostsHostAnalyticsLabelLinkClicks => 'Link clicks';
+
+  @override
+  String get hostsHostAnalyticsLabelRemovedLink => 'Removed link';
+
+  @override
+  String hostsHostAnalyticsLabelTrafficSource({required String source}) {
+    String _temp0 = intl.Intl.selectLogic(source, {
+      'instagram': 'Instagram',
+      'whatsapp': 'WhatsApp',
+      'facebook': 'Facebook',
+      'google': 'Google',
+      'qr': 'QR codes',
+      'email': 'Email',
+      'direct': 'Direct visits',
+      'other': 'Other places',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostsHostAnalyticsTextLinkClicksBySource({required String sources}) {
+    return 'Link clicks came from $sources.';
+  }
+
+  @override
+  String hostsHostAnalyticsTextTrafficSourceClicks({
+    required String source,
+    required String count,
+  }) {
+    return '$source $count';
+  }
+
+  @override
   String get hostsHostAnalyticsTextPresenceUnavailable =>
       'Presence data is unavailable for this range. Missing data is shown as —.';
 
@@ -25308,4 +25342,33 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostInboxProgramPurposeUnresolvedBody =>
       'We can’t verify which messages belong to this program. Conversation history and replies are unavailable here.';
+
+  @override
+  String get hostPayoutsRazorpayIntroTitle => 'Guests pay you directly';
+
+  @override
+  String get hostPayoutsRazorpayIntroBody =>
+      'Ticket and form payments go straight to your own Razorpay account, and refunds come out of it. Catch never holds your money. Catch’s fees are billed to you separately.';
+
+  @override
+  String get hostPayoutsRazorpayUnavailable =>
+      'Connecting Razorpay isn’t available yet. Catch is finishing its Razorpay partner setup. Free events and forms work as usual.';
+
+  @override
+  String get hostPayoutsRazorpayNoAccountTitle => 'No Razorpay account yet?';
+
+  @override
+  String get hostPayoutsRazorpayNoAccountBody =>
+      'Create one at razorpay.com and finish Razorpay’s verification, then connect it here.';
+
+  @override
+  String get hostPayoutsRazorpayConnectHelp =>
+      'Sign in to Razorpay and approve Catch. This lets Catch create orders for your events and forms, check payment and refund status, set up payment notifications, and issue refunds under your cancellation policy. You can disconnect at any time.';
+
+  @override
+  String get hostPayoutsRazorpayDisconnectHelp =>
+      'This stops new checkouts for your events and forms. Catch can still finish refunds for bookings that are already paid.';
+
+  @override
+  String get hostPayoutsRazorpayPermissionsTitle => 'What connecting allows';
 }

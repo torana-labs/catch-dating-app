@@ -1655,6 +1655,53 @@ has not launched, the owner approved local compatibility retirement rather than
 a released-client support window. Remote synthetic-data reset and deployment
 remain separately authorized operations.
 
+### Organizer claim verification
+
+An organiser proves they run a listing in one of two ways, and staff review of
+`organizerClaimRequests` stays the fallback for every case.
+
+- Instagram. Catch never messages first, because Instagram only lets a
+  business reply to someone who messaged it. `startOrganizerClaimVerification`
+  shows a six-digit code that lasts 30 minutes. The code is bound to one
+  attempt, for one account and one listing. The organiser sends it from the
+  listing's Instagram account to Catch's account.
+- Luma. The organiser puts a code in their Luma calendar description.
+
+The attempt is stored at `organizerClaimVerifications/{attemptId}`:
+
+- There is one attempt per listing, account and method. Starting again keeps
+  a code that has more than five minutes left; otherwise it issues a new one.
+- Only the requester may `get` the attempt. That is how the claim page shows
+  the code and moves on by itself.
+
+Two collections are server-only, and Firestore TTL deletes both after
+`expiresAt`:
+
+- `organizerClaimInstagramCodes/{code}` reserves each live code, so codes are
+  unique and the webhook finds the attempt without a query.
+- `organizerClaimInstagramMessages/{messageKey}` holds one receipt per signed
+  message, keyed by the SHA-256 of Meta's message id. It makes redeliveries
+  count once, and it keeps no text or sender id.
+
+`instagramClaimWebhook` checks `X-Hub-Signature-256` with the app secret and
+ignores echoes and other accounts. It rate-limits each sender. It reads the
+sender's username through the Graph API user profile call. The claim completes
+only when that username equals the listing's handle and the code is live and
+unused. Each failure gets its own reply in the thread: wrong sender, expired,
+used or replaced, or unknown code.
+
+A verified attempt approves through `prepareOrganizerClaimApproval`, the same
+transaction path staff approval uses:
+
+- It creates or approves the requester's `organizerClaimRequests` row with
+  `decidedByUid: null`.
+- It supersedes another account's request that is waiting for staff review.
+- The attempt records the evidence: the observed username, the message key,
+  and the approved request id.
+
+Both paths require an account (a name and a verified phone), not a social
+profile.
+
 Public organizer website content is also owned by the canonical organizer
 document. `publicPage` controls publication, indexing, canonical and legacy
 paths; `publicProfile`, `publicSources`, `provenance`, `claim`, and `ownership`
@@ -4392,9 +4439,9 @@ renders each page from one Admin SDK read (CAT-250). Their contracts are
 `contracts/firestore/event_public_pages.schema.json` and the shared
 definitions in `contracts/shared/public_page_common.schema.json`.
 
-- The organizer page holds identity, owner links (empty until CAT-254),
-  upcoming events from every source with their booking target, past moments,
-  a review summary (verified-only rating, count and distribution of every
+- The organizer page holds identity, the owner's live links, upcoming
+  events from every source with their booking target, past moments, a
+  review summary (verified-only rating, count and distribution of every
   published review) with the latest reviews marked verified or unverified,
   the follower count, claim state, capabilities and today's recommendation
   rail. The event page holds every public event field, a capacity snapshot,
@@ -4408,6 +4455,14 @@ definitions in `contracts/shared/public_page_common.schema.json`.
   expected output the website reader writes; the Functions port must
   reproduce it. A page that fails those rules has no document, and an id
   published as both a Catch and an imported event has no event page.
+- Owner links (CAT-254) live in the callable-owned `organizers/{id}.ownerLinks`
+  list, which only `adminUpdateOrganizerDetails` writes, after
+  `functions/src/organizers/organizerLinks.ts` checks each address (https,
+  no credentials or port, a public dotted host, no link shorteners, at most
+  2048 characters) and the operator-wording rule. The page carries the links
+  still live at build time, pinned first; readers also hide a link once its
+  `showUntil` passes. `icon` names what a link is for, and null lets the
+  page pick an icon from the address.
 - The pages never hold contact details, owner identities, rosters or dating
   framing: no `balanced` admission label, `rotations` experience,
   `singlesMixer` activity, Event Success scorecard or `mutualMatchCount`. The

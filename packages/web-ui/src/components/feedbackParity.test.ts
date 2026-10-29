@@ -35,8 +35,9 @@ describe("CatchLoadingIndicator parity", () => {
     for (const alpha of alphas) expect(loadingCss).toContain(`var(--catch-loading-color) ${alpha}%, transparent)`);
     expect(field).toContain("spinnerExtent = CatchSpacing.s4");
     expect(loadingCss).toContain(`--catch-loading-size: ${spacing("s4")}px;`);
-    const period = Number(field.match(/spinnerPeriod = Duration\(milliseconds: (\d+)\)/)?.[1]);
-    expect(loadingCss).toContain(`catch-loading-turn ${period}ms linear infinite`);
+    expect(field).toMatch(/spinnerPeriod =\s+GeneratedCatchMotionTokens\.spinnerPeriod;/);
+    expect(tokensCss).toContain("--catch-motion-spinner-period: 800ms;");
+    expect(loadingCss).toContain("catch-loading-turn var(--catch-motion-spinner-period) linear infinite");
     expect(loading).toContain("strokeWidth = CatchStroke.progressIndicator");
     expect(loadingCss).toContain("--catch-loading-stroke: var(--catch-stroke-progress-indicator);");
   });

@@ -122,7 +122,9 @@ const nativeKeyboard: Record<CatchFieldKeyboardType, {type: string; inputMode?: 
  * A labelled form field in one recipe of Flutter's `CatchField`: `input` for
  * text (a text area when it spans lines) and `select` for one of a list. The
  * field paints a quiet row at rest and an active tile while focused; the
- * caller passes resolved copy.
+ * caller passes resolved copy. Inside a `CatchGroundCard` it takes the Website
+ * v2 boards' boxed input at rest instead, from the card's
+ * `--catch-field-rest-*` properties.
  */
 export function CatchField<T = string>(props: CatchFieldProps<T>) {
   const generatedId = useId();
