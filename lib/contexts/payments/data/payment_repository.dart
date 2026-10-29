@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:catch_dating_app/contexts/account/account.dart';
+import 'package:catch_dating_app/contexts/payments/data/organizer_event_checkout.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_requests.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_callable_responses.dart';
 import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart';
@@ -17,6 +19,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 part 'payment_repository.g.dart';
+part 'payment_repository_organizer.dart';
 
 class PaymentRepository {
   PaymentRepository(

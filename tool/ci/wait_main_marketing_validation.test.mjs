@@ -24,27 +24,42 @@ const queueJobs = [queueJob(30, jobs[0].name), queueJob(31, jobs[1].name)];
 const queueArtifact = {...artifact, id: 41, name: `canonical-marketing-${sourceSha}-${queueRun.id}-${queueRun.run_attempt}`,
   workflow_run: {...artifact.workflow_run, id: queueRun.id}};
 
-// Push and merge-queue listings are answered separately; `listings` and
-// `queueListings` step through successive answers for one event.
+// A nightly or dispatched full CI run of main itself.
+const fullRun = {...run, id: 12, run_number: 11, run_attempt: 1, event: "workflow_dispatch",
+  status: "completed", conclusion: "success"};
+const fullJob = (id, name, conclusion = "success") => ({...job(id, name, conclusion), run_id: fullRun.id,
+  run_attempt: fullRun.run_attempt});
+const fullJobs = [fullJob(50, jobs[0].name), fullJob(51, jobs[1].name)];
+const fullArtifact = {...artifact, id: 42, name: `canonical-marketing-${sourceSha}-${fullRun.id}-${fullRun.run_attempt}`,
+  workflow_run: {...artifact.workflow_run, id: fullRun.id}};
+
+// Push, merge-queue and full-run listings are answered separately; `listings`
+// and `queueListings` step through successive answers for one event.
 function fixture({artifacts = [artifact], runs = [run], results = jobs, canonicalResult = canonical, listings, sleep,
-  queueRuns = [], queueResults = queueJobs, queueArtifacts = [queueArtifact], queueListings} = {}) {
+  queueRuns = [], queueResults = queueJobs, queueArtifacts = [queueArtifact], queueListings,
+  fullRuns = [], fullResults = fullJobs, fullArtifacts = [fullArtifact]} = {}) {
   const step = (answers, fallback) => {
     let index = 0;
     return () => answers ? answers[Math.min(index++, answers.length - 1)] : fallback;
   };
   const pushListing = step(listings, runs), queueListing = step(queueListings, queueRuns);
-  const all = () => [...runs, ...queueRuns, ...(listings ?? []).flat(), ...(queueListings ?? []).flat()];
+  const all = () => [...runs, ...queueRuns, ...fullRuns, ...(listings ?? []).flat(), ...(queueListings ?? []).flat()];
+  const byRun = (id, own, queued, full) => id === queueRun.id ? queued : id === fullRun.id ? full : own;
   return {repository, sourceSha, onWait: () => {}, maxWaitMs: 1,
     now: (() => {let time = 0; return () => time++;})(), sleep: sleep ?? (async () => {}),
     request: async (endpoint, options) => {
       if (endpoint.endsWith("workflows/ci.yml")) return canonicalResult;
       const id = Number(endpoint.match(/\/runs\/(\d+)\//u)?.[1]);
-      const queued = id === queueRun.id;
       if (/\/attempts\/\d+$/u.test(endpoint)) return all().find(candidate => candidate.id === id);
-      if (endpoint.includes("/artifacts?")) { assert.equal(options.paginate, true); return [{artifacts: queued ? queueArtifacts : artifacts}]; }
-      if (endpoint.includes("/jobs?")) { assert.equal(options.paginate, true); return [{jobs: queued ? queueResults : results}]; }
+      if (endpoint.includes("/artifacts?")) {
+        assert.equal(options.paginate, true); return [{artifacts: byRun(id, artifacts, queueArtifacts, fullArtifacts)}];
+      }
+      if (endpoint.includes("/jobs?")) { assert.equal(options.paginate, true); return [{jobs: byRun(id, results, queueResults, fullResults)}]; }
       assert.ok(endpoint.includes(`head_sha=${sourceSha}`));
-      return {workflow_runs: endpoint.includes("event=merge_group") ? queueListing() : pushListing()};
+      if (endpoint.includes("event=merge_group")) return {workflow_runs: queueListing()};
+      if (endpoint.includes("event=push")) return {workflow_runs: pushListing()};
+      assert.match(endpoint, /branch=main&event=(workflow_dispatch|schedule)&/u);
+      return {workflow_runs: fullRuns};
     }};
 }
 
@@ -233,11 +248,48 @@ test("merge queue evidence that changes during inspection is refused", async () 
     queueListings: [[queueRun], [{...queueRun, run_attempt: 2}]]})), /changed during inspection/);
 });
 
-test("main's push run and its merge queue run are both CI for a commit on main", () => {
-  assert.equal(isMainCiSource(run), true);
-  assert.equal(isMainCiSource(queueRun), true);
-  for (const change of [{event: "pull_request"}, {event: "merge_group", head_branch: "main"}, {event: "push", head_branch: queueBranch}]) {
+test("main's push, merge queue, nightly and dispatched runs are all CI for a commit on main", () => {
+  for (const source of [run, queueRun, fullRun, {...fullRun, event: "schedule"}]) {
+    assert.equal(isMainCiSource(source), true, source.event);
+  }
+  for (const change of [{event: "pull_request"}, {event: "merge_group", head_branch: "main"}, {event: "push", head_branch: queueBranch},
+    {event: "workflow_dispatch", head_branch: "feature"}, {event: "schedule", head_branch: queueBranch}]) {
     assert.equal(isMainCiSource({...run, ...change}), false, JSON.stringify(change));
+  }
+});
+
+const skippedWebsite = [job(22, "marketing", "skipped"), job(23, "capture-freshness", "skipped")];
+
+test("a full run of main validates a head whose own change ran no website validation", async () => {
+  for (const event of ["workflow_dispatch", "schedule"]) {
+    const full = {...fullRun, event};
+    const result = await waitMainMarketingValidation(fixture({results: skippedWebsite, fullRuns: [full],
+      queueRuns: [queueRun], queueResults: [queueJob(32, "marketing", "skipped"), queueJob(33, "capture-freshness", "skipped")]}));
+    assert.deepEqual([result.validated, result.sourceCiRunId, result.sourceCiEvent], [true, fullRun.id, event]);
+    assert.deepEqual(result.jobIds, [50, 51]);
+    assert.equal(result.captureBinding.artifactId, "42");
+    assert.equal(result.captureBinding.workflowRef, `${repository}/.github/workflows/ci.yml@refs/heads/main`);
+  }
+});
+
+test("a full run's validation outranks the queue run's captures for an app-only head", async () => {
+  // The queue run rendered fresh captures but, with no website change, ran no Marketing validation.
+  const captureOnly = [queueJob(32, "marketing", "skipped"), queueJob(33, jobs[1].name)];
+  const partial = await waitMainMarketingValidation(fixture({queueRuns: [queueRun], queueResults: captureOnly}));
+  assert.deepEqual([partial.validated, partial.captureProduced, partial.sourceCiRunId], [false, true, queueRun.id]);
+  const result = await waitMainMarketingValidation(fixture({queueRuns: [queueRun], queueResults: captureOnly, fullRuns: [fullRun]}));
+  assert.deepEqual([result.validated, result.sourceCiRunId], [true, fullRun.id]);
+});
+
+test("a validated merge queue run stays the evidence when a full run of main also exists", async () => {
+  const result = await waitMainMarketingValidation(fixture({queueRuns: [queueRun], fullRuns: [fullRun]}));
+  assert.equal(result.sourceCiRunId, queueRun.id);
+});
+
+test("a full run of main that failed, is unfinished or ran elsewhere is no evidence", async () => {
+  for (const change of [{conclusion: "failure"}, {status: "in_progress", conclusion: null}, {head_branch: "feature"}]) {
+    const result = await waitMainMarketingValidation(fixture({results: skippedWebsite, fullRuns: [{...fullRun, ...change}]}));
+    assert.deepEqual([result.validated, result.sourceCiRunId], [false, run.id], JSON.stringify(change));
   }
 });
 
