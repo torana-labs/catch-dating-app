@@ -478,7 +478,8 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
             continue;
           }
         } else if (invocation is EnumConstantArguments &&
-            file.startsWith('lib/event_success/domain/') &&
+            (file.startsWith('lib/contexts/live/domain/') ||
+                file.startsWith('lib/contexts/formats/domain/')) &&
             _looksLikeEnumDisplayCopy(text)) {
           return 'enum:display-argument';
         }
@@ -775,7 +776,7 @@ Widget buildForm(BuildContext context) => Column(children: [
 ]);
 ''';
   final missedShapeFindings = scanDartSource(
-    'lib/event_success/domain/example_missed_shapes.dart',
+    'lib/contexts/formats/domain/example_missed_shapes.dart',
     missedShapesSource,
   );
   final missedShapeTexts = missedShapeFindings

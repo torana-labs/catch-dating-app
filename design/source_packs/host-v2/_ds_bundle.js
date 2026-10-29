@@ -2271,7 +2271,7 @@ Object.assign(window, {
 // catch-website/site/host-success.jsx
 try { (() => {
 // Host page — Event Success showcase. Real module catalog from
-// lib/contexts/formats/domain/event_success_playbooks/modules.dart, staged as a run of show.
+// lib/event_success/domain/event_success_playbooks/modules.dart, staged as a run of show.
 const {
   useState: useESState
 } = React;

@@ -16,6 +16,8 @@ const pathTextExcluded = [
   /\.test\.mjs$/u,
   /\.(?:g|freezed)\.dart$/u,
   /^tool\/architecture\/context_map\.json$/u,
+  // Vendored bundles are pinned by checksum; their comments stay as shipped.
+  /^design\/source_packs\//u,
 ];
 
 // Rewritten URIs change import order; the analyzer's own fixes re-sort and
