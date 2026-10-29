@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/admin_data_quality.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:941f7e7ac47f3fbc7dbae1e67f3df145fc1d4b1337c871132a8ffa8a926bbd04",
+  "generatedFor": "2026-10-29",
+  "sourceDigest": "sha256:79019465f1c43d6bc23fcc1e066d892099973e16c94693be80cf529bbeb64f59",
   "resolvedDigest": "sha256:cb4f0c5ae11fbbeca7573517fd3c88ad676299b726ece385c644c91bc71c4823",
   "feature": {
     "id": "feature.admin_data_quality",
@@ -90,13 +90,6 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminGetEventIntakeDashboard",
-            "requestValidation": "strict_schema",
-            "responseValidation": "structural_object"
-          },
-          {
-            "kind": "admin_callable",
-            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
-            "callable": "adminGetEventSupplyReadiness",
             "requestValidation": "strict_schema",
             "responseValidation": "structural_object"
           }

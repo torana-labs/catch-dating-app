@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-23",
+  "updated": "2026-10-29",
   "id": "feature.admin_data_quality",
   "name": "Admin Data Quality",
   "owner": "admin_console",
@@ -35,8 +35,7 @@
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetOverview", "requestValidation": "strict_schema", "responseValidation": "strict_schema"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetHostAnalytics", "requestValidation": "strict_schema", "responseValidation": "strict_schema"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetMarketingOpsDashboard", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetEventIntakeDashboard", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetEventSupplyReadiness", "requestValidation": "strict_schema", "responseValidation": "structural_object"}
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminGetEventIntakeDashboard", "requestValidation": "strict_schema", "responseValidation": "structural_object"}
         ],
         "testEvidence": {
           "source-register": ["admin/src/features/data-quality/controllers/useDataQualityController.test.tsx"]

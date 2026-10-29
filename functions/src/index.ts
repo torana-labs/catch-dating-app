@@ -567,12 +567,6 @@ export {
   adminListExternalEventDetails,
 } from "./admin/externalEventDetails";
 export {
-  adminGetEventSupplyReadiness,
-} from "./admin/eventSupplyReadiness";
-export {
-  adminPublishExternalEvent,
-} from "./admin/externalEventPublishing";
-export {
   adminTakedownExternalEvent,
 } from "./admin/externalEventTakedown";
 export {
@@ -610,12 +604,6 @@ export {
 export {
   adminRecordEventIntakeReviewDecision,
 } from "./admin/eventIntakeReview";
-export {
-  adminDecideOrganizerEventCandidate,
-} from "./admin/organizerEventIntake";
-export {
-  adminResolveOrganizerEventLocation,
-} from "./admin/organizerEventLocationResolution";
 export {
   adminDecideOrganizerPolicyGap,
 } from "./admin/organizerPolicyGap";

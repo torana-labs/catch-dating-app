@@ -851,8 +851,6 @@ export {organizerIntakeReviewDecisionDocumentSchema} from "./schemas/organizerIn
 export {eventIntakeReviewDecisionDocumentSchema} from "./schemas/eventIntakeReviewDecisionDocument";
 export {organizerIntakeCurationDecisionDocumentSchema} from "./schemas/organizerIntakeCurationDecisionDocument";
 export {organizerIntakeFieldCorrectionDocumentSchema} from "./schemas/organizerIntakeFieldCorrectionDocument";
-export {organizerEventCandidateReviewDecisionDocumentSchema} from "./schemas/organizerEventCandidateReviewDecisionDocument";
-export {organizerEventLocationResolutionDecisionDocumentSchema} from "./schemas/organizerEventLocationResolutionDecisionDocument";
 export {organizerPolicyGapReviewDecisionDocumentSchema} from "./schemas/organizerPolicyGapReviewDecisionDocument";
 export {updateUserProfileCallablePayloadSchema} from "./schemas/updateUserProfileInput";
 export {createClubCallablePayloadSchema} from "./schemas/createClubInput";
@@ -897,7 +895,6 @@ export {adminRecordEventIntakeReviewDecisionCallablePayloadSchema} from "./schem
 export {adminListIntakeOperationsCallablePayloadSchema} from "./schemas/adminListIntakeOperationsInput";
 export {adminListActionExecutionsCallablePayloadSchema} from "./schemas/adminListActionExecutionsInput";
 export {adminRecordActionExecutionCallablePayloadSchema} from "./schemas/adminRecordActionExecutionInput";
-export {adminDecideOrganizerEventCandidateCallablePayloadSchema} from "./schemas/adminDecideOrganizerEventCandidateInput";
 export {adminNominateOrganizerCallablePayloadSchema} from "./schemas/adminNominateOrganizerInput";
 export {adminNominateOrganizerCallableResponseSchema} from "./schemas/adminNominateOrganizerOutput";
 export {adminApproveOrganizerListingCallablePayloadSchema} from "./schemas/adminApproveOrganizerListingInput";
@@ -913,7 +910,6 @@ export {adminRefreshOrganizerEventsCallablePayloadSchema} from "./schemas/adminR
 export {adminRefreshOrganizerEventsCallableResponseSchema} from "./schemas/adminRefreshOrganizerEventsOutput";
 export {adminPublishListingEventsCallableResponseSchema} from "./schemas/adminPublishListingEventsOutput";
 export {adminDecideOrganizerPolicyGapCallablePayloadSchema} from "./schemas/adminDecideOrganizerPolicyGapInput";
-export {adminResolveOrganizerEventLocationCallablePayloadSchema} from "./schemas/adminResolveOrganizerEventLocationInput";
 export {adminSetClubIndexStatusCallablePayloadSchema} from "./schemas/adminSetClubIndexStatusInput";
 export {adminListCrossPathsShowcaseCandidatesCallablePayloadSchema} from "./schemas/adminListCrossPathsShowcaseCandidatesInput";
 export {adminSetCrossPathsShowcaseEligibilityCallablePayloadSchema} from "./schemas/adminSetCrossPathsShowcaseEligibilityInput";
@@ -942,7 +938,6 @@ export {adminGetEventDetailsCallablePayloadSchema} from "./schemas/adminGetEvent
 export {adminListEventDetailsCallablePayloadSchema} from "./schemas/adminListEventDetailsInput";
 export {adminListExternalEventDetailsCallablePayloadSchema} from "./schemas/adminListExternalEventDetailsInput";
 export {adminUpdateEventDetailsCallablePayloadSchema} from "./schemas/adminUpdateEventDetailsInput";
-export {adminPublishExternalEventCallablePayloadSchema} from "./schemas/adminPublishExternalEventInput";
 export {adminTakedownExternalEventCallablePayloadSchema} from "./schemas/adminTakedownExternalEventInput";
 export {startClubHostConversationCallablePayloadSchema} from "./schemas/startClubHostConversationInput";
 export {startOrganizerConversationCallablePayloadSchema} from "./schemas/startOrganizerConversationInput";

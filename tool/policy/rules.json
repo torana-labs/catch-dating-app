@@ -1444,10 +1444,11 @@
       },
       "applies_to": [
         "lib/**",
+        "apps/*/lib/**",
         "tool/architecture/check_dependency_direction.mjs",
         "tool/architecture/dependency_direction_baseline.json"
       ],
-      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and the existing direct imports are ratcheted debt in tool/architecture/dependency_direction_baseline.json \u2014 new domain code must not add them. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals \u2014 when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead.",
+      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and the existing direct imports are ratcheted debt in tool/architecture/dependency_direction_baseline.json \u2014 new domain code must not add them. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals \u2014 when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead. The same rules apply by placement to the bounded-context roots: lib/contexts/<context>/domain/** and lib/kernel/** are domain, lib/contexts/<context>/data/** is data, actions/ are controllers, parts/ stay provider-free, and lib/pages/** and apps/<app>/lib/<destination>/** are screens; findings under these roots are never baselined.",
       "sunset_when": [
         "The dependency-direction baseline is empty and adopted architecture boundary checks cover aligned features"
       ],
@@ -1477,6 +1478,43 @@
           "tool": "audit:provider-graph",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#provider-topology-graph"
+        }
+      ]
+    },
+    "CONTEXT-MAP-001": {
+      "title": "Code lives in a declared bounded context and depends only downward",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.88.0"
+      },
+      "applies_to": [
+        "lib/**",
+        "tool/architecture/context_map.json",
+        "tool/architecture/context_map_baseline.json",
+        "tool/architecture/check_context_map.mjs"
+      ],
+      "instruction": "Every handwritten lib Dart file is placed by tool/architecture/context_map.json in one of the declared bounded contexts or in the kernel, platform, pages or app layer. Layers import only downward (kernel, platform, contexts, pages, app), and a context imports only contexts declared before it. Code under lib/contexts/ crosses into another context only through that context's public API file lib/contexts/<name>/<name>.dart. A new top-level folder must be declared in the map before it holds code. When a screen needs two contexts, its view model combines them; one context never learns about another to save a screen work. Existing legacy imports that break the order ratchet in tool/architecture/context_map_baseline.json and are removed as each context moves; files under the target roots cannot be baselined.",
+      "sunset_when": [
+        "Every legacy entry in the context map has moved under the target roots and the baseline is empty"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:context-map",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#bounded-context-contract",
+          "baseline": "tool/architecture/context_map_baseline.json"
+        },
+        {
+          "tool": "audit:context-map",
+          "stage": "scanner-gate",
+          "docAnchor": "docs/app_architecture.md#bounded-context-contract"
         }
       ]
     },
@@ -3442,6 +3480,6 @@
       ]
     }
   },
-  "version": "2.13.1",
-  "updated": "2026-10-25"
+  "version": "2.14.1",
+  "updated": "2026-10-29"
 }

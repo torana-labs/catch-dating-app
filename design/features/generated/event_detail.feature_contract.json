@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:3f8cf3d918cb536e6fe3113521e0a3069506b08f6ba03739693c81db2bee0f70",
-  "resolvedDigest": "sha256:90319f184bbc374eb007a2f70afe85ad39dfb62c9631ea42864fb75575df5c09",
+  "sourceDigest": "sha256:35abed979b74b5f0c735672105e5ffdf09cb4b7fd3a857f0f4f49c5c97cb177f",
+  "resolvedDigest": "sha256:24664a89d44e14765ab5bceb76ada4040e706af6cda78bf3ade3d8438a915d06",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -19,7 +19,7 @@
     "actionCases": 49,
     "actions": 15,
     "captures": 33,
-    "previews": 12,
+    "previews": 13,
     "testFiles": 10,
     "evidenceExceptions": 9
   },
@@ -1694,7 +1694,8 @@
         "componentContracts": [
           "route_event_detail",
           "event_detail_public_registration",
-          "shared_event_booking_controls",
+          "event_guest_entry",
+          "event_booking",
           "event_page_header",
           "event_page_sections",
           "event_booking_card"
@@ -1717,7 +1718,7 @@
           ],
           "web-otp-registration": [
             "route_event_detail/EventDetailCatch",
-            "shared_event_booking_controls/Invitation"
+            "event_guest_entry/Steps"
           ],
           "external-source": [
             "route_event_detail/EventDetailCatch",
@@ -1768,7 +1769,7 @@
         "actionCases": 7,
         "actions": 4,
         "captures": 0,
-        "previews": 4,
+        "previews": 5,
         "testFiles": 6,
         "evidenceExceptions": 1
       },
@@ -1918,8 +1919,7 @@
             "previewIds": [
               "event_booking_card/BookingCard",
               "event_page_sections/OptionalFields",
-              "route_event_detail/EventDetailCatch",
-              "shared_event_booking_controls/Invitation"
+              "route_event_detail/EventDetailCatch"
             ],
             "tests": [
               "website/src/features/events/eventDetailModel.test.ts",
@@ -1987,8 +1987,8 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_event_detail/EventDetailCatch",
-              "shared_event_booking_controls/Invitation"
+              "event_guest_entry/Steps",
+              "route_event_detail/EventDetailCatch"
             ],
             "tests": [
               "website/src/features/events/eventDetailModel.test.ts",
@@ -2036,6 +2036,7 @@
           "evidence": {
             "captureIds": [],
             "previewIds": [
+              "event_booking/PhoneSheet",
               "event_booking_card/BookingCard",
               "event_page_sections/OptionalFields",
               "route_event_detail/EventDetailCatch"
@@ -2220,18 +2221,36 @@
             }
           },
           {
-            "id": "shared_event_booking_controls",
+            "id": "event_guest_entry",
             "kind": "supporting-component",
-            "source": "website/src/shared/ui/primitives/eventDetail.tsx",
-            "exportName": "EventGuestActions",
+            "source": "website/src/features/events/GuestEventEntry.tsx",
+            "exportName": "GuestEventEntry",
             "storybook": {
               "status": "ready",
               "story": "website/src/stories/GuestEventEntry.stories.tsx",
-              "exportName": "Invitation",
+              "exportName": "Steps",
               "states": [
-                "catch-native",
-                "guest-states",
-                "mobile-sticky-action"
+                "start",
+                "phone",
+                "code",
+                "paid-review"
+              ]
+            }
+          },
+          {
+            "id": "event_booking",
+            "kind": "section",
+            "source": "website/src/features/events/EventBooking.tsx",
+            "exportName": "EventBooking",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/EventPage.stories.tsx",
+              "exportName": "PhoneSheet",
+              "states": [
+                "sticky-aside",
+                "docked-bar",
+                "phone-sheet",
+                "external-source"
               ]
             }
           },
@@ -2287,10 +2306,11 @@
           }
         ],
         "previews": [
+          "event_booking/PhoneSheet",
           "event_booking_card/BookingCard",
+          "event_guest_entry/Steps",
           "event_page_sections/OptionalFields",
-          "route_event_detail/EventDetailCatch",
-          "shared_event_booking_controls/Invitation"
+          "route_event_detail/EventDetailCatch"
         ]
       }
     },

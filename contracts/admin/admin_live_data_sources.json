@@ -36,11 +36,9 @@
       "liveReads": ["adminListIntakeOperations"],
       "liveMutations": [
         "adminCreateOrganizerDraftFromCandidate",
-        "adminDecideOrganizerEventCandidate",
         "adminDecideOrganizerIntake",
         "adminDecideOrganizerPolicyGap",
-        "adminRecordOrganizerCuration",
-        "adminResolveOrganizerEventLocation"
+        "adminRecordOrganizerCuration"
       ]
     },
     {
@@ -71,11 +69,10 @@
       "paths": ["/events"],
       "liveReads": [
         "adminGetEventDetails",
-        "adminGetEventSupplyReadiness",
         "adminListEventDetails",
         "adminListExternalEventDetails"
       ],
-      "liveMutations": ["adminPublishExternalEvent", "adminUpdateEventDetails"]
+      "liveMutations": ["adminUpdateEventDetails"]
     },
     {
       "routeId": "growth",
@@ -111,7 +108,6 @@
       "paths": ["/quality"],
       "liveReads": [
         "adminGetEventIntakeDashboard",
-        "adminGetEventSupplyReadiness",
         "adminGetHostAnalytics",
         "adminGetMarketingOpsDashboard",
         "adminGetOverview"

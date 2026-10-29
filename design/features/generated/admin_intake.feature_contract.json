@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/admin_intake.feature.json",
-  "generatedFor": "2026-07-27",
-  "sourceDigest": "sha256:8ad96fc493e57953898071b177d39313ea21d3db0e46f383c055badfee9395d0",
+  "generatedFor": "2026-10-29",
+  "sourceDigest": "sha256:680d4367abca548d1059624cc58eb6c343b8808fd8c67651f9e26868c1efe6e2",
   "resolvedDigest": "sha256:9c387562a86658de3c00b718af93c153f4ce60b0a6c094e0ed36d6684b30a4ab",
   "feature": {
     "id": "feature.admin_intake",
@@ -17,7 +17,7 @@
     "states": 6,
     "scenarios": 6,
     "actionCases": 15,
-    "actions": 15,
+    "actions": 13,
     "captures": 0,
     "previews": 2,
     "testFiles": 9,
@@ -464,9 +464,9 @@
         "id": "route_organizer_intake"
       },
       "actionScope": {
-        "included": "Switching review and diagnostics, scrolling the bounded candidate queue independently from review detail, deciding organizer intake, creating fail-closed organizer drafts from reviewed candidates, attaching or curating candidates, deciding event candidates and policy gaps, classifying pending inputs, resolving event locations, and freezing the complete Admin workspace during any organizer-intake write.",
+        "included": "Switching review and diagnostics, scrolling the bounded candidate queue independently from review detail, deciding organizer intake, creating fail-closed organizer drafts from reviewed candidates, attaching or curating candidates, deciding policy gaps, classifying pending inputs, and freezing the complete Admin workspace during any organizer-intake write.",
         "excluded": [
-          "Decision notes, curation fields, manual-report acknowledgement, and location fields remain form data.",
+          "Decision notes, curation fields, and manual-report acknowledgement remain form data.",
           "Approval creates a publishing handoff; ownership, app visibility, claims, crawling, and canonical publication remain separately gated.",
           "Candidate draft creation reserves a canonical identity but cannot claim, publish, index, crawl, or expose the organizer in-app."
         ]
@@ -494,30 +494,19 @@
         ],
         "dataContracts": [
           "contracts/callables/admin_decide_organizer_intake_payload.schema.json",
-          "contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
           "contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
           "contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
           "contracts/callables/admin_record_organizer_curation_payload.schema.json",
-          "contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
           "contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
           "contracts/firestore/organizer_intake_review_decisions.schema.json",
-          "contracts/firestore/organizer_event_candidate_review_decisions.schema.json",
           "contracts/firestore/organizer_policy_gap_review_decisions.schema.json",
-          "contracts/firestore/organizer_intake_curation_decisions.schema.json",
-          "contracts/firestore/organizer_event_location_resolution_decisions.schema.json"
+          "contracts/firestore/organizer_intake_curation_decisions.schema.json"
         ],
         "runtimeContracts": [
           {
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminDecideOrganizerIntake",
-            "requestValidation": "strict_schema",
-            "responseValidation": "structural_object"
-          },
-          {
-            "kind": "admin_callable",
-            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
-            "callable": "adminDecideOrganizerEventCandidate",
             "requestValidation": "strict_schema",
             "responseValidation": "structural_object"
           },
@@ -539,13 +528,6 @@
             "kind": "admin_callable",
             "registry": "admin/src/generated/validators/adminCallableValidators.ts",
             "callable": "adminRecordOrganizerCuration",
-            "requestValidation": "strict_schema",
-            "responseValidation": "structural_object"
-          },
-          {
-            "kind": "admin_callable",
-            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
-            "callable": "adminResolveOrganizerEventLocation",
             "requestValidation": "strict_schema",
             "responseValidation": "structural_object"
           }
@@ -581,7 +563,7 @@
         "states": 5,
         "scenarios": 5,
         "actionCases": 9,
-        "actions": 9,
+        "actions": 7,
         "captures": 0,
         "previews": 1,
         "testFiles": 5,
@@ -731,31 +713,6 @@
           "implementationStatus": "implemented"
         },
         {
-          "id": "decide_organizer_event_candidate",
-          "owner": "controller",
-          "codeValue": "handleEventDecision",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "reviewerUid",
-            "candidateId",
-            "decisionVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "workflow-readiness"
-              ]
-            },
-            {
-              "kind": "side_effect",
-              "id": "admin.organizer_event_candidate_decided"
-            }
-          ],
-          "description": "Records import readiness for one organizer event candidate without publishing it.",
-          "implementationStatus": "implemented"
-        },
-        {
           "id": "decide_organizer_policy_gap",
           "owner": "controller",
           "codeValue": "handlePolicyGapDecision",
@@ -804,31 +761,6 @@
           ],
           "description": "Classifies one pending pipeline input with an explicit submitted/in-flight decision.",
           "implementationStatus": "implemented"
-        },
-        {
-          "id": "resolve_organizer_event_location",
-          "owner": "controller",
-          "codeValue": "handleLocationResolution",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "reviewerUid",
-            "candidateId",
-            "locationVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "workflow-readiness"
-              ]
-            },
-            {
-              "kind": "side_effect",
-              "id": "admin.organizer_event_location_resolved"
-            }
-          ],
-          "description": "Records reviewed place identity and coordinates for one organizer event candidate.",
-          "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [],
@@ -870,10 +802,8 @@
                 ],
                 "disabled": [],
                 "notAllowed": [
-                  "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
-                  "decide_pending_intake_input",
-                  "resolve_organizer_event_location"
+                  "decide_pending_intake_input"
                 ]
               }
             },
@@ -893,10 +823,8 @@
                   "record_organizer_curation"
                 ],
                 "notAllowed": [
-                  "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
-                  "decide_pending_intake_input",
-                  "resolve_organizer_event_location"
+                  "decide_pending_intake_input"
                 ]
               }
             },
@@ -916,10 +844,8 @@
                   "attach_organizer_candidate",
                   "create_organizer_draft_from_candidate",
                   "record_organizer_curation",
-                  "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
-                  "decide_pending_intake_input",
-                  "resolve_organizer_event_location"
+                  "decide_pending_intake_input"
                 ]
               }
             }
@@ -955,10 +881,8 @@
               "actions": {
                 "enabled": [
                   "toggle_organizer_intake_diagnostics",
-                  "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
-                  "decide_pending_intake_input",
-                  "resolve_organizer_event_location"
+                  "decide_pending_intake_input"
                 ],
                 "disabled": [],
                 "notAllowed": [
@@ -979,10 +903,8 @@
                 "enabled": [],
                 "disabled": [
                   "toggle_organizer_intake_diagnostics",
-                  "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
-                  "decide_pending_intake_input",
-                  "resolve_organizer_event_location"
+                  "decide_pending_intake_input"
                 ],
                 "notAllowed": [
                   "decide_organizer_intake",
@@ -1031,10 +953,8 @@
                 "notAllowed": [
                   "attach_organizer_candidate",
                   "create_organizer_draft_from_candidate",
-                  "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
-                  "decide_pending_intake_input",
-                  "resolve_organizer_event_location"
+                  "decide_pending_intake_input"
                 ]
               }
             }
@@ -1076,10 +996,8 @@
                   "decide_organizer_intake",
                   "attach_organizer_candidate",
                   "record_organizer_curation",
-                  "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
-                  "decide_pending_intake_input",
-                  "resolve_organizer_event_location"
+                  "decide_pending_intake_input"
                 ]
               }
             }
@@ -1122,10 +1040,8 @@
                   "decide_organizer_intake",
                   "attach_organizer_candidate",
                   "record_organizer_curation",
-                  "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
-                  "decide_pending_intake_input",
-                  "resolve_organizer_event_location"
+                  "decide_pending_intake_input"
                 ]
               }
             },
@@ -1145,10 +1061,8 @@
                   "decide_organizer_intake",
                   "attach_organizer_candidate",
                   "record_organizer_curation",
-                  "decide_organizer_event_candidate",
                   "decide_organizer_policy_gap",
-                  "decide_pending_intake_input",
-                  "resolve_organizer_event_location"
+                  "decide_pending_intake_input"
                 ]
               }
             }

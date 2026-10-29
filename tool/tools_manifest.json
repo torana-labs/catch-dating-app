@@ -1467,7 +1467,7 @@
       "command": "node tool/architecture/check_dependency_direction.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Checks Dart dependency direction, public barrel seams, provider-free state-file naming, route-boundary provider leaks, keepAlive rationale markers, manual provider declarations, hidden display-state classes, and multi-screen presentation files.",
+      "description": "Checks Dart dependency direction, public barrel seams, provider-free state-file naming, route-boundary provider leaks, keepAlive rationale markers, manual provider declarations, hidden display-state classes, and multi-screen presentation files, by layer placement across legacy features, the bounded-context roots and app packages.",
       "checks": [
         "node --test tool/architecture/check_dependency_direction.test.mjs",
         "node --check tool/architecture/check_dependency_direction.mjs",
@@ -1501,7 +1501,12 @@
           "scanFile flags manual provider declarations outside core",
           "scanFile flags display state classes misplaced outside state files",
           "scanFile flags presentation files with multiple route screens",
-          "scanDependencyDirection flags untracked state adapters as a hard gate"
+          "scanDependencyDirection flags untracked state adapters as a hard gate",
+          "scanFile holds context domain and kernel files to the domain rules",
+          "scanFile flags context data and domain imports of actions, parts and screens",
+          "scanFile flags provider-coupled context parts as a hard gate",
+          "scanFile applies screen rules to app-package destinations and shared pages",
+          "scanDependencyDirection scans app packages and never baselines the context roots"
         ]
       },
       "impactPaths": [
@@ -1509,6 +1514,49 @@
         "tool/architecture/check_dependency_direction.mjs",
         "tool/architecture/dependency_direction_baseline.json",
         "tool/architecture/pattern_adoption.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
+    },
+    {
+      "id": "audit:context-map",
+      "category": "audit",
+      "path": "tool/architecture/check_context_map.mjs",
+      "command": "node tool/architecture/check_context_map.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Places every handwritten lib Dart file in a bounded context or layer from tool/architecture/context_map.json and checks that layers and contexts import only downward, that new contexts cross through their public API file, that no new top-level folder goes undeclared, and that the architecture spec's context table matches the map.",
+      "checks": [
+        "node --test tool/architecture/check_context_map.test.mjs",
+        "node --check tool/architecture/check_context_map.mjs",
+        "node tool/architecture/check_context_map.mjs"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "CONTEXT-MAP-001"
+      ],
+      "baseline": "tool/architecture/context_map_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/architecture/check_context_map.test.mjs",
+        "contains": [
+          "scanFile flags a context importing a context declared after it",
+          "scanFile flags upward layer imports",
+          "scanFile flags new contexts that bypass the public API file",
+          "scanFile flags unmapped files and undeclared contexts",
+          "scanContextMap ratchets legacy debt but never baselines new roots",
+          "scanContextMap reports obsolete baseline allowances",
+          "checkSpecTable fails when the spec's context table drifts from the map"
+        ]
+      },
+      "impactPaths": [
+        "docs/app_architecture.md",
+        "tool/architecture/check_context_map.test.mjs",
+        "tool/architecture/check_context_map.mjs",
+        "tool/architecture/context_map.json",
+        "tool/architecture/context_map_baseline.json"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -3472,13 +3520,13 @@
     {
       "id": "firebase:project-resolver",
       "category": "firebase",
-      "path": "tool/firebase/firebase_project_resolver.mjs",
-      "command": "node --test tool/firebase/firebase_project_resolver.test.mjs",
+      "path": "tool/lib/firebase_project.mjs",
+      "command": "node --test tool/lib/firebase_project.test.mjs",
       "safety": "local-test",
       "status": "active",
-      "description": "Shared Firebase project resolver compatibility module.",
+      "description": "Shared Firebase project alias resolver and production-target guard.",
       "checks": [
-        "node --test tool/firebase/firebase_project_resolver.test.mjs"
+        "node --test tool/lib/firebase_project.test.mjs"
       ],
       "role": "finder"
     },
@@ -4955,7 +5003,7 @@
       "command": "node tool/organizer_intake/publish_event_supply_readiness.mjs",
       "safety": "remote-firestore-write-guarded",
       "status": "retired",
-      "description": "Publishes generated external event import-plan and preflight snapshots to eventSupplyReadiness/current for the live Events admin tab; dry-run by default and does not write externalEvents/{id}.",
+      "description": "Publishes generated external event import-plan and preflight snapshots to eventSupplyReadiness/current; dry-run by default and does not write externalEvents/{id}. Nothing reads that snapshot since adminGetEventSupplyReadiness and the Events readiness workspace were retired on 2026-10-29.",
       "checks": [
         "node --check tool/organizer_intake/lib/event_supply_readiness_publish_core.mjs",
         "node --check tool/organizer_intake/publish_event_supply_readiness.mjs",
@@ -5048,7 +5096,7 @@
       "command": "node tool/organizer_intake/export_event_review_decisions_from_firestore.mjs",
       "safety": "remote-read-local-write-guarded",
       "status": "retired",
-      "description": "Exports live admin external event-candidate review decisions from Firestore into repo-backed event review batches.",
+      "description": "Exports admin external event-candidate review decisions from Firestore into repo-backed event review batches. Nothing writes them since adminDecideOrganizerEventCandidate was retired on 2026-10-29.",
       "checks": [
         "node --check tool/organizer_intake/export_event_review_decisions_from_firestore.mjs",
         "node --test tool/organizer_intake/export_event_review_decisions_from_firestore.test.mjs",
@@ -5063,7 +5111,7 @@
       "command": "node tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs",
       "safety": "remote-read-local-write-guarded",
       "status": "retired",
-      "description": "Exports live admin external event-location resolutions from Firestore into repo-backed location resolution batches.",
+      "description": "Exports admin external event-location resolutions from Firestore into repo-backed location resolution batches. Nothing writes them since adminResolveOrganizerEventLocation was retired on 2026-10-29.",
       "checks": [
         "node --check tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs",
         "node --test tool/organizer_intake/export_event_location_resolutions_from_firestore.test.mjs",

@@ -535,6 +535,7 @@ function martRow(overrides: Record<string, unknown> = {}) {
     contactClicks: 0,
     claimClicks: 0,
     outboundClicks: 0,
+    linkClicks: 0,
     ...overrides,
   };
 }
@@ -652,7 +653,7 @@ function hostCallableFixture(moveEvent = false) {
     now: () => now,
     serverTimestamp: () => ({}) as FirebaseFirestore.FieldValue,
     timestampFromDate: fakeTimestamp,
-    bigQuerySource: {loadRows: async () => []},
+    bigQuerySource: {loadRows: async () => [], loadLinkRows: async () => []},
     checkRateLimit: async () => {},
   };
   const request = (uid: string, data: Record<string, unknown>) =>
@@ -697,11 +698,14 @@ test("external-only organizer retains presence without native report links",
     const fixture = hostCallableFixture();
     const response = await getHostAnalyticsHandler(
       fixture.request("owner", {organizerId: "org"}),
-      {...fixture.deps, bigQuerySource: {loadRows: async () => [martRow({
-        clubId: "org", eventId: "external-only", listingViews: 12,
-        eventViews: 9, outboundBookingClicks: 4, bookedCount: 0,
-        paymentCompletedCount: 0, grossRevenueMinor: 0,
-      })]}},
+      {...fixture.deps, bigQuerySource: {
+        loadRows: async () => [martRow({
+          clubId: "org", eventId: "external-only", listingViews: 12,
+          eventViews: 9, outboundBookingClicks: 4, bookedCount: 0,
+          paymentCompletedCount: 0, grossRevenueMinor: 0,
+        })],
+        loadLinkRows: async () => [],
+      }},
     );
     assert.equal(response.discoverySummary.listingViews, 12);
     assert.equal(response.discoverySummary.eventViews, 9);
@@ -710,3 +714,55 @@ test("external-only organizer retains presence without native report links",
     assert.match(metric(response, "outboundBookingClicks").caption ?? "",
       /does not observe external purchases/);
   });
+
+test("owner link clicks roll up by link, with labels and traffic sources",
+  () => {
+    const input = records();
+    input.clubs[0].data = {...input.clubs[0].data, ownerLinks: [
+      {id: "tickets", label: "Tickets", subtitle: null,
+        url: "https://www.district.in/saket", icon: "tickets", pinned: false,
+        showUntil: null},
+    ]} as AnalyticsRecords["clubs"][number]["data"];
+    input.martRows = [martRow({linkClicks: 7})];
+    input.linkRows = [
+      {clubId: "club-1", linkId: "tickets", trafficSource: "instagram",
+        linkClicks: 4},
+      {clubId: "club-1", linkId: "tickets", trafficSource: "qr",
+        linkClicks: 1},
+      {clubId: "club-1", linkId: "removed", trafficSource: "made_up",
+        linkClicks: 2},
+      {clubId: "club-1", linkId: "silent", trafficSource: "direct",
+        linkClicks: 0},
+    ];
+    const range = resolveAnalyticsRange(
+      {rangePreset: "30d"}, new Date("2026-06-18T12:00:00Z"));
+    const response = buildHostAnalyticsFromRecords(input, range, new Date());
+    assert.equal(response.discoverySummary.linkClicks, 7);
+    assert.deepEqual(response.linkSummary, {
+      links: [
+        {organizerId: "club-1", linkId: "tickets", label: "Tickets",
+          clicks: 5},
+        {organizerId: "club-1", linkId: "removed", label: null, clicks: 2},
+      ],
+      trafficSources: [
+        {source: "instagram", clicks: 4},
+        {source: "other", clicks: 2},
+        {source: "qr", clicks: 1},
+      ],
+    });
+    assert.equal(validateHostAnalyticsCallableResponse(response), true,
+      JSON.stringify(validateHostAnalyticsCallableResponse.errors));
+    assert.equal(response.dataQuality.some((row) =>
+      row.id === "owner-link-clicks"), false);
+  });
+
+test("an unreadable link mart leaves the roll-up empty and says so", () => {
+  const input = records();
+  input.linkRows = null;
+  const range = resolveAnalyticsRange(
+    {rangePreset: "30d"}, new Date("2026-06-18T12:00:00Z"));
+  const response = buildHostAnalyticsFromRecords(input, range, new Date());
+  assert.deepEqual(response.linkSummary, {links: [], trafficSources: []});
+  assert.equal(response.dataQuality.find((row) =>
+    row.id === "owner-link-clicks")?.state, "missing");
+});

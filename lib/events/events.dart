@@ -19,22 +19,15 @@ export 'domain/event_eligibility.dart';
 export 'domain/event_invite_link.dart';
 export 'domain/event_itinerary.dart';
 export 'domain/event_meeting_location.dart';
-export 'domain/event_participation.dart';
-export 'domain/event_participation_roster.dart';
 export 'domain/event_private_access.dart';
 export 'domain/external_event.dart';
-export 'domain/saved_event.dart';
-export 'domain/viewer_event_availability.dart';
 
 // ── Repositories ────────────────────────────────────────────────────────────
 export 'data/event_callable_adapters.dart';
 export 'data/event_callable_responses.dart';
-export 'data/event_discovery_repository.dart';
 export 'data/event_draft_repository.dart';
-export 'data/event_participation_repository.dart';
 export 'data/event_repository.dart';
 export 'data/external_event_repository.dart';
-export 'data/saved_event_repository.dart';
 
 // ── Presentation — screens ──────────────────────────────────────────────────
 export 'presentation/event_detail_screen.dart'; // public-api: route entry point exposed to app routing
@@ -71,8 +64,6 @@ export 'shared/event_tiles/event_tiles.dart';
 // ── Presentation — value types & formatters ─────────────────────────────────
 export 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 export 'data/event_calendar_links.dart';
-export 'domain/event_arrival_action.dart';
-export 'domain/event_check_in_qr_payload.dart';
 export 'domain/event_formatters.dart';
 export 'domain/event_location_links.dart';
 export 'presentation/event_action_keys.dart'; // public-api: presentation value/helper API used across feature boundaries

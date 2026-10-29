@@ -1,0 +1,103 @@
+name: Mobile Production
+
+# Ships a build that testers already have. iOS submits that TestFlight build
+# for App Store review as a phased release, released by hand after approval.
+# Android promotes that internal-track version code to production as a staged
+# rollout. Nothing is rebuilt or re-uploaded, so production gets the exact
+# bytes testers used. The prod-mobile-release environment requires a reviewer's
+# approval before either job runs. Operator guide: docs/release_operations.md,
+# "Mobile releases".
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: App to release
+        type: choice
+        options: [consumer, host]
+      platform:
+        description: Store to release to
+        type: choice
+        options: [ios, android]
+      build:
+        description: TestFlight build number (iOS) or Play version code (Android) that testers have
+        type: string
+        required: true
+      rollout:
+        description: Android rollout fraction, for example 0.1 for 10%
+        type: string
+        default: "0.1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-production-${{ inputs.platform }}-${{ inputs.app }}
+  cancel-in-progress: false
+
+jobs:
+  ios:
+    name: Submit iOS ${{ inputs.app }} ${{ inputs.build }} for review
+    if: ${{ github.ref == 'refs/heads/main' && inputs.platform == 'ios' }}
+    runs-on: macos-26
+    environment: prod-mobile-release
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - name: Submit for App Store review
+        env:
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          BUILD: ${{ inputs.build }}
+          FASTLANE_SKIP_UPDATE_CHECK: "1"
+          FASTLANE_HIDE_CHANGELOG: "1"
+          LC_ALL: en_US.UTF-8
+          LANG: en_US.UTF-8
+        run: bundle exec fastlane ios release role:${{ inputs.app }} "build:$BUILD"
+
+  android:
+    name: Roll out Android ${{ inputs.app }} ${{ inputs.build }}
+    if: ${{ github.ref == 'refs/heads/main' && inputs.platform == 'android' }}
+    runs-on: ubuntu-latest
+    environment: prod-mobile-release
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - name: Authenticate to Google Play without a stored key
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
+      - name: Promote to production
+        env:
+          BUILD: ${{ inputs.build }}
+          ROLLOUT: ${{ inputs.rollout }}
+          FASTLANE_SKIP_UPDATE_CHECK: "1"
+          FASTLANE_HIDE_CHANGELOG: "1"
+        run: bundle exec fastlane android release role:${{ inputs.app }} "version_code:$BUILD" "rollout:$ROLLOUT"

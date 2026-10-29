@@ -47,6 +47,7 @@ export const hostAnalyticsSnapshotDocumentSchema: Record<string, unknown> = {
         "topEvents",
         "reviewSummary",
         "discoverySummary",
+        "linkSummary",
         "dataQuality"
       ],
       "properties": {
@@ -474,7 +475,8 @@ export const hostAnalyticsSnapshotDocumentSchema: Record<string, unknown> = {
             "eventSaves",
             "contactClicks",
             "claimClicks",
-            "outboundClicks"
+            "outboundClicks",
+            "linkClicks"
           ],
           "properties": {
             "listingViews": {
@@ -508,6 +510,90 @@ export const hostAnalyticsSnapshotDocumentSchema: Record<string, unknown> = {
             "outboundClicks": {
               "type": "integer",
               "minimum": 0
+            },
+            "linkClicks": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "linkSummary": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Owner link clicks in the range (CAT-254): each link's total, most clicked first, and where the clicking visitors came from. Event-scoped reports have none.",
+          "required": [
+            "links",
+            "trafficSources"
+          ],
+          "properties": {
+            "links": {
+              "type": "array",
+              "maxItems": 50,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "organizerId",
+                  "linkId",
+                  "label",
+                  "clicks"
+                ],
+                "properties": {
+                  "organizerId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "linkId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "label": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80,
+                    "description": "The link's current label; null once the owner has removed it."
+                  },
+                  "clicks": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "trafficSources": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "source",
+                  "clicks"
+                ],
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "instagram",
+                      "whatsapp",
+                      "facebook",
+                      "google",
+                      "qr",
+                      "email",
+                      "direct",
+                      "other"
+                    ]
+                  },
+                  "clicks": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
             }
           }
         },

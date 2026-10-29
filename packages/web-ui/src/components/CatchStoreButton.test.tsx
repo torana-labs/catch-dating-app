@@ -10,7 +10,7 @@ describe("CatchStoreButton", () => {
     const link = screen.getByRole("link", {name: "Download on the App Store"});
     expect(link.getAttribute("href")).toBe("https://apps.apple.com/app/x");
     expect(link.dataset).toMatchObject({size: "l", store: "appStore"});
-    expect(link.textContent).toBe("Download on theApp Store");
+    expect(link.textContent).toBe("Download on the App Store");
   });
 
   it("falls back to its visible label and reports clicks", () => {

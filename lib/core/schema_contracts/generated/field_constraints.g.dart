@@ -3631,108 +3631,6 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const adminDecideOrganizerEventCandidateCallablePayloadBlockerResolutions = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.blockerResolutions',
-    required: true,
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 6,
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadBlockerResolutionsItemsBlockerCode = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.blockerResolutions.items.blockerCode',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['missing_exact_coordinates', 'missing_end_time', 'missing_location_detail', 'requires_event_defaults_policy', 'requires_owner_safe_copy_review', 'duplicate_normalized_event_key'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadBlockerResolutionsItemsNote = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.blockerResolutions.items.note',
-    maxLength: 1000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadBlockerResolutionsItemsOutcome = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.blockerResolutions.items.outcome',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['resolved', 'waived'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadBlockerResolutionsItemsPolicyGapDecisionId = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.blockerResolutions.items.policyGapDecisionId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadCandidateId = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.candidateId',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadChecklistDedupeReviewed = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.checklist.dedupeReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadChecklistIdentityReviewed = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.checklist.identityReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadChecklistImportPolicyAcknowledged = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.checklist.importPolicyAcknowledged',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadChecklistLocationReviewed = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.checklist.locationReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadChecklistOwnerSafeCopyReviewed = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.checklist.ownerSafeCopyReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadChecklistSourceEventReviewed = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.checklist.sourceEventReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadChecklistTimeReviewed = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.checklist.timeReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadDecision = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.decision',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['approve_for_import', 'hold', 'reject'],
-  );
-
-  static const adminDecideOrganizerEventCandidateCallablePayloadNote = CatchContractFieldConstraints(
-    path: 'adminDecideOrganizerEventCandidateCallablePayload.note',
-    maxLength: 1000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
   static const adminDecideOrganizerIntakeCallablePayloadAppVisibility = CatchContractFieldConstraints(
     path: 'adminDecideOrganizerIntakeCallablePayload.appVisibility',
     required: true,
@@ -10198,69 +10096,6 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
-  static const adminPublishExternalEventCallablePayloadChecklistNoCatchBookingPaymentsWaitlist = CatchContractFieldConstraints(
-    path: 'adminPublishExternalEventCallablePayload.checklist.noCatchBookingPaymentsWaitlist',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminPublishExternalEventCallablePayloadChecklistOutboundLinksReviewed = CatchContractFieldConstraints(
-    path: 'adminPublishExternalEventCallablePayload.checklist.outboundLinksReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminPublishExternalEventCallablePayloadChecklistOwnerSafeCopyReviewed = CatchContractFieldConstraints(
-    path: 'adminPublishExternalEventCallablePayload.checklist.ownerSafeCopyReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminPublishExternalEventCallablePayloadChecklistPreflightActionReviewed = CatchContractFieldConstraints(
-    path: 'adminPublishExternalEventCallablePayload.checklist.preflightActionReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminPublishExternalEventCallablePayloadExecutionMode = CatchContractFieldConstraints(
-    path: 'adminPublishExternalEventCallablePayload.executionMode',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['dry_run', 'apply'],
-  );
-
-  static const adminPublishExternalEventCallablePayloadIdempotencyKey = CatchContractFieldConstraints(
-    path: 'adminPublishExternalEventCallablePayload.idempotencyKey',
-    maxLength: 180,
-    minLength: 8,
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^[A-Za-z0-9:_-]+\$',
-  );
-
-  static const adminPublishExternalEventCallablePayloadReviewNote = CatchContractFieldConstraints(
-    path: 'adminPublishExternalEventCallablePayload.reviewNote',
-    maxLength: 1000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminPublishExternalEventCallablePayloadSourceActionId = CatchContractFieldConstraints(
-    path: 'adminPublishExternalEventCallablePayload.sourceActionId',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminPublishExternalEventCallablePayloadTargetPath = CatchContractFieldConstraints(
-    path: 'adminPublishExternalEventCallablePayload.targetPath',
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^externalEvents/[A-Za-z0-9_-]{1,180}\$',
-  );
-
   static const adminPublishListingEventsCallablePayloadBlockerResolutions = CatchContractFieldConstraints(
     path: 'adminPublishListingEventsCallablePayload.blockerResolutions',
     required: true,
@@ -10323,6 +10158,59 @@ abstract final class CatchContractConstraints {
     path: 'adminPublishListingEventsCallablePayload.checklist.ownerSafeCopyReviewed',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocations = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 60,
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsAddress = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.address',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsEventWorkItemId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.eventWorkItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsLatitude = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsLongitude = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsName = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.name',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsPlaceId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const adminPublishListingEventsCallablePayloadEventWorkItemIds = CatchContractFieldConstraints(
@@ -11319,87 +11207,6 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadCandidateId = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.candidateId',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadChecklistCoordinatesReviewed = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.checklist.coordinatesReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadChecklistImportSafetyReviewed = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.checklist.importSafetyReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadChecklistPlaceIdentityReviewed = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.checklist.placeIdentityReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadChecklistSourceLocationReviewed = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.checklist.sourceLocationReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadLocationAddress = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.location.address',
-    maxLength: 500,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadLocationLatitude = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.location.latitude',
-    valueTypes: <String>['number'],
-    minimum: -90,
-    maximum: 90,
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadLocationLongitude = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.location.longitude',
-    valueTypes: <String>['number'],
-    minimum: -180,
-    maximum: 180,
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadLocationName = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.location.name',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadLocationNotes = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.location.notes',
-    maxLength: 1000,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadLocationPlaceId = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.location.placeId',
-    maxLength: 256,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const adminResolveOrganizerEventLocationCallablePayloadNote = CatchContractFieldConstraints(
-    path: 'adminResolveOrganizerEventLocationCallablePayload.note',
-    maxLength: 1000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
   );
 
   static const adminRestrictSalesOrganizerPayloadOrganizerId = CatchContractFieldConstraints(
@@ -90119,6 +89926,13 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const hostAnalyticsCallableResponseDiscoverySummaryLinkClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.discoverySummary.linkClicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const hostAnalyticsCallableResponseDiscoverySummaryListingViews = CatchContractFieldConstraints(
     path: 'hostAnalyticsCallableResponse.discoverySummary.listingViews',
     required: true,
@@ -90152,6 +89966,65 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryLinks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.links',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryLinksItemsClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.links.items.clicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryLinksItemsLabel = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.links.items.label',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryLinksItemsLinkId = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.links.items.linkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryLinksItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.links.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryTrafficSources = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.trafficSources',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryTrafficSourcesItemsClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.trafficSources.items.clicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsCallableResponseLinkSummaryTrafficSourcesItemsSource = CatchContractFieldConstraints(
+    path: 'hostAnalyticsCallableResponse.linkSummary.trafficSources.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagram', 'whatsapp', 'facebook', 'google', 'qr', 'email', 'direct', 'other'],
   );
 
   static const hostAnalyticsCallableResponseRangeEndDate = CatchContractFieldConstraints(
@@ -90646,7 +90519,7 @@ abstract final class CatchContractConstraints {
     path: 'hostAnalyticsEvent.event_name',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['listingView', 'searchAppearance', 'eventView', 'organizerSave', 'eventSave', 'contactClick', 'claimClick', 'outboundClick'],
+    enumValues: <String>['listingView', 'searchAppearance', 'eventView', 'organizerSave', 'eventSave', 'contactClick', 'claimClick', 'outboundClick', 'linkClick'],
   );
 
   static const hostAnalyticsEventIngestedAt = CatchContractFieldConstraints(
@@ -90654,6 +90527,13 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const hostAnalyticsEventLinkId = CatchContractFieldConstraints(
+    path: 'hostAnalyticsEvent.link_id',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const hostAnalyticsEventOccurredAt = CatchContractFieldConstraints(
@@ -90694,6 +90574,12 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsEventTrafficSource = CatchContractFieldConstraints(
+    path: 'hostAnalyticsEvent.traffic_source',
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagram', 'whatsapp', 'facebook', 'google', 'qr', 'email', 'direct', 'other'],
   );
 
   static const hostAnalyticsQueryCallablePayloadClubId = CatchContractFieldConstraints(
@@ -90859,6 +90745,13 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const hostAnalyticsSnapshotDocumentResponseDiscoverySummaryLinkClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.discoverySummary.linkClicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const hostAnalyticsSnapshotDocumentResponseDiscoverySummaryListingViews = CatchContractFieldConstraints(
     path: 'hostAnalyticsSnapshotDocument.response.discoverySummary.listingViews',
     required: true,
@@ -90892,6 +90785,65 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryLinks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.links',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.clicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsLabel = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.label',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsLinkId = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.linkId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSources = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSourcesItemsClicks = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources.items.clicks',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSourcesItemsSource = CatchContractFieldConstraints(
+    path: 'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources.items.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagram', 'whatsapp', 'facebook', 'google', 'qr', 'email', 'direct', 'other'],
   );
 
   static const hostAnalyticsSnapshotDocumentResponseRangeEndDate = CatchContractFieldConstraints(
@@ -116301,309 +116253,6 @@ abstract final class CatchContractConstraints {
 
   static const organizerEntitlementsDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'organizerEntitlementsDocument.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentBlockerResolutions = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.blockerResolutions',
-    valueTypes: <String>['array'],
-    itemValueTypes: <String>['object'],
-    maxItems: 6,
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentBlockerResolutionsItemsBlockerCode = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.blockerResolutions.items.blockerCode',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['missing_exact_coordinates', 'missing_end_time', 'missing_location_detail', 'requires_event_defaults_policy', 'requires_owner_safe_copy_review', 'duplicate_normalized_event_key'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentBlockerResolutionsItemsNote = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.blockerResolutions.items.note',
-    maxLength: 1000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentBlockerResolutionsItemsOutcome = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.blockerResolutions.items.outcome',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['resolved', 'waived'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentBlockerResolutionsItemsPolicyGapDecisionId = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.blockerResolutions.items.policyGapDecisionId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentCandidateId = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.candidateId',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentChecklistDedupeReviewed = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.checklist.dedupeReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentChecklistIdentityReviewed = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.checklist.identityReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentChecklistImportPolicyAcknowledged = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.checklist.importPolicyAcknowledged',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentChecklistLocationReviewed = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.checklist.locationReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentChecklistOwnerSafeCopyReviewed = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.checklist.ownerSafeCopyReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentChecklistSourceEventReviewed = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.checklist.sourceEventReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentChecklistTimeReviewed = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.checklist.timeReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentDecision = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.decision',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['approve_for_import', 'hold', 'reject'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentDecisionId = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.decisionId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentDecisionStatus = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.decisionStatus',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['approved_for_import', 'held', 'rejected'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentImportState = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.importState',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['blocked_by_policy', 'not_importable', 'pending_import'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentNote = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.note',
-    maxLength: 1000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentReviewedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.reviewedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentReviewedAtSeconds = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.reviewedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentReviewedByUid = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.reviewedByUid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentSchemaVersion = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.schemaVersion',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const organizerEventCandidateReviewDecisionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'organizerEventCandidateReviewDecisionDocument.updatedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentCandidateId = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.candidateId',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentChecklistCoordinatesReviewed = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.checklist.coordinatesReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentChecklistImportSafetyReviewed = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.checklist.importSafetyReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentChecklistPlaceIdentityReviewed = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.checklist.placeIdentityReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentChecklistSourceLocationReviewed = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.checklist.sourceLocationReviewed',
-    required: true,
-    valueTypes: <String>['boolean'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentLocationAddress = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.location.address',
-    maxLength: 500,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentLocationLatitude = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.location.latitude',
-    valueTypes: <String>['number'],
-    minimum: -90,
-    maximum: 90,
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentLocationLongitude = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.location.longitude',
-    valueTypes: <String>['number'],
-    minimum: -180,
-    maximum: 180,
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentLocationName = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.location.name',
-    maxLength: 240,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentLocationNotes = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.location.notes',
-    maxLength: 1000,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentLocationPlaceId = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.location.placeId',
-    maxLength: 256,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentNote = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.note',
-    maxLength: 1000,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentResolutionId = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.resolutionId',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentResolutionStatus = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.resolutionStatus',
-    required: true,
-    valueTypes: <String>['string'],
-    enumValues: <String>['resolved'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentReviewedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.reviewedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentReviewedAtSeconds = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.reviewedAt._seconds',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentReviewedByUid = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.reviewedByUid',
-    maxLength: 180,
-    minLength: 1,
-    required: true,
-    valueTypes: <String>['string'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentSchemaVersion = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.schemaVersion',
-    required: true,
-    valueTypes: <String>['integer'],
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.updatedAt._nanoseconds',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 999999999,
-  );
-
-  static const organizerEventLocationResolutionDecisionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
-    path: 'organizerEventLocationResolutionDecisionDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -147587,7 +147236,14 @@ abstract final class CatchContractConstraints {
     path: 'recordOrganizerAnalyticsEventCallablePayload.eventName',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['listingView', 'searchAppearance', 'eventView', 'organizerSave', 'eventSave', 'contactClick', 'claimClick', 'outboundClick'],
+    enumValues: <String>['listingView', 'searchAppearance', 'eventView', 'organizerSave', 'eventSave', 'contactClick', 'claimClick', 'outboundClick', 'linkClick'],
+  );
+
+  static const recordOrganizerAnalyticsEventCallablePayloadLinkId = CatchContractFieldConstraints(
+    path: 'recordOrganizerAnalyticsEventCallablePayload.linkId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const recordOrganizerAnalyticsEventCallablePayloadOrganizerId = CatchContractFieldConstraints(
@@ -147622,6 +147278,12 @@ abstract final class CatchContractConstraints {
     path: 'recordOrganizerAnalyticsEventCallablePayload.source',
     maxLength: 80,
     valueTypes: <String>['string'],
+  );
+
+  static const recordOrganizerAnalyticsEventCallablePayloadTrafficSource = CatchContractFieldConstraints(
+    path: 'recordOrganizerAnalyticsEventCallablePayload.trafficSource',
+    valueTypes: <String>['string'],
+    enumValues: <String>['instagram', 'whatsapp', 'facebook', 'google', 'qr', 'email', 'direct', 'other'],
   );
 
   static const recordOrganizerAnalyticsEventCallableResponseAccepted = CatchContractFieldConstraints(
@@ -176607,21 +176269,6 @@ abstract final class CatchContractConstraints {
     'adminDecideOrganizerClaimCallablePayload.decision': adminDecideOrganizerClaimCallablePayloadDecision,
     'adminDecideOrganizerClaimCallablePayload.decisionReason': adminDecideOrganizerClaimCallablePayloadDecisionReason,
     'adminDecideOrganizerClaimCallablePayload.requestId': adminDecideOrganizerClaimCallablePayloadRequestId,
-    'adminDecideOrganizerEventCandidateCallablePayload.blockerResolutions': adminDecideOrganizerEventCandidateCallablePayloadBlockerResolutions,
-    'adminDecideOrganizerEventCandidateCallablePayload.blockerResolutions.items.blockerCode': adminDecideOrganizerEventCandidateCallablePayloadBlockerResolutionsItemsBlockerCode,
-    'adminDecideOrganizerEventCandidateCallablePayload.blockerResolutions.items.note': adminDecideOrganizerEventCandidateCallablePayloadBlockerResolutionsItemsNote,
-    'adminDecideOrganizerEventCandidateCallablePayload.blockerResolutions.items.outcome': adminDecideOrganizerEventCandidateCallablePayloadBlockerResolutionsItemsOutcome,
-    'adminDecideOrganizerEventCandidateCallablePayload.blockerResolutions.items.policyGapDecisionId': adminDecideOrganizerEventCandidateCallablePayloadBlockerResolutionsItemsPolicyGapDecisionId,
-    'adminDecideOrganizerEventCandidateCallablePayload.candidateId': adminDecideOrganizerEventCandidateCallablePayloadCandidateId,
-    'adminDecideOrganizerEventCandidateCallablePayload.checklist.dedupeReviewed': adminDecideOrganizerEventCandidateCallablePayloadChecklistDedupeReviewed,
-    'adminDecideOrganizerEventCandidateCallablePayload.checklist.identityReviewed': adminDecideOrganizerEventCandidateCallablePayloadChecklistIdentityReviewed,
-    'adminDecideOrganizerEventCandidateCallablePayload.checklist.importPolicyAcknowledged': adminDecideOrganizerEventCandidateCallablePayloadChecklistImportPolicyAcknowledged,
-    'adminDecideOrganizerEventCandidateCallablePayload.checklist.locationReviewed': adminDecideOrganizerEventCandidateCallablePayloadChecklistLocationReviewed,
-    'adminDecideOrganizerEventCandidateCallablePayload.checklist.ownerSafeCopyReviewed': adminDecideOrganizerEventCandidateCallablePayloadChecklistOwnerSafeCopyReviewed,
-    'adminDecideOrganizerEventCandidateCallablePayload.checklist.sourceEventReviewed': adminDecideOrganizerEventCandidateCallablePayloadChecklistSourceEventReviewed,
-    'adminDecideOrganizerEventCandidateCallablePayload.checklist.timeReviewed': adminDecideOrganizerEventCandidateCallablePayloadChecklistTimeReviewed,
-    'adminDecideOrganizerEventCandidateCallablePayload.decision': adminDecideOrganizerEventCandidateCallablePayloadDecision,
-    'adminDecideOrganizerEventCandidateCallablePayload.note': adminDecideOrganizerEventCandidateCallablePayloadNote,
     'adminDecideOrganizerIntakeCallablePayload.appVisibility': adminDecideOrganizerIntakeCallablePayloadAppVisibility,
     'adminDecideOrganizerIntakeCallablePayload.checklist.claimTargetReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistClaimTargetReviewed,
     'adminDecideOrganizerIntakeCallablePayload.checklist.crawlDisabledReviewed': adminDecideOrganizerIntakeCallablePayloadChecklistCrawlDisabledReviewed,
@@ -177514,15 +177161,6 @@ abstract final class CatchContractConstraints {
     'adminPreviewSalesPrivacyPlanResponse.overflow': adminPreviewSalesPrivacyPlanResponseOverflow,
     'adminPreviewSalesPrivacyPlanResponse.policyHash': adminPreviewSalesPrivacyPlanResponsePolicyHash,
     'adminPreviewSalesPrivacyPlanResponse.restrictionRevision': adminPreviewSalesPrivacyPlanResponseRestrictionRevision,
-    'adminPublishExternalEventCallablePayload.checklist.noCatchBookingPaymentsWaitlist': adminPublishExternalEventCallablePayloadChecklistNoCatchBookingPaymentsWaitlist,
-    'adminPublishExternalEventCallablePayload.checklist.outboundLinksReviewed': adminPublishExternalEventCallablePayloadChecklistOutboundLinksReviewed,
-    'adminPublishExternalEventCallablePayload.checklist.ownerSafeCopyReviewed': adminPublishExternalEventCallablePayloadChecklistOwnerSafeCopyReviewed,
-    'adminPublishExternalEventCallablePayload.checklist.preflightActionReviewed': adminPublishExternalEventCallablePayloadChecklistPreflightActionReviewed,
-    'adminPublishExternalEventCallablePayload.executionMode': adminPublishExternalEventCallablePayloadExecutionMode,
-    'adminPublishExternalEventCallablePayload.idempotencyKey': adminPublishExternalEventCallablePayloadIdempotencyKey,
-    'adminPublishExternalEventCallablePayload.reviewNote': adminPublishExternalEventCallablePayloadReviewNote,
-    'adminPublishExternalEventCallablePayload.sourceActionId': adminPublishExternalEventCallablePayloadSourceActionId,
-    'adminPublishExternalEventCallablePayload.targetPath': adminPublishExternalEventCallablePayloadTargetPath,
     'adminPublishListingEventsCallablePayload.blockerResolutions': adminPublishListingEventsCallablePayloadBlockerResolutions,
     'adminPublishListingEventsCallablePayload.blockerResolutions.items.blockerCode': adminPublishListingEventsCallablePayloadBlockerResolutionsItemsBlockerCode,
     'adminPublishListingEventsCallablePayload.blockerResolutions.items.eventWorkItemId': adminPublishListingEventsCallablePayloadBlockerResolutionsItemsEventWorkItemId,
@@ -177532,6 +177170,13 @@ abstract final class CatchContractConstraints {
     'adminPublishListingEventsCallablePayload.checklist.noCatchBookingPaymentsWaitlist': adminPublishListingEventsCallablePayloadChecklistNoCatchBookingPaymentsWaitlist,
     'adminPublishListingEventsCallablePayload.checklist.outboundLinksReviewed': adminPublishListingEventsCallablePayloadChecklistOutboundLinksReviewed,
     'adminPublishListingEventsCallablePayload.checklist.ownerSafeCopyReviewed': adminPublishListingEventsCallablePayloadChecklistOwnerSafeCopyReviewed,
+    'adminPublishListingEventsCallablePayload.eventLocations': adminPublishListingEventsCallablePayloadEventLocations,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.address': adminPublishListingEventsCallablePayloadEventLocationsItemsAddress,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.eventWorkItemId': adminPublishListingEventsCallablePayloadEventLocationsItemsEventWorkItemId,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.latitude': adminPublishListingEventsCallablePayloadEventLocationsItemsLatitude,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.longitude': adminPublishListingEventsCallablePayloadEventLocationsItemsLongitude,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.name': adminPublishListingEventsCallablePayloadEventLocationsItemsName,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.placeId': adminPublishListingEventsCallablePayloadEventLocationsItemsPlaceId,
     'adminPublishListingEventsCallablePayload.eventWorkItemIds': adminPublishListingEventsCallablePayloadEventWorkItemIds,
     'adminPublishListingEventsCallablePayload.eventWorkItemIds.items': adminPublishListingEventsCallablePayloadEventWorkItemIdsItems,
     'adminPublishListingEventsCallablePayload.executionMode': adminPublishListingEventsCallablePayloadExecutionMode,
@@ -177674,18 +177319,6 @@ abstract final class CatchContractConstraints {
     'adminRefreshSalesFitQueueResponse.entry.suppressionStatus': adminRefreshSalesFitQueueResponseEntrySuppressionStatus,
     'adminRefreshSalesFitQueueResponse.receipt.requestId': adminRefreshSalesFitQueueResponseReceiptRequestId,
     'adminRefreshSalesFitQueueResponse.receipt.sourceHash': adminRefreshSalesFitQueueResponseReceiptSourceHash,
-    'adminResolveOrganizerEventLocationCallablePayload.candidateId': adminResolveOrganizerEventLocationCallablePayloadCandidateId,
-    'adminResolveOrganizerEventLocationCallablePayload.checklist.coordinatesReviewed': adminResolveOrganizerEventLocationCallablePayloadChecklistCoordinatesReviewed,
-    'adminResolveOrganizerEventLocationCallablePayload.checklist.importSafetyReviewed': adminResolveOrganizerEventLocationCallablePayloadChecklistImportSafetyReviewed,
-    'adminResolveOrganizerEventLocationCallablePayload.checklist.placeIdentityReviewed': adminResolveOrganizerEventLocationCallablePayloadChecklistPlaceIdentityReviewed,
-    'adminResolveOrganizerEventLocationCallablePayload.checklist.sourceLocationReviewed': adminResolveOrganizerEventLocationCallablePayloadChecklistSourceLocationReviewed,
-    'adminResolveOrganizerEventLocationCallablePayload.location.address': adminResolveOrganizerEventLocationCallablePayloadLocationAddress,
-    'adminResolveOrganizerEventLocationCallablePayload.location.latitude': adminResolveOrganizerEventLocationCallablePayloadLocationLatitude,
-    'adminResolveOrganizerEventLocationCallablePayload.location.longitude': adminResolveOrganizerEventLocationCallablePayloadLocationLongitude,
-    'adminResolveOrganizerEventLocationCallablePayload.location.name': adminResolveOrganizerEventLocationCallablePayloadLocationName,
-    'adminResolveOrganizerEventLocationCallablePayload.location.notes': adminResolveOrganizerEventLocationCallablePayloadLocationNotes,
-    'adminResolveOrganizerEventLocationCallablePayload.location.placeId': adminResolveOrganizerEventLocationCallablePayloadLocationPlaceId,
-    'adminResolveOrganizerEventLocationCallablePayload.note': adminResolveOrganizerEventLocationCallablePayloadNote,
     'adminRestrictSalesOrganizerPayload.organizerId': adminRestrictSalesOrganizerPayloadOrganizerId,
     'adminRestrictSalesOrganizerPayload.reason': adminRestrictSalesOrganizerPayloadReason,
     'adminRestrictSalesOrganizerPayload.requestId': adminRestrictSalesOrganizerPayloadRequestId,
@@ -188280,11 +187913,20 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsCallableResponse.discoverySummary.contactClicks': hostAnalyticsCallableResponseDiscoverySummaryContactClicks,
     'hostAnalyticsCallableResponse.discoverySummary.eventSaves': hostAnalyticsCallableResponseDiscoverySummaryEventSaves,
     'hostAnalyticsCallableResponse.discoverySummary.eventViews': hostAnalyticsCallableResponseDiscoverySummaryEventViews,
+    'hostAnalyticsCallableResponse.discoverySummary.linkClicks': hostAnalyticsCallableResponseDiscoverySummaryLinkClicks,
     'hostAnalyticsCallableResponse.discoverySummary.listingViews': hostAnalyticsCallableResponseDiscoverySummaryListingViews,
     'hostAnalyticsCallableResponse.discoverySummary.organizerSaves': hostAnalyticsCallableResponseDiscoverySummaryOrganizerSaves,
     'hostAnalyticsCallableResponse.discoverySummary.outboundClicks': hostAnalyticsCallableResponseDiscoverySummaryOutboundClicks,
     'hostAnalyticsCallableResponse.discoverySummary.searchAppearances': hostAnalyticsCallableResponseDiscoverySummarySearchAppearances,
     'hostAnalyticsCallableResponse.generatedAt': hostAnalyticsCallableResponseGeneratedAt,
+    'hostAnalyticsCallableResponse.linkSummary.links': hostAnalyticsCallableResponseLinkSummaryLinks,
+    'hostAnalyticsCallableResponse.linkSummary.links.items.clicks': hostAnalyticsCallableResponseLinkSummaryLinksItemsClicks,
+    'hostAnalyticsCallableResponse.linkSummary.links.items.label': hostAnalyticsCallableResponseLinkSummaryLinksItemsLabel,
+    'hostAnalyticsCallableResponse.linkSummary.links.items.linkId': hostAnalyticsCallableResponseLinkSummaryLinksItemsLinkId,
+    'hostAnalyticsCallableResponse.linkSummary.links.items.organizerId': hostAnalyticsCallableResponseLinkSummaryLinksItemsOrganizerId,
+    'hostAnalyticsCallableResponse.linkSummary.trafficSources': hostAnalyticsCallableResponseLinkSummaryTrafficSources,
+    'hostAnalyticsCallableResponse.linkSummary.trafficSources.items.clicks': hostAnalyticsCallableResponseLinkSummaryTrafficSourcesItemsClicks,
+    'hostAnalyticsCallableResponse.linkSummary.trafficSources.items.source': hostAnalyticsCallableResponseLinkSummaryTrafficSourcesItemsSource,
     'hostAnalyticsCallableResponse.range.endDate': hostAnalyticsCallableResponseRangeEndDate,
     'hostAnalyticsCallableResponse.range.granularity': hostAnalyticsCallableResponseRangeGranularity,
     'hostAnalyticsCallableResponse.range.preset': hostAnalyticsCallableResponseRangePreset,
@@ -188356,12 +187998,14 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsEvent.event_date': hostAnalyticsEventEventDate,
     'hostAnalyticsEvent.event_name': hostAnalyticsEventEventName,
     'hostAnalyticsEvent.ingested_at': hostAnalyticsEventIngestedAt,
+    'hostAnalyticsEvent.link_id': hostAnalyticsEventLinkId,
     'hostAnalyticsEvent.occurred_at': hostAnalyticsEventOccurredAt,
     'hostAnalyticsEvent.page_path': hostAnalyticsEventPagePath,
     'hostAnalyticsEvent.platform': hostAnalyticsEventPlatform,
     'hostAnalyticsEvent.session_hash': hostAnalyticsEventSessionHash,
     'hostAnalyticsEvent.source': hostAnalyticsEventSource,
     'hostAnalyticsEvent.target_event_id': hostAnalyticsEventTargetEventId,
+    'hostAnalyticsEvent.traffic_source': hostAnalyticsEventTrafficSource,
     'hostAnalyticsQueryCallablePayload.clubId': hostAnalyticsQueryCallablePayloadClubId,
     'hostAnalyticsQueryCallablePayload.endDate': hostAnalyticsQueryCallablePayloadEndDate,
     'hostAnalyticsQueryCallablePayload.eventId': hostAnalyticsQueryCallablePayloadEventId,
@@ -188385,11 +188029,20 @@ abstract final class CatchContractConstraints {
     'hostAnalyticsSnapshotDocument.response.discoverySummary.contactClicks': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryContactClicks,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.eventSaves': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryEventSaves,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.eventViews': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryEventViews,
+    'hostAnalyticsSnapshotDocument.response.discoverySummary.linkClicks': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryLinkClicks,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.listingViews': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryListingViews,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.organizerSaves': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryOrganizerSaves,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.outboundClicks': hostAnalyticsSnapshotDocumentResponseDiscoverySummaryOutboundClicks,
     'hostAnalyticsSnapshotDocument.response.discoverySummary.searchAppearances': hostAnalyticsSnapshotDocumentResponseDiscoverySummarySearchAppearances,
     'hostAnalyticsSnapshotDocument.response.generatedAt': hostAnalyticsSnapshotDocumentResponseGeneratedAt,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.links': hostAnalyticsSnapshotDocumentResponseLinkSummaryLinks,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.clicks': hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsClicks,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.label': hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsLabel,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.linkId': hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsLinkId,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.links.items.organizerId': hostAnalyticsSnapshotDocumentResponseLinkSummaryLinksItemsOrganizerId,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources': hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSources,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources.items.clicks': hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSourcesItemsClicks,
+    'hostAnalyticsSnapshotDocument.response.linkSummary.trafficSources.items.source': hostAnalyticsSnapshotDocumentResponseLinkSummaryTrafficSourcesItemsSource,
     'hostAnalyticsSnapshotDocument.response.range.endDate': hostAnalyticsSnapshotDocumentResponseRangeEndDate,
     'hostAnalyticsSnapshotDocument.response.range.granularity': hostAnalyticsSnapshotDocumentResponseRangeGranularity,
     'hostAnalyticsSnapshotDocument.response.range.preset': hostAnalyticsSnapshotDocumentResponseRangePreset,
@@ -191899,50 +191552,6 @@ abstract final class CatchContractConstraints {
     'organizerEntitlementsDocument.schemaVersion': organizerEntitlementsDocumentSchemaVersion,
     'organizerEntitlementsDocument.updatedAt._nanoseconds': organizerEntitlementsDocumentUpdatedAtNanoseconds,
     'organizerEntitlementsDocument.updatedAt._seconds': organizerEntitlementsDocumentUpdatedAtSeconds,
-    'organizerEventCandidateReviewDecisionDocument.blockerResolutions': organizerEventCandidateReviewDecisionDocumentBlockerResolutions,
-    'organizerEventCandidateReviewDecisionDocument.blockerResolutions.items.blockerCode': organizerEventCandidateReviewDecisionDocumentBlockerResolutionsItemsBlockerCode,
-    'organizerEventCandidateReviewDecisionDocument.blockerResolutions.items.note': organizerEventCandidateReviewDecisionDocumentBlockerResolutionsItemsNote,
-    'organizerEventCandidateReviewDecisionDocument.blockerResolutions.items.outcome': organizerEventCandidateReviewDecisionDocumentBlockerResolutionsItemsOutcome,
-    'organizerEventCandidateReviewDecisionDocument.blockerResolutions.items.policyGapDecisionId': organizerEventCandidateReviewDecisionDocumentBlockerResolutionsItemsPolicyGapDecisionId,
-    'organizerEventCandidateReviewDecisionDocument.candidateId': organizerEventCandidateReviewDecisionDocumentCandidateId,
-    'organizerEventCandidateReviewDecisionDocument.checklist.dedupeReviewed': organizerEventCandidateReviewDecisionDocumentChecklistDedupeReviewed,
-    'organizerEventCandidateReviewDecisionDocument.checklist.identityReviewed': organizerEventCandidateReviewDecisionDocumentChecklistIdentityReviewed,
-    'organizerEventCandidateReviewDecisionDocument.checklist.importPolicyAcknowledged': organizerEventCandidateReviewDecisionDocumentChecklistImportPolicyAcknowledged,
-    'organizerEventCandidateReviewDecisionDocument.checklist.locationReviewed': organizerEventCandidateReviewDecisionDocumentChecklistLocationReviewed,
-    'organizerEventCandidateReviewDecisionDocument.checklist.ownerSafeCopyReviewed': organizerEventCandidateReviewDecisionDocumentChecklistOwnerSafeCopyReviewed,
-    'organizerEventCandidateReviewDecisionDocument.checklist.sourceEventReviewed': organizerEventCandidateReviewDecisionDocumentChecklistSourceEventReviewed,
-    'organizerEventCandidateReviewDecisionDocument.checklist.timeReviewed': organizerEventCandidateReviewDecisionDocumentChecklistTimeReviewed,
-    'organizerEventCandidateReviewDecisionDocument.decision': organizerEventCandidateReviewDecisionDocumentDecision,
-    'organizerEventCandidateReviewDecisionDocument.decisionId': organizerEventCandidateReviewDecisionDocumentDecisionId,
-    'organizerEventCandidateReviewDecisionDocument.decisionStatus': organizerEventCandidateReviewDecisionDocumentDecisionStatus,
-    'organizerEventCandidateReviewDecisionDocument.importState': organizerEventCandidateReviewDecisionDocumentImportState,
-    'organizerEventCandidateReviewDecisionDocument.note': organizerEventCandidateReviewDecisionDocumentNote,
-    'organizerEventCandidateReviewDecisionDocument.reviewedAt._nanoseconds': organizerEventCandidateReviewDecisionDocumentReviewedAtNanoseconds,
-    'organizerEventCandidateReviewDecisionDocument.reviewedAt._seconds': organizerEventCandidateReviewDecisionDocumentReviewedAtSeconds,
-    'organizerEventCandidateReviewDecisionDocument.reviewedByUid': organizerEventCandidateReviewDecisionDocumentReviewedByUid,
-    'organizerEventCandidateReviewDecisionDocument.schemaVersion': organizerEventCandidateReviewDecisionDocumentSchemaVersion,
-    'organizerEventCandidateReviewDecisionDocument.updatedAt._nanoseconds': organizerEventCandidateReviewDecisionDocumentUpdatedAtNanoseconds,
-    'organizerEventCandidateReviewDecisionDocument.updatedAt._seconds': organizerEventCandidateReviewDecisionDocumentUpdatedAtSeconds,
-    'organizerEventLocationResolutionDecisionDocument.candidateId': organizerEventLocationResolutionDecisionDocumentCandidateId,
-    'organizerEventLocationResolutionDecisionDocument.checklist.coordinatesReviewed': organizerEventLocationResolutionDecisionDocumentChecklistCoordinatesReviewed,
-    'organizerEventLocationResolutionDecisionDocument.checklist.importSafetyReviewed': organizerEventLocationResolutionDecisionDocumentChecklistImportSafetyReviewed,
-    'organizerEventLocationResolutionDecisionDocument.checklist.placeIdentityReviewed': organizerEventLocationResolutionDecisionDocumentChecklistPlaceIdentityReviewed,
-    'organizerEventLocationResolutionDecisionDocument.checklist.sourceLocationReviewed': organizerEventLocationResolutionDecisionDocumentChecklistSourceLocationReviewed,
-    'organizerEventLocationResolutionDecisionDocument.location.address': organizerEventLocationResolutionDecisionDocumentLocationAddress,
-    'organizerEventLocationResolutionDecisionDocument.location.latitude': organizerEventLocationResolutionDecisionDocumentLocationLatitude,
-    'organizerEventLocationResolutionDecisionDocument.location.longitude': organizerEventLocationResolutionDecisionDocumentLocationLongitude,
-    'organizerEventLocationResolutionDecisionDocument.location.name': organizerEventLocationResolutionDecisionDocumentLocationName,
-    'organizerEventLocationResolutionDecisionDocument.location.notes': organizerEventLocationResolutionDecisionDocumentLocationNotes,
-    'organizerEventLocationResolutionDecisionDocument.location.placeId': organizerEventLocationResolutionDecisionDocumentLocationPlaceId,
-    'organizerEventLocationResolutionDecisionDocument.note': organizerEventLocationResolutionDecisionDocumentNote,
-    'organizerEventLocationResolutionDecisionDocument.resolutionId': organizerEventLocationResolutionDecisionDocumentResolutionId,
-    'organizerEventLocationResolutionDecisionDocument.resolutionStatus': organizerEventLocationResolutionDecisionDocumentResolutionStatus,
-    'organizerEventLocationResolutionDecisionDocument.reviewedAt._nanoseconds': organizerEventLocationResolutionDecisionDocumentReviewedAtNanoseconds,
-    'organizerEventLocationResolutionDecisionDocument.reviewedAt._seconds': organizerEventLocationResolutionDecisionDocumentReviewedAtSeconds,
-    'organizerEventLocationResolutionDecisionDocument.reviewedByUid': organizerEventLocationResolutionDecisionDocumentReviewedByUid,
-    'organizerEventLocationResolutionDecisionDocument.schemaVersion': organizerEventLocationResolutionDecisionDocumentSchemaVersion,
-    'organizerEventLocationResolutionDecisionDocument.updatedAt._nanoseconds': organizerEventLocationResolutionDecisionDocumentUpdatedAtNanoseconds,
-    'organizerEventLocationResolutionDecisionDocument.updatedAt._seconds': organizerEventLocationResolutionDecisionDocumentUpdatedAtSeconds,
     'organizerEventOfferActionReceiptDocument.offerId': organizerEventOfferActionReceiptDocumentOfferId,
     'organizerEventOfferActionReceiptDocument.requestHash': organizerEventOfferActionReceiptDocumentRequestHash,
     'organizerEventOfferActionReceiptDocument.requestId': organizerEventOfferActionReceiptDocumentRequestId,
@@ -196215,11 +195824,13 @@ abstract final class CatchContractConstraints {
     'recordOrganizerAnalyticsEventCallablePayload.clubId': recordOrganizerAnalyticsEventCallablePayloadClubId,
     'recordOrganizerAnalyticsEventCallablePayload.eventId': recordOrganizerAnalyticsEventCallablePayloadEventId,
     'recordOrganizerAnalyticsEventCallablePayload.eventName': recordOrganizerAnalyticsEventCallablePayloadEventName,
+    'recordOrganizerAnalyticsEventCallablePayload.linkId': recordOrganizerAnalyticsEventCallablePayloadLinkId,
     'recordOrganizerAnalyticsEventCallablePayload.organizerId': recordOrganizerAnalyticsEventCallablePayloadOrganizerId,
     'recordOrganizerAnalyticsEventCallablePayload.pagePath': recordOrganizerAnalyticsEventCallablePayloadPagePath,
     'recordOrganizerAnalyticsEventCallablePayload.platform': recordOrganizerAnalyticsEventCallablePayloadPlatform,
     'recordOrganizerAnalyticsEventCallablePayload.sessionId': recordOrganizerAnalyticsEventCallablePayloadSessionId,
     'recordOrganizerAnalyticsEventCallablePayload.source': recordOrganizerAnalyticsEventCallablePayloadSource,
+    'recordOrganizerAnalyticsEventCallablePayload.trafficSource': recordOrganizerAnalyticsEventCallablePayloadTrafficSource,
     'recordOrganizerAnalyticsEventCallableResponse.accepted': recordOrganizerAnalyticsEventCallableResponseAccepted,
     'recordOrganizerContactOutreachCallablePayload.channel': recordOrganizerContactOutreachCallablePayloadChannel,
     'recordOrganizerContactOutreachCallablePayload.contactId': recordOrganizerContactOutreachCallablePayloadContactId,

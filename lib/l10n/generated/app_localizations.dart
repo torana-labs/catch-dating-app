@@ -736,6 +736,39 @@ abstract class AppLocalizations {
   /// **'Outbound source clicks'**
   String get hostsHostAnalyticsLabelOutboundSourceClicks;
 
+  /// Host insights public presence readout: clicks on the organiser's own page links.
+  ///
+  /// In en, this message translates to:
+  /// **'Link clicks'**
+  String get hostsHostAnalyticsLabelLinkClicks;
+
+  /// Stands in for the label of a page link the organiser has since removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed link'**
+  String get hostsHostAnalyticsLabelRemovedLink;
+
+  /// Where visitors who clicked a page link came from.
+  ///
+  /// In en, this message translates to:
+  /// **'{source, select, instagram{Instagram} whatsapp{WhatsApp} facebook{Facebook} google{Google} qr{QR codes} email{Email} direct{Direct visits} other{Other places}}'**
+  String hostsHostAnalyticsLabelTrafficSource({required String source});
+
+  /// Lists traffic sources with their click counts, such as 'Instagram 4, QR codes 1'.
+  ///
+  /// In en, this message translates to:
+  /// **'Link clicks came from {sources}.'**
+  String hostsHostAnalyticsTextLinkClicksBySource({required String sources});
+
+  /// One traffic source and its link clicks inside the by-source list.
+  ///
+  /// In en, this message translates to:
+  /// **'{source} {count}'**
+  String hostsHostAnalyticsTextTrafficSourceClicks({
+    required String source,
+    required String count,
+  });
+
   /// Host insights public presence readout.
   ///
   /// In en, this message translates to:

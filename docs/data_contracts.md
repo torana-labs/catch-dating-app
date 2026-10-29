@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.178.0
-updated: 2026-10-28
+version: 1.179.0
+updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -4405,9 +4405,7 @@ checks, and accepted waivers, with an immutable
 idempotency key; a replay returns the same result and changed input is
 rejected. A published event is never overwritten by a later import and a
 withdrawn one is never republished. Nothing writes a canonical Catch-hosted
-`events/{id}` record. `adminPublishExternalEvent` remains only for the retired
-`eventSupplyReadiness/current` snapshot, which no environment has, and is
-retired with it.
+`events/{id}` record.
 
 The governed blockers are `missing_exact_coordinates`, `missing_end_time`,
 `missing_location_detail`, `requires_event_defaults_policy`,

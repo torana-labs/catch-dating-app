@@ -202,6 +202,20 @@ export interface HostAnalyticsResponse {
     contactClicks: number;
     claimClicks: number;
     outboundClicks: number;
+    linkClicks: number;
+  };
+  /** Owner link clicks by link and by traffic source (CAT-254). */
+  linkSummary: {
+    links: Array<{
+      organizerId: string;
+      linkId: string;
+      label: string | null;
+      clicks: number;
+    }>;
+    trafficSources: Array<{
+      source: "instagram" | "whatsapp" | "facebook" | "google" | "qr" | "email" | "direct" | "other";
+      clicks: number;
+    }>;
   };
   dataQuality: Array<{
     id: string;
@@ -390,23 +404,6 @@ export type AccessApplicationDecision = "approve" | "deny";
 export type ClubClaimDecision = "approve" | "reject";
 export type ClubIndexDecision = "indexReady" | "noindex";
 export type OrganizerIntakeDecision = "approve_public" | "hold" | "suppress";
-export type OrganizerEventCandidateDecision =
-  | "approve_for_import"
-  | "hold"
-  | "reject";
-export type OrganizerEventImportBlockerCode =
-  | "missing_exact_coordinates"
-  | "missing_end_time"
-  | "missing_location_detail"
-  | "requires_event_defaults_policy"
-  | "requires_owner_safe_copy_review"
-  | "duplicate_normalized_event_key";
-export interface OrganizerEventBlockerResolution {
-  blockerCode: OrganizerEventImportBlockerCode;
-  outcome: "resolved" | "waived";
-  policyGapDecisionId: string | null;
-  note: string;
-}
 export type OrganizerPolicyGapDecision = "accept" | "hold" | "reject";
 export type OrganizerEntityKind =
   | "club"
@@ -661,31 +658,6 @@ export interface AdminDecideOrganizerIntakeResponse {
   projectionState: "pending_static_generation" | "not_projectable";
 }
 
-export interface AdminDecideOrganizerEventCandidatePayload {
-  candidateId: string;
-  decision: OrganizerEventCandidateDecision;
-  checklist: {
-    identityReviewed: boolean;
-    sourceEventReviewed: boolean;
-    timeReviewed: boolean;
-    locationReviewed: boolean;
-    dedupeReviewed: boolean;
-    ownerSafeCopyReviewed: boolean;
-    importPolicyAcknowledged: boolean;
-  };
-  blockerResolutions: OrganizerEventBlockerResolution[];
-  note: string;
-}
-
-export interface AdminDecideOrganizerEventCandidateResponse {
-  candidateId: string;
-  decisionId: string;
-  decision: OrganizerEventCandidateDecision;
-  decisionStatus: "approved_for_import" | "held" | "rejected";
-  decisionPath: string;
-  importState: "blocked_by_policy" | "not_importable" | "pending_import";
-}
-
 export interface AdminDecideOrganizerPolicyGapPayload {
   gapId: string;
   decision: OrganizerPolicyGapDecision;
@@ -706,35 +678,6 @@ export interface AdminDecideOrganizerPolicyGapResponse {
   decisionStatus: "accepted" | "held" | "rejected";
   decisionPath: string;
   operationalState: "blocked_until_policy_encoded" | "not_approved";
-}
-
-export interface OrganizerResolvedEventLocation {
-  name: string;
-  address?: string | null;
-  placeId?: string | null;
-  latitude: number | null;
-  longitude: number | null;
-  notes?: string | null;
-}
-
-export interface AdminResolveOrganizerEventLocationPayload {
-  candidateId: string;
-  location: OrganizerResolvedEventLocation;
-  checklist: {
-    sourceLocationReviewed: boolean;
-    coordinatesReviewed: boolean;
-    placeIdentityReviewed: boolean;
-    importSafetyReviewed: boolean;
-  };
-  note: string;
-}
-
-export interface AdminResolveOrganizerEventLocationResponse {
-  candidateId: string;
-  resolutionId: string;
-  resolutionStatus: "resolved";
-  decisionPath: string;
-  location: OrganizerResolvedEventLocation;
 }
 
 export interface AdminRecordOrganizerCurationPayload {
@@ -1277,41 +1220,6 @@ export interface ExternalEventImportExecutionAction {
     distanceKm?: number | null;
     [key: string]: unknown;
   };
-}
-
-export interface AdminGetEventSupplyReadinessResponse {
-  generatedAt: string | null;
-  source: "event_supply_readiness" | "empty" | "sample";
-  importPlan: ExternalEventImportPlan;
-  executionPlan: ExternalEventImportExecutionPlan;
-}
-
-export interface AdminPublishExternalEventPayload {
-  sourceActionId: string;
-  targetPath: string;
-  executionMode: "dry_run" | "apply";
-  idempotencyKey: string;
-  reviewNote: string;
-  checklist: {
-    preflightActionReviewed: boolean;
-    outboundLinksReviewed: boolean;
-    noCatchBookingPaymentsWaitlist: boolean;
-    ownerSafeCopyReviewed: boolean;
-  };
-}
-
-export interface AdminPublishExternalEventResponse {
-  eventId: string;
-  targetPath: string;
-  sourceActionId: string;
-  publicationStatus: "public";
-  externalLinkCount: number;
-  executionMode: "dry_run" | "apply";
-  outcome: "would_publish" | "published";
-  receiptPath: string;
-  writeApplied: boolean;
-  idempotent: boolean;
-  publishedAt: string;
 }
 
 export interface AdminTakedownExternalEventPayload {

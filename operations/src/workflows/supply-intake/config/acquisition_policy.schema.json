@@ -10,6 +10,7 @@
     "manualFileCaptureEnabled",
     "provider",
     "pageFetch",
+    "webSearch",
     "budgets",
     "rawPayload"
   ],
@@ -128,6 +129,60 @@
           "maximum": 200
         },
         "maxRequestsPerMonth": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        }
+      }
+    },
+    "webSearch": {
+      "description": "Batch web search: planned discovery queries sent to a search API (SerpAPI) whose results become organizer search candidates. Enabling cites an accepted batch_web_search_policy decision; the trusted runtime injects the client and its credentials.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "adapterId",
+        "policyGapId",
+        "decisionId",
+        "maxResultsPerQuery",
+        "maxQueriesPerRun",
+        "maxQueriesPerMonth"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "adapterId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "serp_api",
+            null
+          ]
+        },
+        "policyGapId": {
+          "const": "batch_web_search_policy"
+        },
+        "decisionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,199}$"
+        },
+        "maxResultsPerQuery": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "maxQueriesPerRun": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "maxQueriesPerMonth": {
           "type": "integer",
           "minimum": 0,
           "maximum": 100000
@@ -294,6 +349,66 @@
                 "const": 0
               },
               "maxRequestsPerMonth": {
+                "const": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "webSearch": {
+            "properties": {
+              "enabled": {
+                "const": true
+              }
+            },
+            "required": [
+              "enabled"
+            ]
+          }
+        },
+        "required": [
+          "webSearch"
+        ]
+      },
+      "then": {
+        "properties": {
+          "webSearch": {
+            "properties": {
+              "adapterId": {
+                "const": "serp_api"
+              },
+              "decisionId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "maxQueriesPerRun": {
+                "minimum": 1
+              },
+              "maxQueriesPerMonth": {
+                "minimum": 1
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "webSearch": {
+            "properties": {
+              "adapterId": {
+                "type": "null"
+              },
+              "decisionId": {
+                "type": "null"
+              },
+              "maxQueriesPerRun": {
+                "const": 0
+              },
+              "maxQueriesPerMonth": {
                 "const": 0
               }
             }

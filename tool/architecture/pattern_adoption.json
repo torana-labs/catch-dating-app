@@ -1217,7 +1217,7 @@
         },
         {
           "path": "tool/use_firebase_environment.sh",
-          "role": "manifest-resolved Firebase app activation",
+          "role": "manifest-resolved Firebase web service worker activation",
           "status": "aligned"
         },
         {

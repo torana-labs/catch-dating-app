@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -53,15 +52,58 @@ abstract class EventParticipation with _$EventParticipation {
 
   factory EventParticipation.fromJson(Map<String, dynamic> json) =>
       _$EventParticipationFromJson(json);
-
-  @Deprecated('Use EventService.participationStatus instead')
-  bool isWaitlistOfferActiveAt(DateTime now) =>
-      EventService.participationStatus(this, now: now).isWaitlistOfferActive;
-
-  @Deprecated('Use EventService.participationStatus instead')
-  bool isWaitlistOfferAcceptedAt(DateTime now) =>
-      EventService.participationStatus(this, now: now).isWaitlistOfferAccepted;
 }
 
 String eventParticipationId({required String eventId, required String uid}) =>
     '${eventId}_$uid';
+
+/// Participation eligibility booleans for one participation, evaluated against
+/// [now], so callers don't need to recompute each rule.
+class ParticipationStatusSnapshot {
+  final bool hasHostApproval;
+  final bool hasOpenWaitlistOffer;
+  final bool isWaitlistOfferActive;
+  final bool isWaitlistOfferAccepted;
+
+  const ParticipationStatusSnapshot({
+    required this.hasHostApproval,
+    required this.hasOpenWaitlistOffer,
+    required this.isWaitlistOfferActive,
+    required this.isWaitlistOfferAccepted,
+  });
+
+  factory ParticipationStatusSnapshot.of(
+    EventParticipation participation, {
+    required DateTime now,
+  }) {
+    return ParticipationStatusSnapshot(
+      hasHostApproval:
+          participation.hostApprovalStatus == EventJoinRequestStatus.approved ||
+          _isWaitlistOfferAcceptedAt(participation, now),
+      hasOpenWaitlistOffer:
+          participation.waitlistOfferStatus ==
+              EventWaitlistOfferStatus.active ||
+          participation.waitlistOfferStatus ==
+              EventWaitlistOfferStatus.accepted,
+      isWaitlistOfferActive: _isWaitlistOfferActiveAt(participation, now),
+      isWaitlistOfferAccepted: _isWaitlistOfferAcceptedAt(participation, now),
+    );
+  }
+}
+
+bool _isWaitlistOfferActiveAt(EventParticipation participation, DateTime now) =>
+    participation.status == EventParticipationStatus.waitlisted &&
+    participation.waitlistOfferStatus == EventWaitlistOfferStatus.active &&
+    _offerExpiresAfter(participation, now);
+
+bool _isWaitlistOfferAcceptedAt(
+  EventParticipation participation,
+  DateTime now,
+) =>
+    participation.status == EventParticipationStatus.waitlisted &&
+    participation.waitlistOfferStatus == EventWaitlistOfferStatus.accepted &&
+    _offerExpiresAfter(participation, now);
+
+bool _offerExpiresAfter(EventParticipation participation, DateTime now) =>
+    participation.waitlistOfferExpiresAt != null &&
+    participation.waitlistOfferExpiresAt!.isAfter(now);

@@ -55,7 +55,7 @@ test("Flutter local runs preserve native configs and cannot override the isolate
   const capture = path.join(directory, "args.json");
   const flutter = path.join(directory, "flutter");
   fs.writeFileSync(flutter, '#!/usr/bin/env node\nrequire("node:fs").writeFileSync(process.env.CATCH_TEST_CAPTURE, JSON.stringify({cwd: process.cwd(), args: process.argv.slice(2)}));\n', {mode: 0o700});
-  const files = ["apps/host/android/app/google-services.json", "apps/host/ios/Runner/GoogleService-Info.plist",
+  const files = ["apps/host/android/app/src/hostDev/google-services.json",
     "apps/host/web/firebase-messaging-sw.js"].map((file) => path.join(repoRoot, file));
   const before = files.map((file) => fs.readFileSync(file, "utf8"));
   const run = (args) => spawnSync("bash", [path.join(repoRoot, "tool/flutter_with_env.sh"), "local", "--role", "host", ...args], {

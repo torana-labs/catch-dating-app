@@ -1,13 +1,9 @@
-import 'dart:math' as math;
-
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -199,25 +195,6 @@ abstract class EventSuccessDefaults with _$EventSuccessDefaults {
       enabled: enabled,
       layoutId: layoutId,
       attendeePrompt: attendeePrompt,
-    );
-  }
-
-  EventSuccessPlan toPlanForEvent(Event event, {required DateTime now}) {
-    final normalized = normalizedForFormat(
-      event.eventFormat,
-      targetAttendeeCount: math.max(1, event.capacityLimit),
-    );
-    return EventSuccessPlan.fromDraft(
-      id: event.id,
-      eventId: event.id,
-      clubId: event.clubId,
-      layoutId: normalized.layoutId,
-      draft: normalized.toDraft(
-        targetAttendeeCount: math.max(1, event.capacityLimit),
-      ),
-      createdAt: now,
-      updatedAt: now,
-      attendeePrompt: _trimToNull(normalized.attendeePrompt),
     );
   }
 }

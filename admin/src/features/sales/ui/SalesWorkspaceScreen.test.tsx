@@ -1,5 +1,5 @@
 import {cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
-import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
+import {afterEach, beforeEach, describe, expect, it, onTestFinished, vi} from "vitest";
 import {AdminFeedbackProvider} from "../../../shared/feedback/AdminFeedbackContext";
 import {SalesWorkspaceScreen} from "./SalesWorkspaceScreen";
 
@@ -178,7 +178,18 @@ describe("SalesWorkspaceScreen assigned staff access", () => {
     expect(onAreaChange).toHaveBeenCalledWith("today");
   });
 
-  it("limits assigned-host editing to summary fields and preserves manual activity", async () => {
+  // "When" is a datetime-local wall clock read in the employee's browser zone.
+  it.each([
+    ["Asia/Kolkata", "2026-10-07T04:00:00.000Z"],
+    ["UTC", "2026-10-07T09:30:00.000Z"],
+  ])("limits assigned-host editing to summary fields and preserves manual activity (%s)",
+    async (timezone, occurredAt) => {
+    const originalTimezone = process.env.TZ;
+    process.env.TZ = timezone;
+    onTestFinished(() => {
+      if (originalTimezone === undefined) delete process.env.TZ;
+      else process.env.TZ = originalTimezone;
+    });
     renderWorkspace({selectedOrganizerId: "host-one"});
 
     expect(screen.queryByRole("button", {name: "Open organizer record"})).toBeNull();
@@ -208,7 +219,7 @@ describe("SalesWorkspaceScreen assigned staff access", () => {
     fireEvent.click(screen.getByRole("button", {name: "Record activity"}));
     await waitFor(() => expect(current.logActivity).toHaveBeenCalledWith({
       organizerId: "host-one", type: "outreach_sent_manual",
-      occurredAt: "2026-10-07T09:30:00.000Z",
+      occurredAt,
       note: "Sent outside Catch after human review", channel: "email",
       attestation: "sent_elsewhere_by_actor",
     }));

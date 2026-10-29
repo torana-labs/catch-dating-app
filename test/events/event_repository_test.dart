@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/events/data/booked_events_repository.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -477,7 +478,10 @@ void main() {
         );
 
         await expectLater(
-          repository.watchAttendedEvents(uid: 'runner-1'),
+          BookedEventsRepository(
+            firestore,
+            repository,
+          ).watchAttendedEvents(uid: 'runner-1'),
           emits([newer, older]),
         );
       },
@@ -517,7 +521,10 @@ void main() {
         );
 
         await expectLater(
-          repository.watchSignedUpEvents(uid: 'runner-1'),
+          BookedEventsRepository(
+            firestore,
+            repository,
+          ).watchSignedUpEvents(uid: 'runner-1'),
           emits([earlier, later]),
         );
       },
@@ -1143,8 +1150,8 @@ void main() {
 
         final container = ProviderContainer(
           overrides: [
-            eventRepositoryProvider.overrideWith(
-              (ref) => _IdleEventRepository(
+            bookedEventsRepositoryProvider.overrideWith(
+              (ref) => _IdleBookedEventsRepository(
                 signedUpEventsStream: signedUpEventsController.stream,
               ),
             ),

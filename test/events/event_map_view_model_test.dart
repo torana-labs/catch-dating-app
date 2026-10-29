@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/events/data/booked_events_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -220,6 +221,9 @@ void main() {
               (ref) => Stream.value([_membership(clubId: 'club-1')]),
             ),
             eventRepositoryProvider.overrideWith((ref) => repository),
+            bookedEventsRepositoryProvider.overrideWith(
+              (ref) => FakeBookedEventsRepository(repository),
+            ),
             clubsRepositoryProvider.overrideWith(
               (ref) =>
                   club_test.FakeClubsRepository()

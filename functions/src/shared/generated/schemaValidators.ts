@@ -851,8 +851,6 @@ export {validateOrganizerIntakeReviewDecisionDocument} from "./validators/organi
 export {validateEventIntakeReviewDecisionDocument} from "./validators/eventIntakeReviewDecisionDocument";
 export {validateOrganizerIntakeCurationDecisionDocument} from "./validators/organizerIntakeCurationDecisionDocument";
 export {validateOrganizerIntakeFieldCorrectionDocument} from "./validators/organizerIntakeFieldCorrectionDocument";
-export {validateOrganizerEventCandidateReviewDecisionDocument} from "./validators/organizerEventCandidateReviewDecisionDocument";
-export {validateOrganizerEventLocationResolutionDecisionDocument} from "./validators/organizerEventLocationResolutionDecisionDocument";
 export {validateOrganizerPolicyGapReviewDecisionDocument} from "./validators/organizerPolicyGapReviewDecisionDocument";
 export {validateUpdateUserProfileCallablePayload} from "./validators/updateUserProfileInput";
 export {validateCreateClubCallablePayload} from "./validators/createClubInput";
@@ -897,7 +895,6 @@ export {validateAdminRecordEventIntakeReviewDecisionCallablePayload} from "./val
 export {validateAdminListIntakeOperationsCallablePayload} from "./validators/adminListIntakeOperationsInput";
 export {validateAdminListActionExecutionsCallablePayload} from "./validators/adminListActionExecutionsInput";
 export {validateAdminRecordActionExecutionCallablePayload} from "./validators/adminRecordActionExecutionInput";
-export {validateAdminDecideOrganizerEventCandidateCallablePayload} from "./validators/adminDecideOrganizerEventCandidateInput";
 export {validateAdminNominateOrganizerCallablePayload} from "./validators/adminNominateOrganizerInput";
 export {validateAdminNominateOrganizerCallableResponse} from "./validators/adminNominateOrganizerOutput";
 export {validateAdminApproveOrganizerListingCallablePayload} from "./validators/adminApproveOrganizerListingInput";
@@ -913,7 +910,6 @@ export {validateAdminRefreshOrganizerEventsCallablePayload} from "./validators/a
 export {validateAdminRefreshOrganizerEventsCallableResponse} from "./validators/adminRefreshOrganizerEventsOutput";
 export {validateAdminPublishListingEventsCallableResponse} from "./validators/adminPublishListingEventsOutput";
 export {validateAdminDecideOrganizerPolicyGapCallablePayload} from "./validators/adminDecideOrganizerPolicyGapInput";
-export {validateAdminResolveOrganizerEventLocationCallablePayload} from "./validators/adminResolveOrganizerEventLocationInput";
 export {validateAdminSetClubIndexStatusCallablePayload} from "./validators/adminSetClubIndexStatusInput";
 export {validateAdminListCrossPathsShowcaseCandidatesCallablePayload} from "./validators/adminListCrossPathsShowcaseCandidatesInput";
 export {validateAdminSetCrossPathsShowcaseEligibilityCallablePayload} from "./validators/adminSetCrossPathsShowcaseEligibilityInput";
@@ -942,7 +938,6 @@ export {validateAdminGetEventDetailsCallablePayload} from "./validators/adminGet
 export {validateAdminListEventDetailsCallablePayload} from "./validators/adminListEventDetailsInput";
 export {validateAdminListExternalEventDetailsCallablePayload} from "./validators/adminListExternalEventDetailsInput";
 export {validateAdminUpdateEventDetailsCallablePayload} from "./validators/adminUpdateEventDetailsInput";
-export {validateAdminPublishExternalEventCallablePayload} from "./validators/adminPublishExternalEventInput";
 export {validateAdminTakedownExternalEventCallablePayload} from "./validators/adminTakedownExternalEventInput";
 export {validateStartClubHostConversationCallablePayload} from "./validators/startClubHostConversationInput";
 export {validateStartOrganizerConversationCallablePayload} from "./validators/startOrganizerConversationInput";

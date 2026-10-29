@@ -1,0 +1,268 @@
+# frozen_string_literal: true
+
+# Mobile release lanes for the Consumer and Host apps.
+#
+#   bundle exec fastlane ios beta role:consumer        # build, verify, TestFlight
+#   bundle exec fastlane android beta role:host        # build, verify, Play internal
+#   bundle exec fastlane ios release role:host build:N # submit a tested build for review
+#   bundle exec fastlane android release role:host version_code:N rollout:0.1
+#
+# Builds always go through tool/flutter_with_env.sh, which selects the prod
+# Firebase files, prod dart-defines, CATCH_APP_ROLE, the entrypoint and the
+# flavor from tool/app_targets.json. The repo's own verifiers then check the
+# built binary before anything is uploaded. Testers receive TestFlight builds
+# through App Store Connect automatic distribution and Play builds through the
+# internal track; production only ever promotes a build testers already have.
+# Operator guide: docs/release_operations.md, "Mobile releases".
+
+require "base64"
+require "digest"
+require "fileutils"
+require "json"
+require "open3"
+
+REPO_ROOT = File.expand_path("..", __dir__)
+ROLES = %w[consumer host].freeze
+TARGET_FIELDS = %w[
+  id projectRoot ios.bundleId ios.scheme ios.configurations.release
+  release.appStoreConnectAppId android.applicationId
+].freeze
+# Play tracks a version code may already occupy. A new code must exceed all.
+PLAY_TRACKS = %w[internal alpha beta production qa].freeze
+MINIMUM_ANDROID_VERSION_CODE = 100_000
+
+opt_out_usage
+default_platform(:ios)
+
+def role_option(options)
+  role = options[:role].to_s
+  UI.user_error!("role must be one of #{ROLES.join(', ')}; got '#{role}'") unless ROLES.include?(role)
+  role
+end
+
+def repo_sh(*command)
+  Dir.chdir(REPO_ROOT) { sh(*command) }
+end
+
+# Reads the prod target for a role from tool/app_targets.json.
+def app_target(role)
+  output, status = Open3.capture2(
+    "node", "tool/platform/resolve_app_target.mjs", "--role", role, "--environment", "prod",
+    "--fields", TARGET_FIELDS.join(","), chdir: REPO_ROOT
+  )
+  UI.user_error!("Could not resolve the prod #{role} target") unless status.success?
+  values = output.chomp.split("\t")
+  UI.user_error!("Incomplete prod #{role} target: #{output.inspect}") unless values.size == TARGET_FIELDS.size && values.none?(&:empty?)
+  TARGET_FIELDS.zip(values).to_h
+end
+
+def marketing_version(target)
+  line = File.readlines(File.join(REPO_ROOT, target["projectRoot"], "pubspec.yaml")).find { |l| l.start_with?("version: ") }
+  UI.user_error!("pubspec.yaml has no version line") unless line
+  line.split.last.split("+").first
+end
+
+def runner_temp
+  ENV.fetch("RUNNER_TEMP", Dir.tmpdir)
+end
+
+# Writes the App Store Connect key to a private file for xcodebuild and
+# fastlane, and removes it when the block ends.
+def with_api_key
+  key_id = ENV.fetch("APP_STORE_CONNECT_API_KEY_ID")
+  key_path = File.join(runner_temp, "AuthKey_#{key_id}.p8")
+  File.write(key_path, Base64.decode64(ENV.fetch("APP_STORE_CONNECT_API_KEY_BASE64")), perm: 0o600)
+  key = app_store_connect_api_key(key_id: key_id, issuer_id: ENV.fetch("APP_STORE_CONNECT_API_ISSUER_ID"),
+                                  key_filepath: key_path, in_house: false)
+  yield key, key_path
+ensure
+  FileUtils.rm_f(key_path) if key_path
+end
+
+def sha256(path)
+  Digest::SHA256.file(path).hexdigest
+end
+
+# Appends the build record to the GitHub job summary: what was built, from
+# which commit, its fingerprint, and where it went.
+def summarize(title, rows)
+  path = ENV["GITHUB_STEP_SUMMARY"]
+  lines = ["## #{title}", ""] + rows.map { |key, value| "- #{key}: `#{value}`" } + [""]
+  UI.message(lines.join("\n"))
+  File.write(path, lines.join("\n") + "\n", mode: "a") if path
+end
+
+def highest_play_version_code(package_name)
+  PLAY_TRACKS.flat_map do |track|
+    google_play_track_version_codes(package_name: package_name, track: track)
+  rescue StandardError => e
+    UI.message("Play track #{track}: #{e.message.lines.first&.strip}")
+    []
+  end.map(&:to_i).max.to_i
+end
+
+def verify_callable_dependencies(role)
+  # Host must not reach testers before its prod Cloud Functions exist.
+  repo_sh("node", "tool/firebase/check_client_callable_dependencies.mjs",
+          "--role", role, "--environment", "prod", "--verify-live")
+end
+
+platform :ios do
+  desc "Build, verify and upload a prod build to TestFlight (internal testers get it automatically)"
+  lane :beta do |options|
+    role = role_option(options)
+    target = app_target(role)
+    version = marketing_version(target)
+    project = File.join(REPO_ROOT, target["projectRoot"])
+    archive_path = File.join(runner_temp, "#{target['id']}.xcarchive")
+    output_directory = File.join(REPO_ROOT, "build/ios/export", target["id"])
+    evidence = File.join(REPO_ROOT, "build/ios/release-evidence")
+    FileUtils.mkdir_p(evidence)
+
+    with_api_key do |key, key_path|
+      latest = latest_testflight_build_number(api_key: key, app_identifier: target["ios.bundleId"],
+                                              initial_build_number: 0).to_i
+      build_number = (latest + 1).to_s
+
+      verify_callable_dependencies(role)
+      repo_sh("./tool/write_ios_maps_key_xcconfig.sh", "prod", File.join(project, "ios/Flutter/GoogleMapsKeys.xcconfig"))
+      repo_sh("./tool/flutter_with_env.sh", "prod", "--role", role, "build", "ios", "--release", "--config-only",
+              "--build-name=#{version}", "--build-number=#{build_number}")
+
+      # Archives are signed with the reusable Apple Development identity and
+      # Apple's cloud signs the App Store export through the API key.
+      # Importing the identity keeps Xcode from minting a new development
+      # certificate on every run.
+      setup_ci(force: true)
+      certificate = File.join(runner_temp, "ios-ci-development.p12")
+      File.binwrite(certificate, Base64.decode64(ENV.fetch("IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64")))
+      begin
+        import_certificate(certificate_path: certificate,
+                           certificate_password: ENV.fetch("IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD"),
+                           keychain_name: ENV.fetch("MATCH_KEYCHAIN_NAME"),
+                           keychain_password: ENV.fetch("MATCH_KEYCHAIN_PASSWORD"))
+      ensure
+        FileUtils.rm_f(certificate)
+      end
+
+      auth = "-allowProvisioningUpdates -authenticationKeyPath #{key_path} " \
+             "-authenticationKeyID #{key[:key_id]} -authenticationKeyIssuerID #{key[:issuer_id]}"
+      ipa = build_app(
+        workspace: File.join(project, "ios/Runner.xcworkspace"),
+        scheme: target["ios.scheme"],
+        configuration: target["ios.configurations.release"],
+        destination: "generic/platform=iOS",
+        archive_path: archive_path,
+        output_directory: output_directory,
+        export_options: File.join(project, "ios/ExportOptions.prod.plist"),
+        xcargs: auth,
+        export_xcargs: auth,
+        skip_profile_detection: true,
+        silent: true
+      )
+
+      # The repo's identity checks: role, bundle id, Flutter entrypoint, prod
+      # Firebase app, Maps key and role-controlled entitlements, then size
+      # and payload policy. Nothing uploads if either fails.
+      repo_sh("node", "tool/platform/verify_ios_release_identity.mjs", "--ipa", ipa, "--role", role,
+              "--environment", "prod", "--expected-version", version, "--expected-build", build_number,
+              "--receipt", File.join(evidence, "#{role}-export.json"))
+      archived_app = Dir.glob(File.join(archive_path, "Products/Applications/*.app")).first
+      UI.user_error!("No app inside #{archive_path}") unless archived_app
+      repo_sh("node", "tool/firebase/validate_google_maps_config.mjs", "--env", "prod", "--platform", "ios",
+              "--project-root", target["projectRoot"], "--ios-built-plist", File.join(archived_app, "Info.plist"))
+      repo_sh("node", "tool/platform/check_mobile_package.mjs", "--artifact", ipa, "--role", role,
+              "--platform", "ios", "--output", File.join(evidence, "#{role}-package.json"))
+
+      upload_to_testflight(api_key: key, app_identifier: target["ios.bundleId"], ipa: ipa,
+                           skip_waiting_for_build_processing: true, distribute_external: false)
+      summarize("TestFlight upload (#{role})", [
+        ["App", target["ios.bundleId"]], ["Version (build)", "#{version} (#{build_number})"],
+        ["Commit", ENV.fetch("GITHUB_SHA", "local")], ["IPA SHA-256", sha256(ipa)],
+        ["Testers", "internal groups with automatic distribution"]
+      ])
+    end
+  end
+
+  desc "Submit a TestFlight build that testers already have for App Store review"
+  lane :release do |options|
+    role = role_option(options)
+    target = app_target(role)
+    build_number = options[:build].to_s
+    UI.user_error!("build:<TestFlight build number> is required") unless build_number.match?(/\A\d+\z/)
+    with_api_key do |key, _key_path|
+    upload_to_app_store(
+      api_key: key,
+      app_identifier: target["ios.bundleId"],
+      app_version: marketing_version(target),
+      build_number: build_number,
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: true,
+      automatic_release: false,
+      phased_release: true,
+      force: true,
+      run_precheck_before_submit: false,
+      submission_information: {add_id_info_uses_idfa: false}
+    )
+    end
+    summarize("App Store submission (#{role})", [
+      ["App", target["ios.bundleId"]], ["Version (build)", "#{marketing_version(target)} (#{build_number})"],
+      ["Release", "phased after approval, released manually"]
+    ])
+  end
+end
+
+platform :android do
+  desc "Build, verify and upload a prod bundle to the Play internal track"
+  lane :beta do |options|
+    role = role_option(options)
+    target = app_target(role)
+    package_name = target["android.applicationId"]
+    version = marketing_version(target)
+    version_code = [highest_play_version_code(package_name) + 1, MINIMUM_ANDROID_VERSION_CODE].max.to_s
+
+    verify_callable_dependencies(role)
+    FileUtils.mkdir_p(File.join(REPO_ROOT, "build/android/release-evidence"))
+    repo_sh("./tool/flutter_with_env.sh", "prod", "--role", role, "build", "appbundle", "--release",
+            "--build-name=#{version}", "--build-number=#{version_code}")
+    bundles = Dir.glob(File.join(REPO_ROOT, target["projectRoot"], "build/app/outputs/bundle/**/*.aab"))
+    UI.user_error!("Expected exactly one App Bundle; found #{bundles.size}") unless bundles.size == 1
+    aab = bundles.first
+
+    repo_sh("node", "tool/platform/verify_android_release_bundle.mjs", "--bundle", aab, "--role", role,
+            "--environment", "prod", "--expected-version", version, "--expected-build", version_code,
+            "--bundletool", ENV.fetch("BUNDLETOOL_JAR"),
+            "--receipt", File.join(REPO_ROOT, "build/android/release-evidence/#{role}-bundle.json"))
+    repo_sh("node", "tool/platform/check_mobile_package.mjs", "--artifact", aab, "--role", role,
+            "--platform", "android", "--output", File.join(REPO_ROOT, "build/android/release-evidence/#{role}-package.json"))
+
+    upload_to_play_store(package_name: package_name, track: "internal", aab: aab, release_status: "completed",
+                         skip_upload_metadata: true, skip_upload_changelogs: true,
+                         skip_upload_images: true, skip_upload_screenshots: true)
+    summarize("Play internal upload (#{role})", [
+      ["Package", package_name], ["Version (code)", "#{version} (#{version_code})"],
+      ["Commit", ENV.fetch("GITHUB_SHA", "local")], ["AAB SHA-256", sha256(aab)], ["Track", "internal"]
+    ])
+  end
+
+  desc "Promote a version already on the internal track to production as a staged rollout"
+  lane :release do |options|
+    role = role_option(options)
+    target = app_target(role)
+    version_code = options[:version_code].to_s
+    rollout = options[:rollout].to_s
+    UI.user_error!("version_code:<Play version code> is required") unless version_code.match?(/\A\d+\z/)
+    UI.user_error!("rollout must be a fraction in (0, 1]") unless rollout.match?(/\A(0?\.\d+|1(\.0+)?)\z/) && rollout.to_f.positive?
+    upload_to_play_store(package_name: target["android.applicationId"], track: "internal",
+                         track_promote_to: "production", version_code: version_code.to_i,
+                         rollout: rollout,
+                         track_promote_release_status: rollout.to_f >= 1 ? "completed" : "inProgress",
+                         skip_upload_aab: true, skip_upload_apk: true, skip_upload_metadata: true,
+                         skip_upload_changelogs: true, skip_upload_images: true, skip_upload_screenshots: true)
+    summarize("Play production rollout (#{role})", [
+      ["Package", target["android.applicationId"]], ["Version code", version_code], ["Rollout", rollout]
+    ])
+  end
+end

@@ -17,7 +17,7 @@ import {
   AdminSearchCandidateHeader,
   AdminSearchCandidateList,
   AdminSearchCandidatePanel,
-  AdminIntakeStateGrid,
+  AdminOrganizerIntakeSurfaceGrid,
 } from "../../../../shared/ui/AdminPrimitives";
 import {
   pendingInputDecisionLabel,
@@ -60,12 +60,12 @@ function OrganizerWorkflowReadinessView({
 }) {
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Ready" value={String(readiness.summary.ready)} />
         <StateRow label="Review" value={String(readiness.summary.reviewNeeded)} />
         <StateRow label="Waiting" value={String(readiness.summary.waiting)} />
         <StateRow label="Policy" value={String(readiness.summary.policyNeeded)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         <CatchBadge label={`local pipeline ${readiness.summary.localPromotionPipelineReady ? "ready" : "blocked"}`} />
         <CatchBadge label={`public projection ${readiness.summary.publicProjectionReady ? "ready" : "waiting"}`} />
@@ -117,12 +117,12 @@ function OrganizerOperatorActionQueueView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Actions" value={String(queue.summary.actions)} />
         <StateRow label="Admin" value={String(queue.summary.adminDecisionsRequired)} />
         <StateRow label="Policy" value={String(queue.summary.policyInputsRequired)} />
         <StateRow label="Waiting" value={String(queue.summary.waitingActions)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {Object.entries(queue.summary.actionsByPriority).map(([priority, count]) => (
           <CatchBadge key={priority} label={`${priority} x${count}`} />
@@ -148,12 +148,12 @@ function OrganizerOperatorActionQueueView({
               <CatchBadge recipe="status" tone={action.status === "requires_admin_decision" ? "success" : "neutral"} label={action.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Subject" value={action.subjectId} />
               <StateRow label="Task" value={action.taskType.replaceAll("_", " ")} />
               <StateRow label="Options" value={String(action.decisionOptions.length)} />
               <StateRow label="Blockers" value={String(action.blockers.length)} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
 
             <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
               <strong>{action.nextAction}</strong>
@@ -202,14 +202,14 @@ function OrganizerOperationalHealthView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Status" value={health.summary.healthStatus.replaceAll("_", " ")} />
         <StateRow label="Workstreams" value={String(health.summary.workstreams)} />
         <StateRow label="Action" value={String(health.summary.actionRequiredWorkstreams)} />
         <StateRow label="Policy" value={String(health.summary.policyBlockedWorkstreams)} />
         <StateRow label="Waiting" value={String(health.summary.waitingWorkstreams)} />
         <StateRow label="Ready" value={String(health.summary.readyWorkstreams)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {Object.entries(health.summary.workstreamsByPriority).map(([priority, count]) => (
           <CatchBadge key={priority} label={`${priority} x${count}`} />
@@ -235,7 +235,7 @@ function OrganizerOperationalHealthView({
               <CatchBadge recipe="status" tone={organizerIntakeEvidencePanels.healthStatusTone(stream.status)} label={stream.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               {Object.entries(stream.metrics).slice(0, 6).map(([metric, value]) => (
                 <StateRow
                   key={metric}
@@ -243,7 +243,7 @@ function OrganizerOperationalHealthView({
                   value={organizerIntakeEvidencePanels.formatHealthMetric(value)}
                 />
               ))}
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
 
             {stream.nextActions.length > 0 ? (
               <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
@@ -284,7 +284,7 @@ function OrganizerPendingWorkCoverageView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow
           label="Status"
           value={coverage.summary.status.replaceAll("_", " ")}
@@ -309,7 +309,7 @@ function OrganizerPendingWorkCoverageView({
           label="Untriaged"
           value={String(coverage.summary.untriagedWorkstreams)}
         />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {coverage.summary.highestPriority ? (
           <CatchBadge label={`highest ${coverage.summary.highestPriority}`} />
@@ -338,7 +338,7 @@ function OrganizerPendingWorkCoverageView({
               <CatchBadge recipe="status" tone={organizerIntakeEvidencePanels.coverageStatusTone(entry.coverageStatus)} label={entry.coverageStatus.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Status" value={entry.status.replaceAll("_", " ")} />
               <StateRow
                 label="Blocker"
@@ -352,7 +352,7 @@ function OrganizerPendingWorkCoverageView({
                 label="Follow-ups"
                 value={String(entry.followUpIds.length)}
               />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
 
             {entry.nextActions.length > 0 ? (
               <QualityRow icon={<FileWarning size={16} strokeWidth={1.9} />}>
@@ -413,14 +413,14 @@ function OrganizerPendingInputRequestView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Inputs" value={String(request.summary.requests)} />
         <StateRow label="Admin" value={String(request.summary.adminPublicationRequests)} />
         <StateRow label="Policy" value={String(request.summary.policyDecisionRequests)} />
         <StateRow label="Questions" value={String(request.summary.requiredPolicyQuestions)} />
         <StateRow label="Manual acks" value={String(request.summary.manualPublicationAcknowledgements)} />
         <StateRow label="Follow-ups" value={String(request.summary.workflowFollowUps)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {request.summary.highestPriority ? (
           <CatchBadge label={`highest ${request.summary.highestPriority}`} />
@@ -467,7 +467,7 @@ function OrganizerPendingInputRequestView({
                 <strong>{input.prompt}</strong>
                 <span>Safe default: {input.safeDefaultAction.replaceAll("_", " ")}</span>
               </QualityRow>
-              <AdminIntakeStateGrid>
+              <AdminOrganizerIntakeSurfaceGrid>
                 <StateRow label="Subject" value={input.subjectId} />
                 <StateRow label="Options" value={input.decisionOptions.join(", ")} />
                 <StateRow
@@ -486,7 +486,7 @@ function OrganizerPendingInputRequestView({
                   label="Claim target"
                   value={input.impact?.claimTargetPath ?? "none"}
                 />
-              </AdminIntakeStateGrid>
+              </AdminOrganizerIntakeSurfaceGrid>
               <AdminTagList>
                 {input.decisionOptions.map((option) => (
                   <CatchBadge key={option} label={option.replaceAll("_", " ")} />
@@ -523,7 +523,7 @@ function OrganizerPendingInputRequestView({
               {input.callableSubmission ? (
                 <AdminIntakeSection>
                   <AdminIntakeSectionTitle>Callable Payloads</AdminIntakeSectionTitle>
-                  <AdminIntakeStateGrid>
+                  <AdminOrganizerIntakeSurfaceGrid>
                     <StateRow
                       label="Callable"
                       value={input.callableSubmission.callableName}
@@ -540,7 +540,7 @@ function OrganizerPendingInputRequestView({
                       label="Collection"
                       value={input.callableSubmission.firestoreCollection}
                     />
-                  </AdminIntakeStateGrid>
+                  </AdminOrganizerIntakeSurfaceGrid>
                   <AdminCommandStack>
                     {Object.entries(input.callableSubmission.payloadsByDecision)
                       .slice(0, 4)
@@ -650,7 +650,7 @@ function OrganizerReviewedDecisionAnswerPacketsView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow
           label="Status"
           value={register.summary.status.replaceAll("_", " ")}
@@ -663,7 +663,7 @@ function OrganizerReviewedDecisionAnswerPacketsView({
         />
         <StateRow label="Stale" value={String(register.summary.stale)} />
         <StateRow label="Invalid" value={String(register.summary.invalid)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         <CatchBadge label={`root ${register.generatedFrom.answerPacketsRoot}`} />
         <CatchBadge label={`source ${register.generatedFrom.generatedAnswerPacket}`} />
@@ -691,7 +691,7 @@ function OrganizerReviewedDecisionAnswerPacketsView({
                 <CatchBadge recipe="status" tone={entry.readyToApply ? "success" : "neutral"} label={entry.status.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
-              <AdminIntakeStateGrid>
+              <AdminOrganizerIntakeSurfaceGrid>
                 <StateRow label="Reviewer" value={entry.reviewer ?? "unknown"} />
                 <StateRow label="Date" value={entry.decidedAt ?? "unknown"} />
                 <StateRow label="Slots" value={String(entry.answerSlots)} />
@@ -707,7 +707,7 @@ function OrganizerReviewedDecisionAnswerPacketsView({
                   label="Source"
                   value={entry.sourceFresh ? "fresh" : entry.sourceFreshness}
                 />
-              </AdminIntakeStateGrid>
+              </AdminOrganizerIntakeSurfaceGrid>
 
               {(entry.errors.length > 0 || entry.warnings.length > 0) ? (
                 <QualityRow tone="warning" icon={<FileWarning size={16} strokeWidth={1.9} />}>

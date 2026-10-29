@@ -30,7 +30,6 @@ import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_stream_utils.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_invite_link.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/event_venue_session.dart';
 import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
@@ -57,14 +56,6 @@ class EventRepository with EventRepositoryActions {
         idField: 'id',
         fromJson: Event.fromJson,
         toJson: (event) => event.toJson(),
-      );
-
-  CollectionReference<EventParticipation> get _participationsRef => _db
-      .collection('eventParticipations')
-      .withDocumentIdConverter<EventParticipation>(
-        idField: 'id',
-        fromJson: EventParticipation.fromJson,
-        toJson: (participation) => participation.toJson(),
       );
 
   CollectionReference<EventPrivateAccess> get _privateAccessRef => _db
@@ -309,20 +300,6 @@ class EventRepository with EventRepositoryActions {
             events.where((event) => !event.synthetic).toList(growable: false),
       );
 
-  Stream<List<Event>> watchAttendedEvents({required String uid}) =>
-      _watchEventsForParticipationStatuses(
-        uid: uid,
-        statuses: const {EventParticipationStatus.attended},
-        descending: true,
-      );
-
-  /// Streams upcoming events the user has signed up for (paid / reserved a spot).
-  Stream<List<Event>> watchSignedUpEvents({required String uid}) =>
-      _watchEventsForParticipationStatuses(
-        uid: uid,
-        statuses: const {EventParticipationStatus.signedUp},
-      );
-
   Stream<List<Event>> watchEventsByIds({required List<String> eventIds}) {
     final uniqueIds = eventIds.toSet().toList()..sort();
     if (uniqueIds.isEmpty) return Stream.value(const []);
@@ -338,40 +315,22 @@ class EventRepository with EventRepositoryActions {
     );
   }
 
-  Stream<List<Event>> _watchEventsForParticipationStatuses({
-    required String uid,
-    required Set<EventParticipationStatus> statuses,
+  /// Streams the events whose ids [idStream] emits, re-querying whenever the
+  /// ids change. Other contexts use this to read events they reference.
+  Stream<List<Event>> watchEventsForIdStream(
+    Stream<List<String>> idStream, {
     bool descending = false,
-  }) {
-    if (statuses.isEmpty) return Stream.value(const []);
-
-    Query<EventParticipation> query = _participationsRef.where(
-      'uid',
-      isEqualTo: uid,
-    );
-    final statusNames = statuses.map((status) => status.name).toList();
-    query = statusNames.length == 1
-        ? query.where('status', isEqualTo: statusNames.single)
-        : query.where('status', whereIn: statusNames);
-
-    final idStream = query
-        .limit(ReadLimitPolicy.boundedWorkingSet)
-        .snapshots()
-        .map(
-          (snap) => snap.docs.map((doc) => doc.data().eventId).toSet().toList(),
-        );
-
-    return watchEventsByIdStream(
-      idStream: idStream,
-      eventsRef: _eventsRef,
-      descending: descending,
-      context: const BackendErrorContext(
-        service: BackendService.firestore,
-        action: 'watch events by participation',
-        resource: _collectionPath,
-      ),
-    );
-  }
+    String action = 'watch events by id stream',
+  }) => watchEventsByIdStream(
+    idStream: idStream,
+    eventsRef: _eventsRef,
+    descending: descending,
+    context: BackendErrorContext(
+      service: BackendService.firestore,
+      action: action,
+      resource: _collectionPath,
+    ),
+  );
 
   /// Generates a new unique Firestore document ID for an event without writing it.
   String generateId() => _eventsRef.doc().id;
@@ -463,14 +422,6 @@ Stream<List<Event>> watchEventsForClubs(Ref ref, EventsForClubsQuery query) =>
     ref
         .watch(eventRepositoryProvider)
         .watchEventsForClubs(clubIds: query.clubIds);
-
-@riverpod
-Stream<List<Event>> watchAttendedEvents(Ref ref, String uid) =>
-    ref.watch(eventRepositoryProvider).watchAttendedEvents(uid: uid);
-
-@riverpod
-Stream<List<Event>> watchSignedUpEvents(Ref ref, String uid) =>
-    ref.watch(eventRepositoryProvider).watchSignedUpEvents(uid: uid);
 
 @riverpod
 Stream<List<Event>> watchEventsByIds(Ref ref, EventsByIdQuery query) => ref

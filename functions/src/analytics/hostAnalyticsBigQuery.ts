@@ -55,6 +55,15 @@ export interface HostAnalyticsMartRow {
   claimClicks: number;
   outboundClicks: number;
   outboundBookingClicks?: number;
+  linkClicks: number;
+}
+
+/** Owner link clicks for one organizer, link and traffic source. */
+export interface HostAnalyticsLinkRow {
+  clubId: string;
+  linkId: string;
+  trafficSource: string | null;
+  linkClicks: number;
 }
 
 export interface HostAnalyticsBigQuerySource {
@@ -62,6 +71,10 @@ export interface HostAnalyticsBigQuerySource {
     range: HostAnalyticsBigQueryRange,
     scope: HostAnalyticsBigQueryScope,
   ): Promise<HostAnalyticsMartRow[]>;
+  loadLinkRows(
+    range: HostAnalyticsBigQueryRange,
+    clubIds: string[],
+  ): Promise<HostAnalyticsLinkRow[]>;
 }
 
 interface RawHostAnalyticsMartRow {
@@ -102,6 +115,14 @@ interface RawHostAnalyticsMartRow {
   claimClicks: string | number | null;
   outboundClicks: string | number | null;
   outboundBookingClicks?: string | number | null;
+  linkClicks?: string | number | null;
+}
+
+interface RawHostAnalyticsLinkRow {
+  clubId: string;
+  linkId: string;
+  trafficSource: string | null;
+  linkClicks: string | number | null;
 }
 
 export class BigQueryHostAnalyticsSource
@@ -109,6 +130,7 @@ implements HostAnalyticsBigQuerySource {
   constructor(
     private readonly client: BigQueryClient = defaultBigQueryClient,
     private readonly table = hostAnalyticsMartTable(),
+    private readonly linkTable = hostAnalyticsLinkMartTable(),
   ) {}
 
   async loadRows(
@@ -128,6 +150,28 @@ implements HostAnalyticsBigQuerySource {
     );
     return rows.map(normalizeMartRow);
   }
+
+  async loadLinkRows(
+    range: HostAnalyticsBigQueryRange,
+    clubIds: string[],
+  ): Promise<HostAnalyticsLinkRow[]> {
+    if (clubIds.length === 0) return [];
+    const rows = await this.client.query<RawHostAnalyticsLinkRow>(
+      hostAnalyticsLinkRowsSql(this.linkTable),
+      [
+        dateParam("startDate", range.startDate),
+        dateParam("endDate", range.endDate),
+        stringArrayParam("clubIds", clubIds),
+        intParam("limit", 2000),
+      ],
+    );
+    return rows.map((row) => ({
+      clubId: row.clubId,
+      linkId: row.linkId,
+      trafficSource: row.trafficSource,
+      linkClicks: numberValue(row.linkClicks),
+    }));
+  }
 }
 
 export const defaultHostAnalyticsBigQuerySource =
@@ -138,6 +182,8 @@ export function hostAnalyticsRowsSql(table: string): string {
   // pre-migration schemas and unrefreshed NULL rows remain unknown, not zero.
   const optionalBookingClicks = "SAFE_CAST(JSON_VALUE(" +
     "TO_JSON_STRING(martRow), '$.outbound_booking_clicks') AS INT64)";
+  const optionalLinkClicks = "SAFE_CAST(JSON_VALUE(" +
+    "TO_JSON_STRING(martRow), '$.link_clicks') AS INT64)";
   return `
 SELECT
   CAST(date AS STRING) AS date,
@@ -178,7 +224,8 @@ SELECT
   SUM(outbound_clicks) AS outboundClicks,
   CASE WHEN COUNT(*) = COUNT(${optionalBookingClicks})
     THEN SUM(${optionalBookingClicks})
-    ELSE NULL END AS outboundBookingClicks
+    ELSE NULL END AS outboundBookingClicks,
+  COALESCE(SUM(${optionalLinkClicks}), 0) AS linkClicks
 FROM \`${table}\` AS martRow
 WHERE date >= @startDate
   AND date <= @endDate
@@ -186,6 +233,22 @@ WHERE date >= @startDate
   AND (@eventId IS NULL OR event_id = @eventId)
 GROUP BY date, club_id, event_id
 ORDER BY date ASC
+LIMIT @limit`;
+}
+
+export function hostAnalyticsLinkRowsSql(table: string): string {
+  return `
+SELECT
+  club_id AS clubId,
+  link_id AS linkId,
+  traffic_source AS trafficSource,
+  SUM(link_clicks) AS linkClicks
+FROM \`${table}\`
+WHERE date >= @startDate
+  AND date <= @endDate
+  AND club_id IN UNNEST(@clubIds)
+GROUP BY club_id, link_id, traffic_source
+ORDER BY linkClicks DESC
 LIMIT @limit`;
 }
 
@@ -231,6 +294,7 @@ function normalizeMartRow(
     outboundClicks: numberValue(row.outboundClicks),
     outboundBookingClicks: row.outboundBookingClicks == null ?
       undefined : numberValue(row.outboundBookingClicks),
+    linkClicks: numberValue(row.linkClicks ?? null),
   };
 }
 
@@ -244,8 +308,16 @@ function numberValue(value: string | number | null): number {
 }
 
 function hostAnalyticsMartTable(): string {
-  const explicit = process.env.HOST_ANALYTICS_MART_TABLE;
-  if (explicit) return explicit;
+  return process.env.HOST_ANALYTICS_MART_TABLE ||
+    `${hostAnalyticsDatasetPath()}.mart_host_event_daily`;
+}
+
+function hostAnalyticsLinkMartTable(): string {
+  return process.env.HOST_ANALYTICS_LINK_MART_TABLE ||
+    `${hostAnalyticsDatasetPath()}.mart_host_link_daily`;
+}
+
+function hostAnalyticsDatasetPath(): string {
   const project = process.env.HOST_ANALYTICS_BIGQUERY_PROJECT_ID ||
     process.env.BIGQUERY_PROJECT_ID ||
     process.env.GCLOUD_PROJECT ||
@@ -253,5 +325,5 @@ function hostAnalyticsMartTable(): string {
     "catch-dating-app-64e51";
   const dataset = process.env.HOST_ANALYTICS_BIGQUERY_DATASET ||
     "catch_analytics";
-  return `${project}.${dataset}.mart_host_event_daily`;
+  return `${project}.${dataset}`;
 }

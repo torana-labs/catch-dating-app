@@ -56,6 +56,16 @@ export interface ListingEventReview {
   ownerSafeCopyReviewed: boolean;
   importPolicyAcknowledged: boolean;
   blockerResolutions: Array<{blockerCode: string; outcome: string; policyGapDecisionId: string | null; note: string}>;
+  location?: StaffEventLocation | null;
+}
+
+/** A map location a reviewer supplies for an event whose source page gave none. */
+export interface StaffEventLocation {
+  name: string | null;
+  address: string | null;
+  placeId: string | null;
+  latitude: number;
+  longitude: number;
 }
 
 export interface ListingEventPlan {
@@ -117,7 +127,8 @@ export interface StaffChecklist {
 
 export type ListingEventActor =
   | {kind: "staff"; adminContext: AdminContext; checklist: StaffChecklist; note: string;
-      blockerResolutions: Map<string, ListingEventReview["blockerResolutions"]>; request?: CallableRequest<unknown>}
+      blockerResolutions: Map<string, ListingEventReview["blockerResolutions"]>;
+      eventLocations?: Map<string, StaffEventLocation>; request?: CallableRequest<unknown>}
   | {kind: "policy"};
 
 export type ListingEventOutcome =
@@ -192,6 +203,7 @@ export async function publishListingEvents(input: {
         reviewerUid: input.actor.adminContext.uid, decidedAt: now, note: input.actor.note,
         checklist: input.actor.checklist,
         blockerResolutions: input.actor.blockerResolutions.get(eventWorkItemId) ?? [],
+        location: input.actor.eventLocations?.get(eventWorkItemId) ?? null,
       });
       const capabilities = verifiedOrganizerSupplyCapabilities(owner.organizer);
       const plan = runtime.planListingEventImport({event, workItemId: eventWorkItemId, citySlug: owner.citySlug, now,
@@ -206,7 +218,8 @@ export async function publishListingEvents(input: {
       const eventRef = db.collection("externalEvents").doc(plan.eventId);
       const inputHash = publicationInputHash({intakeRequestId: input.intakeRequestId, eventWorkItemId,
         executionMode: input.executionMode, actor: input.actor.kind === "policy" ? policy.policyVersion :
-          {checklist: input.actor.checklist, note: input.actor.note, resolutions: review.blockerResolutions}});
+          {checklist: input.actor.checklist, note: input.actor.note, resolutions: review.blockerResolutions,
+            location: review.location ?? null}});
       const [receiptSnap, eventSnap] = await Promise.all([tx.get(receiptRef), tx.get(eventRef)]);
       if (receiptSnap.exists) {
         const receipt = receiptSnap.data() ?? {};

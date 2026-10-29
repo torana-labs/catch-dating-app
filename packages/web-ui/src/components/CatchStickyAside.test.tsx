@@ -1,20 +1,26 @@
+import fs from "node:fs";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {act, cleanup, fireEvent, render, screen} from "@testing-library/react";
 import {afterEach, beforeAll, beforeEach, describe, expect, it, vi} from "vitest";
 import {CatchStickyAside} from "./CatchStickyAside";
 
 afterEach(cleanup);
 
-let resize: (() => void) | undefined;
+const observed = new Set<() => void>();
+const resize = () => observed.forEach((callback) => callback());
 let probeWidth = 0;
 
 beforeAll(() => {
   // jsdom runs no container queries: the probe's width stands in for one.
   globalThis.ResizeObserver = class {
-    constructor(callback: () => void) {
-      resize = callback;
+    constructor(private readonly callback: () => void) {}
+    observe() {
+      observed.add(this.callback);
     }
-    observe() {}
-    disconnect() {}
+    disconnect() {
+      observed.delete(this.callback);
+    }
   } as unknown as typeof ResizeObserver;
   HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
     this.setAttribute("open", "");
@@ -50,7 +56,25 @@ describe("CatchStickyAside", () => {
     fireEvent.click(screen.getByRole("button", {name: "Book"}));
     expect(container.querySelector("dialog")!.open).toBe(true);
     probeWidth = 0;
-    act(() => resize?.());
+    act(() => resize());
     expect(screen.getByRole("complementary", {name: "Booking"})).toBeTruthy();
+  });
+
+  it("sets the docked bar's measured height on the page while it docks", () => {
+    const root = document.documentElement.style;
+    vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(75);
+    probeWidth = 1;
+    render(aside());
+    expect(root.getPropertyValue("--catch-sticky-aside-dock-clearance")).toBe("75px");
+    probeWidth = 0;
+    act(() => resize());
+    expect(root.getPropertyValue("--catch-sticky-aside-dock-clearance")).toBe("");
+  });
+
+  it("keeps the page end and keyboard focus clear of the docked bar", () => {
+    // jsdom lays nothing out, so this reads the clearance from the stylesheet.
+    const css = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "CatchStickyAside.module.css"), "utf8");
+    expect(css).toMatch(/:global\(html\):has\(\.dock\) \{[^}]*scroll-padding-bottom: calc\(var\(--catch-sticky-aside-dock-clearance\) \+ var\(--catch-space-s3\)\);/u);
+    expect(css).toMatch(/:global\(body\):has\(\.dock\) \{\s*padding-bottom: var\(--catch-sticky-aside-dock-clearance\);/u);
   });
 });

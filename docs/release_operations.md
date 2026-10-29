@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.18.0
+version: 2.20.1
 updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
@@ -239,14 +239,17 @@ short enough to be read before a deploy.
 
 ## Native Splash Assets
 
-The native splash is generated from the `flutter_native_splash:` block in
-`pubspec.yaml`; edit that config and run `dart run flutter_native_splash:create`
-instead of hand-editing platform drawables/storyboards. Before regenerating,
+The Consumer native splash is generated from the `flutter_native_splash:` block
+in `apps/consumer/pubspec.yaml`; edit that config and run
+`dart run flutter_native_splash:create` from `apps/consumer` instead of
+hand-editing platform drawables/storyboards. Host splash assets come only from
+the brand generator below. Before regenerating,
 verify the configured splash image is a transparent mark that composites cleanly
 on both `#F4F4F1` and `#0F0E10`; a baked app-icon tile is not an acceptable
 native splash image. The native splash mark is generated as transparent output
 by `tool/branding/generate_catch_icon.swift` and is a separate asset from the
-opaque launcher icon; edit the generator and `pubspec.yaml`, then re-run the
+opaque launcher icon; edit the generator and `apps/consumer/pubspec.yaml`, then
+re-run the
 Swift generator and `flutter_native_splash:create`. Finally run
 `dart run tool/branding/generate_native_brand_assets.dart`: it reapplies the
 Consumer-only iOS responsive launch constraints that align `Catch_` with the
@@ -266,12 +269,14 @@ required check permanently pending. Required CI has no mandatory human backend
 source-review job. The merge queue reruns it on the exact combined source of
 each group before `main` moves, so a pull request result never needs to stay
 current with `main`. A `main` push whose exact commit already passed a
-successful merge-queue run reuses that proof for pure-validation lanes (Flutter,
-visual integration, Tools, docs and policy, Admin and Operations). Jobs that
-produce or prove delivery evidence (Functions, Rules, contracts, app builds,
-Marketing and captures, the finalizer and Firebase packaging) still run, and
-the finalizer records the reused run ID. Without a successful queue run of the
-same commit, `main` runs every selected lane.
+successful merge-queue run re-runs no validation lane, source preflight
+included: it only plans, finalizes, packages Firebase delivery and writes the
+delivery authority, and the finalizer records the reused run ID. Firebase
+packaging compiles Functions from that same commit, and Marketing Website reads
+the queue run's Marketing and capture evidence, validating its own source when
+the queue run selected neither. App builds then run in nightly validation and in
+Mobile Internal Release, which builds each released app. Without a successful
+queue run of the same commit, `main` runs every selected lane.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
@@ -600,6 +605,19 @@ checks npm, Pub, and GitHub Actions each Wednesday, groups compatible minor and
 patch updates into at most one open pull request per ecosystem, and keeps
 security updates grouped separately. Major versions are deliberately excluded:
 each major upgrade needs its own impact review and full selected CI evidence.
+
+Dependabot pull requests merge without a click.
+`.github/workflows/dependabot-auto-merge.yml` turns on auto-merge for every
+Dependabot pull request that is not a major version, so it joins the merge
+queue once Required CI passes. It acts as the repository's auto-merge GitHub
+App, not the built-in Actions token: GitHub starts no workflows for events
+that token causes, and a dependency merge must start `main`'s workflows like
+any other. The App has read-and-write Contents, Pull requests and Workflows
+permissions (Dependabot also updates workflow files) and is installed on this
+repository only; its ID and private key are the Dependabot secrets
+`AUTOMERGE_APP_ID` and `AUTOMERGE_APP_PRIVATE_KEY`, because a workflow
+Dependabot triggers can read only Dependabot secrets. Without them the
+workflow leaves each update for a manual merge.
 
 The 2026-08-10 Pub baseline upgraded every release resolvable under the current
 constraints: 74 packages (33 in the Firebase family and 41 in the remaining
@@ -2302,7 +2320,8 @@ The required IAM is not optional. The Functions runtime service account needs
 `roles/bigquery.jobUser` at project scope plus access to `catch_analytics`
 because the public analytics callable inserts into
 `catch_analytics.host_analytics_events` and the host/admin callables read
-`catch_analytics.mart_host_event_daily`. The deployer or scheduled-query
+`catch_analytics.mart_host_event_daily` and `catch_analytics.mart_host_link_daily`.
+The deployer or scheduled-query
 identity needs `roles/bigquery.jobUser`, write access to `catch_analytics`, and
 read access to `catch_marketplace_metrics` for Event Success scorecard joins.
 The `bq-host-*` extension service accounts must retain write access to their
@@ -2477,9 +2496,12 @@ A smoke build can also emit a single canary event with
   `observability-evidence.yml` after the first daily table lands.
 - **Host analytics marts**: source-controlled DDL and refresh SQL live under
   `analytics/sql/**`. `getHostAnalytics` and `adminGetHostAnalytics` read
-  `catch_analytics.mart_host_event_daily`; `recordOrganizerAnalyticsEvent`
-  writes aggregate-safe discovery events to
-  `catch_analytics.host_analytics_events`. The mart also reads
+  `catch_analytics.mart_host_event_daily`, and the owner link roll-up reads
+  `catch_analytics.mart_host_link_daily`; `recordOrganizerAnalyticsEvent`
+  writes aggregate-safe discovery events, including owner `linkClick`s, to
+  `catch_analytics.host_analytics_events`. Apply the DDL before deploying
+  Functions that read the link mart; until then the roll-up reports a missing
+  `owner-link-clicks` data-quality row instead of failing. The mart also reads
   `analytics_526484083.events_*` for `organizer_<eventName>` GA4 exports when
   the dataset/tables exist, using the larger direct-vs-GA4 daily count per
   club/event/event-name key to avoid double-counting mirrored browser events.
@@ -2588,6 +2610,42 @@ The smoke define emits one nonfatal Crashlytics event with reason
 prod release smoke. After the dashboard rows appear, run the manual
 `Observability Evidence` workflow and record the app build, Crashlytics proof,
 Analytics proof, and GA4 BigQuery export status.
+
+## Mobile releases
+
+Test builds and store releases for the Consumer and Host apps run through
+fastlane (`fastlane/Fastfile`, pinned in `Gemfile.lock`). Two workflows call it,
+both from `main` only:
+
+- `Mobile Beta` (`.github/workflows/mobile-beta.yml`) builds, verifies and
+  uploads test builds to TestFlight internal testers and the Play internal
+  track. It runs nightly at 03:07 IST when app sources changed since its last
+  successful run, and on demand for any app and platform. It uses the
+  approval-free `prod-mobile` environment.
+- `Mobile Production` (`.github/workflows/mobile-production.yml`) ships a
+  build testers already have. On iOS it submits that TestFlight build for App
+  Store review as a phased release, which is released by hand after approval.
+  On Android it promotes that internal-track version code to production as a
+  staged rollout. It rebuilds nothing. It uses the `prod-mobile-release`
+  environment, which requires a reviewer's approval.
+
+Each beta build runs the same checks as before upload: the IPA identity, the
+Google Maps configuration, the Android bundle identity and signing certificate,
+the package size and payload policy, and the live callable dependency check
+for the app's role. iOS build numbers come from the latest TestFlight build
+plus one. Android version codes come from the highest code on any Play track
+plus one, and never go below 100000. Each run attests its IPA or AAB with
+GitHub build provenance and keeps the file and its verification records as a
+30-day workflow artifact.
+
+Run a lane locally with `bundle exec fastlane ios beta role:host` or
+`bundle exec fastlane android beta role:consumer`, given the same environment
+variables the workflow passes. `bundle exec fastlane lanes` lists every lane.
+
+The older `Mobile Internal Release` and `Mobile Internal Promote` workflows
+keep running until the fastlane path has shipped each app once. The migration
+plan, `plans/mobile_release_fastlane_migration.md`, owns the cutover, the
+regression ledger and the delete list.
 
 ## Mobile Internal Release Ownership
 

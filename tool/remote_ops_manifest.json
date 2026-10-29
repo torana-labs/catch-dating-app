@@ -75,8 +75,8 @@
       ],
       "notes": [
         "Environment aliases are defined in .firebaserc.",
-        "Active checked-in config files are copied from firebase/<env> or firebase/<env>/host by tool/use_firebase_environment.sh.",
-        "The Android source-set google-services.json at apps/<role>/android/app/src/<env>/ is also an active working copy and must match the selected app role."
+        "Android flavors read apps/<role>/android/app/src/<flavor>/google-services.json, a committed link to firebase/<env>[/host]/android; the iOS/macOS build phase copies firebase/<env>[/host]/<platform>/GoogleService-Info.plist into the built app.",
+        "Only the web service worker is copied into the app project, by tool/use_firebase_environment.sh."
       ]
     },
     {
@@ -322,10 +322,6 @@
         },
         {
           "kind": "tool-id",
-          "ref": "organizer-intake:publish-event-supply-readiness"
-        },
-        {
-          "kind": "tool-id",
           "ref": "organizer-intake:event-review-decision"
         },
         {
@@ -481,7 +477,6 @@
         "The raw artifact storage manifest is local-only and never uploads files; it blocks raw provider payload storage until object-storage bucket, retention, deletion, and crawl-cost policy are approved.",
         "Event location resolutions are manually reviewed coordinates from the admin bridge or repo-backed local drafts; provider lookup and recurring crawl remain disabled by policy.",
         "External event import plans propose deterministic event write actions but do not mutate Firestore.",
-        "Publishing event supply readiness writes only eventSupplyReadiness/current for admin visibility; it does not import events or write externalEvents/{id}.",
         "Policy gap decisions document product/ops review state only; they do not enable crawler, provider, or import behavior.",
         "Event-candidate approval means approved for future import planning only; import writes remain disabled until product policy changes.",
         "Live admin curation operations must be exported into reviewed repo-backed JSON before dedupe, public projection, and claim-target generation.",

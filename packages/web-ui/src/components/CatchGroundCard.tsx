@@ -24,6 +24,8 @@ export interface CatchGroundCardProps
  * page arranges in it, such as a share panel, a form step or a pitch. Library
  * text inside takes the ground's inks, and the ink ground resolves components
  * through the dark theme, as `CatchBand` does for a full-width section.
+ * A `CatchField` in the card draws the boards' boxed input at rest (a white
+ * fill and a stroke in the ground's ink), so a form step reads on any ground.
  */
 export function CatchGroundCard({
   as: Element = "div",

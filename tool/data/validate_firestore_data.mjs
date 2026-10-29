@@ -14,6 +14,7 @@ import {
   EVENT_MAX_DURATION_MINUTES,
   scheduleComplianceIssues,
 } from "../demo/demo_schedule_policy.mjs";
+import {resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
@@ -51,7 +52,7 @@ export async function main(argv, {firestore} = {}) {
     printHelp();
     return;
   }
-  const projectId = resolveProjectId(args);
+  const projectId = resolveFirebaseProjectId({env: args.env, project: args.project, defaultEnv: null});
   const emulatorHost = args.emulatorHost ?? process.env.FIRESTORE_EMULATOR_HOST;
   let app;
   let db = firestore;
@@ -130,23 +131,6 @@ function requireValue(argv, index, flag) {
     throw new Error(`${flag} requires a value.`);
   }
   return value;
-}
-
-function resolveProjectId(parsed) {
-  if (parsed.project) return parsed.project;
-  if (parsed.env) {
-    const firebaserc = JSON.parse(
-      fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8")
-    );
-    const project = firebaserc.projects?.[parsed.env];
-    if (!project) {
-      throw new Error(`No Firebase project alias found for env: ${parsed.env}`);
-    }
-    return project;
-  }
-  return process.env.GCLOUD_PROJECT ||
-    process.env.GOOGLE_CLOUD_PROJECT ||
-    "catchdates-dev";
 }
 
 function printHelp() {
