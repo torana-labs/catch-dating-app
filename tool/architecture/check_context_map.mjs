@@ -322,7 +322,7 @@ function lineForOffset(source, offset) {
 function baselineFromFindings(findings, map) {
   return {
     owner: "app_architecture",
-    doc: "docs/app_architecture.md#bounded-context-contract",
+    targetPhase: "docs/app_architecture.md#phase-3-move-domain-and-data",
     version: 1,
     updated: new Date().toISOString().slice(0, 10),
     description:

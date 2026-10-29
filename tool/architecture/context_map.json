@@ -14,7 +14,7 @@
     {"id": "profiles", "owns": "A person's private profile, public projection, photos and saved answers."},
     {"id": "safety", "owns": "Blocking, reporting and account deletion."},
     {"id": "organizers", "owns": "Organisers, their team and roles, organiser pages, follows and claims."},
-    {"id": "events", "owns": "Events, schedules, venues, formats and event policies."},
+    {"id": "events", "owns": "Events, schedules, venues and event policies."},
     {"id": "payments", "owns": "Guest payments, refunds, an organiser's Razorpay connection and the Catch bill."},
     {"id": "forms", "owns": "Questions, applications, responses and offers."},
     {"id": "bookings", "owns": "Bookings, waitlists, tickets, the door, attendance and guest lists."},

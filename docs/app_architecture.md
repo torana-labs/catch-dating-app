@@ -310,7 +310,7 @@ when this table and the map disagree.
 | 2 | `profiles` | A person's private profile, public projection, photos and saved answers. |
 | 3 | `safety` | Blocking, reporting and account deletion. |
 | 4 | `organizers` | Organisers, their team and roles, organiser pages, follows and claims. |
-| 5 | `events` | Events, schedules, venues, formats and event policies. |
+| 5 | `events` | Events, schedules, venues and event policies. |
 | 6 | `payments` | Guest payments, refunds, an organiser's Razorpay connection and the Catch bill. |
 | 7 | `forms` | Questions, applications, responses and offers. |
 | 8 | `bookings` | Bookings, waitlists, tickets, the door, attendance and guest lists. |
@@ -388,29 +388,45 @@ that destination's screens move. It does not make a destination a context.
 Edit the machine-readable source and regenerate; do not hand-maintain the
 summaries.
 
-### Migration
+### Migration by phase
 
-1. This contract and `audit:context-map`.
-2. Before the first move, teach path-keyed checks the new roots.
-   `audit:dependency-direction` matches `lib/<feature>/<layer>/` and would stop
-   checking moved domain and data code; it must also match
-   `lib/contexts/<context>/<layer>/`. Tools that name specific files update in
-   the PR that moves those files.
-3. Move domain and data into contexts with no behavior change, one PR per
-   context in table order: `git mv`, a scripted import rewrite, regenerated
-   code and a green workspace analyze. Each PR removes its baseline entries
-   and splits mixed files, such as `EventService`, which holds booking rules.
-   The organizers move finishes the clubs-to-organizers rename. These PRs run
-   one after another because each rewrites imports across the tree.
-4. Screens move when they are redrawn. Each redrawn screen is written in
-   `apps/<app>/lib/<destination>/`, or `lib/pages/` when both apps show it,
-   and the old screen is deleted in the same PR (Migration Protocol v2).
-   Destinations are disjoint folders, so these PRs can run in parallel. The
-   first one proves Riverpod code generation and tests inside an app package
-   with one host destination; if that proves too costly, screens go to
-   `lib/apps/<app>/` instead, placed as the app layer in the map.
-5. Delete a legacy folder and its map entries once it is empty. The rule
-   sunsets when the legacy list and the baseline are both empty.
+#### Phase 1: contract and check
+
+This contract and `audit:context-map`.
+
+#### Phase 2: teach path-keyed checks the new roots
+
+`audit:dependency-direction` matches `lib/<feature>/<layer>/` and would stop
+checking moved domain and data code; it must also match
+`lib/contexts/<context>/<layer>/`. Its screen rules (state files, widgets
+reading repositories) scan only `lib/`, so they must also scan
+`apps/<app>/lib/` before the first screen lands there. Tools that name
+specific files update in the PR that moves those files.
+
+#### Phase 3: move domain and data
+
+Move domain and data into contexts, and shared values out of `lib/core/` and
+`lib/activity/` into the kernel and platform, with no behavior change. Use one
+PR per context in table order: `git mv`, a scripted import rewrite, regenerated
+code and a green workspace analyze. Each PR removes its baseline entries and
+splits mixed files, such as `EventService`, which holds booking rules. The
+organizers move finishes the clubs-to-organizers rename. These PRs run one
+after another because each rewrites imports across the tree. The baseline is
+empty when this phase ends.
+
+#### Phase 4: move screens when they are redrawn
+
+Each redrawn screen is written in `apps/<app>/lib/<destination>/`, or
+`lib/pages/` when both apps show it, and the old screen is deleted in the same
+PR (Migration Protocol v2). Destinations are disjoint folders, so these PRs can
+run in parallel. The first one proves Riverpod code generation and tests inside
+an app package with one host destination; if that proves too costly, screens go
+to `lib/apps/<app>/` instead, placed as the app layer in the map.
+
+#### Phase 5: delete empty legacy folders
+
+Delete a legacy folder and its map entries once it is empty. The rule sunsets
+when the legacy list is empty.
 
 ### Screen state files
 
@@ -5177,7 +5193,7 @@ apps/<app>/lib/<destination>/
 ```
 
 Screens go in the app destination once the first app-package screen lands
-(migration step 4); until then they stay in the legacy feature's
+(migration phase 4); until then they stay in the legacy feature's
 `presentation/` folder.
 
 Event setup and offer flows use generated auto-dispose provider families with
