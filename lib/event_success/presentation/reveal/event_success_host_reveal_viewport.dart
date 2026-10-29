@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_text.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_header.dart';
+import 'package:catch_dating_app/platform/responsive/component_breakpoints.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
+import 'package:catch_dating_app/platform/media/ordered_photo_picker.dart';
 
 class CreateEventPhotoDraftState {
   const CreateEventPhotoDraftState({

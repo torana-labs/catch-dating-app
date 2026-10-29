@@ -15,9 +15,9 @@ import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart'
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

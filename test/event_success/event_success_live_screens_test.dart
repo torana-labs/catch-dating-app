@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
@@ -25,8 +24,6 @@ import 'package:catch_dating_app/contexts/profiles/data/public_profile_repositor
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/presentation/companion/event_success_companion_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen_state.dart';
@@ -39,7 +36,10 @@ import 'package:catch_dating_app/event_success/presentation/event_success_setup_
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_bar.dart';
 import 'package:catch_dating_app/event_success/presentation/host_live/event_success_host_live_page_body.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';

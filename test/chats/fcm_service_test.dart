@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/platform/push/fcm_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';

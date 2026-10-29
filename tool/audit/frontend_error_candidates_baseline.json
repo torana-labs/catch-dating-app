@@ -21,12 +21,12 @@
     },
     {
       "rule": "named_catch",
-      "path": "lib/core/celebration/celebration_effects_controller.dart",
+      "path": "lib/pages/celebration/celebration_effects_controller.dart",
       "snippet": "} catch (error) {"
     },
     {
       "rule": "raw_error_print",
-      "path": "lib/core/celebration/celebration_effects_controller.dart",
+      "path": "lib/pages/celebration/celebration_effects_controller.dart",
       "snippet": "debugPrint('CelebrationEffects: skipped ${asset ?? 'haptic'} ($error)');"
     },
     {

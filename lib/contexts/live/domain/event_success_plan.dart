@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/formats/formats.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_preference.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_success_plan.freezed.dart';

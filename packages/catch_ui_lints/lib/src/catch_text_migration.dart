@@ -219,6 +219,11 @@ List<String> textMigrationGrowth(
   TextMigrationCounts budget,
 ) => migrationGrowth(actual, budget);
 
+TextMigrationCounts textMigrationRenamedBudget(
+  TextMigrationCounts budget,
+  Map<String, String> renames,
+) => migrationRenamedBudget(budget, renames);
+
 TextMigrationCounts textMigrationPrunedCounts(
   TextMigrationCounts actual,
   TextMigrationCounts? recorded,

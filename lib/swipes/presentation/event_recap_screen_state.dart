@@ -2,8 +2,8 @@ import 'package:catch_dating_app/contexts/connections/domain/swipe_window.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_view_model.dart';
 
 sealed class EventRecapScreenState {

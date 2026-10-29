@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.21.2
+version: 2.22.0
 updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
@@ -2469,7 +2469,7 @@ sends **nothing** — this is expected, not a bug.
 
 ### When collection is on
 
-`AppConfig.shouldCollectObservability` (in `lib/core/app_config.dart`) controls
+`AppConfig.shouldCollectObservability` (in `lib/platform/app_config.dart`) controls
 both Firebase Analytics and Crashlytics. It is true only when:
 
 - the build is release mode **and** the environment is `prod`; or
@@ -2683,7 +2683,9 @@ the package size and payload policy, and the live callable dependency check
 for the app's role. Android builds run only for the apps listed in the
 workflow's `PLAY_ROLES` (Host today). Google Play's API cannot create an app,
 so a new app's record and its first bundle are made by hand in Play Console
-before the app is added there. iOS build numbers come from the latest TestFlight build
+before the app is added there. For that first bundle, run `Mobile Beta` for the
+app with `android_upload` off: it builds, verifies and signs the bundle without
+uploading and keeps it in the run's `android-<app>-…` artifact. iOS build numbers come from the latest TestFlight build
 plus one. Android version codes come from the highest code on any Play track
 plus one, and never go below 100000. Each run attests its IPA or AAB with
 GitHub build provenance and keeps the file and its verification records as a

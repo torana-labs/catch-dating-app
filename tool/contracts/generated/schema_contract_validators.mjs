@@ -84,6 +84,8 @@ import {
   workspaceFieldAssertionDocumentSchema,
   workspaceFieldDecisionDocumentSchema,
   catchWhatsappWebhookEventDocumentSchema,
+  catchWhatsappAutoReplyDocumentSchema,
+  catchWhatsappClarificationDocumentSchema,
   salesImportHistoryRowDocumentSchema,
   salesImportHistoryRecordDocumentSchema,
   salesPrivacyRestrictionSchema,
@@ -1382,6 +1384,8 @@ export const validateDecideOrganizerCommunityMembershipCallableResponse = ajv.co
 export const validateWorkspaceFieldAssertionDocument = ajv.compile(workspaceFieldAssertionDocumentSchema);
 export const validateWorkspaceFieldDecisionDocument = ajv.compile(workspaceFieldDecisionDocumentSchema);
 export const validateCatchWhatsappWebhookEventDocument = ajv.compile(catchWhatsappWebhookEventDocumentSchema);
+export const validateCatchWhatsappAutoReplyDocument = ajv.compile(catchWhatsappAutoReplyDocumentSchema);
+export const validateCatchWhatsappClarificationDocument = ajv.compile(catchWhatsappClarificationDocumentSchema);
 export const validateSalesImportHistoryRowDocument = ajv.compile(salesImportHistoryRowDocumentSchema);
 export const validateSalesImportHistoryRecordDocument = ajv.compile(salesImportHistoryRecordDocumentSchema);
 export const validateSalesPrivacyRestriction = ajv.compile(salesPrivacyRestrictionSchema);

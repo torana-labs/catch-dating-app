@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/core/app_error_context.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/platform/errors/app_error_context.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 

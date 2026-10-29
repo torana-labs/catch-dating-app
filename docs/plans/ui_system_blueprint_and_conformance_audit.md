@@ -81,8 +81,8 @@ architecture diagram.
 
 **Catch today.** A pub workspace already exists (`apps/consumer`, `apps/host`
 over the shared root package), but all UI-system code lives inside the app
-package: `lib/core/theme/**` (tokens), `lib/core/widgets/**` (116 files, 193
-`Catch*` classes), `lib/core/forms`, `lib/core/responsive`. Boundaries are
+package: `lib/platform/theme/**` (tokens), `lib/core/widgets/**` (116 files, 193
+`Catch*` classes), `lib/core/forms`, `lib/platform/responsive`. Boundaries are
 held by the analyzer plugin, `check_ui_composition_contracts`, dependency
 direction scanners, and convention. Measured leaks prove convention is porous:
 5 riverpod-importing files and 31 l10n-coupled files in `core/widgets`, 2
@@ -105,7 +105,7 @@ outputs; raw values only in the token layer.
 estate (21 raw `BoxDecoration`s remain outside core, down from ~48 in June).
 
 **Verdict.** CONFORMS. Only defect: the semantic layer is one 3,116-line file
-(`lib/core/theme/catch_tokens.dart`) mixing every tier — a split target under
+(`lib/platform/theme/catch_tokens.dart`) mixing every tier — a split target under
 P9, not a redesign.
 
 ### P3. Component abstraction ladder — PARTIAL
@@ -385,7 +385,7 @@ packages/catch_ui/lib/
 ```
 
 Riverpod-consuming adapters stay in the app package under
-`lib/core/riverpod_ui/` (moved from `core/widgets`): `CatchAsyncBoundary`,
+`lib/platform/riverpod_ui/` (moved from `core/widgets`): `CatchAsyncBoundary`,
 `CatchAsyncBoundary.sliver`, `CatchLocalizedErrorBanner.mutation`,
 `listenToCatchMutationErrors`, `mutation_error_util`, `CatchNotice`'s
 provider factory. They are thin translations onto `catch_ui` surfaces
@@ -712,7 +712,7 @@ a visual one place needs goes into the library instead of the feature, and
 Flutter and React follow the same rule. Measured on 2026-10-23 against
 `origin/main` f03deb7e5, using scans that only report:
 
-- **Flutter.** App code outside `catch_ui` and `lib/core/theme` has 585 files
+- **Flutter.** App code outside `catch_ui` and `lib/platform/theme` has 585 files
   that define widgets.
   - 245 (42%) already only arrange and bind.
   - 140 draw nothing except text. App code makes 1,020 `Text`, `TextSpan` and
@@ -1075,7 +1075,7 @@ output; move generated primitive tokens plus the semantic token classes,
 splitting the token monolith by tier during the move (D6);
 rewrite imports
 mechanically across the workspace; delete the migrated originals
-(`lib/core/theme/catch_tokens.dart`, `catch_platform_tokens.dart`, and
+(`lib/platform/theme/catch_tokens.dart`, `catch_platform_tokens.dart`, and
 `generated/catch_design_tokens.g.dart`); keep the lint plugin's token exemption
 pointed at the new package. Theme wiring, typography, icon assets, gap widgets,
 and app-coupled activity palettes remain app-side until Phase 3.
@@ -1109,7 +1109,7 @@ Sub-slices, each independently gated by compiler + goldens:
   l10n disposition of the 31 coupled files and D5 renames of the 7 unprefixed
   files;
 - 3d patterns (L4: scaffolds, section pages, tab scroll views, form-row
-  orchestration) and the `lib/core/riverpod_ui/` adapter move;
+  orchestration) and the `lib/platform/riverpod_ui/` adapter move;
 - 3e entity-material classification (poster/polaroid/ticket family) per D1;
 - 3f `widgetbook/` repointed to depend on `catch_ui` (+ app package only where
   feature use cases require it); `lib/catch_ui.dart` barrel becomes a
@@ -1198,7 +1198,7 @@ ordering retain their existing behavior; the shared API has no activity model
 or app-localization dependency.
 
 AsyncValue box/sliver boundaries, their state translator, mutation-error listeners
-and mutation-message translation move to `lib/core/riverpod_ui`. Each public
+and mutation-message translation move to `lib/platform/riverpod_ui`. Each public
 widget has its own file, preserving deadline/retry and pending-to-error behavior.
 The sliver boundary inlines its local error selection into the exhaustive build
 switch, resolving the private helper instead of carrying it across the move.
@@ -1702,7 +1702,7 @@ matching an existing component's name or alias and names the component to use;
 the feature-naming check extended to `lib/core/widgets`; the reserved-prefix
 test corrected from `startsWith("Catch")` to `^Catch[A-Z]` (it falsely
 flagged the seven `Catches*` swipe widgets) and enforced across `lib/core/**`
-except `lib/core/riverpod_ui`; `Workspace` accepted as a route-level suffix;
+except `lib/platform/riverpod_ui`; `Workspace` accepted as a route-level suffix;
 and a decrease-only ratchet on the remaining feature-naming failures (197 after
 the new nouns).
 
@@ -1715,7 +1715,7 @@ already exempts them.
 
 DoD: every symbol in the table renamed with the old symbol deleted; no
 registry concept outside `Catch[<UseCase>]<RoleNoun>`; no `Catch[A-Z]` symbol
-outside `catch_ui`, `catch_tokens`, `lib/core/riverpod_ui` and app bootstrap;
+outside `catch_ui`, `catch_tokens`, `lib/platform/riverpod_ui` and app bootstrap;
 the alias gate, prefix test and ratchet each ship with a seeded failing probe
 (a new `EventTicket`, a new `ProfilePanel`, a new `CatchFoo` in a feature
 folder); workspace analyze green.
@@ -1743,7 +1743,7 @@ Deviations and remaining 7b work:
   remove their goldens. `catch.event_card` and `catch.startup_loading_screen`
   stay concepts with a decision note so they can keep their registered members.
 - The `CatchAsyncState` family is the last stray prefix (three ratchet entries).
-  Moving it into `lib/core/riverpod_ui` touches
+  Moving it into `lib/platform/riverpod_ui` touches
   `lib/hosts/today/presentation/host_today_view_model.dart`, which another
   active task holds; move it after that task lands.
 - The splash screen's Widgetbook catalog id still reads

@@ -1495,31 +1495,31 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get coreCatchAdaptivePickerTextDone;
 
-  /// Product copy used by lib/core/riverpod_ui/catch_localized_error_banner.dart (label).
+  /// Product copy used by lib/platform/riverpod_ui/catch_localized_error_banner.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Try again'**
   String get coreCatchErrorBannerLabelTryAgain;
 
-  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (tooltip).
+  /// Product copy used by lib/platform/l10n/catch_ui_copy.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'field'**
   String get coreCatchFieldTooltipField;
 
-  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (label).
+  /// Product copy used by lib/platform/l10n/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
   String get coreCatchFieldLabelCancel;
 
-  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (label).
+  /// Product copy used by lib/platform/l10n/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Done'**
   String get coreCatchFieldLabelDone;
 
-  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (saving label).
+  /// Product copy used by lib/platform/l10n/catch_ui_copy.dart (saving label).
   ///
   /// In en, this message translates to:
   /// **'Saving…'**
@@ -1543,7 +1543,7 @@ abstract class AppLocalizations {
   /// **'Saved'**
   String get coreCatchFieldSemanticSaved;
 
-  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
+  /// Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Optional'**
@@ -1579,31 +1579,31 @@ abstract class AppLocalizations {
   /// **'Enter a valid {field}'**
   String coreCatchFormValidationPattern({required String field});
 
-  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
+  /// Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get coreCatchFrameworkErrorViewTextSomethingWentWrong;
 
-  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
+  /// Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Developer details'**
   String get coreCatchFrameworkErrorViewTextDeveloperDetails;
 
-  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (Text).
+  /// Product copy resolved by lib/platform/l10n/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Typing...'**
   String get coreCatchPersonRowTextTyping;
 
-  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).
+  /// Product copy resolved by lib/platform/l10n/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Unread chat'**
   String get coreCatchPersonRowLabelUnreadChat;
 
-  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).
+  /// Product copy resolved by lib/platform/l10n/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'New match'**
@@ -1621,7 +1621,7 @@ abstract class AppLocalizations {
   /// **'Catch'**
   String get coreCatchStartupLoadingScreenSemanticlabelCatch;
 
-  /// Product copy used by lib/core/widgets/ordered_photo_picker.dart (Text).
+  /// Product copy used by lib/platform/media/ordered_photo_picker.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'COVER'**
@@ -7181,19 +7181,19 @@ abstract class AppLocalizations {
     required Object timeRangeLabel,
   });
 
-  /// Product copy used by lib/core/widgets/block_user_dialog.dart (title).
+  /// Product copy used by lib/contexts/safety/parts/block_user_dialog.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Block {name}?'**
   String coreBlockUserDialogTitleBlockName({required Object name});
 
-  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (tooltip).
+  /// Product copy used by lib/platform/l10n/catch_ui_copy.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Clear {value1}'**
   String coreCatchFieldTooltipClearValue1({required Object value1});
 
-  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
+  /// Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{label}, optional'**
@@ -7217,19 +7217,19 @@ abstract class AppLocalizations {
   /// **'Dismiss'**
   String get coreCatchNoticeTooltipDismiss;
 
-  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (avatar count).
+  /// Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (avatar count).
   ///
   /// In en, this message translates to:
   /// **'+{count}'**
   String coreCatchPersonAvatarTextCount({required Object count});
 
-  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).
+  /// Product copy resolved by lib/platform/l10n/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{label} unread chats'**
   String coreCatchPersonRowLabelLabelUnreadChats({required Object label});
 
-  /// Search-field tooltip supplied by the app copy adapter in lib/core/presentation/catch_ui_copy.dart.
+  /// Search-field tooltip supplied by the app copy adapter in lib/platform/l10n/catch_ui_copy.dart.
   ///
   /// In en, this message translates to:
   /// **'Clear {placeholder}'**
@@ -7249,7 +7249,7 @@ abstract class AppLocalizations {
   /// **'startup-loading-delay'**
   String get coreCatchStartupLoadingScreenBodyStartupLoadingDelay;
 
-  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart for the shared wizard step counter.
+  /// Product copy resolved by lib/platform/l10n/catch_ui_copy.dart for the shared wizard step counter.
   ///
   /// In en, this message translates to:
   /// **'STEP {clampedStep} OF {total}'**
@@ -7267,25 +7267,25 @@ abstract class AppLocalizations {
     required int total,
   });
 
-  /// Product copy resolved by lib/core/presentation/catch_ui_copy.dart for shared identity-header semantics.
+  /// Product copy resolved by lib/platform/l10n/catch_ui_copy.dart for shared identity-header semantics.
   ///
   /// In en, this message translates to:
   /// **'View {name} profile'**
   String coreCatchTopBarLabelViewNameProfile({required Object name});
 
-  /// Product copy used by lib/core/widgets/ordered_photo_picker.dart (label).
+  /// Product copy used by lib/platform/media/ordered_photo_picker.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Photo {value1}'**
   String coreOrderedPhotoPickerLabelPhotoValue1({required Object value1});
 
-  /// Product copy used by lib/core/widgets/ordered_photo_picker.dart (message).
+  /// Product copy used by lib/platform/media/ordered_photo_picker.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Photo {value1}'**
   String coreOrderedPhotoPickerMessagePhotoValue1({required Object value1});
 
-  /// Product copy used by lib/core/widgets/ordered_photo_picker.dart (message).
+  /// Product copy used by lib/platform/media/ordered_photo_picker.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Remove photo {value1}'**
@@ -10800,13 +10800,13 @@ abstract class AppLocalizations {
   /// **'Open'**
   String get hostTodayAttentionOpen;
 
-  /// Product copy used by lib/core/widgets/block_user_dialog.dart (message).
+  /// Product copy used by lib/contexts/safety/parts/block_user_dialog.dart (message).
   ///
   /// In en, this message translates to:
   /// **'You will stop seeing each other in chats, matches, Catches, and future event slots where the other person is already booked.'**
   String get coreBlockUserDialogMessageYouWillStopSeeing;
 
-  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).
+  /// Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'This screen hit a temporary app error. Please go back or try again in a moment.'**
@@ -11345,97 +11345,97 @@ abstract class AppLocalizations {
   /// **'Cancel booking'**
   String get eventsEventDetailScreenStateLabelCancelBooking;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Social run'**
   String get coreEventActivityVisualsLabelSocialRun;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Running'**
   String get coreEventActivityVisualsLabelRunning;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Walking'**
   String get coreEventActivityVisualsLabelWalking;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Pickleball'**
   String get coreEventActivityVisualsLabelPickleball;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Padel'**
   String get coreEventActivityVisualsLabelPadel;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Tennis'**
   String get coreEventActivityVisualsLabelTennis;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Badminton'**
   String get coreEventActivityVisualsLabelBadminton;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Cycling'**
   String get coreEventActivityVisualsLabelCycling;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Spin class'**
   String get coreEventActivityVisualsLabelSpinClass;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Yoga'**
   String get coreEventActivityVisualsLabelYoga;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Strength'**
   String get coreEventActivityVisualsLabelStrength;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Dinner'**
   String get coreEventActivityVisualsLabelDinner;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Pub quiz'**
   String get coreEventActivityVisualsLabelPubQuiz;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Bar crawl'**
   String get coreEventActivityVisualsLabelBarCrawl;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Singles mixer'**
   String get coreEventActivityVisualsLabelSinglesMixer;
 
-  /// Product copy used by lib/core/widgets/event_activity_visuals.dart (label).
+  /// Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Open format'**
@@ -13549,7 +13549,7 @@ abstract class AppLocalizations {
   /// **'matchTesterByPhone'**
   String get chatsSuvbotActionBarVisiblecopyMatchtesterbyphone;
 
-  /// Product copy used by lib/core/widgets/block_user_dialog.dart (visibleCopy).
+  /// Product copy used by lib/contexts/safety/parts/block_user_dialog.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Block'**
@@ -13588,7 +13588,7 @@ abstract class AppLocalizations {
     required Object countdownLabel,
   });
 
-  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).
+  /// Product copy used by lib/platform/l10n/catch_ui_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Select'**
@@ -13600,7 +13600,7 @@ abstract class AppLocalizations {
   /// **'One-time code'**
   String get coreCatchOtpCodeFieldSemanticLabel;
 
-  /// Search-field action copy supplied by the app copy adapter in lib/core/presentation/catch_ui_copy.dart.
+  /// Search-field action copy supplied by the app copy adapter in lib/platform/l10n/catch_ui_copy.dart.
   ///
   /// In en, this message translates to:
   /// **'Close search'**
@@ -16516,19 +16516,19 @@ abstract class AppLocalizations {
   /// **'Insights get sharper after more post-event profile views.'**
   String get userAnalyticsUserAnalyticsCopyBodyInsightsGetSharperAfter;
 
-  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
+  /// Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Private to you'**
   String get coreCatchPrivacyBadgeLabelPrivateToYou;
 
-  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
+  /// Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Host can see'**
   String get coreCatchPrivacyBadgeLabelHostCanSee;
 
-  /// Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).
+  /// Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Catch private'**
@@ -16818,265 +16818,265 @@ abstract class AppLocalizations {
   /// **'Evening'**
   String get dashboardDashboardFullViewModelVisiblecopyEvening;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Explore is still getting set up. Please try again in a moment.'**
   String get coreAppErrorMessageVisiblecopyExploreIsStillGetting;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Connection issue'**
   String get coreAppErrorMessageVisiblecopyConnectionIssue;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Sign in required'**
   String get coreAppErrorMessageVisiblecopySignInRequired;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Action unavailable'**
   String get coreAppErrorMessageVisiblecopyActionUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Check your details'**
   String get coreAppErrorMessageVisiblecopyCheckYourDetails;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Payment cancelled'**
   String get coreAppErrorMessageVisiblecopyPaymentCancelled;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Payment verification failed'**
   String get coreAppErrorMessageVisiblecopyPaymentVerificationFailed;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Payment failed'**
   String get coreAppErrorMessageVisiblecopyPaymentFailed;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Payment unavailable'**
   String get coreAppErrorMessageVisiblecopyPaymentUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Event signup unavailable'**
   String get coreAppErrorMessageVisiblecopyEventSignupUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Upload failed'**
   String get coreAppErrorMessageVisiblecopyUploadFailed;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Action failed'**
   String get coreAppErrorMessageVisiblecopyActionFailed;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Session verification failed'**
   String get coreAppErrorMessageVisiblecopySessionVerificationFailed;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Notifications unavailable'**
   String get coreAppErrorMessageVisiblecopyNotificationsUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Update check unavailable'**
   String get coreAppErrorMessageVisiblecopyUpdateCheckUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Sign in problem'**
   String get coreAppErrorMessageVisiblecopySignInProblem;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Dashboard unavailable'**
   String get coreAppErrorMessageVisiblecopyDashboardUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Explore unavailable'**
   String get coreAppErrorMessageVisiblecopyExploreUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Profile unavailable'**
   String get coreAppErrorMessageVisiblecopyProfileUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Event unavailable'**
   String get coreAppErrorMessageVisiblecopyEventUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Organizer unavailable'**
   String get coreAppErrorMessageVisiblecopyClubUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Messages unavailable'**
   String get coreAppErrorMessageVisiblecopyMessagesUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Catches unavailable'**
   String get coreAppErrorMessageVisiblecopyCatchesUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Payments unavailable'**
   String get coreAppErrorMessageVisiblecopyPaymentsUnavailable;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get coreAppErrorMessageVisiblecopySomethingWentWrong;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Sign in'**
   String get coreAppErrorMessageVisiblecopySignIn;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Try upload again'**
   String get coreAppErrorMessageVisiblecopyTryUploadAgain;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Try payment again'**
   String get coreAppErrorMessageVisiblecopyTryPaymentAgain;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Reload messages'**
   String get coreAppErrorMessageVisiblecopyReloadMessages;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Reload Explore'**
   String get coreAppErrorMessageVisiblecopyReloadExplore;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Reload profile'**
   String get coreAppErrorMessageVisiblecopyReloadProfile;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Reload event'**
   String get coreAppErrorMessageVisiblecopyReloadEvent;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Reload organizer'**
   String get coreAppErrorMessageVisiblecopyReloadClub;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Reload catches'**
   String get coreAppErrorMessageVisiblecopyReloadCatches;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Reload payments'**
   String get coreAppErrorMessageVisiblecopyReloadPayments;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Try again'**
   String get coreAppErrorMessageVisiblecopyTryAgain;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Profile not found'**
   String get coreAppErrorMessageVisiblecopyProfileNotFound;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Explore item not found'**
   String get coreAppErrorMessageVisiblecopyExploreItemNotFound;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Event not found'**
   String get coreAppErrorMessageVisiblecopyEventNotFound;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Organizer not found'**
   String get coreAppErrorMessageVisiblecopyClubNotFound;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Chat not found'**
   String get coreAppErrorMessageVisiblecopyChatNotFound;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Catches not found'**
   String get coreAppErrorMessageVisiblecopyCatchesNotFound;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Payment not found'**
   String get coreAppErrorMessageVisiblecopyPaymentNotFound;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Not found'**
@@ -17193,259 +17193,259 @@ abstract class AppLocalizations {
     required Object waitlistCount,
   });
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Something went wrong. Please try again.'**
   String get coreAppErrorMessageVisiblecopySomethingWentWrongPlease;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Unable to check the latest app configuration right now.'**
   String get coreAppErrorMessageVisiblecopyUnableToCheckThe;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Unable to verify this app session. Please try again.'**
   String get coreAppErrorMessageVisiblecopyUnableToVerifyThis;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Unable to update notification settings right now.'**
   String get coreAppErrorMessageVisiblecopyUnableToUpdateNotification;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Please sign in to continue.'**
   String get coreAppErrorMessageVisiblecopyPleaseSignInTo;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Payment was cancelled.'**
   String get coreAppErrorMessageVisiblecopyPaymentWasCancelled;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Payment failed. Please try again.'**
   String get coreAppErrorMessageVisiblecopyPaymentFailedPleaseTry;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Payment could not be verified. Please contact support.'**
   String get coreAppErrorMessageVisiblecopyPaymentCouldNotBe;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Paid bookings are only available on Android and iOS.'**
   String get coreAppErrorMessageVisiblecopyPaidBookingsAreOnly;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'We could not find what you requested.'**
   String get coreAppErrorMessageVisiblecopyWeCouldNotFind;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'That image is too large. Please choose a smaller image.'**
   String get coreAppErrorMessageVisiblecopyThatImageIsToo;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Please choose an image file.'**
   String get coreAppErrorMessageVisiblecopyPleaseChooseAnImage;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'That image could not be uploaded. Please choose another image.'**
   String get coreAppErrorMessageVisiblecopyThatImageCouldNot;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Please enter a valid phone number.'**
   String get coreAppErrorMessageVisiblecopyPleaseEnterAValid;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'That code is invalid. Please try again.'**
   String get coreAppErrorMessageVisiblecopyThatCodeIsInvalid;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'That code expired. Please request a new one.'**
   String get coreAppErrorMessageVisiblecopyThatCodeExpiredPlease;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'We are having trouble connecting. Please check your internet and try again.'**
   String get coreAppErrorMessageVisiblecopyWeAreHavingTrouble;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'The request timed out. Please try again.'**
   String get coreAppErrorMessageVisiblecopyTheRequestTimedOut;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Too many attempts. Please wait a bit and try again.'**
   String get coreAppErrorMessageVisiblecopyTooManyAttemptsPlease;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'You do not have permission to do that.'**
   String get coreAppErrorMessageVisiblecopyYouDoNotHave;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'This already exists.'**
   String get coreAppErrorMessageVisiblecopyThisAlreadyExists;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'The operation could not be completed. Please try again.'**
   String get coreAppErrorMessageVisiblecopyTheOperationCouldNot;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'This data is still getting set up. Please try again in a moment.'**
   String get coreAppErrorMessageVisiblecopyThisDataIsStill;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'This sign-in method is not enabled.'**
   String get coreAppErrorMessageVisiblecopyThisSignInMethod;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'This account has been disabled.'**
   String get coreAppErrorMessageVisiblecopyThisAccountHasBeen;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Unable to finish sign-in on this device. Please restart the app and request a new code.'**
   String get coreAppErrorMessageVisiblecopyUnableToFinishSign;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Verification was cancelled. Please try again when ready.'**
   String get coreAppErrorMessageVisiblecopyVerificationWasCancelledPlease;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Unable to complete the verification check. Please close the verification window and try again.'**
   String get coreAppErrorMessageVisiblecopyUnableToCompleteThe;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Please complete your basic profile details before continuing.'**
   String get coreAppErrorMessageVisiblecopyPleaseCompleteYourBasic;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Please choose your dating preferences before continuing.'**
   String get coreAppErrorMessageVisiblecopyPleaseChooseYourDating;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Please choose who you want to see before continuing.'**
   String get coreAppErrorMessageVisiblecopyPleaseChooseWhoYou;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Please add a valid phone number before continuing.'**
   String get coreAppErrorMessageVisiblecopyPleaseAddAValid;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Please verify your phone number before continuing.'**
   String get coreAppErrorMessageVisiblecopyPleaseVerifyYourPhone;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Please complete your access application.'**
   String get coreAppErrorMessageVisiblecopyPleaseCompleteYourAccess;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'This access application is already locked for review.'**
   String get coreAppErrorMessageVisiblecopyThisAccessApplicationIs;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Only an organizer manager can edit this organizer.'**
   String get coreAppErrorMessageVisiblecopyOnlyAClubHost;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Only the organizer owner can edit organizer details.'**
   String get coreAppErrorMessageVisiblecopyOnlyTheClubOwner;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Choose an organizer before creating the event.'**
   String get coreAppErrorMessageVisiblecopyChooseAClubBefore;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Add a meeting location before creating the event.'**
   String get coreAppErrorMessageVisiblecopyAddAMeetingLocation;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Profiles are taking too long to load. Please check your connection and try again.'**
   String get coreAppErrorMessageVisiblecopyProfilesAreTakingToo;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Profile changed while saving. Please try again.'**
   String get coreAppErrorMessageVisiblecopyProfileChangedWhileSaving;
 
-  /// Product copy used by lib/core/app_error_message.dart (visibleCopy).
+  /// Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Check the highlighted details and try again.'**
   String get coreAppErrorMessageVisiblecopyCheckTheHighlightedDetails;
 
-  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).
+  /// Product copy used by lib/platform/l10n/catch_ui_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Select {toLowerCase}'**
@@ -17453,7 +17453,7 @@ abstract class AppLocalizations {
     required Object toLowerCase,
   });
 
-  /// Canonical empty editable-row copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).
+  /// Canonical empty editable-row copy used by lib/platform/l10n/catch_ui_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Add {fieldLabel}'**
@@ -40883,6 +40883,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We can’t verify which messages belong to this program. Conversation history and replies are unavailable here.'**
   String get hostInboxProgramPurposeUnresolvedBody;
+
+  /// Payment page title with the server-quoted ticket amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay {amount}'**
+  String paymentMethodSheetTitle({required String amount});
+
+  /// Payment page: who receives the money under the organiser-routed checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment goes to the event’s organiser. Catch doesn’t hold your money.'**
+  String get paymentMethodSheetSeller;
+
+  /// Payment page: the frozen full-refund deadline for this booking.
+  ///
+  /// In en, this message translates to:
+  /// **'Full refund if you cancel by {deadline}.'**
+  String paymentMethodSheetRefundBy({required String deadline});
+
+  /// Payment page: heading for UPI app choices.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI'**
+  String get paymentMethodSheetUpiHeading;
+
+  /// Payment page: pay with the Google Pay UPI app.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Pay'**
+  String get paymentMethodGooglePay;
+
+  /// Payment page: pay with the PhonePe UPI app.
+  ///
+  /// In en, this message translates to:
+  /// **'PhonePe'**
+  String get paymentMethodPhonePe;
+
+  /// Payment page: pay with the Paytm UPI app.
+  ///
+  /// In en, this message translates to:
+  /// **'Paytm'**
+  String get paymentMethodPaytm;
+
+  /// Payment page: pay with any other UPI app, UPI ID or QR.
+  ///
+  /// In en, this message translates to:
+  /// **'Other UPI app or UPI ID'**
+  String get paymentMethodOtherUpi;
+
+  /// Payment page: heading for card and net banking.
+  ///
+  /// In en, this message translates to:
+  /// **'Other ways to pay'**
+  String get paymentMethodSheetOtherHeading;
+
+  /// Payment page: pay by card on Razorpay's secure form.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit or debit card'**
+  String get paymentMethodCard;
+
+  /// Payment page: pay through the guest's bank.
+  ///
+  /// In en, this message translates to:
+  /// **'Net banking'**
+  String get paymentMethodNetbanking;
+
+  /// Payment page footer: Razorpay processes payments; card details never touch Catch.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments are processed securely by Razorpay. Card details are entered on Razorpay’s form, never in Catch.'**
+  String get paymentMethodSheetSecureNote;
 
   /// Payouts screen: title explaining that guest payments go to the organiser's own Razorpay account.
   ///

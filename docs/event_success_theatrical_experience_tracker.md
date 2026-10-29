@@ -325,7 +325,7 @@ Status: deferred pending manual review of native haptics/system sounds.
 - First Hello now has server-owned mission assignment/completion. Remaining
   risk is physical venue QA: GPS drift, no compatible checked-in target early in
   the event, camera permission copy, and whether 100m is too tight in practice.
-- Existing unrelated dirty files are Firebase config and `lib/exceptions/error_logger.dart`;
+- Existing unrelated dirty files are Firebase config and `lib/platform/errors/error_logger.dart`;
   do not revert or include them in this tracker.
 - Phases 1B, 2, 3, and 3B are ready for visual/product review after focused
   gates pass.

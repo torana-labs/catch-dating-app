@@ -10,7 +10,7 @@ import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/events/data/event_runtime_claim_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_runtime_claim_request.dart';
-import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/platform/device/connectivity_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_operational_roster_controller.g.dart';

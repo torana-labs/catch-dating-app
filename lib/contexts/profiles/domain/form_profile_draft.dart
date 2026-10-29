@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
+import 'package:catch_dating_app/kernel/city_catalog.dart';
+import 'package:catch_dating_app/kernel/labelled.dart';
 
 /// Editable review values, isolated from the immutable source submission.
 class FormProfileDraft {

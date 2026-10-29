@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:catch_dating_app/app_bootstrap.dart';
 import 'package:catch_dating_app/consumer_bootstrap.dart';
-import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

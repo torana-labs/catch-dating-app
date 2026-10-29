@@ -444,7 +444,7 @@ Paths in this table are existing inspected sources, not proposed filenames.
 | Existing source | What it supplies | Boundary/gap for weddings |
 |---|---|---|
 | `lib/host_app.dart`, `lib/routing/go_router.dart` (`appRedirect`) | Separate Host app/router; authenticated Host users bypass Consumer profile completion | Host authentication currently does not select a duty-specific workspace; add a staff-access bootstrap rather than another Consumer role |
-| `lib/core/presentation/host_app_shell.dart` | Five manager destinations, organizer selection, adaptive shell | Fixed branch indices and unconditional manager-shell providers; hiding labels alone would still mount unrelated providers |
+| `lib/routing/shell/host_app_shell.dart` | Five manager destinations, organizer selection, adaptive shell | Fixed branch indices and unconditional manager-shell providers; hiding labels alone would still mount unrelated providers |
 | `contracts/firestore/organizer_team_memberships.schema.json`, `functions/src/shared/organizerHosts.ts` | Organizer owner/manager authority | Broad business authority, unsuitable for airport or hotel staff |
 | `contracts/firestore/event_staff_grants.schema.json`, `functions/src/shared/eventOperatorAuthority.ts`, `functions/src/events/eventStaff.ts` | UID-bound, revocable, revisioned, expiring event grants; transaction-aware checks | Existing grant API gives the operator bundle, not airport/hotel-scoped authority; requires an existing Auth account; max 50 active staff and 14-day grants |
 | `lib/hosts/presentation/host_event_operator_screen.dart`, `lib/contexts/organizers/data/host_event_staff_repository.dart` | Restricted `/host/operator/:eventId` route and typed callable repository | Useful shell/access pattern, not a safe airport/hotel read model |
@@ -457,7 +457,7 @@ Paths in this table are existing inspected sources, not proposed filenames.
 | `lib/contexts/bookings/data/host_attendance_outbox.dart` | Account-keyed local queue, absolute mutation, revision and conflict-review pattern | SharedPreferences implementation trims old/overflow entries and clears malformed data. Do not reuse that storage policy for financially significant dispatch records |
 | `functions/src/eventSuccess/operations/departureRosterSource.ts` | Explicit departed-member selection, source hashes, transaction fencing | Requires checked-in event attendees and group participation. It is not airport transport; do not extend it with plate, hotel or vendor fields |
 | `functions/src/places/googlePlaces.ts`, `lib/locations`, `docs/location_stack_plan.md` | Server-side Places adapter, coordinates, Maps rendering and attribution | No flight API or Google Routes ETA adapter found in the inspected runtime sources |
-| `packages/catch_ui`, `packages/catch_tokens`, `lib/core/riverpod_ui` | Provider-free primitives, adaptive composition, field/section patterns and async boundaries | Build logistics components from these; don't fork the visual system |
+| `packages/catch_ui`, `packages/catch_tokens`, `lib/platform/riverpod_ui` | Provider-free primitives, adaptive composition, field/section patterns and async boundaries | Build logistics components from these; don't fork the visual system |
 
 An authored capability label is not sufficient proof of behavior. In particular,
 existing docs describe broader Forms staff capabilities than the manager-only

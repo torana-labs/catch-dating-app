@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -57,7 +57,7 @@ test("flags a shell that bypasses the shared adaptive scaffold", () => {
     result.findings.some(
       (finding) =>
         finding.code === "missing-required-text" &&
-        finding.path === "lib/core/presentation/app_shell.dart" &&
+        finding.path === "lib/routing/shell/app_shell.dart" &&
         finding.message.includes("AdaptiveTabScaffold"),
     ),
   );
@@ -108,14 +108,14 @@ test("Host shell requires both aligned headers and the adaptive scaffold", () =>
   const production = JSON.parse(fs.readFileSync(new URL(
     "./root_screen_composition_contracts.json", import.meta.url), "utf8"));
   const shell = production.shells.find((entry) =>
-    entry.path === "lib/core/presentation/host_app_shell.dart");
+    entry.path === "lib/routing/shell/host_app_shell.dart");
   const root = fixtureRoot({ownerSource: ""});
   const manifestPath = path.join(root, "tool/design/root_screen_composition_contracts.json");
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   manifest.shells = [shell];
   fs.writeFileSync(manifestPath, JSON.stringify(manifest));
   const source = fs.readFileSync(new URL(
-    "../../lib/core/presentation/host_app_shell.dart", import.meta.url), "utf8");
+    "../../lib/routing/shell/host_app_shell.dart", import.meta.url), "utf8");
   write(root, shell.path, source);
   assert.deepEqual(checkRootScreenCompositionContracts({root}).findings, []);
   for (const marker of ["return CatchWorkspaceHeaderLayout(", "child: AdaptiveTabScaffold("]) {
@@ -166,7 +166,7 @@ function fixtureRoot({
       ${extraRouterSource}
     `,
   );
-  write(root, "lib/core/presentation/app_shell.dart", shellSource);
+  write(root, "lib/routing/shell/app_shell.dart", shellSource);
   write(root, "lib/home/home_screen.dart", ownerSource);
   if (stateSource != null) {
     write(root, "lib/example/presentation/example_screen.dart", stateSource);
@@ -180,7 +180,7 @@ function fixtureRoot({
       routerPath: "lib/routing/go_router.dart",
       shells: [
         {
-          path: "lib/core/presentation/app_shell.dart",
+          path: "lib/routing/shell/app_shell.dart",
           requires: [{text: "AdaptiveTabScaffold", minimumOccurrences: 1}],
         },
       ],

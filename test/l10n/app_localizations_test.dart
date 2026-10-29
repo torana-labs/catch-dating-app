@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_dating_app/routing/shell/app_shell.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

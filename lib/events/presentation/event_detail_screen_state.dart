@@ -10,11 +10,11 @@ import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart'
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
+import 'package:catch_dating_app/kernel/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
 
 bool eventDetailHasBookingReadyProfile(
   UserProfile? userProfile, {

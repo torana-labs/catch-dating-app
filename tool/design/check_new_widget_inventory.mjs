@@ -116,7 +116,7 @@ const report = {
     widgetbook: "widgetbook/lib/main.directories.g.dart",
     registry: "design/components/catch.components.json",
     policy:
-      "New or moved public widget classes need Widgetbook coverage and feature UI requires canonical role names/file suffixes; design-system homes also require a canonical Catch* name, lib/core/widgets and design-system widgets require exact source identity in the component registry, and no new widget may reuse a registered component's name or alias. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public covered widgets. The catalog inventory is generated separately.",
+      "New or moved public widget classes need Widgetbook coverage and feature UI requires canonical role names/file suffixes; design-system homes also require a canonical Catch* name, app-coupled shared widgets and design-system widgets require exact source identity in the component registry, and no new widget may reuse a registered component's name or alias. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public covered widgets. The catalog inventory is generated separately.",
   },
   summary,
   movedWidgets,

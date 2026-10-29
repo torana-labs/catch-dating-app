@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 
 const _deepLinkHost = 'catchdates.com';

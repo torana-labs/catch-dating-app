@@ -25344,6 +25344,48 @@ class AppLocalizationsEn extends AppLocalizations {
       'We can’t verify which messages belong to this program. Conversation history and replies are unavailable here.';
 
   @override
+  String paymentMethodSheetTitle({required String amount}) {
+    return 'Pay $amount';
+  }
+
+  @override
+  String get paymentMethodSheetSeller =>
+      'Your payment goes to the event’s organiser. Catch doesn’t hold your money.';
+
+  @override
+  String paymentMethodSheetRefundBy({required String deadline}) {
+    return 'Full refund if you cancel by $deadline.';
+  }
+
+  @override
+  String get paymentMethodSheetUpiHeading => 'UPI';
+
+  @override
+  String get paymentMethodGooglePay => 'Google Pay';
+
+  @override
+  String get paymentMethodPhonePe => 'PhonePe';
+
+  @override
+  String get paymentMethodPaytm => 'Paytm';
+
+  @override
+  String get paymentMethodOtherUpi => 'Other UPI app or UPI ID';
+
+  @override
+  String get paymentMethodSheetOtherHeading => 'Other ways to pay';
+
+  @override
+  String get paymentMethodCard => 'Credit or debit card';
+
+  @override
+  String get paymentMethodNetbanking => 'Net banking';
+
+  @override
+  String get paymentMethodSheetSecureNote =>
+      'Payments are processed securely by Razorpay. Card details are entered on Razorpay’s form, never in Catch.';
+
+  @override
   String get hostPayoutsRazorpayIntroTitle => 'Guests pay you directly';
 
   @override

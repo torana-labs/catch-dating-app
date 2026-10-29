@@ -1,12 +1,9 @@
 /* eslint-disable max-len */
 import type {Firestore} from "firebase-admin/firestore";
 import {logger} from "firebase-functions";
-import type {CatchReceipt} from "../../catchMessaging/whatsappEndpointStops";
-import {isCatchStopReceipt} from "../../catchMessaging/whatsappEndpointStops";
-import {catchEndpointHash} from "../../catchMessaging/whatsappReply";
 import type {SupplyIntakeRequest} from "../../shared/generated/supplyIntakeRequest";
 import {checkRateLimit as defaultCheckRateLimit} from "../../shared/rateLimit";
-import {type NominatorAuthority, type NominatorDeps, resolveWhatsappNominator} from "./nominators";
+import type {NominatorAuthority, NominatorDeps} from "./nominators";
 import {createSupplyIntakeRequest, intakeMarket, supplyIntakeRequestId} from "./requests";
 import {packagedMessageParser, type ParsedNominationMessage} from "./runtime";
 
@@ -14,11 +11,10 @@ import {packagedMessageParser, type ParsedNominationMessage} from "./runtime";
 // Instagram profile shared from the app, a Luma link, a website. Each line
 // with links becomes one nomination, credited to the nominator's account,
 // and goes through the same Supply Intake request every other front door
-// uses. Messages from anyone else are left alone for the support inbox.
+// uses. The inbound router (catchMessaging/inboundRouter.ts) decides which
+// messages are nominations; this module only turns them into requests.
 
 export const MESSAGE_NOMINATIONS_PER_HOUR = 60;
-
-export type MessageNominationOutcome = "queued" | "not_nominator" | "no_links" | "rate_limited" | "ignored";
 
 export interface MessageNominationDeps extends Pick<NominatorDeps, "getUser"> {
   db: Firestore;
@@ -61,33 +57,27 @@ function marketFromNotes(notes: string | null): string | null {
 }
 
 /**
- * Routes one stored WhatsApp receipt. Only complete inbound text from a
- * registered, currently authorized nominator becomes nominations; STOP and
- * everything else is ignored here.
+ * Queues the nominations one message holds, credited to its nominator, once
+ * the inbound router has decided the message is a nomination. Request ids
+ * come from the message, so a redelivery adds nothing.
  */
-export async function processWhatsappNomination(deps: MessageNominationDeps,
-  receipt: CatchReceipt): Promise<MessageNominationOutcome> {
-  if (receipt.eventKind !== "inbound" || receipt.messageType !== "text" || receipt.textTruncated ||
-      typeof receipt.text !== "string" || !receipt.text.trim() ||
-      !/^[1-9][0-9]{6,14}$/u.test(receipt.participantId) || isCatchStopReceipt(receipt)) {
-    return "ignored";
-  }
-  const now = deps.now();
-  const endpointHash = catchEndpointHash("+" + receipt.participantId);
-  const nominator = await deps.db.runTransaction((tx) =>
-    resolveWhatsappNominator(tx, deps.db, deps, endpointHash, now));
-  if (!nominator) return "not_nominator";
-  const parsed = await deps.parse(receipt.text);
-  if (parsed.nominations.length === 0) return "no_links";
+export async function queueMessageNominations(deps: MessageNominationDeps, {messageKey, receivedAtMillis,
+  nominator, parsed}: {
+  messageKey: string;
+  receivedAtMillis: number;
+  nominator: NominatorAuthority;
+  parsed: ParsedNominationMessage;
+}): Promise<{outcome: "queued" | "rate_limited"; requests: SupplyIntakeRequest[]}> {
   try {
     await deps.checkRateLimit(deps.db, nominator.nominatorId, "messageNomination",
       {maxRequests: MESSAGE_NOMINATIONS_PER_HOUR, windowMs: 60 * 60 * 1000});
   } catch (error) {
-    if ((error as {code?: unknown})?.code === "resource-exhausted") return "rate_limited";
+    if ((error as {code?: unknown})?.code === "resource-exhausted") return {outcome: "rate_limited", requests: []};
     throw error;
   }
-  const requests = requestsFromNominationMessage({messageKey: receipt.eventId, parsed, nominator,
-    receivedAt: new Date(receipt.receivedAtMillis)});
+  const now = deps.now();
+  const requests = requestsFromNominationMessage({messageKey, parsed, nominator,
+    receivedAt: new Date(receivedAtMillis)});
   // One transaction per request: each reads its id before creating it, and
   // ids are stable, so a retry after a partial failure only adds the rest.
   for (const request of requests) {
@@ -95,7 +85,7 @@ export async function processWhatsappNomination(deps: MessageNominationDeps,
   }
   logger.info("Message nomination queued.", {nominatorId: nominator.nominatorId, requests: requests.length,
     droppedNominations: parsed.droppedNominations, unreadable: parsed.unreadable.length});
-  return "queued";
+  return {outcome: "queued", requests};
 }
 
 export function defaultMessageNominationDeps(db: Firestore, getUser: NominatorDeps["getUser"]): MessageNominationDeps {

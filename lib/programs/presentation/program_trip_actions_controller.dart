@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_trip_export.dart';
-import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/platform/device/external_share.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_trip_actions_controller.g.dart';

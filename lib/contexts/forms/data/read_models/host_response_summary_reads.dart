@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
+import 'package:catch_dating_app/platform/firebase/host_summary_reader.dart';
 
 /// Ordinary inbox pages contain metadata only. Answer filters and detail reads
 /// retain their source-authorized callable path.

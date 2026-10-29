@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
-import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

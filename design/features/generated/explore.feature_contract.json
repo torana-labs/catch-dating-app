@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-10-20",
   "sourceDigest": "sha256:227f9921f4d38f01cdb2fca32644780de58e3a9752b6b17858edc3928209e578",
-  "resolvedDigest": "sha256:dc654e41acb4ec75d217475a0c01d971985ce06a7414a2c90eed986197494524",
+  "resolvedDigest": "sha256:3a87e6490a80328c4963d2a9adbe6bc443bd8a93d642cee62e9d3ad16311b3ba",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1794,7 +1794,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "EventCard",
-              "file": "lib/core/widgets/event_card.dart",
+              "file": "lib/contexts/events/parts/event_card.dart",
               "constructors": [
                 "EventCard"
               ]

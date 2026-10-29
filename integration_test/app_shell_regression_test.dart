@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
+import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:flutter_test/flutter_test.dart';
 

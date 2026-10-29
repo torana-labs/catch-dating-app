@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/contexts/events/data/event_live_position_service.dart';
@@ -6,7 +5,6 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
@@ -20,7 +18,9 @@ import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_se
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_participants_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_section.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

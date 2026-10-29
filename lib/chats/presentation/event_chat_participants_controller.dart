@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.d
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_participant.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_timing.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_chat_participants_controller.g.dart';

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 

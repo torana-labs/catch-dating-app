@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/discovery/domain/saved_event.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/data/read_limit_policy.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
+import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part '../../events/data/saved_event_repository.g.dart';
+part 'saved_event_repository.g.dart';
 
 class SavedEventRepository {
   const SavedEventRepository(this._db);

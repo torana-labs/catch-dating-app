@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliveries_page.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/list_event_assistance_deliveries_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/repair_event_assistance_delivery_callable_request.g.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

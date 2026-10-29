@@ -1,8 +1,9 @@
-import 'package:catch_dating_app/core/app_error_message.dart'
-    hide appErrorDescriptor;
-import 'package:catch_dating_app/core/app_error_message.dart' as error_copy;
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
+import 'package:catch_dating_app/platform/errors/app_error_message.dart'
+    hide appErrorDescriptor;
+import 'package:catch_dating_app/platform/errors/app_error_message.dart'
+    as error_copy;
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/contexts/live/data/event_attendance_report_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_attendance_report.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_dating_app/event_success/presentation/event_attendance_disposition_provider.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_attendance_report_provider.g.dart';

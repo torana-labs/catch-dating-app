@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_send_intent_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart';

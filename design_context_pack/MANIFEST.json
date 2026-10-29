@@ -5,23 +5,23 @@
   "files": [
     {
       "path": "README.txt",
-      "sha256": "d7274179845f7aab8d1850c069056392460583b8bf46c1fbcd0a5989c7d0ad23",
-      "bytes": 1169
+      "sha256": "34269bd0470e7910a2cdc0c1ad1e49a8385566d4fc223e500d8b6ada4aff9efc",
+      "bytes": 1173
     },
     {
       "path": "design_system/activity_palette.json",
-      "sha256": "128bcd762c701dbeb24862b3360d54c6f6f5a8c892f38bdd0f969bd909729653",
-      "bytes": 4368
+      "sha256": "1ce1b80d68f69a7e1ef27df6fae7030b93c62b79e1a1c85497eb96e510146dff",
+      "bytes": 4372
     },
     {
       "path": "design_system/claude_design_handoff_request.json",
-      "sha256": "cf8c9d8e1d1452bbd9e1cad6f5af6c36dffac33ed6f2cf228569b305e414fee0",
+      "sha256": "d3bf558da200c0410f5d50cf5c125223108eaaee489211c4708db6a794f18743",
       "bytes": 5472
     },
     {
       "path": "design_system/components.json",
-      "sha256": "f9fb48cd1e31264cbfe18276a36a3485e82a52d9fa8d9b6061e2b51ffca25c4c",
-      "bytes": 697851
+      "sha256": "a3df1ddad4fcea71c40e5d905f30b4f47209e8dde6ed04f7fa69ed13e9352848",
+      "bytes": 697935
     },
     {
       "path": "design_system/design_language.txt",

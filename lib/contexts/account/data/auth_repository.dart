@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

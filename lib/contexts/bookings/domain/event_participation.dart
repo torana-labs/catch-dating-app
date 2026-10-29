@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_participation.freezed.dart';

@@ -12,7 +12,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_membership_receivers.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff_change.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter/services.dart';
 
 /// Reads the same backend-produced synthetic fixture used by native parity tests.

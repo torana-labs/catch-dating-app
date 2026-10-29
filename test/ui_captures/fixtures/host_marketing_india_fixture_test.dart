@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
-import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_restore_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/city_catalog.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'sales_demo_synthetic_fixtures.dart';

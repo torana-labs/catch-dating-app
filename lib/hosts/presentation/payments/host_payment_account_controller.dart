@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
-import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/device/external_links.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

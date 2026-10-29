@@ -77,7 +77,7 @@ test("ordinary app logic does not invoke snapshot or handoff export checks", () 
 test("Flutter handoff selection uses real inputs and retains conservative control/full runs", () => {
   assert.deepEqual(selectedHandoffChecks(manifest, ["lib/events/presentation/widgets/event_detail_dock.dart"]), []);
   const context = "node tool/design/build_context_pack.mjs --check";
-  for (const file of ["lib/core/theme/app_theme.dart", "assets/fonts/Fixture.ttf", "packages/catch_tokens/lib/token.dart",
+  for (const file of ["lib/platform/theme/app_theme.dart", "assets/fonts/Fixture.ttf", "packages/catch_tokens/lib/token.dart",
     "test/ui_captures/catalog/screen_capture_catalog.dart", "test/ui_captures/support/capture_device.dart", "pubspec.lock"]) {
     assert.ok(selectedHandoffChecks(manifest, [file]).includes(context), file);
   }

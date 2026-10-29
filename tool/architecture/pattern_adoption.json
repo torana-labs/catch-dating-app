@@ -502,7 +502,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/core/riverpod_ui/catch_async_value_adapter.dart",
+          "path": "lib/platform/riverpod_ui/catch_async_value_adapter.dart",
           "role": "route-edge Riverpod translation into provider-free CatchAsyncState with known-error, credible-data, then loading precedence",
           "status": "aligned"
         },
@@ -572,7 +572,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/core/presentation/catch_async_state.dart",
+          "path": "lib/platform/catch_async_state.dart",
           "role": "provider-free async snapshot primitive used by route-edge Riverpod adapters before display-state builders consume loading/data/error branches",
           "providerFree": true,
           "status": "aligned"
@@ -1274,8 +1274,8 @@
         "lib/l10n/app_en.arb",
         "lib/l10n/l10n.dart",
         "lib/app.dart",
-        "lib/core/presentation/app_shell.dart",
-        "lib/core/riverpod_ui/catch_notice_overlay.dart",
+        "lib/routing/shell/app_shell.dart",
+        "lib/platform/riverpod_ui/catch_notice_overlay.dart",
         "copy/native_en.json",
         "copy/notifications_en.json",
         "copy/event_success_questionnaires_en.json",
@@ -1287,17 +1287,17 @@
       ],
       "adopters": [
         {
-          "path": "lib/core/presentation/app_shell.dart",
+          "path": "lib/routing/shell/app_shell.dart",
           "role": "consumer semantic navigation destination localization",
           "status": "aligned"
         },
         {
-          "path": "lib/core/presentation/host_app_shell.dart",
+          "path": "lib/routing/shell/host_app_shell.dart",
           "role": "host semantic navigation destination localization",
           "status": "aligned"
         },
         {
-          "path": "lib/core/riverpod_ui/catch_notice_overlay.dart",
+          "path": "lib/platform/riverpod_ui/catch_notice_overlay.dart",
           "role": "shared semantic notice localization seam",
           "status": "aligned"
         },
@@ -1337,12 +1337,12 @@
           "status": "aligned"
         },
         {
-          "path": "lib/core/widgets/event_activity_visuals.dart",
+          "path": "lib/contexts/events/parts/event_activity_visuals.dart",
           "role": "shared semantic activity label localization at render boundary",
           "status": "aligned"
         },
         {
-          "path": "lib/core/app_error_message.dart",
+          "path": "lib/platform/errors/app_error_message.dart",
           "role": "shared semantic exception-code localization at widget build time",
           "status": "aligned"
         },
@@ -1409,10 +1409,10 @@
       "status": "reference",
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-shell-scroll-001-adaptive-root-screen-scroll-clearance",
       "prototypeFiles": [
-        "lib/core/presentation/app_shell.dart",
-        "lib/core/presentation/host_app_shell.dart",
-        "lib/core/presentation/adaptive_tab_scaffold.dart",
-        "lib/core/presentation/app_shell_active_tab.dart",
+        "lib/routing/shell/app_shell.dart",
+        "lib/routing/shell/host_app_shell.dart",
+        "lib/routing/shell/adaptive_tab_scaffold.dart",
+        "lib/routing/shell/app_shell_active_tab.dart",
         "packages/catch_ui/lib/src/patterns/catch_tab_viewport_scope.dart",
         "packages/catch_ui/lib/src/patterns/catch_scaffold.dart",
         "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart",
@@ -1429,12 +1429,12 @@
       ],
       "adopters": [
         {
-          "path": "lib/core/presentation/app_shell.dart",
+          "path": "lib/routing/shell/app_shell.dart",
           "role": "shared destination adapter owns localized labels, selected icons, unread badges, semantics, haptics, and bottom, rail, or sidebar rendering while the consumer shell continues to request bottom navigation",
           "status": "aligned"
         },
         {
-          "path": "lib/core/presentation/host_app_shell.dart",
+          "path": "lib/routing/shell/host_app_shell.dart",
           "role": "Host shell supplies one destination set to compact bottom, medium rail, and expanded sidebar variants without moving feature state or route behavior into shell chrome",
           "status": "aligned"
         },
@@ -1792,8 +1792,8 @@
       "status": "reference",
       "architectureExhibit": "docs/app_architecture.md#exhibit-arch-data-cursor-001-bounded-cursor-read-window",
       "prototypeFiles": [
-        "lib/core/data/cursor_page.dart",
-        "lib/core/data/read_limit_policy.dart",
+        "lib/platform/firebase/cursor_page.dart",
+        "lib/platform/firebase/read_limit_policy.dart",
         "lib/explore/presentation/explore_discovery_window_controller.dart",
         "test/core/cursor_page_test.dart",
         "test/explore/explore_discovery_window_controller_test.dart"

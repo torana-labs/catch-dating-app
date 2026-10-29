@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
@@ -19,14 +18,15 @@ import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart'
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
-import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/data/cursor_page.dart';
-import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/explore.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/city_catalog.dart';
+import 'package:catch_dating_app/kernel/city_data.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/platform/device/device_location.dart';
+import 'package:catch_dating_app/platform/firebase/cursor_page.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

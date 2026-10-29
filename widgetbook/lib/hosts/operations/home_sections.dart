@@ -1,6 +1,4 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/core/connectivity_service.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher_sheet.dart';
@@ -8,6 +6,8 @@ import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_contro
 import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_overview.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
+import 'package:catch_dating_app/platform/device/connectivity_service.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/time_zone_calendar.dart';
+import 'package:catch_dating_app/platform/time/time_zone_calendar.dart';
 
 enum ProgramTimezoneSource { organizer, city, device, manual }
 

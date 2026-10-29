@@ -4,7 +4,7 @@ import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/platform/device/external_share.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatThreadActionController {

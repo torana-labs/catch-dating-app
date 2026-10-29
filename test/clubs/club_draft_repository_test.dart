@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/organizers/data/club_draft_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club_draft.dart';
-import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

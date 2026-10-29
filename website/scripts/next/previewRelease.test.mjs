@@ -37,6 +37,11 @@ test("preview requires current-main successful push CI from this repository", ()
     assert.throws(() => assertSuccessfulSource({...input, run: {...queued, head_branch}}), /merge queue run/u);
   }
   assert.throws(() => assertSuccessfulSource({...input, run: {...queued, conclusion: "cancelled"}}));
+  // So is the full run the release train dispatches, or the nightly one, of main itself.
+  for (const event of ["workflow_dispatch", "schedule"]) {
+    assert.doesNotThrow(() => assertSuccessfulSource({...input, run: {...run, event}}), event);
+    assert.throws(() => assertSuccessfulSource({...input, run: {...run, event, head_branch: "feature"}}), /main's own CI/u);
+  }
 });
 test("a release may trail main but never be off main or older than live", () => {
   const run = {head_sha: sourceSha, head_branch: "main", event: "push", path: ".github/workflows/ci.yml", repository: {full_name: repository},

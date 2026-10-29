@@ -4,6 +4,7 @@
 #
 #   bundle exec fastlane ios beta role:consumer        # build, verify, TestFlight
 #   bundle exec fastlane android beta role:host        # build, verify, Play internal
+#   bundle exec fastlane android beta role:consumer upload:false  # build and verify only
 #   bundle exec fastlane ios release role:host build:N # submit a tested build for review
 #   bundle exec fastlane android release role:host version_code:N rollout:0.1
 #
@@ -155,6 +156,10 @@ platform :ios do
         archive_path: archive_path,
         output_directory: output_directory,
         export_options: File.join(project, "ios/ExportOptions.prod.plist"),
+        # The plist says app-store-connect, Xcode's current name, which fastlane
+        # 2.241 rejects. Its older name, app-store, overrides it and Xcode still
+        # accepts it.
+        export_method: "app-store",
         xcargs: auth,
         export_xcargs: auth,
         skip_profile_detection: true,
@@ -215,9 +220,12 @@ platform :ios do
 end
 
 platform :android do
-  desc "Build, verify and upload a prod bundle to the Play internal track"
+  desc "Build, verify and upload a prod bundle to the Play internal track (upload:false builds only)"
   lane :beta do |options|
     role = role_option(options)
+    # upload:false is for an app's first bundle, which Play only accepts by
+    # hand in Play Console; the workflow keeps the signed bundle as an artifact.
+    upload = options.fetch(:upload, true).to_s != "false"
     target = app_target(role)
     package_name = target["android.applicationId"]
     version = marketing_version(target)
@@ -238,12 +246,15 @@ platform :android do
     repo_sh("node", "tool/platform/check_mobile_package.mjs", "--artifact", aab, "--role", role,
             "--platform", "android", "--output", File.join(REPO_ROOT, "build/android/release-evidence/#{role}-package.json"))
 
-    upload_to_play_store(package_name: package_name, track: "internal", aab: aab, release_status: "completed",
-                         skip_upload_metadata: true, skip_upload_changelogs: true,
-                         skip_upload_images: true, skip_upload_screenshots: true)
-    summarize("Play internal upload (#{role})", [
+    if upload
+      upload_to_play_store(package_name: package_name, track: "internal", aab: aab, release_status: "completed",
+                           skip_upload_metadata: true, skip_upload_changelogs: true,
+                           skip_upload_images: true, skip_upload_screenshots: true)
+    end
+    summarize(upload ? "Play internal upload (#{role})" : "Play bundle, not uploaded (#{role})", [
       ["Package", package_name], ["Version (code)", "#{version} (#{version_code})"],
-      ["Commit", ENV.fetch("GITHUB_SHA", "local")], ["AAB SHA-256", sha256(aab)], ["Track", "internal"]
+      ["Commit", ENV.fetch("GITHUB_SHA", "local")], ["AAB SHA-256", sha256(aab)],
+      ["Track", upload ? "internal" : "none: upload by hand in Play Console"]
     ])
   end
 

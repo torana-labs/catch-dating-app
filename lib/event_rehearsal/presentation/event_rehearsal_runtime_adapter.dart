@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
@@ -19,6 +18,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dar
 import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
 /// A read-only projection of one rehearsal session into the canonical Event
 /// Success host runtime. Mutations remain owned by [EventRehearsalController].

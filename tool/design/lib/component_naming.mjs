@@ -22,7 +22,7 @@ const sharedHomes = new Map([
   ["packages/catch_ui/lib/src/primitives/", "L2"],
   ["packages/catch_ui/lib/src/components/", "L3"],
   ["packages/catch_ui/lib/src/patterns/", "L4"],
-  ["lib/core/riverpod_ui/", "L4a"],
+  ["lib/platform/riverpod_ui/", "L4a"],
 ]);
 
 export function sharedWidgetLevel(file) {
@@ -30,13 +30,23 @@ export function sharedWidgetLevel(file) {
 }
 
 /**
- * Feature UI is distinct from app bootstraps and the app-core adapter layer.
- * `lib/core/widgets` holds app-coupled shared widgets, not design-system
- * symbols, so it follows feature naming.
+ * App-coupled shared widgets: context parts, the shared media editor and the
+ * startup page. They bind app data and copy to catch_ui, are not
+ * design-system symbols, and took over from lib/core/widgets.
+ */
+export function isAppSharedWidgetSource(file) {
+  return /^lib\/contexts\/[^/]+\/parts\//u.test(file) ||
+    file.startsWith("lib/platform/media/") ||
+    file.startsWith("lib/pages/startup/");
+}
+
+/**
+ * Feature UI is distinct from app bootstraps and the platform and kernel
+ * layers. App-coupled shared widgets follow feature naming.
  */
 export function isFeatureWidgetSource(file) {
-  return /^lib\/(?!core\/|l10n\/|routing\/)[^/]+\//u.test(file) ||
-    file.startsWith("lib/core/widgets/") ||
+  return /^lib\/(?!core\/|kernel\/|platform\/|l10n\/|routing\/)[^/]+\//u.test(file) ||
+    isAppSharedWidgetSource(file) ||
     /^apps\/(?:consumer|host)\/lib\/[^/]+\//u.test(file);
 }
 
@@ -71,7 +81,7 @@ export function roleNounRedirectAdvice(name, redirects) {
 /** Homes where the reserved `Catch` prefix is legal outside the design-system packages. */
 export function reservedPrefixAllowed(file) {
   return file.startsWith("packages/catch_ui/") || file.startsWith("packages/catch_tokens/") ||
-    file.startsWith("lib/core/riverpod_ui/") ||
+    file.startsWith("lib/platform/riverpod_ui/") ||
     // App bootstrap files carry the product name, as the grammar exempts them.
     /^lib\/[^/]+\.dart$/u.test(file) || /^apps\/(?:consumer|host)\/lib\/[^/]+\.dart$/u.test(file);
 }

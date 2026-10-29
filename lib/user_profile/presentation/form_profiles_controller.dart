@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/profiles/data/form_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile_photo_preview.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

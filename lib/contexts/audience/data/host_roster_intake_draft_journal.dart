@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/platform/errors/app_error_context.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Remembers the server-owned intake draft for one signed-in manager and event.

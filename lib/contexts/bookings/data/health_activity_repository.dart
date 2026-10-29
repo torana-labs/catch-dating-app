@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/bookings/data/health_activity_client.dart';
 import 'package:catch_dating_app/contexts/bookings/data/health_activity_client_provider.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/weekly_activity_summary.dart';
-import 'package:catch_dating_app/core/app_error_context.dart';
-import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/platform/errors/app_error_context.dart';
+import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

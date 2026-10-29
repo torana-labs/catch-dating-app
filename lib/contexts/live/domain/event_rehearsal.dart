@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/contexts/formats/formats.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_accountability.dart';
@@ -11,6 +10,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.d
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_settings.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
 enum EventRehearsalScenario {
   smoothRun(12),

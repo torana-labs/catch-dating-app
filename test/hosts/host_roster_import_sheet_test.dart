@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

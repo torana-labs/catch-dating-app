@@ -6,11 +6,11 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_cont
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
-import 'package:catch_dating_app/core/data/read_limit_policy.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

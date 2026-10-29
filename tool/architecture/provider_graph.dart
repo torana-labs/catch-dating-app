@@ -1472,7 +1472,9 @@ List<ArchitectureCandidate> _ownershipCandidates(List<_ScannedFile> files) {
       }
     }
   }
-  for (final file in files.where((f) => _featureFor(f.path) != 'core')) {
+  for (final file in files.where(
+    (f) => !_isPlatformFeature(_featureFor(f.path)),
+  )) {
     final facts = _OwnershipFacts();
     file.unit.accept(facts);
     for (final variable in facts.variables) {
@@ -1556,7 +1558,8 @@ List<ArchitectureCandidate> _architectureCandidates(
     );
   }
   for (final provider in providers.where(
-    (provider) => provider.kind == 'manual' && provider.feature != 'core',
+    (provider) =>
+        provider.kind == 'manual' && !_isPlatformFeature(provider.feature),
   )) {
     candidates.add(
       ArchitectureCandidate(
@@ -1591,8 +1594,8 @@ List<ArchitectureCandidate> _architectureCandidates(
     final source = byName[edge.source];
     final target = byName[edge.target];
     if (source == null || target == null) continue;
-    if (source.feature == 'core' &&
-        target.feature != 'core' &&
+    if (_isPlatformFeature(source.feature) &&
+        !_isPlatformFeature(target.feature) &&
         target.layer == 'data') {
       candidates.add(
         ArchitectureCandidate(
@@ -1869,6 +1872,11 @@ bool _isKeepAlive(List<Annotation> metadata) => metadata.any(
       annotation.name.name == 'Riverpod' &&
       (annotation.arguments?.toSource().contains('keepAlive: true') ?? false),
 );
+
+// lib/platform/ holds the framework seams lib/core/ held; both may declare
+// providers by hand and must not depend on feature data.
+bool _isPlatformFeature(String feature) =>
+    feature == 'core' || feature == 'platform';
 
 String _featureFor(String relativePath) {
   final parts = relativePath.split('/');

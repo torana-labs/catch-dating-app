@@ -73,5 +73,10 @@
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "4.65.0"
+  },
+  "overrides": {
+    "@firebase/firestore": {
+      "@grpc/grpc-js": "^1.14.5"
+    }
   }
 }

@@ -14,11 +14,6 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dar
 import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
-import 'package:catch_dating_app/core/app_error_context.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/data/read_limit_policy.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         CompleteEventSuccessFirstHelloMissionCallableRequest,
@@ -38,8 +33,13 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         StartEventSuccessFirstHelloMissionCallableRequest,
         SubmitEventSuccessWingmanRequestCallableRequest,
         UpsertEventSuccessLayoutCallableRequest;
-import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/platform/errors/app_error_context.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
+import 'package:catch_dating_app/platform/errors/error_logger.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
+import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

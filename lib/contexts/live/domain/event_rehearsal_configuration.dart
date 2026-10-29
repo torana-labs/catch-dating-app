@@ -1,11 +1,11 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/contexts/formats/formats.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/organizers/organizers.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
 /// Editable practice configuration. Source objects are immutable; changing this
 /// value never edits the organizer, event, plan, or production roster.

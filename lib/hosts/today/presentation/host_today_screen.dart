@@ -8,9 +8,6 @@ import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.da
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
 import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_start_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_flow.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
@@ -23,6 +20,9 @@ import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart'
 import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/errors/app_error_message.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

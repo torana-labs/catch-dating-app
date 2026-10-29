@@ -8,13 +8,13 @@ import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_h
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement_command.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_departure_history_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_sheet.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

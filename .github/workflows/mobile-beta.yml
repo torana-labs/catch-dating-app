@@ -21,6 +21,13 @@ on:
         type: choice
         options: [both, ios, android]
         default: both
+      android_upload:
+        description: >-
+          Upload Android bundles to Play. Off builds and verifies only and keeps
+          the signed bundle as an artifact, for an app's first upload, which
+          Play Console accepts only by hand.
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -43,6 +50,7 @@ jobs:
     outputs:
       roles: ${{ steps.plan.outputs.roles }}
       android_roles: ${{ steps.plan.outputs.android_roles }}
+      android_upload: ${{ steps.plan.outputs.android_upload }}
       ios: ${{ steps.plan.outputs.ios }}
       android: ${{ steps.plan.outputs.android }}
     steps:
@@ -54,6 +62,7 @@ jobs:
         env:
           APP: ${{ inputs.app || 'both' }}
           PLATFORM: ${{ inputs.platform || 'both' }}
+          ANDROID_UPLOAD: ${{ github.event_name != 'workflow_dispatch' || inputs.android_upload }}
           EVENT_NAME: ${{ github.event_name }}
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -76,7 +85,11 @@ jobs:
           fi
           android_roles="$(jq -c --arg play "$PLAY_ROLES" \
             '[.[] | select(. as $role | ($play | split(" ")) | index($role))]' <<<"$roles")"
-          if [[ "$android" == true && "$android_roles" == "[]" ]]; then
+          if [[ "$ANDROID_UPLOAD" != true ]]; then
+            # A build-only bundle needs no Play record.
+            android_roles="$roles"
+            echo "Android builds and verifies only; nothing is uploaded to Play." >> "$GITHUB_STEP_SUMMARY"
+          elif [[ "$android" == true && "$android_roles" == "[]" ]]; then
             echo "No requested app has a Google Play record yet; skipping Android." >> "$GITHUB_STEP_SUMMARY"
             android=false
           elif [[ "$android" == true && "$android_roles" != "$roles" ]]; then
@@ -85,6 +98,7 @@ jobs:
           {
             echo "roles=$roles"
             echo "android_roles=$android_roles"
+            echo "android_upload=$ANDROID_UPLOAD"
             echo "ios=$ios"
             echo "android=$android"
           } >> "$GITHUB_OUTPUT"
@@ -247,7 +261,7 @@ jobs:
           GOOGLE_MAPS_ANDROID_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_PROD }}
           FASTLANE_SKIP_UPDATE_CHECK: "1"
           FASTLANE_HIDE_CHANGELOG: "1"
-        run: bundle exec fastlane android beta role:${{ matrix.role }}
+        run: bundle exec fastlane android beta role:${{ matrix.role }} upload:${{ needs.plan.outputs.android_upload }}
       - name: Record build provenance
         uses: actions/attest-build-provenance@v2
         with:

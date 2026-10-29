@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/platform/errors/app_error_context.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Preserves the exact manager update after a send whose receipt was lost.

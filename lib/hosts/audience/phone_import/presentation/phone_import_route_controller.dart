@@ -8,11 +8,11 @@ import 'package:catch_dating_app/contexts/programmes/domain/phone_contact_refere
 import 'package:catch_dating_app/contexts/programmes/domain/phone_import_access.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_state.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/persistence/command_journal_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'phone_import_route_controller.g.dart';

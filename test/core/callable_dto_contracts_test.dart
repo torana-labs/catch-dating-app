@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_callable_response.dart';
 import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
@@ -42,7 +41,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

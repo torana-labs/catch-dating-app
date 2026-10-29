@@ -1255,11 +1255,11 @@ bool _isTestPath(String path) {
 }
 
 bool _isCoreErrorInfraFile(String path) {
-  return path == 'lib/core/app_error_context.dart' ||
-      path == 'lib/core/backend_error_util.dart' ||
-      path == 'lib/core/app_error_message.dart' ||
-      path == 'lib/exceptions/error_logger.dart' ||
-      path == 'lib/exceptions/console_crash_reporter.dart';
+  return path == 'lib/platform/errors/app_error_context.dart' ||
+      path == 'lib/platform/errors/backend_error_util.dart' ||
+      path == 'lib/platform/errors/app_error_message.dart' ||
+      path == 'lib/platform/errors/error_logger.dart' ||
+      path == 'lib/platform/errors/console_crash_reporter.dart';
 }
 
 bool _near(

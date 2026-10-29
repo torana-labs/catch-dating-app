@@ -19766,6 +19766,164 @@ export const catchWhatsappWebhookEventDocumentSchema = {
   ]
 };
 
+export const catchWhatsappAutoReplyDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_auto_replies.schema.json",
+  "title": "CatchWhatsappAutoReplyDocument",
+  "description": "One automatic reply from Catch's WhatsApp number to someone who just messaged it, claimed before sending so a redelivered message never sends twice. Keeps no message text, only which reply it was, the inbound receipt it answers, the sender's endpoint hash and the outcome. An uncertain send stays consumed. Expires after 30 days.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchWhatsappAutoReplies",
+  "x-firestore-path": "catchWhatsappAutoReplies/{replyId}",
+  "x-document-id-field": "replyId",
+  "x-owner": "Catch WhatsApp inbound router",
+  "required": [
+    "schemaVersion",
+    "replyId",
+    "kind",
+    "sourceEventId",
+    "endpointHash",
+    "state",
+    "providerMessageId",
+    "createdAtMillis",
+    "updatedAtMillis",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "replyId": {
+      "type": "string",
+      "pattern": "^cwauto_[a-f0-9]{64}$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "nomination_queued",
+        "nomination_without_links",
+        "nomination_rate_limited",
+        "clarification_question",
+        "support_acknowledged",
+        "listing_ready"
+      ]
+    },
+    "sourceEventId": {
+      "type": "string",
+      "pattern": "^cwhe_[a-f0-9]{64}$"
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "claimed",
+        "sent",
+        "unknown",
+        "skipped_stop",
+        "skipped_unavailable"
+      ]
+    },
+    "providerMessageId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "createdAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "updatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-firestore-ttl": true
+    }
+  }
+};
+
+export const catchWhatsappClarificationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/catch_whatsapp_clarifications.schema.json",
+  "title": "CatchWhatsappClarificationDocument",
+  "description": "Catch asked a nominator whether their last message was a nomination or a question, and is waiting for \"1\" or \"2\". Keyed by the sender's endpoint hash, so each sender has at most one open question; it names the inbound receipt the answer applies to and expires after 24 hours. Keeps no message text.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "catchWhatsappClarifications",
+  "x-firestore-path": "catchWhatsappClarifications/{endpointHash}",
+  "x-document-id-field": "endpointHash",
+  "x-owner": "Catch WhatsApp inbound router",
+  "required": [
+    "schemaVersion",
+    "endpointHash",
+    "sourceEventId",
+    "askedAtMillis",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceEventId": {
+      "type": "string",
+      "pattern": "^cwhe_[a-f0-9]{64}$"
+    },
+    "askedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-firestore-ttl": true
+    }
+  }
+};
+
 export const salesImportHistoryRowDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/sales_import_history_rows.schema.json",

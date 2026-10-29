@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 
 export 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show PlaceDetailsCallableRequest;

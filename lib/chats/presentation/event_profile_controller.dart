@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/messaging/domain/event_chat_profile.da
 import 'package:catch_dating_app/contexts/messaging/domain/event_chat_timing.dart';
 import 'package:catch_dating_app/contexts/profiles/data/form_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_profile_controller.g.dart';

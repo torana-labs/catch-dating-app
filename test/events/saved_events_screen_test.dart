@@ -3,10 +3,10 @@ import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_state.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

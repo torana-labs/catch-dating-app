@@ -1,6 +1,6 @@
 ---
 doc_id: agent_operating_model
-version: 3.8.0
+version: 3.9.0
 updated: 2026-10-29
 owner: agent_operating_model
 status: active
@@ -487,11 +487,11 @@ and connected task tooling, only within the user's authorized scope:
    equivalent on merged `origin/main`; then link the integrating PR before
    closing superseded proposals. Report pending authorization, delivery
    failures, or unverified state.
-4. Only after merge and any required release acceptance are verified, update the
-   task to **Done** in Linear through the existing connected owner tooling, with
-   the PR/commit and verification evidence. Confirm the update succeeded. If the
-   tooling is unavailable or rejects the update, report the status blocker;
-   never claim Linear synchronization or task completion from a local handoff.
+4. Only after merge and any required release acceptance are verified, close the
+   task's GitHub issue as completed (a `Fixes #N` line in the PR does this on
+   merge), with the PR/commit and verification evidence in the issue. Confirm
+   it closed. If it cannot be closed, report the status blocker; never claim
+   task completion from a local handoff.
 5. Complete the retirement checklist below for the task's own disposable
    worktree and eligible branches while the task context is fresh. Record the
    exact retirement result or retention reason in the existing task handoff; do

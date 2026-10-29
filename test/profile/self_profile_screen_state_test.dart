@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/profiles/domain/photo_upload_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 

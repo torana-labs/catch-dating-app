@@ -45,7 +45,7 @@ The first isolated preview generated from this research is rejected. It is too
 run-club-specific, visually weak, and no longer matches the current product
 surface. Keep it only as a discarded iteration, not as an approved direction.
 
-Current repo truth from `PROJECT_CONTEXT.md`, `lib/activity/domain/activity_taxonomy.dart`,
+Current repo truth from `PROJECT_CONTEXT.md`, `lib/kernel/activity_taxonomy.dart`,
 `lib/event_policies/README.md`, and `docs/event_success.md`:
 
 - Catch is evolving from a run-club dating app into a singles event platform

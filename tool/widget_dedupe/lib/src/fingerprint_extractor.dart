@@ -11,7 +11,7 @@ import 'package:path/path.dart' as p;
 const _tokenClassSources = [
   'packages/catch_tokens/lib',
   'packages/catch_ui/lib/src/foundations',
-  'lib/core/theme',
+  'lib/platform/theme',
 ];
 
 Map<String, Object?> extractFingerprints({

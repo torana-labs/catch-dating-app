@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/data/read_limit_policy.dart';
-import 'package:catch_dating_app/core/firestore_chunks.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_chunks.dart';
+import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Shared realtime `documentId whereIn` fan-out for typed collections.

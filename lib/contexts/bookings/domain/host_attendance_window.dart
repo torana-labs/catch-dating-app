@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/events/events.dart';
-import 'package:catch_dating_app/core/business_rules.dart';
+import 'package:catch_dating_app/kernel/business_rules.dart';
 
 enum HostEventAttendanceState { open, opensLater, closed }
 

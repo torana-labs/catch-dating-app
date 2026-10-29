@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/contexts/events/data/places_repository.dart';
-import 'package:catch_dating_app/core/connectivity_service.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/location_map.dart';
+import 'package:catch_dating_app/platform/device/connectivity_service.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

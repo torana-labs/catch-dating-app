@@ -17,9 +17,9 @@ const manifestPath = "tool/marketing/capture_manifest.json";
 export const SEED_LOOKBACK = 5;
 const digest = bytes => `sha256:${crypto.createHash("sha256").update(bytes).digest("hex")}`;
 
-/** CI on main's code: its push and nightly runs, and merge queue runs. */
+/** CI on main's code: its push, nightly and dispatched runs, and merge queue runs. */
 export function trustedSeedRun(run) {
-  return isMainCiSource(run) || (run?.event === "schedule" && run.head_branch === "main");
+  return isMainCiSource(run);
 }
 
 /** This repository's recent main-line CI runs, newest first. */

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';

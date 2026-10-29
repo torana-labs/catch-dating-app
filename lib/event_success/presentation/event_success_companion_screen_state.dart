@@ -13,11 +13,11 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_standings.da
 import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_moment_presentation_state.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
+import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:flutter/widgets.dart';
 
 enum EventSuccessCompanionRouteStatus { loading, message, error, ready }
