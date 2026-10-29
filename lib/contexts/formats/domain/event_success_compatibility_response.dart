@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/sentinels.dart';
+import 'package:catch_dating_app/kernel/sentinels.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 
 part 'event_success_compatibility_response/helpers.dart';
 part 'event_success_compatibility_response/questionnaire.dart';

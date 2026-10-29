@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/account/domain/app_version_config.dart';
-import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_controller.dart';
+import 'package:catch_dating_app/platform/device/external_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';

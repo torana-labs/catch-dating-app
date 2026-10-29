@@ -1611,7 +1611,7 @@
             "kind": "pattern",
             "dart": {
               "symbol": "CatchAsyncBoundary",
-              "file": "lib/core/riverpod_ui/catch_async_boundary.dart",
+              "file": "lib/platform/riverpod_ui/catch_async_boundary.dart",
               "constructors": [
                 "CatchAsyncBoundary",
                 "CatchAsyncBoundary.sliver"
@@ -2348,7 +2348,7 @@
           {
             "id": "external_links",
             "language": "dart",
-            "file": "lib/core/external_links.dart",
+            "file": "lib/platform/device/external_links.dart",
             "symbol": "ExternalLinkController"
           }
         ],

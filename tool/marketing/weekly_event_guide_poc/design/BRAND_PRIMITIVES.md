@@ -36,8 +36,8 @@ Those dimensions are platform requirements, not brand primitives.
 
 Typography:
 
-- `lib/core/theme/catch_fonts.dart`
-- `lib/core/theme/catch_text_styles.dart`
+- `lib/platform/theme/catch_fonts.dart`
+- `lib/platform/theme/catch_text_styles.dart`
 - `design_context_pack/design_system/typography.json`
 
 Tokens:

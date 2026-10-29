@@ -9,7 +9,7 @@ import 'package:catch_dating_app/contexts/programmes/domain/phone_import_access.
 import 'package:catch_dating_app/contexts/programmes/domain/phone_import_batch.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/phone_import_draft.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

@@ -1863,9 +1863,9 @@
   ],
   "imperativePageRoutes": [
     {
-      "siteId": "material-page:lib/core/widgets/ordered_photo_picker_actions.dart:98a67b416df73d67de94ec3a777cbd810fcd04baba950ee741a172767a41b673:1",
+      "siteId": "material-page:lib/platform/media/ordered_photo_picker_actions.dart:98a67b416df73d67de94ec3a777cbd810fcd04baba950ee741a172767a41b673:1",
       "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!))",
-      "sourcePath": "lib/core/widgets/ordered_photo_picker_actions.dart",
+      "sourcePath": "lib/platform/media/ordered_photo_picker_actions.dart",
       "ordinal": 1,
       "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!)",
       "presentationTarget": "OrderedPhotoManagerScreen",

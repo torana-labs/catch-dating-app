@@ -318,7 +318,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/exceptions/error_logger.dart') {
+  if (path == 'lib/platform/errors/error_logger.dart') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
       reason: 'central logger implementation owns raw crash logging',
@@ -340,7 +340,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/core/fcm_service.dart' &&
+  if (path == 'lib/platform/push/fcm_service.dart' &&
       rule.id == 'direct_firestore_write') {
     return const CandidateDisposition(
       status: CandidateStatus.verified,
@@ -422,8 +422,8 @@ CandidateDisposition _dispositionFor({
 }
 
 bool _isCoreMapperFile(String path) {
-  return path == 'lib/core/backend_error_util.dart' ||
-      path == 'lib/core/app_error_message.dart';
+  return path == 'lib/platform/errors/backend_error_util.dart' ||
+      path == 'lib/platform/errors/app_error_message.dart';
 }
 
 bool _isBackendWrapped(List<String> lines, int lineIndex) {

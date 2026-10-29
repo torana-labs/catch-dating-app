@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
-import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/platform/errors/app_error_context.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// One unresolved exact details command per signed-in manager and event.

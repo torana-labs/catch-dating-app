@@ -7,7 +7,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_membership.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_membership_controller.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

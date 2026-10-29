@@ -284,13 +284,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
-| <code>CatchAsyncBoundary</code> | <code>lib/core/riverpod_ui/catch_async_boundary.dart:21</code> | <code>AsyncBoundary</code> | <code>catch.async_value</code> | Exhaustive async-state selection with one timeout and recovery lifecycle. Also called: <code>AsyncValueView</code>, <code>AsyncBuilder</code>, <code>LoadingErrorBuilder</code>, <code>AsyncStateView</code>. |
-| <code>CatchExternalShareSheet</code> | <code>lib/core/riverpod_ui/catch_external_share_sheet.dart:17</code> | <code>Sheet</code> | <code>catch.sheet</code> | UI adapter for the app's Riverpod-backed external share controller. |
-| <code>CatchLocalizedErrorBanner</code> | <code>lib/core/riverpod_ui/catch_localized_error_banner.dart:8</code> | <code>Banner</code> | <code>catch.banner</code> | Resolves app errors and retry copy at the caller's localization boundary. |
-| <code>CatchLocalizedErrorScaffold</code> | <code>lib/core/riverpod_ui/catch_localized_error_scaffold.dart:7</code> | <code>Scaffold</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchErrorScaffold]. |
-| <code>CatchLocalizedErrorState</code> | <code>lib/core/riverpod_ui/catch_localized_error_state.dart:7</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchErrorState]. |
-| <code>CatchLocalizedSliverErrorState</code> | <code>lib/core/riverpod_ui/catch_localized_sliver_error_state.dart:7</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchSliverErrorState]. |
-| <code>CatchNoticeOverlay</code> | <code>lib/core/riverpod_ui/catch_notice_overlay.dart:11</code> | <code>Overlay</code> | <code>catch.notice</code> | One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchBanner.statuses below tabs. |
+| <code>CatchAsyncBoundary</code> | <code>lib/platform/riverpod_ui/catch_async_boundary.dart:21</code> | <code>AsyncBoundary</code> | <code>catch.async_value</code> | Exhaustive async-state selection with one timeout and recovery lifecycle. Also called: <code>AsyncValueView</code>, <code>AsyncBuilder</code>, <code>LoadingErrorBuilder</code>, <code>AsyncStateView</code>. |
+| <code>CatchExternalShareSheet</code> | <code>lib/platform/riverpod_ui/catch_external_share_sheet.dart:17</code> | <code>Sheet</code> | <code>catch.sheet</code> | UI adapter for the app's Riverpod-backed external share controller. |
+| <code>CatchLocalizedErrorBanner</code> | <code>lib/platform/riverpod_ui/catch_localized_error_banner.dart:8</code> | <code>Banner</code> | <code>catch.banner</code> | Resolves app errors and retry copy at the caller's localization boundary. |
+| <code>CatchLocalizedErrorScaffold</code> | <code>lib/platform/riverpod_ui/catch_localized_error_scaffold.dart:7</code> | <code>Scaffold</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchErrorScaffold]. |
+| <code>CatchLocalizedErrorState</code> | <code>lib/platform/riverpod_ui/catch_localized_error_state.dart:7</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchErrorState]. |
+| <code>CatchLocalizedSliverErrorState</code> | <code>lib/platform/riverpod_ui/catch_localized_sliver_error_state.dart:7</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Resolves app errors and inherited-locale copy for [CatchSliverErrorState]. |
+| <code>CatchNoticeOverlay</code> | <code>lib/platform/riverpod_ui/catch_notice_overlay.dart:11</code> | <code>Overlay</code> | <code>catch.notice</code> | One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchBanner.statuses below tabs. |
 
 ### L5 (951)
 
@@ -362,31 +362,31 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ClubTagList</code> | <code>lib/clubs/shared/club_host_identity_row.dart:36</code> | — | — | No class documentation or registry summary. |
 | <code>ClubPlaceholderCover</code> | <code>lib/clubs/shared/club_placeholder_cover.dart:8</code> | <code>Cover</code> | <code>catch.organizer_poster</code> | Deterministic no-photo organizer artwork used by poster and compact cover states. |
 | <code>CatchConsumerBootstrap</code> | <code>lib/consumer_bootstrap.dart:25</code> | — | — | Consumer-only process bootstrap. |
-| <code>CelebrationDetailRow</code> | <code>lib/core/celebration/celebration_screen.dart:538</code> | — | — | No class documentation or registry summary. |
-| <code>CelebrationDetailsCard</code> | <code>lib/core/celebration/celebration_screen.dart:498</code> | — | — | No class documentation or registry summary. |
-| <code>CelebrationIcon</code> | <code>lib/core/celebration/celebration_screen.dart:479</code> | — | — | No class documentation or registry summary. |
-| <code>CelebrationNote</code> | <code>lib/core/celebration/celebration_screen.dart:577</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationDetailRow</code> | <code>lib/core/celebration/celebration_screen.dart:439</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationDetailsCard</code> | <code>lib/core/celebration/celebration_screen.dart:405</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationIcon</code> | <code>lib/core/celebration/celebration_screen.dart:384</code> | — | — | No class documentation or registry summary. |
-| <code>PaperCelebrationScaffold</code> | <code>lib/core/celebration/celebration_screen.dart:229</code> | — | — | No class documentation or registry summary. |
-| <code>AdaptiveTabScaffold</code> | <code>lib/core/presentation/adaptive_tab_scaffold.dart:12</code> | — | — | Shared adaptive placement contract for consumer and host tab shells. |
-| <code>AppShell</code> | <code>lib/core/presentation/app_shell.dart:55</code> | — | — | No class documentation or registry summary. |
-| <code>AppShellNavigationBar</code> | <code>lib/core/presentation/app_shell.dart:208</code> | — | — | No class documentation or registry summary. |
-| <code>AppShellSideNavigation</code> | <code>lib/core/presentation/app_shell.dart:280</code> | — | — | Labelled vertical destination plane for medium and expanded app shells. |
-| <code>GuestAuthCtaBar</code> | <code>lib/core/presentation/app_shell.dart:161</code> | — | — | No class documentation or registry summary. |
-| <code>HostAppShell</code> | <code>lib/core/presentation/host_app_shell.dart:21</code> | — | — | No class documentation or registry summary. |
-| <code>StartupAnimationScope</code> | <code>lib/core/startup/startup_animation_scope.dart:7</code> | — | — | Session-scoped startup state shared with route-owned welcome surfaces. |
-| <code>ActivityMapPin</code> | <code>lib/core/widgets/activity_map_pin.dart:8</code> | <code>Pin</code> | — | Activity-pigment map pin with an optional selected data flag. Also called: <code>MapPin</code>, <code>EventMapPin</code>, <code>LocationPin</code>. |
-| <code>EventActivityBadge</code> | <code>lib/core/widgets/event_activity_badge.dart:6</code> | <code>Badge</code> | <code>catch.event_card</code> | Circular activity glyph stamp used by event cards, agenda rows, and ticket compositions. |
-| <code>EventBackdropImage</code> | <code>lib/core/widgets/event_backdrop_image.dart:9</code> | <code>Image</code> | <code>catch.event_card</code> | Activity-pigment backdrop art for event media: duotone ground, pattern and glyph. |
-| <code>EventCard</code> | <code>lib/core/widgets/event_card.dart:13</code> | <code>Card</code> | <code>catch.event_card</code> | Production event card backed by the shared activity visual schema. Also called: <code>EventTicket</code>, <code>EventTile</code>, <code>EventListItem</code>, <code>EventPreviewCard</code>. |
-| <code>EventFallbackThumbnail</code> | <code>lib/core/widgets/event_thumbnail.dart:90</code> | <code>Thumbnail</code> | <code>catch.event_card</code> | Direct event-thumbnail activity fallback renderer for no-photo states. |
-| <code>EventThumbnail</code> | <code>lib/core/widgets/event_thumbnail.dart:17</code> | <code>Thumbnail</code> | <code>catch.event_card</code> | Shared image/fallback primitive for any event-card surface. |
-| <code>OrderedPhotoAddTile</code> | <code>lib/core/widgets/ordered_photo_picker.dart:707</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoPicker</code> | <code>lib/core/widgets/ordered_photo_picker.dart:15</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoTile</code> | <code>lib/core/widgets/ordered_photo_picker.dart:475</code> | — | — | No class documentation or registry summary. |
-| <code>StartupBrandHeader</code> | <code>lib/core/widgets/splash_screen.dart:40</code> | <code>Header</code> | <code>catch.startup_loading_screen</code> | The shared role-specific brand anchor used by Host startup and auth. |
+| <code>CelebrationDetailRow</code> | <code>lib/pages/celebration/celebration_screen.dart:538</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationDetailsCard</code> | <code>lib/pages/celebration/celebration_screen.dart:498</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationIcon</code> | <code>lib/pages/celebration/celebration_screen.dart:479</code> | — | — | No class documentation or registry summary. |
+| <code>CelebrationNote</code> | <code>lib/pages/celebration/celebration_screen.dart:577</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationDetailRow</code> | <code>lib/pages/celebration/celebration_screen.dart:439</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationDetailsCard</code> | <code>lib/pages/celebration/celebration_screen.dart:405</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationIcon</code> | <code>lib/pages/celebration/celebration_screen.dart:384</code> | — | — | No class documentation or registry summary. |
+| <code>PaperCelebrationScaffold</code> | <code>lib/pages/celebration/celebration_screen.dart:229</code> | — | — | No class documentation or registry summary. |
+| <code>AdaptiveTabScaffold</code> | <code>lib/routing/shell/adaptive_tab_scaffold.dart:12</code> | — | — | Shared adaptive placement contract for consumer and host tab shells. |
+| <code>AppShell</code> | <code>lib/routing/shell/app_shell.dart:55</code> | — | — | No class documentation or registry summary. |
+| <code>AppShellNavigationBar</code> | <code>lib/routing/shell/app_shell.dart:208</code> | — | — | No class documentation or registry summary. |
+| <code>AppShellSideNavigation</code> | <code>lib/routing/shell/app_shell.dart:280</code> | — | — | Labelled vertical destination plane for medium and expanded app shells. |
+| <code>GuestAuthCtaBar</code> | <code>lib/routing/shell/app_shell.dart:161</code> | — | — | No class documentation or registry summary. |
+| <code>HostAppShell</code> | <code>lib/routing/shell/host_app_shell.dart:21</code> | — | — | No class documentation or registry summary. |
+| <code>StartupAnimationScope</code> | <code>lib/platform/startup/startup_animation_scope.dart:7</code> | — | — | Session-scoped startup state shared with route-owned welcome surfaces. |
+| <code>ActivityMapPin</code> | <code>lib/contexts/events/parts/activity_map_pin.dart:8</code> | <code>Pin</code> | — | Activity-pigment map pin with an optional selected data flag. Also called: <code>MapPin</code>, <code>EventMapPin</code>, <code>LocationPin</code>. |
+| <code>EventActivityBadge</code> | <code>lib/contexts/events/parts/event_activity_badge.dart:6</code> | <code>Badge</code> | <code>catch.event_card</code> | Circular activity glyph stamp used by event cards, agenda rows, and ticket compositions. |
+| <code>EventBackdropImage</code> | <code>lib/contexts/events/parts/event_backdrop_image.dart:9</code> | <code>Image</code> | <code>catch.event_card</code> | Activity-pigment backdrop art for event media: duotone ground, pattern and glyph. |
+| <code>EventCard</code> | <code>lib/contexts/events/parts/event_card.dart:13</code> | <code>Card</code> | <code>catch.event_card</code> | Production event card backed by the shared activity visual schema. Also called: <code>EventTicket</code>, <code>EventTile</code>, <code>EventListItem</code>, <code>EventPreviewCard</code>. |
+| <code>EventFallbackThumbnail</code> | <code>lib/contexts/events/parts/event_thumbnail.dart:90</code> | <code>Thumbnail</code> | <code>catch.event_card</code> | Direct event-thumbnail activity fallback renderer for no-photo states. |
+| <code>EventThumbnail</code> | <code>lib/contexts/events/parts/event_thumbnail.dart:17</code> | <code>Thumbnail</code> | <code>catch.event_card</code> | Shared image/fallback primitive for any event-card surface. |
+| <code>OrderedPhotoAddTile</code> | <code>lib/platform/media/ordered_photo_picker.dart:707</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoPicker</code> | <code>lib/platform/media/ordered_photo_picker.dart:15</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoTile</code> | <code>lib/platform/media/ordered_photo_picker.dart:475</code> | — | — | No class documentation or registry summary. |
+| <code>StartupBrandHeader</code> | <code>lib/pages/startup/splash_screen.dart:40</code> | <code>Header</code> | <code>catch.startup_loading_screen</code> | The shared role-specific brand anchor used by Host startup and auth. |
 | <code>CrossPathsEventConsentSection</code> | <code>lib/cross_paths/presentation/cross_paths_event_consent_section.dart:8</code> | — | — | Provider-free Event Detail renderer for hidden, loading, enabled, disabled, pending, and unavailable event-consent states resolved by the route. |
 | <code>CrossPathsEventContextCard</code> | <code>lib/cross_paths/presentation/cross_paths_explore_card.dart:132</code> | — | — | No class documentation or registry summary. |
 | <code>CrossPathsExploreCard</code> | <code>lib/cross_paths/presentation/cross_paths_explore_card.dart:26</code> | — | — | No class documentation or registry summary. |
@@ -1264,9 +1264,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ChatsListScreen</code> | <code>lib/chats/presentation/inbox/chat_inbox_screen.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailScreen</code> | <code>lib/clubs/presentation/detail/club_detail_screen.dart:31</code> | — | — | No class documentation or registry summary. |
 | <code>CatchConsumerBootScreen</code> | <code>lib/consumer_bootstrap.dart:172</code> | — | — | The animated Consumer cold-start surface shown above auth and routing. |
-| <code>CelebrationScreen</code> | <code>lib/core/celebration/celebration_screen.dart:41</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoManagerScreen</code> | <code>lib/core/widgets/ordered_photo_picker.dart:166</code> | — | — | Full-screen editor for long ordered galleries. It keeps a local mirror so dozens of items can be reordered or removed without collapsing the route; every operation is also forwarded to the owning draft/controller. |
-| <code>SplashScreen</code> | <code>lib/core/widgets/splash_screen.dart:9</code> | — | <code>catch.startup_loading_screen</code> | Branded app-start composition with the Catch logo and a delayed bounded loading indicator. Also called: <code>LaunchScreen</code>, <code>StartupScreen</code>, <code>StartupLoadingScreen</code>, <code>AppLoadingScreen</code>. |
+| <code>CelebrationScreen</code> | <code>lib/pages/celebration/celebration_screen.dart:41</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoManagerScreen</code> | <code>lib/platform/media/ordered_photo_picker.dart:166</code> | — | — | Full-screen editor for long ordered galleries. It keeps a local mirror so dozens of items can be reordered or removed without collapsing the route; every operation is also forwarded to the owning draft/controller. |
+| <code>SplashScreen</code> | <code>lib/pages/startup/splash_screen.dart:9</code> | — | <code>catch.startup_loading_screen</code> | Branded app-start composition with the Catch logo and a delayed bounded loading indicator. Also called: <code>LaunchScreen</code>, <code>StartupScreen</code>, <code>StartupLoadingScreen</code>, <code>AppLoadingScreen</code>. |
 | <code>CrossPathsInvitationScreen</code> | <code>lib/cross_paths/presentation/cross_paths_invitation_screen.dart:28</code> | — | — | No class documentation or registry summary. |
 | <code>ActivityScreen</code> | <code>lib/dashboard/presentation/activity_screen.dart:23</code> | — | — | No class documentation or registry summary. |
 | <code>DashboardEmptyHomeScreen</code> | <code>lib/dashboard/presentation/dashboard_empty_home_screen.dart:3</code> | — | — | No class documentation or registry summary. |

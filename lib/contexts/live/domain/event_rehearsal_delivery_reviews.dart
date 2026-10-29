@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_observati
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_parsing.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_configuration.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 /// A practice message identity can never supply a live command context.
 final class RehearsalDeliveryScope {

@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/programmes/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/travel_leg_revision.dart';
-import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
-import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/persistence/local_command_journal.dart';
+import 'package:catch_dating_app/platform/persistence/memory_command_journal_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'program_operations_fixture.dart';

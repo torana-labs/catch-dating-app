@@ -24,36 +24,36 @@
     "rule": "Use Catch text style roles directly. Do not copy numeric style values into this contract.",
     "roleReferences": {
       "headline": {
-        "file": "lib/core/theme/catch_text_styles.dart",
+        "file": "lib/platform/theme/catch_text_styles.dart",
         "symbol": "CatchTextStyles.eventTitle"
       },
       "displayHeadline": {
-        "file": "lib/core/theme/catch_text_styles.dart",
+        "file": "lib/platform/theme/catch_text_styles.dart",
         "symbol": "CatchTextStyles.display"
       },
       "label": {
-        "file": "lib/core/theme/catch_text_styles.dart",
+        "file": "lib/platform/theme/catch_text_styles.dart",
         "symbol": "CatchTextStyles.kicker"
       },
       "metadata": {
-        "file": "lib/core/theme/catch_text_styles.dart",
+        "file": "lib/platform/theme/catch_text_styles.dart",
         "symbol": "CatchTextStyles.monoLabel"
       },
       "badge": {
-        "file": "lib/core/theme/catch_text_styles.dart",
+        "file": "lib/platform/theme/catch_text_styles.dart",
         "symbol": "CatchTextStyles.badge"
       },
       "body": {
-        "file": "lib/core/theme/catch_text_styles.dart",
+        "file": "lib/platform/theme/catch_text_styles.dart",
         "symbol": "CatchTextStyles.bodyM"
       },
       "button": {
-        "file": "lib/core/theme/catch_text_styles.dart",
+        "file": "lib/platform/theme/catch_text_styles.dart",
         "symbol": "CatchTextStyles.buttonMd"
       }
     },
     "fontRegistryReference": {
-      "file": "lib/core/theme/catch_fonts.dart",
+      "file": "lib/platform/theme/catch_fonts.dart",
       "symbols": [
         "CatchFonts.voice",
         "CatchFonts.head",

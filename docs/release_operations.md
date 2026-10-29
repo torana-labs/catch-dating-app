@@ -2431,7 +2431,7 @@ sends **nothing** — this is expected, not a bug.
 
 ### When collection is on
 
-`AppConfig.shouldCollectObservability` (in `lib/core/app_config.dart`) controls
+`AppConfig.shouldCollectObservability` (in `lib/platform/app_config.dart`) controls
 both Firebase Analytics and Crashlytics. It is true only when:
 
 - the build is release mode **and** the environment is `prod`; or

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_dock.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -62,7 +62,7 @@ Map<String, bool> _coreGoldenDesignations() {
 
 bool _isGoldenSource(String path) =>
     path.startsWith('lib/core/widgets/') ||
-    path.startsWith('lib/core/riverpod_ui/') ||
+    path.startsWith('lib/platform/riverpod_ui/') ||
     path.startsWith('packages/catch_ui/lib/src/primitives/') ||
     path.startsWith('packages/catch_ui/lib/src/components/') ||
     path.startsWith('packages/catch_ui/lib/src/patterns/');

@@ -1172,7 +1172,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "EventCard",
-              "file": "lib/core/widgets/event_card.dart",
+              "file": "lib/contexts/events/parts/event_card.dart",
               "constructors": [
                 "EventCard"
               ]
@@ -2451,7 +2451,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "EventCard",
-              "file": "lib/core/widgets/event_card.dart",
+              "file": "lib/contexts/events/parts/event_card.dart",
               "constructors": [
                 "EventCard"
               ]

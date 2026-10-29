@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 /// Opaque upstream identity for one user-selected local contact. Scope and
 /// actor are included so separate address books/weddings never match through

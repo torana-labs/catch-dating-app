@@ -71,7 +71,7 @@
           {
             "id": "external_links",
             "language": "dart",
-            "file": "lib/core/external_links.dart",
+            "file": "lib/platform/device/external_links.dart",
             "symbol": "ExternalLinkController"
           }
         ],

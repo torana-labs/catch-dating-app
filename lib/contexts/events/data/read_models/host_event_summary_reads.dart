@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
-import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
+import 'package:catch_dating_app/platform/firebase/host_summary_reader.dart';
 
 class HostEventSummaryReads {
   const HostEventSummaryReads(this.reader);

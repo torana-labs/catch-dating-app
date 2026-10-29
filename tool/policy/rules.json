@@ -817,7 +817,7 @@
         "lib/**/presentation/**",
         "lib/core/widgets/**",
         "packages/catch_ui/lib/**",
-        "lib/core/riverpod_ui/**"
+        "lib/platform/riverpod_ui/**"
       ],
       "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check docs/widget_catalog.md and the existing Catch* primitives under packages/catch_ui/lib/src for an owner. Do not duplicate an existing primitive shell; extend the primitive or propose a variant through catalog review. Section titles have one owner: top-level groups route through CatchSection, contained card titles route through CatchSection.contained or a documented content primitive, and nested shared widgets must expose a content-only mode instead of repeating the parent section title. Underline tab/scope rails route through CatchPageTabBar or CatchChoiceInput.segmented; production code must not compose CatchChoiceButton directly because that forks divider, indicator, ink, and trailing-action alignment behavior.",
       "sunset_when": [
@@ -1030,7 +1030,7 @@
         "widgetbook/test/support/triage_inventory.dart",
         "test/goldens/**",
         "packages/catch_ui/lib/**",
-        "lib/core/riverpod_ui/**"
+        "lib/platform/riverpod_ui/**"
       ],
       "instruction": "Generate the inventory in docs/widget_catalog.md from production Widget declarations and design/components/catch.components.json; authored content is limited to Canonical Usage Decisions. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook coverage. Shared Widgets require a canonical Catch* name and an exact source identity, reviewed ladder level and role in the registry; new or moved feature UI requires its feature-prefixed role name and canonical file suffix. The complete shared API must satisfy the naming grammar. Existing feature naming candidates remain source-derived review flags, not approved exceptions or a conformance claim. Every production Widgetbook component/body mount requires golden coverage; proposals carry an explicit marker and remain outside production coverage. Every registered Widgetbook case must classify as component-mount, body-mount, screen-scope, or explicitly marked prototype; every screen-scope case must match one authored capture-migration or named-keep disposition. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Regenerate affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
       "sunset_when": [
@@ -1769,7 +1769,7 @@
         "version": "1.1.0"
       },
       "applies_to": [
-        "lib/exceptions/**",
+        "lib/platform/errors/**",
         "lib/core/*error*",
         "lib/core/widgets/catch_error*",
         "lib/**/presentation/**",
@@ -2196,8 +2196,8 @@
       },
       "applies_to": [
         "lib/**/data/*repository*.dart",
-        "lib/core/data/read_limit_policy.dart",
-        "lib/core/data/cursor_page.dart"
+        "lib/platform/firebase/read_limit_policy.dart",
+        "lib/platform/firebase/cursor_page.dart"
       ],
       "instruction": "Growing repository reads use a reviewed ReadLimitPolicy value plus an opaque cursor path. Numeric limit and take literals must not be reintroduced in repository code, and bounded-set exceptions must remain explicit in data_contracts.md.",
       "sunset_when": [
@@ -2768,7 +2768,7 @@
       "applies_to": [
         "tool/app_targets.json",
         "apps/*/lib/main*.dart",
-        "lib/core/app_config.dart",
+        "lib/platform/app_config.dart",
         "lib/routing/**",
         "firebase/**",
         "tool/firebase/client_callable_dependencies.json",

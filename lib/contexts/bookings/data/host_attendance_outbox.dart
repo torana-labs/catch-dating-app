@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
-import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
-import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_dating_app/platform/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/platform/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/platform/persistence/local_command_journal.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part '../../../hosts/data/host_attendance_outbox.g.dart';

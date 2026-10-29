@@ -5730,7 +5730,7 @@
         "tool/design/check_host_shell_coverage.test.mjs",
         "design/source_packs/host-v2/host-coverage-manifest.json",
         "docs/design_parity/host_shell_route_ui_audit.md",
-        "lib/core/presentation/host_app_shell.dart",
+        "lib/routing/shell/host_app_shell.dart",
         "tool/ui_capture/route_inventory.json",
         "tool/ui_capture/capture_coverage.json"
       ],
@@ -5802,7 +5802,7 @@
       "path": "tool/design/check_platform_token_coverage.mjs",
       "impactPaths": [
         "design/tokens/**",
-        "lib/core/theme/**",
+        "lib/platform/theme/**",
         "packages/catch_tokens/lib/**",
         "packages/catch_ui/**",
         "tool/design_tokens.dart",
@@ -5844,7 +5844,7 @@
       "path": "test/core/widgets/platform_control_targets_test.dart",
       "impactPaths": [
         "design/tokens/**",
-        "lib/core/theme/**",
+        "lib/platform/theme/**",
         "packages/catch_tokens/lib/**",
         "packages/catch_ui/**",
         "lib/core/widgets/**",
@@ -6273,7 +6273,7 @@
         "tool/design/component_naming.test.mjs",
         "design/components/catch.components.json",
         "packages/catch_ui/lib/**",
-        "lib/core/riverpod_ui/**",
+        "lib/platform/riverpod_ui/**",
         "widgetbook/lib/main.directories.g.dart"
       ],
       "command": "node tool/design/check_widget_classification.mjs",
@@ -7098,8 +7098,8 @@
         "tool/design/component_concepts.mjs",
         "docs/design_language.md",
         "design/components/catch.components.json",
-        "lib/core/theme/**",
-        "lib/activity/domain/activity_taxonomy.dart",
+        "lib/platform/theme/**",
+        "lib/kernel/activity_taxonomy.dart",
         "packages/catch_tokens/**",
         "packages/catch_ui/**",
         "test/ui_captures/**",
@@ -7479,7 +7479,7 @@
         "design/components/catch.components.schema.json",
         "docs/app_architecture.md",
         "packages/catch_ui/lib/**",
-        "lib/core/riverpod_ui/**",
+        "lib/platform/riverpod_ui/**",
         "design/components/catch.components.json"
       ],
       "command": "node tool/design/check_component_lexicon.mjs",

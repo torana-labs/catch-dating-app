@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "source": "lib/core/theme/activity_palette.dart",
+  "source": "lib/platform/theme/activity_palette.dart",
   "activities": {
     "socialRun": {
       "label": "Social run",

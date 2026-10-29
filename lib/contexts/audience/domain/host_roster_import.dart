@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/bookings/bookings.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
-import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/kernel/city_catalog.dart';
 
 part 'host_roster_intake_provenance.dart';
 

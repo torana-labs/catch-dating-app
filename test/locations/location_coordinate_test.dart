@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -4,10 +4,10 @@ import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availabil
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/core/formatters/distance_formatter.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/l10n/distance_formatter.dart';
 import 'package:flutter/material.dart';
 
 class ExploreCoverStoryState {

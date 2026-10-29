@@ -7,7 +7,7 @@ import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
 const manifestPath = fromRepo(
   "design/source_packs/host-v2/host-coverage-manifest.json",
 );
-const shellPath = fromRepo("lib/core/presentation/host_app_shell.dart");
+const shellPath = fromRepo("lib/routing/shell/host_app_shell.dart");
 const routeInventoryPath = fromRepo("tool/ui_capture/route_inventory.json");
 const captureCoveragePath = fromRepo("tool/ui_capture/capture_coverage.json");
 const isCliEntrypoint =

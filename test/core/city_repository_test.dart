@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/core/data/city_repository.dart';
-import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/kernel/city_data.dart';
+import 'package:catch_dating_app/platform/cities/city_repository.dart';
+import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

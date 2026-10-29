@@ -105,7 +105,7 @@
           {
             "id": "host_shell",
             "language": "dart",
-            "file": "lib/core/presentation/host_app_shell.dart",
+            "file": "lib/routing/shell/host_app_shell.dart",
             "symbol": "HostAppShell"
           }
         ],
@@ -2045,7 +2045,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "EventCard",
-              "file": "lib/core/widgets/event_card.dart",
+              "file": "lib/contexts/events/parts/event_card.dart",
               "constructors": [
                 "EventCard"
               ]

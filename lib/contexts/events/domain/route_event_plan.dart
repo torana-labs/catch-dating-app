@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:collection/collection.dart';
 
 enum RouteMovementMode { run, walk, ride, mixed }

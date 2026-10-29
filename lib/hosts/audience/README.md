@@ -65,7 +65,7 @@ These are schema declarations, not independent proof of runtime limits.
 - Source: [lib/hosts/presentation/customers/host_customers_screen.dart](../presentation/customers/host_customers_screen.dart)
 - Source: [lib/hosts/presentation/forms/host_forms_screen.dart](../presentation/forms/host_forms_screen.dart)
 - Source: [lib/routing/go_router.dart](../../routing/go_router.dart)
-- Source: [lib/core/presentation/host_app_shell.dart](../../core/presentation/host_app_shell.dart)
+- Source: [lib/routing/shell/host_app_shell.dart](../../core/presentation/host_app_shell.dart)
 
 **What can a host do with People?**
 
@@ -195,7 +195,7 @@ Typed handoffs:
 - `lib/contexts/audience/data/crm/host_contacts_repository.dart` — Owns organizer contacts, customer context, notes, and merge review.
 - `lib/contexts/audience/data/crm/host_saved_audience_repository.dart` — Owns reusable audience definitions, filter options, membership resolution, and previews.
 - `lib/contexts/forms/data/host_forms_repository.dart` — Current shared Host data seam for forms, responses, exports, and automations until A3 relocates it.
-- `lib/core/presentation/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
+- `lib/routing/shell/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
 
 ## Data contracts
 

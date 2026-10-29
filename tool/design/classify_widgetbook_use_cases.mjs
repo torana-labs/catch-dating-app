@@ -36,7 +36,7 @@ export function classify(row, routeTargets = new Set()) {
   if (row.typeFile.startsWith("widgetbook/")) {
     // These marker types name token specimens, not alternative product UI.
     if (foundationSpecimens.get(row.type) === row.typeFile &&
-        row.productionReferences.some((ref) => ["lib/core/theme/", "packages/catch_ui/lib/src/foundations/", "packages/catch_tokens/lib/"].some((prefix) => ref.file.startsWith(prefix)))) {
+        row.productionReferences.some((ref) => ["lib/platform/theme/", "packages/catch_ui/lib/src/foundations/", "packages/catch_tokens/lib/"].some((prefix) => ref.file.startsWith(prefix)))) {
       return {classification: "component-mount", reason: "Production foundation/token specimen"};
     }
     if (!proposalMarker.test(row.name)) {

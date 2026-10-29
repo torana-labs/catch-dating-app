@@ -278,7 +278,7 @@ List<Map<String, Object?>> _coreSurface() {
   final files = [
     for (final root in [
       'lib/core/widgets',
-      'lib/core/riverpod_ui',
+      'lib/platform/riverpod_ui',
       'packages/catch_ui/lib/src/primitives',
       'packages/catch_ui/lib/src/components',
       'packages/catch_ui/lib/src/patterns',

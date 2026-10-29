@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/contexts/connections/domain/match.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

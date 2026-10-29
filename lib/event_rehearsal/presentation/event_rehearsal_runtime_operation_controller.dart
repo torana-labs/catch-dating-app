@@ -7,8 +7,8 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operation_change.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_rehearsal_runtime_operation_controller.g.dart';

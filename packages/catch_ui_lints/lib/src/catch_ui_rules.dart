@@ -24,7 +24,7 @@ const _eventDetailPathFragments = <String>[
 
 const _excludedPathFragments = <String>[
   '/packages/catch_tokens/lib/',
-  '/lib/core/theme/',
+  '/lib/platform/theme/',
   '/lib/core/schema_contracts/generated/',
   '/lib/l10n/generated/',
 ];
@@ -2018,8 +2018,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool get _isShellImplementationPath {
-    return path.endsWith('/lib/core/presentation/app_shell.dart') ||
-        path.endsWith('/lib/core/presentation/host_app_shell.dart');
+    return path.endsWith('/lib/routing/shell/app_shell.dart') ||
+        path.endsWith('/lib/routing/shell/host_app_shell.dart');
   }
 
   int _lineForOffset(int offset) {

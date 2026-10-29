@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_chan
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_help_requests.dart';
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'event_rehearsal_help_queue_fixtures.dart';

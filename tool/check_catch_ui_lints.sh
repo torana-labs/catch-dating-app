@@ -87,17 +87,17 @@ expect_probe() {
 }
 
 stage_probe "seeded violation corpus" <<'DART'
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/catch_ui.dart' as spacing;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
-import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_scaffold.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
+import 'package:catch_dating_app/contexts/events/parts/event_backdrop_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -533,7 +533,7 @@ probe_path="$probe_root/lib/hosts/presentation/error_recovery_lint_probe.dart"
 stage_probe "canonical error recovery rejects empty actions" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/catch_ui.dart' as ui;
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:flutter/material.dart';
 
 final missingRecovery = CatchErrorState(title: 'Error', message: 'Try again');
@@ -865,7 +865,7 @@ DART
   expect_code_count "status placement $feedback_scope" "catch_status_strip_is_layout_owned" 3
   expect_probe exact catch_status_strip_is_layout_owned 3
   stage_probe "arrival placement $feedback_scope" <<'DART'
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart' as ui;
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart' as ui;
 import 'package:firebase_messaging/firebase_messaging.dart' as fcm;
 import 'package:flutter/widgets.dart';
 typedef NoticeOverlayAlias = ui.CatchNoticeOverlay;
@@ -882,7 +882,7 @@ done
 
 probe_path="$probe_root/lib/app.dart"
 stage_probe "global arrival host owner" <<'DART'
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:flutter/widgets.dart';
 final host = CatchNoticeOverlay(child: const SizedBox());
 DART

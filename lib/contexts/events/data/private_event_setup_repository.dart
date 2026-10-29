@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_models.dart';
 import 'package:catch_dating_app/contexts/events/data/read_models/host_event_summary_reads.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/data/read_limit_policy.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
+import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 export 'private_event_setup_models.dart';

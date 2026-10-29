@@ -1,8 +1,8 @@
 // GENERATED CODE - DO NOT EDIT.
 // Source: copy/structured_domain_copy_en.json and tool/copy/templates/structured_domain_copy/modules.dart.template
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
 abstract final class EventSuccessModuleCatalog {
   static const crowdBalance = EventSuccessModule(

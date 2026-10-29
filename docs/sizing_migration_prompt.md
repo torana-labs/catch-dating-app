@@ -37,7 +37,7 @@ Dynamic Type. Source-of-truth: `docs/app_architecture.md → "Sizing And Constra
 bash tool/check_catch_ui_lint_drift.sh --code catch_no_raw_content_dimension --label 'sizing doctrine' --count
 bash tool/check_catch_ui_lint_drift.sh --code catch_no_raw_content_dimension --label 'sizing doctrine'
 ```
-The scanner flags, under `lib/` (excluding `lib/core/theme/**`, `lib/design_fixtures/**`,
+The scanner flags, under `lib/` (excluding `lib/platform/theme/**`, `lib/design_fixtures/**`,
 `*explore_concept*`, generated `*.g.dart`/`*.freezed.dart`):
 - `height:` / `width:` / `dimension:` named args with a number ≥ 4
 - fixed `Size(N, …)` literals (N ≥ 4)
@@ -109,7 +109,7 @@ genuinely fixed art — never to silence the scanner.
   times in a file, you're probably escape-hatching things that should be constraints. Re-check.
 - **Behavior-preserving only.** The layout should look the same at text scale 1.0;
   it should merely stop clipping at 1.5/2.0. Don't restructure widgets beyond the swap.
-- **Stay out of exempt dirs:** never edit `lib/core/theme/**`, `lib/design_fixtures/**`, `*explore_concept*`.
+- **Stay out of exempt dirs:** never edit `lib/platform/theme/**`, `lib/design_fixtures/**`, `*explore_concept*`.
 - **Icon sizes** always go through `CatchIconSize.{sm,md,lg,...}`, never a raw number.
 
 ## Step 4 — verify (after every 5–10 files, and at the end)

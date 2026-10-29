@@ -4,7 +4,7 @@
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/core/sentinels.dart';
+import 'package:catch_dating_app/kernel/sentinels.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 

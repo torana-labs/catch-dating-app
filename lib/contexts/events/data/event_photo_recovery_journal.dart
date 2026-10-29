@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/events/domain/event_photo_recovery.dart';
-import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
-import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/platform/persistence/local_command_journal.dart';
 
 /// Media checkpoints share the command journal's transactional database. The
 /// existing journal remains the replay, lease, age and immutable-ID authority.

@@ -6,9 +6,9 @@ import 'package:catch_dating_app/contexts/events/data/private_event_preferences_
 import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';

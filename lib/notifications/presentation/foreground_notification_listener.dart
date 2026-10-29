@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/messaging/domain/foreground_notification.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/presentation/foreground_notification_controller.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

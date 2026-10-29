@@ -1,7 +1,6 @@
 // copy:allow-file(Widgetbook and capture-only deterministic fixture data)
 import 'dart:async';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
@@ -18,6 +17,7 @@ import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
 /// Shared deterministic fixtures for host operations design review.
 ///

@@ -115,7 +115,7 @@ void main() {
         'widgetbook/lib/text.dart',
         'lib/a.g.dart',
         'lib/a.freezed.dart',
-        'lib/core/theme/a.dart',
+        'lib/platform/theme/a.dart',
         'lib/l10n/generated/a.dart',
       ]) {
         expect(textMigrationScope(file), isFalse, reason: file);

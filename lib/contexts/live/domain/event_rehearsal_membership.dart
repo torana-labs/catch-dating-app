@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_membershi
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_parsing.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff.dart';
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 enum RehearsalMembershipAvailability {
   ready,

@@ -56,7 +56,7 @@ section under 120 lines.
 | L2 | primitives | one visual job: text, surface, icon, gap, tap target | `packages/catch_ui/lib/src/primitives` | unchanged | L0–L1 |
 | L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` | `packages/catch_ui` | L0–L2 |
 | L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` | `packages/catch_ui` | L0–L3 |
-| L4a | riverpod adapters | `CatchAsyncBoundary`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` | `lib/platform/riverpod_ui/` | L0–L4 + Riverpod |
+| L4a | riverpod adapters | `CatchAsyncBoundary`, mutation error family, provider-backed notices | `lib/platform/riverpod_ui/**` | `lib/platform/riverpod_ui/` | L0–L4 + Riverpod |
 | L5 | feature UI | arranges L2–L4 components and binds domain data to their props; draws nothing itself (D18) | `lib/<feature>/presentation/widgets/**` | `lib/contexts/<context>/parts/` | L0–L4 + own context |
 | L6 | screens | route wiring, providers, view models, navigation | `lib/<feature>/presentation/**` | `apps/<app>/lib/<destination>/`, or `lib/pages/` when both apps show it | everything below |
 
@@ -468,7 +468,7 @@ providers, or call `ref.watch/read/listen`; provider-owned composition belongs
 in a neighboring `_view_model.dart`, `_controller.dart`, or route screen.
 When a route edge translates Riverpod `AsyncValue` into `CatchAsyncState`, it
 must use `catchAsyncStateFromAsyncValue` from
-`lib/core/riverpod_ui/catch_async_value_adapter.dart`. That adapter preserves
+`lib/platform/riverpod_ui/catch_async_value_adapter.dart`. That adapter preserves
 the exhaustive presentation phase: initial loading, retrying, data,
 refreshing data, stale data with an error, or terminal error. A loading retry
 without credible data always renders loading, never its previous error.
@@ -531,7 +531,7 @@ domain and data have since moved under `lib/contexts/`, and the screen folders
 named here move when they are redrawn. The first folder-boundary cleanup
 applied after this spec uses these owners:
 
-- App analytics instrumentation lives in `lib/core/analytics`, not a top-level
+- App analytics instrumentation lives in `lib/platform/analytics`, not a top-level
   `lib/analytics` feature.
 - Explore search lives under `lib/contexts/discovery/data`; it is part of the
   Explore aggregate surface, not a standalone `search` feature.
@@ -1364,7 +1364,7 @@ production dependency is the Flutter SDK, enforced by
 The package also enables Flutter lints, including undeclared-package-import
 diagnostics, and treats info diagnostics as failures.
 Theme wiring, typography, icon assets, and the app-coupled `ActivityPalette`
-remain in `lib/core/theme` until their Phase 3 disposition.
+remain in `lib/platform/theme` until their Phase 3 disposition.
 
 | Tier | Owner | Examples | Use when |
 |---|---|---|---|
@@ -1653,7 +1653,7 @@ current toolchain, `flutter analyze` and `dart analyze lib` do not load the
 Catch plugin; they remain useful generic checks but are not Catch lint proof.
 
 The current lint scope is all handwritten `lib/**` Dart except
-`packages/catch_tokens/lib/**`, `lib/core/theme/**` foundations, generated code,
+`packages/catch_tokens/lib/**`, `lib/platform/theme/**` foundations, generated code,
 and schema-generated contracts. The token package owns raw token definitions; feature/shared widget code consumes
 named `CatchSpacing`, `CatchLayout`, `CatchGaps`, `CatchInsets`, `CatchRadius`,
 `CatchBorder`, `CatchStroke`, and Catch control primitives instead of local raw
@@ -1958,7 +1958,7 @@ app was trying to do. Do not put PII in either.
 
 ### App Operation Context API
 
-`lib/core/app_error_context.dart` is the non-backend parallel to
+`lib/platform/errors/app_error_context.dart` is the non-backend parallel to
 `BackendErrorContext`. It adapts to the backend normalizer/logging shape so the
 whole app keeps one context and reporting model.
 
@@ -2029,7 +2029,7 @@ Rules:
 - Repositories wrap Firebase/backend operations with
   `withBackendErrorContext` or `withBackendErrorStream`.
 - Local, validation, platform, and plugin operations use the app operation
-  context APIs from `lib/core/app_error_context.dart` when they can fail outside
+  context APIs from `lib/platform/errors/app_error_context.dart` when they can fail outside
   backend wrappers.
 - Controllers usually do not catch repository errors. Let typed errors
   propagate through Riverpod `AsyncValue` or `Mutation` state. Catch only when
@@ -2311,20 +2311,20 @@ Candidate patterns:
 
 | Concern | File |
 |---|---|
-| Exception types | `lib/exceptions/app_exception.dart` |
-| Backend error wrapping | `lib/core/backend_error_util.dart` |
-| Frontend/local op context | `lib/core/app_error_context.dart` |
-| User-facing backend messages | `lib/core/app_error_message.dart` (`appErrorDescriptor` / `appErrorMessage`) |
-| UI-facing title/message facade | `lib/core/app_error_message.dart` |
-| Central error logger and `AsyncErrorLogger` | `lib/exceptions/error_logger.dart` |
-| Analytics error events | `lib/core/analytics/app_analytics.dart` |
+| Exception types | `lib/platform/errors/app_exception.dart` |
+| Backend error wrapping | `lib/platform/errors/backend_error_util.dart` |
+| Frontend/local op context | `lib/platform/errors/app_error_context.dart` |
+| User-facing backend messages | `lib/platform/errors/app_error_message.dart` (`appErrorDescriptor` / `appErrorMessage`) |
+| UI-facing title/message facade | `lib/platform/errors/app_error_message.dart` |
+| Central error logger and `AsyncErrorLogger` | `lib/platform/errors/error_logger.dart` |
+| Analytics error events | `lib/platform/analytics/app_analytics.dart` |
 | Backend scanner | `tool/audit/backend_error_candidates.dart` |
 | Frontend scanner | `tool/audit/frontend_error_candidates.dart` |
 | Branded error surfaces | `packages/catch_ui/lib/src/components/catch_error_state.dart` |
-| App-level transient feedback | `lib/core/riverpod_ui/catch_notice_feedback.dart` |
+| App-level transient feedback | `lib/platform/riverpod_ui/catch_notice_feedback.dart` |
 | Error banner | `packages/catch_ui/lib/src/components/catch_banner.dart` |
-| Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
-| Mutation subscriptions and transient error notices | `lib/core/riverpod_ui/catch_notice_feedback.dart` |
+| Mutation helpers | `lib/platform/riverpod_ui/mutation_error_util.dart` |
+| Mutation subscriptions and transient error notices | `lib/platform/riverpod_ui/catch_notice_feedback.dart` |
 | Global error handlers | `lib/app_bootstrap.dart` |
 
 ### Event conversation session ownership
@@ -3224,17 +3224,17 @@ Reference implementation:
 - `lib/l10n/l10n.dart` — presentation access seam and isolated-preview fallback;
 - `lib/app.dart` — shared locale delegates, supported locales, and role-aware
   app title;
-- `lib/core/presentation/app_shell.dart` and
-  `lib/core/presentation/host_app_shell.dart` — semantic navigation destinations
+- `lib/routing/shell/app_shell.dart` and
+  `lib/routing/shell/host_app_shell.dart` — semantic navigation destinations
   localized at render time;
-- `lib/core/riverpod_ui/catch_notice_overlay.dart` — resolves notice dismiss copy
+- `lib/platform/riverpod_ui/catch_notice_overlay.dart` — resolves notice dismiss copy
   at the app boundary;
 - presentation-state factories such as
   `lib/onboarding/presentation/onboarding_flow_state.dart`,
   `lib/events/presentation/event_detail_screen_state.dart`, and
   `lib/event_success/presentation/event_success_companion_screen_state.dart`
   — receive `AppLocalizations` explicitly and return resolved display copy;
-- `lib/core/widgets/event_activity_visuals.dart` — resolves semantic taxonomy
+- `lib/contexts/events/parts/event_activity_visuals.dart` — resolves semantic taxonomy
   labels from localization at the render boundary while domain activity kinds
   remain stable identifiers;
 - `copy/native_en.json` and `tool/copy/sync_native_copy.mjs` — native copy lane;
@@ -3243,7 +3243,7 @@ Reference implementation:
 - `copy/structured_domain_copy_en.json` and
   `tool/copy/sync_structured_domain_copy.dart` — schema-checked synchronous
   content lane for domain models that cannot depend on `BuildContext`;
-- `lib/core/app_error_message.dart` — semantic exception-code localization at
+- `lib/platform/errors/app_error_message.dart` — semantic exception-code localization at
   widget build time; and
 - `tool/copy/check_mobile_copy_ownership.dart` — zero-debt ownership gate.
 - `tool/copy/check_l10n_key_usage.mjs` — exact live handwritten-key census and
@@ -5094,7 +5094,7 @@ CatchFormList<UpdateUserProfilePatch>(
 
 Reference implementation:
 
-- `lib/core/data/cursor_page.dart` owns `limit + 1`, opaque document cursors,
+- `lib/platform/firebase/cursor_page.dart` owns `limit + 1`, opaque document cursors,
   and honest `hasMore` state.
 - `lib/explore/presentation/explore_discovery_window_controller.dart` is the
   reference provider family: the normalized query pair is its identity, the
@@ -5103,7 +5103,7 @@ Reference implementation:
   `lib/contexts/events/data/external_event_repository.dart` retain raw Firestore cursors
   through client-side post-filtering so rejected documents are never fetched
   repeatedly or skipped.
-- `lib/core/data/read_limit_policy.dart` owns every numeric Firestore page or
+- `lib/platform/firebase/read_limit_policy.dart` owns every numeric Firestore page or
   working-set ceiling. Repository code does not introduce numeric literals.
 
 Adopters follow these constraints:

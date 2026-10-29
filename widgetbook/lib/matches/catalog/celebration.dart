@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/matches/shared/match_celebration_dialog.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

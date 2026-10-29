@@ -24,7 +24,7 @@ const screenFilePattern = /(?:^|\/)[^/]*screen[^/]*\.dart$/u;
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const excludedPrefixes = [
   "lib/core/widgets/",
-  "lib/core/theme/",
+  "lib/platform/theme/",
 ];
 
 const isCliEntrypoint =

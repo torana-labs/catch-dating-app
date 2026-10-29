@@ -53,7 +53,7 @@ Status: approved plan, not yet implemented. Delivery slices W0–W5 in §8 are t
 
 | Thing | Fact | Source |
 |---|---|---|
-| Shell | Fixed 5-branch `StatefulShellRoute.indexedStack`: Today, Events, Audience, Inbox, Organizer. All manager providers (unread count, operable clubs, FCM) mount unconditionally. | `lib/core/presentation/host_app_shell.dart`, `lib/routing/go_router.dart:901` |
+| Shell | Fixed 5-branch `StatefulShellRoute.indexedStack`: Today, Events, Audience, Inbox, Organizer. All manager providers (unread count, operable clubs, FCM) mount unconditionally. | `lib/routing/shell/host_app_shell.dart`, `lib/routing/go_router.dart:901` |
 | Event time model | `events` requires `startTime`/`endTime` only — one contiguous span. Also requires `meetingPoint`, `startingPointLat/Lng`, `pace`, `distanceKm`, `genderCounts`, `cohortCounts`, 13 `discovery*` fields. | `contracts/firestore/events.schema.json` |
 | Event workspace | `HostEventManageSection { setup, guests, live, report }`; lifecycle picks one phase. | `lib/hosts/presentation/host_event_manage_screen_state.dart` |
 | Org authority | `organizerTeamMemberships.role ∈ {owner, manager}` — org-wide only. | `contracts/firestore/organizer_team_memberships.schema.json` |
