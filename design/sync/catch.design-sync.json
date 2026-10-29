@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "67cba0460bd625ca128fbab2ac7fe1be80d3f049a638349f022abb77b2ef4179",
+  "sourceDigest": "ae614ef3a722f5cc134abdcb96c7b321421179fc4b1a6139631cc0b929f02450",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "67cba0460bd625ca128fbab2ac7fe1be80d3f049a638349f022abb77b2ef4179",
-    "contractDigest": "67cba0460bd625ca128fbab2ac7fe1be80d3f049a638349f022abb77b2ef4179"
+    "digest": "ae614ef3a722f5cc134abdcb96c7b321421179fc4b1a6139631cc0b929f02450",
+    "contractDigest": "ae614ef3a722f5cc134abdcb96c7b321421179fc4b1a6139631cc0b929f02450"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "a4dd585d0861ef996cb55028e59f3d63bf8a1a1849709d25cd453f83eec012de",
+    "handoffRequestDigest": "bece2f19eb506716e8cf05c1a8733e65cd22efda59938d682b0fe94800326420",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -82,19 +82,19 @@
     }
   },
   "metrics": {
-    "contractCount": 72,
-    "publicClassCount": 245,
-    "conceptCount": 59,
-    "memberCount": 162,
-    "membersPerConcept": 2.75,
+    "contractCount": 71,
+    "publicClassCount": 241,
+    "conceptCount": 58,
+    "memberCount": 159,
+    "membersPerConcept": 2.74,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 9,
-      "concept": 59,
-      "member": 162,
+      "concept": 58,
+      "member": 159,
       "screen": 15
     },
-    "collisionCount": 32,
+    "collisionCount": 31,
     "collisions": [
       {
         "key": "catch.badge",
@@ -293,15 +293,6 @@
         ]
       },
       {
-        "key": "catch.ordered_photo_picker",
-        "symbols": [
-          "OrderedPhotoAddTile",
-          "OrderedPhotoManagerScreen",
-          "OrderedPhotoPicker",
-          "OrderedPhotoTile"
-        ]
-      },
-      {
         "key": "catch.organizer_poster",
         "symbols": [
           "CatchPoster",
@@ -453,11 +444,11 @@
     ],
     "naming": {
       "canonicalConceptNames": 56,
-      "documentedConceptNameExceptions": 3,
+      "documentedConceptNameExceptions": 2,
       "undocumentedConceptNameExceptions": 0
     },
     "figmaMappingStates": {
-      "missing": 70,
+      "missing": 69,
       "stale": 2
     },
     "figmaPropertyDriftCount": 2,
@@ -465,9 +456,9 @@
     "figmaReviewSnapshotMappings": 2,
     "figmaPublishedMappings": 0,
     "codeConnectMappingStates": {
-      "planned": 72
+      "planned": 71
     },
-    "claudeAllowed": 72,
+    "claudeAllowed": 71,
     "reactImplementationStates": {
       "headless-control": 6,
       "styled": 23
@@ -1024,41 +1015,6 @@
       "claudeHandoffName": "StartupLoadingScreen",
       "claudeAllowed": true,
       "contractDigest": "60788cd9473e409f1f086c2f87a5d727b62238c30001c0ef9c8eadb343049ae7"
-    },
-    {
-      "contractId": "catch.ordered_photo_picker",
-      "conceptRole": "concept",
-      "conceptId": "catch.ordered_photo_picker",
-      "dartSymbol": "OrderedPhotoPicker",
-      "dartFile": "lib/platform/media/ordered_photo_picker.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
-      "figmaName": "Catch/OrderedPhotoPicker",
-      "figmaPropertyProjectionMode": "inferred",
-      "figmaReviewStatePolicy": "variant",
-      "figmaPropertySources": {},
-      "figmaDeclaredStatus": "unmapped",
-      "figmaDeclaredUrl": null,
-      "figmaStatus": "missing",
-      "figmaUrl": null,
-      "figmaNodeId": null,
-      "figmaComponentKey": null,
-      "figmaPublishStatus": null,
-      "figmaSnapshotCaptureMethod": "figma-mcp",
-      "figmaVariableBindingCount": 0,
-      "figmaVariableBindingDigest": null,
-      "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 1,
-      "figmaExpectedPropertyDigest": "68b45ba603878e9d289e365e99a96c3e51de347d7134791b2f9a500eb6fa94ca",
-      "figmaActualPropertyCount": 0,
-      "figmaActualPropertyDigest": null,
-      "figmaDrift": [],
-      "codeConnectStatus": "planned",
-      "codeConnectTemplate": null,
-      "claudeHandoffName": "OrderedPhotoPicker",
-      "claudeAllowed": true,
-      "contractDigest": "da25f9dc728771d98fb7a17c6500e6242ac0854f038fb7d4dc362c1424653372"
     },
     {
       "contractId": "catch.typography",

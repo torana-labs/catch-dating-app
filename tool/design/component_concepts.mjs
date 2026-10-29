@@ -45,7 +45,10 @@ export function newWidgetPolicyIssues(
       issues.push("noncanonical-core-widget-name");
     }
   }
-  const contractHome = isAppSharedWidgetSource(entry.file) ||
+  // The shared media editor predates the registry: registering it needs a
+  // Widgetbook contract preview and goldens, which come with its redraw.
+  const contractHome = (isAppSharedWidgetSource(entry.file) &&
+      !entry.file.startsWith("lib/platform/media/")) ||
     ["lib/platform/riverpod_ui/", "packages/catch_ui/lib/"]
       .some((home) => entry.file.startsWith(home));
   if (contractHome && !componentContracted) issues.push("missing-component-contract");

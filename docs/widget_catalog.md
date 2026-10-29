@@ -104,7 +104,7 @@ and candidate discussions; this document has no parallel status ledger.
 
 1245 public production Widgets. Source discovery determines membership; the component registry supplies reviewed identity and ladder metadata.
 
-Purpose comes from the first class documentation paragraph, then the registry summary. 811 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
+Purpose comes from the first class documentation paragraph, then the registry summary. 814 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
 
 ### L2 (25)
 
@@ -1078,9 +1078,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaymentHistoryTile</code> | <code>lib/payments/presentation/payment_history_screen.dart:215</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryTileSkeleton</code> | <code>lib/payments/presentation/payment_history_screen.dart:169</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentReceiptSheet</code> | <code>lib/payments/presentation/payment_history_screen.dart:318</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoAddTile</code> | <code>lib/platform/media/ordered_photo_picker.dart:685</code> | <code>Tile</code> | <code>catch.ordered_photo_picker</code> | Add-photos tile that opens the caller's picker. |
-| <code>OrderedPhotoPicker</code> | <code>lib/platform/media/ordered_photo_picker.dart:15</code> | — | <code>catch.ordered_photo_picker</code> | Ordered gallery editor for organizer and event media: an inline cover and thumbnail rail plus a full-screen manager for reorder, remove, retry and add. Also called: <code>OrderedMediaEditor</code>. |
-| <code>OrderedPhotoTile</code> | <code>lib/platform/media/ordered_photo_picker.dart:475</code> | <code>Tile</code> | <code>catch.ordered_photo_picker</code> | One ordered photo with cover badge, remove or menu action, reorder handle and upload status. |
+| <code>OrderedPhotoAddTile</code> | <code>lib/platform/media/ordered_photo_picker.dart:685</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoPicker</code> | <code>lib/platform/media/ordered_photo_picker.dart:15</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoTile</code> | <code>lib/platform/media/ordered_photo_picker.dart:475</code> | — | — | No class documentation or registry summary. |
 | <code>StartupAnimationScope</code> | <code>lib/platform/startup/startup_animation_scope.dart:7</code> | — | — | Session-scoped startup state shared with route-owned welcome surfaces. |
 | <code>ProgramArrivalActionMenu</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:400</code> | — | — | No class documentation or registry summary. |
 | <code>ProgramArrivalReadinessBadge</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:361</code> | — | — | No class documentation or registry summary. |
@@ -1350,7 +1350,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaymentConfirmationLoadingScreen</code> | <code>lib/payments/presentation/payment_confirmation_loading_screen.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentConfirmationScreen</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:32</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryScreen</code> | <code>lib/payments/presentation/payment_history_screen.dart:21</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoManagerScreen</code> | <code>lib/platform/media/ordered_photo_picker.dart:166</code> | — | <code>catch.ordered_photo_picker</code> | Full-screen editor for long ordered galleries. It keeps a local mirror so dozens of items can be reordered or removed without collapsing the route; every operation is also forwarded to the owning draft/controller. |
+| <code>OrderedPhotoManagerScreen</code> | <code>lib/platform/media/ordered_photo_picker.dart:166</code> | — | — | Full-screen editor for long ordered galleries. It keeps a local mirror so dozens of items can be reordered or removed without collapsing the route; every operation is also forwarded to the owning draft/controller. |
 | <code>ProgramArrivalsScreen</code> | <code>lib/programs/presentation/program_arrivals_screen.dart:28</code> | — | — | The greeter's live arrivals roster for one pickup station. |
 | <code>ProgramAttendanceReportScreen</code> | <code>lib/programs/presentation/program_attendance_report_screen.dart:17</code> | — | — | The reconciliationViewer's attendance report: program-wide RSVP-vs-door totals, then one row per function with its exception counts. Everything here is counts and guest ids — the callable never returns PII. |
 | <code>ProgramAttentionScreen</code> | <code>lib/programs/presentation/program_attention_screen.dart:15</code> | — | — | Function-lead attention feed: program-scoped staffAttention moment sends filtered server-side to the caller's duties — late-arrival and disruption alerts raised by Moments land here for whoever holds the stamped duty. |
