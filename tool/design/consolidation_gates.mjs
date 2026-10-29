@@ -113,7 +113,7 @@ function sumOver(root, files, count) {
 
 const reactSkip = (file) => /\.(?:test|stories)\.tsx$/u.test(file) || file.includes("/generated/");
 const flutterSkip = (file) => /\.(?:g|freezed|mocks)\.dart$/u.test(file) ||
-  ["lib/core/theme/", "lib/l10n/", "lib/design_fixtures/"].some((prefix) => file.startsWith(prefix)) ||
+  ["lib/platform/theme/", "lib/l10n/", "lib/design_fixtures/"].some((prefix) => file.startsWith(prefix)) ||
   /^lib\/firebase_options/u.test(file);
 const sharedStylesheets = new Set(["website/src/styles/base.css", "website/src/styles/catch-language.css"]);
 

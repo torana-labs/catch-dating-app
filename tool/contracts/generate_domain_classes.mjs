@@ -57,11 +57,11 @@ const checkOnly = process.argv.includes("--check");
 const IMPORT_FREEZED =
   "import 'package:freezed_annotation/freezed_annotation.dart';";
 const IMPORT_CONVERTERS =
-  "import 'package:catch_dating_app/core/firestore_converters.dart';";
+  "import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';";
 const IMPORT_CURRENCY =
-  "import 'package:catch_dating_app/core/country_markets.dart';";
+  "import 'package:catch_dating_app/kernel/country_markets.dart';";
 const IMPORT_LABELLED =
-  "import 'package:catch_dating_app/core/labelled.dart';";
+  "import 'package:catch_dating_app/kernel/labelled.dart';";
 
 // ── Class projection specs ──────────────────────────────────────────────────
 //
@@ -191,10 +191,10 @@ const SPECS = [
   "schema": "firestore/events.schema.json",
   "output": "lib/contexts/events/domain/event.dart",
   "imports": [
-    "import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';",
-    "import 'package:catch_dating_app/core/country_markets.dart';",
-    "import 'package:catch_dating_app/core/firestore_converters.dart';",
-    "import 'package:catch_dating_app/core/media/uploaded_photo.dart';",
+    "import 'package:catch_dating_app/kernel/activity_taxonomy.dart';",
+    "import 'package:catch_dating_app/kernel/country_markets.dart';",
+    "import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';",
+    "import 'package:catch_dating_app/platform/media/uploaded_photo.dart';",
     "import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';",
     "import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';",
     "import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';",

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 /// Matches the server's ordered JSON snapshot for inherited defaults.
 String organizerEventDefaultsHash({

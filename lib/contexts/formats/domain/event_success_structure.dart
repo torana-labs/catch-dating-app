@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/labelled.dart';
-import 'package:catch_dating_app/core/sentinels.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/labelled.dart';
+import 'package:catch_dating_app/kernel/sentinels.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 
 enum EventSuccessUnitKind implements Labelled {

@@ -59,6 +59,26 @@ void main() {
     );
   });
 
+  test('a moved file keeps its merge-base budget', () {
+    const budget = {
+      'lib/core/widgets/a.dart': {'supporting': 2},
+      'lib/b.dart': {'supporting': 1},
+    };
+    final moved = textMigrationRenamedBudget(budget, {
+      'lib/core/widgets/a.dart': 'lib/platform/media/a.dart',
+    });
+    expect(moved, {
+      'lib/platform/media/a.dart': {'supporting': 2},
+      'lib/b.dart': {'supporting': 1},
+    });
+    expect(
+      textMigrationGrowth({
+        'lib/platform/media/a.dart': {'supporting': 2},
+      }, moved),
+      isEmpty,
+    );
+  });
+
   test('new variants activate only original legacy role allowances', () {
     const initial = {
       'lib/a.dart': {'supporting': 2, 'bodyM': 1},
@@ -115,7 +135,7 @@ void main() {
         'widgetbook/lib/text.dart',
         'lib/a.g.dart',
         'lib/a.freezed.dart',
-        'lib/core/theme/a.dart',
+        'lib/platform/theme/a.dart',
         'lib/l10n/generated/a.dart',
       ]) {
         expect(textMigrationScope(file), isFalse, reason: file);

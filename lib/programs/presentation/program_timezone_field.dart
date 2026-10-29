@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/time_zone_catalog.dart';
+import 'package:catch_dating_app/platform/time/time_zone_catalog.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

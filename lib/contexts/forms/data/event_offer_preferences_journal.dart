@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
-import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/platform/errors/app_error_context.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// One exact unresolved offer settings command per signed-in manager and event.

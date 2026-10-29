@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/profiles/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
 
 enum SelfProfileRouteStatus { loading, error, unavailable, ready }
 

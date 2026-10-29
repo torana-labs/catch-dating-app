@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, relativeToRepo} from "../lib/repo_paths.mjs";
+import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
 const JACCARD_STRONG = 0.55;
 const SMALL_WIDGET_MULTISET_JACCARD = 0.75;
@@ -479,7 +480,7 @@ function enrichCluster(
   const cohesion = mean(pairJaccards);
   const absorbCandidate = members.some(
     (member) =>
-      member.file.startsWith("lib/core/widgets/") ||
+      isAppSharedWidgetSource(member.file) ||
       contractedSymbols.has(member.name) ||
       member.contractId,
   );
@@ -624,7 +625,7 @@ function pairAbsorbCandidate(pair, widgetsByName, contractedSymbols) {
 function isAbsorbWidget(widget, contractedSymbols) {
   return Boolean(
     widget &&
-      (widget.file.startsWith("lib/core/widgets/") ||
+      (isAppSharedWidgetSource(widget.file) ||
         contractedSymbols.has(widget.name) ||
         widget.contractId),
   );

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

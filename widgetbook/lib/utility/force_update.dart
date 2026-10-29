@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/contexts/account/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/contexts/account/domain/app_version_config.dart';
-import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
+import 'package:catch_dating_app/platform/device/external_links.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

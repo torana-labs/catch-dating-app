@@ -1,11 +1,11 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
 
 // Typed callable request DTO emitted from callables/create_event_payload.schema.json.

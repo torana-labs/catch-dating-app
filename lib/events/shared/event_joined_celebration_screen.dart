@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
-import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
-import 'package:catch_dating_app/core/celebration/celebration_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/pages/celebration/celebration_screen.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

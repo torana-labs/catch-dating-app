@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/contexts/safety/domain/messaging_permission.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_controller.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_screen.dart';
 import 'package:catch_ui/catch_ui.dart';

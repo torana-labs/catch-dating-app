@@ -211,18 +211,40 @@ overwritten. Every request records its `origin`.
   account holds a sales role or a current partner membership and stores the
   number only as the WhatsApp endpoint hash plus its last four digits
   (`supplyNominators/{nominatorId}`). The receipt dispatcher hands each
-  inbound, complete, non-STOP text to the router, which re-checks the
-  nominator's role on every message, rate-limits them to 60 messages an hour
-  and parses the text with
+  inbound, complete, non-STOP text to the inbound router
+  (`functions/src/catchMessaging/inboundRouter.ts`), because the same number
+  also carries support. The router re-checks the sender's role on every
+  message and classifies it (`inboundIntent.ts`):
+  - an explicit "nominate" or "help" prefix wins;
+  - a nominator's links with at most a short note are a nomination;
+  - links with a question or a long message are unclear, so Catch asks
+    "Reply 1 to nominate, 2 if it's a question" and keeps the question open
+    for 24 hours (`catchWhatsappClarifications`);
+  - everything else, and everything from non-nominators, stays support.
+
+  A nomination is rate-limited to 60 messages an hour per nominator, and the
+  text is parsed with
   `operations/src/workflows/supply-intake/message-nomination.mjs`: each line
   with links is one organizer, and lines without links are notes for the
   organizer above. A city named on a line places it; otherwise the
   nominator's default city does. Each organizer becomes a `nomination` with
   origin `message_nomination` (the receipt id), credited to the nominator, and
   its id is keyed on the message and line so a redelivery adds nothing.
-  Messages from anyone else stay ordinary support traffic. It runs only while
-  `SUPPLY_MESSAGE_NOMINATIONS_ENABLED` and the receipt consumers are on, and
-  sends no reply yet.
+  Catch replies automatically (owner decision, 30 Oct 2026; no staff approval
+  per reply):
+  - an acknowledgement naming what was queued, with a hint when only a
+    Linktree or Beacons link came;
+  - the 1-or-2 question, and a support acknowledgement after a "2";
+  - a "listing ready" message per organizer when its request completes
+    (`onMessageNominationListingReady`).
+
+  Each reply is claimed once per message and purpose
+  (`catchWhatsappAutoReplies`, no text kept), never goes to a number that
+  sent STOP, and only goes out inside WhatsApp's 24-hour window. Replies use
+  a pinned `CATCH_WHATSAPP_ACCESS_TOKEN` version named by
+  `CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION`; blank keeps replies off
+  while routing still works. Everything runs only while
+  `SUPPLY_MESSAGE_NOMINATIONS_ENABLED` and the receipt consumers are on.
 - **Event refresh.** `adminRefreshOrganizerEvents` (roles `admin`,
   `adminOwner`, `support`, `salesStaff`) reads new events for an unclaimed
   organizer Catch already lists, from links staff give or the event-calendar

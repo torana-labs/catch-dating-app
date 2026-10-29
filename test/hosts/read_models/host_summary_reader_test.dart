@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/audience/data/read_models/host_contact_summary_reads.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
-import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
+import 'package:catch_dating_app/platform/firebase/host_summary_reader.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

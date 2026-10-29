@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/account/account.dart';
-import 'package:catch_dating_app/core/app_error_context.dart';
-import 'package:catch_dating_app/core/persistence/async_keyed_lock.dart';
+import 'package:catch_dating_app/platform/errors/app_error_context.dart';
+import 'package:catch_dating_app/platform/persistence/async_keyed_lock.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

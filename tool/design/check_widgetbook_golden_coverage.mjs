@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
+import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
 const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
 const waiverPath = path.join(
@@ -10,8 +11,7 @@ const waiverPath = path.join(
   "widgetbook/test/support/golden_coverage_waivers.json",
 );
 const coreRoots = [
-  "lib/core/widgets/",
-  "lib/core/riverpod_ui/",
+  "lib/platform/riverpod_ui/",
   "packages/catch_ui/lib/src/primitives/",
   "packages/catch_ui/lib/src/components/",
   "packages/catch_ui/lib/src/patterns/",
@@ -47,6 +47,7 @@ export function validateGoldenCoverage({
     }
   }
   const designatedCases = registeredCases.filter((row) =>
+    isAppSharedWidgetSource(row.typeFile ?? "") ||
     coreRoots.some((root) => row.typeFile?.startsWith(root))
   );
   if (designatedCases.length === 0) {

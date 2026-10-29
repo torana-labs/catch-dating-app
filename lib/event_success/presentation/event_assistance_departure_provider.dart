@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_departure_provider.g.dart';

@@ -47,7 +47,7 @@ export 'shared/attendance_sheet_view_model.dart';
 export 'shared/event_invite_share_copy.dart';
 
 // ── Presentation — widgets commonly reused outside the feature ──────────────
-export 'package:catch_dating_app/core/widgets/event_activity_badge.dart';
+export 'package:catch_dating_app/contexts/events/parts/event_activity_badge.dart';
 export 'presentation/widgets/event_detail_body.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/event_detail_dock.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/event_detail_hero_top_bar.dart'; // public-api: shared presentation component used outside this feature
@@ -62,7 +62,7 @@ export 'shared/event_tiles/event_tile_data.dart';
 export 'shared/event_tiles/event_tiles.dart';
 
 // ── Presentation — value types & formatters ─────────────────────────────────
-export 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
+export 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
 export 'package:catch_dating_app/contexts/events/data/event_calendar_links.dart';
 export 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 export 'package:catch_dating_app/contexts/events/domain/event_location_links.dart';

@@ -4,7 +4,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversat
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list_body.dart';
-import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

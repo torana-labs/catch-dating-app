@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
@@ -7,7 +6,8 @@ import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_location_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:flutter/material.dart';
 
 class CreateEventDraftRestoreState {

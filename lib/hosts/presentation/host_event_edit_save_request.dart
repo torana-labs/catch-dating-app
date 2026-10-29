@@ -1,14 +1,14 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_public_details.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
-import 'package:catch_dating_app/core/business_rules.dart';
-import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/business_rules.dart';
+import 'package:catch_dating_app/kernel/country_markets.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable

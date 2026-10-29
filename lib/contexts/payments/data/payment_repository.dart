@@ -8,11 +8,11 @@ import 'package:catch_dating_app/contexts/payments/data/payment_callable_respons
 import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/country_markets.dart';
-import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/kernel/country_markets.dart';
+import 'package:catch_dating_app/platform/device/external_links.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

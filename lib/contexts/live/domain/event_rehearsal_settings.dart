@@ -9,7 +9,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_parsing.d
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_runtime_configuration.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff.dart';
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 final class RehearsalSettingsGroup {
   const RehearsalSettingsGroup._({

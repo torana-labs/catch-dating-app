@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Store review requires in-app Privacy, Terms and Help destinations, and

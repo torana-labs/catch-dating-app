@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/country_markets.dart';
+import 'package:catch_dating_app/kernel/city_catalog.dart';
+import 'package:catch_dating_app/kernel/country_markets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

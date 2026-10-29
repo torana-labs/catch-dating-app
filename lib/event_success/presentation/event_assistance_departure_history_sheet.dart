@@ -1,14 +1,14 @@
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/chats/chats.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
+import 'package:catch_dating_app/contexts/safety/parts/block_user_dialog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/device/external_share.dart';
+import 'package:catch_dating_app/platform/errors/app_error_message.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

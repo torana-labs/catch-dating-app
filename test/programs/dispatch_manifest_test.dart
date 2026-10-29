@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/programmes/domain/dispatch_manifest.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 ProgramArrivalsRoster roster(String readiness) =>

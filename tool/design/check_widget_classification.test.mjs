@@ -67,7 +67,7 @@ test("classification reports feature naming debt without treating app bootstraps
 test("classification discovers indirect and nontraditional Widgets across roots", () => {
   const declarations = collectWidgetClassificationDeclarations([
     {
-      file: "lib/core/widgets/catch_cross_root_base.dart",
+      file: "lib/contexts/events/parts/catch_cross_root_base.dart",
       source: `
 abstract class CatchCrossRootBase extends InheritedWidget {}
 class CatchRenderBoundary extends SingleChildRenderObjectWidget {}
@@ -98,13 +98,13 @@ class CatchExactPanel extends RenderObjectWidget {}
     })),
     [
       {
-        file: "lib/core/widgets/catch_cross_root_base.dart",
+        file: "lib/contexts/events/parts/catch_cross_root_base.dart",
         name: "CatchCrossRootBase",
         baseClass: "InheritedWidget",
         classKind: "widget",
       },
       {
-        file: "lib/core/widgets/catch_cross_root_base.dart",
+        file: "lib/contexts/events/parts/catch_cross_root_base.dart",
         name: "CatchRenderBoundary",
         baseClass: "SingleChildRenderObjectWidget",
         classKind: "widget",

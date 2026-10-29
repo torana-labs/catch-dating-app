@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/catch_attendance_activity.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/runner_activity.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';

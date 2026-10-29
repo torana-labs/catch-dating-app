@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/travel_leg_revision.dart';
-import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
+import 'package:catch_dating_app/platform/persistence/local_command_journal.dart';
 
 enum ProgramOperationKind { legObservation, dispatch, doorAction, walkIn }
 

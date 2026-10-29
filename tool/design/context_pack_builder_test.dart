@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/platform/theme/activity_palette.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +94,7 @@ Generated sources:
 - docs/design_language.md
 - design/components/catch.components.json
 - packages/catch_tokens/lib/catch_tokens.dart
-- lib/core/theme/activity_palette.dart
+- lib/platform/theme/activity_palette.dart
 - packages/catch_ui/lib/src/foundations/catch_text_styles.dart
 - packages/catch_ui/lib/src/foundations/catch_fonts.dart
 - test/ui_captures/catalog/screen_capture_catalog.dart
@@ -288,7 +288,7 @@ node tool/ui_capture/run_captures.mjs --profile design-gallery
     final dark = _themeExtension<ActivityPalette>(AppTheme.dark);
     return {
       'version': 1,
-      'source': 'lib/core/theme/activity_palette.dart',
+      'source': 'lib/platform/theme/activity_palette.dart',
       'activities': {
         for (final kind in ActivityKind.values)
           kind.name: {

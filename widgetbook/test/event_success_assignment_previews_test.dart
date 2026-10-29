@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_assignment_reason_notice.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_round_section.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_group_override_sheet.dart';
@@ -8,6 +7,7 @@ import 'package:catch_dating_app/event_success/presentation/assignments/event_su
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_round_section.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';

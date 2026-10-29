@@ -8,7 +8,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_preference.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
 
 enum EventSuccessHostTab { setup, live, report }
 

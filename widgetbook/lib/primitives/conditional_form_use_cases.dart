@@ -1,8 +1,8 @@
 // Corpus annotation names the internal owner; construction uses public Section.
 // ignore_for_file: implementation_imports
 
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/src/components/catch_dependent_row_section.dart';
 import 'package:flutter/material.dart';

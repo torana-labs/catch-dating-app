@@ -130,7 +130,7 @@
           {
             "id": "host_shell",
             "language": "dart",
-            "file": "lib/core/presentation/host_app_shell.dart",
+            "file": "lib/routing/shell/host_app_shell.dart",
             "symbol": "HostAppShell"
           }
         ],

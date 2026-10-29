@@ -11,10 +11,9 @@ import {CATCH_REPLY_OPERATIONS, readCatchOperation} from "./whatsappReplyStore";
 import {CATCH_RECEIPTS, readCatchReceipt, isCatchStopReceipt,
   persistCatchStopReceipt} from "./whatsappEndpointStops";
 import type {CatchReceipt} from "./whatsappEndpointStops";
-import {getAuth} from "firebase-admin/auth";
-import {logger} from "firebase-functions";
-import {defaultMessageNominationDeps, processWhatsappNomination} from
-  "../operations/supplyIntake/messageNominations";
+import {routeCatchWhatsappInbound} from "./inboundRouter";
+import {inboundRouterDeps, messageNominationsEnabled} from
+  "./inboundRouterRuntime";
 
 export interface CatchReceiptScope {wabaId: string; phoneNumberId: string}
 function inScope(scope: CatchReceiptScope,
@@ -169,18 +168,13 @@ const consumersEnabled = defineBoolean(
 const consumerWaba = defineString("CATCH_WHATSAPP_WABA_ID", {default: ""});
 const consumerPhone = defineString("CATCH_WHATSAPP_PHONE_NUMBER_ID",
   {default: ""});
-function configuredConsumerScope(): CatchReceiptScope | null {
+export function configuredConsumerScope(): CatchReceiptScope | null {
   if (!consumersEnabled.value()) return null;
   const scope = {wabaId: consumerWaba.value().trim(),
     phoneNumberId: consumerPhone.value().trim()};
   if (!inScope(scope, scope)) throw new Error("Invalid Catch consumer scope");
   return scope;
 }
-
-// Separate from the receipt gate: nominations need receipts, and they also
-// need the owner to switch message nominations on.
-const messageNominationsEnabled = defineBoolean(
-  "SUPPLY_MESSAGE_NOMINATIONS_ENABLED", {default: false});
 
 /** Only newly saved provider identity needs the early-receipt companion. */
 export function needsCatchStatusReconciliation(
@@ -202,12 +196,7 @@ export const onCatchWhatsappWebhookEventCreated = onDocumentCreated({
   const db = getFirestore();
   const routeInbound = messageNominationsEnabled.value() ?
     async (receipt: CatchReceipt) => {
-      const outcome = await processWhatsappNomination(
-        defaultMessageNominationDeps(db, (uid) => getAuth().getUser(uid)),
-        receipt);
-      if (outcome !== "not_nominator" && outcome !== "ignored") {
-        logger.info("WhatsApp nomination routed.", {outcome});
-      }
+      await routeCatchWhatsappInbound(inboundRouterDeps(db, scope), receipt);
     } :
     undefined;
   await processCatchWhatsappReceipt(db, event.params.eventId, scope,

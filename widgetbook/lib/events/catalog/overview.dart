@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_section.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_state.dart';
@@ -10,6 +9,7 @@ import 'package:catch_dating_app/events/presentation/widgets/event_detail_overvi
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_photo_header.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';

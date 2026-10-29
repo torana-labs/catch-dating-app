@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/commit_organizer_form_admission_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/preview_organizer_form_admission_callable_request.g.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 final class HostFormAdmissionScope {
   const HostFormAdmissionScope({

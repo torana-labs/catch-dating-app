@@ -11,7 +11,7 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_run
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_sheet.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

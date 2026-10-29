@@ -8,11 +8,11 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configura
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_target_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

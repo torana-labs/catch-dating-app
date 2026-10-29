@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/startup/startup_animation_scope.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/onboarding_welcome_body.dart';
+import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
+import 'package:catch_dating_app/platform/startup/startup_animation_scope.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

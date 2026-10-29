@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_ui/catch_ui.dart';

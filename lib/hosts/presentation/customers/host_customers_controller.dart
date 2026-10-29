@@ -7,8 +7,8 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.d
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

@@ -9,10 +9,10 @@ function fixture() {
     builder: "example",
     type: "CatchExample",
     name: "Catalog states",
-    typeFile: "lib/core/widgets/catch_example.dart",
+    typeFile: "lib/contexts/events/parts/catch_example.dart",
     productionReferences: [
       {
-        file: "lib/core/widgets/catch_example.dart",
+        file: "lib/contexts/events/parts/catch_example.dart",
         symbol: "CatchExample",
       },
     ],
@@ -22,17 +22,17 @@ function fixture() {
       coreSurface: [
         {
           name: "CatchExample",
-          file: "lib/core/widgets/catch_example.dart",
+          file: "lib/contexts/events/parts/catch_example.dart",
           line: 1,
         },
         {
           name: "CatchExampleData",
-          file: "lib/core/widgets/catch_example.dart",
+          file: "lib/contexts/events/parts/catch_example.dart",
           line: 20,
         },
         {
           name: "CatchIndirect",
-          file: "lib/core/widgets/catch_indirect.dart",
+          file: "lib/contexts/events/parts/catch_indirect.dart",
           line: 1,
         },
       ],
@@ -42,10 +42,10 @@ function fixture() {
           ...component,
           builder: "indirect",
           type: "CatchHost",
-          typeFile: "lib/core/widgets/catch_host.dart",
+          typeFile: "lib/contexts/events/parts/catch_host.dart",
           productionReferences: [
             {
-              file: "lib/core/widgets/catch_indirect.dart",
+              file: "lib/contexts/events/parts/catch_indirect.dart",
               symbol: "CatchIndirect",
             },
           ],
@@ -94,7 +94,7 @@ test("accepts only a current, owned and specific waiver", () => {
   data.inventory.generated.pop();
   data.waivers.push({
     class: "CatchIndirect",
-    file: "lib/core/widgets/catch_indirect.dart",
+    file: "lib/contexts/events/parts/catch_indirect.dart",
     owner: "ui_system_program",
     expires: "2026-10-04",
     reason: "Nonvisual protocol has no independent golden rendering surface.",
@@ -109,14 +109,14 @@ test("rejects expired, ownerless, vague and stale waivers", () => {
   data.waivers.push(
     {
       class: "CatchExample",
-      file: "lib/core/widgets/catch_example.dart",
+      file: "lib/contexts/events/parts/catch_example.dart",
       owner: "",
       expires: "2026-09-03",
       reason: "later",
     },
     {
       class: "CatchGone",
-      file: "lib/core/widgets/catch_gone.dart",
+      file: "lib/contexts/events/parts/catch_gone.dart",
       owner: "ui_system_program",
       expires: "2026-10-04",
       reason: "Removed class must not leave a stale policy waiver behind.",
@@ -133,7 +133,7 @@ test("rejects waiver counts above the Phase 1 ceiling", () => {
   const data = fixture();
   data.inventory.coreSurface = Array.from({length: 21}, (_, index) => ({
     name: `CatchWaived${index}`,
-    file: `lib/core/widgets/catch_waived_${index}.dart`,
+    file: `lib/contexts/events/parts/catch_waived_${index}.dart`,
     line: 1,
   }));
   data.waivers = data.inventory.coreSurface.map((row) => ({
@@ -151,7 +151,7 @@ test("keeps generated public Catch classes in the denominator", () => {
   const data = fixture();
   data.inventory.coreSurface.push({
     name: "CatchGeneratedProvider",
-    file: "lib/core/widgets/catch_generated.g.dart",
+    file: "lib/contexts/events/parts/catch_generated.g.dart",
     line: 1,
     generated: true,
   });
@@ -166,7 +166,7 @@ test("keeps generated public Catch classes in the denominator", () => {
 for (const layer of ["primitives", "components", "patterns"]) {
   test(`preserves coverage when ${layer} move across the package boundary`, () => {
     const moved = JSON.parse(JSON.stringify(fixture()).replaceAll(
-      "lib/core/widgets/", `packages/catch_ui/lib/src/${layer}/`,
+      "lib/contexts/events/parts/", `packages/catch_ui/lib/src/${layer}/`,
     ));
     const result = validate(moved);
     assert.deepEqual(result.failures, []);
@@ -181,7 +181,7 @@ for (const layer of ["primitives", "components", "patterns"]) {
 // Moving a Riverpod adapter must preserve both coverage and its failure signal.
 test("preserves adapter coverage at the app Riverpod boundary", () => {
   const moved = JSON.parse(JSON.stringify(fixture()).replaceAll(
-    "lib/core/widgets/", "lib/core/riverpod_ui/",
+    "lib/contexts/events/parts/", "lib/platform/riverpod_ui/",
   ));
   const result = validate(moved);
   assert.deepEqual(result.failures, []);

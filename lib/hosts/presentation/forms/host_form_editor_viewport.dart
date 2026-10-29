@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_section.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_body.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_actions.dart';
@@ -9,6 +8,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_question_sec
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

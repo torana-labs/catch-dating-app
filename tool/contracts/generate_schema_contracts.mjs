@@ -145,6 +145,16 @@ const schemaSpecs = [
     source: "firestore/catch_whatsapp_webhook_events.schema.json",
     typeOutput: "functions/src/shared/generated/catchWhatsappWebhookEventDocument.ts",
   },
+  {
+    name: "CatchWhatsappAutoReplyDocument",
+    source: "firestore/catch_whatsapp_auto_replies.schema.json",
+    typeOutput: "functions/src/shared/generated/catchWhatsappAutoReplyDocument.ts",
+  },
+  {
+    name: "CatchWhatsappClarificationDocument",
+    source: "firestore/catch_whatsapp_clarifications.schema.json",
+    typeOutput: "functions/src/shared/generated/catchWhatsappClarificationDocument.ts",
+  },
   {"name": "SalesImportHistoryRowDocument", "source": "firestore/sales_import_history_rows.schema.json", "typeOutput": "functions/src/shared/generated/salesImportHistoryRowDocument.ts"},
   {"name": "SalesImportHistoryRecordDocument", "source": "firestore/sales_import_history_records.schema.json", "typeOutput": "functions/src/shared/generated/salesImportHistoryRecordDocument.ts"},
   {"name": "SalesPrivacyRestriction", "source": "firestore/sales_privacy_restrictions.schema.json", "typeOutput": "functions/src/shared/generated/salesPrivacyRestriction.ts"},
@@ -9432,7 +9442,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "EventFormatSnapshot",
       imports: [
-        "import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';",
+        "import 'package:catch_dating_app/kernel/activity_taxonomy.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9738,7 +9748,7 @@ function dartPatchClassConfig(specName) {
         jsonValueHelperName: "_updateUserProfilePatchJsonValue",
         includeTimestampJsonHelper: true,
         imports: [
-          "import 'package:catch_dating_app/core/sentinels.dart';",
+          "import 'package:catch_dating_app/kernel/sentinels.dart';",
           "import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';",
           "import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';",
           "import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';",
@@ -9757,7 +9767,7 @@ function dartPatchClassConfig(specName) {
         jsonValueHelperName: "_updateClubPatchJsonValue",
         includeTimestampJsonHelper: false,
         imports: [
-          "import 'package:catch_dating_app/core/sentinels.dart';",
+          "import 'package:catch_dating_app/kernel/sentinels.dart';",
           "import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';",
         ],
         objectFields: new Map([["hostDefaults", "ClubHostDefaults"]]),

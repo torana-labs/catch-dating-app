@@ -4,7 +4,7 @@
   "routerPath": "lib/routing/go_router.dart",
   "shells": [
     {
-      "path": "lib/core/presentation/adaptive_tab_scaffold.dart",
+      "path": "lib/routing/shell/adaptive_tab_scaffold.dart",
       "requires": [
         {
           "text": "final keyboardVisible = MediaQuery.viewInsetsOf(context).bottom > 0",
@@ -33,7 +33,7 @@
       ]
     },
     {
-      "path": "lib/core/presentation/app_shell.dart",
+      "path": "lib/routing/shell/app_shell.dart",
       "requires": [
         {
           "text": "return AdaptiveTabScaffold(",
@@ -58,7 +58,7 @@
       ]
     },
     {
-      "path": "lib/core/presentation/host_app_shell.dart",
+      "path": "lib/routing/shell/host_app_shell.dart",
       "requires": [
         {
           "text": "return CatchWorkspaceHeaderLayout(",

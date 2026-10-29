@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 /// Returns a human-readable diagnostic for a force-update check error.

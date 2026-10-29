@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:f8aa0d3d5995efa85ab5ace81352804c7be4590677a39c520aa880a7cb49bb1f",
-  "resolvedDigest": "sha256:a7badb2512ddb4fc158fef85add5c1ae4d3f58b00ac176fc5cba261c7947866d",
+  "sourceDigest": "sha256:e5d5ea1491091c40e9b1eb2d3238871e1d284b4d96a1bb436deaea908531a5c3",
+  "resolvedDigest": "sha256:b8400979ed1a555bbc64d083ce718445e4aed28e2e1e990bc9d53c27ce7499ec",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -105,7 +105,7 @@
           {
             "id": "host_shell",
             "language": "dart",
-            "file": "lib/core/presentation/host_app_shell.dart",
+            "file": "lib/routing/shell/host_app_shell.dart",
             "symbol": "HostAppShell"
           }
         ],
@@ -2045,7 +2045,7 @@
             "kind": "composite",
             "dart": {
               "symbol": "EventCard",
-              "file": "lib/core/widgets/event_card.dart",
+              "file": "lib/contexts/events/parts/event_card.dart",
               "constructors": [
                 "EventCard"
               ]

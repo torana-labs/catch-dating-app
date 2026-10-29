@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/city_data.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 
 LocationCoordinate resolveEventMapInitialCenter({
   LocationCoordinate? deviceLocation,

@@ -1,18 +1,18 @@
 import 'dart:typed_data';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
+import 'package:catch_dating_app/contexts/events/parts/activity_map_pin.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_pins_map.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tile_data.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/city_data.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/location_map.dart';
+import 'package:catch_dating_app/platform/device/device_location.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

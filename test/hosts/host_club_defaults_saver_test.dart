@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_defaults_saver.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';

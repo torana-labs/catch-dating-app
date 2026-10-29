@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {repoRoot} from "../lib/repo_paths.mjs";
+import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const rawDividerPattern = /\b(?:Divider|VerticalDivider)\s*\(/gu;
@@ -17,7 +18,6 @@ const allowedRawDividerFiles = new Set([
   "packages/catch_ui/lib/src/primitives/catch_divider.dart",
   "packages/catch_ui/lib/src/components/catch_section.dart",
 ]);
-const wrapperAllowedPathPrefixes = ["lib/core/widgets/"];
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -153,7 +153,7 @@ function classifyFeatureRowDividerOwnership({
   line,
   expression,
 }) {
-  if (wrapperAllowedPathPrefixes.some((prefix) => relativePath.startsWith(prefix))) {
+  if (isAppSharedWidgetSource(relativePath)) {
     return null;
   }
   if (!className.endsWith("Rows")) return null;
@@ -179,7 +179,7 @@ function classifyFeatureRowDividerOwnership({
 }
 
 function classifyThinSectionWrapper({relativePath, className, line, expression}) {
-  if (wrapperAllowedPathPrefixes.some((prefix) => relativePath.startsWith(prefix))) {
+  if (isAppSharedWidgetSource(relativePath)) {
     return null;
   }
   if (!className.endsWith("Section")) return null;
