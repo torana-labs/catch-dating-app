@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
-import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_create_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_draft_restore.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_setup_screen.dart';

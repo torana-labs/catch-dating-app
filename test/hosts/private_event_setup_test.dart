@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

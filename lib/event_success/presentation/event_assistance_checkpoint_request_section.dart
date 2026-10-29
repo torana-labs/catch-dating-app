@@ -1,8 +1,8 @@
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_visits_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

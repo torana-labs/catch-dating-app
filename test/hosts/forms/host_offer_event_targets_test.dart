@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

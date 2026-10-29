@@ -9386,7 +9386,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "ClubHostDefaults",
       imports: [
-        "import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';",
+        "import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9397,7 +9397,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "EventMeetingLocation",
       imports: [
-        "import 'package:catch_dating_app/events/domain/event_meeting_location.dart';",
+        "import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9408,7 +9408,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "EventPolicyBundle",
       imports: [
-        "import 'package:catch_dating_app/event_policies/domain/event_policy.dart';",
+        "import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9438,7 +9438,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "EventSuccessDefaults",
       imports: [
-        "import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';",
+        "import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9449,7 +9449,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "EventConstraints",
       imports: [
-        "import 'package:catch_dating_app/events/domain/event_constraints.dart';",
+        "import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9734,9 +9734,9 @@ function dartPatchClassConfig(specName) {
         includeTimestampJsonHelper: true,
         imports: [
           "import 'package:catch_dating_app/core/sentinels.dart';",
-          "import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';",
-          "import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';",
-          "import 'package:catch_dating_app/user_profile/domain/user_profile.dart';",
+          "import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';",
+          "import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';",
+          "import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';",
           "import 'package:cloud_firestore/cloud_firestore.dart';",
         ],
         objectFields: new Map([["activityPreferences", "ActivityPreferences"]]),
@@ -9753,7 +9753,7 @@ function dartPatchClassConfig(specName) {
         includeTimestampJsonHelper: false,
         imports: [
           "import 'package:catch_dating_app/core/sentinels.dart';",
-          "import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';",
+          "import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';",
         ],
         objectFields: new Map([["hostDefaults", "ClubHostDefaults"]]),
         listObjectFields: new Map(),

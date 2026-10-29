@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/domain/event_attendee.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

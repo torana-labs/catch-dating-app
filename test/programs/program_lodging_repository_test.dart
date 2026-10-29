@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:catch_dating_app/contexts/programmes/data/program_lodging_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
-import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
-import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 

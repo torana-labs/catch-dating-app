@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_sheet.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventAssistanceDepartureHistorySection;
 import 'package:catch_dating_app/l10n/l10n.dart';

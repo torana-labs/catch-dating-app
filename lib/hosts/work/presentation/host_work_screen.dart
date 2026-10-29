@@ -1,9 +1,9 @@
+import 'package:catch_dating_app/contexts/programmes/data/host_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/host_work_assignment.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/hosts/work/data/host_work_repository.dart';
-import 'package:catch_dating_app/hosts/work/domain/host_work_assignment.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

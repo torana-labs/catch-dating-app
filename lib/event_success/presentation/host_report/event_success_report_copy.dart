@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_models.dart';
 
 String eventSuccessReportPercent(double value) => '${(value * 100).round()}%';
 

@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_journal.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_journal.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'event_controller_test_support.dart';

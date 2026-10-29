@@ -1,16 +1,16 @@
 // copy:allow-file(Widgetbook and capture-only deterministic fixture data)
+import 'package:catch_dating_app/contexts/insights/data/user_analytics_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/safety/data/safety_repository.dart';
-import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 /// Shared deterministic fixtures for Profile/Public Profile design review.
 ///

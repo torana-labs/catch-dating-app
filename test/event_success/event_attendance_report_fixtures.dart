@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/event_success/data/event_attendance_report_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
-import 'package:catch_dating_app/event_success/domain/event_attendance_report.dart';
+import 'package:catch_dating_app/contexts/live/data/event_attendance_report_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_attendance_report.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 EventAssistanceRuntimeScope reportScope({String eventId = 'event-1'}) =>

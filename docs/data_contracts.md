@@ -5622,7 +5622,7 @@ live IAM, tenant configuration or every authorized principal:
 | `functions/src/safety/accountDeletion.ts` | Writes the recipient `deletedUsers` tombstone before Auth deletion. Readiness reads that guard; direct Auth deletion bypasses this application path. |
 | `tool/demo/cross_paths_demo_core.mjs` | Privileged fixture tooling can clear/reassign phone numbers, create users and alter test-phone configuration. It has scoped guards including an explicitly pinned production path, not a readiness lock. |
 | `tool/firebase/probe_chat_storage_rules.mjs` | Mints and exchanges a custom token for a selected user after its own data preflight; it does not establish a readiness authority fence. |
-| `lib/auth/data/auth_repository.dart`, `admin/src/shared/api/firebase.ts`, `website/src/firebase.ts` | Establish phone/email-link sessions, Google Admin sessions and sign out. These source flows do not fence backend role, identity or session mutations. |
+| `lib/contexts/account/data/auth_repository.dart`, `admin/src/shared/api/firebase.ts`, `website/src/firebase.ts` | Establish phone/email-link sessions, Google Admin sessions and sign out. These source flows do not fence backend role, identity or session mutations. |
 
 The client SDK also exposes account deletion, linking/unlinking, password and
 phone mutation capabilities independently of whether the current application UI

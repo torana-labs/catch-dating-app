@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
-import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
+import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/shared/write_review_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

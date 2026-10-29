@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/bookings/data/event_attendee_repository.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_accountability_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_visit_sheet.dart';
-import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

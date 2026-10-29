@@ -1,15 +1,16 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assignment_feature_choice_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assignment_feature_choice.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_success/data/event_assignment_feature_choice_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assignment_feature_choice.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assignment_feature_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../support/catch_test_fonts.dart';
 
 const _choice = EventAssignmentFeatureChoice(

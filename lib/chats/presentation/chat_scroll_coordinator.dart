@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 

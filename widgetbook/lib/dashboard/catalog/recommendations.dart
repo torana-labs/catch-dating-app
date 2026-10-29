@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recommendation.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_recommendations_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommend_card.dart';
 import 'package:flutter/material.dart';

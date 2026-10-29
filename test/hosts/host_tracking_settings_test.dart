@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';

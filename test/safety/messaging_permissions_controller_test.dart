@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/safety/data/messaging_permission_repository.dart';
-import 'package:catch_dating_app/safety/domain/messaging_permission.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/safety/data/messaging_permission_repository.dart';
+import 'package:catch_dating_app/contexts/safety/domain/messaging_permission.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

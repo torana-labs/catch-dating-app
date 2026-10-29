@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_validation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/contexts/connections/domain/match.dart';
 import 'package:catch_dating_app/matches/presentation/match_celebration_controller.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

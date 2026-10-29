@@ -1,9 +1,9 @@
-import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_profile.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
 import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_control_room_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
@@ -25,7 +25,7 @@ import 'package:catch_dating_app/event_success/presentation/host_live/event_succ
 import 'package:catch_dating_app/event_success/presentation/host_live/event_success_presence_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_live/event_success_room_summary_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_live/event_success_step_action_row.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

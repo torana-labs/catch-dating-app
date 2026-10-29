@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations/host_manager_event_setup_preferences_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';

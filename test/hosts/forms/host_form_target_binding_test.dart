@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
-import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';

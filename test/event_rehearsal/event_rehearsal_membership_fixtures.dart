@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_membership_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 
 import '../event_success/event_assistance_membership_fixtures.dart';
 import 'event_rehearsal_accountability_fixtures.dart';

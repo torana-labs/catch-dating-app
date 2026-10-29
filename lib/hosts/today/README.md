@@ -52,15 +52,15 @@ Typed handoffs:
 |---|---|---|
 | `HostTodayScreen` | `lib/hosts/today/presentation/host_today_screen.dart` | Feature-contract actions: sign_in, open_operational_event, open_attention_task, start_dress_rehearsal. |
 | `HostTodayBody` | `lib/hosts/today/presentation/widgets/host_today_body.dart` | Structural owner from feature.host_home. |
-| `HostAttentionProjection` | `lib/hosts/today/domain/host_attention_item.dart` | Structural owner from feature.host_home. |
-| `HostAttentionRepository` | `lib/hosts/today/data/host_attention_repository.dart` | Structural owner from feature.host_home. |
+| `HostAttentionProjection` | `lib/contexts/insights/domain/host_attention_item.dart` | Structural owner from feature.host_home. |
+| `HostAttentionRepository` | `lib/contexts/insights/data/host_attention_repository.dart` | Structural owner from feature.host_home. |
 | `HostTodayFeedController` | `lib/hosts/today/presentation/host_today_feed_controller.dart` | Structural owner from feature.host_home. |
 | `HostAppShell` | `lib/core/presentation/host_app_shell.dart` | Feature-contract actions: switch_organizer. |
 
 ## Shared dependencies
 
-- `lib/events/data/event_repository.dart` — Shared canonical event reads; Today owns only its bounded projection.
-- `lib/hosts/data/host_attendance_outbox.dart` — Device-local absolute attendance operations are intentionally merged after the server projection.
+- `lib/contexts/events/data/event_repository.dart` — Shared canonical event reads; Today owns only its bounded projection.
+- `lib/contexts/bookings/data/host_attendance_outbox.dart` — Device-local absolute attendance operations are intentionally merged after the server projection.
 - `lib/core/presentation/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
 
 ## Data contracts

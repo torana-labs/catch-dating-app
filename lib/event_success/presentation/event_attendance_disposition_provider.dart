@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/contexts/live/data/event_attendance_disposition_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_attendance_disposition.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/event_success/data/event_attendance_disposition_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
-import 'package:catch_dating_app/event_success/domain/event_attendance_disposition.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

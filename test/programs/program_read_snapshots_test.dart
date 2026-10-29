@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

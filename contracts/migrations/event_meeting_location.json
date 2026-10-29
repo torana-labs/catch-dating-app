@@ -56,7 +56,7 @@
     }
   ],
   "knownConsumers": [
-    "lib/events/domain/event.dart",
+    "lib/contexts/events/domain/event.dart",
     "lib/events/data/event_callable_dtos.dart",
     "lib/events/presentation/create_event_screen.dart",
     "lib/hosts/presentation/edit_hosted_event_screen.dart",

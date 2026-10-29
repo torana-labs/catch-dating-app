@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment_features.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_assignment_features.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_assignment_features_section.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/contexts/events/data/event_photo_recovery_journal.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_photo_recovery.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_storage_indexed_db.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_storage_sqlite.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/data/event_photo_recovery_journal.dart';
-import 'package:catch_dating_app/hosts/domain/event_photo_recovery.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:idb_shim/idb_client_memory.dart';
 import 'package:sqlite3/sqlite3.dart';

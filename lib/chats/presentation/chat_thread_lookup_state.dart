@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/chats/domain/suvbot_identity.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/contexts/connections/domain/match.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/suvbot_identity.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 
 class ChatThreadLookupState {
   const ChatThreadLookupState({

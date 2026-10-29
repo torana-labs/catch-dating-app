@@ -1,9 +1,9 @@
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_destination.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting_result.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_template.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_assistance_setting_callable_response.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_assistance_setting_callable_payload.g.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting_result.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_template.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

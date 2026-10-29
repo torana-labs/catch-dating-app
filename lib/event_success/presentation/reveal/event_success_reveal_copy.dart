@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 
 String eventSuccessRevealHostHeadline({
   required EventSuccessRevealAssignmentKind kind,

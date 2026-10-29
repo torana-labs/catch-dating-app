@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/chats/domain/event_chat_profile.dart';
-import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 EventProfileSettings settingsFixture({

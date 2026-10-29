@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'event_rehearsal_help_queue_fixtures.dart';

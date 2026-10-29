@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/chats.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/connections/data/match_repository.dart';
+import 'package:catch_dating_app/contexts/connections/domain/match.dart';
+import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/matches/data/match_repository.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_inbox_catch_pages_controller.g.dart';

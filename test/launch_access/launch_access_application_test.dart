@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
+import 'package:catch_dating_app/contexts/account/domain/launch_access_application.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

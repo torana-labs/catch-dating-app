@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
-import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/contexts/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 
 class CreateEventLocationState {

@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'dart:ui' as ui;
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/domain/event_chat.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_participant.dart';
+
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_participant.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 

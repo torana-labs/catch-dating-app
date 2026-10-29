@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 
 class SelfProfilePhotoIntentFactory {

@@ -1,8 +1,8 @@
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
+import 'package:catch_dating_app/contexts/events/domain/private_event_setup_basics.dart';
+import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/hosts/domain/private_event_setup_basics.dart';
-import 'package:catch_dating_app/hosts/domain/private_event_setup_inventory.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';

@@ -5,9 +5,9 @@
 /// depend on.
 library;
 
-export 'data/conversation_repository.dart' show ConversationRepository;
-export 'domain/chat_message.dart';
-export 'domain/suvbot_action_item.dart';
+export 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart' show ConversationRepository;
+export 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
+export 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
 // public-api: Host shares Chat authorization and attachment commands.
 export 'presentation/chat_controller.dart' show chatControllerProvider;
 export 'presentation/chat_screen.dart'; // public-api: route entry point exposed to app routing

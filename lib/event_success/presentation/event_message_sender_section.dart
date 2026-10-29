@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/live/domain/event_sender_preference.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/event_success/domain/event_sender_preference.dart';
 import 'package:catch_dating_app/event_success/presentation/event_message_channel_accordion.dart';
 import 'package:catch_dating_app/event_success/presentation/event_message_preference_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_sender_preference_controller.dart';

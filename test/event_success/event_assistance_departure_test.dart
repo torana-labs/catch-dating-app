@@ -1,10 +1,10 @@
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/confirm_event_assistance_departure_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/confirm_event_assistance_departure_callable_payload.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_assistance_departure_roster_callable_response.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_assistance_group_progress_callable_response.g.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

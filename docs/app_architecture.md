@@ -2648,8 +2648,8 @@ section models when that removes business logic from widgets.
 
 Reference files:
 
-- `lib/clubs/data/club_name_lookup.dart`
-- `lib/clubs/data/club_name_lookup.g.dart`
+- `lib/contexts/organizers/data/club_name_lookup.dart`
+- `lib/contexts/organizers/data/club_name_lookup.g.dart`
 - `test/architecture/generated_provider_family_test.dart`
 
 Use generated function providers for feature-owned async families. Keep the
@@ -4041,8 +4041,8 @@ Reference files:
 
 - `functions/src/communications/organizerCommunicationPlan.ts`
 - `functions/src/organizers/organizerCommunicationPlans.ts`
-- `lib/hosts/domain/crm/host_communication_plan.dart`
-- `lib/hosts/data/crm/host_communication_repository.dart`
+- `lib/contexts/audience/domain/crm/host_communication_plan.dart`
+- `lib/contexts/audience/data/crm/host_communication_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_card.dart`
 
@@ -4099,8 +4099,8 @@ Reference files:
 
 - `contracts/firestore/organizer_manual_send_tasks.schema.json`
 - `functions/src/organizers/organizerManualSendTasks.ts`
-- `lib/hosts/domain/crm/host_manual_send_task.dart`
-- `lib/hosts/data/crm/host_communication_repository.dart`
+- `lib/contexts/audience/domain/crm/host_manual_send_task.dart`
+- `lib/contexts/audience/data/crm/host_communication_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
 - `lib/hosts/presentation/inbox/host_manual_send_list.dart`
 - `test/hosts/host_crm_repository_test.dart`
@@ -4163,8 +4163,8 @@ Reference files:
 - `contracts/firestore/organizer_saved_audiences.schema.json`
 - `functions/src/organizers/organizerSavedAudiences.ts`
 - `functions/src/organizers/organizerCampaigns.ts`
-- `lib/hosts/domain/crm/host_saved_audience.dart`
-- `lib/hosts/data/crm/host_saved_audience_repository.dart`
+- `lib/contexts/audience/domain/crm/host_saved_audience.dart`
+- `lib/contexts/audience/data/crm/host_saved_audience_repository.dart`
 - `lib/hosts/presentation/customers/host_customers_screen.dart`
 - `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart`
 - `lib/hosts/presentation/customers/host_saved_audience_editor.dart`
@@ -4346,18 +4346,18 @@ still require a sanitized server-owned suggestion response.
 Reference files:
 
 - `lib/cross_paths/cross_paths.dart`
-- `lib/cross_paths/data/cross_paths_repository.dart`
-- `lib/cross_paths/domain/cross_paths_suggestion.dart`
+- `lib/contexts/connections/data/cross_paths_repository.dart`
+- `lib/contexts/connections/domain/cross_paths_suggestion.dart`
 - `lib/explore/presentation/explore_cross_paths_provider.dart`
 - `lib/cross_paths/presentation/cross_paths_explore_card.dart`
-- `lib/cross_paths/domain/cross_paths_invitation.dart`
-- `lib/cross_paths/domain/cross_paths_pair_hold.dart`
+- `lib/contexts/connections/domain/cross_paths_invitation.dart`
+- `lib/contexts/connections/domain/cross_paths_pair_hold.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_screen.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_state.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_section.dart`
-- `lib/events/domain/event.dart`
+- `lib/contexts/events/domain/event.dart`
 - `lib/safety/presentation/settings_screen.dart`
 - `functions/src/crossPaths/pilotPolicy.ts`
 - `functions/src/crossPaths/setCrossPathsEventConsent.ts`
@@ -5089,8 +5089,8 @@ Reference implementation:
 - `lib/explore/presentation/explore_discovery_window_controller.dart` is the
   reference provider family: the normalized query pair is its identity, the
   notifier alone accumulates pages, and views receive immutable state.
-- `lib/events/data/event_discovery_repository.dart` and
-  `lib/events/data/external_event_repository.dart` retain raw Firestore cursors
+- `lib/contexts/discovery/data/event_discovery_repository.dart` and
+  `lib/contexts/events/data/external_event_repository.dart` retain raw Firestore cursors
   through client-side post-filtering so rejected documents are never fetched
   repeatedly or skipped.
 - `lib/core/data/read_limit_policy.dart` owns every numeric Firestore page or
