@@ -15,6 +15,7 @@ final class AdminPublishListingEventsCallableRequest {
     required this.reviewNote,
     required this.checklist,
     required this.blockerResolutions,
+    this.eventLocations,
   });
 
   final String intakeRequestId;
@@ -24,6 +25,7 @@ final class AdminPublishListingEventsCallableRequest {
   final String reviewNote;
   final Map<String, Object?> checklist;
   final List<Map<String, Object?>> blockerResolutions;
+  final List<Map<String, Object?>>? eventLocations;
 
   Map<String, Object?> toJson() => {
     'intakeRequestId': intakeRequestId,
@@ -33,5 +35,6 @@ final class AdminPublishListingEventsCallableRequest {
     'reviewNote': reviewNote,
     'checklist': checklist,
     'blockerResolutions': blockerResolutions,
+    'eventLocations': ?eventLocations,
   };
 }

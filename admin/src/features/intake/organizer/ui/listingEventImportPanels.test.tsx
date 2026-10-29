@@ -68,7 +68,45 @@ describe("imported events", () => {
       eventWorkItemIds: ["event-mixer", "event-call"], reviewNote: "Checked both on Luma.",
       checklist: {outboundLinksReviewed: true, noCatchBookingPaymentsWaitlist: true, ownerSafeCopyReviewed: true},
       blockerResolutions: [{eventWorkItemId: "event-call", blockerCode: "missing_end_time", outcome: "resolved",
-        policyGapDecisionId: null, note: "Online call, an hour long."}]}));
+        policyGapDecisionId: null, note: "Online call, an hour long."}], eventLocations: []}));
+  });
+
+  it("takes a map location for an event its page left unplaced, or waives one with no fixed place", async () => {
+    const unplaced = event({eventWorkItemId: "event-walk", eventId: "ext-walk", title: "Heritage walk",
+      state: "needs_resolution", publishedBy: null, venue: null, address: null,
+      blockers: ["missing_exact_coordinates", "missing_location_detail"],
+      resolvableBlockers: ["missing_exact_coordinates", "missing_location_detail"]});
+    // A publish that does not go through keeps the form, so both answers can be tried in turn.
+    const current = controller({rows: [{...listing, events: [unplaced]}] as unknown as
+      ListingEventImportsController["rows"], publish: vi.fn(async () => false)});
+    render(<>{renderListingEventImports(current)}</>);
+    fireEvent.click(screen.getByRole("button", {name: "Review events"}));
+    fireEvent.click(screen.getByRole("checkbox", {name: "Publish Heritage walk"}));
+    for (const label of [/opens the organizer's own page/, /Catch takes no booking/, /fit to show on Catch/]) {
+      fireEvent.click(screen.getByRole("checkbox", {name: label}));
+    }
+    fireEvent.change(screen.getByLabelText("Review note"), {target: {value: "Checked it on Luma."}});
+    fireEvent.change(screen.getByLabelText("What you checked for Heritage walk"),
+      {target: {value: "The page names the start point."}});
+    const publish = screen.getByRole("button", {name: "Publish 1 event"});
+    fireEvent.change(screen.getByLabelText("Map location for Heritage walk"), {target: {value: "91, 72.8"}});
+    expect(publish).toHaveProperty("disabled", true);
+    fireEvent.change(screen.getByLabelText("Map location for Heritage walk"),
+      {target: {value: "18.9220, 72.8347"}});
+    fireEvent.change(screen.getByLabelText("Venue for Heritage walk"), {target: {value: "Gateway of India"}});
+    fireEvent.click(publish);
+    await waitFor(() => expect(current.publish).toHaveBeenCalledWith(expect.objectContaining({
+      blockerResolutions: [], eventLocations: [{eventWorkItemId: "event-walk", name: "Gateway of India",
+        address: null, placeId: null, latitude: 18.922, longitude: 72.8347}]})));
+
+    fireEvent.click(screen.getByRole("checkbox", {name: "Heritage walk has no fixed place"}));
+    expect(screen.queryByLabelText("Map location for Heritage walk")).toBeNull();
+    fireEvent.click(publish);
+    await waitFor(() => expect(current.publish).toHaveBeenLastCalledWith(expect.objectContaining({
+      eventLocations: [], blockerResolutions: ["missing_exact_coordinates", "missing_location_detail"].map(
+        (blockerCode) => ({eventWorkItemId: "event-walk", blockerCode, outcome: "waived",
+          policyGapDecisionId: "policy-external-event-location-provider-policy",
+          note: "The page names the start point."}))})));
   });
 
   it("withdraws a published event with a reason", async () => {
