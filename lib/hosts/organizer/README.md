@@ -71,8 +71,8 @@ Typed handoffs:
 
 ## Shared dependencies
 
-- `lib/clubs/data/clubs_repository.dart` — Transitional Organizer repository alias remains the canonical Flutter read/write seam during the domain cutover.
-- `lib/payments/data/host_payment_account_repository.dart` — Provider-neutral payout account persistence and callable orchestration.
+- `lib/contexts/organizers/data/clubs_repository.dart` — Transitional Organizer repository alias remains the canonical Flutter read/write seam during the domain cutover.
+- `lib/contexts/payments/data/host_payment_account_repository.dart` — Provider-neutral payout account persistence and callable orchestration.
 - `lib/core/presentation/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
 
 ## Data contracts

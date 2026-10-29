@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

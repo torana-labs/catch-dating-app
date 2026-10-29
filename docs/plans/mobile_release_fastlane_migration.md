@@ -1,6 +1,6 @@
 ---
 doc_id: mobile_release_fastlane_migration
-version: 1.0.0
+version: 1.0.1
 updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
@@ -123,7 +123,10 @@ retries in place of hand-written loops (A-72 to A-74).
 1. App Store Connect, for both apps (6765646860 and 6778927317): TestFlight,
    each internal group, turn on automatic distribution.
 2. Play Console, for both apps: confirm the internal testing track has a tester
-   list. Confirm the Consumer app record exists.
+   list. The Consumer app has no Play record yet (2026-10-29). Create it in
+   Play Console, upload its first bundle there by hand (the API cannot create
+   an app or make the first upload), then add `consumer` to `PLAY_ROLES` in
+   `mobile-beta.yml`. Until then `Mobile Beta` skips Consumer Android.
 3. GitHub: create the `prod-mobile-release` environment with required
    reviewers and deployment branches limited to `main`. Give it the same App
    Store Connect secrets and Play variables as `prod-mobile`. If the Google

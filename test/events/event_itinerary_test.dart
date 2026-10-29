@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

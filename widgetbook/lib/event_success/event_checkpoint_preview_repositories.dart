@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/event_success/data/event_assistance_checkpoint_repository.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_departure_history_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_departure_history.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_checkpoint_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_departure_history_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:flutter/services.dart';
 
 import 'event_assistance_preview_repositories.dart' show previewUnconfirmed;

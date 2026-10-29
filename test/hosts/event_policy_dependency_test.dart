@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_policy_step.dart';

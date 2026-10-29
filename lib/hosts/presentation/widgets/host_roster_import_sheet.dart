@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_mapping_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

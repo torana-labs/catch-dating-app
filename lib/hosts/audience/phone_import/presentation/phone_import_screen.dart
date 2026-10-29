@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
@@ -8,7 +9,6 @@ import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_route_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

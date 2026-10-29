@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/data/host_roster_intake_draft_journal.dart';
+import 'package:catch_dating_app/contexts/audience/data/host_roster_intake_draft_journal.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

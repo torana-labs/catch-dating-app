@@ -685,7 +685,17 @@ for (const filtered of [true, false]) {
     const result = run();
     assert.equal(result.status, filtered ? 1 : 0, result.stderr);
     if (filtered) {
-      assert.match(result.stderr, /bad object|unable to read|missing|invalid object/u);
+      // Both outcomes mean "object unavailable offline". Some Git builds
+      // report the absent blob directly; others (Git 2.43, as shipped by
+      // Ubuntu 24.04 and cloud agent sessions) die in the promisor path
+      // after refusing the lazy fetch. The refusal only counts when Git
+      // also says lazy fetching was disabled, and the receipt assertion
+      // below still proves the remote was never invoked.
+      const missingObject = /bad object|unable to read|missing|invalid object/u;
+      const refusedLazyFetch =
+        /lazy fetching disabled[\s\S]*could not fetch [0-9a-f]{40,64} from promisor remote/u;
+      assert.ok(missingObject.test(result.stderr) || refusedLazyFetch.test(result.stderr),
+        `expected an offline missing-object failure, got:\n${result.stderr}`);
     } else {
       const report = JSON.parse(result.stdout);
       assert.equal(report.pass, true);

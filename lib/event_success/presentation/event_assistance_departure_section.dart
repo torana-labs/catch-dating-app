@@ -1,11 +1,11 @@
 import 'dart:math';
 
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_draft.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_departure_draft.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_roster_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';

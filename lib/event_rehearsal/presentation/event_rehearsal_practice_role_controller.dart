@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

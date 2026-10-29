@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/events/domain/organizer_moment.dart';
+import 'package:catch_dating_app/contexts/events/domain/organizer_moment.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_controller.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_entry_field.dart';
 import 'package:catch_dating_app/hosts/events/presentation/moments/organizer_moments_screen.dart';

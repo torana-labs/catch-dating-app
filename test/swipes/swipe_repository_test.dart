@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
-import 'package:catch_dating_app/swipes/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/connections/data/swipe_repository.dart';
+import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

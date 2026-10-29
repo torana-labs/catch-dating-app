@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingProfilePromptsState {

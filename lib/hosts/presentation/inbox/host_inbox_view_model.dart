@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:flutter/foundation.dart';
 
 enum HostInboxAudienceSegment { booked, prospective }

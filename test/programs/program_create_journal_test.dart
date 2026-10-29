@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/contexts/programmes/data/program_create_journal.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/programs/data/program_create_journal.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

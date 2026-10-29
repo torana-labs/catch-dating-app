@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/user_profile/data/form_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/data/form_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

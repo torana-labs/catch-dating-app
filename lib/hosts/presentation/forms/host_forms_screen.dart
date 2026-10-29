@@ -1,8 +1,13 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/contexts/forms/domain/host_application_import.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
@@ -12,11 +17,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_s
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
-import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';

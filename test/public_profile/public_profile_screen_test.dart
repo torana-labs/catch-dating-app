@@ -1,13 +1,13 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
+import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
-import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

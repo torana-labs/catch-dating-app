@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
-import 'package:catch_dating_app/hosts/data/private_event_update_journal.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_update_journal.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,10 +8,9 @@ void main() {
 
   const basics = PrivateEventBasics(
     name: 'Saturday mixer',
-    city: EventSetupValue.set(EventSetupCity(
-      cityId: 'in-mh-mumbai',
-      marketId: 'in-mh-mumbai',
-    )),
+    city: EventSetupValue.set(
+      EventSetupCity(cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai'),
+    ),
     localDate: '2026-09-26',
     localStartTime: '19:00',
     timezone: EventSetupValue.set('Asia/Kolkata'),
@@ -24,28 +23,31 @@ void main() {
     basics: basics,
   );
 
-  test('pending update survives a new repository instance with exact body', () async {
-    await const PrivateEventUpdateJournal().save(
-      userId: 'host-1',
-      request: request,
-    );
-    final loaded = await const PrivateEventUpdateJournal().load(
-      userId: 'host-1',
-      organizerId: 'club-1',
-      eventId: 'event-1',
-    );
-    expect(loaded?.toJson(), request.toJson());
-    expect(loaded?.requestId, 'update-1');
-    expect(loaded?.expectedSetupRevision, 2);
-    expect(
-      await const PrivateEventUpdateJournal().load(
-        userId: 'host-2',
+  test(
+    'pending update survives a new repository instance with exact body',
+    () async {
+      await const PrivateEventUpdateJournal().save(
+        userId: 'host-1',
+        request: request,
+      );
+      final loaded = await const PrivateEventUpdateJournal().load(
+        userId: 'host-1',
         organizerId: 'club-1',
         eventId: 'event-1',
-      ),
-      isNull,
-    );
-  });
+      );
+      expect(loaded?.toJson(), request.toJson());
+      expect(loaded?.requestId, 'update-1');
+      expect(loaded?.expectedSetupRevision, 2);
+      expect(
+        await const PrivateEventUpdateJournal().load(
+          userId: 'host-2',
+          organizerId: 'club-1',
+          eventId: 'event-1',
+        ),
+        isNull,
+      );
+    },
+  );
 
   test('late clear cannot erase a later request for the same event', () async {
     const journal = PrivateEventUpdateJournal();

@@ -224,25 +224,9 @@ async function main(argv) {
       "admin/src/generated/externalEventImportExecutionPlan.json",
       "admin/src/generated/externalEventImportPlan.json",
       "admin/src/generated/marketingOpsBridge.json",
-      "tool/organizer_intake/generated/search_result_candidate_queue.json",
-      "tool/organizer_intake/search_result_batches/2026-07-24-pilot-indore-organizers.json",
-      "tool/organizer_intake/search_result_batches/2026-07-24-pilot-mumbai-organizers.json",
       "operations/launch/pilot_supply_shortlist.json",
     ].filter((file) => fs.existsSync(fromRepo(file))).concat(
-      collectOperationalJson([
-        "generated",
-        "batches",
-        "answer_packets",
-        "review_decisions",
-        "curation_decisions",
-        "event_review_decisions",
-        "event_location_resolutions",
-        "policy_gap_decisions",
-        "search_result_batches",
-        "event_source_batches",
-        "raw_artifacts",
-      ].map((directory) => fromRepo(`tool/organizer_intake/${directory}`)))
-        .concat(collectOperationalJson([fromRepo("operations/launch")])),
+      collectOperationalJson([fromRepo("operations/launch")]),
     ),
   });
   if (violations.length > 0) {

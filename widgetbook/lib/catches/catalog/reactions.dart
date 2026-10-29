@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/swipes/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_reaction_action.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

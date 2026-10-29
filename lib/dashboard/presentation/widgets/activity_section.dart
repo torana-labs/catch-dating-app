@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -5,8 +7,6 @@ import 'package:catch_dating_app/dashboard/presentation/notification_route_util.
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
-import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

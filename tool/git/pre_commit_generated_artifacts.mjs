@@ -27,12 +27,13 @@ export function planPreCommitActions({graph, stagedPaths}) {
     matchesGlobPath(candidate, "lib/l10n/*.arb") ||
       (l10n != null && matchesCodegenInput(candidate, l10n)));
   return {
-    // Schema outputs have an exact canonical generator format. Formatting them
-    // again would invalidate the freshness check that runs in this same hook.
+    // Generator outputs have an exact canonical generator format. Formatting
+    // them again would invalidate the freshness check that runs in this same
+    // hook. Localization outputs are written by this hook and stay formatted.
     dartPaths: paths.filter((candidate) => candidate.endsWith(".dart") &&
       !generators.some((generator) =>
-        generator.id === "contracts.schema-projections" &&
-        generator.outputs.some((pattern) => matchesGlobPath(candidate, pattern)))),
+        generator.id !== "flutter.l10n" &&
+        (generator.outputs ?? []).some((pattern) => matchesGlobPath(candidate, pattern)))),
     l10nInputChanged,
     functionsSourceChanged: paths.some((candidate) =>
       /^functions\/src\/.*\.(?:cts|mts|tsx?)$/u.test(candidate)),

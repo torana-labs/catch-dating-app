@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/club_posts_home_section.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
-import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

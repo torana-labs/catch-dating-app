@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/programs/domain/program_models.dart';
-import 'package:catch_dating_app/programs/domain/program_operation_projection.dart';
-import 'package:catch_dating_app/programs/domain/program_operations.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_operation_projection.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_operations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'program_operations_fixture.dart';

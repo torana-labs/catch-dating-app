@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.20.1
+version: 2.21.2
 updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
@@ -900,6 +900,42 @@ account's project roles, its exact impersonation principal, and both GitHub
 environment variables. A repository-wide principal is not an acceptable
 substitute for the environment-scoped attribute.
 
+## Cloudflare edge for catchdates.com
+
+catchdates.com's DNS already lives on Cloudflare (`byron`/`carioca.ns.cloudflare.com`), with the apex A record and `www` CNAME set to DNS-only. Proxying them puts the Cloudflare free plan in front of the site:
+
+- Bot Fight Mode;
+- Cloudflare's AI-crawler block;
+- a managed challenge for scripted clients (curl, Python, headless Chrome and similar) on organizer, event and explore pages;
+- one rate-limit rule: 40 requests per 10 seconds per IP on organizer, event and preview-card paths.
+
+Verified search engines and link-preview fetchers pass. robots.txt stays ours (`website/app/robots.ts`), not Cloudflare's managed one.
+
+`tool/cloudflare/edge_policy.json` is the desired state, and `tool/cloudflare/apply_edge_policy.mjs` applies it. A run without `--apply` only reads and prints the plan. Rules whose description lacks the `catch-edge: ` prefix are kept exactly as they are.
+
+Token, created by the zone owner in the Cloudflare dashboard:
+- **Scope:** zone `catchdates.com` only.
+- **Permissions:** Zone Settings Edit, DNS Edit, Zone WAF Edit, Bot Management Edit, and Zone Read.
+
+```sh
+CLOUDFLARE_API_TOKEN=... node tool/cloudflare/apply_edge_policy.mjs           # plan
+CLOUDFLARE_API_TOKEN=... node tool/cloudflare/apply_edge_policy.mjs --apply   # make it so
+CLOUDFLARE_API_TOKEN=... node tool/cloudflare/apply_edge_policy.mjs           # expect 0 changes
+```
+
+TLS goes to Full (strict) before any record is proxied. Firebase Hosting already holds a certificate for both names, and it renews through the HTTP challenge, which still reaches Firebase through the proxy.
+
+After applying, verify:
+1. `curl -sI https://catchdates.com` shows a `cf-ray` header and a 200.
+2. A shared organizer link still previews in WhatsApp, Instagram, X and LinkedIn.
+3. Google Search Console's URL inspection fetches an organizer page.
+4. `curl -s -o /dev/null -w '%{http_code}' https://catchdates.com/organizers/` returns a challenge (403), while a browser loads the page.
+5. Sign-in, checkout and the forms still work.
+
+The production Firebase hosts (`catch-dating-app-64e51.web.app` and `.firebaseapp.com`) would otherwise bypass Cloudflare. The production website therefore answers them with a 301 to catchdates.com, except Firebase's `/__/` Auth handlers and `/api/`. Preview channels are not redirected.
+
+**Rollback:** set the two records back to DNS-only in the dashboard (or `PATCH` `proxied: false`). The site then serves directly from Firebase Hosting again. The Bot Fight Mode and rule settings can stay; they only act on proxied traffic.
+
 ## Custom form domain onboarding
 
 The trusted operator command is `node tool/firebase/form_domain_operator.mjs`.
@@ -1255,7 +1291,9 @@ As of 2026-07-11, `androidpublisher.googleapis.com` is enabled and
 exists with zero project roles. Its only IAM binding is
 `roles/iam.workloadIdentityUser` for
 `principalSet://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/attribute.repository_environment/1170579691:prod-mobile`
-(CAT-210 replaced the earlier name-based subject). Play Console must
+(CAT-210 replaced the earlier name-based subject). On 2026-10-29 a second
+member was added for the `prod-mobile-release` environment that
+`Mobile Production` uses; see [Mobile releases](#mobile-releases). Play Console must
 still invite that identity separately, scoped to the two app records and only
 read-app plus testing-track release permissions.
 
@@ -2629,10 +2667,23 @@ both from `main` only:
   staged rollout. It rebuilds nothing. It uses the `prod-mobile-release`
   environment, which requires a reviewer's approval.
 
+Both environments deploy only from `main` and hold the same credentials: the
+`catch-github-mobile-prod` App Store Connect API key in the three
+`APP_STORE_CONNECT_API_*` secrets, and the `GCP_WORKLOAD_IDENTITY_PROVIDER` and
+`GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL` variables. The Play publisher service
+account's `roles/iam.workloadIdentityUser` binding names exactly the two
+environment principals,
+`attribute.repository_environment/1170579691:prod-mobile` and
+`attribute.repository_environment/1170579691:prod-mobile-release`
+(added 2026-10-29).
+
 Each beta build runs the same checks as before upload: the IPA identity, the
 Google Maps configuration, the Android bundle identity and signing certificate,
 the package size and payload policy, and the live callable dependency check
-for the app's role. iOS build numbers come from the latest TestFlight build
+for the app's role. Android builds run only for the apps listed in the
+workflow's `PLAY_ROLES` (Host today). Google Play's API cannot create an app,
+so a new app's record and its first bundle are made by hand in Play Console
+before the app is added there. iOS build numbers come from the latest TestFlight build
 plus one. Android version codes come from the highest code on any Play track
 plus one, and never go below 100000. Each run attests its IPA or AAB with
 GitHub build provenance and keeps the file and its verification records as a

@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
+import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
-import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:flutter/material.dart';
 
 import '../support/widgetbook_harness.dart';

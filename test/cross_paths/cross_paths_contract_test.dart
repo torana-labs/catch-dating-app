@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_event_consent.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_pair_hold.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
+import 'package:catch_dating_app/contexts/connections/data/cross_paths_repository.dart';
+import 'package:catch_dating_app/contexts/connections/domain/cross_paths_event_consent.dart';
+import 'package:catch_dating_app/contexts/connections/domain/cross_paths_invitation.dart';
+import 'package:catch_dating_app/contexts/connections/domain/cross_paths_pair_hold.dart';
+import 'package:catch_dating_app/contexts/connections/domain/cross_paths_suggestion.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

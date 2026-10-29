@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/hosts/domain/crm/host_campaign_policy.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign_policy.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

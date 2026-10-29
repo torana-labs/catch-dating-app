@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/swipes/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;

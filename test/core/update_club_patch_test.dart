@@ -1,9 +1,9 @@
 // Schema-conformance tests for the generated [UpdateClubPatch].
 // Catches drift against the canonical
 // `contracts/callables/update_organizer_payload.schema.json`.
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
-import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;

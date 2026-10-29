@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/work/domain/host_work_assignment.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/host_work_assignment.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<Object?, Object?> assignmentMap({

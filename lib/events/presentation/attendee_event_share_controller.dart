@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/events/data/event_callable_responses.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'attendee_event_share_controller.g.dart';

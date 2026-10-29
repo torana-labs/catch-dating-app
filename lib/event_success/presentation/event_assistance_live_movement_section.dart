@@ -1,12 +1,12 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_departure_history.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_departure_history.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_movement_section.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

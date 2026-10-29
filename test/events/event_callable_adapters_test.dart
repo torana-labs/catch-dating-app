@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/data/event_callable_adapters.dart';
+import 'package:catch_dating_app/contexts/events/data/event_callable_adapters.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'events_test_helpers.dart';

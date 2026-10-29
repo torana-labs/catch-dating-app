@@ -1,11 +1,13 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_configuration.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_operation_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
@@ -16,8 +18,6 @@ import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehe
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator_body.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
-import 'package:catch_dating_app/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

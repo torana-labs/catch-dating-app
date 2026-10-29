@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
 import 'package:catch_dating_app/hosts/presentation/host_club_publication_state.dart';
-import 'package:catch_dating_app/organizers/domain/organizer_authority.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../clubs/clubs_test_helpers.dart';

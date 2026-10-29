@@ -1,10 +1,10 @@
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment_features.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_assignment_features.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_assignment_feature_rule_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_assignment_features_section.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -111,40 +111,48 @@ class _MatchingPreviewState extends State<_MatchingPreview> {
                     viewerUid: 'host-1',
                     enabled: true,
                     sequenceUnsupported: false,
-                    formsState: CatchAsyncState<List<HostFormSummary>>.data(
-                      [_form],
-                    ),
+                    formsState: CatchAsyncState<List<HostFormSummary>>.data([
+                      _form,
+                    ]),
                     onLoadMoreForms: null,
-                    onPreview: ({required eventId, required rules,
-                        required sourceFormIds}) async =>
-                        EventSuccessAssignmentFeaturePreview(
-                      eventId: eventId,
-                      revision: _revision,
-                      rosterCount: 8,
-                      sources: const [_source],
-                      savedRules: _saved,
-                      coverage: [
-                        for (final rule in rules)
-                          EventSuccessAssignmentFeatureCoverage(
-                            featureId: rule.featureId,
-                            grantedCount: 5,
-                            usableCount: 4,
-                            missingCount: 4,
-                          ),
-                      ],
-                    ),
-                    onSave: ({required eventId, required expectedRevision,
-                        required requestId, required rules}) async {
-                      setState(() {
-                        _saved = List.unmodifiable(rules);
-                        _revision++;
-                      });
-                      return EventSuccessAssignmentFeatureSaveResult(
-                        eventId: eventId,
-                        revision: _revision,
-                        replayed: false,
-                      );
-                    },
+                    onPreview:
+                        ({
+                          required eventId,
+                          required rules,
+                          required sourceFormIds,
+                        }) async => EventSuccessAssignmentFeaturePreview(
+                          eventId: eventId,
+                          revision: _revision,
+                          rosterCount: 8,
+                          sources: const [_source],
+                          savedRules: _saved,
+                          coverage: [
+                            for (final rule in rules)
+                              EventSuccessAssignmentFeatureCoverage(
+                                featureId: rule.featureId,
+                                grantedCount: 5,
+                                usableCount: 4,
+                                missingCount: 4,
+                              ),
+                          ],
+                        ),
+                    onSave:
+                        ({
+                          required eventId,
+                          required expectedRevision,
+                          required requestId,
+                          required rules,
+                        }) async {
+                          setState(() {
+                            _saved = List.unmodifiable(rules);
+                            _revision++;
+                          });
+                          return EventSuccessAssignmentFeatureSaveResult(
+                            eventId: eventId,
+                            revision: _revision,
+                            replayed: false,
+                          );
+                        },
                   ),
                 ),
         ),

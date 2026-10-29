@@ -1,16 +1,12 @@
-import '../support/page_preview.dart';
-import '../support/widgetbook_harness.dart';
-import '../utility/fixtures.dart';
-import '../utility/preview.dart';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
-import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
-import 'package:catch_dating_app/programs/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_edit_dialog.dart';
 import 'package:catch_dating_app/programs/presentation/program_guest_group_edit_dialog.dart';
-import 'package:catch_dating_app/programs/presentation/program_guest_desk_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_guests_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_import_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_team_screen.dart';
@@ -20,6 +16,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
+import '../support/page_preview.dart';
+import '../support/widgetbook_harness.dart';
+import '../utility/fixtures.dart';
+import '../utility/preview.dart';
 
 const _organizerId = 'org_kapoor';
 const _programId = 'program_kapoor_shah';

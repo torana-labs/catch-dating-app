@@ -1,15 +1,17 @@
 import 'dart:math';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_journal.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/data/event_offer_preferences_journal.dart';
-import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:catch_dating_app/hosts/presentation/event_management/create/event_preferences_editor.dart';
+
 part 'event_offer_preferences_controller.g.dart';
 
 typedef ReadEventOfferConfiguration =

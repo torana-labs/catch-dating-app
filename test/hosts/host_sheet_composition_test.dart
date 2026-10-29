@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';

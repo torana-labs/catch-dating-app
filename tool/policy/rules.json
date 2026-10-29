@@ -1495,7 +1495,7 @@
         "tool/architecture/context_map_baseline.json",
         "tool/architecture/check_context_map.mjs"
       ],
-      "instruction": "Every handwritten lib Dart file is placed by tool/architecture/context_map.json in one of the declared bounded contexts or in the kernel, platform, pages or app layer. Layers import only downward (kernel, platform, contexts, pages, app), and a context imports only contexts declared before it. Code under lib/contexts/ crosses into another context only through that context's public API file lib/contexts/<name>/<name>.dart. A new top-level folder must be declared in the map before it holds code. When a screen needs two contexts, its view model combines them; one context never learns about another to save a screen work. Existing legacy imports that break the order ratchet in tool/architecture/context_map_baseline.json and are removed as each context moves; files under the target roots cannot be baselined.",
+      "instruction": "Every handwritten lib Dart file is placed by tool/architecture/context_map.json in one of the declared bounded contexts or in the kernel, platform, pages or app layer. Layers import only downward (kernel, platform, contexts, pages, app), and a context imports only contexts declared before it. Code under lib/contexts/ crosses into another context only through that context's public API file lib/contexts/<name>/<name>.dart. A new top-level folder must be declared in the map before it holds code. When a screen needs two contexts, its view model combines them; one context never learns about another to save a screen work. Existing legacy imports that break the order ratchet in tool/architecture/context_map_baseline.json and are removed as each context moves; files under the target roots cannot be baselined. Since the phase 3 move, domain and data code lives under lib/contexts/ and a legacy feature folder keeps only its screens and barrel; any other file there fails legacyContextFile.",
       "sunset_when": [
         "Every legacy entry in the context map has moved under the target roots and the baseline is empty"
       ],
@@ -1515,6 +1515,11 @@
           "tool": "audit:context-map",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#bounded-context-contract"
+        },
+        {
+          "tool": "architecture:context-move",
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#phase-3-move-domain-and-data"
         }
       ]
     },
@@ -3125,8 +3130,6 @@
         "admin/src/features/intake/operations/**",
         "admin/src/features/operations/**",
         "tool/host_discovery/**",
-        "tool/marketing/event_guide/**",
-        "tool/organizer_intake/**",
         "tool/tools_manifest.json",
         "tool/remote_ops_manifest.json"
       ],

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
 
 List<String> eventSuccessAssignmentParticipantUids(
   List<EventSuccessAssignment> assignments,

@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_event_display_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';

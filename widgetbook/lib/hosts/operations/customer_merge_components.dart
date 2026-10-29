@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:flutter/material.dart';

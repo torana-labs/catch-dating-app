@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment_record.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_payment_record.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_detail_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payments_section_list.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

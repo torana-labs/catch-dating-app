@@ -1,7 +1,7 @@
 ---
 doc_id: host_listing_discovery_architecture
-version: 0.6.0
-updated: 2026-07-27
+version: 0.6.1
+updated: 2026-10-29
 owner: operations_platform
 status: superseded
 ---
@@ -138,27 +138,15 @@ human review and schema-validation gates pass.
 Current repo implementation:
 
 The durable orchestration owner is now `operations/`, with Supply Intake as the
-reference workflow. The paths under `tool/organizer_intake`,
-`tool/host_discovery`, and `tool/marketing/event_guide` remain compatibility
-producers for reviewed artifacts and repository utilities; new run state,
-leases, checkpoints, decisions, and learning lifecycles must not be added there.
-This separation lets future admin workflows reuse one operations platform
-without turning `tool/` into a collection of unrelated business applications.
+reference workflow. New run state, leases, checkpoints, decisions, and learning
+lifecycles must not be added under `tool/`. This separation lets future admin
+workflows reuse one operations platform without turning `tool/` into a
+collection of unrelated business applications.
 
-- `tool/organizer_intake/lib/source_mention_resolution_core.mjs` builds private
-  source artifacts, extracted mentions, resolution candidates, bounded candidate
-  pairs, clusters, and review packets.
-- The generated artifacts are embedded under
-  `admin/src/features/intake/organizer/generated/organizerIntakeBridge.json` as
-  `sourceMentionResolution`, and `check_admin_review_bridge.mjs` now validates
-  nested parity against the generated JSON files.
-- `source_mention_resolution_policy` is a policy-gap review item, so thresholds,
-  blocking keys, stable-provider assumptions, LLM prompt/cache policy, and spend
-  caps are visible in the admin UI and reviewable through the existing
-  admin-policy callable/export loop.
-- `llm_source_resolution.mjs` creates prompt payloads for ambiguous clusters but
-  refuses model calls. A future backend/tool runner must add cache reads/writes,
-  model env config, request caps, and explicit billing approval.
+2026-10-29: `tool/organizer_intake` and the event guide were retired; Supply
+Intake in `operations/` replaces them. The source-mention resolution prototype
+(`source_mention_resolution_core.mjs`, `llm_source_resolution.mjs`) last existed
+at `bb58cad05`.
 
 ## Event Mention Deduplication
 

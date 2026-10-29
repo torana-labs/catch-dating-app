@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_campaign_policy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_campaign_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_ui/catch_ui.dart';

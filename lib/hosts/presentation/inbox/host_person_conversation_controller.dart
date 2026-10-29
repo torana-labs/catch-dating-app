@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/chats/data/conversation_repository.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_person_conversation_controller.g.dart';

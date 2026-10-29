@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_form_admission_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
-import 'package:catch_dating_app/hosts/data/forms/host_form_admission_gateway.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_admission.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'host_form_admission_controller.g.dart';
 part 'host_form_admission_controller.freezed.dart';
+part 'host_form_admission_controller.g.dart';
 
 typedef HostFormAdmissionSession = ({
   String accountId,

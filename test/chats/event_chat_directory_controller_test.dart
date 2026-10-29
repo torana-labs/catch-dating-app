@@ -1,10 +1,12 @@
 import 'dart:async';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_directory.dart';
+
 import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_directory.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../test_pump_helpers.dart';
 import 'event_chat_controller_test.dart' show roomAccess;
 

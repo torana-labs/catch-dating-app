@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
-import 'package:catch_dating_app/events/data/event_draft_repository.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
-import 'package:catch_dating_app/hosts/data/private_event_update_journal.dart';
+import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
+import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_update_journal.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

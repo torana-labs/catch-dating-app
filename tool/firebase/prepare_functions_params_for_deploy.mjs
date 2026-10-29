@@ -40,6 +40,7 @@ export const materializedNonSecretParams = [
   "CATCH_INSTAGRAM_ACCOUNT_ID",
   "CATCH_INSTAGRAM_HANDLE",
   "CATCH_INSTAGRAM_GRAPH_VERSION",
+  "SUPPLY_MESSAGE_NOMINATIONS_ENABLED",
   "EVENT_ASSISTANCE_RCS_ENABLED",
   "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED",
   "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED",
@@ -224,6 +225,13 @@ function normalizedProviderParams(environment = process.env, projectId) {
     (instagramAccountId && instagramHandle),
   "CATCH_INSTAGRAM_CLAIMS_ENABLED requires the Instagram account id and handle");
 
+  // Message nominations read stored WhatsApp receipts, so they need the
+  // receipt consumers on as well.
+  const messageNominationsEnabled = normalizedBooleanParam(
+    environment, "SUPPLY_MESSAGE_NOMINATIONS_ENABLED");
+  assert(messageNominationsEnabled === "false" || catchConsumersEnabled === "true",
+    "SUPPLY_MESSAGE_NOMINATIONS_ENABLED requires CATCH_WHATSAPP_RECEIPT_CONSUMERS_ENABLED");
+
   const assistanceReferences = {};
   for (const [name, secret] of [["EVENT_ASSISTANCE_GUEST_KEY_VERSION", "EVENT_ASSISTANCE_GUEST_KEYS"],
     ["EVENT_ASSISTANCE_RCS_WEBHOOK_KEY_VERSION", "EVENT_ASSISTANCE_RCS_WEBHOOK_KEYS"]]) {
@@ -275,6 +283,7 @@ function normalizedProviderParams(environment = process.env, projectId) {
     CATCH_INSTAGRAM_ACCOUNT_ID: instagramAccountId || " ",
     CATCH_INSTAGRAM_HANDLE: instagramHandle || " ",
     CATCH_INSTAGRAM_GRAPH_VERSION: instagramGraphVersion,
+    SUPPLY_MESSAGE_NOMINATIONS_ENABLED: messageNominationsEnabled,
     ...eventAssistance,
     // Blank preserves a fail-closed callable until hosting is provisioned.
     FORM_DOMAIN_CNAME_TARGET: formDomainTarget || " ",

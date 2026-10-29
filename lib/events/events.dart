@@ -11,23 +11,23 @@
 library;
 
 // ── Domain models ───────────────────────────────────────────────────────────
-export 'domain/event.dart';
-export 'domain/event_constraints.dart';
-export 'domain/event_domain_readiness.dart';
-export 'domain/event_draft.dart';
-export 'domain/event_eligibility.dart';
-export 'domain/event_invite_link.dart';
-export 'domain/event_itinerary.dart';
-export 'domain/event_meeting_location.dart';
-export 'domain/event_private_access.dart';
-export 'domain/external_event.dart';
+export 'package:catch_dating_app/contexts/events/domain/event.dart';
+export 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
+export 'package:catch_dating_app/contexts/events/domain/event_domain_readiness.dart';
+export 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
+export 'package:catch_dating_app/contexts/events/domain/event_eligibility.dart';
+export 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
+export 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
+export 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
+export 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
+export 'package:catch_dating_app/contexts/events/domain/external_event.dart';
 
 // ── Repositories ────────────────────────────────────────────────────────────
-export 'data/event_callable_adapters.dart';
-export 'data/event_callable_responses.dart';
-export 'data/event_draft_repository.dart';
-export 'data/event_repository.dart';
-export 'data/external_event_repository.dart';
+export 'package:catch_dating_app/contexts/events/data/event_callable_adapters.dart';
+export 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
+export 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
+export 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+export 'package:catch_dating_app/contexts/events/data/external_event_repository.dart';
 
 // ── Presentation — screens ──────────────────────────────────────────────────
 export 'presentation/event_detail_screen.dart'; // public-api: route entry point exposed to app routing
@@ -63,9 +63,9 @@ export 'shared/event_tiles/event_tiles.dart';
 
 // ── Presentation — value types & formatters ─────────────────────────────────
 export 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-export 'data/event_calendar_links.dart';
-export 'domain/event_formatters.dart';
-export 'domain/event_location_links.dart';
+export 'package:catch_dating_app/contexts/events/data/event_calendar_links.dart';
+export 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+export 'package:catch_dating_app/contexts/events/domain/event_location_links.dart';
 export 'presentation/event_action_keys.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'presentation/event_map_center.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'shared/event_detail_route_transition.dart';

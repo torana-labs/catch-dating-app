@@ -1,14 +1,15 @@
 import 'dart:math';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_journal.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_journal.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'host_manager_event_setup_defaults_controller.g.dart';
 part 'host_manager_event_setup_defaults_controller.freezed.dart';
+part 'host_manager_event_setup_defaults_controller.g.dart';
 
 typedef ReadManagerEventSetupDefaults =
     Future<ManagerEventSetupDefaults> Function(String organizerId);

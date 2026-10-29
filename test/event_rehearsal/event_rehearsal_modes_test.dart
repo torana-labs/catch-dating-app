@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_plan.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_publication.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_template.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_destination.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_template.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_plan.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_publication.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'event_rehearsal_assistance_fixtures.dart';

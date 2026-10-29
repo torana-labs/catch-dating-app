@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/event_success/data/event_sender_preference_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_sender_preference.dart';
+import 'package:catch_dating_app/contexts/live/data/event_sender_preference_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_sender_preference.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';

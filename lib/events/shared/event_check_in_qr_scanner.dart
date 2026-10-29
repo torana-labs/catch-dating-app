@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/domain/event_check_in_qr_payload.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_check_in_qr_payload.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 

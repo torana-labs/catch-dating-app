@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_case.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_case_managers.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_cases_page.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_managers.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_cases_page.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'event_assistance_help_queue_fixtures.dart';
