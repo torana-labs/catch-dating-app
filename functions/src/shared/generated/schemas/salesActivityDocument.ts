@@ -218,6 +218,7 @@ export const salesActivityDocumentSchema: Record<string, unknown> = {
               "enum": [
                 "admin_nomination",
                 "sales_inbound_intent",
+                "message_nomination",
                 "discovery_run",
                 "none"
               ]

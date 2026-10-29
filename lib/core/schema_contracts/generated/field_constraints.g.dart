@@ -8491,7 +8491,7 @@ abstract final class CatchContractConstraints {
   static const adminListOrganizerListingReviewsCallableResponseRowsItemsOrigin = CatchContractFieldConstraints(
     path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.origin',
     required: true,
-    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run', 'none'],
+    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'message_nomination', 'discovery_run', 'none'],
   );
 
   static const adminListOrganizerListingReviewsCallableResponseRowsItemsRequestId = CatchContractFieldConstraints(
@@ -148502,7 +148502,7 @@ abstract final class CatchContractConstraints {
   static const salesActivityDocumentSourceOrigin = CatchContractFieldConstraints(
     path: 'salesActivityDocument.source.origin',
     required: true,
-    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run', 'none'],
+    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'message_nomination', 'discovery_run', 'none'],
   );
 
   static const salesActivityDocumentSourceRequestId = CatchContractFieldConstraints(

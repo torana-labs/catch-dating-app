@@ -20,7 +20,7 @@
           "kind": {"enum": ["nomination", "self_submission", "discovery"]},
           "submittedByRole": {"enum": ["associate", "partner", "organizer", "system"]},
           "submittedAt": {"type": "string", "format": "date-time"},
-          "origin": {"enum": ["admin_nomination", "sales_inbound_intent", "discovery_run", "none"]},
+          "origin": {"enum": ["admin_nomination", "sales_inbound_intent", "message_nomination", "discovery_run", "none"]},
           "market": {
             "type": "object",
             "additionalProperties": false,
