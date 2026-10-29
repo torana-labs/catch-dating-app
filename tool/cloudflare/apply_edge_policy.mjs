@@ -115,11 +115,22 @@ function keepRule(rule) {
   return Object.fromEntries(["id", ...RULE_FIELDS].filter((key) => rule[key] !== undefined).map((key) => [key, rule[key]]));
 }
 
+// Cloudflare stores defaults the policy never sets (such as a rate limit's
+// requests_to_origin), so a stored rule matches when every value the policy
+// does set is equal.
 function sameRules(current, desired) {
-  const shape = (rules) => JSON.stringify(rules.map((rule) => Object.fromEntries(RULE_FIELDS
-    .filter((key) => key !== "enabled" && rule[key] !== undefined).map((key) => [key, rule[key]]))));
-  return current.length === desired.length && current.every((rule) => rule.enabled !== false) &&
-    shape(current) === shape(desired);
+  return current.length === desired.length && current.every((rule, index) =>
+    rule.enabled !== false && covers(rule, desired[index]));
+}
+
+function covers(actual, expected) {
+  if (expected === null || typeof expected !== "object") return actual === expected;
+  if (Array.isArray(expected)) {
+    return Array.isArray(actual) && actual.length === expected.length &&
+      expected.every((value, index) => covers(actual[index], value));
+  }
+  return actual !== null && typeof actual === "object" &&
+    Object.entries(expected).every(([key, value]) => covers(actual[key], value));
 }
 
 async function main() {
@@ -133,17 +144,17 @@ async function main() {
   const plan = await planEdgePolicy({policy, api});
   const summary = {zone: plan.zone, blockers: plan.blockers,
     changes: plan.changes.map(({kind, target, from, to}) => ({kind, target, from, to}))};
-  console.log(args.json ? JSON.stringify(summary, null, 2) : formatPlan(summary));
+  console.log(args.json ? JSON.stringify(summary, null, 2) : formatPlan(summary, args.apply));
   if (!args.apply) return;
   const applied = await applyEdgePlan({plan, api});
   console.log(`Applied ${applied} change(s). Run again without --apply to confirm nothing is left.`);
 }
 
-function formatPlan({zone, blockers, changes}) {
+function formatPlan({zone, blockers, changes}, applying) {
   const lines = [`Cloudflare edge plan for ${zone}: ${changes.length} change(s).`];
   for (const change of changes) lines.push(`- ${change.kind} ${change.target}: ${JSON.stringify(change.from)} -> ${JSON.stringify(change.to)}`);
   for (const blocker of blockers) lines.push(`! ${blocker}`);
-  if (changes.length > 0) lines.push("Nothing was changed. Re-run with --apply to make these changes.");
+  if (changes.length > 0 && !applying) lines.push("Nothing was changed. Re-run with --apply to make these changes.");
   return lines.join("\n");
 }
 

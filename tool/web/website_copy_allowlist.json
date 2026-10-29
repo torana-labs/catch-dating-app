@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-10-29",
+  "updated": "2026-10-30",
   "description": "Permanent, narrowly justified website copy ownership exceptions. Keep this near-empty.",
   "entries": [
     {
@@ -126,6 +126,21 @@
     {
       "file": "website/src/server/robotsPolicy.ts",
       "text": "Discordbot",
+      "reason": "Crawler user-agent token in the robots.txt allowlist, matched by crawlers and never shown to visitors."
+    },
+    {
+      "file": "website/src/server/robotsPolicy.ts",
+      "text": "OAI-SearchBot",
+      "reason": "Crawler user-agent token in the robots.txt allowlist, matched by crawlers and never shown to visitors."
+    },
+    {
+      "file": "website/src/server/robotsPolicy.ts",
+      "text": "PerplexityBot",
+      "reason": "Crawler user-agent token in the robots.txt allowlist, matched by crawlers and never shown to visitors."
+    },
+    {
+      "file": "website/src/server/robotsPolicy.ts",
+      "text": "Claude-SearchBot",
       "reason": "Crawler user-agent token in the robots.txt allowlist, matched by crawlers and never shown to visitors."
     }
   ]

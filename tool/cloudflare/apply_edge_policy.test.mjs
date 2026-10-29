@@ -36,7 +36,11 @@ function fakeCloudflare(state = {}) {
     }
     match = route.match(/^\/zones\/zone-1\/rulesets\/phases\/(\w+)\/entrypoint$/u);
     if (match) {
-      if (method === "PUT") zone.rulesets[match[1]] = {rules: data.rules};
+      // Cloudflare stores defaults the policy never sets.
+      if (method === "PUT") {
+        zone.rulesets[match[1]] = {rules: data.rules.map((rule) => ({id: rule.id ?? `r-${match[1]}`, enabled: true,
+          ...rule, ...(rule.ratelimit ? {ratelimit: {requests_to_origin: false, ...rule.ratelimit}} : {})}))};
+      }
       if (!zone.rulesets[match[1]]) return {ok: false, status: 404, json: async () => ({success: false, errors: []})};
       return ok(zone.rulesets[match[1]]);
     }
@@ -111,4 +115,12 @@ test("every managed rule carries the managed prefix", () => {
     for (const rule of rules) assert.ok(rule.description.startsWith(policy.managedPrefix));
   }
   assert.equal(policy.rulesets.http_ratelimit.length, 1, "the free plan allows one rate-limit rule");
+});
+
+test("a stored rule that differs from the policy is still planned", async () => {
+  const cf = fakeCloudflare();
+  await applyEdgePlan({plan: await planEdgePolicy({policy, api: cf.api}), api: cf.api});
+  cf.zone.rulesets.http_ratelimit.rules[0].ratelimit.requests_per_period = 500;
+  const replan = await planEdgePolicy({policy, api: cf.api});
+  assert.deepEqual(replan.changes.map((change) => change.target), ["http_ratelimit"]);
 });

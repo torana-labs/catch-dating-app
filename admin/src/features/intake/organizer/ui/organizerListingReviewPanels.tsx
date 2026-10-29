@@ -1,8 +1,9 @@
-import {CatchField, CatchText} from "@catch/web-ui";
+import {CatchField, CatchIcon, CatchText} from "@catch/web-ui";
 import {useState} from "react";
 import {ClipboardCheck} from "lucide-react";
 import {
   AdminButton,
+  AlertRow,
   AdminFieldGrid,
   AdminForm,
   AdminLinkButton,
@@ -45,6 +46,14 @@ const kindLabels: Record<ListingReview["kind"], string> = {
 
 const uncheckedList = (): Checklist => Object.fromEntries(checklistItems.map(([key]) => [key, false])) as never;
 
+type DuplicateCheck = NonNullable<ListingReview["duplicateCheck"]>;
+
+const bandLabels: Record<DuplicateCheck["candidates"][number]["band"], string> = {
+  match: "Likely the same", probable: "Probably the same", review: "Possibly the same", low: "Weak overlap",
+};
+
+const POSSIBLE_DUPLICATE_GAP = "possible_duplicate_organizer";
+
 /**
  * Listings Supply Intake built and nobody has approved. Approving one
  * publishes it unclaimed and noindex and opens its Sales work.
@@ -74,7 +83,8 @@ function OrganizerListingReview({controller}: {controller: OrganizerListingRevie
           {kindLabels[entry.kind]} · {entry.market.label ?? entry.market.slug} ·{" "}
           {entry.listing.eventCount} event{entry.listing.eventCount === 1 ? "" : "s"} ·{" "}
           {entry.listing.fetchedPageCount} of {entry.listing.pageCount} pages read
-          {entry.listing.gaps.length ? <> · {entry.listing.gaps.length} gaps</> : null}{" "}
+          {entry.listing.gaps.length ? <> · {entry.listing.gaps.length} gaps</> : null}
+          {entry.listing.gaps.includes(POSSIBLE_DUPLICATE_GAP) ? <> · possible duplicate</> : null}{" "}
           <AdminButton onClick={() => setSelected(entry.listingWorkItemId)}>Review</AdminButton>
         </>} />)}
       <AdminToolbar>
@@ -113,6 +123,7 @@ function ListingApprovalForm({row, controller, onClose}: {
       value={<AdminLinkButton href={link.url} rel="noreferrer" target="_blank">{link.url}</AdminLinkButton>} />)}
     {row.listing.gaps.length ? <CatchText as="p" variant="supporting">Gaps: {row.listing.gaps.join(", ")}.
       {row.listing.researchNeeded ? " Research is still needed." : ""}</CatchText> : null}
+    <ListingDuplicateCheck check={row.duplicateCheck} flagged={row.listing.gaps.includes(POSSIBLE_DUPLICATE_GAP)} />
     {!row.market.open ? <CatchText as="p" variant="supporting" role="status">They were nominated
       for {row.market.label ?? row.market.slug}, which Catch has not opened. Choose an open market or wait.</CatchText> : null}
     {controller.canApprove ? <AdminForm onSubmit={(event) => {event.preventDefault(); void submit();}}>
@@ -140,4 +151,36 @@ function ListingApprovalForm({row, controller, onClose}: {
     </AdminForm> : <CatchText as="p" variant="supporting" role="status">Approving a listing
       needs an admin or admin owner, because it opens Sales records.</CatchText>}
   </Panel>;
+}
+
+/**
+ * How the listing compares with the organizers Catch already lists. The check
+ * is advisory: the reviewer decides, and approving is never blocked by it.
+ */
+function ListingDuplicateCheck({check, flagged}: {check: ListingReview["duplicateCheck"]; flagged: boolean}) {
+  if (!check) {
+    return <CatchText as="p" variant="supporting">This listing was not compared with the organizers Catch
+      already lists. Search Organizers before approving.</CatchText>;
+  }
+  const scope = `${check.organizersCompared} published organizer${check.organizersCompared === 1 ? "" : "s"}` +
+    (check.citySlug ? ` in ${check.citySlug}` : " across every city");
+  const truncated = check.truncated ? " Only the first ones were compared, so search Organizers too." : "";
+  if (!flagged || check.candidates.length === 0) {
+    return <CatchText as="p" variant="supporting">Compared with {scope}: none looks like the same
+      organizer.{truncated}</CatchText>;
+  }
+  return <>
+    <AlertRow tone="warning" icon={<CatchIcon icon="organizer" size="xs" tone="warning" />}
+      title="Possible duplicate organizer">
+      Catch may already list this organizer ({POSSIBLE_DUPLICATE_GAP}). Compared with {scope}; open each match below
+      and approve only if this is a different organizer.{truncated}
+    </AlertRow>
+    {check.candidates.map((candidate) => <StateRow key={candidate.organizerId}
+      label={`${bandLabels[candidate.band]} · score ${candidate.score.toFixed(2)}`}
+      value={<>
+        <AdminLinkButton href={`/organizers/${encodeURIComponent(candidate.organizerId)}`} rel="noreferrer"
+          target="_blank">{candidate.name ?? candidate.organizerId}</AdminLinkButton>{" "}
+        {candidate.rationale}
+      </>} />)}
+  </>;
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: artifact_retention
-version: 1.0.0
-updated: 2026-07-12
+version: 1.0.1
+updated: 2026-10-29
 owner: design_system
 status: active
 ---
@@ -13,7 +13,6 @@ status: active
 Other evidence lanes follow the same policy:
 
 - `docs/visual_references/**` image files
-- `tool/organizer_intake/raw_artifacts/**`
 - `test/goldens/failures/`
 - root `firebase-export-*` and `emulator-data/`
 

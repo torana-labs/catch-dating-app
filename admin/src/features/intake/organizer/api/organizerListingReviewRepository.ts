@@ -35,6 +35,7 @@ const sampleListing: ListingReview = {
     categories: ["social"], links: [{platform: "luma", url: "https://lu.ma/afterfly"}],
     gaps: [], eventCount: 3, researchNeeded: false, contentHash: "a".repeat(64), pageCount: 1,
     fetchedPageCount: 1},
+  duplicateCheck: {verdict: "none", organizersCompared: 12, citySlug: "mumbai", truncated: false, candidates: []},
 };
 const sampleApprovals = new Map<string, ListingApproval>();
 

@@ -53,6 +53,35 @@ test("empty output, plugin failure, process failure and unrelated output cannot 
   }
 });
 
+test("only the verbatim Flutter root banner on stderr is ignored", () => {
+  // Printed by Flutter's bin/dart wrapper when it runs as root outside CI.
+  const banner = [
+    "   Woah! You appear to be trying to run flutter as root.",
+    "   We strongly recommend running the flutter tool without superuser privileges.",
+    "  /",
+    "\u{1F4CE}",
+    "",
+  ].join("\n");
+  const valid = diagnostic("/repo/probes/one.dart");
+  assert.deepEqual(verifyProbeResult(plan(), {...result(valid), stderr: banner}),
+    {fixtures: 2, assertions: 4, diagnostics: 1, analyzerStarts: 1});
+  assert.deepEqual(verifyProbeResult(plan(), {...result(valid), stderr: banner.replaceAll("\n", "\r\n")}),
+    {fixtures: 2, assertions: 4, diagnostics: 1, analyzerStarts: 1});
+  // The banner does not excuse a missing or wrong finding.
+  assert.throws(() => verifyProbeResult(plan(), {...result("", 0), stderr: banner}), /violating fixture/);
+  assert.throws(() => verifyProbeResult(plan(), {...result(diagnostic("/repo/probes/two.dart")), stderr: banner}),
+    /violating fixture/);
+  // Anything beyond the exact block, a truncated block, or the block on stdout still fails.
+  for (const failure of [
+    {...result(valid), stderr: banner + "No issues found!\n"},
+    {...result(valid), stderr: banner.replace("  /\n", "")},
+    {...result(valid), stderr: banner.replace("root.", "root!")},
+    result(banner + valid),
+  ]) {
+    assert.throws(() => verifyProbeResult(plan(), failure), /Unrecognized analyzer output/);
+  }
+});
+
 test("malformed or unowned expectations fail before starting the analyzer", () => {
   for (const text of ["", manifest.replace("probes/one.dart", "../outside.dart"),
     manifest.replace("\tmin\t", "\tunknown\t"), manifest.replace("\t1\n", "\tNaN\n"),

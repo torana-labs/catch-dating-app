@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.21.0
+version: 2.21.2
 updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
@@ -1291,7 +1291,9 @@ As of 2026-07-11, `androidpublisher.googleapis.com` is enabled and
 exists with zero project roles. Its only IAM binding is
 `roles/iam.workloadIdentityUser` for
 `principalSet://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/attribute.repository_environment/1170579691:prod-mobile`
-(CAT-210 replaced the earlier name-based subject). Play Console must
+(CAT-210 replaced the earlier name-based subject). On 2026-10-29 a second
+member was added for the `prod-mobile-release` environment that
+`Mobile Production` uses; see [Mobile releases](#mobile-releases). Play Console must
 still invite that identity separately, scoped to the two app records and only
 read-app plus testing-track release permissions.
 
@@ -2665,10 +2667,23 @@ both from `main` only:
   staged rollout. It rebuilds nothing. It uses the `prod-mobile-release`
   environment, which requires a reviewer's approval.
 
+Both environments deploy only from `main` and hold the same credentials: the
+`catch-github-mobile-prod` App Store Connect API key in the three
+`APP_STORE_CONNECT_API_*` secrets, and the `GCP_WORKLOAD_IDENTITY_PROVIDER` and
+`GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL` variables. The Play publisher service
+account's `roles/iam.workloadIdentityUser` binding names exactly the two
+environment principals,
+`attribute.repository_environment/1170579691:prod-mobile` and
+`attribute.repository_environment/1170579691:prod-mobile-release`
+(added 2026-10-29).
+
 Each beta build runs the same checks as before upload: the IPA identity, the
 Google Maps configuration, the Android bundle identity and signing certificate,
 the package size and payload policy, and the live callable dependency check
-for the app's role. iOS build numbers come from the latest TestFlight build
+for the app's role. Android builds run only for the apps listed in the
+workflow's `PLAY_ROLES` (Host today). Google Play's API cannot create an app,
+so a new app's record and its first bundle are made by hand in Play Console
+before the app is added there. iOS build numbers come from the latest TestFlight build
 plus one. Android version codes come from the highest code on any Play track
 plus one, and never go below 100000. Each run attests its IPA or AAB with
 GitHub build provenance and keeps the file and its verification records as a

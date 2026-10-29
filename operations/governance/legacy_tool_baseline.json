@@ -4,10 +4,7 @@
   "schemaVersion": 3,
   "policyId": "operations-tool-boundary-v3",
   "toolRoot": "tool",
-  "legacyRoots": [
-    {"path": "tool/marketing/event_guide", "codeFileCeiling": 5},
-    {"path": "tool/organizer_intake", "codeFileCeiling": 107}
-  ],
+  "legacyRoots": [],
   "allowedLegacyPathReaders": [],
   "codeExtensions": [".js", ".mjs", ".cjs", ".ts", ".tsx"],
   "forbiddenLegacyImports": [
@@ -25,7 +22,10 @@
   ],
   "singleSpine": {
     "retiredPaths": [
-      "tool/host_discovery"
+      "tool/host_discovery",
+      "tool/marketing/event_guide",
+      "tool/marketing/weekly_event_guide_poc",
+      "tool/organizer_intake"
     ],
     "retiredBasenames": [
       "event_intake_bridge.json"
@@ -35,8 +35,6 @@
         "root": "operations/src",
         "tokens": [
           "tool/host_discovery",
-          "tool/organizer_intake/generated",
-          "tool/marketing/event_guide/generated",
           "eventIntakeDashboards"
         ]
       },
@@ -49,13 +47,6 @@
       {
         "root": "admin/src",
         "tokens": [
-          "eventIntakeDashboards"
-        ]
-      },
-      {
-        "root": "tool/marketing/event_guide",
-        "tokens": [
-          "event_intake_bridge",
           "eventIntakeDashboards"
         ]
       }

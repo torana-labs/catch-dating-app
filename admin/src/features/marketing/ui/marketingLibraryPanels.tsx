@@ -524,9 +524,8 @@ function MarketingAppFeatureMediaView({
             compact variant="marketing"
             icon={<FileWarning size={16} strokeWidth={1.9} />}
           >
-            The marketing ops bridge does not include app screenshot metadata.
-            Regenerate it from the event-guide script to attach the existing
-            screenshot capture manifest.
+            The marketing dashboard has no app screenshot metadata yet, so
+            the existing screenshot capture manifest is not attached.
           </EmptyState>
         </AdminPanel>
       </AdminCardList>
