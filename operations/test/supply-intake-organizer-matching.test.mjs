@@ -69,6 +69,8 @@ test("Luma calendar and website URL variants resolve to the same identity key", 
   // An unread seed URL still names the organizer.
   const seeded = match({seedUrls: ["https://lu.ma/calendar/Bombay-Board-Gamers"]});
   assert.equal(seeded.verdict, "match");
+  // A seeded single-segment Luma URL may be an event page, so it is no identity.
+  assert.equal(match({seedUrls: ["https://lu.ma/bombay-board-gamers"]}).verdict, "none");
 });
 
 test("a shared host matches only the exact page, never the domain", () => {

@@ -131,8 +131,10 @@ export function bigramSimilarity(left, right) {
  * The identity key of one organizer link, or null when the link cannot
  * identify an organizer. A link may carry a normalizedKey computed upstream;
  * the URL is normalized again so both sides use this repository's normalizer.
+ * A link known to be the organizer's own page reads an ambiguous Luma slug as
+ * its calendar; any other URL (a nominator's seed) keeps it as an event.
  */
-export function identityKeysForLink(link) {
+export function identityKeysForLink(link, {organizerRole = true} = {}) {
   const url = typeof link === "string" ? link : link?.url;
   const keys = [];
   const supplied = typeof link === "object" && link !== null ? link.normalizedKey : null;
@@ -140,7 +142,8 @@ export function identityKeysForLink(link) {
   if (typeof url === "string" && url.trim()) {
     let surface;
     try {
-      surface = surfaceForOrganizerPage(normalizeOrganizerSurfaceUrl(url));
+      surface = normalizeOrganizerSurfaceUrl(url);
+      if (organizerRole) surface = surfaceForOrganizerPage(surface);
     } catch {
       surface = null;
     }

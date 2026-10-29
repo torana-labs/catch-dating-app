@@ -108,7 +108,9 @@ export function listingMatchSubject(listing, {market} = {}) {
   for (const link of asArray(listing.organizer.links)) for (const key of identityKeysForLink(link)) keys.add(key);
   for (const key of asArray(listing.organizer.identityKeys)) if (isIdentityKeyString(key)) keys.add(key);
   // A seed URL the listing could not read still names the organizer.
-  for (const url of asArray(listing.seed?.urls)) for (const key of identityKeysForLink(url)) keys.add(key);
+  for (const url of asArray(listing.seed?.urls)) {
+    for (const key of identityKeysForLink(url, {organizerRole: false})) keys.add(key);
+  }
   const subjectMarket = market ?? listing.market ?? null;
   return {
     subjectId: typeof listing.listingId === "string" ? listing.listingId : null,
