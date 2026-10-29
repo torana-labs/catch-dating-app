@@ -1,0 +1,119 @@
+{
+  "owner": "app_architecture",
+  "targetPhase": "docs/app_architecture.md#phase-3-move-domain-and-data",
+  "version": 1,
+  "updated": "2026-10-29",
+  "description": "Imports in legacy folders that break the bounded-context order. Each move into lib/contexts/ removes its entries; normal runs fail on new findings and on obsolete allowances.",
+  "allowedFindings": [
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/clubs/data/clubs_repository.dart",
+      "import": "package:catch_dating_app/events/data/event_stream_utils.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/clubs/domain/club_host_defaults.dart",
+      "import": "package:catch_dating_app/event_policies/domain/event_policy_defaults.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/clubs/domain/club_host_defaults.dart",
+      "import": "package:catch_dating_app/event_success/domain/event_success_defaults.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/data/event_callable_adapters.dart",
+      "import": "package:catch_dating_app/event_success/domain/event_success_defaults.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/data/event_repository.dart",
+      "import": "package:catch_dating_app/event_success/domain/event_success_defaults.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/data/event_repository.dart",
+      "import": "package:catch_dating_app/events/domain/event_participation.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/domain/event_draft.dart",
+      "import": "package:catch_dating_app/event_success/domain/event_success_defaults.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/domain/event_service.dart",
+      "import": "package:catch_dating_app/events/domain/event_participation.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/events.dart",
+      "import": "data/event_discovery_repository.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/events.dart",
+      "import": "data/event_participation_repository.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/events.dart",
+      "import": "data/saved_event_repository.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/events.dart",
+      "import": "domain/event_arrival_action.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/events.dart",
+      "import": "domain/event_check_in_qr_payload.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/events.dart",
+      "import": "domain/event_participation_roster.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/events.dart",
+      "import": "domain/event_participation.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/events.dart",
+      "import": "domain/saved_event.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/events/events.dart",
+      "import": "domain/viewer_event_availability.dart"
+    },
+    {
+      "rule": "contextOrderImport",
+      "path": "lib/hosts/data/host_application_repository.dart",
+      "import": "package:catch_dating_app/hosts/domain/host_application_import.dart"
+    },
+    {
+      "rule": "upwardLayerImport",
+      "path": "lib/activity/domain/activity_taxonomy.dart",
+      "import": "package:catch_dating_app/core/labelled.dart"
+    },
+    {
+      "rule": "upwardLayerImport",
+      "path": "lib/core/fcm_service.dart",
+      "import": "package:catch_dating_app/routing/route_contract.dart"
+    },
+    {
+      "rule": "upwardLayerImport",
+      "path": "lib/core/widgets/event_thumbnail.dart",
+      "import": "package:catch_dating_app/events/domain/event.dart"
+    },
+    {
+      "rule": "upwardLayerImport",
+      "path": "lib/event_success/event_success_companion_launcher.dart",
+      "import": "package:catch_dating_app/routing/go_router.dart"
+    }
+  ]
+}

@@ -12,7 +12,13 @@ broad audit history.
 
 ## Structure
 
-Most app features follow the same shape:
+`lib/` is moving to bounded contexts under `lib/contexts/`, with screens in
+`apps/<app>/lib/`. `tool/architecture/context_map.json` places every current
+folder in a context or layer, and `audit:context-map` fails on code that
+imports against the order; read the Bounded Context Contract in
+`docs/app_architecture.md` before adding a folder or moving code.
+
+Until each folder moves, most app features follow the same shape:
 
 - `domain`: Freezed models, enums, value objects, and pure domain helpers.
 - `data`: repositories, Firebase adapters, and Riverpod providers.

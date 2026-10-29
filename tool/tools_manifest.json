@@ -1516,6 +1516,49 @@
       }
     },
     {
+      "id": "audit:context-map",
+      "category": "audit",
+      "path": "tool/architecture/check_context_map.mjs",
+      "command": "node tool/architecture/check_context_map.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Places every handwritten lib Dart file in a bounded context or layer from tool/architecture/context_map.json and checks that layers and contexts import only downward, that new contexts cross through their public API file, that no new top-level folder goes undeclared, and that the architecture spec's context table matches the map.",
+      "checks": [
+        "node --test tool/architecture/check_context_map.test.mjs",
+        "node --check tool/architecture/check_context_map.mjs",
+        "node tool/architecture/check_context_map.mjs"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "CONTEXT-MAP-001"
+      ],
+      "baseline": "tool/architecture/context_map_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/architecture/check_context_map.test.mjs",
+        "contains": [
+          "scanFile flags a context importing a context declared after it",
+          "scanFile flags upward layer imports",
+          "scanFile flags new contexts that bypass the public API file",
+          "scanFile flags unmapped files and undeclared contexts",
+          "scanContextMap ratchets legacy debt but never baselines new roots",
+          "scanContextMap reports obsolete baseline allowances",
+          "checkSpecTable fails when the spec's context table drifts from the map"
+        ]
+      },
+      "impactPaths": [
+        "docs/app_architecture.md",
+        "tool/architecture/check_context_map.test.mjs",
+        "tool/architecture/check_context_map.mjs",
+        "tool/architecture/context_map.json",
+        "tool/architecture/context_map_baseline.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
+    },
+    {
       "id": "audit:mutation-error-surfaces",
       "category": "audit",
       "path": "tool/architecture/check_mutation_error_surfaces.mjs",
