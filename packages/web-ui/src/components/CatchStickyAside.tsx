@@ -7,7 +7,7 @@ import {CatchSheet} from "./CatchSheet";
 import styles from "./CatchStickyAside.module.css";
 
 // Read by the stylesheet's page clearance on the root element.
-const dockHeightProperty = "--catch-sticky-aside-dock-height";
+const dockClearanceProperty = "--catch-sticky-aside-dock-clearance";
 
 export interface CatchStickyAsideProps {
   /** Names the aside, and the sheet it becomes on a phone. */
@@ -57,13 +57,13 @@ export function CatchStickyAside({label, children, dock, openLabel, closeLabel, 
     const element = dockBar.current;
     if (!element) return undefined;
     const root = document.documentElement;
-    const measure = () => root.style.setProperty(dockHeightProperty, `${element.offsetHeight}px`);
+    const measure = () => root.style.setProperty(dockClearanceProperty, `${element.offsetHeight}px`);
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(element);
     return () => {
       observer.disconnect();
-      root.style.removeProperty(dockHeightProperty);
+      root.style.removeProperty(dockClearanceProperty);
     };
   }, [compact]);
 

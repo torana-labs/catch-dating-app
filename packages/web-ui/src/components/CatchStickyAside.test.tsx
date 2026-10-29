@@ -65,16 +65,16 @@ describe("CatchStickyAside", () => {
     vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(75);
     probeWidth = 1;
     render(aside());
-    expect(root.getPropertyValue("--catch-sticky-aside-dock-height")).toBe("75px");
+    expect(root.getPropertyValue("--catch-sticky-aside-dock-clearance")).toBe("75px");
     probeWidth = 0;
     act(() => resize());
-    expect(root.getPropertyValue("--catch-sticky-aside-dock-height")).toBe("");
+    expect(root.getPropertyValue("--catch-sticky-aside-dock-clearance")).toBe("");
   });
 
   it("keeps the page end and keyboard focus clear of the docked bar", () => {
     // jsdom lays nothing out, so this reads the clearance from the stylesheet.
     const css = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "CatchStickyAside.module.css"), "utf8");
-    expect(css).toMatch(/:global\(html\):has\(\.dock\) \{[^}]*scroll-padding-bottom: calc\(var\(--catch-sticky-aside-dock-height\) \+ var\(--catch-space-s3\)\);/u);
-    expect(css).toMatch(/:global\(body\):has\(\.dock\) \{\s*padding-bottom: var\(--catch-sticky-aside-dock-height\);/u);
+    expect(css).toMatch(/:global\(html\):has\(\.dock\) \{[^}]*scroll-padding-bottom: calc\(var\(--catch-sticky-aside-dock-clearance\) \+ var\(--catch-space-s3\)\);/u);
+    expect(css).toMatch(/:global\(body\):has\(\.dock\) \{\s*padding-bottom: var\(--catch-sticky-aside-dock-clearance\);/u);
   });
 });

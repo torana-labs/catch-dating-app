@@ -35,12 +35,12 @@
  * height on the root element once the dock renders.
  */
 :global(html):has(.dock) {
-  --catch-sticky-aside-dock-height: calc(2 * var(--catch-space-s3) + var(--catch-space-s10) + var(--catch-stroke-hairline) + env(safe-area-inset-bottom));
-  scroll-padding-bottom: calc(var(--catch-sticky-aside-dock-height) + var(--catch-space-s3));
+  --catch-sticky-aside-dock-clearance: calc(2 * var(--catch-space-s3) + var(--catch-space-s10) + var(--catch-stroke-hairline) + env(safe-area-inset-bottom));
+  scroll-padding-bottom: calc(var(--catch-sticky-aside-dock-clearance) + var(--catch-space-s3));
 }
 
 :global(body):has(.dock) {
-  padding-bottom: var(--catch-sticky-aside-dock-height);
+  padding-bottom: var(--catch-sticky-aside-dock-clearance);
 }
 
 .bar {
