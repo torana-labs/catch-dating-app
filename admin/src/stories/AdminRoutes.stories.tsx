@@ -1524,7 +1524,8 @@ function buildEventSupplyReadiness(
     executionPlan: {
       actions: [],
       commands: {
-        plan: "node tool/organizer_intake/verify_event_import_preflight.mjs --dry-run",
+        plan: "node tool/organizer_intake/plan_external_event_imports.mjs",
+        preflight: "node tool/organizer_intake/preflight_external_event_imports.mjs",
         write: "not enabled in Storybook fixture",
       },
       generatedFrom: {

@@ -1111,26 +1111,16 @@ function validateRemoteConfigOwnership({root, manifest, findings}) {
       "lib/hosts/audience/phone_import/presentation/phone_import_route_controller.dart"), "utf8"),
     workSource: fs.readFileSync(path.join(root,
       "lib/programs/presentation/program_work_screen.dart"), "utf8"),
-    parameters,
   }));
 }
 
-/** Prevent the retired binary production hold in the phone import path and
- * the retired Remote Config release gates from returning to the template.
- * App environment checks elsewhere retain their identity/security meaning. */
-// Features ship identically in every environment; these switches were removed.
-export const retiredHostReleaseKeys = Object.freeze([
-  "CATCH_EVENT_OFFER_INTEGRATION_READY",
-  "CATCH_PRIVATE_EVENT_PRIVACY_READY",
-  "CATCH_PRIVATE_EVENT_SEAT_WRITERS_READY",
-  "CATCH_WEDDING_PHONE_IMPORT_READY",
-  "host_private_event_setup_enabled",
-  "host_progressive_event_defaults_enabled",
-  "host_wedding_phone_import_enabled",
-]);
-
+/** Prevent the retired binary production hold from returning to the phone
+ * import path. App environment checks elsewhere retain their identity/security
+ * meaning. Retired Remote Config gates are owned by the `retired` section of
+ * tool/firebase/environment_difference_policy.json, which
+ * report_environment_parity.mjs --policy-only enforces against the template. */
 export function validateHostReleaseVisibility({accessSource, routeSource,
-  workSource, parameters}) {
+  workSource}) {
   const findings = [];
   for (const [label, source] of [
     ["phone access", accessSource], ["phone route", routeSource],
@@ -1140,11 +1130,6 @@ export function validateHostReleaseVisibility({accessSource, routeSource,
     const compiledVisibility = /(?:!AppConfig\.environment\.isProduction|!kReleaseMode)\s*&&\s*(?:canImportWeddingPhoneContacts|phoneImport)/u;
     if (compiledDenial.test(source) || compiledVisibility.test(source)) {
       findings.push(`${label}: compiled environment release hold is forbidden`);
-    }
-  }
-  for (const key of retiredHostReleaseKeys) {
-    if (Object.hasOwn(parameters, key)) {
-      findings.push(`Remote Config template must not reintroduce retired release gate ${key}`);
     }
   }
   return findings;
