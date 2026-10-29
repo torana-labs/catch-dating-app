@@ -1,7 +1,7 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {useState} from "react";
 import {SectionHeader} from "../shared/site/SectionHeader";
-import {ActionGroup, Button, ButtonLink, ChoiceCard, ChoiceChip, ChoiceChipGrid, ContentGrid, ListingSuccessMetricGrid, PanelShell, StepRail, UiLabel, VerificationMethodGrid} from "../shared/ui/primitives";
+import {ActionGroup, Button, ButtonLink, ChoiceCard, ChoiceChip, ChoiceChipGrid, ContentGrid, StepRail, UiLabel, VerificationMethodGrid} from "../shared/ui/primitives";
 
 const meta = {
   title: "Marketing Website/Shared/Layout And Form Primitives",
@@ -157,56 +157,6 @@ export const ContentGridStory: Story = {
         <p>Feature sections configure the cards; the primitive owns the grid contract.</p>
       </article>
     </ContentGrid>
-  ),
-};
-
-export const PanelShellStory: Story = {
-  name: "Panel shells",
-  parameters: {
-    catchComponent: {
-      id: "shared_panel_shell",
-      routeIds: ["home", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["hero", "event-ticket", "listing", "claim-unlocks"],
-    },
-  },
-  render: () => (
-    <ContentGrid variant="surface">
-      <PanelShell variant="hero" reveal>
-        <UiLabel>Hero panel</UiLabel>
-        <h3>Launch proof</h3>
-        <p>Hero panels hold dense proof beside route copy.</p>
-      </PanelShell>
-      <PanelShell variant="event-ticket" reveal>
-        <UiLabel>Event ticket</UiLabel>
-        <h3>Dinner club preview</h3>
-        <p>Ticket panels keep generated event previews visually consistent.</p>
-      </PanelShell>
-      <PanelShell variant="claim-unlocks" reveal>
-        <UiLabel>Claim unlocks</UiLabel>
-        <h3>Owner controls</h3>
-        <p>Claim panels show what unlocks after review.</p>
-      </PanelShell>
-    </ContentGrid>
-  ),
-};
-
-export const ListingSuccessMetricGridStory: Story = {
-  name: "Listing success metric grid",
-  parameters: {
-    catchComponent: {
-      id: "shared_listing_success_metric_grid",
-      routeIds: ["organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["listing-metrics"],
-    },
-  },
-  render: () => (
-    <ListingSuccessMetricGrid
-      items={[
-        {label: "Verified check-ins", value: "164"},
-        {label: "Repeat hosts", value: "7"},
-        {label: "Post-event score", value: "4.8"},
-      ]}
-    />
   ),
 };
 

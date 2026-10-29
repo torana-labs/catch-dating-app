@@ -173,9 +173,7 @@ export function buildEventPageView(page: EventPageData, now: number = Date.now()
 }
 
 function momentsFor(event: CatchEvent): EventPageView["moments"] {
-  // The read model already drops rotations (CAT-247); never show it here either.
-  const moments = (event.catchExperienceActivities ?? []).flatMap((activity) =>
-    activity === "introductions" || activity === "sharedActivities" ? [copy.moments[activity]] : []);
+  const moments = (event.catchExperienceActivities ?? []).map((activity) => copy.moments[activity]);
   return moments.length ? moments : null;
 }
 
@@ -218,9 +216,7 @@ function goodToKnowFor(page: EventPageData): EventPageGoodToKnow[] {
   const event = page.item.event;
   const policy = page.item.source === "catch" ? page.item.event.cancellationPolicy : undefined;
   const included = page.item.source === "catch" ? page.item.event.included?.trim() : undefined;
-  // The read model already drops the balanced label (CAT-247).
-  const joining = page.item.source === "catch" ? (page.item.event.admissionLabels ?? []).flatMap((label) =>
-    label === "balanced" ? [] : [copy.joining[label]]) : [];
+  const joining = page.item.source === "catch" ? (page.item.event.admissionLabels ?? []).map((label) => copy.joining[label]) : [];
   const items: Array<EventPageGoodToKnow | null> = [
     included ? {key: "included", label: copy.goodToKnow.included, body: included, accent: "coral"} : null,
     event.requirements?.trim() ? {key: "bring", label: copy.goodToKnow.bring, body: event.requirements.trim()} : null,

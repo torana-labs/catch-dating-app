@@ -1,11 +1,7 @@
 import type {HTMLAttributes, ReactNode} from "react";
 import {ToggleGroupControl, UiLabel as WebUiLabel} from "@catch/web-ui";
 import type {HostPreviewSectionVariant} from "./host";
-
-import type {ListingGridVariant, ListingSectionVariant} from "./organizer";
 import {classNames} from "@catch/web-ui";
-
-export type SuccessGridVariant = "event-success-module" | "listing";
 
 export interface PublicEventCardModel {
   activityLabel: string;
@@ -26,10 +22,6 @@ export interface PublicEventCardModel {
   title: string;
   waitlistedCount?: number;
 }
-
-export type PanelShellElement = "aside" | "div";
-
-export type PanelShellVariant = "claim-unlocks" | "event-ticket" | "hero" | "listing";
 
 export type ContentGridVariant =
   | "claim-review"
@@ -54,11 +46,6 @@ export function UiLabel({
   );
 }
 
-export const successGridClassNames: Record<SuccessGridVariant, string> = {
-  "event-success-module": "event-success-module-grid",
-  listing: "listing-success-grid",
-};
-
 export const contentGridClassNames: Record<ContentGridVariant, string> = {
   "claim-review": "claim-review-grid",
   format: "format-grid",
@@ -67,26 +54,6 @@ export const contentGridClassNames: Record<ContentGridVariant, string> = {
   "public-event": "public-event-grid",
   surface: "surface-grid",
   trust: "trust-grid",
-};
-
-export const listingGridClassNames: Record<ListingGridVariant, string> = {
-  default: "listing-grid",
-  fit: "listing-grid listing-grid--fit",
-};
-
-export const listingSectionClassNames: Record<ListingSectionVariant, string> = {
-  default: "listing-section",
-  events: "listing-section listing-section--events",
-  reviews: "listing-section listing-section--reviews",
-  split: "listing-section listing-section--split",
-  success: "listing-section listing-section--success",
-};
-
-export const panelShellClassNames: Record<PanelShellVariant, string> = {
-  "claim-unlocks": "claim-unlocks",
-  "event-ticket": "event-ticket",
-  hero: "hero-panel",
-  listing: "listing-panel",
 };
 
 export const hostPreviewSectionClassNames: Record<HostPreviewSectionVariant, string> = {
@@ -115,28 +82,6 @@ export function VerificationMethodGrid({
   );
 }
 
-export function SuccessGrid({
-  children,
-  className,
-  reveal = false,
-  variant,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  children: ReactNode;
-  reveal?: boolean;
-  variant: SuccessGridVariant;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames(successGridClassNames[variant], className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </div>
-  );
-}
-
 export function ContentGrid({
   children,
   className,
@@ -150,29 +95,5 @@ export function ContentGrid({
     <div {...props} className={classNames(contentGridClassNames[variant], className)}>
       {children}
     </div>
-  );
-}
-
-export function PanelShell({
-  as: Element = "div",
-  children,
-  className,
-  reveal = false,
-  variant,
-  ...props
-}: HTMLAttributes<HTMLElement> & {
-  as?: PanelShellElement;
-  children: ReactNode;
-  reveal?: boolean;
-  variant: PanelShellVariant;
-}) {
-  return (
-    <Element
-      {...props}
-      className={classNames(panelShellClassNames[variant], className)}
-      data-reveal={reveal || undefined}
-    >
-      {children}
-    </Element>
   );
 }

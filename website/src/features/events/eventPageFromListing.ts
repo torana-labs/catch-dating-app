@@ -21,17 +21,9 @@ export function eventPageFromListing(listing: HostListing, eventId: string): Eve
   const path = `/events/${encodeURIComponent(eventId)}/`;
   let item: EventPageData["item"];
   if (catchEvent) {
-    // Catch is not a dating product (CAT-247): drop the same framing the read model drops.
-    const {admissionLabels, catchExperienceActivities, scorecard: _scorecard, ...rest} = catchEvent;
-    const labels = (admissionLabels ?? []).filter((label) => label !== "balanced");
-    const experience = (catchExperienceActivities ?? []).filter((activity) => activity !== "rotations");
-    const mixer = rest.activityKind === "singlesMixer";
-    const event: CatchItem["event"] = {
-      ...rest,
-      ...(mixer ? {activityKind: "openActivity", ...(rest.title === "Singles mixer" ? {title: copy.hostedEvent} : {})} : {}),
-      ...(labels.length ? {admissionLabels: labels} : {}),
-      ...(experience.length ? {catchExperienceActivities: experience} : {}),
-    };
+    // Catch is not a dating product (CAT-247): show a mixer as the read model does.
+    const event: CatchItem["event"] = catchEvent.activityKind === "singlesMixer" ? {...catchEvent, activityKind: "openActivity",
+      ...(catchEvent.title === "Singles mixer" ? {title: copy.hostedEvent} : {})} : catchEvent;
     item = {source: "catch", eventId, path, event, booking: {kind: "catch", path,
       registrationAccess: event.registrationAccess ?? "app", spotsLeft: Math.max(0, event.capacityLimit - event.bookedCount)}};
   } else if (external) {

@@ -8360,6 +8360,31 @@
           "CatchMenu.anchored"
         ]
       },
+      "react": {
+        "symbol": "CatchMenu",
+        "file": "packages/web-ui/src/components/CatchMenu.tsx",
+        "api": "styled",
+        "storybook": {
+          "status": "ready",
+          "story": "packages/web-ui/src/components/CatchMenu.stories.tsx",
+          "exportName": "Contract",
+          "states": [
+            "default",
+            "action-row",
+            "choice-row",
+            "choice-row-selected",
+            "disabled-row",
+            "danger-row",
+            "with-icons",
+            "with-sublabels",
+            "sectioned",
+            "scrolling",
+            "anchored-selection",
+            "anchored-trigger"
+          ]
+        },
+        "notes": "Recipes panel (Flutter's CatchMenu) and anchored (CatchMenu.anchored). A menu whose rows are all choices is a listbox of options, otherwise a menu of items. Arrow keys, Home and End move between rows; Escape, Tab, a choice or an outside press close an anchored menu, and Escape returns focus to the trigger. The anchored panel opens on the side with more room inside a 16px viewport inset. Web additions: label names the menu for assistive technology, align picks the trigger edge, and the builder's controller (isOpen, open, close, toggle) adds triggerProps, the popup semantics, ref and keys to spread on the trigger; Flutter's builder child has no web use. Sublabels are ink2 because Flutter's ink3 is under 4.5:1. compact-selection-sheet is the CatchSelectionMenu member's adaptive sheet, which has no web member yet."
+      },
       "design": {
         "figma": {
           "status": "unmapped",
@@ -8404,7 +8429,7 @@
             "type": "callback",
             "required": false,
             "dartType": "CatchMenuBuilder",
-            "tsType": "(controller: {isOpen: boolean; open: () => void; close: () => void}, child: ReactNode) => ReactNode"
+            "tsType": "(controller: CatchMenuController) => ReactNode"
           },
           {
             "name": "controller",

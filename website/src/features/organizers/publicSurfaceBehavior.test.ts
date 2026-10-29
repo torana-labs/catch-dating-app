@@ -288,7 +288,6 @@ function verifyEventDetail(
       checkedInCount: 0,
       waitlistedCount: 0,
       priceLabel: "₹1,500",
-      scorecard: null,
     }] : [],
     externalEvents: supply === "external" ? [{
       id: eventId,

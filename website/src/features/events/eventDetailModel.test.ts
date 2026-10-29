@@ -174,7 +174,6 @@ function catchEvent(): HostListingCatchEvent {
     waitlistedCount: 0,
     priceLabel: "₹1,500",
     publicRegistrationEnabled: true,
-    scorecard: null,
   };
 }
 

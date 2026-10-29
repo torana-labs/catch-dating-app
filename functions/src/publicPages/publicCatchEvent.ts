@@ -16,7 +16,7 @@ export interface LivePublicCatchEvent {
   event: PublicCatchEvent;
 }
 type Raw = Record<string, unknown>;
-type Experience = "introductions" | "sharedActivities" | "rotations";
+type Experience = "introductions" | "sharedActivities";
 
 const activityTitles: Record<string, string> = {
   socialRun: "Social run", pickleball: "Pickleball social",
@@ -46,13 +46,16 @@ function millis(value: unknown): number | null {
   }
 }
 
-/** Explicit public participation declarations only. */
+/**
+ * Explicit public participation declarations only. The rotations experience
+ * is valid on an event but is dating framing, so it is never public (CAT-247).
+ */
 export function publicExperienceActivities(value: unknown): Experience[] {
   if (!Array.isArray(value) || value.length < 1 || value.length > 3 ||
     new Set(value).size !== value.length ||
     !value.every((item) => item === "introductions" ||
       item === "sharedActivities" || item === "rotations")) return [];
-  return value as Experience[];
+  return value.filter((item): item is Experience => item !== "rotations");
 }
 
 /** A bounded display projection. Booking rechecks live terms on the server. */
@@ -206,12 +209,6 @@ function publicGuestDetails(data: Raw, format: Raw | null,
   }
   if (admission?.membershipRequired || admission?.format === "membersOnly") {
     labels.push("membership");
-  }
-  if (admission?.balancedRatioPolicy != null ||
-      admission?.format === "balancedRatio" ||
-      admission?.format === "fixedCohortCaps" ||
-      constraints?.maxMen != null || constraints?.maxWomen != null) {
-    labels.push("balanced");
   }
   const waitlist = record(admission?.waitlistPolicy)?.mode;
   const cancellation =
