@@ -91,17 +91,12 @@ test("common arguments fail closed on malformed option input and declarations", 
   );
 });
 
-test("the thirteen common migration and intake commands retain the shared parser", () => {
+test("the eight common migration commands retain the shared parser", () => {
   for (const path of [
     "tool/firebase/create_config_cities.mjs",
     "tool/data/backfill_location_market_fields.mjs",
     "tool/data/backfill_event_meeting_locations.mjs",
     "tool/data/migrate_clubs_to_organizers.mjs",
-    "tool/organizer_intake/export_curation_decisions_from_firestore.mjs",
-    "tool/organizer_intake/export_event_location_resolutions_from_firestore.mjs",
-    "tool/organizer_intake/export_event_review_decisions_from_firestore.mjs",
-    "tool/organizer_intake/export_policy_gap_decisions_from_firestore.mjs",
-    "tool/organizer_intake/export_review_decisions_from_firestore.mjs",
     "tool/data/backfill_event_admin_search.mjs",
     "tool/data/backfill_event_discovery_fields.mjs",
     "tool/data/backfill_organizer_admin_search.mjs",

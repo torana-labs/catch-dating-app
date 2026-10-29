@@ -3125,8 +3125,6 @@
         "admin/src/features/intake/operations/**",
         "admin/src/features/operations/**",
         "tool/host_discovery/**",
-        "tool/marketing/event_guide/**",
-        "tool/organizer_intake/**",
         "tool/tools_manifest.json",
         "tool/remote_ops_manifest.json"
       ],

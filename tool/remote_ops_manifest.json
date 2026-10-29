@@ -265,229 +265,32 @@
       ]
     },
     {
-      "id": "organizer-intake-review-export",
+      "id": "organizer-listing-materialization",
       "category": "data",
-      "status": "retired",
+      "status": "active",
       "safety": "remote-read-local-write-guarded",
       "environments": [
-        "dev",
-        "staging",
         "prod"
       ],
-      "purpose": "Historical inventory for the retired repo-backed organizer projection pipeline. Live Supply Intake state and review decisions now remain in Firestore and flow through Operations and authenticated Admin callables.",
+      "purpose": "Materialize the public organizer listing projection (website/src/generated/hostListings*.json) from one read-only snapshot of published Firestore organizers before the exact marketing build.",
       "entrypoints": [
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:normalize-surface-url"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:capture-search-results"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:ingest-search-results"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:capture-luma-events"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:ingest-event-sources"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:plan-event-location-resolution"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:event-location-resolution"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:plan-event-crawl-runs"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:plan-raw-artifact-storage"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:plan-external-event-imports"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:preflight-external-event-imports"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:event-review-decision"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:policy-gap-decision"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:curation-decision"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:pending-input-request"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:pending-work-coverage"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:pending-decision-answer-packet"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:create-decision-answer-packet"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:pending-decision-answer-plan"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:reviewed-decision-answer-packets"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:apply-pending-decision-answers"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:export-curation-decisions"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:export-review-decisions"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:export-event-review-decisions"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:export-event-location-resolutions"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:export-policy-gap-decisions"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:generate"
-        },
         {
           "kind": "tool-id",
           "ref": "marketing:generate-organizer-listings"
         },
         {
-          "kind": "tool-id",
-          "ref": "organizer-intake:check-operational-health"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:promotion-execution-packet"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:check-admin-review-bridge"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:check-promotion-bridge"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:run-promotion-pipeline"
-        },
-        {
-          "kind": "tool-id",
-          "ref": "organizer-intake:sync-claim-targets"
+          "kind": "workflow",
+          "ref": ".github/workflows/_web-hosting-build.yml"
         }
       ],
       "requiredChecks": [
-        "Normalize newly discovered external surface URLs before adding intake batch or curation data.",
-        "Capture provider search results against an Operations Supply Intake run key before ingesting them as organizer evidence.",
-        "Run search-result ingestion after adding captured search batches and review matched/unknown surface candidates.",
-        "Capture external event payloads only from reviewed provider JSON; do not enable live crawling from this workflow.",
-        "Run external event-source ingestion after adding captured event batches and review every candidate before future import.",
-        "Project Event Intake only from completed Supply Intake runs and work items; do not use Marketing artifacts as an operational fallback.",
-        "Record reviewed event location resolutions through the admin bridge or repo-backed local drafts before event-source ingestion when exact coordinates exist.",
-        "Export reviewed event location resolutions before event-source ingestion when admin-resolved coordinates exist.",
-        "Review generated organizer_policy_gap_register.json before changing crawl, provider lookup, import write, defaults, or naming behavior.",
-        "Review generated organizer_policy_decision_packets.json and capture the required product inputs before encoding policy changes.",
-        "Record hold, accept, or reject policy-gap decisions before encoding crawl, provider lookup, import write, defaults, or naming policy changes.",
-        "Render generated organizer_pending_input_request.json before requesting admin or product decisions; it is the source of truth for pending human inputs.",
-        "Run pending-work coverage after operational-health changes; every unresolved workstream must be covered by a pending input or follow-up before promotion preview.",
-        "Create reviewed answer-packet copies with create_decision_answer_packet.mjs; never edit generated/organizer_pending_decision_answer_packet.json directly.",
-        "Run reviewed_decision_answer_packets.mjs --check before applying answer packets so absent, incomplete, stale, or invalid reviewed copies are visible.",
-        "Run pending_decision_answer_plan.mjs --require-complete against a reviewed copy before using --write-decision-answers.",
-        "Apply answered decision packets only through apply_pending_decision_answers.mjs or run_promotion_pipeline.mjs with explicit --write-decision-answers.",
-        "Run the event crawl run planner after organizer generation; treat it as a no-network run-intent artifact until crawl policy is approved.",
-        "Run the raw artifact storage planner after adding provider payloads; raw payloads must stay out of Firestore and remote upload remains disabled until bucket and retention policy are approved.",
-        "Run event location resolution planning after event-source ingestion; do not call Places or geocoding providers until provider policy and cost caps are approved.",
-        "Run the external event import planner after event-source ingestion; treat it as a no-write review artifact until import policy is approved.",
-        "Run the external event import execution preflight after import planning; every createEvent payload must validate before a future write-enabled importer exists.",
-        "Record event-candidate approve, hold, or reject decisions through the admin bridge or repo-backed event review batches before future import planning.",
-        "Record merge/suppress/surface curation before approving public projection when dedupe or false-positive evidence is present.",
-        "Run curation, organizer-review, event-review, and event-location exporters without --write first and review the dry-run output.",
-        "Run the policy-gap decision exporter without --write first and review the dry-run output before encoding policy changes.",
-        "Run node tool/organizer_intake/organizer_intake.mjs after writing an export.",
-        "Treat organizer_intake.mjs failures on exported approve_public decisions as publication blockers; the generator revalidates approvals against pre-approval packet readiness before projection.",
-        "Run node tool/organizer_intake/check_operational_health.mjs --check after generating organizer artifacts; p0_action_required is expected until admin and product inputs are recorded.",
-        "Review generated organizer_promotion_execution_packet.json before running remote exporters, website deploy, or claim-target sync.",
-        "Review generated canonical_host_entities.json before website projection, claim-target sync, crawl planning, or event import planning.",
-        "Review generated canonical_evidence_index.json before promoting pages, syncing claim targets, enabling crawl planning, or planning event imports.",
-        "Review generated publication_review_packets.json and use the packet-aware review_decision.mjs gate before recording approve, hold, or suppress publication decisions.",
-        "Review generated publication_decision_impact_preview.json before recording public approvals so index, claim-target, sitemap, and app-visibility consequences are explicit.",
-        "Review generated organizer_claim_target_sync_preview.json before running any live claim-target sync dry run or write.",
-        "Run npm --workspace catch-marketing run generate:organizer-listings after organizer projection changes.",
-        "Run node website/scripts/checkOrganizerBuildOutputs.mjs after marketing website builds to verify organizer route HTML, canonical tags, robots tags, and sitemap inclusion.",
-        "Run node tool/web/check_admin_review_bridge.mjs before website deploy, claim-target sync, or adding a new review channel.",
-        "Run node tool/organizer_intake/check_promotion_bridge.mjs before website deploy or claim-target sync.",
-        "Use node tool/organizer_intake/run_promotion_pipeline.mjs for the local-only promotion preview, including search-result candidate regeneration and marketing website build-output validation, or with explicit env/write flags for reviewed remote operations.",
-        "Run claim-target sync without --write first and review creates/refreshes/skips before applying remote writes."
+        "Read Firestore only through --firestore-project; the generator never writes remote data.",
+        "Run npm --workspace catch-marketing run check:organizer-listings after materializing; both outputs must match WebsiteHostListingProjection.",
+        "Use --readiness-receipt only with --firestore-project; the receipt is evidence and cannot enable claim or review capabilities."
       ],
       "notes": [
-        "The exporters read Firestore but never write remote data.",
-        "Platform adapters classify external URLs before manual review so dedupe keys and crawl defaults stay deterministic across search runs.",
-        "Search-result capture is local-only and requires a reviewed provider payload plus an Operations discovery run key; live provider selection and spend policy remain separate.",
-        "Search-result ingestion is local-only and produces review queues; it does not publish pages or mutate Firestore.",
-        "External event capture, ingestion, and review are scaffolding. Generated event candidates are blocked by policy and do not write events.",
-        "The policy gap register is declarative and does not enable crawls, provider lookups, or event writes.",
-        "The policy decision packet artifact is the operator-facing question list for unresolved product inputs; safe defaults keep behavior disabled.",
-        "Pending input and pending work coverage artifacts are read-only operator handoffs; they do not write Firestore or make policy choices.",
-        "Reviewed answer-packet registers are local-only readiness views over copied answer packets; stale copies must be recreated or explicitly overridden after manual comparison.",
-        "Applying an answer packet writes reviewed repo-backed decision JSON only after dry-running the exact local decision commands.",
-        "The canonical host registry is the private OrganizerEntity-to-public-Host boundary; legacy clubs are compatibility projections only.",
-        "The canonical evidence index ties host surfaces to source refs, local artifact hashes, raw payload storage status, and review state without writing remote data.",
-        "Publication review packets consolidate canonical host state, evidence, draft copy, gates, and admin decision commands; they do not publish or write remote data.",
-        "Publication decision impact previews simulate approval consequences without recording decisions, writing Firestore, publishing pages, or updating sitemaps.",
-        "The marketing postbuild step validates generated organizer route HTML and sitemap state before a website build succeeds.",
-        "Claim-target sync previews apply the same create/refresh/owner-bound skip rules as the sync tool against local fixture state and never read or write Firestore.",
-        "The event crawl run plan is local-only and never performs provider fetches, scheduled jobs, or Firestore writes.",
-        "The raw artifact storage manifest is local-only and never uploads files; it blocks raw provider payload storage until object-storage bucket, retention, deletion, and crawl-cost policy are approved.",
-        "Event location resolutions are manually reviewed coordinates from the admin bridge or repo-backed local drafts; provider lookup and recurring crawl remain disabled by policy.",
-        "External event import plans propose deterministic event write actions but do not mutate Firestore.",
-        "Policy gap decisions document product/ops review state only; they do not enable crawler, provider, or import behavior.",
-        "Event-candidate approval means approved for future import planning only; import writes remain disabled until product policy changes.",
-        "Live admin curation operations must be exported into reviewed repo-backed JSON before dedupe, public projection, and claim-target generation.",
-        "The admin review bridge checker proves every review channel has UI/API, callable, schema, Firestore export, tooling manifest, and promotion-pipeline wiring.",
-        "The promotion execution packet is the operator preflight for local generation, remote exports, website build validation, and claim-target sync; it does not execute those phases by itself.",
-        "The claim-target sync writes only approved public organizer projections into clubs/{entityId}.",
-        "Existing claimed or owner-bound organizer club documents are skipped by the sync tool.",
-        "Local JSON exports are intentionally reviewed in git before website deploy.",
-        "Exported approve_public decisions are rechecked against pre-approval publication packet readiness before any public projection or claim-target artifact is written.",
-        "Admin approval publishes and indexes website pages only after the static projection pipeline regenerates.",
-        "Approved public unclaimed pages can receive claim requests only after the claim-target sync creates or refreshes their Firestore club documents."
+        "Without --firestore-project the generator emits only demo listings; --check validates the committed outputs without network access.",
+        "Supply Intake review state stays in Operations runs, work items and Admin callables; the retired repo-backed organizer projection pipeline is not an input."
       ]
     },
     {

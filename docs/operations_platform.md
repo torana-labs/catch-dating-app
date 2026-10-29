@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.37.0
+version: 1.37.1
 updated: 2026-10-29
 owner: operations_platform
 status: active
@@ -24,15 +24,14 @@ This boundary keeps three concerns separate:
 | `tool/` | Repository checks, generators, migrations, deploy helpers, data repair, and compatibility producers consumed by operations adapters | Long-running business workflow state or agent orchestration |
 | `tool/remote_ops_manifest.json` | Inventory and preconditions for commands that can read or mutate external systems | Workflow queues, run state, or autonomous scheduling |
 
-Organizer-intake and event-guide tools remain bounded compatibility producers
-for reviewed migrations and Marketing packaging. Supply Intake no longer reads
-their committed generated artifacts, and the retired host-discovery tree has
-been removed. New orchestration belongs in `operations/`; do not extend legacy
-folders with another workflow engine.
+The organizer-intake, event-guide, weekly event guide PoC and host-discovery
+tool trees are retired (2026-10-29); Supply Intake replaces them, and the
+boundary check fails if their paths return. New orchestration belongs in
+`operations/`; do not extend `tool/` with another workflow engine.
 `operations-tool-boundary-v3` scans every code file under `tool/` for direct
 operations-runtime imports and for durable-workflow signals aggregated by tool
-subtree. File-count ceilings remain as an additional ratchet for the remaining
-known compatibility producers.
+subtree. `legacyRoots` file-count ceilings remain available as an additional
+ratchet; no tool subtree currently needs one.
 
 Supply Intake's `manifest.json#compatibilityInputs` is empty. The legacy
 adapter, host-discovery corpus, and Event Intake bridge publisher are retired
@@ -72,8 +71,8 @@ ledger, not process memory or committed search-run JSON.
 The other time bounds answer different questions and do not override fetch
 cadence:
 
-- `<city>/<week>/` event-guide folders define Marketing publication weeks.
-  They are not operational inputs and do not set supply freshness.
+- Marketing publication weeks (`<city>/<week>`) are not operational inputs
+  and do not set supply freshness.
 - Supply Intake snapshots freeze normalized reviewed evidence into each plan.
   The snapshot timestamp is provenance, not permission to refetch a provider.
 - Per-kind freshness decides whether a planned query or source surface is
