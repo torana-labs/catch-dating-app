@@ -57,6 +57,15 @@ List<String> migrationGrowth(
         '${entry.key}:${kind.key}: ${kind.value} exceeds ${budget[entry.key]?[kind.key] ?? 0}',
 ];
 
+/// A moved file keeps its budget: the merge-base counts follow Git's renames.
+MigrationCounts migrationRenamedBudget(
+  MigrationCounts budget,
+  Map<String, String> renames,
+) => {
+  for (final entry in budget.entries)
+    renames[entry.key] ?? entry.key: entry.value,
+};
+
 /// Dormant kinds can retain their original counts, but never reserve new debt.
 MigrationCounts migrationPrunedCounts(
   MigrationCounts actual,
@@ -130,8 +139,28 @@ Future<void> runMigrationBaseline(
             .isNotEmpty;
     MigrationCounts parse(String source) =>
         parseMigrationBaseline(source, label: label);
+    final renames = <String, String>{
+      for (final line
+          in (git([
+                    'diff',
+                    '--name-status',
+                    '--find-renames',
+                    '--diff-filter=R',
+                    base,
+                    'HEAD',
+                    '--',
+                    'lib',
+                    'apps',
+                  ]).stdout
+                  as String)
+              .split('\n'))
+        if (line.split('\t') case [_, final from, final to]) from: to,
+    };
     final previous = hasBase
-        ? parse(git(['show', '$base:$baselinePath']).stdout as String)
+        ? migrationRenamedBudget(
+            parse(git(['show', '$base:$baselinePath']).stdout as String),
+            renames,
+          )
         : null;
     final baseline = File('$root/$baselinePath');
     final recordedSource = baseline.existsSync()

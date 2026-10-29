@@ -173,7 +173,7 @@ class _CatchCelebrationScreenState extends ConsumerState<CelebrationScreen> {
                       ],
                       if (widget.note != null) ...[
                         gapH16,
-                        CelebrationNote(note: widget.note!),
+                        CelebrationNotice(note: widget.note!),
                       ],
                       for (final child in widget.supplementalChildren) ...[
                         gapH16,
@@ -574,8 +574,8 @@ class CelebrationDetailRow extends StatelessWidget {
   }
 }
 
-class CelebrationNote extends StatelessWidget {
-  const CelebrationNote({super.key, required this.note});
+class CelebrationNotice extends StatelessWidget {
+  const CelebrationNotice({super.key, required this.note});
 
   final String note;
 

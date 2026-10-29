@@ -902,8 +902,8 @@ DART
 done
 
 for non_status_owner in \
-  "lib/core/widgets/catch_route_scaffold.dart" \
-  "lib/core/widgets/catch_scaffold.dart" \
+  "lib/contexts/events/parts/catch_route_scaffold.dart" \
+  "lib/contexts/events/parts/catch_scaffold.dart" \
   "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart"; do
   probe_path="$probe_root/$non_status_owner"
   stage_probe "retired or delegating status non-owner $non_status_owner" <<'DART'
@@ -924,7 +924,7 @@ expect_probe exact catch_use_canonical_feedback 0
 # No source path grants an exemption for raw framework feedback.
 for feedback_scope in \
   "packages/catch_ui/lib/src/components/snack_bar_consumer.dart" \
-  "lib/core/widgets/catch_error_notice_consumer.dart"; do
+  "lib/contexts/events/parts/catch_error_notice_consumer.dart"; do
   probe_path="$probe_root/$feedback_scope"
   stage_probe "feedback non-owner $feedback_scope" <<'DART'
 import 'package:flutter/material.dart';
@@ -972,11 +972,11 @@ expect_probe exact catch_use_canonical_feedback 0
 expect_probe exact catch_status_strip_is_layout_owned 0
 
 # Only the exact shared text-entry primitive owns the raw TextField. Its
-# package neighbor and retired app path remain ordinary consumers.
+# package neighbor and a same-named app file remain ordinary consumers.
 for input_scope in \
   "packages/catch_ui/lib/src/primitives/catch_text_input.dart" \
   "packages/catch_ui/lib/src/primitives/text_input_consumer.dart" \
-  "lib/core/widgets/catch_text_input.dart"; do
+  "lib/contexts/events/parts/catch_text_input.dart"; do
   probe_path="$probe_root/$input_scope"
   stage_probe "text input ownership $input_scope" <<'DART'
 import 'package:flutter/material.dart';
@@ -995,7 +995,7 @@ done
 for menu_scope in \
   "packages/catch_ui/lib/src/components/catch_menu.dart" \
   "packages/catch_ui/lib/src/components/menu_anchor_consumer.dart" \
-  "lib/core/widgets/catch_menu.dart"; do
+  "lib/contexts/events/parts/catch_menu.dart"; do
   probe_path="$probe_root/$menu_scope"
   stage_probe "menu anchor ownership $menu_scope" <<'DART'
 import 'package:flutter/material.dart';

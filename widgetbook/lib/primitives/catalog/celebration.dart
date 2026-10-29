@@ -272,18 +272,18 @@ Widget celebrationDetailRowCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CelebrationNote,
+  type: CelebrationNotice,
   path: '[Core catalog]/Moments',
 )
 Widget celebrationNoteCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CelebrationNote',
+    title: 'CelebrationNotice',
     catalogId: 'core.celebration.immersive_note',
     children: [
       WidgetbookCatalogStateCard(
         label: 'supporting note',
         child: _ImmersiveCelebrationFrame(
-          child: CelebrationNote(note: 'Matching opens after check-in.'),
+          child: CelebrationNotice(note: 'Matching opens after check-in.'),
         ),
       ),
     ],

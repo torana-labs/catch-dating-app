@@ -1866,7 +1866,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CelebrationNote',
+            name: 'CelebrationNotice',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
