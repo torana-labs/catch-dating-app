@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import {fileURLToPath, pathToFileURL} from "node:url";
+import {pathToFileURL} from "node:url";
 
-const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-const repoRoot = path.resolve(scriptDir, "..", "..");
+import {repoRoot} from "../lib/repo_paths.mjs";
 
 export const adminReviewBridgeChannels = [
   {
@@ -335,7 +334,7 @@ function parseArgs(argv) {
 }
 
 function printHelp() {
-  console.log(`Usage: node tool/organizer_intake/check_admin_review_bridge.mjs [options]
+  console.log(`Usage: node tool/web/check_admin_review_bridge.mjs [options]
 
 Validates that Organizer Intake reads operationRuns and operationWorkItems
 through adminListIntakeOperations, writes decisions through audited Admin

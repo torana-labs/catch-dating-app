@@ -104,7 +104,7 @@ jobs:
 
       - name: Check organizer admin review bridge
         if: ${{ inputs.surface == 'admin' }}
-        run: node tool/organizer_intake/check_admin_review_bridge.mjs
+        run: node tool/web/check_admin_review_bridge.mjs
 
       - name: Run admin unit tests with coverage
         if: ${{ inputs.surface == 'admin' }}

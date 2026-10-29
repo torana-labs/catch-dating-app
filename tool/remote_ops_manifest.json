@@ -451,7 +451,7 @@
         "Review generated organizer_claim_target_sync_preview.json before running any live claim-target sync dry run or write.",
         "Run npm --workspace catch-marketing run generate:organizer-listings after organizer projection changes.",
         "Run node website/scripts/checkOrganizerBuildOutputs.mjs after marketing website builds to verify organizer route HTML, canonical tags, robots tags, and sitemap inclusion.",
-        "Run node tool/organizer_intake/check_admin_review_bridge.mjs before website deploy, claim-target sync, or adding a new review channel.",
+        "Run node tool/web/check_admin_review_bridge.mjs before website deploy, claim-target sync, or adding a new review channel.",
         "Run node tool/organizer_intake/check_promotion_bridge.mjs before website deploy or claim-target sync.",
         "Use node tool/organizer_intake/run_promotion_pipeline.mjs for the local-only promotion preview, including search-result candidate regeneration and marketing website build-output validation, or with explicit env/write flags for reviewed remote operations.",
         "Run claim-target sync without --write first and review creates/refreshes/skips before applying remote writes."

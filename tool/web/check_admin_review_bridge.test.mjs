@@ -3,6 +3,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+
+import {fromRepo} from "../lib/repo_paths.mjs";
 import {
   adminReviewBridgeChannels,
   checkAdminReviewBridge,
@@ -115,7 +117,7 @@ function mirrorRequiredFiles() {
     files.add(channel.generatedDocument);
   }
   for (const file of files) {
-    const source = path.resolve(file);
+    const source = fromRepo(file);
     const destination = path.join(root, file);
     fs.mkdirSync(path.dirname(destination), {recursive: true});
     fs.copyFileSync(source, destination);
