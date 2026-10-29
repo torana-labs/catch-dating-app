@@ -21,6 +21,17 @@ execution, provider selection or automatic cross-provider fallback.
 | DeepSeek | `deepseek-flash`, `deepseek-v4-pro` | Chat Completions `response_format: json_object`; trusted prompt includes schema; local AJV validates output. Thinking is explicitly disabled. |
 | OpenAI | `gpt-4.1-mini-2025-04-14` | Responses `text.format: json_schema` with `strict: true`; all object fields required. `store: false` and truncation disabled. |
 | Anthropic | `claude-haiku-4-5-20251001` | Messages `output_config.format: json_schema`; no beta header. Thinking explicitly disabled. |
+| Local (Ollama, LM Studio) | `qwen2.5:7b-instruct`, `qwen2.5:14b-instruct`, `llama3.1:8b`, `gemma3:12b` | OpenAI-compatible Chat Completions `response_format: json_object` on a loopback endpoint; schema in the trusted prompt; local AJV validates output. No credential is sent. Output cap 4,096 tokens. |
+
+`local-provider.mjs` runs a model on the same machine, so extraction has no
+per-call bill. Its endpoint must be `localhost`, `127.0.0.1` or `[::1]` at
+`/v1/chat/completions`; any other host is a configuration error, so it can
+never send organizer data to an unreviewed vendor. Only instruct models
+without a separate thinking channel are listed. A reply naming another model,
+or carrying thinking output, fails closed. Like the others it is disabled by
+default, takes an injected transport, and is budgeted through
+`GuardedModelRunner` (reserve a nominal cost ceiling such as 1 micro-dollar).
+It has not yet been exercised against a live server.
 
 The narrow local output cap is 8,192 tokens for every listed model. Unknown
 provider/model/capability combinations fail closed. Other models and aliases
@@ -156,6 +167,8 @@ Reviewed on 2026-10-07; model support must be rechecked before activation:
 - OpenAI [structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs),
   [GPT-4.1 Mini snapshots](https://developers.openai.com/api/docs/models/gpt-4.1-mini),
   and [official generated Responses types](https://github.com/openai/openai-node/blob/master/src/resources/responses/responses.ts).
+- Ollama [OpenAI compatibility](https://docs.ollama.com/api/openai-compatibility)
+  (reviewed 2026-10-29).
 - Anthropic [structured outputs and refusals](https://platform.claude.com/docs/en/build-with-claude/structured-outputs),
   [Messages API](https://platform.claude.com/docs/en/api/messages/create),
   [Haiku 4.5 snapshot](https://platform.claude.com/docs/en/models/haiku-4-5/overview),
