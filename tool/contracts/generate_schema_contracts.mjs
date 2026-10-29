@@ -3452,19 +3452,6 @@ const schemaSpecs = [
       "functions/src/shared/generated/organizerIntakeFieldCorrectionDocument.ts",
   },
   {
-    name: "OrganizerEventCandidateReviewDecisionDocument",
-    source: "firestore/organizer_event_candidate_review_decisions.schema.json",
-    typeOutput:
-      "functions/src/shared/generated/organizerEventCandidateReviewDecisionDocument.ts",
-  },
-  {
-    name: "OrganizerEventLocationResolutionDecisionDocument",
-    source:
-      "firestore/organizer_event_location_resolution_decisions.schema.json",
-    typeOutput:
-      "functions/src/shared/generated/organizerEventLocationResolutionDecisionDocument.ts",
-  },
-  {
     name: "OrganizerPolicyGapReviewDecisionDocument",
     source: "firestore/organizer_policy_gap_review_decisions.schema.json",
     typeOutput:
@@ -3741,12 +3728,6 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminRecordActionExecutionCallablePayload.ts",
   },
   {
-    name: "AdminDecideOrganizerEventCandidateCallablePayload",
-    source: "callables/admin_decide_organizer_event_candidate_payload.schema.json",
-    typeOutput:
-      "functions/src/shared/generated/adminDecideOrganizerEventCandidateCallablePayload.ts",
-  },
-  {
     name: "AdminNominateOrganizerCallablePayload",
     source: "callables/admin_nominate_organizer_payload.schema.json",
     typeOutput:
@@ -3877,13 +3858,6 @@ const schemaSpecs = [
     source: "callables/admin_decide_organizer_policy_gap_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/adminDecideOrganizerPolicyGapCallablePayload.ts",
-  },
-  {
-    name: "AdminResolveOrganizerEventLocationCallablePayload",
-    source:
-      "callables/admin_resolve_organizer_event_location_payload.schema.json",
-    typeOutput:
-      "functions/src/shared/generated/adminResolveOrganizerEventLocationCallablePayload.ts",
   },
   {
     name: "AdminSetClubIndexStatusCallablePayload",
@@ -4039,12 +4013,6 @@ const schemaSpecs = [
     source: "callables/admin_update_event_details_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/adminUpdateEventDetailsCallablePayload.ts",
-  },
-  {
-    name: "AdminPublishExternalEventCallablePayload",
-    source: "callables/admin_publish_external_event_payload.schema.json",
-    typeOutput:
-      "functions/src/shared/generated/adminPublishExternalEventCallablePayload.ts",
   },
   {
     name: "AdminTakedownExternalEventCallablePayload",
