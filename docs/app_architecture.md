@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.91.0
+version: 1.92.0
 updated: 2026-10-29
 owner: app_architecture
 status: active
@@ -387,7 +387,10 @@ prefix wins, so one file can be placed apart from its folder. Since the phase
 count as app composition until they are redrawn, and its feature barrel, which
 may re-export its own screens and the moved files until it is split.
 `tool/architecture/move_to_contexts.mjs --imports-only --from <move-commit>`
-updates a branch that predates the move.
+updates a branch that predates the move. A legacy entry may carry a `moveTo`
+target for files no rule places, such as the `lib/core/` sort; the script
+moves them the same verified way, and the entry goes once its files have
+moved.
 
 ### Host destinations
 
@@ -547,8 +550,9 @@ applied after this spec uses these owners:
   in `lib/contexts/bookings/data`) according to whether they are pure logic or
   service seams.
   They should not be imported from `events/presentation`.
-- Shared activity/event visual primitives used by core widgets live in
-  `lib/core/widgets`, not under `events/presentation/widgets`.
+- Shared activity/event visuals (cards, thumbnails, activity badges and map
+  pins) live in `lib/contexts/events/parts`, not under
+  `events/presentation/widgets`.
 - Club display-name lookup is a data/provider seam in
   `lib/contexts/organizers/data`.
 
@@ -776,8 +780,8 @@ These are not screens by default:
 - section bodies, cards, rows, forms, slivers, rails, and bottom sheets;
 - feature widgets that can be rendered inside more than one screen.
 
-They should live under `presentation/widgets/` or `core/widgets/` depending on
-ownership.
+They should live under `presentation/widgets/` or a context's `parts/`
+depending on ownership.
 
 ## Screen Composition Contract
 
@@ -1621,7 +1625,7 @@ Catch's UI system has separate sources of truth by layer:
 | Layer | Source of truth | Mirrors / consumers |
 |---|---|---|
 | Primitive token values | `design/tokens/catch.tokens.json` | Flutter generated tokens, website CSS, Figma variables, Claude/Figma context packs |
-| Flutter widget behavior | `packages/catch_ui/lib/src/**`, `lib/core/widgets/**` | Component contracts, goldens/captures, Figma Code Connect snippets |
+| Flutter widget behavior | `packages/catch_ui/lib/src/**`, `lib/contexts/*/parts/**` | Component contracts, goldens/captures, Figma Code Connect snippets |
 | Cross-tool component API | `design/components/catch.components.json` | Claude handoff rules, Figma component mappings, Code Connect templates, future registry docs |
 | Screen composition | Feature Flutter code | UI captures, gallery screenshots, design review packs |
 
@@ -2836,11 +2840,13 @@ exist.
 
 Widgets have two normal homes:
 
-- `lib/core/widgets/**` for shared, app-coupled widgets that cannot live in
-  `catch_ui` because they use app domain types or copy. They follow feature
-  naming (`<Feature><RoleNoun>`, never the `Catch` prefix) and are registered
-  in the component registry. Like feature widgets they arrange and bind; what
-  they draw lives in `catch_ui` (D18).
+- `lib/contexts/<context>/parts/**` for shared, app-coupled widgets that cannot
+  live in `catch_ui` because they use one context's domain types or copy. The
+  shared media editor lives in `lib/platform/media/` and the startup page in
+  `lib/pages/startup/`. They follow feature naming (`<Feature><RoleNoun>`,
+  never the `Catch` prefix) and are registered in the component registry. Like
+  feature widgets they arrange and bind; what they draw lives in `catch_ui`
+  (D18).
 - `lib/<feature>/presentation/widgets/**` for feature-owned UI that depends on
   feature domain/state language. Its target home is
   `lib/contexts/<context>/parts/**` when it binds one context's data, or the
@@ -2867,7 +2873,7 @@ Feature widgets do not own:
 - global spacing/token definitions;
 - cross-feature reusable primitives without catalog review.
 
-Promote a feature widget to `core/widgets` only when:
+Promote a feature widget to a context's `parts/` only when:
 
 - at least two unrelated features need the same visual/interaction contract;
 - the API can be named without feature-specific language;
@@ -5175,7 +5181,7 @@ architecture cleanup within a feature or context:
 
 8. Clean widget ownership.
    - Keep feature-specific widgets under feature `presentation/widgets`.
-   - Promote reusable primitives through `core/widgets`, `docs/widget_catalog.md`,
+   - Promote reusable bindings through a context's `parts/`, `docs/widget_catalog.md`,
      Widgetbook, and component contracts.
    - Inline or delete private helper widgets that are not legitimate classes.
 
@@ -5287,6 +5293,6 @@ Use this checklist during code review:
 - Does every pending mutation have an error surface?
 - Is `StatefulWidget` used for Flutter mechanics rather than product state?
 - Are domain rules testable without Flutter?
-- Are reusable widgets in `core/widgets` and feature-specific widgets in
+- Are reusable widgets in a context's `parts/` and feature-specific widgets in
   feature `presentation/widgets`?
 - Would a new developer know where to add the next related behavior?

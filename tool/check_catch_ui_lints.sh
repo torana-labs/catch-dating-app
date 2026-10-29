@@ -431,7 +431,7 @@ expect_code_count \
   "catch_no_shell_local_measurement" \
   1
 
-probe_path="$probe_root/lib/core/widgets/text_migration_lint_probe.dart"
+probe_path="$probe_root/lib/contexts/events/parts/text_migration_lint_probe.dart"
 stage_probe "CatchText steer rejects covered roles, Material slots and local aliases" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -469,7 +469,7 @@ Widget textMigrationCleanProbe(BuildContext context, TextTheme suppliedTheme) =>
 DART
 expect_probe exact catch_text_requires_style 0
 
-probe_path="$probe_root/lib/core/widgets/drawing_migration_lint_probe.dart"
+probe_path="$probe_root/lib/contexts/events/parts/drawing_migration_lint_probe.dart"
 stage_probe "drawing steer rejects SDK constructors and inherited drawing" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart' as fw;
@@ -505,7 +505,7 @@ DART
 expect_probe exact catch_no_raw_surface_shell 0
 
 for drawing_scope in \
-  "lib/core/widgets/drawing_boundary_probe.dart" \
+  "lib/contexts/events/parts/drawing_boundary_probe.dart" \
   "lib/events/presentation/drawing_boundary_probe.dart"; do
   probe_path="$probe_root/$drawing_scope"
   stage_probe "drawing boundary delegates existing diagnostics $drawing_scope" <<'DART'
@@ -518,15 +518,9 @@ List<Widget> drawingBoundaryProbe(String url) => [
   Image.network(url), ImageAlias.network(url),
 ];
 DART
-  if [[ "$drawing_scope" == lib/core/widgets/* ]]; then
-    expect_probe exact catch_no_raw_surface_shell 4
-    expect_probe exact catch_no_raw_material_control 0
-    expect_probe exact catch_no_raw_network_image 0
-  else
-    expect_probe exact catch_no_raw_surface_shell 0
-    expect_probe exact catch_no_raw_material_control 2
-    expect_probe exact catch_no_raw_network_image 2
-  fi
+  expect_probe exact catch_no_raw_surface_shell 0
+  expect_probe exact catch_no_raw_material_control 2
+  expect_probe exact catch_no_raw_network_image 2
 done
 
 probe_path="$probe_root/lib/hosts/presentation/error_recovery_lint_probe.dart"
@@ -805,7 +799,7 @@ for feedback_scope in \
   "lib/hosts/presentation/feedback_probe.dart" \
   "apps/consumer/lib/feedback_probe.dart" \
   "apps/host/lib/feedback_probe.dart" \
-  "lib/core/widgets/feedback_probe.dart" \
+  "lib/contexts/events/parts/feedback_probe.dart" \
   "packages/catch_ui/lib/src/components/feedback_probe.dart"; do
   probe_path="$probe_root/$feedback_scope"
   stage_probe "resolved feedback $feedback_scope" <<'DART'
@@ -888,7 +882,7 @@ final host = CatchNoticeOverlay(child: const SizedBox());
 DART
 expect_probe exact catch_notice_host_is_app_owned 0
 
-probe_path="$probe_root/lib/core/fcm_service.dart"
+probe_path="$probe_root/lib/platform/push/fcm_service.dart"
 stage_probe "foreground transport owner" <<'DART'
 import 'package:firebase_messaging/firebase_messaging.dart';
 final foreground = FirebaseMessaging.onMessage;

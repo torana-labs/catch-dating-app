@@ -1,6 +1,6 @@
 ---
 doc_id: project_context
-version: 3.1.3
+version: 3.1.4
 updated: 2026-10-29
 owner: agent_operating_model
 status: active
@@ -28,7 +28,7 @@ features.
 | Cloud Functions | `functions/src/` | [docs/backend_operation_catalog.md](docs/backend_operation_catalog.md) |
 | Marketing website | `website/` | [docs/marketing_website_architecture.md](docs/marketing_website_architecture.md) |
 | Admin console | `admin/` | [docs/web_surface_architecture.md](docs/web_surface_architecture.md) |
-| Design system and Widgetbook | `lib/platform/theme/`, `lib/core/widgets/`, `widgetbook/` | [docs/design_language.md](docs/design_language.md), [docs/widget_catalog.md](docs/widget_catalog.md) |
+| Design system and Widgetbook | `lib/platform/theme/`, `packages/catch_ui/`, `lib/contexts/*/parts/`, `widgetbook/` | [docs/design_language.md](docs/design_language.md), [docs/widget_catalog.md](docs/widget_catalog.md) |
 | Firebase environments | `firebase/`, `.firebaserc`, `firebase.json` | [firebase/README.md](firebase/README.md) |
 | CI and release operations | `.github/`, `tool/ci/`, `tool/platform/` | [docs/release_operations.md](docs/release_operations.md) |
 | Governed automation | `tool/` | [tool/README.md](tool/README.md) |

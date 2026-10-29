@@ -11,7 +11,7 @@
     },
     {
       "path": "packages/catch_ui_lints/lib/src/catch_ui_rules.dart",
-      "maxLines": 2303
+      "maxLines": 2294
     },
     {
       "path": "packages/catch_ui/lib/src/components/catch_field.dart",

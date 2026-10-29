@@ -269,15 +269,25 @@ class _GeneratedCases extends RecursiveAstVisitor<void> {
   }
 }
 
+/// App-coupled shared widgets: context parts, the shared media editor and the
+/// startup page. They took over from lib/core/widgets; tool/design/lib/
+/// component_naming.mjs names the same homes.
+bool isAppSharedWidgetSource(String path) =>
+    RegExp(r'^lib/contexts/[^/]+/parts/').hasMatch(path) ||
+    path.startsWith('lib/platform/media/') ||
+    path.startsWith('lib/pages/startup/');
+
 // Preserve the migration denominator across shared UI and app adapters: every public
 // Catch* core class, including descriptors and controllers, remains inventoried
 // when moved into the package. Nonvisual classes need an explicit disposition.
-// App-coupled lib/core/widgets follow feature naming without the Catch prefix,
+// App-coupled shared widgets follow feature naming without the Catch prefix,
 // so their public widget classes are inventoried by base type instead.
 List<Map<String, Object?>> _coreSurface() {
   final files = [
     for (final root in [
-      'lib/core/widgets',
+      'lib/contexts',
+      'lib/pages/startup',
+      'lib/platform/media',
       'lib/platform/riverpod_ui',
       'packages/catch_ui/lib/src/primitives',
       'packages/catch_ui/lib/src/components',
@@ -288,13 +298,18 @@ List<Map<String, Object?>> _coreSurface() {
             .listSync(recursive: true)
             .whereType<File>()
             .map((file) => file.path)
-            .where((path) => path.endsWith('.dart')),
+            .where((path) => path.endsWith('.dart'))
+            .where(
+              (path) =>
+                  !path.startsWith('lib/contexts/') ||
+                  isAppSharedWidgetSource(path),
+            ),
   ]..sort();
   return [
     for (final file in files)
       for (final node in _unit(file).declarations.whereType<ClassDeclaration>())
         if (node.namePart.typeName.lexeme.startsWith('Catch') ||
-            (file.startsWith('lib/core/widgets/') &&
+            (isAppSharedWidgetSource(file) &&
                 !node.namePart.typeName.lexeme.startsWith('_') &&
                 (node.extendsClause?.superclass.toSource() ?? '').endsWith(
                   'Widget',

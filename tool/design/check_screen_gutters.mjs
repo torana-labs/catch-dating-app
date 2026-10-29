@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
 const defaultScreenContractsPath = "design/screens/catch.screens.json";
 const defaultStateMatrixPath = "docs/design_parity/state_matrix.json";
@@ -23,7 +24,6 @@ const screenishContextPattern =
 const screenFilePattern = /(?:^|\/)[^/]*screen[^/]*\.dart$/u;
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const excludedPrefixes = [
-  "lib/core/widgets/",
   "lib/platform/theme/",
 ];
 
@@ -184,6 +184,7 @@ function addBinding(files, binding) {
 function isScannableDartFile(relativePath) {
   if (!relativePath.endsWith(".dart")) return false;
   if (generatedSuffixes.some((suffix) => relativePath.endsWith(suffix))) return false;
+  if (isAppSharedWidgetSource(relativePath)) return false;
   if (excludedPrefixes.some((prefix) => relativePath.startsWith(prefix))) return false;
   return true;
 }

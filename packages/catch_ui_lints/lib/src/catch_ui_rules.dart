@@ -599,8 +599,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
       isPresentationPath: _isPresentationPath(path),
       isSizingScannerPath: _isSizingScannerPath(path),
       isUiSystemScannerPath: _isUiSystemScannerPath(path),
-      allowRawControlConstructors:
-          _isCoreWidgetPrimitivePath(path) || _isRawChromeExceptionPath(path),
+      allowRawControlConstructors: _isRawChromeExceptionPath(path),
     );
     registry.addInstanceCreationExpression(this, visitor);
     registry.addNamedExpression(this, visitor);
@@ -642,9 +641,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   }
 
   bool _isFeaturePresentationPath(String path) {
-    return path.contains('/lib/') &&
-        path.contains('/presentation/') &&
-        !path.contains('/lib/core/');
+    return path.contains('/lib/') && path.contains('/presentation/');
   }
 
   bool _isPresentationPath(String path) {
@@ -655,16 +652,16 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     return !path.contains('/lib/design_fixtures/');
   }
 
+  // Shared app UI lives in the platform layer, shared pages, context parts
+  // and the app shells; feature screens live in presentation folders.
   bool _isUiSystemScannerPath(String path) {
     if (!_isSizingScannerPath(path)) return false;
     return path.contains('/packages/catch_ui/lib/src/') ||
-        path.contains('/lib/core/widgets/') ||
-        path.contains('/lib/core/presentation/') ||
+        path.contains('/lib/platform/') ||
+        path.contains('/lib/pages/') ||
+        path.contains('/lib/routing/shell/') ||
+        RegExp(r'/lib/contexts/[^/]+/parts/').hasMatch(path) ||
         path.contains('/presentation/');
-  }
-
-  bool _isCoreWidgetPrimitivePath(String path) {
-    return path.contains('/lib/core/widgets/');
   }
 
   bool _isRawChromeExceptionPath(String path) {
@@ -735,8 +732,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
           continue;
         }
         if (typeName == 'Image' &&
-            _constructorMemberName(drawing) == 'network' &&
-            !_isCoreWidgetPrimitivePath) {
+            _constructorMemberName(drawing) == 'network') {
           continue;
         }
       }
@@ -888,7 +884,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
     if (typeName == 'Image' &&
         constructorName == 'network' &&
-        !_isCoreWidgetPrimitivePath &&
         !path.endsWith(
           '/packages/catch_ui/lib/src/primitives/catch_network_image.dart',
         )) {
@@ -2011,10 +2006,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return path.endsWith(
       '/packages/catch_ui/lib/src/components/catch_range_input.dart',
     );
-  }
-
-  bool get _isCoreWidgetPrimitivePath {
-    return path.contains('/lib/core/widgets/');
   }
 
   bool get _isShellImplementationPath {

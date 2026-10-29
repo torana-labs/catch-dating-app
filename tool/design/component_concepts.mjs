@@ -1,4 +1,8 @@
-import {featureWidgetNamingIssues, roleNouns} from "./lib/component_naming.mjs";
+import {
+  featureWidgetNamingIssues,
+  isAppSharedWidgetSource,
+  roleNouns,
+} from "./lib/component_naming.mjs";
 
 export const conceptRoles = new Set(["concept", "member", "composition", "screen"]);
 export const conceptQualifiers = new Set([
@@ -33,16 +37,17 @@ export function newWidgetPolicyIssues(
 
   const issues = featureWidgetNamingIssues(entry);
   if (!widgetbookCovered) issues.push("missing-widgetbook");
-  // Design-system homes require the reserved prefix; app-coupled
-  // lib/core/widgets follow feature naming but stay registered.
+  // Design-system homes require the reserved prefix; app-coupled shared
+  // widgets follow feature naming but stay registered.
   if (["lib/platform/riverpod_ui/", "packages/catch_ui/lib/"]
     .some((home) => entry.file.startsWith(home))) {
     if (!/^Catch[A-Z0-9]/u.test(entry.name)) {
       issues.push("noncanonical-core-widget-name");
     }
   }
-  const contractHome = ["lib/core/widgets/", "lib/platform/riverpod_ui/", "packages/catch_ui/lib/"]
-    .some((home) => entry.file.startsWith(home));
+  const contractHome = isAppSharedWidgetSource(entry.file) ||
+    ["lib/platform/riverpod_ui/", "packages/catch_ui/lib/"]
+      .some((home) => entry.file.startsWith(home));
   if (contractHome && !componentContracted) issues.push("missing-component-contract");
   // The same symbol at a moved path is a stale registry row, reported above.
   const staleRegistryPath = contractHome && registeredOwner?.symbol === entry.name;

@@ -61,7 +61,7 @@ Map<String, bool> _coreGoldenDesignations() {
 }
 
 bool _isGoldenSource(String path) =>
-    path.startsWith('lib/core/widgets/') ||
+    isAppSharedWidgetSource(path) ||
     path.startsWith('lib/platform/riverpod_ui/') ||
     path.startsWith('packages/catch_ui/lib/src/primitives/') ||
     path.startsWith('packages/catch_ui/lib/src/components/') ||

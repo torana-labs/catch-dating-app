@@ -30,13 +30,23 @@ export function sharedWidgetLevel(file) {
 }
 
 /**
- * Feature UI is distinct from app bootstraps and the app-core adapter layer.
- * `lib/core/widgets` holds app-coupled shared widgets, not design-system
- * symbols, so it follows feature naming.
+ * App-coupled shared widgets: context parts, the shared media editor and the
+ * startup page. They bind app data and copy to catch_ui, are not
+ * design-system symbols, and took over from lib/core/widgets.
+ */
+export function isAppSharedWidgetSource(file) {
+  return /^lib\/contexts\/[^/]+\/parts\//u.test(file) ||
+    file.startsWith("lib/platform/media/") ||
+    file.startsWith("lib/pages/startup/");
+}
+
+/**
+ * Feature UI is distinct from app bootstraps and the platform and kernel
+ * layers. App-coupled shared widgets follow feature naming.
  */
 export function isFeatureWidgetSource(file) {
-  return /^lib\/(?!core\/|l10n\/|routing\/)[^/]+\//u.test(file) ||
-    file.startsWith("lib/core/widgets/") ||
+  return /^lib\/(?!core\/|kernel\/|platform\/|l10n\/|routing\/)[^/]+\//u.test(file) ||
+    isAppSharedWidgetSource(file) ||
     /^apps\/(?:consumer|host)\/lib\/[^/]+\//u.test(file);
 }
 

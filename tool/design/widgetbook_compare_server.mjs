@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {URL, fileURLToPath} from "node:url";
 import {buildWidgetClassification} from "./generate_widget_classification.mjs";
+import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 import {buildWidgetVariantInventory} from "./generate_widget_variant_inventory.mjs";
 
 const repoRoot = process.cwd();
@@ -929,7 +930,7 @@ function isCanonicalLikeMember(name, widgetsByName) {
   const widget = widgetsByName.get(name);
   return Boolean(
     name.startsWith("Catch") ||
-      widget?.file?.startsWith("lib/core/widgets/") ||
+      isAppSharedWidgetSource(widget?.file ?? "") ||
       widget?.file?.includes("/shared/"),
   );
 }

@@ -5847,7 +5847,9 @@
         "lib/platform/theme/**",
         "packages/catch_tokens/lib/**",
         "packages/catch_ui/**",
-        "lib/core/widgets/**",
+        "lib/contexts/*/parts/**",
+        "lib/platform/media/**",
+        "lib/pages/startup/**",
         "test/core/widgets/platform_control_targets_test.dart",
         "test/core/platform_typography_test.dart",
         "test/core/widgets/catch_tab_bar_test.dart"
@@ -6623,7 +6625,9 @@
         "widgetbook/test/support/golden_coverage_waivers.json",
         "widgetbook/test/support/triage_inventory.dart",
         "widgetbook/lib/**",
-        "lib/core/widgets/**"
+        "lib/contexts/*/parts/**",
+        "lib/platform/media/**",
+        "lib/pages/startup/**"
       ],
       "ciRequirements": {
         "repositoryView": "full",
@@ -6636,7 +6640,7 @@
       "command": "node tool/design/check_widgetbook_golden_coverage.mjs --check",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Requires every public Catch* class under lib/core/widgets to map to a registered core Widgetbook golden id or a current owner-and-expiry waiver, with at most 20 waivers.",
+      "description": "Requires every public Catch* class in the shared UI homes and every public app-coupled shared widget (context parts, the media editor, the startup page) to map to a registered core Widgetbook golden id or a current owner-and-expiry waiver, with at most 20 waivers.",
       "checks": [
         "node --check tool/design/check_widgetbook_golden_coverage.mjs",
         "node --test tool/design/check_widgetbook_golden_coverage.test.mjs",
