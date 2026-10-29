@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
-import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
+import 'package:catch_dating_app/platform/firebase/host_summary_reader.dart';
 
 class HostContactSummaryReads {
   const HostContactSummaryReads(this.reader);

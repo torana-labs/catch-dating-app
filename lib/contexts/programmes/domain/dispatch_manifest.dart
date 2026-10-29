@@ -2,7 +2,7 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart'
 import 'package:catch_dating_app/contexts/programmes/domain/program_operation_projection.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_operations.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/travel_leg_revision.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 
 export 'travel_leg_revision.dart';
 

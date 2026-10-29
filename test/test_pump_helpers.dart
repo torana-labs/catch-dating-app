@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/connections/connections.dart';
 import 'package:catch_dating_app/contexts/messaging/data/chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

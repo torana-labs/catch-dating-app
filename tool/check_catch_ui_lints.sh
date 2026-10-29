@@ -87,17 +87,17 @@ expect_probe() {
 }
 
 stage_probe "seeded violation corpus" <<'DART'
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/catch_ui.dart' as spacing;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
-import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_scaffold.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
+import 'package:catch_dating_app/contexts/events/parts/event_backdrop_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -431,7 +431,7 @@ expect_code_count \
   "catch_no_shell_local_measurement" \
   1
 
-probe_path="$probe_root/lib/core/widgets/text_migration_lint_probe.dart"
+probe_path="$probe_root/lib/contexts/events/parts/text_migration_lint_probe.dart"
 stage_probe "CatchText steer rejects covered roles, Material slots and local aliases" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -469,7 +469,7 @@ Widget textMigrationCleanProbe(BuildContext context, TextTheme suppliedTheme) =>
 DART
 expect_probe exact catch_text_requires_style 0
 
-probe_path="$probe_root/lib/core/widgets/drawing_migration_lint_probe.dart"
+probe_path="$probe_root/lib/contexts/events/parts/drawing_migration_lint_probe.dart"
 stage_probe "drawing steer rejects SDK constructors and inherited drawing" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart' as fw;
@@ -505,7 +505,7 @@ DART
 expect_probe exact catch_no_raw_surface_shell 0
 
 for drawing_scope in \
-  "lib/core/widgets/drawing_boundary_probe.dart" \
+  "lib/contexts/events/parts/drawing_boundary_probe.dart" \
   "lib/events/presentation/drawing_boundary_probe.dart"; do
   probe_path="$probe_root/$drawing_scope"
   stage_probe "drawing boundary delegates existing diagnostics $drawing_scope" <<'DART'
@@ -518,22 +518,16 @@ List<Widget> drawingBoundaryProbe(String url) => [
   Image.network(url), ImageAlias.network(url),
 ];
 DART
-  if [[ "$drawing_scope" == lib/core/widgets/* ]]; then
-    expect_probe exact catch_no_raw_surface_shell 4
-    expect_probe exact catch_no_raw_material_control 0
-    expect_probe exact catch_no_raw_network_image 0
-  else
-    expect_probe exact catch_no_raw_surface_shell 0
-    expect_probe exact catch_no_raw_material_control 2
-    expect_probe exact catch_no_raw_network_image 2
-  fi
+  expect_probe exact catch_no_raw_surface_shell 0
+  expect_probe exact catch_no_raw_material_control 2
+  expect_probe exact catch_no_raw_network_image 2
 done
 
 probe_path="$probe_root/lib/hosts/presentation/error_recovery_lint_probe.dart"
 stage_probe "canonical error recovery rejects empty actions" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/catch_ui.dart' as ui;
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
 import 'package:flutter/material.dart';
 
 final missingRecovery = CatchErrorState(title: 'Error', message: 'Try again');
@@ -805,7 +799,7 @@ for feedback_scope in \
   "lib/hosts/presentation/feedback_probe.dart" \
   "apps/consumer/lib/feedback_probe.dart" \
   "apps/host/lib/feedback_probe.dart" \
-  "lib/core/widgets/feedback_probe.dart" \
+  "lib/contexts/events/parts/feedback_probe.dart" \
   "packages/catch_ui/lib/src/components/feedback_probe.dart"; do
   probe_path="$probe_root/$feedback_scope"
   stage_probe "resolved feedback $feedback_scope" <<'DART'
@@ -865,7 +859,7 @@ DART
   expect_code_count "status placement $feedback_scope" "catch_status_strip_is_layout_owned" 3
   expect_probe exact catch_status_strip_is_layout_owned 3
   stage_probe "arrival placement $feedback_scope" <<'DART'
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart' as ui;
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart' as ui;
 import 'package:firebase_messaging/firebase_messaging.dart' as fcm;
 import 'package:flutter/widgets.dart';
 typedef NoticeOverlayAlias = ui.CatchNoticeOverlay;
@@ -882,13 +876,13 @@ done
 
 probe_path="$probe_root/lib/app.dart"
 stage_probe "global arrival host owner" <<'DART'
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
 import 'package:flutter/widgets.dart';
 final host = CatchNoticeOverlay(child: const SizedBox());
 DART
 expect_probe exact catch_notice_host_is_app_owned 0
 
-probe_path="$probe_root/lib/core/fcm_service.dart"
+probe_path="$probe_root/lib/platform/push/fcm_service.dart"
 stage_probe "foreground transport owner" <<'DART'
 import 'package:firebase_messaging/firebase_messaging.dart';
 final foreground = FirebaseMessaging.onMessage;
@@ -908,8 +902,8 @@ DART
 done
 
 for non_status_owner in \
-  "lib/core/widgets/catch_route_scaffold.dart" \
-  "lib/core/widgets/catch_scaffold.dart" \
+  "lib/contexts/events/parts/catch_route_scaffold.dart" \
+  "lib/contexts/events/parts/catch_scaffold.dart" \
   "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart"; do
   probe_path="$probe_root/$non_status_owner"
   stage_probe "retired or delegating status non-owner $non_status_owner" <<'DART'
@@ -930,7 +924,7 @@ expect_probe exact catch_use_canonical_feedback 0
 # No source path grants an exemption for raw framework feedback.
 for feedback_scope in \
   "packages/catch_ui/lib/src/components/snack_bar_consumer.dart" \
-  "lib/core/widgets/catch_error_notice_consumer.dart"; do
+  "lib/contexts/events/parts/catch_error_notice_consumer.dart"; do
   probe_path="$probe_root/$feedback_scope"
   stage_probe "feedback non-owner $feedback_scope" <<'DART'
 import 'package:flutter/material.dart';
@@ -978,11 +972,11 @@ expect_probe exact catch_use_canonical_feedback 0
 expect_probe exact catch_status_strip_is_layout_owned 0
 
 # Only the exact shared text-entry primitive owns the raw TextField. Its
-# package neighbor and retired app path remain ordinary consumers.
+# package neighbor and a same-named app file remain ordinary consumers.
 for input_scope in \
   "packages/catch_ui/lib/src/primitives/catch_text_input.dart" \
   "packages/catch_ui/lib/src/primitives/text_input_consumer.dart" \
-  "lib/core/widgets/catch_text_input.dart"; do
+  "lib/contexts/events/parts/catch_text_input.dart"; do
   probe_path="$probe_root/$input_scope"
   stage_probe "text input ownership $input_scope" <<'DART'
 import 'package:flutter/material.dart';
@@ -1001,7 +995,7 @@ done
 for menu_scope in \
   "packages/catch_ui/lib/src/components/catch_menu.dart" \
   "packages/catch_ui/lib/src/components/menu_anchor_consumer.dart" \
-  "lib/core/widgets/catch_menu.dart"; do
+  "lib/contexts/events/parts/catch_menu.dart"; do
   probe_path="$probe_root/$menu_scope"
   stage_probe "menu anchor ownership $menu_scope" <<'DART'
 import 'package:flutter/material.dart';

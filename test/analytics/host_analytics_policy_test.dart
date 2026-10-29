@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/analytics/host_analytics_choice.dart';
-import 'package:catch_dating_app/core/analytics/host_analytics_policy.dart';
+import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
+import 'package:catch_dating_app/platform/analytics/host_analytics_choice.dart';
+import 'package:catch_dating_app/platform/analytics/host_analytics_policy.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 

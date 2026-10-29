@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
-import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
+import 'package:catch_dating_app/platform/device/external_links.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';

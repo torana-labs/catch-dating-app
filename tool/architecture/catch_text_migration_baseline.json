@@ -12,7 +12,7 @@
     "lib/clubs/presentation/detail/widgets/club_photo_rail.dart": {
       "monoLabelS": 2
     },
-    "lib/core/widgets/ordered_photo_picker.dart": {
+    "lib/platform/media/ordered_photo_picker.dart": {
       "monoLabel": 1
     },
     "lib/cross_paths/presentation/cross_paths_explore_card.dart": {

@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part '../contexts/live/data/event_success_companion_launcher.g.dart';
+part 'event_success_companion_launcher.g.dart';
 
 // keepalive: companion launch de-dupe state must survive app-shell listener
 // rebuilds so attendance transitions do not relaunch the same companion route.

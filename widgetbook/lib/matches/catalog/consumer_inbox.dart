@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chat_inbox_screen.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

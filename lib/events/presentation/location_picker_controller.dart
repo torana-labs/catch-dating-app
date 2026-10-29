@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/events/data/places_repository.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'location_picker_controller.g.dart';

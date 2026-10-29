@@ -4,7 +4,6 @@ import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definitio
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_question.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_availability_field.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_notice.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_viewport.dart';
@@ -15,6 +14,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_sec
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_field_lanes.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_text_field.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

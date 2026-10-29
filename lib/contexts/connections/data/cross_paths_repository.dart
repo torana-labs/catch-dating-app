@@ -2,9 +2,6 @@ import 'package:catch_dating_app/contexts/connections/domain/cross_paths_event_c
 import 'package:catch_dating_app/contexts/connections/domain/cross_paths_invitation.dart';
 import 'package:catch_dating_app/contexts/connections/domain/cross_paths_pair_hold.dart';
 import 'package:catch_dating_app/contexts/connections/domain/cross_paths_suggestion.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/data/read_limit_policy.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         GetCrossPathsSuggestionsCallableRequest,
@@ -12,7 +9,10 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         RespondCrossPathsInvitationCallableRequest,
         CancelCrossPathsInvitationOrPlanCallableRequest,
         SetCrossPathsEventConsentCallableRequest;
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/media/uploaded_photo.dart';
-import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
+import 'package:catch_dating_app/kernel/organizer_supply_capabilities.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
+import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'club.freezed.dart';

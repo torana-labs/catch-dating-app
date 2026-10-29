@@ -17,8 +17,6 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart
 import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_pod_section.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_rotation_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_control_room_state.dart';
@@ -39,6 +37,8 @@ import 'package:catch_dating_app/event_success/presentation/host_live/event_succ
 import 'package:catch_dating_app/event_success/presentation/host_live/event_success_room_summary_section.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/errors/app_error_message.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {isAppSharedWidgetSource} from "../design/lib/component_naming.mjs";
 
 const TOOL_FILE = fileURLToPath(import.meta.url);
 const DEFAULT_ROOT = path.resolve(path.dirname(TOOL_FILE), "../..");
@@ -40,8 +41,7 @@ export function buildFormContractInventory({repoRoot = DEFAULT_ROOT} = {}) {
   for (const file of listDartFiles(path.join(repoRoot, "lib"))) {
     const relative = normalizePath(path.relative(repoRoot, file));
     if (
-      relative.startsWith("lib/core/forms/") ||
-      relative.startsWith("lib/core/widgets/") ||
+      isAppSharedWidgetSource(relative) ||
       relative.includes("/generated/") ||
       relative.endsWith(".g.dart") ||
       relative.endsWith(".freezed.dart")

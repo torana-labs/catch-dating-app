@@ -3,11 +3,13 @@ import test from "node:test";
 import {loadContextMap} from "./check_context_map.mjs";
 import {
   barrelSource,
+  folderMoves,
   planMoves,
   pruneLegacyEntries,
   rewriteDartDirectives,
   rewritePathMentions,
   verifyMoveDiff,
+  withBarrelExports,
 } from "./move_to_contexts.mjs";
 
 const map = loadContextMap(JSON.stringify({
@@ -52,6 +54,35 @@ test("planMoves keeps the path below domain/ or data/ and sends root files to da
     "lib/auth/require_signed_in_uid.dart": "lib/contexts/events/data/require_signed_in_uid.dart",
   });
   assert.deepEqual(collisions, []);
+});
+
+test("planMoves keeps a generated part beside its source", () => {
+  // A file entry places event_attendee.dart in bookings; its parts would
+  // otherwise follow lib/events/ to the events context.
+  const splitMap = loadContextMap(JSON.stringify({
+    roots: map.roots,
+    contexts: [{id: "events", owns: "Events."}, {id: "bookings", owns: "Bookings."}],
+    legacy: [
+      {path: "lib/events/", context: "events"},
+      {path: "lib/events/domain/event_attendee.dart", context: "bookings"},
+      {path: "lib/hosts/", layer: "app"},
+      {path: "lib/hosts/data/host_profile_repository.dart", context: "events"},
+    ],
+  }));
+  const {moves} = planMoves([
+    "lib/events/domain/event_attendee.dart",
+    "lib/events/domain/event_attendee.freezed.dart",
+    "lib/events/domain/event_attendee.g.dart",
+    "lib/hosts/data/host_profile_repository.dart",
+    "lib/hosts/data/host_profile_repository.g.dart",
+  ], splitMap);
+  assert.deepEqual(Object.fromEntries(moves), {
+    "lib/events/domain/event_attendee.dart": "lib/contexts/bookings/domain/event_attendee.dart",
+    "lib/events/domain/event_attendee.freezed.dart": "lib/contexts/bookings/domain/event_attendee.freezed.dart",
+    "lib/events/domain/event_attendee.g.dart": "lib/contexts/bookings/domain/event_attendee.g.dart",
+    "lib/hosts/data/host_profile_repository.dart": "lib/contexts/events/data/host_profile_repository.dart",
+    "lib/hosts/data/host_profile_repository.g.dart": "lib/contexts/events/data/host_profile_repository.g.dart",
+  });
 });
 
 test("planMoves reports two files landing on one path", () => {
@@ -220,4 +251,110 @@ test("verifyMoveDiff accepts directive and path changes and flags anything else"
     read: (side, file) => files[side][file],
   });
   assert.deepEqual(problems, ["lib/x.dart changed beyond directives and moved paths"]);
+});
+
+const sortMap = loadContextMap(JSON.stringify({
+  roots: {
+    contexts: "lib/contexts/",
+    pages: "lib/pages/",
+    kernel: "lib/kernel/",
+    platform: "lib/platform/",
+  },
+  contexts: [{id: "events", owns: "Events."}],
+  legacy: [
+    {path: "lib/core/", layer: "platform"},
+    {path: "lib/core/theme/", layer: "platform", moveTo: "lib/platform/theme/"},
+    {path: "lib/core/widgets/", layer: "platform", moveTo: "lib/platform/widgets/"},
+    {path: "lib/core/widgets/event_card.dart", layer: "platform", moveTo: "lib/contexts/events/parts/event_card.dart"},
+    {path: "lib/core/firebase_providers.dart", layer: "platform", moveTo: "lib/platform/firebase/firebase_providers.dart"},
+  ],
+}));
+
+test("planMoves sends moveTo folders and files, with their generated parts", () => {
+  const {moves} = planMoves([
+    "lib/core/theme/app_theme.dart",
+    "lib/core/theme/README.md",
+    "lib/core/widgets/event_card.dart",
+    "lib/core/widgets/splash.dart",
+    "lib/core/firebase_providers.dart",
+    "lib/core/firebase_providers.g.dart",
+    "lib/core/firebase_providers_test_fixture.dart",
+    "lib/core/app_config.dart",
+  ], sortMap);
+  assert.deepEqual(Object.fromEntries(moves), {
+    "lib/core/theme/app_theme.dart": "lib/platform/theme/app_theme.dart",
+    "lib/core/theme/README.md": "lib/platform/theme/README.md",
+    "lib/core/widgets/event_card.dart": "lib/contexts/events/parts/event_card.dart",
+    "lib/core/widgets/splash.dart": "lib/platform/widgets/splash.dart",
+    "lib/core/firebase_providers.dart": "lib/platform/firebase/firebase_providers.dart",
+    "lib/core/firebase_providers.g.dart": "lib/platform/firebase/firebase_providers.g.dart",
+  });
+});
+
+test("folderMoves lists only folders that move whole", () => {
+  assert.deepEqual(folderMoves(sortMap), [["lib/core/theme/", "lib/platform/theme/"]]);
+});
+
+test("rewritePathMentions moves folder mentions and quoted leading-slash fragments", () => {
+  const moves = new Map([["lib/core/fcm_service.dart", "lib/platform/push/fcm_service.dart"]]);
+  const folders = [["lib/core/theme/", "lib/platform/theme/"]];
+  const {source, count} = rewritePathMentions([
+    "path.endsWith('/lib/core/fcm_service.dart')",
+    "'/lib/core/theme/' lib/core/theme lib/core/theme/app_theme.dart",
+    "'package:catch_dating_app/core/theme/app_theme.dart'",
+    "lib/core/theme_extras.dart apps/host/lib/core/theme/x.dart x/lib/core/fcm_service.dart",
+    "read('../../../../lib/core/fcm_service.dart')",
+  ].join("\n"), moves, folders);
+  assert.equal(count, 6);
+  assert.equal(source, [
+    "path.endsWith('/lib/platform/push/fcm_service.dart')",
+    "'/lib/platform/theme/' lib/platform/theme lib/platform/theme/app_theme.dart",
+    "'package:catch_dating_app/platform/theme/app_theme.dart'",
+    "lib/core/theme_extras.dart apps/host/lib/core/theme/x.dart x/lib/core/fcm_service.dart",
+    "read('../../../../lib/platform/push/fcm_service.dart')",
+  ].join("\n"));
+});
+
+test("pruneLegacyEntries drops moveTo entries once their files have moved", () => {
+  const {source, removed} = pruneLegacyEntries([
+    "  \"legacy\": [",
+    "    {\"path\": \"lib/core/\", \"layer\": \"platform\"},",
+    "    {\"path\": \"lib/core/theme/\", \"layer\": \"platform\", \"moveTo\": \"lib/platform/theme/\"}",
+    "  ]",
+  ].join("\n"), ["lib/core/app_config.dart", "lib/platform/theme/app_theme.dart"]);
+  assert.equal(removed, 1);
+  assert.equal(source, [
+    "  \"legacy\": [",
+    "    {\"path\": \"lib/core/\", \"layer\": \"platform\"}",
+    "  ]",
+  ].join("\n"));
+});
+
+test("withBarrelExports adds only missing exports to an existing public API file", () => {
+  const source = "// Public API.\nexport 'domain/event.dart';\n";
+  const merged = withBarrelExports(source, "events", new Set([
+    "lib/contexts/events/domain/event.dart",
+    "lib/contexts/events/parts/event_card.dart",
+  ]), sortMap);
+  assert.equal(merged, "// Public API.\nexport 'domain/event.dart';\nexport 'parts/event_card.dart';\n");
+  assert.equal(withBarrelExports(source, "events", new Set(["lib/contexts/events/domain/event.dart"]), sortMap), source);
+});
+
+test("verifyMoveDiff accepts folder mentions that moved with their folder", () => {
+  const moves = new Map([["lib/core/theme/app_theme.dart", "lib/platform/theme/app_theme.dart"]]);
+  const files = {
+    old: {"lib/core/theme/app_theme.dart": "class T {}\n", "tool/lint.dart": "const x = '/lib/core/theme/';\n"},
+    new: {"lib/platform/theme/app_theme.dart": "class T {}\n", "tool/lint.dart": "const x = '/lib/platform/theme/';\n"},
+  };
+  const problems = verifyMoveDiff({
+    changes: [
+      {status: "D", file: "lib/core/theme/app_theme.dart"},
+      {status: "A", file: "lib/platform/theme/app_theme.dart"},
+      {status: "M", file: "tool/lint.dart"},
+    ],
+    moves,
+    folders: [["lib/core/theme/", "lib/platform/theme/"]],
+    read: (side, file) => files[side][file],
+  });
+  assert.deepEqual(problems, []);
 });

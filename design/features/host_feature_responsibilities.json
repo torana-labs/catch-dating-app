@@ -73,7 +73,7 @@
           "reason": "Device-local absolute attendance operations are intentionally merged after the server projection."
         },
         {
-          "path": "lib/core/presentation/host_app_shell.dart",
+          "path": "lib/routing/shell/host_app_shell.dart",
           "reason": "The shell owns global destination navigation and organizer scope."
         }
       ],
@@ -166,7 +166,7 @@
           "reason": "The shared repository owns canonical event queries; Events owns inventory pagination and display policy."
         },
         {
-          "path": "lib/core/presentation/host_app_shell.dart",
+          "path": "lib/routing/shell/host_app_shell.dart",
           "reason": "The shell owns global destination navigation and organizer scope."
         },
         {
@@ -224,7 +224,7 @@
               "lib/hosts/presentation/customers/host_customers_screen.dart",
               "lib/hosts/presentation/forms/host_forms_screen.dart",
               "lib/routing/go_router.dart",
-              "lib/core/presentation/host_app_shell.dart"
+              "lib/routing/shell/host_app_shell.dart"
             ],
             "examples": []
           },
@@ -492,7 +492,7 @@
           "reason": "Current shared Host data seam for forms, responses, exports, and automations until A3 relocates it."
         },
         {
-          "path": "lib/core/presentation/host_app_shell.dart",
+          "path": "lib/routing/shell/host_app_shell.dart",
           "reason": "The shell owns global destination navigation and organizer scope."
         }
       ],
@@ -560,7 +560,7 @@
           "reason": "Legacy campaign orchestration is relocated by A4; the responsibility remains Inbox-owned now."
         },
         {
-          "path": "lib/core/presentation/host_app_shell.dart",
+          "path": "lib/routing/shell/host_app_shell.dart",
           "reason": "The shell owns global destination navigation and organizer scope."
         }
       ],
@@ -644,7 +644,7 @@
           "reason": "Provider-neutral payout account persistence and callable orchestration."
         },
         {
-          "path": "lib/core/presentation/host_app_shell.dart",
+          "path": "lib/routing/shell/host_app_shell.dart",
           "reason": "The shell owns global destination navigation and organizer scope."
         }
       ],

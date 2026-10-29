@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 
 const eventSuccessLayerDevelopmentStatus =
     'live_wired_with_preview_lab_and_iterating';
 
-@Deprecated('Use ActivityKind from lib/activity/domain/activity_taxonomy.dart.')
+@Deprecated('Use ActivityKind from lib/kernel/activity_taxonomy.dart.')
 typedef EventActivityType = ActivityKind;
 
 enum EventSocialIntensity {

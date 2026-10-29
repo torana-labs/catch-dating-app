@@ -1,7 +1,7 @@
 ---
 doc_id: widget_consolidation_rules
-version: 1.2.0
-updated: 2026-10-18
+version: 1.2.1
+updated: 2026-10-29
 owner: widget_consolidation
 status: active
 ---
@@ -172,7 +172,7 @@ Identical fine-stream `shapeHash` AND identical constructor param names/types.
 Merge:
 - both in the same file/feature → keep the better-named one in the more
   shared file; delete the other; repoint call sites.
-- one in `lib/core/widgets/` → it is canonical; absorb the feature copy.
+- one in a context's `parts/` → it is canonical; absorb the feature copy.
 - cross-feature, neither in core → this wants promotion: ESCALATE with a
   proposed `Catch*` name (the merge itself waits for the name).
 *Evidence: HostAnalyticsBar/UserAnalyticsBar, EventDetailSocialSkeleton/

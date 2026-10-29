@@ -41,7 +41,7 @@ bash tool/check_catch_ui_lint_drift.sh --count   # how many candidates (if 0, ST
 bash tool/check_catch_ui_lint_drift.sh           # lists matching analyzer diagnostics, exits 1
 ```
 Scanned: all of `lib/` except generated code, the token DEFINITIONS
-(`packages/catch_tokens/lib/**`) and app theme foundations (`lib/core/theme/**`), design fixtures (`lib/design_fixtures/**`), and retired
+(`packages/catch_tokens/lib/**`) and app theme foundations (`lib/platform/theme/**`), design fixtures (`lib/design_fixtures/**`), and retired
 concept files (`*explore_concept*`),
 and color-only art exemptions (`graded_image.dart`,
 `event_activity_visuals.dart`). `Colors.transparent` and transparent

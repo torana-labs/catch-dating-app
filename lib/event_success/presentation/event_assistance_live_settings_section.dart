@@ -2,7 +2,6 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_setting_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_pending_settings.dart';
@@ -10,6 +9,7 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_run
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

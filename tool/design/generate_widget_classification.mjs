@@ -4,7 +4,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {collisionKeyFor} from "./component_concepts.mjs";
-import {featureWidgetNamingIssues} from "./lib/component_naming.mjs";
+import {featureWidgetNamingIssues, isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 import {
   buildLineStarts,
   collectClassDeclarations,
@@ -263,14 +263,14 @@ function isScreen(name, file) {
 
 function isAtom(name, file) {
   return (
-    file.includes("lib/core/widgets/") &&
+    isAppSharedWidgetSource(file) &&
     /(?:Badge|Button|Chip|Field|Avatar|Icon|Toggle|Slider|Pill|Dot|Input|Image|Label|Kicker|Ring)$/.test(name)
   );
 }
 
 function isComposition(name, file) {
   return (
-    file.includes("lib/core/widgets/") ||
+    isAppSharedWidgetSource(file) ||
     /(?:Section|Rail|List|Grid|Dock|TopBar|BottomSheet|Sheet|Dialog|Card|Menu|Header|Footer|Stepper|TabBar|Scaffold|Body|Shell|Layout|Tile|Row|Panel)$/.test(name)
   );
 }
@@ -304,7 +304,7 @@ function flagsFor(entry, role, contract, catalogStatus, visibility) {
       flags.push("primitive-imports-data-layer");
     }
   }
-  if (!contract && entry.file.includes("lib/core/widgets/") && entry.classKind === "widget") {
+  if (!contract && isAppSharedWidgetSource(entry.file) && entry.classKind === "widget") {
     flags.push("core-widget-without-contract");
   }
   return flags.sort();

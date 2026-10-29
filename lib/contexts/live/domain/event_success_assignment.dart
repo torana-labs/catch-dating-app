@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 
 final class EventSuccessAssignment {
   const EventSuccessAssignment({

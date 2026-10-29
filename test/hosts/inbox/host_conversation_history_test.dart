@@ -5,8 +5,8 @@ import 'package:catch_dating_app/contexts/connections/data/match_repository.dart
 import 'package:catch_dating_app/contexts/messaging/data/chat_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
-import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_conversation_history_controller.dart';
+import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

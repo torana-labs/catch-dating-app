@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/programmes/domain/program_timezone.dart';
-import 'package:catch_dating_app/core/time_zone_catalog.dart';
+import 'package:catch_dating_app/platform/time/time_zone_catalog.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

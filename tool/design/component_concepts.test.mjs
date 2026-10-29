@@ -39,7 +39,7 @@ test("new app-coupled core widgets follow feature naming and stay registered", (
     newWidgetPolicyIssues(
       {
         name: "ScreenShell",
-        file: "lib/core/widgets/screen_shell.dart",
+        file: "lib/contexts/events/parts/screen_shell.dart",
         visibility: "public",
       },
       {
@@ -50,11 +50,11 @@ test("new app-coupled core widgets follow feature naming and stay registered", (
     ["noncanonical-feature-widget-name", "noncanonical-feature-widget-file", "missing-component-contract"],
   );
   assert.deepEqual(newWidgetPolicyIssues(
-    {name: "CatchEventCard", file: "lib/core/widgets/catch_event_card.dart", visibility: "public"},
+    {name: "CatchEventCard", file: "lib/contexts/events/parts/catch_event_card.dart", visibility: "public"},
     {widgetbookCovered: true, componentContracted: true}),
   ["reserved-feature-widget-prefix"]);
   assert.deepEqual(newWidgetPolicyIssues(
-    {name: "EventCard", file: "lib/core/widgets/event_card.dart", visibility: "public"},
+    {name: "EventCard", file: "lib/contexts/events/parts/event_card.dart", visibility: "public"},
     {widgetbookCovered: true, componentContracted: true}), []);
 });
 
@@ -86,7 +86,7 @@ test("new private widgets remain a blocking destination", () => {
 test("new shared package widgets and Riverpod adapters require registry identity", () => {
   for (const file of [
     "packages/catch_ui/lib/src/components/catch_button.dart",
-    "lib/core/riverpod_ui/catch_async_boundary.dart",
+    "lib/platform/riverpod_ui/catch_async_boundary.dart",
   ]) {
     const entry = {name: "CatchButton", file, visibility: "public"};
     assert.deepEqual(newWidgetPolicyIssues(entry, {
@@ -196,13 +196,13 @@ test("exact public widget names collide across shared Consumer and Host roots", 
   };
 
   assert.deepEqual(publicWidgetNamingProblems([
-    {...base, file: "lib/core/widgets/catch_cross_root_panel.dart"},
+    {...base, file: "lib/contexts/events/parts/catch_cross_root_panel.dart"},
     {...base, file: "apps/consumer/lib/cross_root_panel.dart"},
     {...base, file: "apps/host/lib/cross_root_panel.dart"},
   ]), [
     "duplicate public widget class CatchCrossRootPanel: " +
       "apps/consumer/lib/cross_root_panel.dart, apps/host/lib/cross_root_panel.dart, " +
-      "lib/core/widgets/catch_cross_root_panel.dart",
+      "lib/contexts/events/parts/catch_cross_root_panel.dart",
   ]);
 });
 
@@ -218,7 +218,7 @@ test("normalized public widget names collide across production roots", () => {
     {
       ...base,
       name: "CatchCrossRootPanelWidget",
-      file: "lib/core/widgets/catch_cross_root_panel.dart",
+      file: "lib/contexts/events/parts/catch_cross_root_panel.dart",
     },
     {
       ...base,
@@ -242,7 +242,7 @@ test("one governed concept family may span all production roots", () => {
     {
       ...governed,
       name: "CatchCrossRootPanel",
-      file: "lib/core/widgets/catch_cross_root_panel.dart",
+      file: "lib/contexts/events/parts/catch_cross_root_panel.dart",
       conceptRole: "concept",
     },
     {
@@ -434,7 +434,7 @@ const aliasRegistry = [{
   dart: {symbol: "EventCard", file: "lib/events/shared/event_tiles/event_card.dart"},
   aliases: ["EventTicket", "EventTile"],
   contract: {members: [{id: "catch.event_card.thumbnail", symbol: "EventThumbnail",
-    file: "lib/core/widgets/event_thumbnail.dart", aliases: ["EventImageThumb"]}]},
+    file: "lib/contexts/events/parts/event_thumbnail.dart", aliases: ["EventImageThumb"]}]},
 }];
 
 test("a new widget named like a registered component or alias points at it", () => {

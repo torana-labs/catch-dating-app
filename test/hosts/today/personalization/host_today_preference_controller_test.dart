@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_today_preference_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -7,7 +7,7 @@
       "sources": [
         "docs/design_language.md",
         "packages/catch_tokens/lib/catch_tokens.dart",
-        "lib/core/theme/activity_palette.dart",
+        "lib/platform/theme/activity_palette.dart",
         "packages/catch_ui/lib/src/foundations/catch_fonts.dart",
         "packages/catch_ui/lib/src/foundations/catch_text_styles.dart"
       ],
@@ -3315,11 +3315,11 @@
       "$value": 0.04
     },
     "activityArtworkPattern": {
-      "$description": "Pattern marks over activity artwork: the EventBackdropImage.patternOpacity default in lib/core/widgets/event_backdrop_image.dart.",
+      "$description": "Pattern marks over activity artwork: the EventBackdropImage.patternOpacity default in lib/contexts/events/parts/event_backdrop_image.dart.",
       "$value": 0.22
     },
     "activityArtworkGlyph": {
-      "$description": "Activity glyph over activity artwork: the EventBackdropImage.iconOpacity default in lib/core/widgets/event_backdrop_image.dart.",
+      "$description": "Activity glyph over activity artwork: the EventBackdropImage.iconOpacity default in lib/contexts/events/parts/event_backdrop_image.dart.",
       "$value": 0.2
     },
     "groundCardOutline": {

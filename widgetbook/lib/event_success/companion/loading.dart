@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/event_success/presentation/companion/event_success_companion_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
+import 'package:catch_dating_app/platform/errors/app_error_message.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

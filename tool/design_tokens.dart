@@ -841,7 +841,7 @@ void _writeDartShadowLayers(StringBuffer buffer, Object? value) {
   }
 }
 
-/// Mirrors `ActivitySwatch._derive` in `lib/core/theme/activity_palette.dart`,
+/// Mirrors `ActivitySwatch._derive` in `lib/platform/theme/activity_palette.dart`,
 /// including Flutter's `HSLColor` math, so the website reads the same deep,
 /// soft and dark-mode swatches the app derives at runtime.
 /// `test/core/theme/activity_palette_web_parity_test.dart` fails on drift.

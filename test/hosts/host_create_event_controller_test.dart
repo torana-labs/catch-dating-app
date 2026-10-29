@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
 import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
@@ -15,13 +14,14 @@ import 'package:catch_dating_app/contexts/events/domain/event_photo_recovery.dar
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
-import 'package:catch_dating_app/core/country_markets.dart';
-import 'package:catch_dating_app/core/media/uploaded_photo.dart';
-import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
-import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
-import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/country_markets.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
+import 'package:catch_dating_app/platform/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/platform/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/platform/persistence/memory_command_journal_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';

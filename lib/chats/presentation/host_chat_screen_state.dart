@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.da
 import 'package:catch_dating_app/contexts/messaging/domain/suvbot_identity.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
 
 class HostChatScreenState {
   const HostChatScreenState({

@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_decision_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_entry_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_queue_section.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/event_success/event_help_preview_repositories.dart';

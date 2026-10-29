@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/formats/formats.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 
 final class EventSuccessOutcomeUnit {
   const EventSuccessOutcomeUnit({required this.id, required this.label});

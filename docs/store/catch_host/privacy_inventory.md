@@ -142,7 +142,7 @@ becomes an acceptable over-declaration. Product Interaction and Device ID stay
 collected through the Google Maps SDK and FCM.
 
 If the Host analytics hold is lifted, collection becomes consent-gated: the
-seven allowlisted events in `lib/core/analytics/host_analytics_policy.dart`,
+seven allowlisted events in `lib/platform/analytics/host_analytics_policy.dart`,
 with no analytics user ID, no screen views, and advertising consent denied. The
 declaration already covers that.
 

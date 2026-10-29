@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/contexts/formats/formats.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'club_host_defaults.freezed.dart';

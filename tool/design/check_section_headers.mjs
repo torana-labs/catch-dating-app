@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {repoRoot} from "../lib/repo_paths.mjs";
+import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const sectionCallPattern =
@@ -21,7 +22,6 @@ const kickerPattern =
 const classInstantiationPattern = /\b([A-Z][A-Za-z0-9_]*)\s*\(/gu;
 const headerFlagFieldPattern = /\bfinal\s+bool\s+(showHeader|showTitle)\s*;/gu;
 
-const primitiveImplementationPrefixes = ["lib/core/widgets/"];
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -538,9 +538,7 @@ function isScannableDartFile(relativePath) {
 }
 
 function isPrimitiveImplementation(relativePath) {
-  return primitiveImplementationPrefixes.some((prefix) =>
-    relativePath.startsWith(prefix),
-  );
+  return isAppSharedWidgetSource(relativePath);
 }
 
 function runCli() {

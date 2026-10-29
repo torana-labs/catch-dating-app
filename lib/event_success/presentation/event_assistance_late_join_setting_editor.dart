@@ -6,10 +6,10 @@ import 'package:catch_dating_app/contexts/live/data/event_assistance_late_join_s
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting_result.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_setting_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_pending_settings.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

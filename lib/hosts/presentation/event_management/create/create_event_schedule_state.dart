@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/business_rules.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/kernel/business_rules.dart';
+import 'package:catch_dating_app/platform/time/time_formatters.dart';
 import 'package:flutter/material.dart';
 
 const createEventFutureStartError = 'Choose a start time later than now';

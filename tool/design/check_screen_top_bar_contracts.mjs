@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {repoRoot} from "../lib/repo_paths.mjs";
+import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
 const defaultManifestPath = "tool/design/screen_top_bar_contracts.json";
 const architectureAdoptionPath =
@@ -471,7 +472,7 @@ function collectManualHeaders(root) {
 
   for (const absolutePath of walkDartFiles(libRoot)) {
     const relativePath = path.relative(root, absolutePath).split(path.sep).join("/");
-    if (relativePath.startsWith("lib/core/widgets/")) continue;
+    if (isAppSharedWidgetSource(relativePath)) continue;
     const source = maskDartCommentsAndStrings(
       fs.readFileSync(absolutePath, "utf8"),
     );
@@ -512,7 +513,7 @@ function collectTrackedRootHeaderPaths(root) {
         (adopter) =>
           typeof adopter.path === "string" &&
           adopter.path.startsWith("lib/") &&
-          !adopter.path.startsWith("lib/core/widgets/") &&
+          !isAppSharedWidgetSource(adopter.path) &&
           adopter.status === "aligned",
       )
       .map((adopter) => adopter.path),

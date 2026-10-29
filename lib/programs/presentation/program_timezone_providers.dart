@@ -5,8 +5,8 @@ import 'package:catch_dating_app/contexts/insights/data/host_analytics_repositor
 import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_timezone.dart';
-import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/kernel/city_catalog.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_timezone_providers.g.dart';

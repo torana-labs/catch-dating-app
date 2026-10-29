@@ -6,7 +6,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_parsing.d
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_membership.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff.dart';
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 /// One synthetic guest in one run. A new visit keeps the same pending owner.
 final class RehearsalAccountabilityScope {

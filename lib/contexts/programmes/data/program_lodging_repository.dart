@@ -3,8 +3,8 @@ import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_boar
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
 /// Live-only private planning data. Never persists affinity or functional

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_setup_section.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/contexts/account/data/app_version_config_provider.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_controller.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_keys.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

@@ -2,11 +2,11 @@ import 'package:catch_dating_app/contexts/programmes/data/program_work_repositor
 import 'package:catch_dating_app/contexts/programmes/domain/dispatch_manifest.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_operations.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
-import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
-import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
+import 'package:catch_dating_app/platform/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/platform/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/platform/persistence/local_command_journal.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:catch_dating_app/contexts/programmes/domain/program_operations.dart';

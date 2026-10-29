@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.d
 import 'package:catch_dating_app/contexts/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_restore_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_location_state.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

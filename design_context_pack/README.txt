@@ -14,7 +14,7 @@ Generated sources:
 - docs/design_language.md
 - design/components/catch.components.json
 - packages/catch_tokens/lib/catch_tokens.dart
-- lib/core/theme/activity_palette.dart
+- lib/platform/theme/activity_palette.dart
 - packages/catch_ui/lib/src/foundations/catch_text_styles.dart
 - packages/catch_ui/lib/src/foundations/catch_fonts.dart
 - test/ui_captures/catalog/screen_capture_catalog.dart

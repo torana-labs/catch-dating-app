@@ -5,8 +5,8 @@ import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart
 import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
 
 enum HostClubDetailRetryIntent { reloadDetail }
 

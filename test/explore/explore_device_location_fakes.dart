@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
+import 'package:catch_dating_app/platform/device/device_location.dart';
 
 class NoDeviceLocation extends DeviceLocation {
   @override

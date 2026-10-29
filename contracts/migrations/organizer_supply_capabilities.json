@@ -60,7 +60,7 @@
     "functions/src/shared/organizerSupplyCapabilities.ts",
     "functions/src/operations/supplyIntake/eventPublication.ts",
     "functions/src/admin/externalEventTakedown.ts",
-    "lib/organizers/domain/organizer_supply_capabilities.dart",
+    "lib/kernel/organizer_supply_capabilities.dart",
     "lib/contexts/events/domain/external_event.dart",
     "lib/events/presentation/event_detail_screen_state.dart",
     "website/src/features/organizers/organizerPolicy.ts",

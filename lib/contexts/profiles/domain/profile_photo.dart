@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'profile_photo.freezed.dart';

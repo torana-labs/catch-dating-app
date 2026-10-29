@@ -30,7 +30,7 @@ void main() {
     expect(result['tokenClassSources'], [
       'packages/catch_tokens/lib',
       'packages/catch_ui/lib/src/foundations',
-      'lib/core/theme',
+      'lib/platform/theme',
     ]);
     expect(
       result['tokenClasses'],

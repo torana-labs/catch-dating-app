@@ -6,7 +6,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_b
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_host_section.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

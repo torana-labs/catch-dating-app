@@ -18,7 +18,6 @@ import 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.da
 import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
@@ -28,6 +27,7 @@ import 'package:catch_dating_app/hosts/today/personalization/presentation/host_t
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
