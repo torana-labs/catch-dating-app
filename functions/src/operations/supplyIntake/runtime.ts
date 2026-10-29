@@ -43,6 +43,7 @@ interface PackagedIntake {
   assertSupplyIntakeRequest: (value: unknown) => SupplyIntakeRequest;
   gatherIntakeEvidence: (input: Record<string, unknown>) => Promise<GatheredEvidence>;
   buildIntakeListing: (input: Record<string, unknown>) => IntakeListing;
+  organizerReferenceFromDocument: (organizerId: string, document: unknown) => OrganizerReference;
   intakeInputSnapshot: (input: {listing: IntakeListing}) => Record<string, unknown>;
   pageFetchBudgetLedgers: (input: Record<string, unknown>) => PageFetchLedgers;
   GuardedPageFetchPort: new (options: Record<string, unknown>) => IntakePageSource;
@@ -83,8 +84,10 @@ export interface AcquisitionPolicy {
 export interface SupplyIntakeRequest {
   schemaVersion: 1;
   requestId: string;
-  kind: "nomination" | "self_submission" | "discovery";
+  kind: "nomination" | "self_submission" | "discovery" | "event_refresh";
   market: string;
+  /** The listed organizer an event_refresh reads events for. */
+  target?: {organizerId: string};
   seed: {name: string | null; urls: string[]; notes: string | null; categories: string[]};
   submittedBy: {role: "associate" | "partner" | "organizer" | "system"; uid: string | null; partnerId: string | null};
   submittedAt: string;
@@ -96,16 +99,47 @@ interface GatheredEvidence {
   stoppedReason: string | null;
 }
 
+/** An organizer Catch already lists, in the shape the organizer matcher reads. */
+export interface OrganizerReference {
+  organizerId: string;
+  name: string | null;
+  slug: string | null;
+  markets: string[];
+  instagramHandle: string | null;
+  links: string[];
+}
+
+export interface IntakeDuplicateCheck {
+  policyId: string;
+  authority: "advisory";
+  verdict: "match" | "ambiguous" | "none";
+  reasons: string[];
+  organizersCompared: number;
+  inventoryHash: string;
+  candidates: Array<{
+    organizerId: string;
+    name: string | null;
+    score: number;
+    band: "match" | "probable" | "review" | "low";
+    signals: string[];
+    conflicts: string[];
+    rationale: string;
+  }>;
+}
+
 export interface IntakeListing {
   listingId: string;
   contentHash: string;
   gaps: string[];
   researchNeeded: boolean;
   events: unknown[];
+  /** Present only when the run compared the listing with an organizer inventory. */
+  duplicateCheck?: IntakeDuplicateCheck;
 }
 
 const modules = [
   ["intake-request.mjs", "workflows/supply-intake/intake-request.mjs"],
+  ["organizer-matching/matcher.mjs", "workflows/supply-intake/organizer-matching/matcher.mjs"],
   ["page-capture.mjs", "workflows/supply-intake/page-capture.mjs"],
   ["acquisition.mjs", "workflows/supply-intake/acquisition.mjs"],
   ["workflow.mjs", "workflows/supply-intake/workflow.mjs"],
@@ -147,11 +181,14 @@ export interface IntakeRunResult {
  * Gathers one request's pages, builds its listing and runs Supply Intake in a
  * scratch store. The returned projection is the only thing that becomes
  * durable Firestore state; snapshots go to the server-only artifact store.
+ * Given the organizers Catch already lists, the listing carries an advisory
+ * duplicate check; null skips the check.
  */
-export async function runSupplyIntake({request, pageSource, now}: {
+export async function runSupplyIntake({request, pageSource, now, existingOrganizers = null}: {
   request: SupplyIntakeRequest;
   pageSource: IntakePageSource;
   now: () => Date;
+  existingOrganizers?: OrganizerReference[] | null;
 }): Promise<IntakeRunResult> {
   const runtime = await packagedIntake();
   const intake = runtime.assertSupplyIntakeRequest(request);
@@ -165,7 +202,7 @@ export async function runSupplyIntake({request, pageSource, now}: {
   };
   const startedAt = now().toISOString();
   const gathered = await runtime.gatherIntakeEvidence({request: intake, pageSource: recordingSource, now: startedAt});
-  const listing = runtime.buildIntakeListing({request: intake, gathered, now: startedAt});
+  const listing = runtime.buildIntakeListing({request: intake, gathered, now: startedAt, existingOrganizers});
   const inputSnapshot = runtime.intakeInputSnapshot({listing});
   const scratch = await fs.mkdtemp(path.join(os.tmpdir(), "catch-supply-intake-"));
   try {

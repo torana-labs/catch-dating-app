@@ -160802,6 +160802,148 @@ abstract final class CatchContractConstraints {
     maximum: 599,
   );
 
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckAuthority = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.authority',
+    required: true,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidates = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsBand = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.band',
+    required: true,
+    enumValues: <String>['match', 'probable', 'review', 'low'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsConflicts = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.conflicts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 12,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsConflictsItems = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.conflicts.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9_]{0,79}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsName = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.name',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.organizerId',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsRationale = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.rationale',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsScore = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsSignals = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.signals',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 12,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsSignalsItems = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.signals.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9_]{0,79}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckInventoryCitySlug = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.citySlug',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckInventoryLimit = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10000,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckInventoryTruncated = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckInventoryHash = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.inventoryHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckOrganizersCompared = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.organizersCompared',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckPolicyId = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.policyId',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckReasons = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.reasons',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 8,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckReasonsItems = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.reasons.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9_]{0,79}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckVerdict = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.verdict',
+    required: true,
+    enumValues: <String>['match', 'ambiguous', 'none'],
+  );
+
   static const supplyIntakeRequestsDocumentResultEventCount = CatchContractFieldConstraints(
     path: 'supplyIntakeRequestsDocument.result.eventCount',
     required: true,
@@ -195717,6 +195859,26 @@ abstract final class CatchContractConstraints {
     'supplyIntakeRequestsDocument.result.captureReceipts.items.snapshotBytes': supplyIntakeRequestsDocumentResultCaptureReceiptsItemsSnapshotBytes,
     'supplyIntakeRequestsDocument.result.captureReceipts.items.snapshotHash': supplyIntakeRequestsDocumentResultCaptureReceiptsItemsSnapshotHash,
     'supplyIntakeRequestsDocument.result.captureReceipts.items.status': supplyIntakeRequestsDocumentResultCaptureReceiptsItemsStatus,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.authority': supplyIntakeRequestsDocumentResultDuplicateCheckAuthority,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates': supplyIntakeRequestsDocumentResultDuplicateCheckCandidates,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.band': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsBand,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.conflicts': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsConflicts,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.conflicts.items': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsConflictsItems,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.name': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsName,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.organizerId': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsOrganizerId,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.rationale': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsRationale,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.score': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsScore,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.signals': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsSignals,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.signals.items': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsSignalsItems,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.citySlug': supplyIntakeRequestsDocumentResultDuplicateCheckInventoryCitySlug,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.limit': supplyIntakeRequestsDocumentResultDuplicateCheckInventoryLimit,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.truncated': supplyIntakeRequestsDocumentResultDuplicateCheckInventoryTruncated,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.inventoryHash': supplyIntakeRequestsDocumentResultDuplicateCheckInventoryHash,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.organizersCompared': supplyIntakeRequestsDocumentResultDuplicateCheckOrganizersCompared,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.policyId': supplyIntakeRequestsDocumentResultDuplicateCheckPolicyId,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.reasons': supplyIntakeRequestsDocumentResultDuplicateCheckReasons,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.reasons.items': supplyIntakeRequestsDocumentResultDuplicateCheckReasonsItems,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.verdict': supplyIntakeRequestsDocumentResultDuplicateCheckVerdict,
     'supplyIntakeRequestsDocument.result.eventCount': supplyIntakeRequestsDocumentResultEventCount,
     'supplyIntakeRequestsDocument.result.eventWorkItemIds': supplyIntakeRequestsDocumentResultEventWorkItemIds,
     'supplyIntakeRequestsDocument.result.eventWorkItemIds.items': supplyIntakeRequestsDocumentResultEventWorkItemIdsItems,
