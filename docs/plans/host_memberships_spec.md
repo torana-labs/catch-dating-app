@@ -532,7 +532,7 @@ New joins are refused while the program is not `active`.
 
 The CRM projection works as follows:
 
-- A trigger on `hostMemberships/{id}` (`onHostMembershipWritten`) finds contacts
+- A trigger on `hostMemberships/{id}` (`onHostMembershipAudienceProjected`) finds contacts
   where `organizerId == m.organizerId` and `linkedUid == m.uid`, writes the
   `membership` summary, and rebuilds traits. This follows
   `projectOrganizerCommunicationPreference`.
