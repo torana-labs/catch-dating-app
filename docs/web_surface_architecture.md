@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.42.0
-updated: 2026-10-26
+version: 0.43.0
+updated: 2026-10-29
 owner: web_platform
 status: active
 ---
@@ -792,7 +792,7 @@ local-data context, and sign-out live in the account disclosure.
 
 Operational directories and record review use URL-owned master-detail routes.
 Canonical list/workspace roots are `/overview`, `/safety`, `/access`, `/growth`,
-`/organizers`, `/organizers/claims`, `/events`, `/events/readiness`,
+`/organizers`, `/organizers/claims`, `/events`,
 `/events/external`, `/users`, `/finance`, `/quality`, `/operations`, and
 `/admin-roles`.
 
@@ -804,7 +804,7 @@ Marketing owns `/marketing` (default Posts), `/marketing/posts`,
 
 URL-owned detail families are `/safety/{targetPath}`, `/access/{uid}`,
 `/organizers/{clubId}`, `/organizers/claims/{requestId}`, `/events/{eventId}`,
-`/events/readiness/{actionId}`, `/events/external/{candidateId}`,
+`/events/external/{candidateId}`,
 `/growth/signals/{signalId}`, `/finance/issues/{issueId}`,
 `/quality/signals/{signalId}`, and `/admin-roles/{uid}`. A missing direct record
 stays unavailable; controllers must never auto-select another row to make a
