@@ -1,9 +1,7 @@
 import {productionIndexing} from "../src/server/publicEnvironment";
+import {robotsPolicy} from "../src/server/robotsPolicy";
 export const dynamic = "force-dynamic";
 import type {MetadataRoute} from "next";
 export default function robots(): MetadataRoute.Robots {
-  if (!productionIndexing()) return {rules: {userAgent: "*", disallow: "/"}};
-  return {rules: {userAgent: "*", allow: "/", disallow: ["/api/", "/_legacy/", "/booking/", "/offer/",
-    "/join/", "/event-update/", "/rehearse/", "/invite/", "/rsvp/", "/f/", "/demo/", "/claim/"]},
-    sitemap: "https://catchdates.com/sitemap.xml"};
+  return robotsPolicy(productionIndexing());
 }
