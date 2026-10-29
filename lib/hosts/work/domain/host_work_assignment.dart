@@ -7,7 +7,7 @@
 /// server-side authorization.
 library;
 
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// Whether an assignment scopes to a single event or a multi-day program.
 enum HostWorkScopeKind { event, program }

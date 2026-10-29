@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// Scope a moment definition is bound to. Exactly one id is set per kind.
 enum OrganizerMomentScopeKind { event, program }

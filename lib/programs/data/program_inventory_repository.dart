@@ -5,7 +5,9 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/domain/program_calendar.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'program_inventory_repository.g.dart';
 
 /// Typed adapters for the Events inventory and recoverable first-save command.
 /// Existing detail, editing and constituent repositories remain their owners.
@@ -80,6 +82,6 @@ class ProgramInventoryRepository {
   );
 }
 
-final programInventoryRepositoryProvider = Provider<ProgramInventoryRepository>(
-  (ref) => ProgramInventoryRepository(ref.watch(firebaseFunctionsProvider)),
-);
+@riverpod
+ProgramInventoryRepository programInventoryRepository(Ref ref) =>
+    ProgramInventoryRepository(ref.watch(firebaseFunctionsProvider));

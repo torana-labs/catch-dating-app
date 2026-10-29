@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// Shared decision horizon for Today's operational queue and event preview.
 const hostTodayOperationsHorizon = Duration(days: 7);
