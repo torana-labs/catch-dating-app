@@ -124,7 +124,6 @@
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerIntakeCurationPanel",
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerIntakeList",
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerIntakeSurfaceGrid",
-      "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerLocationResolutionForm",
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerPolicyGapColumns",
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerSurfaceList",
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerSurfaceRow",
