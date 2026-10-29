@@ -132,6 +132,24 @@ export function packagedIntake(): Promise<PackagedIntake> {
   return packaged;
 }
 
+export interface ParsedNominationMessage {
+  nominations: Array<{urls: string[]; notes: string | null}>;
+  unreadable: string[];
+  droppedNominations: number;
+}
+
+let messageParser: Promise<{parseNominationMessage: (text: string) => ParsedNominationMessage}> | null = null;
+
+/** Loads only the message parser, which nomination routing needs on every inbound message. */
+export function packagedMessageParser(): Promise<{parseNominationMessage: (text: string) => ParsedNominationMessage}> {
+  messageParser ??= import(pathToFileURL(path.resolve(__dirname, "../..", "operations", "src",
+    "workflows/supply-intake/message-nomination.mjs")).href).catch((error: unknown) => {
+    messageParser = null;
+    throw error;
+  });
+  return messageParser;
+}
+
 export interface IntakeRunResult {
   listing: IntakeListing;
   receipts: IntakeCaptureReceipt[];

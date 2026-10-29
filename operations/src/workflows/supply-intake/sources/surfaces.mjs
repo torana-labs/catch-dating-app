@@ -14,6 +14,7 @@ const eventPlatforms = new Set(platformCatalog.platforms.map((platform) => platf
 const trackingParams = new Set([
   "fbclid",
   "gclid",
+  "igsh",
   "igshid",
   "mc_cid",
   "mc_eid",

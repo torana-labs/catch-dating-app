@@ -160,6 +160,7 @@ Do not edit it by hand.
 | SupplyIntakeRequest | `operations/supply_intake_request.schema.json` | `functions/src/shared/generated/supplyIntakeRequest.ts` |
 | SupplyIntakeRequestsDocument | `firestore/supply_intake_requests.schema.json` | `functions/src/shared/generated/supplyIntakeRequestsDocument.ts` |
 | SupplyIntakeUsageDocument | `firestore/supply_intake_usage.schema.json` | `functions/src/shared/generated/supplyIntakeUsageDocument.ts` |
+| SupplyNominatorDocument | `firestore/supply_nominators.schema.json` | `functions/src/shared/generated/supplyNominatorDocument.ts` |
 | AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `functions/src/shared/generated/adminSalesIntelligenceGenerateCallablePayload.ts` |
 | SalesOutreachJobsDocument | `firestore/sales_outreach_jobs.schema.json` | `functions/src/shared/generated/salesOutreachJobsDocument.ts` |
 | OutreachDraft | `operations/outreach_drafting_draft.schema.json` | `functions/src/shared/generated/outreachDraft.ts` |
@@ -903,6 +904,10 @@ Do not edit it by hand.
 | AdminListListingEventImportsCallablePayload | `callables/admin_list_listing_event_imports_payload.schema.json` | `functions/src/shared/generated/adminListListingEventImportsCallablePayload.ts` |
 | AdminListListingEventImportsCallableResponse | `callable_responses/admin_list_listing_event_imports_response.schema.json` | `functions/src/shared/generated/adminListListingEventImportsCallableResponse.ts` |
 | AdminPublishListingEventsCallablePayload | `callables/admin_publish_listing_events_payload.schema.json` | `functions/src/shared/generated/adminPublishListingEventsCallablePayload.ts` |
+| AdminSetSupplyNominatorCallablePayload | `callables/admin_set_supply_nominator_payload.schema.json` | `functions/src/shared/generated/adminSetSupplyNominatorCallablePayload.ts` |
+| AdminSetSupplyNominatorCallableResponse | `callable_responses/admin_set_supply_nominator_response.schema.json` | `functions/src/shared/generated/adminSetSupplyNominatorCallableResponse.ts` |
+| AdminListSupplyNominatorsCallablePayload | `callables/admin_list_supply_nominators_payload.schema.json` | `functions/src/shared/generated/adminListSupplyNominatorsCallablePayload.ts` |
+| AdminListSupplyNominatorsCallableResponse | `callable_responses/admin_list_supply_nominators_response.schema.json` | `functions/src/shared/generated/adminListSupplyNominatorsCallableResponse.ts` |
 | AdminListSupplyIntakePoliciesCallablePayload | `callables/admin_list_supply_intake_policies_payload.schema.json` | `functions/src/shared/generated/adminListSupplyIntakePoliciesCallablePayload.ts` |
 | AdminListSupplyIntakePoliciesCallableResponse | `callable_responses/admin_list_supply_intake_policies_response.schema.json` | `functions/src/shared/generated/adminListSupplyIntakePoliciesCallableResponse.ts` |
 | AdminRefreshOrganizerEventsCallablePayload | `callables/admin_refresh_organizer_events_payload.schema.json` | `functions/src/shared/generated/adminRefreshOrganizerEventsCallablePayload.ts` |
@@ -1434,6 +1439,7 @@ Do not edit it by hand.
 | `schemaSupplyIntakeRequestSchema` | SupplyIntakeRequest | `operations/supply_intake_request.schema.json` | `lib/core/schema_contracts/generated/schemas/supply_intake_request.g.dart` |
 | `schemaSupplyIntakeRequestsDocumentSchema` | SupplyIntakeRequestsDocument | `firestore/supply_intake_requests.schema.json` | `lib/core/schema_contracts/generated/schemas/supply_intake_requests_document.g.dart` |
 | `schemaSupplyIntakeUsageDocumentSchema` | SupplyIntakeUsageDocument | `firestore/supply_intake_usage.schema.json` | `lib/core/schema_contracts/generated/schemas/supply_intake_usage_document.g.dart` |
+| `schemaSupplyNominatorDocumentSchema` | SupplyNominatorDocument | `firestore/supply_nominators.schema.json` | `lib/core/schema_contracts/generated/schemas/supply_nominator_document.g.dart` |
 | `schemaAdminSalesIntelligenceGenerateCallablePayloadSchema` | AdminSalesIntelligenceGenerateCallablePayload | `callables/admin_sales_intelligence_generate_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_sales_intelligence_generate_callable_payload.g.dart` |
 | `schemaSalesOutreachJobsDocumentSchema` | SalesOutreachJobsDocument | `firestore/sales_outreach_jobs.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_outreach_jobs_document.g.dart` |
 | `schemaOutreachDraftSchema` | OutreachDraft | `operations/outreach_drafting_draft.schema.json` | `lib/core/schema_contracts/generated/schemas/outreach_draft.g.dart` |
@@ -2177,6 +2183,10 @@ Do not edit it by hand.
 | `schemaAdminListListingEventImportsCallablePayloadSchema` | AdminListListingEventImportsCallablePayload | `callables/admin_list_listing_event_imports_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_listing_event_imports_callable_payload.g.dart` |
 | `schemaAdminListListingEventImportsCallableResponseSchema` | AdminListListingEventImportsCallableResponse | `callable_responses/admin_list_listing_event_imports_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_listing_event_imports_callable_response.g.dart` |
 | `schemaAdminPublishListingEventsCallablePayloadSchema` | AdminPublishListingEventsCallablePayload | `callables/admin_publish_listing_events_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_publish_listing_events_callable_payload.g.dart` |
+| `schemaAdminSetSupplyNominatorCallablePayloadSchema` | AdminSetSupplyNominatorCallablePayload | `callables/admin_set_supply_nominator_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_supply_nominator_callable_payload.g.dart` |
+| `schemaAdminSetSupplyNominatorCallableResponseSchema` | AdminSetSupplyNominatorCallableResponse | `callable_responses/admin_set_supply_nominator_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_set_supply_nominator_callable_response.g.dart` |
+| `schemaAdminListSupplyNominatorsCallablePayloadSchema` | AdminListSupplyNominatorsCallablePayload | `callables/admin_list_supply_nominators_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_supply_nominators_callable_payload.g.dart` |
+| `schemaAdminListSupplyNominatorsCallableResponseSchema` | AdminListSupplyNominatorsCallableResponse | `callable_responses/admin_list_supply_nominators_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_supply_nominators_callable_response.g.dart` |
 | `schemaAdminListSupplyIntakePoliciesCallablePayloadSchema` | AdminListSupplyIntakePoliciesCallablePayload | `callables/admin_list_supply_intake_policies_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_supply_intake_policies_callable_payload.g.dart` |
 | `schemaAdminListSupplyIntakePoliciesCallableResponseSchema` | AdminListSupplyIntakePoliciesCallableResponse | `callable_responses/admin_list_supply_intake_policies_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_list_supply_intake_policies_callable_response.g.dart` |
 | `schemaAdminRefreshOrganizerEventsCallablePayloadSchema` | AdminRefreshOrganizerEventsCallablePayload | `callables/admin_refresh_organizer_events_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_refresh_organizer_events_callable_payload.g.dart` |
@@ -2799,6 +2809,7 @@ Do not edit it by hand.
 | AdminListOrganizerListingReviewsCallableRequest | AdminListOrganizerListingReviewsCallablePayload | `callables/admin_list_organizer_listing_reviews_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_organizer_listing_reviews_callable_request.g.dart` |
 | AdminListListingEventImportsCallableRequest | AdminListListingEventImportsCallablePayload | `callables/admin_list_listing_event_imports_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_list_listing_event_imports_callable_request.g.dart` |
 | AdminPublishListingEventsCallableRequest | AdminPublishListingEventsCallablePayload | `callables/admin_publish_listing_events_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_publish_listing_events_callable_request.g.dart` |
+| AdminSetSupplyNominatorCallableRequest | AdminSetSupplyNominatorCallablePayload | `callables/admin_set_supply_nominator_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_set_supply_nominator_callable_request.g.dart` |
 | AdminRefreshOrganizerEventsCallableRequest | AdminRefreshOrganizerEventsCallablePayload | `callables/admin_refresh_organizer_events_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_refresh_organizer_events_callable_request.g.dart` |
 | AdminDecideOrganizerPolicyGapCallableRequest | AdminDecideOrganizerPolicyGapCallablePayload | `callables/admin_decide_organizer_policy_gap_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_decide_organizer_policy_gap_callable_request.g.dart` |
 | AdminSetClubIndexStatusCallableRequest | AdminSetClubIndexStatusCallablePayload | `callables/admin_set_club_index_status_payload.schema.json` | `lib/core/schema_contracts/generated/callables/admin_set_club_index_status_callable_request.g.dart` |
@@ -3047,6 +3058,7 @@ Do not edit it by hand.
 | SetEventAssignmentFeatureConsentCallablePayload | cannot map field "decision" (no type) |
 | UpdateOrganizerCallablePayloadPatch | no Dart patch config |
 | UpdateClubCallablePayloadPatch | cannot map patch field "clubPhotos" (type=array) |
+| AdminListSupplyNominatorsCallablePayload | no properties |
 | AdminListSupplyIntakePoliciesCallablePayload | no properties |
 | AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |
 | AdminUpdateOrganizerDetailsCallablePayloadPatch | no Dart patch config |

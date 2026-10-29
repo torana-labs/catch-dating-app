@@ -6,9 +6,13 @@ import {spawnSync} from "node:child_process";
 import {fileURLToPath} from "node:url";
 import test from "node:test";
 import {
+  INVENTORY_END_MARKER,
+  INVENTORY_START_MARKER,
   extractDocumentedFunctionNames,
+  extractFunctionExportModules,
   extractFunctionExports,
   scanFunctionReadmeInventory,
+  writeFunctionReadmeInventory,
 } from "./check_fn_readme_inventory.mjs";
 
 test("extractFunctionExports reads direct and re-exported names", () => {
@@ -157,6 +161,100 @@ test("README baseline cleanup rejects resolved, removed and reintroduced omissio
   fs.writeFileSync(index, "export {createEvent} from './events';\n");
   fs.writeFileSync(readme, "# Functions\n## Function inventory\n");
   check(1, ["missingReadmeFunction"]);
+});
+
+const markedReadme = (rows) => "# Functions\n## Function inventory\nIntro prose.\n\n" +
+  `${INVENTORY_START_MARKER}\n### Callable\n\n| Function | File | Purpose |\n|---|---|---|\n${rows}` +
+  `\nA paragraph between tables stays.\n${INVENTORY_END_MARKER}\n\n## Shared modules\n| \`notAFunction\` | x |\n`;
+
+test("extractFunctionExportModules maps each export to its module", () => {
+  const modules = extractFunctionExportModules(`
+    export {createEvent,
+      updateEvent as updateEventCallable} from "./events/mutateEvent";
+    export const local = onCall(() => {});
+  `);
+  assert.deepEqual([...modules], [
+    ["local", null],
+    ["createEvent", "./events/mutateEvent"],
+    ["updateEventCallable", "./events/mutateEvent"],
+  ]);
+});
+
+test("writeFunctionReadmeInventory changes only missing and removed rows", (t) => {
+  const root = createFixture({
+    "functions/src/index.ts": "export {kept, shared} from './kept';\nexport {added} from './events/added';\n",
+    "functions/src/events/added.ts": "export const added = 1;\n",
+    "functions/README.md": markedReadme(
+      "| `shared` / `retiredPartner` | `src/kept.ts` | Shared row keeps its purpose. |\n" +
+      "| `retired` | `src/old.ts` | Gone. |\n" +
+      "| `kept` | `src/kept.ts` | Kept as written. |\n"),
+  });
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const readme = path.join(root, "functions/README.md");
+
+  const written = writeFunctionReadmeInventory({root});
+  assert.deepEqual([written.changed, written.added, written.removed], [true, ["added"], ["retired", "retiredPartner"]]);
+  const source = fs.readFileSync(readme, "utf8");
+  assert.equal(source, markedReadme(
+    "| `shared` | `src/kept.ts` | Shared row keeps its purpose. |\n" +
+    "| `kept` | `src/kept.ts` | Kept as written. |\n").replace(`\n${INVENTORY_END_MARKER}`,
+    "\n\n### Not yet described\n\n" +
+    "`--write` adds each export missing from this inventory here; move its row to its section and describe it.\n\n" +
+    "| Function | File | Purpose |\n|----------|------|---------|\n" +
+    "| `added` | `src/events/added.ts` | Not yet described. |\n" + INVENTORY_END_MARKER));
+  assert.deepEqual(scanFunctionReadmeInventory({root}).findings, []);
+  assert.equal(writeFunctionReadmeInventory({root}).changed, false, "a second write is a no-op");
+
+  // Once the export goes, its undescribed row and the empty section go too.
+  fs.writeFileSync(path.join(root, "functions/src/index.ts"), "export {kept, shared} from './kept';\n");
+  writeFunctionReadmeInventory({root});
+  assert.equal(fs.readFileSync(readme, "utf8"), markedReadme(
+    "| `shared` | `src/kept.ts` | Shared row keeps its purpose. |\n" +
+    "| `kept` | `src/kept.ts` | Kept as written. |\n"));
+});
+
+test("--check fails on drift and names --write, which repairs it and leaves baseline omissions", (t) => {
+  const root = createFixture({
+    "functions/src/index.ts": "export {kept, added, legacy} from './kept';\n",
+    "functions/README.md": markedReadme("| `kept` | `src/kept.ts` | Kept. |\n| `retired` | `src/old.ts` | Gone. |\n"),
+    "baseline.json": JSON.stringify({allowedFindings: [{rule: "missingReadmeFunction", function: "legacy"}]}),
+  });
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const run = (...args) => spawnSync(process.execPath, [
+    fileURLToPath(new URL("./check_fn_readme_inventory.mjs", import.meta.url)),
+    "--root", root, "--baseline", path.join(root, "baseline.json"), ...args,
+  ], {encoding: "utf8"});
+
+  const drift = run("--check");
+  assert.equal(drift.status, 1);
+  assert.match(drift.stderr, /added: functions\/README\.md must list every exported function/);
+  assert.match(drift.stderr, /retired: Current functions\/README\.md inventory row has no index\.ts export/);
+  assert.match(drift.stderr, /Run `node tool\/audit\/check_fn_readme_inventory\.mjs --write`/);
+  assert.equal(run().status, 1, "the default mode is --check");
+
+  const write = run("--write");
+  assert.equal(write.status, 0, write.stderr);
+  assert.match(write.stdout, /1 row\(s\) added, 1 removed export\(s\) dropped/);
+  const source = fs.readFileSync(path.join(root, "functions/README.md"), "utf8");
+  assert.match(source, /\| `added` \| `src\/kept` \| Not yet described\. \|/);
+  assert.doesNotMatch(source, /`retired`|`legacy`/);
+  assert.equal(run("--check").status, 0);
+});
+
+test("--write refuses a README without inventory markers", (t) => {
+  const original = "## Function inventory\n| `kept` | `src/kept.ts` |\n";
+  const root = createFixture({
+    "functions/src/index.ts": "export {kept, added} from './kept';\n",
+    "functions/README.md": original,
+  });
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  const result = spawnSync(process.execPath, [
+    fileURLToPath(new URL("./check_fn_readme_inventory.mjs", import.meta.url)),
+    "--root", root, "--baseline", path.join(root, "missing-baseline.json"), "--write",
+  ], {encoding: "utf8"});
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /needs the .*fn-inventory:start.* markers/);
+  assert.equal(fs.readFileSync(path.join(root, "functions/README.md"), "utf8"), original);
 });
 
 function createFixture(files) {

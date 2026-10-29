@@ -8616,6 +8616,31 @@
           "a count may only fall, and a fall must be recorded"
         ]
       }
+    },
+    {
+      "id": "cloudflare:edge-policy",
+      "category": "cloudflare",
+      "path": "tool/cloudflare/apply_edge_policy.mjs",
+      "command": "node tool/cloudflare/apply_edge_policy.mjs",
+      "safety": "remote-write",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Plans, and with --apply makes, the catchdates.com Cloudflare zone match tool/cloudflare/edge_policy.json: proxied DNS, strict TLS, Bot Fight Mode, AI-crawler blocking, one firewall rule and one rate-limit rule. Rules it did not create are kept.",
+      "checks": [
+        "node --check tool/cloudflare/apply_edge_policy.mjs",
+        "node --test tool/cloudflare/apply_edge_policy.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/cloudflare/edge_policy.json",
+        "tool/cloudflare/apply_edge_policy.test.mjs"
+      ],
+      "role": "operator",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     }
   ]
 }
