@@ -38,13 +38,14 @@ export function assertSuccessfulSource({run, sourceSha, repository, mainSha}) {
 
 /**
  * Successful same-source CI for a commit on main, whatever main has merged
- * since: main's push run, or the merge queue run that tested the exact commit
- * main received. A later merge cancels the first, never the second.
+ * since: main's push run, the merge queue run that tested the exact commit
+ * main received, or a nightly or dispatched full run of main. A later merge
+ * cancels the first, never the others.
  */
 export function assertSuccessfulSourceRun({run, sourceSha, repository}) {
   sha(sourceSha);
   assert.equal(run.head_sha, sourceSha);
-  assert.ok(isMainCiSource(run), "Source CI must be main's push run or the merge queue run of the same commit");
+  assert.ok(isMainCiSource(run), "Source CI must be main's own CI or the merge queue run of the same commit");
   assert.equal(run.path?.split("@")[0], ".github/workflows/ci.yml");
   assert.equal(run.repository?.full_name, repository);
   assert.equal(run.head_repository?.full_name, repository);
