@@ -10,8 +10,8 @@ import {activityArtworkTokenValues} from "./activityArtworkTokens";
 const read = (relative: string) =>
   fs.readFileSync(fileURLToPath(new URL(relative, import.meta.url)), "utf8");
 
-const visualsDart = read("../../../../lib/core/widgets/event_activity_visuals.dart");
-const backdropDart = read("../../../../lib/core/widgets/event_backdrop_image.dart");
+const visualsDart = read("../../../../lib/contexts/events/parts/event_activity_visuals.dart");
+const backdropDart = read("../../../../lib/contexts/events/parts/event_backdrop_image.dart");
 const artworkTs = read("./activityArtwork.ts");
 const tokensCss = read("../../../web-config/generated/catch-tokens.css");
 

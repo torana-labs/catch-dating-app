@@ -224,11 +224,12 @@ export function withBarrelExports(source, context, targets, map) {
 // Replaces whole-path mentions of moved files in text files, both as repo
 // paths (lib/...) and as package URIs (package:catch_dating_app/...), which
 // generators and templates embed in the Dart they write. A path may start
-// with a slash right after a quote, as the path fragments lints match do;
-// a path inside another folder (apps/host/lib/...) is a different file.
-// Mentions of a folder that moved whole move with it.
+// with a slash right after a quote, as the path fragments lints match do, or
+// climb to the repository root (../../lib/...); a path inside another folder
+// (apps/host/lib/...) is a different file. Mentions of a folder that moved
+// whole move with it.
 export function rewritePathMentions(source, moves, folders = []) {
-  const repoPathStart = "(?<![\\w.-])(?<![^'\"`\\s(]/)";
+  const repoPathStart = "(?<![\\w.-])(?<!(?<!\\.\\.|['\"`\\s(])/)";
   let out = source;
   let count = 0;
   const replace = (pattern, replacement) => {

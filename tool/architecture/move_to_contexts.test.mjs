@@ -274,13 +274,15 @@ test("rewritePathMentions moves folder mentions and quoted leading-slash fragmen
     "'/lib/core/theme/' lib/core/theme lib/core/theme/app_theme.dart",
     "'package:catch_dating_app/core/theme/app_theme.dart'",
     "lib/core/theme_extras.dart apps/host/lib/core/theme/x.dart x/lib/core/fcm_service.dart",
+    "read('../../../../lib/core/fcm_service.dart')",
   ].join("\n"), moves, folders);
-  assert.equal(count, 5);
+  assert.equal(count, 6);
   assert.equal(source, [
     "path.endsWith('/lib/platform/push/fcm_service.dart')",
     "'/lib/platform/theme/' lib/platform/theme lib/platform/theme/app_theme.dart",
     "'package:catch_dating_app/platform/theme/app_theme.dart'",
     "lib/core/theme_extras.dart apps/host/lib/core/theme/x.dart x/lib/core/fcm_service.dart",
+    "read('../../../../lib/platform/push/fcm_service.dart')",
   ].join("\n"));
 });
 
