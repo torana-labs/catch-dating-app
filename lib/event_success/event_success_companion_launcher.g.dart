@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../../event_success/event_success_companion_launcher.dart';
+part of 'event_success_companion_launcher.dart';
 
 // **************************************************************************
 // RiverpodGenerator

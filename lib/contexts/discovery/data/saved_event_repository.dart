@@ -10,7 +10,7 @@ import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part '../../events/data/saved_event_repository.g.dart';
+part 'saved_event_repository.g.dart';
 
 class SavedEventRepository {
   const SavedEventRepository(this._db);

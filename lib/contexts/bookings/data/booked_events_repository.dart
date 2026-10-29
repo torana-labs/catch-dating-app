@@ -8,7 +8,7 @@ import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part '../../events/data/booked_events_repository.g.dart';
+part 'booked_events_repository.g.dart';
 
 /// The events a person has booked or attended, read through their
 /// participations. Bookings own the participation query; [EventRepository]

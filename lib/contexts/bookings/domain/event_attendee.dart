@@ -2,8 +2,8 @@ import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part '../../events/domain/event_attendee.freezed.dart';
-part '../../events/domain/event_attendee.g.dart';
+part 'event_attendee.freezed.dart';
+part 'event_attendee.g.dart';
 
 enum EventAttendeeSource {
   catchBooking,

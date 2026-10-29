@@ -27,7 +27,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:crypto/crypto.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part '../../../hosts/data/host_forms_repository.g.dart';
+part 'host_forms_repository.g.dart';
 
 // firestore-index: hostFormSummaries (organizerId:ASCENDING, status:ASCENDING, updatedAtMillis:DESCENDING, __name__:DESCENDING)
 // firestore-index: hostFormSummaries (organizerId:ASCENDING, status:ASCENDING, purpose:ASCENDING, updatedAtMillis:DESCENDING, __name__:DESCENDING)

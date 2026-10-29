@@ -56,6 +56,35 @@ test("planMoves keeps the path below domain/ or data/ and sends root files to da
   assert.deepEqual(collisions, []);
 });
 
+test("planMoves keeps a generated part beside its source", () => {
+  // A file entry places event_attendee.dart in bookings; its parts would
+  // otherwise follow lib/events/ to the events context.
+  const splitMap = loadContextMap(JSON.stringify({
+    roots: map.roots,
+    contexts: [{id: "events", owns: "Events."}, {id: "bookings", owns: "Bookings."}],
+    legacy: [
+      {path: "lib/events/", context: "events"},
+      {path: "lib/events/domain/event_attendee.dart", context: "bookings"},
+      {path: "lib/hosts/", layer: "app"},
+      {path: "lib/hosts/data/host_profile_repository.dart", context: "events"},
+    ],
+  }));
+  const {moves} = planMoves([
+    "lib/events/domain/event_attendee.dart",
+    "lib/events/domain/event_attendee.freezed.dart",
+    "lib/events/domain/event_attendee.g.dart",
+    "lib/hosts/data/host_profile_repository.dart",
+    "lib/hosts/data/host_profile_repository.g.dart",
+  ], splitMap);
+  assert.deepEqual(Object.fromEntries(moves), {
+    "lib/events/domain/event_attendee.dart": "lib/contexts/bookings/domain/event_attendee.dart",
+    "lib/events/domain/event_attendee.freezed.dart": "lib/contexts/bookings/domain/event_attendee.freezed.dart",
+    "lib/events/domain/event_attendee.g.dart": "lib/contexts/bookings/domain/event_attendee.g.dart",
+    "lib/hosts/data/host_profile_repository.dart": "lib/contexts/events/data/host_profile_repository.dart",
+    "lib/hosts/data/host_profile_repository.g.dart": "lib/contexts/events/data/host_profile_repository.g.dart",
+  });
+});
+
 test("planMoves reports two files landing on one path", () => {
   const {collisions} = planMoves([
     "lib/events/data/repository.dart",

@@ -11,7 +11,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'package:catch_dating_app/contexts/forms/domain/host_application_summary.dart';
 
-part '../../../hosts/data/host_application_repository.g.dart';
+part 'host_application_repository.g.dart';
 
 enum HostApplicationSort {
   newest,

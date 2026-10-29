@@ -14,7 +14,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part '../../events/data/event_attendee_repository.g.dart';
+part 'event_attendee_repository.g.dart';
 
 class EventAttendeeRepository {
   const EventAttendeeRepository(this._db, this._functions);

@@ -5,7 +5,7 @@ import 'package:catch_dating_app/platform/persistence/command_journal_storage.da
 import 'package:catch_dating_app/platform/persistence/local_command_journal.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part '../../../hosts/data/host_attendance_outbox.g.dart';
+part 'host_attendance_outbox.g.dart';
 
 abstract interface class HostAttendanceMutator {
   Future<EventAttendeeAttendanceResult> setAttendance({

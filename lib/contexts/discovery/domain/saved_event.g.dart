@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../discovery/domain/saved_event.dart';
+part of 'saved_event.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

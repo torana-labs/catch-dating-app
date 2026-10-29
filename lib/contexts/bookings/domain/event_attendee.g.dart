@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../bookings/domain/event_attendee.dart';
+part of 'event_attendee.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

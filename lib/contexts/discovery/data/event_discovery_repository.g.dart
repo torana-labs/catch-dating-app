@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../discovery/data/event_discovery_repository.dart';
+part of 'event_discovery_repository.dart';
 
 // **************************************************************************
 // RiverpodGenerator

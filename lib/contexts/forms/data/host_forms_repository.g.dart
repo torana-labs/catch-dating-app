@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../contexts/forms/data/host_forms_repository.dart';
+part of 'host_forms_repository.dart';
 
 // **************************************************************************
 // RiverpodGenerator

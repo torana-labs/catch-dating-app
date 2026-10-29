@@ -3,7 +3,7 @@ import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part '../../events/data/event_check_in_location_service.g.dart';
+part 'event_check_in_location_service.g.dart';
 
 // keepalive: check-in location service is a shared platform facade for event
 // arrival actions.

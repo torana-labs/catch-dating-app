@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../contexts/bookings/data/host_attendance_outbox.dart';
+part of 'host_attendance_outbox.dart';
 
 // **************************************************************************
 // RiverpodGenerator

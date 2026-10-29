@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../bookings/data/event_attendee_repository.dart';
+part of 'event_attendee_repository.dart';
 
 // **************************************************************************
 // RiverpodGenerator

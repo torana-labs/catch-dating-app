@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part '../../events/domain/saved_event.freezed.dart';
-part '../../events/domain/saved_event.g.dart';
+part 'saved_event.freezed.dart';
+part 'saved_event.g.dart';
 
 @freezed
 abstract class SavedEvent with _$SavedEvent {

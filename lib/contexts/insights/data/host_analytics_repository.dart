@@ -8,7 +8,7 @@ import 'package:flutter/material.dart' show DateUtils;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part '../../../hosts/data/host_analytics_repository.g.dart';
+part 'host_analytics_repository.g.dart';
 
 // keepalive: the device IANA timezone is stable for the app process and lets
 // host surfaces render from their market fallback while the plugin resolves.

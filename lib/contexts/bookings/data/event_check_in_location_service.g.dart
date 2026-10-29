@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../bookings/data/event_check_in_location_service.dart';
+part of 'event_check_in_location_service.dart';
 
 // **************************************************************************
 // RiverpodGenerator

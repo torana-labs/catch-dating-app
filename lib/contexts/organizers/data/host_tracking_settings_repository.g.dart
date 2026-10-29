@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../../contexts/organizers/data/host_tracking_settings_repository.dart';
+part of 'host_tracking_settings_repository.dart';
 
 // **************************************************************************
 // RiverpodGenerator

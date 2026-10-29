@@ -57,6 +57,19 @@ export function planMoves(files, map) {
       : [layered[1], layered[2]];
     moves.set(file, `${map.roots.contexts}${place.context}/${layer}/${rest}`);
   }
+  // A generated part lives beside its source: it moves with it and never on
+  // its own, however a map entry would place it.
+  const tracked = new Set(files);
+  for (const file of files) {
+    const part = /^(.*)\.(?:g|freezed)\.dart$/u.exec(file);
+    if (part == null || !tracked.has(`${part[1]}.dart`)) continue;
+    const sourceTarget = moves.get(`${part[1]}.dart`);
+    if (sourceTarget == null) {
+      moves.delete(file);
+    } else {
+      moves.set(file, `${sourceTarget.slice(0, -".dart".length)}${file.slice(part[1].length)}`);
+    }
+  }
   const byTarget = new Map();
   for (const [from, to] of moves) {
     byTarget.set(to, [...(byTarget.get(to) ?? []), from]);

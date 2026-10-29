@@ -7,8 +7,8 @@ import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part '../../live/domain/event_success_defaults.freezed.dart';
-part '../../live/domain/event_success_defaults.g.dart';
+part 'event_success_defaults.freezed.dart';
+part 'event_success_defaults.g.dart';
 
 @freezed
 abstract class EventSuccessDefaults with _$EventSuccessDefaults {
