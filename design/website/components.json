@@ -3282,6 +3282,34 @@
       "notes": "Website T4 under D18 (CAT-248). The event page's booking card: a sticky aside beside the content on desktop, and on phones a docked bar (CatchDock) whose action opens the same card in a CatchSheet. It switches on the page's container width (catch-page below 840px), not the viewport. Search aliases: StickySidebar, BookingAside, StickyCard, BookingPanel, MobileBookingBar."
     },
     {
+      "id": "shared_accordion",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home",
+        "host"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchAccordion.tsx",
+      "exportName": "CatchAccordion",
+      "css": [
+        "packages/web-ui/src/components/CatchAccordion.module.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "story": "packages/web-ui/src/components/CatchAccordion.stories.tsx",
+        "exportName": "States",
+        "states": [
+          "closed",
+          "open",
+          "exclusive",
+          "multiple",
+          "on-ink",
+          "board-reference"
+        ]
+      },
+      "notes": "Website T4 under D18 (CAT-249): the FAQ list on the home and host pages, on native details and summary. One answer is open at a time by default (the name attribute), with a plus that turns to a minus, a hairline between questions and the question in titleL. Website-only: the app draws no FAQ. Search aliases: FAQ, Disclosure, Collapsible, ExpandableList, QuestionList."
+    },
+    {
       "id": "shared_fact_tile",
       "kind": "supporting-component",
       "routeIds": [

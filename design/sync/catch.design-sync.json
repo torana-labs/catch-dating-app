@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "acc7da3b46170b0d384a4016666ba3dcbc7e52a5ee6e1d98ca89c2de7aab97d9",
+  "sourceDigest": "4176a0b3ea9b77813f3115c8d20edbf2d76f1fb4989cb4dcc41eec22e93a624a",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "acc7da3b46170b0d384a4016666ba3dcbc7e52a5ee6e1d98ca89c2de7aab97d9",
-    "contractDigest": "acc7da3b46170b0d384a4016666ba3dcbc7e52a5ee6e1d98ca89c2de7aab97d9"
+    "digest": "4176a0b3ea9b77813f3115c8d20edbf2d76f1fb4989cb4dcc41eec22e93a624a",
+    "contractDigest": "4176a0b3ea9b77813f3115c8d20edbf2d76f1fb4989cb4dcc41eec22e93a624a"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "96111579339f187e828aa3623822868341425deb42ea24943058f4d4cc3a7fb9",
+    "handoffRequestDigest": "eea67f436bbd0f6a412374238e396129a7053a26de5473f6f755760010f04a6f",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,7 +461,7 @@
     "claudeAllowed": 71,
     "reactImplementationStates": {
       "headless-control": 6,
-      "styled": 22
+      "styled": 23
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -1267,9 +1267,9 @@
       "conceptId": "catch.menu",
       "dartSymbol": "CatchMenu",
       "dartFile": "packages/catch_ui/lib/src/components/catch_menu.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchMenu",
+      "reactFile": "packages/web-ui/src/components/CatchMenu.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Menu",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1294,7 +1294,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Menu",
       "claudeAllowed": true,
-      "contractDigest": "17cf435bfd079356139ed7857c58c358b5394ecdb8eac81d1263d51886588e89"
+      "contractDigest": "e0732d68680ff16f09f95d01ef0583a5351cbe151f9fb881c6c0a2a87e0e6395"
     },
     {
       "contractId": "catch.icon_tile",
