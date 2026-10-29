@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.21.0
+version: 2.21.1
 updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
@@ -2668,7 +2668,10 @@ both from `main` only:
 Each beta build runs the same checks as before upload: the IPA identity, the
 Google Maps configuration, the Android bundle identity and signing certificate,
 the package size and payload policy, and the live callable dependency check
-for the app's role. iOS build numbers come from the latest TestFlight build
+for the app's role. Android builds run only for the apps listed in the
+workflow's `PLAY_ROLES` (Host today). Google Play's API cannot create an app,
+so a new app's record and its first bundle are made by hand in Play Console
+before the app is added there. iOS build numbers come from the latest TestFlight build
 plus one. Android version codes come from the highest code on any Play track
 plus one, and never go below 100000. Each run attests its IPA or AAB with
 GitHub build provenance and keeps the file and its verification records as a
