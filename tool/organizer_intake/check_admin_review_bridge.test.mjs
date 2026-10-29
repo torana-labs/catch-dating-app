@@ -24,16 +24,14 @@ test("current Organizer Intake is Firestore-backed", () => {
 
   assert.equal(result.ok, true);
   assert.deepEqual(result.errors, []);
-  assert.equal(result.summary.channels, 5);
-  assert.equal(result.summary.readyChannels, 5);
+  assert.equal(result.summary.channels, 3);
+  assert.equal(result.summary.readyChannels, 3);
   assert.equal(result.summary.source, "firestore");
   assert.deepEqual(
     result.channels.map((channel) => channel.id),
     [
       "organizer_publication",
       "organizer_curation",
-      "external_event_candidate_review",
-      "external_event_location_resolution",
       "organizer_policy_gap_review",
     ]
   );

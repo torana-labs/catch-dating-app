@@ -342,7 +342,8 @@ seams.
 
 External-event publication is also outside the Operations writer boundary.
 Supply Intake may carry explicit resolved/waived blocker evidence into its
-reviewed projection, but `adminPublishExternalEvent` and
+reviewed projection, but `adminPublishListingEvents` (with the
+`onSupplyIntakeListingApproved` policy trigger through the same writer) and
 `adminTakedownExternalEvent` are the only mutation authorities. Both use
 dry-run/apply execution, immutable idempotency receipts, and a server-side
 recheck of market, organizer ceiling, candidate snapshot, and policy-gap

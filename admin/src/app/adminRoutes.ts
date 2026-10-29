@@ -28,7 +28,7 @@ interface RouteState {
   title?: string;
   salesArea?: "today" | "hosts" | "pipeline" | "research" | "pilots" | "settings";
   organizerWorkspace?: "directory" | "claims";
-  eventWorkspace?: "directory" | "external" | "readiness";
+  eventWorkspace?: "directory" | "external";
   marketingTab?: MarketingTab;
   composerStep?: MarketingStep;
 }
@@ -55,8 +55,8 @@ export const adminRoutes: AdminRoute[] = [
   route("/events/:eventId", "events", {title: "Event detail"}),
   route("/events/external/*", "events", {eventWorkspace: "external", title: "External inventory"}),
   route("/events/external/:externalEventId", "events", {eventWorkspace: "external", title: "External event"}),
-  route("/events/readiness/*", "events", {eventWorkspace: "readiness", title: "Event readiness"}),
-  route("/events/readiness/:readinessActionId", "events", {eventWorkspace: "readiness", title: "Event readiness review"}),
+  // The retired readiness workspace: old links open the directory, not an event named "readiness".
+  route("/events/readiness/*", "events"),
   route("/growth/signals/:growthSignalId", "growth", {title: "Growth signal"}),
   route("/finance/issues/:financeIssueId", "finance", {title: "Finance issue"}),
   route("/quality/signals/:qualitySignalId", "quality", {title: "Data quality signal"}),

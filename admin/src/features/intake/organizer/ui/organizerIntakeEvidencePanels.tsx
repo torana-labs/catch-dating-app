@@ -19,7 +19,7 @@ import {
   AdminSearchCandidateHeader,
   AdminSearchCandidateList,
   AdminSearchCandidatePanel,
-  AdminIntakeStateGrid,
+  AdminOrganizerIntakeSurfaceGrid,
 } from "../../../../shared/ui/AdminPrimitives";
 import {policyGapDecisionLabel} from "../controllers/organizerIntakeHelpers";
 import type {
@@ -54,7 +54,7 @@ function OrganizerPromotionExecutionView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow
           label="Status"
           value={packet.summary.status.replaceAll("_", " ")}
@@ -80,7 +80,7 @@ function OrganizerPromotionExecutionView({
           label="Answer packets"
           value={packet.summary.reviewedAnswerPacketStatus.replaceAll("_", " ")}
         />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         <CatchBadge label={`admin pending x${packet.summary.pendingAdminDecisions}`} />
         <CatchBadge label={`policy pending x${packet.summary.pendingPolicyDecisions}`} />
@@ -116,12 +116,12 @@ function OrganizerPromotionExecutionView({
               <CatchBadge recipe="status" tone={promotionPhaseTone(phase.status)} label={phase.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Mode" value={phase.executionMode.replaceAll("_", " ")} />
               <StateRow label="Blockers" value={String(phase.blockers.length)} />
               <StateRow label="Outputs" value={String(phase.outputs.length)} />
               <StateRow label="Phase" value={phase.phaseId.replaceAll("_", " ")} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
 
             {phase.blockers.length > 0 ? (
               <QualityRow tone="warning" icon={<FileWarning size={16} strokeWidth={1.9} />}>
@@ -178,7 +178,7 @@ function OrganizerPolicyGapRegisterView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Gaps" value={String(register.summary.gaps)} />
         <StateRow label="Operational blockers" value={String(register.summary.decisionRequired)} />
         <StateRow label="Reviewed" value={String(register.summary.reviewDecisions)} />
@@ -188,7 +188,7 @@ function OrganizerPolicyGapRegisterView({
         <StateRow label="Invalid" value={String(register.summary.reviewInvalid)} />
         <StateRow label="Ready" value={String(register.summary.ready)} />
         <StateRow label="Disabled" value={String(register.summary.blockedByPolicy)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {Object.entries(register.summary.gapsByArea).map(([area, count]) => (
           <CatchBadge key={area} label={`${area} x${count}`} />
@@ -230,13 +230,13 @@ function OrganizerPolicyGapRegisterView({
                 </div>
                 <CatchBadge recipe="status" tone={gap.status === "ready" ? "success" : "neutral"} label={gap.severity} />
               </AdminSearchCandidateHeader>
-              <AdminIntakeStateGrid>
+              <AdminOrganizerIntakeSurfaceGrid>
                 <StateRow label="Status" value={gap.status.replaceAll("_", " ")} />
                 <StateRow label="Decision" value={gap.decisionStatus.replaceAll("_", " ")} />
                 <StateRow label="Default" value={gap.defaultPosition.replaceAll("_", " ")} />
                 <StateRow label="State" value={gap.currentState} />
                 <StateRow label="Next" value={gap.nextAction} />
-              </AdminIntakeStateGrid>
+              </AdminOrganizerIntakeSurfaceGrid>
               {submittedDecision ? (
                 <AdminIntakeDecisionState>
                   <CheckCircle2 size={16} strokeWidth={1.9} />
@@ -290,7 +290,7 @@ function OrganizerPolicyGapRegisterView({
               {gap.reviewDecision ? (
                 <AdminIntakeSection>
                   <AdminIntakeSectionTitle>Reviewed Decision</AdminIntakeSectionTitle>
-                  <AdminIntakeStateGrid>
+                  <AdminOrganizerIntakeSurfaceGrid>
                     <StateRow label="Decision" value={gap.reviewDecision.decision} />
                     <StateRow label="Reviewer" value={gap.reviewDecision.reviewer} />
                     <StateRow label="Date" value={gap.reviewDecision.decidedAt} />
@@ -303,7 +303,7 @@ function OrganizerPolicyGapRegisterView({
                       label="Batch"
                       value={gap.reviewDecision.policyGapDecisionBatchId}
                     />
-                  </AdminIntakeStateGrid>
+                  </AdminOrganizerIntakeSurfaceGrid>
                 </AdminIntakeSection>
               ) : null}
               <AdminOrganizerPolicyGapColumns>
@@ -349,14 +349,14 @@ function OrganizerPolicyDecisionPacketsView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Packets" value={String(packets.summary.packets)} />
         <StateRow label="Need decision" value={String(packets.summary.decisionRequired)} />
         <StateRow label="Questions" value={String(packets.summary.questions)} />
         <StateRow label="Unanswered" value={String(packets.summary.unansweredQuestions)} />
         <StateRow label="Accepted" value={String(packets.summary.accepted)} />
         <StateRow label="Held" value={String(packets.summary.held)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {Object.entries(packets.summary.questionsByArea).map(([area, count]) => (
           <CatchBadge key={area} label={`${area} x${count}`} />
@@ -381,12 +381,12 @@ function OrganizerPolicyDecisionPacketsView({
               <CatchBadge recipe="status" tone={packet.status === "ready" ? "success" : "neutral"} label={packet.severity} />
             </AdminSearchCandidateHeader>
 
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Gap" value={packet.gapId} />
               <StateRow label="Decision" value={packet.decisionStatus.replaceAll("_", " ")} />
               <StateRow label="Safe default" value={packet.safeDefaultAction.replaceAll("_", " ")} />
               <StateRow label="Gate" value={packet.implementationGate} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
 
             <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
               <strong>{packet.currentState}</strong>
@@ -426,14 +426,14 @@ function OrganizerCanonicalHostRegistryView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Entities" value={String(registry.summary.entities)} />
         <StateRow label="Public" value={String(registry.summary.publicPublished)} />
         <StateRow label="Indexed" value={String(registry.summary.indexed)} />
         <StateRow label="Claim targets" value={String(registry.summary.claimTargets)} />
         <StateRow label="Surfaces" value={String(registry.summary.surfaces)} />
         <StateRow label="Crawl-capable" value={String(registry.summary.crawlCapableSurfaces)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         <CatchBadge label={registry.naming.publicEntityLabel} />
         <CatchBadge label={registry.naming.canonicalDataModel} />
@@ -462,14 +462,14 @@ function OrganizerCanonicalHostRegistryView({
               <CatchBadge recipe="status" tone={entry.publicPresence.publishStatus === "published" ? "success" : "neutral"} label={entry.publicPresence.publishStatus} />
             </AdminSearchCandidateHeader>
 
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Host id" value={entry.canonicalHostId} />
               <StateRow label="Path" value={entry.publicPresence.canonicalPath ?? "none"} />
               <StateRow label="Index" value={entry.publicPresence.indexStatus} />
               <StateRow label="App" value={entry.publicPresence.appVisibility} />
               <StateRow label="Claim" value={entry.claim.claimState} />
               <StateRow label="Club doc" value={entry.legacyClubCompatibility.documentId} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
 
             <AdminTagList>
               {entry.geography.markets.map((market) => (
@@ -505,14 +505,14 @@ function OrganizerCanonicalEvidenceIndexView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Records" value={String(index.summary.records)} />
         <StateRow label="Resolved" value={String(index.summary.resolvedArtifactRefs)} />
         <StateRow label="Missing" value={String(index.summary.surfacesWithoutEvidence)} />
         <StateRow label="Manual" value={String(index.summary.manualReportsWithoutArtifacts)} />
         <StateRow label="Raw payloads" value={String(index.summary.rawProviderArtifacts)} />
         <StateRow label="Raw bytes" value={index.summary.rawPayloadBytes.toLocaleString()} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {Object.entries(index.summary.evidenceByStatus).map(([status, count]) => (
           <CatchBadge key={status} label={`${status.replaceAll("_", " ")} x${count}`} />
@@ -538,7 +538,7 @@ function OrganizerCanonicalEvidenceIndexView({
               <CatchBadge recipe="status" tone={record.evidence.status === "resolved_artifact" ? "success" : "neutral"} label={record.evidence.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Surface" value={record.surface.surfaceId} />
               <StateRow label="Type" value={record.evidence.type} />
               <StateRow label="Publish" value={record.reviewState.publishStatus ?? "unknown"} />
@@ -551,7 +551,7 @@ function OrganizerCanonicalEvidenceIndexView({
                 label="SHA"
                 value={record.artifact ? record.artifact.sha256.slice(0, 12) : "none"}
               />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
 
             <AdminTagList>
               {record.riskFlags.length === 0 ? (
@@ -589,14 +589,14 @@ function OrganizerPublicationReviewPacketsView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Packets" value={String(packets.summary.packets)} />
         <StateRow label="Ready" value={String(packets.summary.readyForManualPublicationReview)} />
         <StateRow label="Blocked" value={String(packets.summary.blockedByData)} />
         <StateRow label="Published" value={String(packets.summary.published)} />
         <StateRow label="Evidence" value={String(packets.summary.evidenceRecords)} />
         <StateRow label="Manual refs" value={String(packets.summary.manualReportsWithoutArtifacts)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {Object.entries(packets.summary.packetsByStatus).map(([status, count]) => (
           <CatchBadge key={status} label={`${status.replaceAll("_", " ")} x${count}`} />
@@ -622,14 +622,14 @@ function OrganizerPublicationReviewPacketsView({
               <CatchBadge recipe="status" tone={packet.status === "ready_for_manual_publication_review" ? "success" : "neutral"} label={packet.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Path" value={packet.publicPresence.canonicalPath ?? "none"} />
               <StateRow label="Index" value={packet.publicPresence.indexStatus} />
               <StateRow label="App" value={packet.publicPresence.appVisibility} />
               <StateRow label="Evidence" value={String(packet.evidenceSummary.records)} />
               <StateRow label="Data blockers" value={String(packet.dataBlockers.length)} />
               <StateRow label="Evidence blockers" value={String(packet.evidenceBlockers.length)} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
 
             <QualityRow icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
               <strong>{packet.recommendedAction}</strong>
@@ -638,12 +638,12 @@ function OrganizerPublicationReviewPacketsView({
 
             <AdminIntakeSection>
               <AdminIntakeSectionTitle>Evidence review</AdminIntakeSectionTitle>
-              <AdminIntakeStateGrid>
+              <AdminOrganizerIntakeSurfaceGrid>
                 <StateRow label="Shown" value={`${packet.evidenceReview.shownRecords}/${packet.evidenceReview.totalRecords}`} />
                 <StateRow label="Artifacts" value={String(packet.evidenceReview.artifactBackedRecords)} />
                 <StateRow label="Manual" value={String(packet.evidenceReview.manualReportsWithoutArtifacts)} />
                 <StateRow label="Unresolved" value={String(packet.evidenceReview.unresolvedLocalRefs)} />
-              </AdminIntakeStateGrid>
+              </AdminOrganizerIntakeSurfaceGrid>
               <AdminCommandStack>
                 {packet.evidenceReview.records.slice(0, 6).map((record) => (
                   <AdminCommandRow key={record.evidenceId}>
@@ -724,14 +724,14 @@ function OrganizerPublicationImpactPreviewView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Impacts" value={String(preview.summary.impacts)} />
         <StateRow label="Would publish" value={String(preview.summary.wouldPublish)} />
         <StateRow label="Would index" value={String(preview.summary.wouldIndex)} />
         <StateRow label="Claim targets" value={String(preview.summary.wouldCreateClaimTargets)} />
         <StateRow label="App visible" value={String(preview.summary.wouldBeAppDiscoverable)} />
         <StateRow label="Manual acks" value={String(preview.summary.reviewerAcknowledgementsRequired)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {Object.entries(preview.summary.byStatus).map(([status, count]) => (
           <CatchBadge key={status} label={`${status.replaceAll("_", " ")} x${count}`} />
@@ -754,14 +754,14 @@ function OrganizerPublicationImpactPreviewView({
               <CatchBadge recipe="status" tone={entry.status.includes("would_publish") ? "success" : "neutral"} label={entry.status.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
 
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Path" value={entry.publicProjection.canonicalPath ?? "none"} />
               <StateRow label="Publish" value={entry.publicProjection.publishStatus} />
               <StateRow label="Index" value={entry.publicProjection.indexing} />
               <StateRow label="Claim" value={entry.claimTarget.path ?? "none"} />
               <StateRow label="App" value={entry.app.appVisibility} />
               <StateRow label="Sitemap" value={entry.remoteEffects.sitemapEligible ? "eligible" : "excluded"} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
 
             <AdminTagList>
               {entry.preconditions.reviewerAcknowledgementRequired ? (

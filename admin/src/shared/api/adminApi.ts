@@ -41,7 +41,6 @@ import {
 } from "./sampleData";
 import {
   sampleEventIntakeBridge,
-  sampleEventSupplyReadiness,
   sampleMarketingOpsBridge,
 } from "./sampleOperationalData";
 import {sampleIntakeOperations} from
@@ -66,7 +65,6 @@ import {
   AdminDecideSafetyTriageItemResponse,
   AdminGetEventDetailsPayload,
   AdminGetEventDetailsResponse,
-  AdminGetEventSupplyReadinessResponse,
   AdminGetMarketingOpsDashboardResponse,
   AdminGetSafetyTriageDetailsPayload,
   AdminGetSafetyTriageDetailsResponse,
@@ -83,8 +81,6 @@ import {
   AdminGetClubClaimRequestDetailsPayload,
   AdminGetClubClaimRequestDetailsResponse,
   AdminListClubClaimRequestsResponse,
-  AdminDecideOrganizerEventCandidatePayload,
-  AdminDecideOrganizerEventCandidateResponse,
   AdminDecideOrganizerIntakePayload,
   AdminDecideOrganizerIntakeResponse,
   AdminDecideOrganizerPolicyGapPayload,
@@ -95,8 +91,6 @@ import {
   AdminCreateOrganizerDraftFromCandidateResponse,
   AdminRecordEventIntakeReviewDecisionPayload,
   AdminRecordEventIntakeReviewDecisionResponse,
-  AdminPublishExternalEventPayload,
-  AdminPublishExternalEventResponse,
   AdminTakedownExternalEventPayload,
   AdminTakedownExternalEventResponse,
   AdminRecordMarketingReviewDecisionPayload,
@@ -117,8 +111,6 @@ import {
   AdminListClubDetailsPayload,
   AdminListClubDetailsResponse,
   AdminOverviewResponse,
-  AdminResolveOrganizerEventLocationPayload,
-  AdminResolveOrganizerEventLocationResponse,
   AdminSetClubIndexStatusPayload,
   AdminSetClubIndexStatusResponse,
   AdminUpdateEventDetailsPayload,
@@ -1601,37 +1593,6 @@ export async function createOrganizerDraftFromCandidate(
   return result.data;
 }
 
-export async function decideOrganizerEventCandidate(
-  payload: AdminDecideOrganizerEventCandidatePayload
-): Promise<AdminDecideOrganizerEventCandidateResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 240));
-    const decisionId = `event-${payload.candidateId
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")}`;
-    return {
-      candidateId: payload.candidateId,
-      decisionId,
-      decision: payload.decision,
-      decisionStatus: payload.decision === "approve_for_import" ?
-        "approved_for_import" :
-        payload.decision === "hold" ? "held" : "rejected",
-      decisionPath: `organizerEventCandidateReviewDecisions/${decisionId}`,
-      importState: payload.decision === "approve_for_import" ?
-        "blocked_by_policy" :
-        "not_importable",
-    };
-  }
-
-  const callable = httpsCallable<
-    AdminDecideOrganizerEventCandidatePayload,
-    AdminDecideOrganizerEventCandidateResponse
-  >(functions, "adminDecideOrganizerEventCandidate");
-  const result = await callable(payload);
-  return result.data;
-}
-
 export async function decideOrganizerPolicyGap(
   payload: AdminDecideOrganizerPolicyGapPayload
 ): Promise<AdminDecideOrganizerPolicyGapResponse> {
@@ -1659,33 +1620,6 @@ export async function decideOrganizerPolicyGap(
     AdminDecideOrganizerPolicyGapPayload,
     AdminDecideOrganizerPolicyGapResponse
   >(functions, "adminDecideOrganizerPolicyGap");
-  const result = await callable(payload);
-  return result.data;
-}
-
-export async function resolveOrganizerEventLocation(
-  payload: AdminResolveOrganizerEventLocationPayload
-): Promise<AdminResolveOrganizerEventLocationResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 240));
-    const resolutionId = `loc-${payload.candidateId
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")}`;
-    return {
-      candidateId: payload.candidateId,
-      resolutionId,
-      resolutionStatus: "resolved",
-      decisionPath:
-        `organizerEventLocationResolutionDecisions/${resolutionId}`,
-      location: payload.location,
-    };
-  }
-
-  const callable = httpsCallable<
-    AdminResolveOrganizerEventLocationPayload,
-    AdminResolveOrganizerEventLocationResponse
-  >(functions, "adminResolveOrganizerEventLocation");
   const result = await callable(payload);
   return result.data;
 }
@@ -1939,55 +1873,6 @@ export async function listExternalEventDetails(
     AdminListExternalEventDetailsPayload,
     AdminListExternalEventDetailsResponse
   >(functions, "adminListExternalEventDetails");
-  const result = await callable(payload);
-  return result.data;
-}
-
-export async function loadEventSupplyReadiness():
-  Promise<AdminGetEventSupplyReadinessResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 120));
-    return structuredClone(sampleEventSupplyReadiness);
-  }
-
-  const callable = httpsCallable<
-    unknown,
-    AdminGetEventSupplyReadinessResponse
-  >(functions, "adminGetEventSupplyReadiness");
-  const result = await callable({});
-  return result.data;
-}
-
-export async function publishExternalEvent(
-  payload: AdminPublishExternalEventPayload
-): Promise<AdminPublishExternalEventResponse> {
-  if (dataMode() === "sample") {
-    await new Promise((resolve) => window.setTimeout(resolve, 220));
-    if (!payload.reviewNote.trim()) {
-      throw new Error("A review note is required to publish external supply.");
-    }
-    const eventId = payload.targetPath.split("/")[1] ?? payload.sourceActionId;
-    return {
-      eventId,
-      targetPath: payload.targetPath,
-      sourceActionId: payload.sourceActionId,
-      publicationStatus: "public",
-      externalLinkCount: 1,
-      executionMode: payload.executionMode,
-      outcome: payload.executionMode === "apply" ?
-        "published" :
-        "would_publish",
-      receiptPath: `externalEventPublicationReceipts/sample-${eventId}`,
-      writeApplied: payload.executionMode === "apply",
-      idempotent: false,
-      publishedAt: sampleGeneratedAt,
-    };
-  }
-
-  const callable = httpsCallable<
-    AdminPublishExternalEventPayload,
-    AdminPublishExternalEventResponse
-  >(functions, "adminPublishExternalEvent");
   const result = await callable(payload);
   return result.data;
 }

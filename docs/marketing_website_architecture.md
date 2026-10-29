@@ -1,6 +1,6 @@
 ---
 doc_id: marketing_website_architecture
-version: 0.17.2
+version: 0.17.3
 updated: 2026-10-29
 owner: marketing_website
 status: active
@@ -468,7 +468,7 @@ The website is already split out of the old monolithic shell:
   controller-local. Safety Triage queue and detail reads now use explicit query
   keys while filters, selection, review notes, assignment notes, and recent
   session receipts remain local to the controller. Event Publishing canonical
-  list, external supply list, supply readiness, and selected-detail reads now
+  list, external supply list, and selected-detail reads now
   use explicit query keys while query inputs, filters, active view, selected
   external row, and edited event form state remain local to the controller.
   Listing public reviews are the first website reference migration for remote
@@ -1049,9 +1049,9 @@ website/src/
    selected detail, assignment mutation, and decision mutation use shared query
    keys and mutation pending state. `Event Publishing` keeps query inputs,
    filters, active view, selected external row, and edited event form state
-   local while canonical list, external list, supply readiness, selected detail,
-   save mutation, and external publish mutation use shared query keys and
-   mutation pending state. Organizer Intake, Event Intake, and Marketing Ops
+   local while canonical list, external list, selected detail, save mutation,
+   and external takedown mutation use shared query keys and mutation pending
+   state. Organizer Intake, Event Intake, and Marketing Ops
    row-level pending state is derived from TanStack mutation state through named
    mutation keys. `web:react-query-state` ratchets manual
    loading/saving/submitting/in-flight state in feature controllers and feature

@@ -19938,63 +19938,6 @@ export interface OrganizerIntakeFieldCorrectionDocument {
 }
 
 /**
- * Latest admin event-candidate review decision stored at organizerEventCandidateReviewDecisions/{decisionId}. Raw provider event evidence and imported events are not stored here.
- */
-export interface OrganizerEventCandidateReviewDecisionDocument {
-  schemaVersion: 1;
-  decisionId: string;
-  candidateId: string;
-  decision: "approve_for_import" | "hold" | "reject";
-  decisionStatus: "approved_for_import" | "held" | "rejected";
-  checklist: {
-    identityReviewed: boolean;
-    sourceEventReviewed: boolean;
-    timeReviewed: boolean;
-    locationReviewed: boolean;
-    dedupeReviewed: boolean;
-    ownerSafeCopyReviewed: boolean;
-    importPolicyAcknowledged: boolean;
-  };
-  /**
-   * @maxItems 6
-   */
-  blockerResolutions?: ExternalEventBlockerResolution[];
-  note: string;
-  reviewedByUid: string;
-  reviewedAt: FirebaseFirestore.Timestamp;
-  updatedAt: FirebaseFirestore.Timestamp;
-  importState: "blocked_by_policy" | "not_importable" | "pending_import";
-}
-
-/**
- * Latest admin-reviewed event location resolution stored at organizerEventLocationResolutionDecisions/{resolutionId}. Raw provider lookup responses and imported events are not stored here.
- */
-export interface OrganizerEventLocationResolutionDecisionDocument {
-  schemaVersion: 1;
-  resolutionId: string;
-  candidateId: string;
-  location: {
-    name: string;
-    address?: string | null;
-    placeId?: string | null;
-    latitude: number | null;
-    longitude: number | null;
-    notes?: string | null;
-  };
-  checklist: {
-    sourceLocationReviewed: boolean;
-    coordinatesReviewed: boolean;
-    placeIdentityReviewed: boolean;
-    importSafetyReviewed: boolean;
-  };
-  note: string;
-  reviewedByUid: string;
-  reviewedAt: FirebaseFirestore.Timestamp;
-  updatedAt: FirebaseFirestore.Timestamp;
-  resolutionStatus: "resolved";
-}
-
-/**
  * Latest admin/product policy-gap review decision stored at organizerPolicyGapReviewDecisions/{decisionId}. These decisions are review state only and do not enable organizer crawls, provider lookups, event imports, defaults, or naming migrations.
  */
 export interface OrganizerPolicyGapReviewDecisionDocument {

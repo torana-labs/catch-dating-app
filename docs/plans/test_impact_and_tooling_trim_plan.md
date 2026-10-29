@@ -1,7 +1,7 @@
 ---
 doc_id: test_impact_and_tooling_trim_plan
-version: 1.2.0
-updated: 2026-10-23
+version: 1.3.0
+updated: 2026-10-29
 owner: agent_operating_model
 status: proposed
 ---
@@ -160,8 +160,8 @@ last 150 merges in its description, using the method from #760.
    retirement rule above. The Tools lane selects only `active` tools, so their
    197 check commands never run. They are the organizer-intake pipeline in
    `tool/organizer_intake/` (157 files), and they are not cleanly separable:
-   Functions (`functions/src/admin/eventSupplyReadiness.ts`), Admin (the data
-   quality screen), operations tests, `tool/remote_ops_manifest.json` and
+   Functions (`functions/src/admin/eventSupplyReadiness.ts`, retired
+   2026-10-29), Admin (the data quality screen, likewise), operations tests, `tool/remote_ops_manifest.json` and
    `tool/lib/cli_args.test.mjs` still reference their files and generated
    JSON. First map which behaviors the live Functions and Admin features
    already cover, port the rest (for example the search-capture and
@@ -180,6 +180,17 @@ last 150 merges in its description, using the method from #760.
    still read repo JSON. Only the organizer discovery and promotion scripts
    that #109 replaced with Admin and Firestore remain retirement candidates,
    under the rule above.
+
+   **Decided 2026-10-29: the readiness publish step is superseded.** The
+   Supply Intake path (`onSupplyIntakeRequestCreated`,
+   `recoverSupplyIntakeRequests`, `onSupplyIntakeListingApproved`,
+   `adminPublishListingEvents` and Organizer Intake's "Imported events"
+   panels) replaces it. `adminGetEventSupplyReadiness`,
+   `adminPublishExternalEvent`, `adminDecideOrganizerEventCandidate` and
+   `adminResolveOrganizerEventLocation` are retired from Functions, Admin and
+   contracts; they last existed at `acb66a698`. Staff-entered coordinates moved
+   to `adminPublishListingEvents.eventLocations` (#1005). The scripts in
+   `tool/organizer_intake/` are retired in a separate change.
 3. Retire tools with no caller at all (listed in "Trim Inventory") under the
    same rule. A guard that is still wanted gets wired into CI instead.
 

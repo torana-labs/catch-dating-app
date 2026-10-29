@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-07-27",
+  "updated": "2026-10-29",
   "id": "feature.admin_intake",
   "name": "Admin Supply Intake",
   "owner": "admin_console",
@@ -86,9 +86,9 @@
       "runtime": "react_admin",
       "authority": {"registry": "admin_routes", "id": "route_organizer_intake"},
       "actionScope": {
-        "included": "Switching review and diagnostics, scrolling the bounded candidate queue independently from review detail, deciding organizer intake, creating fail-closed organizer drafts from reviewed candidates, attaching or curating candidates, deciding event candidates and policy gaps, classifying pending inputs, resolving event locations, and freezing the complete Admin workspace during any organizer-intake write.",
+        "included": "Switching review and diagnostics, scrolling the bounded candidate queue independently from review detail, deciding organizer intake, creating fail-closed organizer drafts from reviewed candidates, attaching or curating candidates, deciding policy gaps, classifying pending inputs, and freezing the complete Admin workspace during any organizer-intake write.",
         "excluded": [
-          "Decision notes, curation fields, manual-report acknowledgement, and location fields remain form data.",
+          "Decision notes, curation fields, and manual-report acknowledgement remain form data.",
           "Approval creates a publishing handoff; ownership, app visibility, claims, crawling, and canonical publication remain separately gated.",
           "Candidate draft creation reserves a canonical identity but cannot claim, publish, index, crawl, or expose the organizer in-app."
         ]
@@ -102,25 +102,19 @@
         "componentContracts": ["route_organizer_intake"],
         "dataContracts": [
           "contracts/callables/admin_decide_organizer_intake_payload.schema.json",
-          "contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
           "contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
           "contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
           "contracts/callables/admin_record_organizer_curation_payload.schema.json",
-          "contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
           "contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
           "contracts/firestore/organizer_intake_review_decisions.schema.json",
-          "contracts/firestore/organizer_event_candidate_review_decisions.schema.json",
           "contracts/firestore/organizer_policy_gap_review_decisions.schema.json",
-          "contracts/firestore/organizer_intake_curation_decisions.schema.json",
-          "contracts/firestore/organizer_event_location_resolution_decisions.schema.json"
+          "contracts/firestore/organizer_intake_curation_decisions.schema.json"
         ],
         "runtimeContracts": [
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideOrganizerIntake", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideOrganizerEventCandidate", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminDecideOrganizerPolicyGap", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
           {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminCreateOrganizerDraftFromCandidate", "requestValidation": "strict_schema", "responseValidation": "strict_schema"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminRecordOrganizerCuration", "requestValidation": "strict_schema", "responseValidation": "structural_object"},
-          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminResolveOrganizerEventLocation", "requestValidation": "strict_schema", "responseValidation": "structural_object"}
+          {"kind": "admin_callable", "registry": "admin/src/generated/validators/adminCallableValidators.ts", "callable": "adminRecordOrganizerCuration", "requestValidation": "strict_schema", "responseValidation": "structural_object"}
         ],
         "testEvidence": {
           "default": [
@@ -159,11 +153,8 @@
         {"id": "attach_organizer_candidate", "owner": "controller", "codeValue": "handleAttachCandidate", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "candidateId", "targetOrganizerId"], "outcomes": [{"kind": "surface_state", "stateIds": ["default"]}, {"kind": "side_effect", "id": "admin.organizer_candidate_attached"}], "description": "Records a candidate-to-organizer attachment curation decision."},
         {"id": "create_organizer_draft_from_candidate", "owner": "controller", "codeValue": "handleCreateOrganizerDraft", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "sourceNormalizedKey"], "outcomes": [{"kind": "surface_state", "stateIds": ["default", "organizer-draft-creation"]}, {"kind": "side_effect", "id": "admin.organizer_draft_created"}], "description": "Creates one deterministic source-backed organizer draft while ownership, publication, indexing, crawling, and app visibility remain disabled."},
         {"id": "record_organizer_curation", "owner": "controller", "codeValue": "handleItemCuration", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "operationId", "curationVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["default", "publication-packets"]}, {"kind": "side_effect", "id": "admin.organizer_curation_recorded"}], "description": "Persists one explicit merge, create, hide, or projection curation operation."},
-        {"id": "decide_organizer_event_candidate", "owner": "controller", "codeValue": "handleEventDecision", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "candidateId", "decisionVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["workflow-readiness"]}, {"kind": "side_effect", "id": "admin.organizer_event_candidate_decided"}], "description": "Records import readiness for one organizer event candidate without publishing it."},
         {"id": "decide_organizer_policy_gap", "owner": "controller", "codeValue": "handlePolicyGapDecision", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "gapId", "decisionVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["workflow-readiness"]}, {"kind": "side_effect", "id": "admin.organizer_policy_gap_decided"}], "description": "Records accept, hold, or reject for one unencoded policy gap."},
-        {"id": "decide_pending_intake_input", "owner": "controller", "codeValue": "handlePendingInputDecision", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "inputId", "decisionVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["workflow-readiness"]}, {"kind": "side_effect", "id": "admin.pending_intake_input_classified"}], "description": "Classifies one pending pipeline input with an explicit submitted/in-flight decision."},
-        {"id": "resolve_organizer_event_location", "owner": "controller", "codeValue": "handleLocationResolution", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "candidateId", "locationVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["workflow-readiness"]}, {"kind": "side_effect", "id": "admin.organizer_event_location_resolved"}], "description": "Records reviewed place identity and coordinates for one organizer event candidate."
-        }
+        {"id": "decide_pending_intake_input", "owner": "controller", "codeValue": "handlePendingInputDecision", "cardinality": "singleton", "scopeKeys": ["reviewerUid", "inputId", "decisionVersion"], "outcomes": [{"kind": "surface_state", "stateIds": ["workflow-readiness"]}, {"kind": "side_effect", "id": "admin.pending_intake_input_classified"}], "description": "Classifies one pending pipeline input with an explicit submitted/in-flight decision."}
       ],
       "scenarios": [
         {
@@ -181,8 +172,8 @@
           "stateId": "workflow-readiness",
           "dimensions": {},
           "actionCases": [
-            {"id": "readiness_tasks", "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_event_candidate", "decide_organizer_policy_gap", "decide_pending_intake_input", "resolve_organizer_event_location"]},
-            {"id": "readiness_mutation_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_event_candidate", "decide_organizer_policy_gap", "decide_pending_intake_input", "resolve_organizer_event_location"]}
+            {"id": "readiness_tasks", "enabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_policy_gap", "decide_pending_intake_input"]},
+            {"id": "readiness_mutation_pending_frozen_workspace", "dimensions": {"mutation": "pending"}, "disabledActions": ["toggle_organizer_intake_diagnostics", "decide_organizer_policy_gap", "decide_pending_intake_input"]}
           ]
         },
         {

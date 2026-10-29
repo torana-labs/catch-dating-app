@@ -506,23 +506,6 @@ export const adminActionCatalog = {
       "controlPlane": false
     },
     {
-      "actionId": "organizer-intake.decide-event-candidate",
-      "callable": "adminDecideOrganizerEventCandidate",
-      "workflowIds": [
-        "organizer-intake"
-      ],
-      "guiPath": "/intake/organizers",
-      "kind": "mutation",
-      "risk": "high",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "summary": "Record a review decision for one organizer-sourced event candidate without importing it.",
-      "controlPlane": false
-    },
-    {
       "actionId": "organizer-intake.decide-policy-gap",
       "callable": "adminDecideOrganizerPolicyGap",
       "workflowIds": [
@@ -537,23 +520,6 @@ export const adminActionCatalog = {
         "support"
       ],
       "summary": "Record a policy-gap decision while the underlying behavior remains disabled.",
-      "controlPlane": false
-    },
-    {
-      "actionId": "organizer-intake.resolve-location",
-      "callable": "adminResolveOrganizerEventLocation",
-      "workflowIds": [
-        "organizer-intake"
-      ],
-      "guiPath": "/intake/organizers",
-      "kind": "mutation",
-      "risk": "high",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "summary": "Record reviewed coordinates for one private external event candidate.",
       "controlPlane": false
     },
     {
@@ -758,41 +724,6 @@ export const adminActionCatalog = {
         "support"
       ],
       "summary": "List bounded read-only external event supply.",
-      "controlPlane": false
-    },
-    {
-      "actionId": "external-events.readiness",
-      "callable": "adminGetEventSupplyReadiness",
-      "workflowIds": [
-        "external-events",
-        "data-quality"
-      ],
-      "guiPath": "/events/readiness",
-      "kind": "read",
-      "risk": "read",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "summary": "Load the reviewed external-event import preflight and execution plan.",
-      "controlPlane": false
-    },
-    {
-      "actionId": "external-events.publish",
-      "callable": "adminPublishExternalEvent",
-      "workflowIds": [
-        "external-events"
-      ],
-      "guiPath": "/events/readiness",
-      "kind": "mutation",
-      "risk": "critical",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "summary": "Dry-run or publish one preflight-approved read-only external event with an idempotency receipt.",
       "controlPlane": false
     },
     {
@@ -2223,8 +2154,6 @@ export const adminActionCatalog = {
         "organizer-intake.refresh-organizer-events",
         "organizer-intake.create-organizer-draft",
         "organizer-intake.record-curation",
-        "organizer-intake.resolve-location",
-        "organizer-intake.decide-event-candidate",
         "organizer-intake.decide-policy-gap",
         "organizer-intake.decide-publication"
       ]
@@ -2275,8 +2204,6 @@ export const adminActionCatalog = {
       "guiPath": "/events/external",
       "actions": [
         "external-events.list",
-        "external-events.readiness",
-        "external-events.publish",
         "external-events.takedown"
       ]
     },
@@ -2326,8 +2253,7 @@ export const adminActionCatalog = {
         "overview.get",
         "analytics.host",
         "marketing.get",
-        "event-intake.get",
-        "external-events.readiness"
+        "event-intake.get"
       ]
     },
     {

@@ -13,7 +13,6 @@ describe("Admin route contract", () => {
     ["/organizers/claims/request-1", "organizers", "claimRequestId", "request-1"],
     ["/events/event-1", "events", "eventId", "event-1"],
     ["/events/external/candidate-1", "events", "externalEventId", "candidate-1"],
-    ["/events/readiness/source%2Faction", "events", "readinessActionId", "source/action"],
     ["/growth/signals/signal-1", "growth", "growthSignalId", "signal-1"],
     ["/finance/issues/payments%2Fpayment-1", "finance", "financeIssueId", "payments/payment-1"],
     ["/quality/signals/source-1", "quality", "qualitySignalId", "source-1"],
@@ -28,7 +27,7 @@ describe("Admin route contract", () => {
 
   it.each([
     ["/organizers/claims", "organizerWorkspace", "claims", "clubId"],
-    ["/events/readiness/", "eventWorkspace", "readiness", "eventId"],
+    ["/events/readiness/", "eventWorkspace", "directory", "eventId"],
     ["/events/external", "eventWorkspace", "external", "eventId"],
   ])("does not mistake the %s workspace for a record", (path, key, value, recordKey) => {
     const route = resolveAdminRoute(path);
@@ -45,6 +44,13 @@ describe("Admin route contract", () => {
     expect(resolveAdminRoute("/marketing/drafts/a/unknown")).toMatchObject({
       marketingTab: "draft", composerStep: "source", params: {draftId: "a"},
     });
+  });
+
+  it("opens the directory for links to the retired readiness workspace", () => {
+    expect(resolveAdminRoute("/events/readiness/source%2Faction")).toMatchObject({
+      nav: "events", eventWorkspace: "directory",
+    });
+    expect(resolveAdminRoute("/events/readiness/source%2Faction").params.eventId).toBeUndefined();
   });
 
   it("keeps unknown nested paths in their workspace without borrowing a record", () => {
@@ -71,8 +77,6 @@ describe("Admin route contract", () => {
     ["/intake/organizers", "Organizer intake"],
     ["/intake/events", "Event intake"],
     ["/intake/operations", "Supply intake operations"],
-    ["/events/readiness", "Event readiness"],
-    ["/events/readiness/action", "Event readiness review"],
     ["/events/external", "External inventory"],
   ])("retains the title for %s", (path, title) => {
     expect(resolveAdminRoute(path).title).toBe(title);

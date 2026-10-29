@@ -1,11 +1,9 @@
 import {CatchBadge, CatchField, CatchText} from "@catch/web-ui";
 import {useState} from "react";
-import {CheckCircle2, Clock3, ExternalLink, FileWarning, FolderSearch, Lock} from "lucide-react";
+import {Clock3, ExternalLink, FileWarning, FolderSearch} from "lucide-react";
 import type {
   AdminEventListRow,
   AdminExternalEventListRow,
-  ExternalEventImportAction,
-  ExternalEventImportExecutionAction,
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
@@ -22,7 +20,6 @@ import {
   StateRow,
   TableActionButton,
   AdminEyebrow,
-  AdminTagList,
   AdminIntakeSourceList,
   AdminSearchCandidateHeader,
   AdminMutedCell,
@@ -34,37 +31,8 @@ import {
   eventIsFull,
   externalEventNeedsReview,
   formatEventLabel,
-  type ExternalEventImportReview,
 } from "../controllers/eventPublishingHelpers";
-import {eventPublishingReadinessPanels} from "./eventPublishingReadinessPanels";
 import {eventPublishingEditorPanels} from "./eventPublishingEditorPanels";
-
-type EventImportReadinessFilter =
-  | "needsAction"
-  | "writeReady"
-  | "blocked"
-  | "waitingReview"
-  | "rejected"
-  | "all";
-
-interface EventImportReadinessRow {
-  key: string;
-  title: string;
-  platform: string;
-  status: ExternalEventImportAction["status"];
-  executionStatus: ExternalEventImportExecutionAction["status"] | null;
-  targetPath: string;
-  candidateId: string;
-  sourceEventKey: string;
-  canonicalHostId: string;
-  startTime: string | null;
-  outboundLinkCount: number;
-  primaryExternalUrl: string | null;
-  blockers: string[];
-  validationErrorCount: number;
-  sourceActionId: string;
-  publishReady: boolean;
-}
 
 function EventDirectoryTable({
   onSelect,
@@ -334,50 +302,6 @@ function ExternalEventSupplyDetail({
   );
 }
 
-function ExternalEventImportReviewPanel({
-  review,
-}: {
-  review: ExternalEventImportReview | null;
-}) {
-  if (!review) {
-    return (
-      <AdminEventSupplyEmptyState icon={<Clock3 size={16} strokeWidth={1.9} />}>
-        Select an external event to inspect import eligibility.
-      </AdminEventSupplyEmptyState>
-    );
-  }
-
-  return (
-    <AdminEventSupplyDetail
-      aria-label="External event import eligibility"
-    >
-      <QualityRow
-        tone={eventPublishingReadinessPanels.importReviewToneClass(review.status)}
-        icon={<Lock size={16} strokeWidth={1.9} />}>
-        <strong>{review.label}</strong>
-        <span>{review.detail}</span>
-      </QualityRow>
-      <QualityList>
-        <StateRow label="Target" value={review.targetPath} />
-        <StateRow label="Import action" value={review.importActionId} />
-        <StateRow label="Preflight action" value={review.executionActionId} />
-        <StateRow label="Next command" value={review.nextCommand} />
-      </QualityList>
-      {review.blockers.length > 0 ? (
-        <AdminTagList>
-          {review.blockers.map((blocker) => (
-            <CatchBadge key={blocker} label={blocker.replaceAll("_", " ")} />
-          ))}
-        </AdminTagList>
-      ) : (
-        <EmptyState icon={<CheckCircle2 size={16} strokeWidth={1.9} />}>
-          No deterministic blockers in the current snapshot.
-        </EmptyState>
-      )}
-    </AdminEventSupplyDetail>
-  );
-}
-
 function ExternalEventTakedownPanel({
   event,
   isSubmitting,
@@ -466,6 +390,5 @@ export const eventPublishingSupplyPanels = {
   EventDirectoryTable,
   ExternalEventSupplyTable,
   ExternalEventSupplyDetail,
-  ExternalEventImportReviewPanel,
   ExternalEventTakedownPanel,
 };

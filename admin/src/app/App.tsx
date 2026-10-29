@@ -812,7 +812,6 @@ function AdminRouteApp() {
               activeWorkspace={route.eventWorkspace}
               selectedEventId={route.params.eventId ?? null}
               selectedExternalEventId={route.params.externalEventId ?? null}
-              selectedReadinessActionId={route.params.readinessActionId ?? null}
               onBackToList={() => navigate(
                 `${adminPathForNav("events")}${location.search}`
               )}
@@ -827,12 +826,6 @@ function AdminRouteApp() {
                   `${adminPathForNav("events")}/external/${encodeURIComponent(eventId)}` +
                     location.search :
                   `${adminPathForNav("events")}/external${location.search}`);
-              }}
-              onSelectReadinessActionId={(sourceActionId) => {
-                navigate(sourceActionId ?
-                  `${adminPathForNav("events")}/readiness/${encodeURIComponent(sourceActionId)}` +
-                    location.search :
-                  `${adminPathForNav("events")}/readiness${location.search}`);
               }}
               onWorkspaceChange={(workspace) => {
                 navigate(workspace === "directory" ?

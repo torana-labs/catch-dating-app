@@ -4,7 +4,6 @@ import type {
   AdminCreateOrganizerDraftFromCandidatePayload,
   AdminRecordOrganizerCurationPayload,
   OrganizerCurationSurface,
-  OrganizerEventCandidateDecision,
   OrganizerIntakeDecision,
   OrganizerPolicyGapDecision,
 } from "../../../../shared/types/adminTypes";
@@ -387,49 +386,6 @@ export function defaultIntakeDecisionNote(
   return `Manual QA suppressed ${item.displayName} from public projection.`;
 }
 
-export function eventCandidateChecklistForDecision(
-  candidate: Intake.OrganizerExternalEventCandidate,
-  decision: OrganizerEventCandidateDecision
-) {
-  if (decision === "approve_for_import") {
-    return {
-      identityReviewed: true,
-      sourceEventReviewed: true,
-      timeReviewed: true,
-      locationReviewed: true,
-      dedupeReviewed: true,
-      ownerSafeCopyReviewed: true,
-      importPolicyAcknowledged: true,
-    };
-  }
-  return {
-    identityReviewed: Boolean(candidate.entityId && candidate.surfaceId),
-    sourceEventReviewed: Boolean(candidate.eventUrl),
-    timeReviewed: Boolean(candidate.startAt),
-    locationReviewed: Boolean(
-      candidate.location.name ||
-        candidate.location.address ||
-        candidate.location.citySlug
-    ),
-    dedupeReviewed: false,
-    ownerSafeCopyReviewed: false,
-    importPolicyAcknowledged: true,
-  };
-}
-
-export function defaultEventCandidateDecisionNote(
-  candidate: Intake.OrganizerExternalEventCandidate,
-  decision: OrganizerEventCandidateDecision
-) {
-  if (decision === "approve_for_import") {
-    return `Manual QA approved ${candidate.title} for future event import. Import writes remain disabled by policy.`;
-  }
-  if (decision === "hold") {
-    return `Manual QA held ${candidate.title} for additional event evidence.`;
-  }
-  return `Manual QA rejected ${candidate.title} from external event import.`;
-}
-
 export function policyGapChecklistForDecision(
   decision: OrganizerPolicyGapDecision
 ) {
@@ -462,36 +418,8 @@ export function defaultPolicyGapDecisionNote(
   return `Product policy rejected for ${gap.gapId}.`;
 }
 
-export function locationResolutionFormFromTask(
-  task: Intake.OrganizerExternalEventLocationResolutionTask
-): Intake.OrganizerLocationResolutionFormState {
-  return {
-    name: task.sourceLocation.name ?? "",
-    address: task.sourceLocation.address ?? "",
-    placeId: task.sourceLocation.placeId ?? "",
-    latitude: task.sourceLocation.latitude == null ?
-      "" :
-      String(task.sourceLocation.latitude),
-    longitude: task.sourceLocation.longitude == null ?
-      "" :
-      String(task.sourceLocation.longitude),
-    notes: "",
-    note: `Manual location QA complete for ${task.title}.`,
-  };
-}
-
-export function nullableInput(value: string): string | null {
-  const trimmed = value.trim();
-  return trimmed ? trimmed : null;
-}
-
 export function decisionLabel(decision: string) {
   if (decision === "approve_public") return "Approve public";
-  return decision.charAt(0).toUpperCase() + decision.slice(1);
-}
-
-export function eventDecisionLabel(decision: string) {
-  if (decision === "approve_for_import") return "Approve future import";
   return decision.charAt(0).toUpperCase() + decision.slice(1);
 }
 

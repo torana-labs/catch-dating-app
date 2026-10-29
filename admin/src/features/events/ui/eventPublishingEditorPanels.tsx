@@ -5,8 +5,6 @@ import type {
   AdminEventDetails,
   AdminEventInteractionModel,
   AdminEventPace,
-  ExternalEventImportAction,
-  ExternalEventImportExecutionAction,
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
@@ -44,33 +42,6 @@ import {
   type EventPublishingFormState,
   type EventValidationIssue,
 } from "../controllers/eventPublishingHelpers";
-
-type EventImportReadinessFilter =
-  | "needsAction"
-  | "writeReady"
-  | "blocked"
-  | "waitingReview"
-  | "rejected"
-  | "all";
-
-interface EventImportReadinessRow {
-  key: string;
-  title: string;
-  platform: string;
-  status: ExternalEventImportAction["status"];
-  executionStatus: ExternalEventImportExecutionAction["status"] | null;
-  targetPath: string;
-  candidateId: string;
-  sourceEventKey: string;
-  canonicalHostId: string;
-  startTime: string | null;
-  outboundLinkCount: number;
-  primaryExternalUrl: string | null;
-  blockers: string[];
-  validationErrorCount: number;
-  sourceActionId: string;
-  publishReady: boolean;
-}
 
 function EventEditor({
   diffRows,

@@ -736,40 +736,6 @@
       }
     },
     {
-      "actionId": "organizer-intake.decide-event-candidate",
-      "callable": "adminDecideOrganizerEventCandidate",
-      "workflowIds": [
-        "organizer-intake"
-      ],
-      "guiPath": "/intake/organizers",
-      "kind": "mutation",
-      "risk": "high",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "confirmation": "action-and-target",
-      "targetField": "candidateId",
-      "requestSchema": "contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
-      "summary": "Record a review decision for one organizer-sourced event candidate without importing it.",
-      "example": {
-        "candidateId": "example-event-candidate",
-        "decision": "hold",
-        "checklist": {
-          "identityReviewed": true,
-          "sourceEventReviewed": true,
-          "timeReviewed": true,
-          "locationReviewed": true,
-          "dedupeReviewed": true,
-          "ownerSafeCopyReviewed": true,
-          "importPolicyAcknowledged": true
-        },
-        "blockerResolutions": [],
-        "note": "Fixture event candidate hold."
-      }
-    },
-    {
       "actionId": "organizer-intake.decide-policy-gap",
       "callable": "adminDecideOrganizerPolicyGap",
       "workflowIds": [
@@ -800,40 +766,6 @@
           "behaviorStillDisabledAcknowledged": true
         },
         "note": "Fixture policy hold."
-      }
-    },
-    {
-      "actionId": "organizer-intake.resolve-location",
-      "callable": "adminResolveOrganizerEventLocation",
-      "workflowIds": [
-        "organizer-intake"
-      ],
-      "guiPath": "/intake/organizers",
-      "kind": "mutation",
-      "risk": "high",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "confirmation": "action-and-target",
-      "targetField": "candidateId",
-      "requestSchema": "contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
-      "summary": "Record reviewed coordinates for one private external event candidate.",
-      "example": {
-        "candidateId": "example-event-candidate",
-        "location": {
-          "name": "Fixture venue",
-          "latitude": 19.076,
-          "longitude": 72.8777
-        },
-        "checklist": {
-          "sourceLocationReviewed": true,
-          "coordinatesReviewed": true,
-          "placeIdentityReviewed": true,
-          "importSafetyReviewed": true
-        },
-        "note": "Fixture location resolution."
       }
     },
     {
@@ -1104,57 +1036,6 @@
       "example": {
         "timeWindow": "upcoming",
         "limit": 25
-      }
-    },
-    {
-      "actionId": "external-events.readiness",
-      "callable": "adminGetEventSupplyReadiness",
-      "workflowIds": [
-        "external-events",
-        "data-quality"
-      ],
-      "guiPath": "/events/readiness",
-      "kind": "read",
-      "risk": "read",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "requestSchema": "contracts/callables/admin_get_event_supply_readiness_payload.schema.json",
-      "summary": "Load the reviewed external-event import preflight and execution plan.",
-      "example": {}
-    },
-    {
-      "actionId": "external-events.publish",
-      "callable": "adminPublishExternalEvent",
-      "workflowIds": [
-        "external-events"
-      ],
-      "guiPath": "/events/readiness",
-      "kind": "mutation",
-      "risk": "critical",
-      "roles": [
-        "admin",
-        "adminOwner",
-        "support"
-      ],
-      "confirmation": "action-and-target",
-      "targetField": "targetPath",
-      "requestSchema": "contracts/callables/admin_publish_external_event_payload.schema.json",
-      "summary": "Dry-run or publish one preflight-approved read-only external event with an idempotency receipt.",
-      "example": {
-        "sourceActionId": "example-action",
-        "targetPath": "externalEvents/example-event",
-        "executionMode": "dry_run",
-        "idempotencyKey": "example-action:dry-run",
-        "reviewNote": "Fixture publication; do not apply.",
-        "checklist": {
-          "preflightActionReviewed": true,
-          "outboundLinksReviewed": true,
-          "noCatchBookingPaymentsWaitlist": true,
-          "ownerSafeCopyReviewed": true
-        }
       }
     },
     {
@@ -3421,8 +3302,6 @@
         "organizer-intake.refresh-organizer-events",
         "organizer-intake.create-organizer-draft",
         "organizer-intake.record-curation",
-        "organizer-intake.resolve-location",
-        "organizer-intake.decide-event-candidate",
         "organizer-intake.decide-policy-gap",
         "organizer-intake.decide-publication"
       ]
@@ -3473,8 +3352,6 @@
       "guiPath": "/events/external",
       "actions": [
         "external-events.list",
-        "external-events.readiness",
-        "external-events.publish",
         "external-events.takedown"
       ]
     },
@@ -3524,8 +3401,7 @@
         "overview.get",
         "analytics.host",
         "marketing.get",
-        "event-intake.get",
-        "external-events.readiness"
+        "event-intake.get"
       ]
     },
     {
