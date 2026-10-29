@@ -545,7 +545,8 @@
         "componentContracts": [
           "route_event_detail",
           "event_detail_public_registration",
-          "shared_event_booking_controls",
+          "event_guest_entry",
+          "event_booking",
           "event_page_header",
           "event_page_sections",
           "event_booking_card"
@@ -568,7 +569,7 @@
           ],
           "web-otp-registration": [
             "route_event_detail/EventDetailCatch",
-            "shared_event_booking_controls/Invitation"
+            "event_guest_entry/Steps"
           ],
           "external-source": [
             "route_event_detail/EventDetailCatch",

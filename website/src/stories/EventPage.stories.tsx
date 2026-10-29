@@ -1,7 +1,9 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
-import {CatchBand, CatchButton, CatchGrid, CatchSplit} from "@catch/web-ui";
-import {expect, within} from "storybook/test";
+import {CatchBand, CatchGrid, CatchSplit} from "@catch/web-ui";
+import {expect, userEvent, waitFor, within} from "storybook/test";
+import {EventBooking} from "../features/events/EventBooking";
 import {buildEventPageView, type EventPageData} from "../features/events/eventPageModel";
+import {GuestEventEntryView} from "../features/events/GuestEventEntry";
 import {EventBookingCard, EventPageHeader, EventPageMain} from "../features/events/sections/EventPageSections";
 import {
   bareEventPage,
@@ -31,9 +33,13 @@ type Story = StoryObj<FieldArgs>;
 
 const sections = ["catch-native", "external-source", "optional-fields", "photo-or-poster", "event-reviews", "more-events"];
 
-// Booking is the guest entry in the route stories; this stand-in keeps the
-// card's place without the phone sign-in.
-const bookStandIn = <CatchButton fullWidth label="Book" onPressed={() => undefined} />;
+// The booking steps' first state, without the phone sign-in behind it.
+const noop = () => undefined;
+const signedOut = {user: null, phone: "", setPhone: noop, code: "", setCode: noop, codeSent: false,
+  submit: noop, message: "", pending: false, recaptchaId: "story", viewer: null, loading: false, error: false,
+  refresh: noop, changePhone: noop, changeAccount: noop,
+} as unknown as Parameters<typeof GuestEventEntryView>[0]["controller"];
+const bookStandIn = <GuestEventEntryView controller={signedOut} eventId="story" startLabel="Book now" />;
 
 function EventPageStory({page}: {page: EventPageData}) {
   const view = buildEventPageView(page, eventPageFixtureNow);
@@ -42,7 +48,8 @@ function EventPageStory({page}: {page: EventPageData}) {
       <CatchBand as="header" pb="none" pt="compact"><EventPageHeader onShare={() => undefined} view={view} /></CatchBand>
       <CatchBand as="main" pt="compact">
         <CatchSplit
-          end={<EventBookingCard catchEntry={bookStandIn} externalAction={(button) => button} onExternalClick={() => undefined} view={view} />}
+          align="stretch"
+          end={<EventBooking catchEntry={bookStandIn} onExternalClick={noop} view={view} />}
           gap="regular"
           railSide="end"
           ratio="narrowRail"
@@ -113,8 +120,8 @@ export const BookingCard: Story = {
       <CatchGrid columns={3} compactColumns={1}>
         {[[fullEventPage, eventPageFixtureNow], [importedEventPage, eventPageFixtureNow],
           [fullEventPage, Date.parse("2026-11-23T00:00:00.000Z")]].map(([page, now], index) => (
-          <EventBookingCard catchEntry={bookStandIn} externalAction={(button) => button} key={index}
-            onExternalClick={() => undefined} view={buildEventPageView(page as EventPageData, now as number)} />
+          <EventBookingCard catchEntry={bookStandIn} key={index}
+            onExternalClick={noop} view={buildEventPageView(page as EventPageData, now as number)} />
         ))}
       </CatchGrid>
     </CatchBand>
@@ -123,5 +130,31 @@ export const BookingCard: Story = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole("link", {name: /Get tickets on Luma/})).toHaveAttribute("target", "_blank");
     await expect(canvas.getByText("Booking is closed for this event.")).toBeVisible();
+  },
+};
+
+/**
+ * The booking beside the page from 840px, and on a phone a docked bar with
+ * the price that opens the card in a sheet. Open it at a phone width to see
+ * the bar and the sheet.
+ */
+export const PhoneSheet: Story = {
+  name: "Booking on a phone",
+  parameters: {catchComponent: {id: "event_booking", routeIds: ["event_detail_canonical"],
+    states: ["sticky-aside", "docked-bar", "phone-sheet", "external-source"]}},
+  render: () => <EventPageStory page={fullEventPage} />,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    const open = canvas.queryByRole("button", {name: "Book"});
+    if (!open) {
+      await expect(canvas.getByRole("complementary", {name: "Booking"})).toBeVisible();
+      return;
+    }
+    await expect(canvas.getByText("27 going · 13 spots left")).toBeVisible();
+    await userEvent.click(open);
+    const sheet = await within(canvasElement.ownerDocument.body).findByRole("dialog", {name: "Half-marathon training: 15K"});
+    await expect(within(sheet).getByRole("button", {name: "Book now"})).toBeVisible();
+    await userEvent.click(within(sheet).getByRole("button", {name: "Close"}));
+    await waitFor(() => expect(sheet).not.toBeVisible());
   },
 };

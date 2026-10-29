@@ -221,15 +221,13 @@ function EventMore({more}: {more: NonNullable<EventPageView["more"]>}) {
 }
 
 /**
- * The price, the time and where to book. A Catch event takes the guest entry
- * the page passes; an imported event links out to its source. The sticky aside
- * that will hold it names the booking landmark, so the card is not one.
+ * The price, the time and where to book. A Catch event takes the booking
+ * steps the page passes; an imported event links out to its source. The
+ * sticky aside that holds it names the booking landmark, so the card is not one.
  */
-export function EventBookingCard({view, catchEntry, externalAction, onExternalClick}: {
+export function EventBookingCard({view, catchEntry, onExternalClick}: {
   view: EventPageView;
   catchEntry: ReactNode;
-  /** Places the source link and its note, such as in the docked phone action. */
-  externalAction: (button: ReactNode, note: string) => ReactNode;
   onExternalClick: () => void;
 }) {
   const {booking, facts} = view;
@@ -243,10 +241,12 @@ export function EventBookingCard({view, catchEntry, externalAction, onExternalCl
         </CatchGap>
         <CatchText variant="sectionTitle">{when}</CatchText>
         {!booking.open ? <CatchText color="ink2" variant="bodyM">{copy.booking.closed}</CatchText> :
-          booking.kind === "catch" ? catchEntry : externalAction(
-            <CatchButton fullWidth href={booking.url} label={copy.booking.externalAction(booking.label)} newTab
-              onPressed={onExternalClick} trailing={<CatchIcon icon="openExternal" />} />,
-            copy.booking.externalNote(booking.label),
+          booking.kind === "catch" ? catchEntry : (
+            <CatchGap size="related">
+              <CatchText color="ink2" variant="bodyS">{copy.booking.externalNote(booking.label)}</CatchText>
+              <CatchButton fullWidth href={booking.url} label={copy.booking.externalAction(booking.label)} newTab
+                onPressed={onExternalClick} trailing={<CatchIcon icon="openExternal" />} />
+            </CatchGap>
           )}
       </CatchGap>
     </CatchGroundCard>
