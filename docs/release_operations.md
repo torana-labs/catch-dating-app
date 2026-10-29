@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.17.0
-updated: 2026-10-26
+version: 2.18.0
+updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -1373,12 +1373,14 @@ provider activation and generates no Catch delivery receipt.
 ### Instagram claim verification activation
 
 Organisers prove a claim by sending a code from the listing's Instagram
-account to Catch's Instagram account. The method stays hidden until the owner
-completes these steps for an environment:
+account to Catch's Instagram account. The method stays hidden, and
+`instagramClaimWebhook` stays out of every deploy plan as a dormant target in
+`tool/firebase/list_firebase_function_targets.mjs`, until the owner completes
+these steps:
 
-1. Create three secrets in that project's Secret Manager. They must exist,
-   even as placeholders, before any deploy that includes
-   `instagramClaimWebhook`, because readiness blocks deploys without them:
+1. Create three secrets in Secret Manager in every project that deploys from
+   main. Readiness blocks any deploy that includes `instagramClaimWebhook`
+   until they exist:
    - `CATCH_INSTAGRAM_APP_SECRET`: the app secret that signs webhooks. For
      Instagram Login, that is the Instagram app secret shown under API setup
      with Instagram login.
@@ -1387,11 +1389,13 @@ completes these steps for an environment:
      `instagram_business_manage_messages`.
    - `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: a random string of at least 32
      characters.
-2. Set these GitHub environment variables, then deploy:
+2. Set these GitHub environment variables:
    - `CATCH_INSTAGRAM_ACCOUNT_ID`: the professional account id.
    - `CATCH_INSTAGRAM_HANDLE`: the username, without @.
    - `CATCH_INSTAGRAM_GRAPH_VERSION`: optional; the default is `v26.0`.
-3. In the Meta app dashboard, under API setup with Instagram login:
+3. Remove `functions:instagramClaimWebhook` from
+   `dormantFirebaseFunctionTargets` in a PR. Its merge deploys the webhook.
+4. In the Meta app dashboard, under API setup with Instagram login:
    - Configure webhooks with the callback URL
      `https://asia-south1-<project>.cloudfunctions.net/instagramClaimWebhook`
      and the same verify token.
@@ -1399,9 +1403,9 @@ completes these steps for an environment:
    - Turn on the webhook subscription for Catch's account.
    A Meta app has one callback URL, so only one environment receives these
    messages at a time.
-4. On Catch's Instagram account, turn on Allow access to messages under
+5. On Catch's Instagram account, turn on Allow access to messages under
    Message controls, Connected tools.
-5. Send a test message from an account with a role on the app. Check that the
+6. Send a test message from an account with a role on the app. Check that the
    webhook answers it, then set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` and
    deploy again.
 

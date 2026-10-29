@@ -172693,8 +172693,8 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.catchEvents.items.admissionLabels',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['approval', 'invitation', 'membership', 'balanced'],
-    maxItems: 4,
+    itemEnumValues: <String>['approval', 'invitation', 'membership'],
+    maxItems: 3,
     uniqueItems: true,
   );
 
@@ -172702,7 +172702,7 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.catchEvents.items.admissionLabels.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['approval', 'invitation', 'membership', 'balanced'],
+    enumValues: <String>['approval', 'invitation', 'membership'],
   );
 
   static const websiteHostListingProjectionCatchEventsItemsAmountPaise = CatchContractFieldConstraints(
@@ -172736,9 +172736,9 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.catchEvents.items.catchExperienceActivities',
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    itemEnumValues: <String>['introductions', 'sharedActivities', 'rotations'],
+    itemEnumValues: <String>['introductions', 'sharedActivities'],
     minItems: 1,
-    maxItems: 3,
+    maxItems: 2,
     uniqueItems: true,
   );
 
@@ -172746,7 +172746,7 @@ abstract final class CatchContractConstraints {
     path: 'websiteHostListingProjection.catchEvents.items.catchExperienceActivities.items',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['introductions', 'sharedActivities', 'rotations'],
+    enumValues: <String>['introductions', 'sharedActivities'],
   );
 
   static const websiteHostListingProjectionCatchEventsItemsCheckedInCount = CatchContractFieldConstraints(
@@ -173148,48 +173148,6 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummaryBookedCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.bookedCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummaryCatchSentCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.catchSentCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummaryChatStartedCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.chatStartedCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummaryCheckedInCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.checkedInCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummaryMutualMatchCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.mutualMatchCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
-  );
-
-  static const websiteHostListingProjectionEventSuccessSummarySafetyIncidentCount = CatchContractFieldConstraints(
-    path: 'websiteHostListingProjection.eventSuccessSummary.safetyIncidentCount',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 0,
   );
 
   static const websiteHostListingProjectionExternalEvents = CatchContractFieldConstraints(
@@ -197980,12 +197938,6 @@ abstract final class CatchContractConstraints {
     'websiteHostListingProjection.eventEvidence.items.sourceLabel': websiteHostListingProjectionEventEvidenceItemsSourceLabel,
     'websiteHostListingProjection.eventEvidence.items.summary': websiteHostListingProjectionEventEvidenceItemsSummary,
     'websiteHostListingProjection.eventEvidence.items.title': websiteHostListingProjectionEventEvidenceItemsTitle,
-    'websiteHostListingProjection.eventSuccessSummary.bookedCount': websiteHostListingProjectionEventSuccessSummaryBookedCount,
-    'websiteHostListingProjection.eventSuccessSummary.catchSentCount': websiteHostListingProjectionEventSuccessSummaryCatchSentCount,
-    'websiteHostListingProjection.eventSuccessSummary.chatStartedCount': websiteHostListingProjectionEventSuccessSummaryChatStartedCount,
-    'websiteHostListingProjection.eventSuccessSummary.checkedInCount': websiteHostListingProjectionEventSuccessSummaryCheckedInCount,
-    'websiteHostListingProjection.eventSuccessSummary.mutualMatchCount': websiteHostListingProjectionEventSuccessSummaryMutualMatchCount,
-    'websiteHostListingProjection.eventSuccessSummary.safetyIncidentCount': websiteHostListingProjectionEventSuccessSummarySafetyIncidentCount,
     'websiteHostListingProjection.externalEvents': websiteHostListingProjectionExternalEvents,
     'websiteHostListingProjection.externalEvents.items.accessibility': websiteHostListingProjectionExternalEventsItemsAccessibility,
     'websiteHostListingProjection.externalEvents.items.activityKind': websiteHostListingProjectionExternalEventsItemsActivityKind,

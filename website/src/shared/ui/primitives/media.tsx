@@ -1,8 +1,14 @@
 import type {CSSProperties, HTMLAttributes, ReactNode} from "react";
 import type {ActivityMeta} from "./foundation";
 
-import type {ActivityListing} from "./organizer";
 import {classNames} from "@catch/web-ui";
+
+interface ActivityListing {
+  logo: {
+    text: string;
+  };
+  status: string;
+}
 
 export type ActivityMarkSize = "sm" | "md" | "lg";
 

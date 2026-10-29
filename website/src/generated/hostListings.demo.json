@@ -414,8 +414,7 @@
         "bookedCount": 0,
         "checkedInCount": 0,
         "waitlistedCount": 0,
-        "priceLabel": "$14",
-        "scorecard": null
+        "priceLabel": "$14"
       },
       {
         "id": "event-host-live-console",
@@ -434,8 +433,7 @@
         "bookedCount": 17,
         "checkedInCount": 7,
         "waitlistedCount": 3,
-        "priceLabel": "$14",
-        "scorecard": null
+        "priceLabel": "$14"
       },
       {
         "id": "event-host-post-report",
@@ -454,18 +452,9 @@
         "bookedCount": 17,
         "checkedInCount": 13,
         "waitlistedCount": 2,
-        "priceLabel": "$14",
-        "scorecard": null
+        "priceLabel": "$14"
       }
     ],
-    "eventSuccessSummary": {
-      "bookedCount": 17,
-      "checkedInCount": 13,
-      "mutualMatchCount": 18,
-      "chatStartedCount": 12,
-      "catchSentCount": 41,
-      "safetyIncidentCount": 0
-    },
     "eventEvidence": [],
     "reviews": [
       {
