@@ -584,6 +584,25 @@ export const ADMIN_ACTION_CATALOG = {
       "salesStaff"
     ]
   },
+  "sales.intake.set-message-nominator": {
+    "callable": "adminSetSupplyNominator",
+    "controlPlane": true,
+    "kind": "mutation",
+    "roles": [
+      "admin",
+      "adminOwner"
+    ]
+  },
+  "sales.intake.list-message-nominators": {
+    "callable": "adminListSupplyNominators",
+    "controlPlane": true,
+    "kind": "read",
+    "roles": [
+      "admin",
+      "adminOwner",
+      "salesStaff"
+    ]
+  },
   "sales.hosts.update": {
     "callable": "adminUpdateSalesAccount",
     "controlPlane": false,
