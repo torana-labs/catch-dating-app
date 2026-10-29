@@ -10325,6 +10325,59 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const adminPublishListingEventsCallablePayloadEventLocations = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 60,
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsAddress = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.address',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsEventWorkItemId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.eventWorkItemId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsLatitude = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsLongitude = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsName = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.name',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminPublishListingEventsCallablePayloadEventLocationsItemsPlaceId = CatchContractFieldConstraints(
+    path: 'adminPublishListingEventsCallablePayload.eventLocations.items.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const adminPublishListingEventsCallablePayloadEventWorkItemIds = CatchContractFieldConstraints(
     path: 'adminPublishListingEventsCallablePayload.eventWorkItemIds',
     required: true,
@@ -175707,6 +175760,13 @@ abstract final class CatchContractConstraints {
     'adminPublishListingEventsCallablePayload.checklist.noCatchBookingPaymentsWaitlist': adminPublishListingEventsCallablePayloadChecklistNoCatchBookingPaymentsWaitlist,
     'adminPublishListingEventsCallablePayload.checklist.outboundLinksReviewed': adminPublishListingEventsCallablePayloadChecklistOutboundLinksReviewed,
     'adminPublishListingEventsCallablePayload.checklist.ownerSafeCopyReviewed': adminPublishListingEventsCallablePayloadChecklistOwnerSafeCopyReviewed,
+    'adminPublishListingEventsCallablePayload.eventLocations': adminPublishListingEventsCallablePayloadEventLocations,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.address': adminPublishListingEventsCallablePayloadEventLocationsItemsAddress,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.eventWorkItemId': adminPublishListingEventsCallablePayloadEventLocationsItemsEventWorkItemId,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.latitude': adminPublishListingEventsCallablePayloadEventLocationsItemsLatitude,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.longitude': adminPublishListingEventsCallablePayloadEventLocationsItemsLongitude,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.name': adminPublishListingEventsCallablePayloadEventLocationsItemsName,
+    'adminPublishListingEventsCallablePayload.eventLocations.items.placeId': adminPublishListingEventsCallablePayloadEventLocationsItemsPlaceId,
     'adminPublishListingEventsCallablePayload.eventWorkItemIds': adminPublishListingEventsCallablePayloadEventWorkItemIds,
     'adminPublishListingEventsCallablePayload.eventWorkItemIds.items': adminPublishListingEventsCallablePayloadEventWorkItemIdsItems,
     'adminPublishListingEventsCallablePayload.executionMode': adminPublishListingEventsCallablePayloadExecutionMode,

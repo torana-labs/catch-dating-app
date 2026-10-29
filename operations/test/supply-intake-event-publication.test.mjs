@@ -95,4 +95,9 @@ test("a staff review carries the checklist and the reviewer's resolutions", () =
   const unchecked = staffEventReview({reviewerUid: "staff-1", decidedAt: NOW, note: "x",
     checklist: {outboundLinksReviewed: true, noCatchBookingPaymentsWaitlist: false, ownerSafeCopyReviewed: false}});
   assert.deepEqual([unchecked.ownerSafeCopyReviewed, unchecked.importPolicyAcknowledged], [false, false]);
+  assert.equal(unchecked.location, null, "no location unless the reviewer supplies one");
+  const located = staffEventReview({reviewerUid: "staff-1", decidedAt: NOW, note: "x", checklist: {},
+    location: {name: "Cubbon Park", latitude: 12.9763, longitude: 77.5929}});
+  assert.deepEqual(located.location, {name: "Cubbon Park", address: null, placeId: null, latitude: 12.9763,
+    longitude: 77.5929});
 });

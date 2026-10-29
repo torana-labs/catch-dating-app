@@ -116,9 +116,11 @@ export function automatedEventReview({event, organizer, policy, now}) {
 /**
  * The review a staff member gives by publishing: their checklist confirms the
  * copy and the outbound-only booking, and their resolutions or cited waivers
- * clear governed blockers for this event.
+ * clear governed blockers for this event. A location they supply fills the
+ * map location the source page left out.
  */
-export function staffEventReview({reviewerUid, decidedAt, note, checklist, blockerResolutions = []}) {
+export function staffEventReview({reviewerUid, decidedAt, note, checklist, blockerResolutions = [],
+  location = null}) {
   return {
     reviewerUid,
     decidedAt,
@@ -132,6 +134,8 @@ export function staffEventReview({reviewerUid, decidedAt, note, checklist, block
       policyGapDecisionId: resolution.policyGapDecisionId ?? null,
       note: resolution.note,
     })),
+    location: location === null ? null : {name: location.name ?? null, address: location.address ?? null,
+      placeId: location.placeId ?? null, latitude: location.latitude, longitude: location.longitude},
   };
 }
 
