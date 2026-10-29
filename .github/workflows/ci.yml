@@ -236,8 +236,8 @@ jobs:
         run: |
           set -uo pipefail
           # The merge queue validated this exact commit before main moved to
-          # it. Reuse covers only pure-validation lanes; every delivery
-          # producer still runs. Any lookup failure keeps the full run.
+          # it, so main re-runs no validation lane: it only plans, finalizes
+          # and packages delivery. Any lookup failure keeps the full run.
           run_id=""
           if runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?event=merge_group&head_sha=$SOURCE_SHA&per_page=20")"; then
             run_id="$(jq -r --arg sha "$SOURCE_SHA" '[.workflow_runs[]? | select(.event == "merge_group" and
@@ -308,7 +308,7 @@ jobs:
   source-preflight:
     name: Complete source preflight
     needs: plan
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && !needs.plan.outputs.queue_verified_run }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -372,13 +372,13 @@ jobs:
 
   contracts:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.contracts == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.contracts == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/contracts-ci.yml
     secrets: inherit
 
   functions:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.functions == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.functions == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/functions-ci.yml
     secrets: inherit
 
@@ -393,7 +393,8 @@ jobs:
        needs.plan.outputs.source_sha != github.sha ||
        (needs.plan.result == 'success' &&
         needs.source-preflight.result == 'success' &&
-        needs.plan.outputs.firestore_rules == 'true'))
+        needs.plan.outputs.firestore_rules == 'true' &&
+        !needs.plan.outputs.queue_verified_run))
     uses: ./.github/workflows/firestore-rules-ci.yml
     with:
       ci_plan_attempt: ${{ needs.plan.outputs.producer_attempt }}
@@ -431,7 +432,7 @@ jobs:
 
   marketing:
     needs: [plan, source-preflight, capture-freshness]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.marketing == 'true' }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && needs.plan.outputs.marketing == 'true' && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/react-surface-validation.yml
     with:
       surface: marketing
@@ -440,7 +441,7 @@ jobs:
 
   capture-freshness:
     needs: [plan, source-preflight]
-    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && (needs.plan.outputs.capture_freshness == 'true' || needs.plan.outputs.marketing == 'true') }}
+    if: ${{ needs.plan.outputs.producer_attempt == format('{0}', github.run_attempt) && (needs.plan.outputs.capture_freshness == 'true' || needs.plan.outputs.marketing == 'true') && !needs.plan.outputs.queue_verified_run }}
     uses: ./.github/workflows/marketing-captures.yml
     with:
       automatic_source_sha: ${{ needs.plan.outputs.source_sha }}
@@ -561,7 +562,8 @@ jobs:
       (needs.plan.outputs.flutter_build_android == 'true' ||
        needs.plan.outputs.flutter_build_ios == 'true' ||
        needs.plan.outputs.flutter_build_web == 'true' ||
-       needs.plan.outputs.flutter_web_smoke == 'true')
+       needs.plan.outputs.flutter_web_smoke == 'true') &&
+      !needs.plan.outputs.queue_verified_run
     uses: ./.github/workflows/app-build-matrix.yml
     with:
       app_roles: ${{ needs.plan.outputs.app_roles }}
@@ -693,6 +695,7 @@ jobs:
         env:
           DEPLOY_GROUPS: ${{ needs.finalize-plan.outputs.deploy_groups }}
           NEEDS_JSON: ${{ toJSON(needs) }}
+          QUEUE_RUN: ${{ needs.plan.outputs.queue_verified_run }}
         run: |
           set -euo pipefail
           failures="$(
@@ -715,6 +718,8 @@ jobs:
           ' <<< "$DEPLOY_GROUPS" > /dev/null
           while IFS=$'\t' read -r deploy_group validation_job; do
             result="$(jq -er --arg job "$validation_job" '.[$job].result' <<< "$NEEDS_JSON")"
+            # The cited merge-queue run validated this exact source.
+            if [[ "$result" == "skipped" && -n "${QUEUE_RUN:-}" ]]; then continue; fi
             if [[ "$result" != "success" ]]; then
               echo "Deploy group $deploy_group requires $validation_job=success; got $result."
               exit 1
@@ -749,11 +754,22 @@ jobs:
           path: build/ci
 
       - name: Download the exact tested Functions build
-        if: contains(fromJSON(needs.finalize-plan.outputs.deploy_groups), 'functions')
+        if: contains(fromJSON(needs.finalize-plan.outputs.deploy_groups), 'functions') && needs.functions.result == 'success'
         uses: actions/download-artifact@v7
         with:
           name: functions-lib-${{ needs.plan.outputs.source_sha }}-${{ github.run_attempt }}
           path: build/ci/tested-functions-lib
+
+      # When the merge queue proved this exact source, main runs no Functions
+      # lane; compile the same commit the queue tested instead.
+      - name: Build Functions from the queue-validated source
+        if: contains(fromJSON(needs.finalize-plan.outputs.deploy_groups), 'functions') && needs.functions.result == 'skipped' && needs.plan.outputs.queue_verified_run
+        run: |
+          set -euo pipefail
+          npm --prefix functions ci
+          npm --prefix functions run build
+          mkdir -p build/ci
+          cp -R functions/lib build/ci/tested-functions-lib
 
       - id: package
         name: Package the exact CI plan and bounded Firebase backend
@@ -856,12 +872,16 @@ jobs:
             exit 1
           fi
           test "$(jq -er '.plan.result' <<< "$NEEDS_JSON")" = success
-          test "$(jq -er '.["source-preflight"].result' <<< "$NEEDS_JSON")" = success
+          preflight="$(jq -er '.["source-preflight"].result' <<< "$NEEDS_JSON")"
+          # The cited queue run already completed this exact source's preflight.
+          [[ "$preflight" == success || ( -n "${QUEUE_RUN:-}" && "$preflight" == skipped ) ]]
           # Selection only counts when its owning job actually succeeded.
           jq -e --arg queue "${QUEUE_RUN:-}" '
             . as $needs |
-            # Pure-validation lanes the merge queue proved on this exact source.
-            ["admin", "docs", "flutter", "operations", "policy_docs", "tools", "visual_integration"] as $reusable |
+            # Every lane the merge queue proved on this exact source.
+            ["admin", "capture_freshness", "contracts", "docs", "firestore_rules", "flutter",
+             "flutter_build_android", "flutter_build_ios", "flutter_build_web", "flutter_web_smoke",
+             "functions", "marketing", "operations", "policy_docs", "tools", "visual_integration"] as $reusable |
             {admin: "admin", capture_freshness: "capture-freshness", contracts: "contracts",
              docs: "docs-policy", policy_docs: "docs-policy", firestore_rules: "firestore-rules",
              flutter: "flutter", functions: "functions", marketing: "marketing",

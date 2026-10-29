@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

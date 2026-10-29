@@ -1,12 +1,10 @@
 import {
   loadEventIntakeDashboard,
-  loadEventSupplyReadiness,
   loadHostAnalytics,
   loadMarketingOpsBridge,
   loadOverview,
 } from "../../../shared/api/adminApi";
 import type {
-  AdminGetEventSupplyReadinessResponse,
   AdminOverviewResponse,
   EventIntakeBridge,
   HostAnalyticsResponse,
@@ -27,9 +25,4 @@ export async function loadDataQualityMarketingBridge(): Promise<MarketingOpsBrid
 
 export async function loadDataQualityEventIntakeBridge(): Promise<EventIntakeBridge> {
   return (await loadEventIntakeDashboard()).bridge;
-}
-
-export function loadDataQualityEventSupplyReadiness():
-  Promise<AdminGetEventSupplyReadinessResponse> {
-  return loadEventSupplyReadiness();
 }

@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/events/data/saved_event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/saved_event.dart';
+import 'package:catch_dating_app/contexts/discovery/data/saved_event_repository.dart';
+import 'package:catch_dating_app/contexts/discovery/domain/saved_event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

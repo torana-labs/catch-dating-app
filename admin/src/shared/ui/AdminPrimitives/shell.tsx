@@ -335,15 +335,18 @@ export function AdminAccountMenu({
       <button
         aria-controls={panelId}
         aria-expanded={isOpen}
-        aria-label="Account menu"
+        aria-label={`${userLabel}, account menu`}
         className="admin-account-trigger"
         onClick={() => setIsOpen((current) => !current)}
         ref={triggerRef}
         type="button"
       >
-        <span aria-hidden="true" className="admin-account-avatar">
-          {avatarLabel}
-        </span>
+        {/* Drawn from CSS so the initials stay out of the button's visible text, which must match its name. */}
+        <span
+          aria-hidden="true"
+          className="admin-account-avatar"
+          data-initials={avatarLabel}
+        />
         <span className="admin-account-trigger-copy">
           <strong>{userLabel}</strong>
         </span>

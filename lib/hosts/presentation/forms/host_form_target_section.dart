@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';

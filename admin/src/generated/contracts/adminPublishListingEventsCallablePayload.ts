@@ -39,4 +39,17 @@ export interface AdminPublishListingEventsCallablePayload {
     policyGapDecisionId: string | null;
     note: string;
   }[];
+  /**
+   * Map locations the reviewer supplied for events whose source page gave none. The coordinates clear missing_exact_coordinates; a venue name or address fills one the page left out.
+   *
+   * @maxItems 60
+   */
+  eventLocations?: {
+    eventWorkItemId: string;
+    name: string | null;
+    address: string | null;
+    placeId: string | null;
+    latitude: number;
+    longitude: number;
+  }[];
 }

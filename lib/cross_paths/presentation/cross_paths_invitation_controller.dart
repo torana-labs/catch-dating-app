@@ -1,11 +1,11 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_pair_hold.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/payments/data/payment_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/connections/data/cross_paths_repository.dart';
+import 'package:catch_dating_app/contexts/connections/domain/cross_paths_invitation.dart';
+import 'package:catch_dating_app/contexts/connections/domain/cross_paths_pair_hold.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'cross_paths_invitation_controller.g.dart';

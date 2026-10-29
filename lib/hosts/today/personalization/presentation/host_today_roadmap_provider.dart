@@ -1,14 +1,14 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
+import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/payments/data/host_payment_account_repository.dart';
+import 'package:catch_dating_app/contexts/payments/domain/host_payment_account.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
-import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
-import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
-import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_today_roadmap_provider.g.dart';

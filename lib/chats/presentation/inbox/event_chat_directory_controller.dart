@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
-import 'package:catch_dating_app/chats/domain/event_chat.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_directory.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_directory.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

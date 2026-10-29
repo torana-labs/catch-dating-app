@@ -1,14 +1,14 @@
-import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_photo_recovery_journal.dart';
+import 'package:catch_dating_app/contexts/events/data/event_photo_recovery_service.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_photo_recovery.dart';
+import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
-import 'package:catch_dating_app/events/data/event_draft_repository.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/data/event_photo_recovery_journal.dart';
-import 'package:catch_dating_app/hosts/data/event_photo_recovery_service.dart';
-import 'package:catch_dating_app/hosts/domain/event_photo_recovery.dart';
-import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

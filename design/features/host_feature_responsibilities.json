@@ -65,11 +65,11 @@
       ],
       "sharedDependencies": [
         {
-          "path": "lib/events/data/event_repository.dart",
+          "path": "lib/contexts/events/data/event_repository.dart",
           "reason": "Shared canonical event reads; Today owns only its bounded projection."
         },
         {
-          "path": "lib/hosts/data/host_attendance_outbox.dart",
+          "path": "lib/contexts/bookings/data/host_attendance_outbox.dart",
           "reason": "Device-local absolute attendance operations are intentionally merged after the server projection."
         },
         {
@@ -162,7 +162,7 @@
       ],
       "sharedDependencies": [
         {
-          "path": "lib/events/data/event_repository.dart",
+          "path": "lib/contexts/events/data/event_repository.dart",
           "reason": "The shared repository owns canonical event queries; Events owns inventory pagination and display policy."
         },
         {
@@ -480,15 +480,15 @@
       ],
       "sharedDependencies": [
         {
-          "path": "lib/hosts/data/crm/host_contacts_repository.dart",
+          "path": "lib/contexts/audience/data/crm/host_contacts_repository.dart",
           "reason": "Owns organizer contacts, customer context, notes, and merge review."
         },
         {
-          "path": "lib/hosts/data/crm/host_saved_audience_repository.dart",
+          "path": "lib/contexts/audience/data/crm/host_saved_audience_repository.dart",
           "reason": "Owns reusable audience definitions, filter options, membership resolution, and previews."
         },
         {
-          "path": "lib/hosts/data/host_forms_repository.dart",
+          "path": "lib/contexts/forms/data/host_forms_repository.dart",
           "reason": "Current shared Host data seam for forms, responses, exports, and automations until A3 relocates it."
         },
         {
@@ -636,11 +636,11 @@
       "additionalDataContracts": [],
       "sharedDependencies": [
         {
-          "path": "lib/clubs/data/clubs_repository.dart",
+          "path": "lib/contexts/organizers/data/clubs_repository.dart",
           "reason": "Transitional Organizer repository alias remains the canonical Flutter read/write seam during the domain cutover."
         },
         {
-          "path": "lib/payments/data/host_payment_account_repository.dart",
+          "path": "lib/contexts/payments/data/host_payment_account_repository.dart",
           "reason": "Provider-neutral payout account persistence and callable orchestration."
         },
         {

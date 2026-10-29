@@ -124,7 +124,6 @@
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerIntakeCurationPanel",
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerIntakeList",
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerIntakeSurfaceGrid",
-      "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerLocationResolutionForm",
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerPolicyGapColumns",
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerSurfaceList",
       "admin/src/shared/ui/AdminPrimitives/intake.tsx::AdminOrganizerSurfaceRow",
@@ -408,7 +407,7 @@
       "website/src/shared/ui/primitives/publicForms.tsx::PublicFormVerification"
     ],
     "screens.web_page_css_lines": {
-      "admin/src/styles.css": 4321,
+      "admin/src/styles.css": 4296,
       "website/src/styles.css": 19,
       "website/src/styles/consumer-home.css": 141,
       "website/src/styles/event-runtime.css": 669,

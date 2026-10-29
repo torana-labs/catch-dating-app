@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_deliveries_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_change.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_deliveries_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_change.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_deliveries_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_pending_deliveries.dart';

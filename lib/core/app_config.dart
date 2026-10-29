@@ -36,18 +36,6 @@ enum AppRole {
   final String value;
 
   bool get isHost => this == AppRole.host;
-
-  static AppRole fromValue(String value) {
-    return switch (value.trim().toLowerCase()) {
-      'consumer' || 'guest' => AppRole.consumer,
-      'host' || 'organizer' => AppRole.host,
-      _ => throw ArgumentError.value(
-        value,
-        'CATCH_APP_ROLE',
-        'Unsupported app role. Use consumer or host.',
-      ),
-    };
-  }
 }
 
 class AppConfig {
@@ -58,11 +46,6 @@ class AppConfig {
     defaultValue: 'dev',
   );
 
-  static const String _rawAppRole = String.fromEnvironment(
-    'CATCH_APP_ROLE',
-    defaultValue: 'consumer',
-  );
-
   static AppRole? _entrypointAppRoleOverride;
   static AppEnvironment? _entrypointEnvironmentOverride;
 
@@ -70,8 +53,9 @@ class AppConfig {
       _entrypointEnvironmentOverride ??
       AppEnvironment.fromValue(_rawAppEnvironment);
 
-  static AppRole get appRole =>
-      _entrypointAppRoleOverride ?? AppRole.fromValue(_rawAppRole);
+  /// The role the app's entrypoint declared through `runCatchApp`. Code that
+  /// runs without an entrypoint, such as unit tests, reads as the consumer.
+  static AppRole get appRole => _entrypointAppRoleOverride ?? AppRole.consumer;
 
   static String get appRoleName => appRole.value;
 

@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/account/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_controller.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_keys.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

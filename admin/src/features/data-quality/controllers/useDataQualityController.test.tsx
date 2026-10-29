@@ -3,12 +3,10 @@ import {beforeEach, describe, expect, it, vi} from "vitest";
 import {sampleHostAnalytics, sampleOverview} from "../../../shared/api/sampleData";
 import {
   sampleEventIntakeBridge,
-  sampleEventSupplyReadiness,
   sampleMarketingOpsBridge,
 } from "../../../shared/api/sampleOperationalData";
 import {createQueryHarness} from "../../../shared/test/queryHarness";
 import type {
-  AdminGetEventSupplyReadinessResponse,
   EventIntakeBridge,
   MarketingOpsBridge,
 } from "../../../shared/types/adminTypes";
@@ -19,18 +17,12 @@ import {
 
 const mocks = vi.hoisted(() => ({
   loadDataQualityEventIntakeBridge: vi.fn(),
-  loadDataQualityEventSupplyReadiness: vi.fn(),
   loadDataQualityHostAnalytics: vi.fn(),
   loadDataQualityMarketingBridge: vi.fn(),
   loadDataQualityOverview: vi.fn(),
 }));
 
 vi.mock("../api/dataQualityRepository", () => mocks);
-
-const eventSupply = {
-  ...sampleEventSupplyReadiness,
-  source: "event_supply_readiness",
-} satisfies AdminGetEventSupplyReadinessResponse;
 
 describe("useDataQualityController", () => {
   beforeEach(() => {
@@ -42,7 +34,6 @@ describe("useDataQualityController", () => {
     mocks.loadDataQualityEventIntakeBridge.mockReset().mockResolvedValue(
       sampleEventIntakeBridge as EventIntakeBridge
     );
-    mocks.loadDataQualityEventSupplyReadiness.mockReset().mockResolvedValue(eventSupply);
   });
 
   it("keeps source failures isolated and leaves selection route-owned", async () => {

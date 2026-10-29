@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';

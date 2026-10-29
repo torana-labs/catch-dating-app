@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_deliveries_page.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliveries_page.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
 
 String deliveryId([int number = 1]) =>
     'outbox:${number.toRadixString(16).padLeft(64, '0')}';

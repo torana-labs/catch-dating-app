@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_tracking_settings_input_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

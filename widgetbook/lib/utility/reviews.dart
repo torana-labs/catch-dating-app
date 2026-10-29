@@ -1,16 +1,16 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
+import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
-import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
 import 'package:catch_dating_app/reviews/shared/reviews_section.dart';
 import 'package:catch_dating_app/reviews/shared/star_rating_row.dart';
 import 'package:catch_dating_app/reviews/shared/write_review_sheet.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

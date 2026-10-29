@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_summary_reads.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
-import 'package:catch_dating_app/hosts/data/read_models/host_event_summary_reads.dart';
 import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';

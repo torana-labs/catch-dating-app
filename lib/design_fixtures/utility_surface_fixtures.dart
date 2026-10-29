@@ -1,13 +1,13 @@
 // copy:allow-file(Widgetbook and capture-only deterministic fixture data)
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
-import 'package:catch_dating_app/payments/domain/payment.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/safety/domain/blocked_user.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
+import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
+import 'package:catch_dating_app/contexts/safety/domain/blocked_user.dart';
 
 /// Shared deterministic fixtures for utility/account design review surfaces.
 ///

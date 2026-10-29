@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 import 'package:flutter/foundation.dart';
 
 typedef ClubHostDefaultsUpdate =

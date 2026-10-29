@@ -1411,7 +1411,7 @@ test("capture provenance inputs add lightweight freshness without changing sourc
     "artifacts/marketing/app-screenshots/host-event-setup.png",
     "tool/marketing/lib/capture_provenance.mjs", "assets/audio/celebration/README.md",
     "assets/audio/event_success/README.md", "packages/example/assets/README.md",
-    "lib/README.md", "test/goldens/README.md", "tool/marketing/event_guide/README.md",
+    "lib/README.md", "test/goldens/README.md", "tool/marketing/README.md",
     "tool/demo/demo_seed/scenarios/README.md",
     "artifacts/marketing/app-screenshots/README.md",
   ];
@@ -1443,7 +1443,7 @@ test("capture provenance inputs add lightweight freshness without changing sourc
 });
 
 test("capture validation keeps unrelated tooling narrow and mixed Functions authority intact", () => {
-  for (const file of ["tool/organizer_intake/sync_claim_targets_to_firestore.mjs",
+  for (const file of ["tool/data/migrate_clubs_to_organizers.mjs",
     "tool/docs/check_doc_metadata.mjs", "functions/test/publicListingReadiness.test.cjs"]) {
     const result = plan(file);
     assert.equal(result.operations.ciTargets.includes("marketing"), false, file);

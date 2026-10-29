@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/contexts/events/data/organizer_event_venue_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/contexts/events/domain/organizer_event_venue.dart';
+import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
-import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/create_event_guests_section.dart';

@@ -1,11 +1,8 @@
-import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const city = EventSetupCity(
-    cityId: 'in-mh-mumbai',
-    marketId: 'in-mh-mumbai',
-  );
+  const city = EventSetupCity(cityId: 'in-mh-mumbai', marketId: 'in-mh-mumbai');
 
   test('first save encodes only the required private basics', () {
     const basics = PrivateEventBasics(
@@ -21,10 +18,7 @@ void main() {
       'name': 'Saturday mixer',
       'city': {
         'mode': 'set',
-        'value': {
-          'cityId': 'in-mh-mumbai',
-          'marketId': 'in-mh-mumbai',
-        },
+        'value': {'cityId': 'in-mh-mumbai', 'marketId': 'in-mh-mumbai'},
       },
       'localDate': '2026-09-26',
       'localStartTime': '19:00',
@@ -48,10 +42,7 @@ void main() {
       reviewedDefaultsHash: hash,
     );
 
-    expect(
-      basics(cityValue: const EventSetupValue.inherit()).isValid,
-      isFalse,
-    );
+    expect(basics(cityValue: const EventSetupValue.inherit()).isValid, isFalse);
     expect(
       basics(
         cityValue: const EventSetupValue.inherit(),
@@ -59,10 +50,7 @@ void main() {
       ).isValid,
       isTrue,
     );
-    expect(
-      basics(cityValue: const EventSetupValue.clear()).isValid,
-      isFalse,
-    );
+    expect(basics(cityValue: const EventSetupValue.clear()).isValid, isFalse);
   });
 
   test('invalid local calendar date and time never submit', () {
@@ -95,8 +83,11 @@ void main() {
     expect(basics('Run', 'in-mh-mumbai', '').isValid, isFalse);
     expect(basics('', 'in-mh-mumbai', 'in-mh-mumbai').isValid, isFalse);
     expect(
-      basics(List.filled(121, 'A').join(), 'in-mh-mumbai', 'in-mh-mumbai')
-          .isValid,
+      basics(
+        List.filled(121, 'A').join(),
+        'in-mh-mumbai',
+        'in-mh-mumbai',
+      ).isValid,
       isFalse,
     );
   });
@@ -183,8 +174,10 @@ void main() {
       'canEditBasics': true,
       'canChangeCity': true,
       'eventDetails': <String, Object?>{
-        'endTimeMillis': null, 'venueName': null,
-        'sourceVenueId': null, 'eventFormat': null,
+        'endTimeMillis': null,
+        'venueName': null,
+        'sourceVenueId': null,
+        'eventFormat': null,
       },
       'eventPreferences': null,
     };
@@ -197,10 +190,15 @@ void main() {
     expect(summary.eventPreferences, isNull);
     expect(summary.eventDetails.endTimeMillis, isNull);
     expect(summary.eventDetails.venueName, isNull);
-    expect(PrivateEventBasicSummary.fromResponse({
-      ...response, 'publicationState': 'published',
-      'canEditBasics': false, 'canChangeCity': false,
-    }).publicationState, 'published');
+    expect(
+      PrivateEventBasicSummary.fromResponse({
+        ...response,
+        'publicationState': 'published',
+        'canEditBasics': false,
+        'canChangeCity': false,
+      }).publicationState,
+      'published',
+    );
     expect(
       () => PrivateEventBasicSummary.fromResponse({
         ...response,

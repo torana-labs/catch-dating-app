@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_controller.dart';
 import 'package:catch_dating_app/hosts/audience/phone_import/presentation/phone_import_submission_controller.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
 
 /// One route-owned, disposable review. Confirmed retry data has its separate
 /// account/program lifetime in the canonical command database.

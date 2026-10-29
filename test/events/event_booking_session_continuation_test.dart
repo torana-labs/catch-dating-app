@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/auth/data/authenticated_session.dart';
-import 'package:catch_dating_app/events/data/event_callable_responses.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/payments/data/payment_repository.dart';
-import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

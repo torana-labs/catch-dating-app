@@ -1,8 +1,8 @@
+import 'package:catch_dating_app/contexts/safety/domain/messaging_permission.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/safety/domain/messaging_permission.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_controller.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

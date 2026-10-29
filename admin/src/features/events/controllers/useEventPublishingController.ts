@@ -6,20 +6,16 @@ import type {
   AdminExternalEventListRow,
   AdminListExternalEventDetailsPayload,
   AdminListEventDetailsPayload,
-  AdminPublishExternalEventPayload,
   AdminTakedownExternalEventPayload,
 } from "../../../shared/types/adminTypes";
 import {
   listExternalEventProfiles,
   listEventProfiles,
-  loadEventSupplyReadiness,
   loadEventProfile,
-  publishExternalEventProfile,
   saveEventProfile,
   takedownExternalEventProfile,
 } from "../api/eventPublishingRepository";
 import {
-  buildExternalEventImportReview,
   buildEventSavePayload,
   diffEventProfile,
   externalEventNeedsReview,
@@ -57,15 +53,8 @@ export type ExternalEventSupplyFilter =
   | "active"
   | "cancelled";
 
-export type EventPublishingWorkspace = "directory" | "readiness" | "external";
-export type EventPublishingView = "list" | "detail" | "readiness" | "external";
-
-export interface ExternalEventPublishRequest {
-  sourceActionId: string;
-  targetPath: string;
-  reviewNote: string;
-  checklist: AdminPublishExternalEventPayload["checklist"];
-}
+export type EventPublishingWorkspace = "directory" | "external";
+export type EventPublishingView = "list" | "detail" | "external";
 
 export interface ExternalEventTakedownRequest {
   eventId: string;
@@ -80,11 +69,9 @@ export function useEventPublishingController({
   onNotice,
   onSelectEventId,
   onSelectExternalEventId,
-  onSelectReadinessActionId,
   onWorkspaceChange,
   selectedEventId: controlledSelectedEventId,
   selectedExternalEventId: controlledSelectedExternalEventId,
-  selectedReadinessActionId = null,
 }: {
   activeWorkspace?: EventPublishingWorkspace;
   onBackToList?: () => void;
@@ -92,11 +79,9 @@ export function useEventPublishingController({
   onNotice: (message: string | null) => void;
   onSelectEventId?: (eventId: string) => void;
   onSelectExternalEventId?: (eventId: string | null) => void;
-  onSelectReadinessActionId?: (sourceActionId: string | null) => void;
   onWorkspaceChange?: (workspace: EventPublishingWorkspace) => void;
   selectedEventId?: string | null;
   selectedExternalEventId?: string | null;
-  selectedReadinessActionId?: string | null;
 }) {
   const queryClient = useQueryClient();
   const {beginOperation, endOperation} = useAdminPendingOperationGuard();
@@ -181,12 +166,6 @@ export function useEventPublishingController({
       limit: 10,
     }),
   });
-  const supplyReadinessQuery = useQuery({
-    enabled: activeWorkspace === "readiness",
-    queryKey: adminQueryKeys.events.supplyReadiness(),
-    queryFn: loadEventSupplyReadiness,
-    placeholderData: (previousData) => previousData,
-  });
   const detailEventId = selectedEventId ?? "__none__";
   const detailQuery = useQuery({
     enabled: Boolean(selectedEventId),
@@ -196,9 +175,6 @@ export function useEventPublishingController({
   const saveMutation = useMutation({
     mutationFn: saveEventProfile,
   });
-  const publishExternalMutation = useMutation({
-    mutationFn: publishExternalEventProfile,
-  });
   const takedownExternalMutation = useMutation({
     mutationFn: takedownExternalEventProfile,
   });
@@ -206,7 +182,6 @@ export function useEventPublishingController({
   const externalRows = externalListQuery.data?.rows ?? [];
   const listGeneratedAt = listQuery.data?.generatedAt ?? null;
   const externalListGeneratedAt = externalListQuery.data?.generatedAt ?? null;
-  const supplyReadiness = supplyReadinessQuery.data ?? null;
 
   const refreshList = useCallback(async () => {
     const result = await listQuery.refetch();
@@ -224,18 +199,6 @@ export function useEventPublishingController({
       externalDetailQuery.refetch() : externalListQuery.refetch());
     return !result.error;
   }, [externalDetailQuery, externalListQuery, selectedExternalEventId]);
-
-  const refreshSupplyReadiness = useCallback(async () => {
-    const result = await supplyReadinessQuery.refetch();
-    if (result.error) {
-      onError(messageFromError(
-        result.error,
-        "Unable to load event import readiness."
-      ));
-      return false;
-    }
-    return true;
-  }, [onError, supplyReadinessQuery]);
 
   useEffect(() => {
     if (!listQuery.error) return;
@@ -281,14 +244,6 @@ export function useEventPublishingController({
     onError,
     selectedExternalEventId,
   ]);
-
-  useEffect(() => {
-    if (!supplyReadinessQuery.error) return;
-    onError(messageFromError(
-      supplyReadinessQuery.error,
-      "Unable to load event import readiness."
-    ));
-  }, [onError, supplyReadinessQuery.error]);
 
   useEffect(() => {
     if (!detailQuery.error) return;
@@ -357,11 +312,6 @@ export function useEventPublishingController({
     onError(null);
   }, [onError, onWorkspaceChange]);
 
-  const openReadiness = useCallback(() => {
-    onWorkspaceChange?.("readiness");
-    onError(null);
-  }, [onError, onWorkspaceChange]);
-
   const diffRows = useMemo(
     () => diffEventProfile(event, form),
     [event, form]
@@ -397,15 +347,6 @@ export function useEventPublishingController({
     externalDetailQuery.isSuccess,
     selectedExternalEventId,
   ]);
-  const selectedExternalImportReview = useMemo(
-    () => buildExternalEventImportReview(
-      selectedExternalEvent,
-      supplyReadiness?.importPlan ?? null,
-      supplyReadiness?.executionPlan ?? null
-    ),
-    [selectedExternalEvent, supplyReadiness]
-  );
-
   const save = useCallback(async () => {
     if (!event || !form) {
       onError("Load an event before saving.");
@@ -459,64 +400,6 @@ export function useEventPublishingController({
     queryClient,
     saveMutation,
     setSelectedEventId,
-  ]);
-
-  const publishExternalEvent = useCallback(async (
-    publishRequest: ExternalEventPublishRequest
-  ) => {
-    if (!publishRequest.reviewNote.trim()) {
-      onError("Add a review note before publishing external supply.");
-      return false;
-    }
-    const operation = beginOperation();
-    if (!operation) return false;
-    try {
-      const operationKey = externalEventOperationKey(
-        publishRequest.sourceActionId
-      );
-      const result = await dispatchDryRunAndApply(
-        (payload) => publishExternalMutation.mutateAsync(payload),
-        {
-          sourceActionId: publishRequest.sourceActionId,
-          targetPath: publishRequest.targetPath,
-          executionMode: "dry_run",
-          idempotencyKey: `${operationKey}:dry-run`,
-          reviewNote: publishRequest.reviewNote.trim(),
-          checklist: publishRequest.checklist,
-        } satisfies AdminPublishExternalEventPayload,
-        {
-          sourceActionId: publishRequest.sourceActionId,
-          targetPath: publishRequest.targetPath,
-          executionMode: "apply",
-          idempotencyKey: `${operationKey}:apply`,
-          reviewNote: publishRequest.reviewNote.trim(),
-          checklist: publishRequest.checklist,
-        } satisfies AdminPublishExternalEventPayload
-      );
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: [...adminQueryKeys.all, "events", "external-list"],
-        }),
-        queryClient.invalidateQueries({
-          queryKey: adminQueryKeys.events.supplyReadiness(),
-        }),
-      ]);
-      onError(null);
-      onNotice(`Published ${result.targetPath} as read-only external supply.`);
-      return true;
-    } catch (error) {
-      onError(messageFromError(error, "Unable to publish external event."));
-      return false;
-    } finally {
-      endOperation(operation);
-    }
-  }, [
-    beginOperation,
-    endOperation,
-    onError,
-    onNotice,
-    publishExternalMutation,
-    queryClient,
   ]);
 
   const takedownExternalEvent = useCallback(async (
@@ -594,31 +477,19 @@ export function useEventPublishingController({
       !selectedEventId && (listQuery.isPending || listQuery.isFetching),
     isSaving: saveMutation.isPending,
     isTakingDownExternalEvent: takedownExternalMutation.isPending,
-    isSupplyReadinessLoading: activeWorkspace === "readiness" &&
-      (supplyReadinessQuery.isPending || supplyReadinessQuery.isFetching),
     listGeneratedAt,
-    publishingExternalActionId: publishExternalMutation.isPending ?
-      publishExternalMutation.variables?.sourceActionId ?? null :
-      null,
     query,
     rows,
     selectedExternalEvent,
     selectedExternalEventId,
-    selectedExternalImportReview,
-    selectedReadinessActionId,
-    supplyReadiness,
     validationIssues,
     view,
     openExternalSupply,
-    openReadiness,
-    publishExternalEvent,
     refreshExternalList,
     refreshList,
-    refreshSupplyReadiness,
     save,
     selectEvent,
     selectExternalEvent: setSelectedExternalEventId,
-    selectReadinessAction: onSelectReadinessActionId ?? (() => undefined),
     setEventId,
     setExternalFilter,
     setExternalQuery,

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
-import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
+import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
-import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
-import 'package:catch_dating_app/programs/data/program_work_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_stakeholder_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -136,7 +136,7 @@ void main() {
     (tester) async {
       final repository = _Repository(emptyProgramSnapshots());
       await _pump(tester, repository);
-expect(find.text('Sangeet', skipOffstage: false), findsOneWidget);
+      expect(find.text('Sangeet', skipOffstage: false), findsOneWidget);
       expect(find.text('Taj Palace', skipOffstage: false), findsOneWidget);
       expect(find.text('142 GUESTS'), findsOneWidget);
       expect(find.text('58 HOUSEHOLDS'), findsOneWidget);

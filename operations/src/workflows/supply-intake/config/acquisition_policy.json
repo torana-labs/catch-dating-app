@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "policyVersion": "supply-acquisition-v2",
+  "policyVersion": "supply-acquisition-v3",
   "manualFileCaptureEnabled": true,
   "provider": {
     "enabled": false,
@@ -20,6 +20,15 @@
     "maxRedirects": 3,
     "maxRequestsPerIntake": 12,
     "maxRequestsPerMonth": 600
+  },
+  "webSearch": {
+    "enabled": false,
+    "adapterId": null,
+    "policyGapId": "batch_web_search_policy",
+    "decisionId": null,
+    "maxResultsPerQuery": 10,
+    "maxQueriesPerRun": 0,
+    "maxQueriesPerMonth": 0
   },
   "budgets": {
     "maxNetworkRequestsPerRun": 0,

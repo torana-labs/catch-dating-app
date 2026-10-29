@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/data/event_publication_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_publication_repository.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

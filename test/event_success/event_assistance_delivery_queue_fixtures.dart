@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_deliveries_page.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliveries_page.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 
 Map<String, Object?> deliveryQueueFixture(
   String stage, {

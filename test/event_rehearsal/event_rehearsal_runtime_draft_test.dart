@@ -1,8 +1,9 @@
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_outcome.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_runtime_draft.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_configuration.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_delivery_outcome.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_runtime_draft.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'event_rehearsal_settings_ui_fixtures.dart';
 
 void main() {

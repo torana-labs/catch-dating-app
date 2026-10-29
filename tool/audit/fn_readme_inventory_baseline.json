@@ -2,7 +2,7 @@
   "owner": "backend_operation_catalog",
   "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
   "version": 1,
-  "updated": "2026-10-17",
+  "updated": "2026-10-29",
   "description": "Current functions README inventory debt baseline. Normal scanner runs fail on exported functions not listed here.",
   "allowedFindings": [
     {
@@ -12,10 +12,6 @@
     {
       "rule": "missingReadmeFunction",
       "function": "adminDecideAccessApplication"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "adminDecideOrganizerEventCandidate"
     },
     {
       "rule": "missingReadmeFunction",
@@ -48,10 +44,6 @@
     {
       "rule": "missingReadmeFunction",
       "function": "adminRecordOrganizerCuration"
-    },
-    {
-      "rule": "missingReadmeFunction",
-      "function": "adminResolveOrganizerEventLocation"
     },
     {
       "rule": "missingReadmeFunction",

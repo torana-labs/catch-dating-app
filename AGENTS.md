@@ -1,7 +1,7 @@
 ---
 doc_id: agent_entrypoint
-version: 3.6.0
-updated: 2026-10-23
+version: 3.6.1
+updated: 2026-10-29
 owner: agent_operating_model
 status: active
 ---
@@ -72,14 +72,9 @@ accountable owner and next action.
 
 ## Removed Evidence Layer
 
-The following legacy evidence paths have been deleted and must remain absent:
-
-- `docs/audit_registry/files.jsonl`
-- `docs/audit_registry/passes.jsonl`
-- `docs/audit_registry/agent_metrics.jsonl`
-- `docs/audit_registry/doc_versions.json`
-- `docs/agent_regression_ledger.json`
-
+The legacy evidence ledgers under `docs/audit_registry/` and
+`docs/agent_regression_ledger.json` are deleted;
+`tool/check_repository_root_hygiene.mjs` fails if they return.
 Any older instruction that requires those writes is superseded by this section.
 Put a recurring safety rule in an executable test or scanner; use an expiring
 waiver in the owning source document only when automation is not possible.

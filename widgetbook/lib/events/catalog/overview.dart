@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_section.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_state.dart';
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_body.dart';

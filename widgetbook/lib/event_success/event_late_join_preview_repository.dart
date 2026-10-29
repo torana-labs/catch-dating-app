@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/event_success/data/event_assistance_late_join_setting_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting_result.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_late_join_setting_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting_result.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/services.dart';
 

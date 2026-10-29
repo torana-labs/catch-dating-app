@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
-import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
+import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

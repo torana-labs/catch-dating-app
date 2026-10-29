@@ -1,0 +1,265 @@
+name: Mobile Beta
+
+# Test builds of the Consumer and Host apps for TestFlight internal testers and
+# the Play internal track. It runs nightly when app sources changed since the
+# last successful build, and on demand for any app and platform. Every build is
+# made, verified and uploaded in one job from main by fastlane/Fastfile.
+# Operator guide: docs/release_operations.md, "Mobile releases".
+
+on:
+  schedule:
+    - cron: "37 21 * * *" # 03:07 IST
+  workflow_dispatch:
+    inputs:
+      app:
+        description: App to build
+        type: choice
+        options: [both, consumer, host]
+        default: both
+      platform:
+        description: Platform to build
+        type: choice
+        options: [both, ios, android]
+        default: both
+
+permissions:
+  contents: read
+
+env:
+  # Apps with a Google Play app record. Play's API cannot create an app, and
+  # its first bundle must be uploaded by hand in Play Console, so an app joins
+  # this list only after both are done (Consumer has no record yet).
+  PLAY_ROLES: host
+
+jobs:
+  plan:
+    name: Decide what to build
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+    outputs:
+      roles: ${{ steps.plan.outputs.roles }}
+      android_roles: ${{ steps.plan.outputs.android_roles }}
+      ios: ${{ steps.plan.outputs.ios }}
+      android: ${{ steps.plan.outputs.android }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: plan
+        env:
+          APP: ${{ inputs.app || 'both' }}
+          PLATFORM: ${{ inputs.platform || 'both' }}
+          EVENT_NAME: ${{ github.event_name }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [[ "$APP" == both ]]; then roles='["consumer","host"]'; else roles="[\"$APP\"]"; fi
+          ios=$([[ "$PLATFORM" != android ]] && echo true || echo false)
+          android=$([[ "$PLATFORM" != ios ]] && echo true || echo false)
+          if [[ "$EVENT_NAME" == schedule ]]; then
+            # Nightly builds only when something that reaches the apps changed
+            # since the last successful nightly or manual build.
+            last="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow mobile-beta.yml --branch main \
+              --status success --limit 1 --json headSha --jq '.[0].headSha // ""')"
+            if [[ -n "$last" ]] && git cat-file -e "$last^{commit}" 2>/dev/null &&
+               git diff --quiet "$last" HEAD -- apps lib packages assets firebase/prod pubspec.yaml pubspec.lock \
+                 tool/env/dart_defines/prod.json tool/app_targets.json tool/flutter_with_env.sh fastlane Gemfile Gemfile.lock; then
+              echo "No app changes since $last; nothing to build." >> "$GITHUB_STEP_SUMMARY"
+              ios=false
+              android=false
+            fi
+          fi
+          android_roles="$(jq -c --arg play "$PLAY_ROLES" \
+            '[.[] | select(. as $role | ($play | split(" ")) | index($role))]' <<<"$roles")"
+          if [[ "$android" == true && "$android_roles" == "[]" ]]; then
+            echo "No requested app has a Google Play record yet; skipping Android." >> "$GITHUB_STEP_SUMMARY"
+            android=false
+          elif [[ "$android" == true && "$android_roles" != "$roles" ]]; then
+            echo "Android builds only $android_roles; the others have no Google Play record yet (PLAY_ROLES)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+          {
+            echo "roles=$roles"
+            echo "android_roles=$android_roles"
+            echo "ios=$ios"
+            echo "android=$android"
+          } >> "$GITHUB_OUTPUT"
+
+  ios:
+    name: iOS ${{ matrix.role }}
+    needs: plan
+    if: ${{ needs.plan.outputs.ios == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        role: ${{ fromJSON(needs.plan.outputs.roles) }}
+    runs-on: macos-26
+    environment: prod-mobile
+    timeout-minutes: 90
+    concurrency:
+      group: mobile-beta-ios-${{ matrix.role }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - name: Require the pinned minimum Xcode
+        run: |
+          set -euo pipefail
+          XCODE_MIN_VERSION="$(sed -n 's/^XCODE_MIN_VERSION=//p' tool/ci/toolchain.env)"
+          current="$(xcodebuild -version | awk 'NR==1 {print $2}')"
+          lowest="$(printf '%s\n%s\n' "$XCODE_MIN_VERSION" "$current" | sort -V | head -1)"
+          test "$lowest" = "$XCODE_MIN_VERSION" || { echo "Xcode $current is older than $XCODE_MIN_VERSION."; exit 1; }
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - uses: ./.github/actions/setup-flutter
+      - run: flutter pub get --enforce-lockfile
+      - uses: ./.github/actions/cache-cocoapods
+        with:
+          cocoapods-version: ${{ steps.toolchain.outputs.cocoapods-version }}
+          lockfiles: apps/${{ matrix.role }}/ios/Podfile.lock
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - name: Build, verify and upload to TestFlight
+        env:
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_CI_DEVELOPMENT_CERTIFICATE_P12_BASE64 }}
+          IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CI_DEVELOPMENT_CERTIFICATE_PASSWORD }}
+          GOOGLE_MAPS_IOS_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_PROD }}
+          FASTLANE_SKIP_UPDATE_CHECK: "1"
+          FASTLANE_HIDE_CHANGELOG: "1"
+          LC_ALL: en_US.UTF-8
+          LANG: en_US.UTF-8
+        run: bundle exec fastlane ios beta role:${{ matrix.role }}
+      - name: Record build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: build/ios/export/*/*.ipa
+      - name: Keep the IPA and verification records
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-${{ matrix.role }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            build/ios/export/*/*.ipa
+            build/ios/export/*/*.dSYM.zip
+            build/ios/release-evidence
+            ~/Library/Logs/gym
+          if-no-files-found: ignore
+          retention-days: 30
+
+  android:
+    name: Android ${{ matrix.role }}
+    needs: plan
+    if: ${{ needs.plan.outputs.android == 'true' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        role: ${{ fromJSON(needs.plan.outputs.android_roles) }}
+    runs-on: ubuntu-latest
+    environment: prod-mobile
+    timeout-minutes: 60
+    concurrency:
+      group: mobile-beta-android-${{ matrix.role }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    env:
+      CATCH_GRADLE_WRAPPER_MAX_ATTEMPTS: "5"
+      CATCH_GRADLE_WRAPPER_RETRY_DELAY_SECONDS: "20"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ steps.toolchain.outputs.java-version }}
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: ./.github/actions/setup-flutter
+      - run: flutter pub get --enforce-lockfile
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+      - name: Install pinned bundletool
+        env:
+          BUNDLETOOL_VERSION: 1.18.3
+          BUNDLETOOL_SHA256: a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29
+        run: |
+          set -euo pipefail
+          jar="$RUNNER_TEMP/bundletool-all-${BUNDLETOOL_VERSION}.jar"
+          curl --fail --silent --show-error --location --retry 3 \
+            "https://github.com/google/bundletool/releases/download/${BUNDLETOOL_VERSION}/bundletool-all-${BUNDLETOOL_VERSION}.jar" \
+            --output "$jar"
+          printf '%s  %s\n' "$BUNDLETOOL_SHA256" "$jar" | sha256sum --check --status
+          echo "BUNDLETOOL_JAR=$jar" >> "$GITHUB_ENV"
+      - name: Write the upload keystore and prod Maps key
+        env:
+          APP: ${{ matrix.role }}
+          ANDROID_UPLOAD_KEYSTORE_BASE64: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
+          ANDROID_UPLOAD_STORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_STORE_PASSWORD }}
+          ANDROID_UPLOAD_KEY_ALIAS: ${{ secrets.ANDROID_UPLOAD_KEY_ALIAS }}
+          ANDROID_UPLOAD_KEY_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEY_PASSWORD }}
+          GOOGLE_MAPS_ANDROID_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_PROD }}
+        run: |
+          set -euo pipefail
+          android="apps/$APP/android"
+          mkdir -p "$android/keystore"
+          printf '%s' "$ANDROID_UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$android/keystore/upload-keystore.jks"
+          {
+            echo 'storeFile=../keystore/upload-keystore.jks'
+            printf 'storePassword=%s\n' "$ANDROID_UPLOAD_STORE_PASSWORD"
+            printf 'keyAlias=%s\n' "$ANDROID_UPLOAD_KEY_ALIAS"
+            printf 'keyPassword=%s\n' "$ANDROID_UPLOAD_KEY_PASSWORD"
+          } > "$android/key.properties"
+          printf '\nGOOGLE_MAPS_ANDROID_API_KEY_PROD=%s\n' "$GOOGLE_MAPS_ANDROID_API_KEY_PROD" >> "$android/local.properties"
+          chmod 600 "$android/keystore/upload-keystore.jks" "$android/key.properties" "$android/local.properties"
+      - name: Authenticate to Google Play without a stored key
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL }}
+      - name: Build, verify and upload to the Play internal track
+        env:
+          GOOGLE_MAPS_ANDROID_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_PROD }}
+          FASTLANE_SKIP_UPDATE_CHECK: "1"
+          FASTLANE_HIDE_CHANGELOG: "1"
+        run: bundle exec fastlane android beta role:${{ matrix.role }}
+      - name: Record build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: apps/${{ matrix.role }}/build/app/outputs/bundle/**/*.aab
+      - name: Keep the bundle and verification records
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-${{ matrix.role }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            apps/${{ matrix.role }}/build/app/outputs/bundle/**/*.aab
+            apps/${{ matrix.role }}/build/app/outputs/mapping
+            build/android/release-evidence
+          if-no-files-found: ignore
+          retention-days: 30

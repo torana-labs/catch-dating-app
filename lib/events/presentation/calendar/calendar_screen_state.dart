@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 

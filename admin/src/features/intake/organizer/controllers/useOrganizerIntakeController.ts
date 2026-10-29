@@ -5,25 +5,18 @@ import {
 } from "@tanstack/react-query";
 import {useCallback, useMemo, useState} from "react";
 import {
-  decideOrganizerEventCandidate,
   decideOrganizerIntake,
   decideOrganizerPolicyGap,
   createOrganizerDraftFromCandidate,
   recordOrganizerCuration,
-  resolveOrganizerEventLocation,
 } from "../api/organizerIntakeRepository";
 import {
   curationFormKey,
   curationPayloadForItem,
   decisionLabel,
-  defaultEventCandidateDecisionNote,
   defaultIntakeDecisionNote,
   defaultPolicyGapDecisionNote,
-  eventCandidateChecklistForDecision,
-  eventDecisionLabel,
   intakeChecklistForDecision,
-  locationResolutionFormFromTask,
-  nullableInput,
   emptyOrganizerSurfaceChecklist,
   organizerDraftFormFromCandidate,
   organizerDraftPayloadForCandidate,
@@ -41,8 +34,6 @@ import {loadOrganizerIntakeBridge} from "./loadOrganizerIntakeBridge";
 import {linkOrganizerIntakeToSales, type IntakeSalesLinkResult} from
   "../api/organizerSalesBridgeRepository";
 import type {
-  AdminDecideOrganizerEventCandidatePayload,
-  AdminDecideOrganizerEventCandidateResponse,
   AdminDecideOrganizerIntakePayload,
   AdminDecideOrganizerIntakeResponse,
   AdminDecideOrganizerPolicyGapPayload,
@@ -51,10 +42,6 @@ import type {
   AdminCreateOrganizerDraftFromCandidateResponse,
   AdminRecordOrganizerCurationPayload,
   AdminRecordOrganizerCurationResponse,
-  AdminResolveOrganizerEventLocationPayload,
-  AdminResolveOrganizerEventLocationResponse,
-  OrganizerEventCandidateDecision,
-  OrganizerEventBlockerResolution,
   OrganizerIntakeDecision,
   OrganizerPolicyGapDecision,
 } from "../../../../shared/types/adminTypes";
@@ -62,9 +49,6 @@ import type * as Intake from "../types/organizerIntakeTypes";
 import {adminQueryKeys} from "../../../../shared/query/queryKeys";
 import {usePendingMutationRecord} from "../../../../shared/query/usePendingMutationRecord";
 import {useAdminPendingOperationGuard} from "../../../../shared/pendingOperation";
-
-type LocationResolutionMutationPayload =
-  AdminResolveOrganizerEventLocationPayload & {taskId: string};
 
 export function useOrganizerIntakeController({
   onError,
@@ -103,14 +87,6 @@ export function useOrganizerIntakeController({
     );
   const [curationForms, setCurationForms] =
     useState<Record<string, Intake.OrganizerCurationFormState>>({});
-  const [eventDecisionNotes, setEventDecisionNotes] =
-    useState<Record<string, string>>({});
-  const [localEventDecisions, setLocalEventDecisions] =
-    useState<Record<string, AdminDecideOrganizerEventCandidateResponse>>({});
-  const [locationResolutionForms, setLocationResolutionForms] =
-    useState<Record<string, Intake.OrganizerLocationResolutionFormState>>({});
-  const [localLocationResolutions, setLocalLocationResolutions] =
-    useState<Record<string, AdminResolveOrganizerEventLocationResponse>>({});
   const [policyDecisionNotes, setPolicyDecisionNotes] =
     useState<Record<string, string>>({});
   const [localPolicyDecisions, setLocalPolicyDecisions] =
@@ -126,19 +102,11 @@ export function useOrganizerIntakeController({
   const organizerDraftMutationKey =
     adminQueryKeys.organizerIntake.createDraft();
   const salesLinkMutationKey = [...adminQueryKeys.all, "intakeSalesLink"];
-  const eventDecisionMutationKey =
-    adminQueryKeys.organizerIntake.eventDecision();
   const policyDecisionMutationKey =
     adminQueryKeys.organizerIntake.policyDecision();
-  const locationResolutionMutationKey =
-    adminQueryKeys.organizerIntake.locationResolution();
   const decideOrganizerIntakeMutation = useMutation({
     mutationKey: decisionMutationKey,
     mutationFn: decideOrganizerIntake,
-  });
-  const decideOrganizerEventCandidateMutation = useMutation({
-    mutationKey: eventDecisionMutationKey,
-    mutationFn: decideOrganizerEventCandidate,
   });
   const decideOrganizerPolicyGapMutation = useMutation({
     mutationKey: policyDecisionMutationKey,
@@ -155,11 +123,6 @@ export function useOrganizerIntakeController({
   const salesLinkMutation = useMutation({
     mutationKey: salesLinkMutationKey,
     mutationFn: linkOrganizerIntakeToSales,
-  });
-  const resolveOrganizerEventLocationMutation = useMutation({
-    mutationKey: locationResolutionMutationKey,
-    mutationFn: ({taskId: _taskId, ...payload}: LocationResolutionMutationPayload) =>
-      resolveOrganizerEventLocation(payload),
   });
   const decisionInFlight = usePendingMutationRecord<
     AdminDecideOrganizerIntakePayload,
@@ -187,26 +150,12 @@ export function useOrganizerIntakeController({
   >(salesLinkMutationKey, (payload) => ({
     key: payload.candidateId, value: true,
   }));
-  const eventDecisionInFlight = usePendingMutationRecord<
-    AdminDecideOrganizerEventCandidatePayload,
-    OrganizerEventCandidateDecision
-  >(eventDecisionMutationKey, (payload) => ({
-    key: payload.candidateId,
-    value: payload.decision,
-  }));
   const policyDecisionInFlight = usePendingMutationRecord<
     AdminDecideOrganizerPolicyGapPayload,
     OrganizerPolicyGapDecision
   >(policyDecisionMutationKey, (payload) => ({
     key: payload.gapId,
     value: payload.decision,
-  }));
-  const locationResolutionInFlight = usePendingMutationRecord<
-    LocationResolutionMutationPayload,
-    boolean
-  >(locationResolutionMutationKey, (payload) => ({
-    key: payload.taskId,
-    value: true,
   }));
 
   const publicationPacketByEntity = useMemo(() =>
@@ -566,60 +515,6 @@ export function useOrganizerIntakeController({
     recordOrganizerCurationMutation,
   ]);
 
-  const handleEventDecision = useCallback(async (
-    candidate: Intake.OrganizerExternalEventCandidate,
-    decision: OrganizerEventCandidateDecision,
-    blockerResolutions: OrganizerEventBlockerResolution[]
-  ) => {
-    const checklist = eventCandidateChecklistForDecision(candidate, decision);
-    if (decision === "approve_for_import" &&
-      !Object.values(checklist).every(Boolean)) {
-      onError("Resolve event candidate review gates before import approval.");
-      return;
-    }
-    const note = eventDecisionNotes[candidate.candidateId]?.trim() ||
-      defaultEventCandidateDecisionNote(candidate, decision);
-    const payload: AdminDecideOrganizerEventCandidatePayload = {
-      candidateId: candidate.candidateId,
-      decision,
-      checklist,
-      blockerResolutions: decision === "approve_for_import" ?
-        blockerResolutions :
-        [],
-      note,
-    };
-    const operation = beginOperation();
-    if (!operation) return;
-    onError(null);
-    onNotice(null);
-    try {
-      const response =
-        await decideOrganizerEventCandidateMutation.mutateAsync(payload);
-      setLocalEventDecisions((current) => ({
-        ...current,
-        [candidate.candidateId]: response,
-      }));
-      onNotice(
-        `Recorded ${eventDecisionLabel(decision)} for ${candidate.title}.`
-      );
-    } catch (decisionError) {
-      onError(
-        decisionError instanceof Error ?
-          decisionError.message :
-          "Unable to record event candidate decision."
-      );
-    } finally {
-      endOperation(operation);
-    }
-  }, [
-    beginOperation,
-    decideOrganizerEventCandidateMutation,
-    endOperation,
-    eventDecisionNotes,
-    onError,
-    onNotice,
-  ]);
-
   const handlePolicyGapDecision = useCallback(async (
     gap: Intake.OrganizerPolicyGap,
     decision: OrganizerPolicyGapDecision
@@ -758,76 +653,6 @@ export function useOrganizerIntakeController({
     onNotice,
   ]);
 
-  const handleLocationResolution = useCallback(async (
-    task: Intake.OrganizerExternalEventLocationResolutionTask
-  ) => {
-    const form = locationResolutionForms[task.taskId] ??
-      locationResolutionFormFromTask(task);
-    const latitude = Number(form.latitude);
-    const longitude = Number(form.longitude);
-    const name = form.name.trim() ||
-      task.sourceLocation.name?.trim() ||
-      task.resolutionQuery.trim();
-    if (!name) {
-      onError("Enter a reviewed location name before resolving coordinates.");
-      return;
-    }
-    if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90 ||
-      !Number.isFinite(longitude) || longitude < -180 || longitude > 180) {
-      onError("Enter reviewed latitude and longitude values.");
-      return;
-    }
-    const note = form.note.trim() ||
-      `Manual location QA complete for ${task.title}.`;
-    const payload: LocationResolutionMutationPayload = {
-      taskId: task.taskId,
-      candidateId: task.candidateId,
-      location: {
-        name,
-        address: nullableInput(form.address),
-        placeId: nullableInput(form.placeId),
-        latitude,
-        longitude,
-        notes: nullableInput(form.notes),
-      },
-      checklist: {
-        sourceLocationReviewed: true,
-        coordinatesReviewed: true,
-        placeIdentityReviewed: true,
-        importSafetyReviewed: true,
-      },
-      note,
-    };
-    const operation = beginOperation();
-    if (!operation) return;
-    onError(null);
-    onNotice(null);
-    try {
-      const response =
-        await resolveOrganizerEventLocationMutation.mutateAsync(payload);
-      setLocalLocationResolutions((current) => ({
-        ...current,
-        [task.candidateId]: response,
-      }));
-      onNotice(`Resolved event location for ${task.title}.`);
-    } catch (resolutionError) {
-      onError(
-        resolutionError instanceof Error ?
-          resolutionError.message :
-          "Unable to record event location resolution."
-      );
-    } finally {
-      endOperation(operation);
-    }
-  }, [
-    beginOperation,
-    endOperation,
-    locationResolutionForms,
-    onError,
-    onNotice,
-    resolveOrganizerEventLocationMutation,
-  ]);
-
   return {
     availability: intake.availability,
     bridge,
@@ -837,27 +662,19 @@ export function useOrganizerIntakeController({
     curationInFlight,
     decisionInFlight,
     decisionNotes,
-    eventDecisionInFlight,
-    eventDecisionNotes,
     handleAttachCandidate,
     handleCreateOrganizerDraft,
     handleDecision,
-    handleEventDecision,
     handleItemCuration,
-    handleLocationResolution,
     handleOpenOrganizerDraft,
     handleRetrySalesLink,
     handlePendingInputDecision,
     handlePolicyGapDecision,
     localCuration,
     localDecisions,
-    localEventDecisions,
-    localLocationResolutions,
     localOrganizerDrafts,
     localSalesLinks,
     localPolicyDecisions,
-    locationResolutionForms,
-    locationResolutionInFlight,
     manualReportAcknowledgements,
     metrics,
     organizerDraftForms,
@@ -870,8 +687,6 @@ export function useOrganizerIntakeController({
     publicationPacketByEntity,
     setCurationForms,
     setDecisionNotes,
-    setEventDecisionNotes,
-    setLocationResolutionForms,
     setManualReportAcknowledgements,
     setOrganizerDraftForms,
     setPolicyDecisionNotes,

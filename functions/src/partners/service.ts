@@ -40,6 +40,24 @@ async function readPartnerMembership(deps: PartnerDeps, tx: Tx,
   return row;
 }
 
+/**
+ * Whether uid holds a current accepted partner membership, for callers that
+ * act on a partner's behalf without a partner session (a nomination the
+ * partner sent by message).
+ */
+export async function hasCurrentPartnerMembership(
+  db: FirebaseFirestore.Firestore, tx: Tx, uid: string, now: Date,
+): Promise<boolean> {
+  try {
+    await readPartnerMembership({db, now: () => now,
+      checkAuth: async () => undefined}, tx, uid);
+    return true;
+  } catch (error) {
+    if ((error as {code?: unknown})?.code === "permission-denied") return false;
+    throw error;
+  }
+}
+
 /** One organizer-scoped assignment is the cross-channel reservation. */
 export async function requireAssignment(
   deps: PartnerDeps, actor: PartnerActor, tx: Tx, organizerId: string,

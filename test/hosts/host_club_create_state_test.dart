@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
 import 'package:catch_ui/catch_ui.dart';

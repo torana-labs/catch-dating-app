@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_payment_record.dart';
+import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment_record.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_form_payments_controller.g.dart';

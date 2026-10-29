@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/presentation/host_team_workspace_state.dart';
 
 HostTeamWorkspaceState buildHostTeamWorkspaceState({

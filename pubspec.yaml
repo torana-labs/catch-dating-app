@@ -51,7 +51,7 @@ dependencies:
   go_router: ^17.1.0
   cloud_functions: ^6.5.1
   archive: ^4.3.0
-  crypto: ^3.0.7
+  crypto: ^3.0.8
   envied: ^1.3.10
   file_picker: ^12.1.3
   freezed_annotation: ^3.0.0
@@ -115,41 +115,10 @@ dev_dependencies:
   freezed: ^3.0.0
   json_serializable: ^6.15.2
   riverpod: ^3.3.2
-  flutter_launcher_icons: ^0.14.4
   fake_cloud_firestore: ^4.3.0
   firebase_auth_mocks: ^0.15.1
   json_schema: ^5.2.2
   test: ^1.31.0
-
-# Native brand colors mirror design_context_pack/design_system/tokens.json.
-# Run `dart run tool/branding/generate_native_brand_assets.dart` after token
-# changes that should affect launcher icons or native splash colors.
-flutter_launcher_icons:
-  android: true
-  ios: true
-  image_path: assets/branding/catch_icon.png
-  remove_alpha_ios: true
-  web:
-    generate: true
-    image_path: assets/branding/catch_icon.png
-    background_color: "#16140F"
-    theme_color: "#16140F"
-
-flutter_native_splash:
-  color: "#F4F4F1"
-  color_web: "#F4F4F1"
-  color_dark: "#0F0E10"
-  color_dark_web: "#0F0E10"
-  image: assets/branding/catch_splash_mark_light.png
-  image_dark: assets/branding/catch_splash_mark_dark.png
-  android: true
-  ios: true
-  web: true
-  android_12:
-    color: "#F4F4F1"
-    color_dark: "#0F0E10"
-    image: assets/branding/catch_splash_mark_light.png
-    image_dark: assets/branding/catch_splash_mark_dark.png
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

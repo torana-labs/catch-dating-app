@@ -1,17 +1,17 @@
-import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
-import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_arrival_mission.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_assignment_features.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_attendee.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_compatibility_response.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_arrival_mission.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment_features.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_presence.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -57,11 +57,13 @@ class EventSuccessController extends _$EventSuccessController {
     List<String> sourceFormIds = const [],
   }) async {
     requireSignedInUid(ref, action: 'preview event matching coverage');
-    return ref.read(eventSuccessRepositoryProvider).previewAssignmentFeatures(
-      eventId: eventId,
-      rules: rules,
-      sourceFormIds: sourceFormIds,
-    );
+    return ref
+        .read(eventSuccessRepositoryProvider)
+        .previewAssignmentFeatures(
+          eventId: eventId,
+          rules: rules,
+          sourceFormIds: sourceFormIds,
+        );
   }
 
   Future<EventSuccessAssignmentFeatureSaveResult> configureAssignmentFeatures({
@@ -71,12 +73,14 @@ class EventSuccessController extends _$EventSuccessController {
     required List<EventSuccessAssignmentFeatureRule> rules,
   }) async {
     requireSignedInUid(ref, action: 'save event matching preferences');
-    return ref.read(eventSuccessRepositoryProvider).configureAssignmentFeatures(
-      eventId: eventId,
-      expectedRevision: expectedRevision,
-      requestId: requestId,
-      rules: rules,
-    );
+    return ref
+        .read(eventSuccessRepositoryProvider)
+        .configureAssignmentFeatures(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+          requestId: requestId,
+          rules: rules,
+        );
   }
 
   Future<EventSuccessPlan> ensurePlan(Event event) async {

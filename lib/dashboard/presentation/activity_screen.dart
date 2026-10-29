@@ -1,6 +1,8 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
@@ -14,8 +16,6 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
-import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

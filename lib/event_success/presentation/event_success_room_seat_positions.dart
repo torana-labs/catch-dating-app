@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
 import 'package:flutter/painting.dart';
 
 /// Where up to [count] seat markers sit inside a room-map unit of [shape].

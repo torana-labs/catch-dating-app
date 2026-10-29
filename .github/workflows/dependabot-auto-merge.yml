@@ -1,0 +1,56 @@
+name: Dependabot auto-merge
+
+# Turns on auto-merge for Dependabot pull requests, so a dependency update that
+# passes Required CI goes through the merge queue without a manual click.
+# .github/dependabot.yml already ignores major version updates; a security
+# update that is a major version still waits for a person.
+#
+# It acts as the repository's auto-merge GitHub App rather than the built-in
+# Actions token: GitHub starts no workflows for events the built-in token
+# causes, and this merge must start main's workflows like any other. A workflow
+# Dependabot triggers can read only Dependabot secrets, so the app's ID and key
+# live there. Setup: docs/release_operations.md, "Dependency maintenance".
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  enable:
+    name: Queue Dependabot update
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - id: metadata
+        name: Read the update type
+        uses: dependabot/fetch-metadata@v2
+      - id: app
+        name: Require the auto-merge app
+        if: ${{ steps.metadata.outputs.update-type != 'version-update:semver-major' }}
+        env:
+          APP_ID: ${{ secrets.AUTOMERGE_APP_ID }}
+        run: |
+          if [[ -z "$APP_ID" ]]; then
+            echo "::notice::AUTOMERGE_APP_ID is not set as a Dependabot secret; leaving this update for a manual merge."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - id: token
+        if: ${{ steps.app.outputs.ready == 'true' }}
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.AUTOMERGE_APP_ID }}
+          private-key: ${{ secrets.AUTOMERGE_APP_PRIVATE_KEY }}
+      - name: Turn on auto-merge
+        if: ${{ steps.app.outputs.ready == 'true' }}
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        # The merge queue sets the merge method, so none is passed here.
+        run: gh pr merge --auto "$PR_URL"

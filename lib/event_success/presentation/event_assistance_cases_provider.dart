@@ -1,8 +1,8 @@
+import 'package:catch_dating_app/contexts/live/data/event_assistance_cases_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_cases_page.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_cases_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_case.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_case_scope.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_cases_page.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -70,7 +70,9 @@ class EventAssistanceCases extends _$EventAssistanceCases {
           eventAssistanceCasesForAccountProvider(query, account: account),
         );
         final pageState = catchAsyncStateFromAsyncValue(page);
-        if ((pageState.isLoading || pageState.isRefreshing || pageState.retrying)) {
+        if ((pageState.isLoading ||
+            pageState.isRefreshing ||
+            pageState.retrying)) {
           return const AsyncLoading();
         }
         if (pageState.error != null) {

@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
-import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/launch_access_repository.dart';
+import 'package:catch_dating_app/contexts/account/domain/launch_access_application.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -53,9 +53,7 @@ void main() {
         launchAccessControllerProvider,
         (_, _) {},
       );
-      container
-          .read(launchAccessControllerProvider.notifier)
-          .setCity('mumbai');
+      container.read(launchAccessControllerProvider.notifier).setCity('mumbai');
       expect(subscription.read().city, 'mumbai');
 
       subscription.close();

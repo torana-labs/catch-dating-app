@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_events_controller.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';

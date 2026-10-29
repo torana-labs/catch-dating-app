@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_customer_send.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_query.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_send.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_timeline.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -186,7 +186,9 @@ void main() {
         'optedIn',
       );
       expect(
-        detail.whatsappPermission.purposes['eventOperations']
+        detail
+            .whatsappPermission
+            .purposes['eventOperations']
             ?.deliveryAvailable,
         isFalse,
       );
@@ -204,10 +206,7 @@ void main() {
       expect(detail.sends.last.kind, HostCustomerSendKind.announcement);
       expect(detail.sends.last.eventId, 'event-1');
       expect(detail.timeline.length, 2);
-      expect(
-        detail.timeline.first,
-        isA<HostCustomerSendTimelineEntry>(),
-      );
+      expect(detail.timeline.first, isA<HostCustomerSendTimelineEntry>());
       final outreach = detail.timeline.last;
       expect(outreach, isA<HostCustomerOutreachTimelineEntry>());
       final logged = outreach as HostCustomerOutreachTimelineEntry;

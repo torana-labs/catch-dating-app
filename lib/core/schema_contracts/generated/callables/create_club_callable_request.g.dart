@@ -1,7 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 // ignore_for_file: constant_identifier_names, use_null_aware_elements
-import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 
 
 // Typed callable request DTO emitted from callables/create_club_payload.schema.json.

@@ -19,6 +19,7 @@ import {
   publishListingEvents,
   type ListingEventPublicationDeps,
   type ListingEventReview,
+  type StaffEventLocation,
 } from "../operations/supplyIntake/eventPublication";
 import {requireAdminRole} from "./adminAuth";
 
@@ -206,6 +207,16 @@ export async function adminPublishListingEventsHandler(
     }
     resolutions.set(eventWorkItemId, [...resolutions.get(eventWorkItemId) ?? [], resolution]);
   }
+  const eventLocations = new Map<string, StaffEventLocation>();
+  for (const {eventWorkItemId, ...location} of data.eventLocations ?? []) {
+    if (!chosen.has(eventWorkItemId)) {
+      throw new HttpsError("invalid-argument", `A location names ${eventWorkItemId}, which is not being published.`);
+    }
+    if (eventLocations.has(eventWorkItemId)) {
+      throw new HttpsError("invalid-argument", `${eventWorkItemId} has more than one location.`);
+    }
+    eventLocations.set(eventWorkItemId, location);
+  }
   const db = deps.firestore();
   await deps.checkRateLimit?.(
     db,
@@ -216,7 +227,8 @@ export async function adminPublishListingEventsHandler(
   const {organizerId, results} = await publishListingEvents({
     intakeRequestId: data.intakeRequestId,
     eventWorkItemIds: data.eventWorkItemIds,
-    actor: {kind: "staff", adminContext, checklist, note: data.reviewNote, blockerResolutions: resolutions, request},
+    actor: {kind: "staff", adminContext, checklist, note: data.reviewNote, blockerResolutions: resolutions,
+      eventLocations, request},
     executionMode: data.executionMode,
     idempotencyKey: data.idempotencyKey,
   }, deps);

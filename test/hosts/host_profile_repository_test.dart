@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
-import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';

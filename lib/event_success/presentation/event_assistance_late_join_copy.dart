@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_draft.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setup.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_destination.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_draft.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setting.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_late_join_setup.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

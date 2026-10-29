@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/domain/club_draft.dart';
-import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_draft.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';

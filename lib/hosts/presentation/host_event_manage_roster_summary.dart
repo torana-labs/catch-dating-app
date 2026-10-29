@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventSuccessOperationalRosterSummary;
-import 'package:catch_dating_app/events/domain/event_attendee.dart';
 
 EventSuccessOperationalRosterSummary hostEventManageOperationalRosterSummary(
   List<EventAttendee>? attendees,

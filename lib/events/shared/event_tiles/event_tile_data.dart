@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_capacity_labels.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 
 enum EventTileStatus {
   open,

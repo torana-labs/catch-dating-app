@@ -1,3 +1,9 @@
+import 'package:catch_dating_app/contexts/profiles/domain/photo_upload_state.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_validation.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/labelled.dart';
@@ -5,13 +11,7 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_inline_edit_patch_factory.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_height_editor.dart';
 import 'package:catch_ui/catch_ui.dart';

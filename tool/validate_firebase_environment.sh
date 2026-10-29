@@ -91,27 +91,29 @@ if (legalUrls.size !== legalUrlNames.length) {
 }
 NODE
 
-IFS=$'\t' read -r android_config ios_config macos_config web_config <<<"$(
+IFS=$'\t' read -r android_flavor android_config ios_config macos_config web_config <<<"$(
   node "$repo_root/tool/platform/resolve_app_target.mjs" \
     --role "$app_role" \
     --environment "$environment" \
-    --fields 'firebase.android.configPath,firebase.ios.configPath,firebase.macos.configPath,firebase.web.configPath'
+    --fields 'android.flavor,firebase.android.configPath,firebase.ios.configPath,firebase.macos.configPath,firebase.web.configPath'
 )"
 
-copy_specs=(
-  "$android_config|android/app/google-services.json"
-  "$ios_config|ios/Runner/GoogleService-Info.plist"
-  "$macos_config|macos/Runner/GoogleService-Info.plist"
-  "$web_config|web/firebase-messaging-sw.js"
+# Each entry is canonical file|platform directory|file the build reads. The
+# Android flavor file is a committed link to the canonical file, and the
+# iOS/macOS build phases read the canonical file directly. Only the web service
+# worker is an active copy that use_firebase_environment.sh refreshes.
+check_specs=(
+  "$android_config|android|android/app/src/$android_flavor/google-services.json"
+  "$ios_config|ios|"
+  "$macos_config|macos|"
+  "$web_config|web|web/firebase-messaging-sw.js"
 )
 
 status=0
-for spec in "${copy_specs[@]}"; do
-  source_rel="${spec%%|*}"
-  dest_rel="${spec##*|}"
+for spec in "${check_specs[@]}"; do
+  IFS='|' read -r source_rel platform_dir dest_rel <<<"$spec"
   source_path="$repo_root/$source_rel"
-  dest_path="$destination_root/$dest_rel"
-  if [[ ! -d "$(dirname "$dest_path")" ]]; then
+  if [[ ! -d "$destination_root/$platform_dir" ]]; then
     continue
   fi
 
@@ -121,20 +123,24 @@ for spec in "${copy_specs[@]}"; do
     continue
   fi
 
+  if [[ -z "$dest_rel" ]]; then
+    continue
+  fi
+  dest_path="$destination_root/$dest_rel"
   if [[ ! -f "$dest_path" ]]; then
-    echo "Missing active Firebase config file: $dest_rel"
+    echo "Missing Firebase config file the build reads: $project_root/$dest_rel"
     status=1
     continue
   fi
 
   if ! cmp -s "$source_path" "$dest_path"; then
-    echo "Active Firebase config mismatch: $dest_rel does not match $source_rel"
+    echo "Firebase config mismatch: $project_root/$dest_rel does not match $source_rel"
     status=1
   fi
 done
 
 if [[ $status -ne 0 ]]; then
-  echo "Run ./tool/use_firebase_environment.sh $environment $app_role $project_root to refresh active config files."
+  echo "Android flavor files must link to their file under firebase/. Run ./tool/use_firebase_environment.sh $environment $app_role $project_root to refresh the web service worker."
   exit "$status"
 fi
 

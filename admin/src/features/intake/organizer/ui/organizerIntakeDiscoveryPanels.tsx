@@ -10,7 +10,7 @@ import {
   AdminIntakeGateList,
   AdminIntakeSection,
   AdminIntakeSectionTitle,
-  AdminIntakeStateGrid,
+  AdminOrganizerIntakeSurfaceGrid,
   AdminSearchCandidateActions,
   AdminSearchCandidateCard,
   AdminSearchCandidateHeader,
@@ -55,14 +55,14 @@ function OrganizerClaimTargetSyncPreviewView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Targets" value={String(preview.summary.targets)} />
         <StateRow label="Creates" value={String(preview.summary.creates)} />
         <StateRow label="Refreshes" value={String(preview.summary.refreshes)} />
         <StateRow label="Owner-bound" value={String(preview.summary.skippedOwnerBound)} />
         <StateRow label="Writes" value={String(preview.summary.writesNeeded)} />
         <StateRow label="Remote writes" value={String(preview.mode.remoteWrites)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
         <strong>{preview.guardrails[0]}</strong>
         <span>{preview.guardrails[1]}</span>
@@ -91,11 +91,11 @@ function OrganizerClaimTargetSyncPreviewView({
                 <CatchBadge recipe="status" tone={action.writesRemoteData ? "success" : "neutral"} label={action.status.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
-              <AdminIntakeStateGrid>
+              <AdminOrganizerIntakeSurfaceGrid>
                 <StateRow label="Merge" value={action.merge ? "merge" : "set"} />
                 <StateRow label="Fields" value={String(action.writeFieldCount)} />
                 <StateRow label="Dry run" value={action.requiresFirestoreDryRun ? "required" : "not required"} />
-              </AdminIntakeStateGrid>
+              </AdminOrganizerIntakeSurfaceGrid>
 
               <AdminTagList>
                 {action.writeFields.slice(0, 12).map((field) => (
@@ -127,14 +127,14 @@ function OrganizerCrawlRunPlanView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Scheduler" value={plan.policy.schedulerEnabled ? "enabled" : "disabled"} />
         <StateRow label="Network" value={plan.policy.networkEnabled ? "enabled" : "disabled"} />
         <StateRow label="Request cap" value={String(plan.policy.maxRequestsPerRun)} />
         <StateRow label="Would fetch" value={String(plan.summary.wouldFetch)} />
         <StateRow label="Blocked" value={String(plan.summary.blocked)} />
         <StateRow label="Writes" value={String(plan.summary.firestoreWrites)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {plan.policy.platformAllowlist.length === 0 ? (
           <CatchBadge label="No platform allowlist" />
@@ -169,12 +169,12 @@ function OrganizerCrawlRunPlanView({
               </div>
               <CatchBadge recipe="status" tone={intent.action === "would_fetch" ? "success" : "neutral"} label={intent.action.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Run" value={intent.crawlRunId} />
               <StateRow label="Surface" value={intent.surfaceId} />
               <StateRow label="Next" value={intent.nextGate.replaceAll("_", " ")} />
               <StateRow label="Output" value={intent.expectedOutput} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
             <AdminTagList>
               {intent.blockedBy.length === 0 ? (
                 <CatchBadge label="ready for reviewed capture" />
@@ -200,14 +200,14 @@ function OrganizerRawArtifactStorageView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Policy" value={manifest.policy.status.replaceAll("_", " ")} />
         <StateRow label="Object storage" value={manifest.policy.remoteObjectStorageEnabled ? "enabled" : "disabled"} />
         <StateRow label="Firestore raw" value={manifest.summary.firestoreRawStorageAllowed ? "allowed" : "forbidden"} />
         <StateRow label="Raw payloads" value={String(manifest.summary.rawProviderPayloads)} />
         <StateRow label="Upload blocked" value={String(manifest.summary.remoteUploadBlocked)} />
         <StateRow label="Bytes" value={manifest.summary.totalBytes.toLocaleString()} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         <CatchBadge label={`provider: ${manifest.policy.provider}`} />
         <CatchBadge label={`bucket: ${manifest.policy.bucket ?? "not configured"}`} />
@@ -242,12 +242,12 @@ function OrganizerRawArtifactStorageView({
               </div>
               <CatchBadge recipe="status" tone={artifact.storagePlan.action === "would_upload" ? "success" : "neutral"} label={artifact.storagePlan.action.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Firestore" value={artifact.firestoreMode.replaceAll("_", " ")} />
               <StateRow label="Retention" value={artifact.retention.status.replaceAll("_", " ")} />
               <StateRow label="Bytes" value={artifact.sizeBytes.toLocaleString()} />
               <StateRow label="Object key" value={artifact.storagePlan.remoteObjectKey} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
             <AdminTagList>
               {artifact.storagePlan.blockedBy.length === 0 ? (
                 <CatchBadge label="storage policy satisfied" />
@@ -285,12 +285,12 @@ function OrganizerSearchCandidateQueueView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Batches" value={String(queue.summary.batches)} />
         <StateRow label="Results" value={String(queue.summary.results)} />
         <StateRow label="Matched" value={String(queue.summary.matchedExistingEntities)} />
         <StateRow label="Duplicate keys" value={String(queue.summary.duplicateNormalizedKeys)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {platformEntries.length === 0 ? (
           <CatchBadge label="No captured surfaces" />
@@ -388,14 +388,14 @@ function OrganizerDiscoverySearchPlanView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Launch cities" value={plan.summary.launchCities.join(", ")} />
         <StateRow label="Planned launch queries" value={String(plan.summary.launchCityPlanned)} />
         <StateRow label="Fresh skipped" value={String(plan.summary.launchCitySkippedFresh)} />
         <StateRow label="Fresh for" value={plan.freshForDays ? `${plan.freshForDays} days` : "not configured"} />
         <StateRow label="As of" value={plan.asOf ?? "unknown"} />
         <StateRow label="Plan source" value={plan.generatedFrom.searchPlan} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <AdminTagList>
         {plan.launchCities.map((city) => (
           <CatchBadge key={city.citySlug} label={`${city.city}: ${city.categoryIds.length} categories`} />
@@ -408,11 +408,11 @@ function OrganizerDiscoverySearchPlanView({
       </QualityRow>
       <AdminIntakeSection>
         <AdminIntakeSectionTitle>Configuration Sources</AdminIntakeSectionTitle>
-        <AdminIntakeStateGrid>
+        <AdminOrganizerIntakeSurfaceGrid>
           {sourceRows.map(([label, value]) => (
             <StateRow key={label} label={label} value={value} />
           ))}
-        </AdminIntakeStateGrid>
+        </AdminOrganizerIntakeSurfaceGrid>
       </AdminIntakeSection>
       <AdminIntakeSection>
         <AdminIntakeSectionTitle>Launch Search Terms</AdminIntakeSectionTitle>
@@ -468,7 +468,7 @@ function OrganizerDiscoverySearchPlanView({
               </div>
               <CatchBadge label={entry.planKind.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Template" value={entry.queryTemplateId} />
               <StateRow label="Template text" value={entry.queryTemplate} />
               <StateRow label="Source" value={entry.source} />
@@ -477,7 +477,7 @@ function OrganizerDiscoverySearchPlanView({
               <StateRow label="Searched" value={entry.searchedAt ?? "not captured"} />
               <StateRow label="Existing run" value={entry.existingRunFile ?? "none"} />
               <StateRow label="Fingerprint" value={entry.resultFingerprint ?? "none"} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
           </AdminSearchCandidateCard>
         ))}
         {launchEntries.length === 0 ? (
@@ -501,12 +501,12 @@ function OrganizerDiscoverySearchPlanView({
                   </div>
                   <CatchBadge label="fresh" />
                 </AdminSearchCandidateHeader>
-                <AdminIntakeStateGrid>
+                <AdminOrganizerIntakeSurfaceGrid>
                   <StateRow label="Run key" value={entry.runKey} />
                   <StateRow label="Searched" value={entry.searchedAt ?? "unknown"} />
                   <StateRow label="Existing run" value={entry.existingRunFile ?? "none"} />
                   <StateRow label="Fingerprint" value={entry.resultFingerprint ?? "none"} />
-                </AdminIntakeStateGrid>
+                </AdminOrganizerIntakeSurfaceGrid>
               </AdminSearchCandidateCard>
             ))}
           </AdminSearchCandidateList>
@@ -535,11 +535,11 @@ function OrganizerPublishingContractsView({
               </div>
               <CatchBadge recipe="status" tone="success" label="schema source" />
             </AdminSearchCandidateHeader>
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Firestore" value={contract.firestoreSchema} />
               <StateRow label="Generated payload" value={contract.generatedCallablePayload} />
               <StateRow label="Callable" value={contract.writeCallable} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
             <AdminTagList>
               {contract.projectionNotes.map((note: string) => (
                 <CatchBadge key={note} label={note} />
@@ -568,7 +568,7 @@ function OrganizerSourceMentionResolutionView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow
           label="Source artifacts"
           value={String(resolution.sourceArtifacts.summary.artifacts)}
@@ -594,7 +594,7 @@ function OrganizerSourceMentionResolutionView({
           label="Prompt payloads"
           value={String(resolution.llmPromptQueue.summary.requests)}
         />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
         <strong>Canonical write boundary</strong>
         <span>{resolution.policy.canonicalBoundary.generatedCandidates}</span>
@@ -628,7 +628,7 @@ function OrganizerSourceMentionResolutionView({
                 </div>
                 <CatchBadge recipe="status" tone={packet.humanReviewRequired ? "danger" : "success"} label={packet.resolutionState.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
-              <AdminIntakeStateGrid>
+              <AdminOrganizerIntakeSurfaceGrid>
                 <StateRow label="Score" value={String(packet.score)} />
                 <StateRow label="Candidates" value={String(packet.candidateIds.length)} />
                 <StateRow label="Mentions" value={String(packet.mentionIds.length)} />
@@ -636,7 +636,7 @@ function OrganizerSourceMentionResolutionView({
                   label="LLM"
                   value={packet.llmReview.status.replaceAll("_", " ")}
                 />
-              </AdminIntakeStateGrid>
+              </AdminOrganizerIntakeSurfaceGrid>
               <AdminTagList>
                 {Object.entries(packet.checklist).map(([key, value]) => (
                   <CatchBadge key={key} label={`${key}: ${String(value)}`} />
@@ -669,13 +669,13 @@ function OrganizerSourceMentionResolutionView({
               </div>
               <CatchBadge recipe="status" tone={organizerIntakeEvidencePanels.sourceResolutionTone(cluster.resolutionState)} label={cluster.resolutionState.replaceAll("_", " ")} />
             </AdminSearchCandidateHeader>
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Score" value={String(cluster.score)} />
               <StateRow label="Mentions" value={String(cluster.mentionIds.length)} />
               <StateRow label="Cities" value={cluster.cities.join(", ") || "unknown"} />
               <StateRow label="Dates" value={cluster.dates.join(", ") || "unknown"} />
               <StateRow label="LLM" value={cluster.llmReview.status.replaceAll("_", " ")} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
             <AdminTagList>
               {cluster.hardSignals.map((signal) => (
                 <CatchBadge key={signal} label={signal} />
@@ -769,12 +769,12 @@ function OrganizerSearchCandidateCard({
         </div>
         <CatchBadge recipe="status" tone={candidate.reviewAction.includes("attach") ? "success" : "neutral"} label={candidate.reviewAction.replaceAll("_", " ")} />
       </AdminSearchCandidateHeader>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Candidate" value={candidate.candidateId} />
         <StateRow label="Observed" value={candidate.observedAt} />
         <StateRow label="Normalized" value={candidate.normalizedKey ?? "none"} />
         <StateRow label="Canonical URL" value={candidate.canonicalUrl} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       {candidate.snippet ? (
         <AdminSearchCandidateSnippet>{candidate.snippet}</AdminSearchCandidateSnippet>
       ) : null}

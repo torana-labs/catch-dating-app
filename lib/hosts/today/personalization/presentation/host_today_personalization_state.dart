@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
+import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:meta/meta.dart';
 

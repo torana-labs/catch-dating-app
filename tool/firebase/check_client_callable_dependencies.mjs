@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-import {resolveFirebaseProjectId} from "./firebase_project_resolver.mjs";
+import {resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 import {
   listFirebaseFunctionExports,
   listFirebaseFunctionTargets,

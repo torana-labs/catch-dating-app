@@ -13,6 +13,8 @@ const _hostSplashDarkPath = 'assets/branding/catch_host_splash_mark_dark.png';
 const _generatedIconDir = 'assets/branding/generated';
 const _consumerProjectRoot = 'apps/consumer';
 const _hostProjectRoot = 'apps/host';
+// The consumer's flutter_native_splash config, whose colors follow the tokens.
+const _consumerSplashPubspecPath = '$_consumerProjectRoot/pubspec.yaml';
 const _consumerLaunchScreenPath =
     'apps/consumer/ios/Runner/Base.lproj/LaunchScreen.storyboard';
 const _hostLaunchScreenPath =
@@ -766,22 +768,11 @@ String _projectPath(String projectRoot, String relativePath) {
 }
 
 void _syncPubspecTokens(_NativeBrandTokens tokens) {
-  final file = File('pubspec.yaml');
-  final webTheme = tokens.colorHex('ink', 'light');
+  final file = File(_consumerSplashPubspecPath);
   final splashLight = tokens.colorHex('bg', 'light');
   final splashDark = tokens.colorHex('bg', 'dark');
   var pubspec = file.readAsStringSync();
 
-  pubspec = _replaceRequiredLine(
-    pubspec,
-    RegExp(r'^    background_color: .+$', multiLine: true),
-    '    background_color: "$webTheme"',
-  );
-  pubspec = _replaceRequiredLine(
-    pubspec,
-    RegExp(r'^    theme_color: .+$', multiLine: true),
-    '    theme_color: "$webTheme"',
-  );
   pubspec = _replaceRequiredLine(
     pubspec,
     RegExp(r'^  color: .+$', multiLine: true),
@@ -820,17 +811,16 @@ String _replaceRequiredLine(String source, RegExp pattern, String replacement) {
   final matches = pattern.allMatches(source).length;
   if (matches != 1) {
     throw StateError(
-      'Expected one pubspec.yaml match for ${pattern.pattern}, found $matches.',
+      'Expected one $_consumerSplashPubspecPath match for ${pattern.pattern}, '
+      'found $matches.',
     );
   }
   return source.replaceAll(pattern, replacement);
 }
 
 void _verifyPubspecTokens(_NativeBrandTokens tokens) {
-  final pubspec = File('pubspec.yaml').readAsStringSync();
+  final pubspec = File(_consumerSplashPubspecPath).readAsStringSync();
   final expected = <String>[
-    "background_color: \"${tokens.colorHex('ink', 'light')}\"",
-    "theme_color: \"${tokens.colorHex('ink', 'light')}\"",
     "color: \"${tokens.colorHex('bg', 'light')}\"",
     "color_web: \"${tokens.colorHex('bg', 'light')}\"",
     "color_dark: \"${tokens.colorHex('bg', 'dark')}\"",
@@ -839,7 +829,7 @@ void _verifyPubspecTokens(_NativeBrandTokens tokens) {
   final missing = expected.where((line) => !pubspec.contains(line)).toList();
   if (missing.isNotEmpty) {
     throw StateError(
-      'pubspec.yaml is not aligned with $_tokenPath:\n${missing.join('\n')}',
+      '$_consumerSplashPubspecPath is not aligned with $_tokenPath:\n${missing.join('\n')}',
     );
   }
 }

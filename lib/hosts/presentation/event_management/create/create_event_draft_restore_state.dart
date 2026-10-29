@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
+import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_location_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_schedule_state.dart';

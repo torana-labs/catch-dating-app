@@ -47,13 +47,13 @@
           {
             "id": "today_attention_model",
             "language": "dart",
-            "file": "lib/hosts/today/domain/host_attention_item.dart",
+            "file": "lib/contexts/insights/domain/host_attention_item.dart",
             "symbol": "HostAttentionProjection"
           },
           {
             "id": "today_attention_repository",
             "language": "dart",
-            "file": "lib/hosts/today/data/host_attention_repository.dart",
+            "file": "lib/contexts/insights/data/host_attention_repository.dart",
             "symbol": "HostAttentionRepository"
           },
           {

@@ -4,13 +4,15 @@ import {normalizeOrganizerSurfaceUrl} from "./sources/surfaces.mjs";
 
 // The import plan for one reviewed listing event: the read-only externalEvents
 // document it would publish, and every blocker that stops it. Ported from the
-// retired organizer-intake event import plan (event_import_plan_core.mjs, last
-// present at 30e5d7abd) so its governed blockers, read-only booking posture
-// and outbound-link merge keep working. The input is now a Supply Intake
-// listing_event_candidate projection rather than a JSON queue file.
+// retired organizer-intake event import plan (event_import_plan_core.mjs;
+// the readiness path built on it last existed at acb66a698) so its governed
+// blockers, read-only booking posture and outbound-link merge keep working.
+// The input is now a Supply Intake listing_event_candidate projection rather
+// than a JSON queue file.
 //
-// Publishing stays a staff decision: this module never writes. A plan with
-// no blockers is write-ready; adminPublishExternalEvent performs the write.
+// Publishing stays a staff or policy decision: this module never writes. A
+// plan with no blockers is write-ready; adminPublishListingEvents, or the
+// onSupplyIntakeListingApproved policy trigger, performs the write.
 
 // The externalEvents contract's platform enum. Urbanaut listings plan but stay
 // blocked until that enum (and the app's ExternalEventPlatform) gains it.
@@ -47,9 +49,11 @@ const ACTIVITY_PATTERNS = [
  *   blockerResolutions: Array<{blockerCode: string, outcome: string, policyGapDecisionId: string | null,
  *   note: string}>}, duplicates?: object[], citySlug: string | null, now: string}} input
  */
-export function planListingEventImport({event, workItemId, organizer, review, duplicates = [], citySlug, now}) {
-  invariant(event && typeof event.eventKey === "string" && typeof workItemId === "string",
+export function planListingEventImport({event: listed, workItemId, organizer, review, duplicates = [], citySlug,
+  now}) {
+  invariant(listed && typeof listed.eventKey === "string" && typeof workItemId === "string",
     "INVALID_EVENT_IMPORT", "An import plan needs a listing event and its work item.");
+  const event = withStaffLocation(listed, review?.location ?? null);
   const blockers = new Set();
   if (!organizer) blockers.add("organizer_listing_pending");
   if (!PUBLISHABLE_PLATFORMS.includes(event.platform)) blockers.add("platform_not_publishable");
@@ -67,6 +71,9 @@ export function planListingEventImport({event, workItemId, organizer, review, du
   if (duplicates.length > 0) blockers.add("duplicate_normalized_event_key");
   for (const resolution of review?.blockerResolutions ?? []) {
     if (!GOVERNED_BLOCKERS.includes(resolution.blockerCode)) continue;
+    // Resolving a missing map location means supplying it (review.location),
+    // not a note saying so; without coordinates it can only be waived.
+    if (resolution.blockerCode === "missing_exact_coordinates" && resolution.outcome === "resolved") continue;
     if (resolution.outcome === "resolved" ||
         (resolution.outcome === "waived" && typeof resolution.policyGapDecisionId === "string")) {
       blockers.delete(resolution.blockerCode);
@@ -104,7 +111,8 @@ function externalEventDocument({event, eventId, organizer, review, duplicates, c
     endTime: timestamp(event.endAt ?? event.startAt),
     timezone: event.timezone ?? null,
     meetingPoint: locationName,
-    meetingLocation: {name: locationName, address: event.address ?? null, placeId: null, latitude, longitude, notes},
+    meetingLocation: {name: locationName, address: event.address ?? null, placeId: event.placeId ?? null, latitude,
+      longitude, notes},
     locationDetails: notes,
     photoUrl: event.imageUrl ?? null,
     activity: {version: 1, activityKind: activityKind(event), interactionModel: "openFormat", source: "heuristic"},
@@ -133,6 +141,22 @@ function externalEventDocument({event, eventId, organizer, review, duplicates, c
     createdAt: reviewed,
     updatedAt: reviewed,
   };
+}
+
+/**
+ * A reviewer may supply the map location the source page left out, as the
+ * retired adminResolveOrganizerEventLocation did (last present at acb66a698).
+ * Its coordinates replace the page's; its venue name and address fill only
+ * what the page lacked.
+ */
+function withStaffLocation(event, location) {
+  if (location === null) return event;
+  invariant(Number.isFinite(location.latitude) && Math.abs(location.latitude) <= 90 &&
+    Number.isFinite(location.longitude) && Math.abs(location.longitude) <= 180,
+  "INVALID_STAFF_LOCATION", "A staff-supplied location needs a latitude and longitude in range.");
+  return {...event, latitude: location.latitude, longitude: location.longitude,
+    venue: event.venue ?? location.name ?? null, address: event.address ?? location.address ?? null,
+    placeId: location.placeId ?? event.placeId ?? null};
 }
 
 /** Deterministic per organizer and source event, so a re-import overwrites itself. */

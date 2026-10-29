@@ -1,10 +1,10 @@
+import 'package:catch_dating_app/contexts/forms/data/host_response_query_repository.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/data/host_response_query_repository.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
 import 'package:flutter/foundation.dart';
 
-export 'package:catch_dating_app/hosts/data/host_response_query_repository.dart'
+export 'package:catch_dating_app/contexts/forms/data/host_response_query_repository.dart'
     show HostResponseQueryGateway;
 
 enum HostResponseQueryStatus {
@@ -249,7 +249,9 @@ class HostResponseQueryController extends ChangeNotifier {
     final view = _view;
     final request = view.request;
     final generation = _generation;
-    if (request == null || ids.isEmpty || ids.length > 25 ||
+    if (request == null ||
+        ids.isEmpty ||
+        ids.length > 25 ||
         view.status != HostResponseQueryStatus.ready ||
         view.resultHash != resultHash ||
         !view.selectedIds.containsAll(ids)) {
@@ -257,7 +259,8 @@ class HostResponseQueryController extends ChangeNotifier {
     }
     try {
       final page = await _gateway.query(request.withCursor(null));
-      if (!_isCurrent(generation) || _view.resultHash != resultHash ||
+      if (!_isCurrent(generation) ||
+          _view.resultHash != resultHash ||
           !_view.selectedIds.containsAll(ids) ||
           page.queryHash != view.queryHash ||
           page.resultHash != resultHash ||
