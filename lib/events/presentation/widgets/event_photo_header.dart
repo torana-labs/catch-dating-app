@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/core/widgets/event_thumbnail.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:flutter/material.dart';
 

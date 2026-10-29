@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:catch_dating_app/event_success/domain/event_assistance_case_scope.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_cases_page.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_cases_page.dart';
 
 Map<String, Object?> helpQueueFixture(String key) => Map<String, Object?>.from(
   (jsonDecode(

@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_result.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_setting.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_configuration.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_result.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,11 +1,11 @@
+import 'package:catch_dating_app/contexts/events/data/organizer_event_venue_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
+import 'package:catch_dating_app/contexts/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
-import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
-import 'package:catch_dating_app/events/domain/organizer_event_venue.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

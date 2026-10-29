@@ -1,13 +1,13 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/events/data/places_repository.dart'
+    show PlaceAutocompleteSuggestion;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/locations/data/places_repository.dart'
-    show PlaceAutocompleteSuggestion;
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/location_map.dart';
 import 'package:catch_tokens/catch_tokens.dart';

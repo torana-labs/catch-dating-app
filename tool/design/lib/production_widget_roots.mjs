@@ -25,6 +25,15 @@ export function isProductionWidgetDartPath(value) {
   );
 }
 
+// Context domain and data layers hold no UI under the Bounded Context Contract
+// (domain code cannot import Flutter), so the new-widget inventory skips them;
+// context parts/ and actions/ and every screen folder stay in scope.
+const contextModelLayer = /^lib\/contexts\/[^/]+\/(?:domain|data)\//u;
+
+export function isWidgetInventoryPath(value) {
+  return isProductionWidgetDartPath(value) && !contextModelLayer.test(value);
+}
+
 export function isGeneratedProductionWidgetDartPath(value) {
   if (!isProductionWidgetDartPath(value)) return false;
   return (

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_controller.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.dart';
 import 'package:catch_ui/catch_ui.dart';

@@ -7,15 +7,15 @@ import 'package:analyzer/dart/ast/visitor.dart';
 
 const _catalogPath = 'copy/structured_domain_copy_en.json';
 const _files = <String, String>{
-  'coach': 'lib/event_success/domain/event_success_coach.dart',
-  'library': 'lib/event_success/domain/event_success_playbooks/library.dart',
-  'modules': 'lib/event_success/domain/event_success_playbooks/modules.dart',
-  'metrics': 'lib/event_success/domain/event_success_playbooks/metrics.dart',
+  'coach': 'lib/contexts/formats/domain/event_success_coach.dart',
+  'library': 'lib/contexts/formats/domain/event_success_playbooks/library.dart',
+  'modules': 'lib/contexts/formats/domain/event_success_playbooks/modules.dart',
+  'metrics': 'lib/contexts/formats/domain/event_success_playbooks/metrics.dart',
   'eventPolicyCancellation':
-      'lib/event_policies/domain/event_policy/cancellation.dart',
-  'eventPolicyCohort': 'lib/event_policies/domain/event_policy/cohort.dart',
+      'lib/contexts/events/domain/event_policy/cancellation.dart',
+  'eventPolicyCohort': 'lib/contexts/events/domain/event_policy/cohort.dart',
   'eventPolicySettlement':
-      'lib/event_policies/domain/event_policy/settlement.dart',
+      'lib/contexts/events/domain/event_policy/settlement.dart',
 };
 const _copyArguments = <String>{
   'antiPatterns',

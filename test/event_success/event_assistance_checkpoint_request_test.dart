@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/reassign_event_assistance_checkpoint_reporter_callable_payload.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_assistance_checkpoint_closeout_callable_payload.g.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

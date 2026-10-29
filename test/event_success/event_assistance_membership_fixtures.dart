@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_membership.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_membership_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
 
 final membershipScope = EventAssistanceGuestScope(
   organizerId: 'organizer-1',

@@ -199,6 +199,20 @@ test("schema-generated Dart keeps exact generator ownership while source formats
     ["format", "--", "lib/example.dart"]);
 });
 
+test("copy-generated Dart keeps exact generator ownership while source formats", () => {
+  const output = graph.compileCodegen
+    .find((generator) => generator.id === "copy.structured-domain")
+    .outputs.find((candidate) => candidate.endsWith(".dart") &&
+      !candidate.startsWith("lib/l10n/"));
+  const result = runPreCommitGeneratedArtifacts({
+    fileExists: () => true, graph, repoRoot: "/fixture",
+    runCommand: () => ({status: 0, stderr: "", stdout: ""}),
+    stagedPaths: ["lib/example.dart", output],
+    unstagedPaths: [],
+  });
+  assert.deepEqual(result.formattedDartPaths, ["lib/example.dart"]);
+});
+
 test("stale generated Dart still rejects the commit without a formatter rewrite", () => {
   const calls = [];
   assert.throws(() => runPreCommitGeneratedArtifacts({

@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 class SelfProfileInlineEditPatchFactory {
   const SelfProfileInlineEditPatchFactory();

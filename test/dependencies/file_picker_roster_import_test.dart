@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:catch_dating_app/hosts/data/host_roster_file_service.dart';
-import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
+import 'package:catch_dating_app/contexts/audience/data/host_roster_file_service.dart';
+import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 

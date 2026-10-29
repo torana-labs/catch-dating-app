@@ -1,5 +1,11 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart'
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart'
     show uidProvider;
+import 'package:catch_dating_app/contexts/connections/data/cross_paths_repository.dart';
+import 'package:catch_dating_app/contexts/connections/domain/cross_paths_invitation.dart';
+import 'package:catch_dating_app/contexts/connections/domain/cross_paths_suggestion.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
@@ -7,14 +13,8 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_badge.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_invitation.dart';
-import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_controller.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_tokens/catch_tokens.dart';

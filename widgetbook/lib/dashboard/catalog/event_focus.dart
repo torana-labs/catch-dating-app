@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/contexts/bookings/domain/event_arrival_action.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
-import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

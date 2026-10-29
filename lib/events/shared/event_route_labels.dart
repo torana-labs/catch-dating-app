@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/domain/route_event_plan.dart';
+import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 
 String routeMovementLabel(AppLocalizations l10n, RouteMovementMode value) =>

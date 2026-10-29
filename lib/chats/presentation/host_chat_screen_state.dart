@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
-import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
-import 'package:catch_dating_app/chats/domain/suvbot_identity.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/connections/domain/match.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/suvbot_identity.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 
 class HostChatScreenState {
   const HostChatScreenState({

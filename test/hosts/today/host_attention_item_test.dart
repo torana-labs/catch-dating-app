@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/contexts/insights/domain/host_attention_item.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

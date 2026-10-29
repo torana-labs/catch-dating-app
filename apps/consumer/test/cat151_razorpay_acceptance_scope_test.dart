@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../integration_test/support/cat151_razorpay_acceptance_scope.dart';

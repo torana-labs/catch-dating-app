@@ -1,12 +1,13 @@
 import 'dart:io';
 import 'dart:ui' as ui;
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/domain/event_chat.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_participant.dart';
+
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_participant.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 
@@ -303,9 +305,9 @@ void main() {
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((_) => Stream.value('maya')),
-          eventChatControllerProvider('event').overrideWith(
-            ScheduleFixtureController.new,
-          ),
+          eventChatControllerProvider(
+            'event',
+          ).overrideWith(ScheduleFixtureController.new),
         ],
         child: MaterialApp.router(
           routerConfig: router,
@@ -347,9 +349,9 @@ void main() {
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((_) => Stream.value('maya')),
-          eventChatControllerProvider('event').overrideWith(
-            ScheduleFixtureController.new,
-          ),
+          eventChatControllerProvider(
+            'event',
+          ).overrideWith(ScheduleFixtureController.new),
         ],
         child: MaterialApp.router(
           routerConfig: router,
@@ -367,10 +369,12 @@ void main() {
     expect(ScheduleFixtureController._actions, isEmpty);
     expect(find.textContaining('cannot reopen it'), findsOneWidget);
     expect(ScheduleFixtureController._foregroundStates, isNot(contains(false)));
-    await tester.tap(find.descendant(
-      of: find.byType(Dialog),
-      matching: find.widgetWithText(CatchButton, 'Archive room'),
-    ));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(Dialog),
+        matching: find.widgetWithText(CatchButton, 'Archive room'),
+      ),
+    );
     await pumpFeatureUi(tester);
     expect(ScheduleFixtureController._actions, [EventChatAction.archive]);
     expect(tester.takeException(), isNull);

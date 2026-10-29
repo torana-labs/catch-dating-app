@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/domain/crm/host_customer_revenue.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_revenue.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

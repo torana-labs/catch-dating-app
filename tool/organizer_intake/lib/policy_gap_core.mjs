@@ -504,7 +504,7 @@ function namingMigrationPolicyGap() {
     blockedArtifacts: [
       "admin/src/App.tsx",
       "website/src/App.tsx",
-      "lib/clubs/domain/club.dart",
+      "lib/contexts/organizers/domain/club.dart",
     ],
     evidence: {
       intakeCanonicalEntity: "organizer",

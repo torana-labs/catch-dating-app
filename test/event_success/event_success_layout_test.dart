@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

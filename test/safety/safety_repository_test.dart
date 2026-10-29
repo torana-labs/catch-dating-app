@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -118,12 +118,6 @@
       "rationale": "The account- and organizer-scoped Programs inventory controller landed with a manual family so its request identity, disposal, pagination, and override contracts stay stable. CAT156 owns the equivalent Riverpod codegen migration and generated-output update."
     },
     {
-      "id": "manual-provider:programInventoryRepositoryProvider",
-      "status": "planned",
-      "debtId": "CAT156",
-      "rationale": "The Programs inventory repository remains manually provided for the initial consolidation to avoid changing repository overrides alongside the Events integration. CAT156 owns the equivalent Riverpod codegen migration and generated-output update."
-    },
-    {
       "id": "ownership-listenable-wrapper:lib/programs/presentation/program_events_controller.dart#programCreateControllerProvider:construct:ProgramCreateController",
       "path": "lib/programs/presentation/program_events_controller.dart",
       "symbol": "programCreateControllerProvider",

@@ -17,6 +17,7 @@ const appPackage = "package:catch_dating_app/";
 const layerRank = {kernel: 0, platform: 1, context: 2, pages: 3, app: 4};
 const hardGateRules = new Set([
   "contextBarrelBypass",
+  "legacyContextFile",
   "specOutOfSync",
   "unknownContext",
   "unmappedFile",
@@ -71,7 +72,13 @@ export function loadContextMap(source) {
     legacy.push(entry);
   }
   legacy.sort((a, b) => b.path.length - a.path.length);
-  return {roots, contexts, contextRank, legacy};
+  return {
+    roots,
+    contexts,
+    contextRank,
+    legacy,
+    forbidLegacyContextFiles: map.forbidLegacyContextFiles === true,
+  };
 }
 
 // Returns where a lib/ path sits: {layer, context, legacy}. Target roots win;
@@ -130,6 +137,9 @@ export function scanContextMap({snapshot, baseline = emptyBaseline()}) {
     allFindings.push(...scanFile({relativePath: file, source, map}));
   }
   allFindings.push(...checkSpecTable({source: sources.get(specPath), map}));
+  if (map.forbidLegacyContextFiles) {
+    allFindings.push(...files.flatMap((file) => legacyContextFileFinding(file, map)));
+  }
 
   const baselineKeys = new Set((baseline.allowedFindings ?? []).map(findingKey));
   const findings = [];
@@ -196,6 +206,22 @@ export function scanFile({relativePath, source, map}) {
     findings.push({...finding, path: relativePath, import: uri, line});
   }
   return findings;
+}
+
+// Once domain and data have moved, a legacy folder holds only screens and its
+// feature barrel; any other file it places in a context belongs under
+// lib/contexts/<context>/.
+export function legacyContextFileFinding(file, map) {
+  const place = placePath(file, map);
+  if (place == null || !place.legacy || place.layer !== "context") return [];
+  const barrel = /^lib\/([^/]+)\/([^/]+)\.dart$/u.exec(file);
+  if (barrel != null && barrel[1] === barrel[2]) return [];
+  return [{
+    rule: "legacyContextFile",
+    path: file,
+    line: 1,
+    reason: `domain and data code for ${place.context} lives under ${map.roots.contexts}${place.context}/; legacy folders keep only screens and their barrel`,
+  }];
 }
 
 // The spec's context table must list the map's contexts, in order, with the

@@ -1,10 +1,10 @@
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff_change.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff_change.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show assistanceGroupDutyLabel, assistanceGroupDutyBody;
 import 'package:catch_dating_app/l10n/l10n.dart';

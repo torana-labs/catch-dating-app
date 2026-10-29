@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/events/shared/event_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/events/shared/event_joined_celebration_screen.dart';
-import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 

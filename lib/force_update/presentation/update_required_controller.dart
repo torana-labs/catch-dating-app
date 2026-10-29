@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/account/domain/app_version_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

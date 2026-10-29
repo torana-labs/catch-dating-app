@@ -13,7 +13,7 @@ test("organizer nomenclature gate rejects legacy authority and generic copy", ()
     httpsCallable(functions, "createPublicClubReview");
   `);
   write(root, "lib/example.dart", "httpsCallable('joinClub')");
-  write(root, "lib/clubs/data/clubs_repository.dart", `
+  write(root, "lib/contexts/organizers/data/clubs_repository.dart", `
     const _legacyCollectionPath = "clubs";
     watchWithLegacyProjection();
     import "organizer_projection_fallback.dart";
@@ -51,13 +51,13 @@ test("organizer nomenclature gate passes a canonical fixture", () => {
     currentPhase: "retire_legacy",
   }));
   for (const [file, markers] of new Map([
-    ["lib/clubs/data/clubs_repository.dart", [
+    ["lib/contexts/organizers/data/clubs_repository.dart", [
       "_collectionPath = 'organizers'", "createOrganizer",
       "startOrganizerConversation",
     ]],
-    ["lib/clubs/data/club_membership_repository.dart", ["organizerFollows"]],
-    ["lib/clubs/data/club_posts_repository.dart", ["createOrganizerPost"]],
-    ["lib/image_uploads/data/image_upload_repository.dart", ["organizers/"]],
+    ["lib/contexts/organizers/data/club_membership_repository.dart", ["organizerFollows"]],
+    ["lib/contexts/organizers/data/club_posts_repository.dart", ["createOrganizerPost"]],
+    ["lib/contexts/profiles/data/image_upload_repository.dart", ["organizers/"]],
     ["lib/routing/route_contract.dart", ["/host/organizer"]],
     ["website/src/firebase.ts", [
       "requestOrganizerClaim", "createPublicOrganizerReview",

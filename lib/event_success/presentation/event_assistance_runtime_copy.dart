@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_draft.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_sender.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_setting.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_configuration.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_draft.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_sender.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_runtime_setting.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 
 String runtimeRouteLabel(AppLocalizations l, AssistanceMessageRoute route) =>

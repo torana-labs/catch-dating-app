@@ -1,14 +1,14 @@
 // copy:allow-file(Widgetbook and capture-only deterministic fixture data)
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/runner_activity.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
-import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
-import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
-import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 /// Shared deterministic fixtures for Dashboard Home design review surfaces.
 ///

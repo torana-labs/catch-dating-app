@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -9,10 +9,7 @@ void main() {
       'organizerId': 'org',
       'items': <Object?>[],
       'nextCursor': null,
-      'versionScope': {
-        'activeVersionId': 'form_v3',
-        'publishedVersion': 3,
-      },
+      'versionScope': {'activeVersionId': 'form_v3', 'publishedVersion': 3},
     });
     expect(page.versionScope?.activeVersionId, 'form_v3');
     expect(page.versionScope?.publishedVersion, 3);
@@ -47,15 +44,17 @@ void main() {
       expect(request.copyWith(cursor: 'next').versionId, 'form_v2');
       expect(
         request,
-        isNot(const HostFormResponseListRequest(
-          organizerId: 'org',
-          formId: 'form',
-          versionId: 'form_v1',
-          answerFilters: {
-            'city': {'Mumbai', 'Delhi'},
-            'diet': {'vegetarian', 'vegan'},
-          },
-        )),
+        isNot(
+          const HostFormResponseListRequest(
+            organizerId: 'org',
+            formId: 'form',
+            versionId: 'form_v1',
+            answerFilters: {
+              'city': {'Mumbai', 'Delhi'},
+              'diet': {'vegetarian', 'vegan'},
+            },
+          ),
+        ),
       );
     },
   );

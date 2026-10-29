@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/event_success/domain/event_attendance_disposition.dart';
-import 'package:catch_dating_app/event_success/domain/event_attendance_report.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_attendance_disposition.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_attendance_report.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'event_attendance_report_fixtures.dart';

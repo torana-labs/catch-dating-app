@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/swipes/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_body.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -52,19 +52,17 @@ void main() {
     );
   }, tags: const ['golden']);
 
-  testWidgets(
-    'profile redesign missing photos dynamic type (light + dark)',
-    (tester) async {
-      await matchCatchGolden(
-        tester,
-        'profile_redesign_missing_photos_dynamic_type',
-        size: const Size(390, 1960),
-        textScale: 1.3,
-        builder: (context) => ProfileBody(data: _missingPhotoProfileView()),
-      );
-    },
-    tags: const ['golden'],
-  );
+  testWidgets('profile redesign missing photos dynamic type (light + dark)', (
+    tester,
+  ) async {
+    await matchCatchGolden(
+      tester,
+      'profile_redesign_missing_photos_dynamic_type',
+      size: const Size(390, 1960),
+      textScale: 1.3,
+      builder: (context) => ProfileBody(data: _missingPhotoProfileView()),
+    );
+  }, tags: const ['golden']);
 }
 
 ProfileReactionTarget _target(

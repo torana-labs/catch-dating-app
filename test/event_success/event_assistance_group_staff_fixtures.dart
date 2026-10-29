@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff_change.dart';
 
 final staffGroup = EventAssistanceGroupScope(
   organizerId: 'org-1',
