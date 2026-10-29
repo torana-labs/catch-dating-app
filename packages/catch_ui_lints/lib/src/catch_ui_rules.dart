@@ -652,15 +652,19 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     return !path.contains('/lib/design_fixtures/');
   }
 
-  // Shared app UI lives in the platform layer, shared pages, context parts
-  // and the app shells; feature screens live in presentation folders.
+  // Shared app UI lives in context parts, shared pages, the platform media
+  // and dialog helpers and the app shells; feature screens live in
+  // presentation folders. The celebration page predates the scan (it was
+  // lib/core/celebration) and joins it when it is redrawn.
   bool _isUiSystemScannerPath(String path) {
     if (!_isSizingScannerPath(path)) return false;
     return path.contains('/packages/catch_ui/lib/src/') ||
-        path.contains('/lib/platform/') ||
-        path.contains('/lib/pages/') ||
-        path.contains('/lib/routing/shell/') ||
         RegExp(r'/lib/contexts/[^/]+/parts/').hasMatch(path) ||
+        (path.contains('/lib/pages/') &&
+            !path.contains('/lib/pages/celebration/')) ||
+        path.contains('/lib/platform/media/') ||
+        path.contains('/lib/platform/dialogs/') ||
+        path.contains('/lib/routing/shell/') ||
         path.contains('/presentation/');
   }
 
