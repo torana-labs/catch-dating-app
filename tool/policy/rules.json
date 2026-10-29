@@ -1444,10 +1444,11 @@
       },
       "applies_to": [
         "lib/**",
+        "apps/*/lib/**",
         "tool/architecture/check_dependency_direction.mjs",
         "tool/architecture/dependency_direction_baseline.json"
       ],
-      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and the existing direct imports are ratcheted debt in tool/architecture/dependency_direction_baseline.json \u2014 new domain code must not add them. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals \u2014 when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead.",
+      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and the existing direct imports are ratcheted debt in tool/architecture/dependency_direction_baseline.json \u2014 new domain code must not add them. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals \u2014 when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead. The same rules apply by placement to the bounded-context roots: lib/contexts/<context>/domain/** and lib/kernel/** are domain, lib/contexts/<context>/data/** is data, actions/ are controllers, parts/ stay provider-free, and lib/pages/** and apps/<app>/lib/<destination>/** are screens; findings under these roots are never baselined.",
       "sunset_when": [
         "The dependency-direction baseline is empty and adopted architecture boundary checks cover aligned features"
       ],
@@ -3479,6 +3480,6 @@
       ]
     }
   },
-  "version": "2.14.0",
+  "version": "2.14.1",
   "updated": "2026-10-29"
 }

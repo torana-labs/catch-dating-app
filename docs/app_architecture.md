@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.88.0
+version: 1.89.0
 updated: 2026-10-29
 owner: app_architecture
 status: active
@@ -337,7 +337,9 @@ lib/contexts/bookings/
 A context needs only the folders it uses. Screen-shaped code (screens, view
 models, typed screen state and multi-step flow controllers) lives in an app or
 in `lib/pages/`, never in a context. A `parts/` widget takes values, domain
-models and callbacks; it does not watch providers.
+models and callbacks; it does not watch providers (checked:
+`partsProviderCoupling`, a hard gate). `actions/` files are controllers: they
+may read repositories and platform plugins.
 
 ### Rules
 
@@ -396,12 +398,17 @@ This contract and `audit:context-map`.
 
 #### Phase 2: teach path-keyed checks the new roots
 
-`audit:dependency-direction` matches `lib/<feature>/<layer>/` and would stop
-checking moved domain and data code; it must also match
-`lib/contexts/<context>/<layer>/`. Its screen rules (state files, widgets
-reading repositories) scan only `lib/`, so they must also scan
-`apps/<app>/lib/` before the first screen lands there. Tools that name
-specific files update in the PR that moves those files.
+`audit:dependency-direction` places each file by layer rather than matching
+`lib/<feature>/<layer>/`, so its rules keep applying after a move. Context
+`domain/` and `data/` folders and `lib/kernel/` get the domain and data rules,
+`actions/` the controller exemptions, `parts/` the provider-free rule, and
+`lib/pages/` and `apps/<app>/lib/<destination>/` the screen rules. Findings
+under these roots can never be baselined, so moved code arrives clean.
+
+The other screen checks still read only `lib/`, and the app packages don't
+load the Catch UI or Riverpod analyzer plugins. Closing that gap is a
+prerequisite for phase 4, not for phase 3. Tools that name specific files
+update in the PR that moves those files.
 
 #### Phase 3: move domain and data
 
@@ -593,7 +600,9 @@ core -> lower-level platform/framework APIs and explicit feature-neutral types
 Hard rules:
 
 - `domain` must not import Flutter, Riverpod, Firebase, platform plugins, or
-  feature presentation files.
+  feature presentation files. The layer rules apply by placement: context
+  `domain/` folders and `lib/kernel/` are domain, context `data/` folders are
+  data, and `lib/pages/` and `apps/<app>/lib/<destination>/` are screens.
 - `data` must not import feature presentation files.
 - `presentation/widgets/**` must not call repository methods or watch
   repository providers directly.
