@@ -45,26 +45,6 @@ export function loadFirebaseAdmin() {
   return requireFromFunctions("firebase-admin");
 }
 
-export function resolveProjectId({env, project}) {
-  if (project) return project;
-  const firebaserc = JSON.parse(
-    fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8")
-  );
-  if (env) {
-    const resolved = firebaserc.projects?.[env];
-    if (!resolved) throw new Error(`No Firebase project alias found for env: ${env}`);
-    return resolved;
-  }
-  return firebaserc.projects?.dev ?? "catchdates-dev";
-}
-
-export function isProductionTarget({env, projectId}) {
-  const firebaserc = JSON.parse(
-    fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8")
-  );
-  return env === "prod" || projectId === firebaserc.projects?.prod;
-}
-
 export function normalizePhone(raw) {
   const value = String(raw ?? "").replace(/\s+/g, "").trim();
   if (!/^\+[1-9]\d{7,14}$/.test(value)) {

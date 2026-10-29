@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import fs from "node:fs";
 import path from "node:path";
 import {createRequire} from "node:module";
 import {isDeepStrictEqual} from "node:util";
@@ -9,6 +8,7 @@ import {
   assertValidSchemaPayload,
   validatePublicProfileDocument,
 } from "../contracts/generated/schema_contract_validators.mjs";
+import {isFirebaseProductionTarget, resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
@@ -32,8 +32,8 @@ export async function main(argv = process.argv.slice(2)) {
     return;
   }
 
-  const projectId = resolveProjectId(args);
-  if (args.apply && isProductionTarget(args, projectId) && !args.allowProd) {
+  const projectId = resolveFirebaseProjectId({env: args.env, project: args.project, defaultEnv: null});
+  if (args.apply && isFirebaseProductionTarget({env: args.env, projectId}) && !args.allowProd) {
     throw new Error(
       "Refusing to repair prod without --allow-prod. " +
       "Run a dry run first, then rerun with --apply --allow-prod."
@@ -221,32 +221,6 @@ function loadProfileReadiness() {
       `Original error: ${error.message}`
     );
   }
-}
-
-function resolveProjectId(parsed) {
-  if (parsed.project) return parsed.project;
-  if (parsed.env) {
-    const firebaserc = readFirebaseRc();
-    const project = firebaserc.projects?.[parsed.env];
-    if (!project) {
-      throw new Error(`No Firebase project alias found for env: ${parsed.env}`);
-    }
-    return project;
-  }
-  return process.env.GCLOUD_PROJECT ||
-    process.env.GOOGLE_CLOUD_PROJECT ||
-    "catchdates-dev";
-}
-
-function isProductionTarget(parsed, projectId) {
-  const firebaserc = readFirebaseRc();
-  return parsed.env === "prod" || projectId === firebaserc.projects?.prod;
-}
-
-function readFirebaseRc() {
-  return JSON.parse(
-    fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8")
-  );
 }
 
 function schemaSerializableFirestoreData(value) {

@@ -21,18 +21,17 @@ import {
   buildUnreadMessagePlan,
   buildValidateDemoStateReport,
   demoOperationId,
-  isProductionTarget,
   listScenarioConfigs,
   loadGoldenAccounts,
   loadScenarioConfig,
   loadFirebaseAdmin,
   normalizePhone,
   resolveUserByPhone,
-  resolveProjectId,
   splitCsv,
   timestampFromDate,
   writeManifest,
 } from "./demo_ops_core.mjs";
+import {isFirebaseProductionTarget, resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 import {
   applyEventAggregateRepairPlan,
   buildEventAggregateRepairPlan,
@@ -127,7 +126,7 @@ export async function main(argv = process.argv.slice(2)) {
   if (args.emulatorHost) {
     process.env.FIRESTORE_EMULATOR_HOST = args.emulatorHost;
   }
-  const projectId = resolveProjectId(args);
+  const projectId = resolveFirebaseProjectId({env: args.env, project: args.project});
   guardProdWrite({args, projectId});
   admin.initializeApp({projectId});
   const db = admin.firestore();
@@ -1417,7 +1416,7 @@ function phonesFromArgs(args) {
 }
 
 function guardProdWrite({args, projectId}) {
-  if (args.apply && isProductionTarget({env: args.env, projectId}) && !args.allowProd) {
+  if (args.apply && isFirebaseProductionTarget({env: args.env, projectId}) && !args.allowProd) {
     throw new Error("Refusing to write to prod without --allow-prod.");
   }
 }

@@ -51,6 +51,7 @@ import {
   validateUserProfileDocument,
 } from "../contracts/generated/schema_contract_validators.mjs";
 import {marketForIdOrAlias} from "../lib/location_markets.mjs";
+import {isFirebaseProductionTarget, resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
@@ -494,8 +495,8 @@ export async function main(argv = process.argv.slice(2)) {
     args.cities
   );
 
-  const projectId = resolveProjectId(args);
-  const isProdTarget = isProductionTarget(args, projectId);
+  const projectId = resolveFirebaseProjectId({env: args.env, project: args.project});
+  const isProdTarget = isFirebaseProductionTarget({env: args.env, projectId});
   if (args.apply && isProdTarget && !args.allowProd) {
     throw new Error(
       "Refusing to write to prod without --allow-prod. Rerun only if this is intentional."
@@ -709,22 +710,6 @@ function requireValue(argv, index, flag) {
 
 function splitCsv(value) {
   return value.split(",").map((item) => item.trim()).filter(Boolean);
-}
-
-function resolveProjectId(parsed) {
-  if (parsed.project) return parsed.project;
-  const firebaserc = JSON.parse(fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8"));
-  if (parsed.env) {
-    const project = firebaserc.projects?.[parsed.env];
-    if (!project) throw new Error(`No Firebase project alias found for env: ${parsed.env}`);
-    return project;
-  }
-  return firebaserc.projects?.dev ?? "catchdates-dev";
-}
-
-function isProductionTarget(parsed, projectId) {
-  const firebaserc = JSON.parse(fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8"));
-  return parsed.env === "prod" || projectId === firebaserc.projects?.prod;
 }
 
 function loadAnchorSpecs(parsed) {

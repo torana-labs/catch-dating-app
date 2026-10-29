@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import fs from "node:fs";
 import path from "node:path";
 import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
+import {resolveFirebaseProjectId} from "../lib/firebase_project.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
@@ -21,7 +21,7 @@ if (args.emulatorHost) {
   process.env.FIRESTORE_EMULATOR_HOST = args.emulatorHost;
 }
 
-const projectId = resolveProjectId(args);
+const projectId = resolveFirebaseProjectId({env: args.env, project: args.project, defaultEnv: null});
 admin.initializeApp({projectId});
 const db = admin.firestore();
 
@@ -99,23 +99,6 @@ function requireValue(argv, index, flag) {
     throw new Error(`${flag} requires a value.`);
   }
   return value;
-}
-
-function resolveProjectId(parsed) {
-  if (parsed.project) return parsed.project;
-  if (parsed.env) {
-    const firebaserc = JSON.parse(
-      fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8")
-    );
-    const project = firebaserc.projects?.[parsed.env];
-    if (!project) {
-      throw new Error(`No Firebase project alias found for env: ${parsed.env}`);
-    }
-    return project;
-  }
-  return process.env.GCLOUD_PROJECT ||
-    process.env.GOOGLE_CLOUD_PROJECT ||
-    "catchdates-dev";
 }
 
 function printHelp() {
