@@ -160,8 +160,10 @@ platform :ios do
         # 2.241 rejects. Its older name, app-store, overrides it and Xcode still
         # accepts it.
         export_method: "app-store",
+        # gym passes xcargs to both the archive and the export, and adds
+        # export_xcargs to the export again; xcodebuild rejects repeated
+        # -authenticationKey* options, so the key goes in xcargs only.
         xcargs: auth,
-        export_xcargs: auth,
         skip_profile_detection: true,
         silent: true
       )
