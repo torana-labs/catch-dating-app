@@ -5,6 +5,16 @@ const retiredDestinations: Readonly<Record<string, string>> = {
   stack: "/host/#existing-tools", directory: "/organizers/", claim: "/claim/", preview: "/host/",
 };
 
+/**
+ * The organiser directory became Explore's organisers view (CAT-261). Its
+ * query comes along unchanged, so search, city and attribution survive.
+ */
+export function organizerDirectoryDestination(query: URLSearchParams): string {
+  const destination = new URLSearchParams(query);
+  destination.set("show", "organisers");
+  return `/explore/?${destination}`;
+}
+
 export function retiredMarketingDestination(location: {pathname: string; search: string; hash: string}): string | null {
   // Hosting implementations can append the original query after a redirect's
   // fragment. Restore it before analytics and section scrolling on Host only.
@@ -22,6 +32,9 @@ export function retiredMarketingDestination(location: {pathname: string; search:
   }
   if (location.pathname === "/" && ["#waitlist", "#events", "#formats", "#members", "#hosts", "#trust", "#download-app"].includes(location.hash)) {
     destination = `/explore/${location.hash}`;
+  }
+  if (/^\/organizers\/?$/.test(location.pathname)) {
+    return `${organizerDirectoryDestination(new URLSearchParams(location.search))}${location.hash}`;
   }
   if (!destination) return null;
   const [pathname, hash] = destination.split("#");

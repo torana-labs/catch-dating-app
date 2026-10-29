@@ -481,10 +481,3 @@
 .empty-results p {
   color: var(--website-copy-muted);
 }
-
-.listing-hero__eyebrow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--catch-space-micro10);
-  align-items: center;
-}

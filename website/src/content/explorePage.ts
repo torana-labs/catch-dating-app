@@ -1,0 +1,30 @@
+// Copy for the Website v2 Explore page and its city pages (CAT-261): plans and
+// organisers in one place, from the city's cityPlans read model.
+export const explorePageCopy = {
+  eyebrow: "Explore {city}",
+  title: "What’s on in {city}",
+  lead: "Plans for the next two weeks, and the hosts who run them.",
+  soonTitle: "Catch is coming to {city}",
+  soonLead: "Hosts here are setting up their first plans. Here’s who’s joining, and what’s on in {liveCity} meanwhile.",
+  search: {label: "Search plans and organisers", placeholder: "A plan, an organiser or a place", clear: "Clear {query}", close: "Close search"},
+  view: {label: "Show", plans: "Plans", organisers: "Organisers"},
+  when: {label: "When", any: "Next two weeks", today: "Today", weekend: "This weekend", week: "Next 7 days"},
+  formats: {label: "Format", everything: "Everything"},
+  planCount: "{count} plans",
+  planCountOne: "1 plan",
+  organiserCount: "{count} organisers",
+  organiserCountOne: "1 organiser",
+  noPlans: "No plans match these filters.",
+  noPlansBody: "Try another date or format, or clear the search.",
+  noOrganisers: "No organisers match this search.",
+  noOrganisersBody: "Try another name, or see every organiser in {city}.",
+  clear: "Clear filters",
+  unavailable: "We couldn’t load plans right now.",
+  unavailableBody: "Please try again in a moment. Your filters are kept.",
+  liveCityAction: "See what’s on in {city}",
+  meta: {
+    title: "What’s on in {city} | Catch",
+    description: "Runs, dinners, games and nights out in {city} over the next two weeks, and the hosts who run them.",
+    twitterDescription: "What’s on in {city}: hosted plans on Catch.",
+  },
+} as const;

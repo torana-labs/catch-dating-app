@@ -1,5 +1,4 @@
 "use client";
-import {exploreRouteStateForSearch, exploreDiscoveryHref} from "../../features/home/exploreDiscovery";
 import type {HomeCatalog} from "../../features/home/homeTypes";
 import {publicJsonLd} from "../../shared/next/publicJsonLd";
 import dynamic from "next/dynamic";
@@ -19,10 +18,9 @@ import type {PublicContact} from "../../content/publicContact";
 import {MarketingConsentBanner} from "../../features/marketing/MarketingConsentBanner";
 import {claimRouteStateForLocation, claimUrlStateForListing} from "../../features/claims/claimRouting";
 const Home = dynamic(() => import("../../features/home/HomePage").then(m => m.HomePage));
-const Explore = dynamic(() => import("../../features/home/HomePage").then(m => m.VisitorDiscoveryPage));
+const Explore = dynamic(() => import("../../features/home/ExplorePage").then(m => m.ExplorePage));
 const Host = dynamic(() => import("../../features/host/HostPage").then(m => m.HostPage));
 const Apply = dynamic(() => import("../../features/host/HostApplicationPage").then(m => m.HostApplicationPage));
-const Directory = dynamic(() => import("../../features/organizers/OrganizerSearchPage").then(m => m.OrganizerSearchPage));
 const Listing = dynamic(() => import("../../features/organizers/HostListingPage").then(m => m.HostListingPage));
 const Event = dynamic(() => import("../../features/events/EventDetailPage").then(m => m.EventDetailPage));
 const Claim = dynamic(() => import("../../features/claims/ClaimPage").then(m => m.ClaimPage));
@@ -34,7 +32,6 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   const {listings, readAt: currentReadAt, organizerPage} = usePublicHostListings();
   const eventRoute = useEventPage();
   const navigate = useNavigate();
-  const exploreRouteState = exploreRouteStateForSearch(location.search);
   useEffect(() => {
     const destination = retiredMarketingDestination(location);
     if (destination) window.location.replace(destination);
@@ -45,10 +42,9 @@ export function PublicPage({page, readAt, contact, home}: {page: PageKey; readAt
   let content;
   let structured: unknown = null;
   if (page === "home") content = home ? <Home catalog={home} /> : <Missing />;
-  else if (page === "visitor_discovery") content = <Explore captures={captures} routeState={exploreRouteState} onFiltersChange={filters => navigate(exploreDiscoveryHref(filters))} />;
+  else if (page === "visitor_discovery") content = home ? <Explore catalog={home} /> : <Missing />;
   else if (page === "host") content = location.pathname.replace(/\/$/, "") === "/host/apply"
     ? <Apply /> : <Host captures={captures} />;
-  else if (page === "organizers") content = <Directory />;
   else if (page === "listing") {
     const listing = getHostListingRouteForPath(location.pathname, listings)?.listing;
     if (listing) structured = {"@context": "https://schema.org", "@type": "Organization",

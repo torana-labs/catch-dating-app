@@ -24,7 +24,7 @@ describe("homepage", {timeout: 20_000}, () => {
     expect(quiz.textContent).toContain("Games and quizzes · Thu 7:30 PM");
     expect(quiz.textContent).toContain("6 left");
     expect(main.getByText("Hosted plans across Bandra, Khar, Andheri and Worli.")).toBeTruthy();
-    expect(main.getByRole("link", {name: "See everything in Mumbai"}).getAttribute("href")).toBe("/explore/?city=mumbai");
+    expect(main.getByRole("link", {name: "See everything in Mumbai"}).getAttribute("href")).toBe("/mumbai/");
   });
 
   it("filters the week by format from the tiles and the chips, and says when a format has none", () => {
@@ -107,7 +107,7 @@ describe("homepage", {timeout: 20_000}, () => {
   it("lists every city in the footer, the ones not open marked soon", () => {
     render(<HomePage catalog={mumbaiLiveCatalog} />);
     const footer = within(screen.getByRole("contentinfo"));
-    expect(footer.getByRole("link", {name: "Mumbai"}).getAttribute("href")).toBe("/?city=mumbai");
-    expect(footer.getByRole("link", {name: "Pune · soon"}).getAttribute("href")).toBe("/?city=pune");
+    expect(footer.getByRole("link", {name: "Mumbai"}).getAttribute("href")).toBe("/mumbai/");
+    expect(footer.getByRole("link", {name: "Pune · soon"}).getAttribute("href")).toBe("/pune/");
   });
 });
