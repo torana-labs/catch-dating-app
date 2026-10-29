@@ -908,7 +908,9 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.ok(toolJob);
   assert.match(toolJob, /marketing_checks_in_react: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   const marketingJob = ci.match(/\n  marketing:\n([\s\S]*?)\n  operations:/u)?.[1];
-  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.plan\.outputs\.marketing == 'true' \}\}/u);
+  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.plan\.outputs\.marketing == 'true' && !needs\.plan\.outputs\.queue_verified_run \}\}/u);
+  // Tools reads Marketing's same-run results, so both skip under the same queue proof.
+  assert.match(toolJob, /!needs\.plan\.outputs\.queue_verified_run/u);
   assert.match(marketingJob, /uses: \.\/\.github\/workflows\/react-surface-validation.yml/u);
   assert.match(marketingJob, /surface: marketing/u);
   assert.doesNotMatch(marketingJob, /skip_deployable_build:/u);
@@ -1658,7 +1660,7 @@ test("Tools check shells independently request capture and inventory producer pr
 });
 
 
-test("main reuses a successful merge-queue run of the exact source for pure-validation lanes only", (t) => {
+test("main reuses a successful merge-queue run of the exact source for every validation lane", (t) => {
   const ci = workflow("ci.yml");
   const plan = ci.slice(ci.indexOf("\n  plan:\n"), ci.indexOf("\n  source-preflight:\n"));
   assert.match(plan, /queue_verified_run: \$\{\{ steps\.queue\.outputs\.run_id \}\}/u);
@@ -1666,13 +1668,13 @@ test("main reuses a successful merge-queue run of the exact source for pure-vali
   assert.ok(lookup?.run, "missing merge-queue lookup step");
   assert.match(lookup.if, /github\.event_name == 'push'/u);
   const job = (id) => ci.slice(ci.indexOf(`\n  ${id}:\n`) + 1).split(/\n  [a-z-]+:\n/u)[0];
-  for (const id of ["flutter", "visual-integration", "tools", "admin", "operations", "docs-policy"]) {
+  for (const id of ["source-preflight", "flutter", "visual-integration", "tools", "admin", "operations",
+    "docs-policy", "functions", "firestore-rules", "contracts", "marketing", "capture-freshness", "app-builds"]) {
     assert.match(job(id), /!needs\.plan\.outputs\.queue_verified_run/u, `${id} skips when the queue proved main`);
   }
-  for (const id of ["functions", "firestore-rules", "contracts", "marketing", "capture-freshness",
-    "app-builds", "finalize-plan", "package-firebase", "required"]) {
+  for (const id of ["finalize-plan", "package-firebase", "required"]) {
     assert.doesNotMatch(job(id).split("\n    steps:")[0], /queue_verified_run/u,
-      `${id} produces or checks delivery evidence and always runs`);
+      `${id} plans, packages or checks delivery and always runs`);
   }
   // Execute the actual lookup against a fake GitHub API.
   const step = extractSteps(ci).find((entry) => entry.name === "Find the merge-queue validation of this exact source");

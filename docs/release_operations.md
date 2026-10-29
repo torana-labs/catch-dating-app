@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.18.0
+version: 2.19.0
 updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
@@ -266,12 +266,14 @@ required check permanently pending. Required CI has no mandatory human backend
 source-review job. The merge queue reruns it on the exact combined source of
 each group before `main` moves, so a pull request result never needs to stay
 current with `main`. A `main` push whose exact commit already passed a
-successful merge-queue run reuses that proof for pure-validation lanes (Flutter,
-visual integration, Tools, docs and policy, Admin and Operations). Jobs that
-produce or prove delivery evidence (Functions, Rules, contracts, app builds,
-Marketing and captures, the finalizer and Firebase packaging) still run, and
-the finalizer records the reused run ID. Without a successful queue run of the
-same commit, `main` runs every selected lane.
+successful merge-queue run re-runs no validation lane, source preflight
+included: it only plans, finalizes, packages Firebase delivery and writes the
+delivery authority, and the finalizer records the reused run ID. Firebase
+packaging compiles Functions from that same commit, and Marketing Website reads
+the queue run's Marketing and capture evidence, validating its own source when
+the queue run selected neither. App builds then run in nightly validation and in
+Mobile Internal Release, which builds each released app. Without a successful
+queue run of the same commit, `main` runs every selected lane.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
