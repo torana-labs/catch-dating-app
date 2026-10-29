@@ -1,9 +1,11 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -56,12 +58,20 @@ class BookedEventsRepository {
         ? query.where('status', isEqualTo: statusNames.single)
         : query.where('status', whereIn: statusNames);
 
-    final idStream = query
-        .limit(ReadLimitPolicy.boundedWorkingSet)
-        .snapshots()
-        .map(
-          (snap) => snap.docs.map((doc) => doc.data().eventId).toSet().toList(),
-        );
+    final idStream = withBackendErrorStream(
+      () => query
+          .limit(ReadLimitPolicy.boundedWorkingSet)
+          .snapshots()
+          .map(
+            (snap) =>
+                snap.docs.map((doc) => doc.data().eventId).toSet().toList(),
+          ),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch participations by status',
+        resource: 'eventParticipations',
+      ),
+    );
 
     return _events.watchEventsForIdStream(
       idStream,
