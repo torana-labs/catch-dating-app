@@ -91,6 +91,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_defaul
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_help_section.dart';
+import 'package:catch_dating_app/events/data/booked_events_repository.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';

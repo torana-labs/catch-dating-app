@@ -7,7 +7,6 @@ import 'package:catch_dating_app/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_profile_requirements.dart';
-import 'package:catch_dating_app/events/domain/event_service.dart';
 import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
@@ -257,7 +256,7 @@ EventDetailBookingDockState eventDetailBookingDockStateFrom({
   final hasApprovedJoinRequest =
       availability.status == ViewerEventAvailabilityStatus.approvedToBook;
   final hasActiveWaitlistOffer = participation != null
-      ? EventService.participationStatus(
+      ? ParticipationStatusSnapshot.of(
           participation,
           now: now,
         ).isWaitlistOfferActive

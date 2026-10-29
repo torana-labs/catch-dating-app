@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_activity_pro
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
@@ -78,6 +79,33 @@ abstract class EventSuccessPlan with _$EventSuccessPlan {
       draft: draft,
       createdAt: now,
       updatedAt: now,
+    );
+  }
+
+  /// Builds an event's plan from the format settings chosen for it, sized to
+  /// the event's capacity.
+  factory EventSuccessPlan.fromDefaults(
+    EventSuccessDefaults defaults,
+    Event event, {
+    required DateTime now,
+  }) {
+    final targetAttendeeCount = math.max(1, event.capacityLimit);
+    final normalized = defaults.normalizedForFormat(
+      event.eventFormat,
+      targetAttendeeCount: targetAttendeeCount,
+    );
+    final attendeePrompt = normalized.attendeePrompt?.trim();
+    return EventSuccessPlan.fromDraft(
+      id: event.id,
+      eventId: event.id,
+      clubId: event.clubId,
+      layoutId: normalized.layoutId,
+      draft: normalized.toDraft(targetAttendeeCount: targetAttendeeCount),
+      createdAt: now,
+      updatedAt: now,
+      attendeePrompt: attendeePrompt == null || attendeePrompt.isEmpty
+          ? null
+          : attendeePrompt,
     );
   }
 

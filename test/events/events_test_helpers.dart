@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/events/data/booked_events_repository.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -490,14 +491,6 @@ class FakeEventRepository extends Fake implements EventRepository {
       Stream.value(clubEvents[clubId] ?? const []);
 
   @override
-  Stream<List<Event>> watchAttendedEvents({required String uid}) =>
-      Stream.value(attendedEvents[uid] ?? const []);
-
-  @override
-  Stream<List<Event>> watchSignedUpEvents({required String uid}) =>
-      Stream.value(signedUpEvents[uid] ?? const []);
-
-  @override
   Future<List<Event>> fetchUpcomingEventsForClubs(List<String> clubIds) async {
     recommendedClubIds = clubIds;
     return recommendedEvents;
@@ -935,6 +928,22 @@ class FakeSwipeCandidateRepository extends Fake
     lastEventId = eventId;
     return candidates;
   }
+}
+
+/// Serves a [FakeEventRepository]'s per-user booked and attended events.
+class FakeBookedEventsRepository extends Fake
+    implements BookedEventsRepository {
+  FakeBookedEventsRepository(this.events);
+
+  final FakeEventRepository events;
+
+  @override
+  Stream<List<Event>> watchAttendedEvents({required String uid}) =>
+      Stream.value(events.attendedEvents[uid] ?? const []);
+
+  @override
+  Stream<List<Event>> watchSignedUpEvents({required String uid}) =>
+      Stream.value(events.signedUpEvents[uid] ?? const []);
 }
 
 class FakeSavedEventRepository extends Fake implements SavedEventRepository {

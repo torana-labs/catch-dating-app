@@ -880,9 +880,11 @@ void main() {
         bookedCount: 30,
       );
 
-      final defaultsPlan = const EventSuccessDefaults(
-        enabled: true,
-      ).toPlanForEvent(event, now: DateTime(2026, 5, 23, 12));
+      final defaultsPlan = EventSuccessPlan.fromDefaults(
+        const EventSuccessDefaults(enabled: true),
+        event,
+        now: DateTime(2026, 5, 23, 12),
+      );
       final directPlan = EventSuccessPlan.defaultForEvent(
         event,
         now: DateTime(2026, 5, 23, 12),
