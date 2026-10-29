@@ -1564,6 +1564,33 @@
       }
     },
     {
+      "id": "architecture:context-move",
+      "category": "generator",
+      "path": "tool/architecture/move_to_contexts.mjs",
+      "command": "node tool/architecture/move_to_contexts.mjs --plan",
+      "safety": "local",
+      "status": "active",
+      "description": "Moves legacy domain/ and data/ files into lib/contexts/<context>/ as tool/architecture/context_map.json places them, rewrites every Dart directive and whole-path mention, writes each context's public API file, and proves a move commit is mechanical (--verify). --imports-only updates another branch after the move lands.",
+      "checks": [
+        "node --test tool/architecture/move_to_contexts.test.mjs",
+        "node --check tool/architecture/move_to_contexts.mjs"
+      ],
+      "role": "generator",
+      "rules": [
+        "CONTEXT-MAP-001"
+      ],
+      "impactPaths": [
+        "tool/architecture/move_to_contexts.mjs",
+        "tool/architecture/move_to_contexts.test.mjs",
+        "tool/architecture/check_context_map.mjs",
+        "tool/architecture/context_map.json"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": ["node"]
+      }
+    },
+    {
       "id": "audit:mutation-error-surfaces",
       "category": "audit",
       "path": "tool/architecture/check_mutation_error_surfaces.mjs",

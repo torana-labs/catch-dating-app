@@ -1515,6 +1515,11 @@
           "tool": "audit:context-map",
           "stage": "scanner-gate",
           "docAnchor": "docs/app_architecture.md#bounded-context-contract"
+        },
+        {
+          "tool": "architecture:context-move",
+          "stage": "manual",
+          "docAnchor": "docs/app_architecture.md#phase-3-move-domain-and-data"
         }
       ]
     },
