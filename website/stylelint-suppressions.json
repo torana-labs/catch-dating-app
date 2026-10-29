@@ -14,10 +14,10 @@
   },
   "src/styles/consumer-home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 191
+      "count": 72
     },
     "declaration-property-value-allowed-list": {
-      "count": 19
+      "count": 9
     },
     "media-feature-name-value-allowed-list": {
       "count": 3
@@ -58,7 +58,7 @@
   },
   "src/styles/home.css": {
     "declaration-property-unit-allowed-list": {
-      "count": 44
+      "count": 42
     },
     "declaration-property-value-allowed-list": {
       "count": 13

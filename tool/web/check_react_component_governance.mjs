@@ -1576,7 +1576,7 @@ const componentFamilies = [
       },
     ],
     createElementPattern: null,
-    guidance: "Use SectionHeader instead of rendering website section-heading shells directly.",
+    guidance: "The section-heading shell and SectionHeader are retired; build section headings from @catch/web-ui parts such as CatchText inside the section.",
   },
   {
     family: "website-action-group",

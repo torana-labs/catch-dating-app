@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {expectedRelease, sharedCacheSeconds, sharedCachePage, verifyDeployedWebsite} from "./deployedSmoke.mjs";
-import {consumerHomeCopy} from "../../src/content/consumerHome.ts";
+import {homePageCopy} from "../../src/content/homePage.ts";
 import {hostLandingCopy} from "../../src/content/hostLanding.ts";
 import {exploreCopy} from "../../src/content/explore.ts";
 import {organiserDirectoryCopy} from "../../src/content/organiserDirectory.ts";
@@ -12,7 +12,7 @@ function responder(base, change = () => {}) {
     const path = url.slice(base.length), live = base === "https://catchdates.com";
     const headers = {"x-catch-release": sourceSha, "cache-control": "private, no-store", ...(!live || path.startsWith("/f/") ? {"x-robots-tag": "noindex"} : {})};
     let body = "<h1>Content</h1>", status = path.includes("not-a-real") ? 404 : 200;
-    const titles = {"/": consumerHomeCopy.hero.title, "/host/": hostLandingCopy.hero.title, "/explore/": exploreCopy.title, "/organizers/": organiserDirectoryCopy.title};
+    const titles = {"/": homePageCopy.hero.title, "/host/": hostLandingCopy.hero.title, "/explore/": exploreCopy.title, "/organizers/": organiserDirectoryCopy.title};
     if (titles[path]) body = `<h1>${titles[path]}</h1>`;
     if (path === "/api/public-catalog") body = JSON.stringify({listings: [{path: "/organizers/mumbai/club/", catchEvents: [{id: "event"}]}]});
     if (path === "/robots.txt") body = live ? "User-agent: *\nAllow: /" : "User-agent: *\nDisallow: /";

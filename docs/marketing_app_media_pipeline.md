@@ -36,10 +36,10 @@ node tool/marketing/sync_website_media.mjs --check
 ## Website Contract
 
 Pages ask for a capture by slot id and never name an image path:
-`website/src/shared/media/MediaSlot.tsx` renders
-`CatchAppCaptureImage` (`@catch/web-ui`, the website's T4 component for a
-device-framed capture with its caption) for the record with that id. Pages
-receive the records as their `captures` prop.
+`website/src/shared/media/captureSlot.ts` resolves the record with that id to
+the props of `CatchAppCaptureImage` (`@catch/web-ui`, the website's T4
+component for a device-framed capture with its caption), which the page
+renders. Pages receive the records as their `captures` prop.
 
 `website/src/app/marketingCaptures.ts` bundles
 `website/public/assets/app-screenshots/manifest.json` at build time, so

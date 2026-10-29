@@ -39,25 +39,12 @@ h3 {
   padding: clamp(72px, 10vw, 112px) 0;
 }
 
-/* ------------------------------------------------------- section header */
-
-.section-heading {
-  width: 100%;
-  max-width: 780px;
-}
-
-.section-heading--wide {
-  max-width: 920px;
-}
-
-.section-heading .ui-label,
 .proof-section__copy .ui-label {
   display: inline-flex;
   align-items: center;
   gap: var(--catch-space-s3);
 }
 
-.section-heading .ui-label::before,
 .proof-section__copy .ui-label::before {
   width: var(--catch-space-s7);
   height: var(--catch-stroke-hairline);
@@ -65,7 +52,6 @@ h3 {
   content: "";
 }
 
-.section-heading h2,
 .proof-section__copy h2,
 .listing-section--split h2,
 .claim-band h2 {
@@ -75,7 +61,6 @@ h3 {
   text-wrap: balance;
 }
 
-.section-heading p,
 .proof-section__copy p,
 .listing-section--split p {
   max-width: 62ch;

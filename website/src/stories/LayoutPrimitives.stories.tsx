@@ -1,6 +1,5 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {useState} from "react";
-import {SectionHeader} from "../shared/site/SectionHeader";
 import {ActionGroup, Button, ButtonLink, ChoiceCard, ChoiceChip, ChoiceChipGrid, ContentGrid, StepRail, UiLabel, VerificationMethodGrid} from "../shared/ui/primitives";
 
 const meta = {
@@ -40,33 +39,6 @@ export const UiLabelShellStory: Story = {
         <h3>Claim packet ready</h3>
         <p>The same label primitive is used for route copy, field groups, and public proof rails.</p>
       </article>
-    </ContentGrid>
-  ),
-};
-
-export const SectionHeaderStory: Story = {
-  name: "Section header",
-  parameters: {
-    catchComponent: {
-      id: "shared_section_header",
-      routeIds: ["home", "host", "organizer_search", "organizer_listing_canonical", "organizer_listing_legacy"],
-      states: ["default", "wide", "h1"],
-    },
-  },
-  render: () => (
-    <ContentGrid variant="surface">
-      <SectionHeader
-        eyebrow="Organizer discovery"
-        title="Find source-backed organizers"
-        body="Shared section headers keep route sections aligned without duplicating heading markup."
-      />
-      <SectionHeader
-        eyebrow="Host launch"
-        title="Publish safer social events"
-        body="Wide headers give route-level sections a denser intro when the section owns more evidence."
-        headingLevel="h1"
-        wide
-      />
     </ContentGrid>
   ),
 };

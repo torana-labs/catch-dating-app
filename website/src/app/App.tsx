@@ -1,5 +1,7 @@
 import {exploreRouteStateForSearch, exploreDiscoveryHref} from "../features/home/exploreDiscovery";
-import {homeRouteStateForSearch} from "../features/home/homeDiscovery";
+import {activeMarket} from "@content/markets";
+import {cityPlansFromListings} from "../features/home/cityPlansFromListings";
+import {homeCatalogFromPlans, requestedHomeCity} from "../features/home/homeCatalog";
 import {retiredMarketingDestination} from "./retiredMarketingRoutes";
 import {salesDemoApiFromCallable} from "../features/salesDemo/salesDemoModel";
 import {invokeSalesDemoCallable} from "../firebase";
@@ -180,8 +182,12 @@ function CanonicalMarketingRouteShell() {
       : fallbackPage;
   const navigate = useNavigate();
   const exploreRouteState = exploreRouteStateForSearch(location.search);
-  const homeRouteState = homeRouteStateForSearch(location.search);
-  const homeRouteKey = `${homeRouteState.city}:${homeRouteState.category}`;
+  // The static build has no server, so the homepage builds its cities from the live catalog.
+  const homeCatalog = useMemo(() => {
+    const now = Date.now();
+    return homeCatalogFromPlans(activeMarket.cities, activeMarket.cities.map((city) =>
+      cityPlansFromListings(listings, city, activeMarket.cities, now)), requestedHomeCity(location.search), now);
+  }, [listings, location.search]);
   const routeKey = page === "sales_demo" || page === "event_assistance" || page === "event_offer" || page === "event_booking" ||
       page === "household_rsvp" ? page :
     `${location.pathname}${location.search}${location.hash}`;
@@ -214,7 +220,7 @@ function CanonicalMarketingRouteShell() {
             element={<VisitorDiscoveryPage captures={captures} routeState={exploreRouteState} onFiltersChange={filters => navigate(exploreDiscoveryHref(filters))} />} />
           <Route
             path={marketingRoutePaths.home}
-            element={<HomePage key={homeRouteKey} captures={captures} routeState={homeRouteState} />}
+            element={<HomePage catalog={homeCatalog} />}
           />
           <Route
             path={marketingRoutePaths.host}
