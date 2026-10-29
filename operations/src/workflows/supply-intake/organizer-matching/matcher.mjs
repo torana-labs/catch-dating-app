@@ -20,7 +20,7 @@ import {
 // match / ambiguous / none verdict. The verdict is advisory: it flags the
 // listing for the reviewer, never merges records and never blocks approval.
 //
-// Ported from tool/organizer_intake's source-mention resolver
+// Ported from the retired organizer-intake source-mention resolver
 // (source-mention-resolution-v1): the same weights for shared surface keys,
 // exact names and markets, and the same auto-attach, probable-duplicate and
 // human-review thresholds. Changes from the legacy scorecard, each because a
