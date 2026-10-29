@@ -3,6 +3,7 @@
   "owner": "app_architecture",
   "doc": "docs/app_architecture.md#bounded-context-contract",
   "description": "Bounded contexts of the Flutter app, in dependency order. A context may import only contexts declared before it. Legacy entries place today's folders until each moves under the target roots; the longest matching path prefix wins.",
+  "forbidLegacyContextFiles": true,
   "roots": {
     "contexts": "lib/contexts/",
     "pages": "lib/pages/",

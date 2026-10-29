@@ -1527,7 +1527,7 @@
       "command": "node tool/architecture/check_context_map.mjs",
       "safety": "local",
       "status": "active",
-      "description": "Places every handwritten lib Dart file in a bounded context or layer from tool/architecture/context_map.json and checks that layers and contexts import only downward, that new contexts cross through their public API file, that no new top-level folder goes undeclared, and that the architecture spec's context table matches the map.",
+      "description": "Places every handwritten lib Dart file in a bounded context or layer from tool/architecture/context_map.json and checks that layers and contexts import only downward, that new contexts cross through their public API file, that no new top-level folder goes undeclared, that no domain or data file returns to a legacy folder, and that the architecture spec's context table matches the map.",
       "checks": [
         "node --test tool/architecture/check_context_map.test.mjs",
         "node --check tool/architecture/check_context_map.mjs",
@@ -1548,7 +1548,8 @@
           "scanFile flags unmapped files and undeclared contexts",
           "scanContextMap ratchets legacy debt but never baselines new roots",
           "scanContextMap reports obsolete baseline allowances",
-          "checkSpecTable fails when the spec's context table drifts from the map"
+          "checkSpecTable fails when the spec's context table drifts from the map",
+          "legacyContextFileFinding keeps legacy folders to screens and barrels once forbidden"
         ]
       },
       "impactPaths": [
