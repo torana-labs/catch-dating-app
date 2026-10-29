@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:35abed979b74b5f0c735672105e5ffdf09cb4b7fd3a857f0f4f49c5c97cb177f",
-  "resolvedDigest": "sha256:24664a89d44e14765ab5bceb76ada4040e706af6cda78bf3ade3d8438a915d06",
+  "sourceDigest": "sha256:35293c827975e6575064672b082d22ac3a189229398c6e7f811c594f381adca1",
+  "resolvedDigest": "sha256:fed4e7bec88dc89c6940e710560678cac909cc5dd76cf3847f561e5f20c03ddf",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",

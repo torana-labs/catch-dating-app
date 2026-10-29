@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:d53a70ef5535bb95521a8031cda5c0eb7f84385b04314d9ebaf4c0a58372f134",
-  "resolvedDigest": "sha256:c56e7d5da4fa4159d75a8f25026d8017c007039225fa3088f50e288ba70e6b3f",
+  "resolvedDigest": "sha256:4f29980c9dc527ab0aeac3848ebd27faa4191cce98279429c90decf34feba462",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",

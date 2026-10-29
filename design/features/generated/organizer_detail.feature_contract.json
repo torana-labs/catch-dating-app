@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-10-19",
   "sourceDigest": "sha256:9394b74224b2769b388fea06049361fe75a179a3222d77a209c19fad57a4b21d",
-  "resolvedDigest": "sha256:80b0d159c38b08cc47ccabaab065b1da3b4984cb34f0efcaf13eda78867ef72e",
+  "resolvedDigest": "sha256:7aeb718dc7c523fa49e08ccb4ce0f58d16f9831e2a6edfde1be14dbdd67cf984",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
