@@ -71,8 +71,11 @@ evidence and scoped live approvals remain prerequisites for activation.
 
 These rows name current `src/index.ts` exports, including exports that remain
 dormant pending activation. Historical Function names belong in prose outside
-the inventory.
+the inventory. `node tool/audit/check_fn_readme_inventory.mjs --write` keeps the
+rows between the markers in step with `src/index.ts`: it drops removed exports
+and lists new ones under "Not yet described" for you to move and describe.
 
+<!-- fn-inventory:start (generated rows: node tool/audit/check_fn_readme_inventory.mjs --write) -->
 | Function | File | Purpose |
 |----------|------|---------|
 | `onHostContactSummaryChanged` / `onHostContactTraitsSummaryChanged` / `onHostContactChannelSummaryChanged` / `onHostContactVocabularySummaryChanged` / `onHostAudienceSummaryCoverageChanged` / `onHostFormSummaryChanged` / `onHostEventSummaryChanged` / `onHostGroupSummaryChanged` / `onHostResponseSummaryChanged` / `onHostApplicationSummaryChanged` / `onHostApplicationEvidenceSummaryChanged` / `onHostApplicationGrantSummaryChanged` / `onHostResponseConversionSummaryChanged` / `onHostResponseSourceLabelSummaryChanged` / `onHostResponseContactOriginChanged` | `src/hostReadModels/triggers.ts` | Current-source, organizer-scoped People/Forms/private Events/Groups/Responses read-model reconciliation; views are SDK-readable metadata, never mutation or permission authority. |
@@ -418,6 +421,7 @@ enter previews.
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |
 | `organizerWhatsappWebhook` | `src/organizers/organizerWhatsappWebhook.ts` | Verify Meta webhook signatures and project delivery or STOP events without retaining message content |
+<!-- fn-inventory:end -->
 
 ## Shared modules
 
