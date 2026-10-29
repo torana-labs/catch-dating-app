@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "zone": "catchdates.com",
+  "description": "Free-plan Cloudflare protection in front of catchdates.com. Search engines and link previews stay welcome; scripted bulk reading of organizer and event pages is challenged or slowed. Rules this tool owns start with the managed prefix; anything else in the zone is left alone.",
+  "managedPrefix": "catch-edge: ",
+  "dns": {
+    "proxied": ["catchdates.com", "www.catchdates.com"]
+  },
+  "settings": {
+    "ssl": "strict",
+    "always_use_https": "on",
+    "min_tls_version": "1.2",
+    "browser_check": "on"
+  },
+  "botManagement": {
+    "fight_mode": true,
+    "ai_bots_protection": "block",
+    "enable_js": true,
+    "is_robots_txt_managed": false
+  },
+  "rulesets": {
+    "http_request_firewall_custom": [
+      {
+        "description": "catch-edge: challenge scripted clients on organizer and event pages",
+        "action": "managed_challenge",
+        "expression": "(starts_with(http.request.uri.path, \"/organizers/\") or starts_with(http.request.uri.path, \"/events/\") or starts_with(http.request.uri.path, \"/explore\")) and not cf.client.bot and (http.user_agent eq \"\" or lower(http.user_agent) contains \"python\" or lower(http.user_agent) contains \"scrapy\" or lower(http.user_agent) contains \"curl\" or lower(http.user_agent) contains \"wget\" or lower(http.user_agent) contains \"go-http-client\" or lower(http.user_agent) contains \"headlesschrome\" or lower(http.user_agent) contains \"phantomjs\" or lower(http.user_agent) contains \"httpclient\" or lower(http.user_agent) contains \"axios\" or lower(http.user_agent) contains \"node-fetch\")"
+      }
+    ],
+    "http_ratelimit": [
+      {
+        "description": "catch-edge: slow bulk reading of organizer and event pages",
+        "action": "block",
+        "expression": "(http.request.uri.path contains \"/organizers/\" or http.request.uri.path contains \"/events/\" or http.request.uri.path contains \"/og/\")",
+        "ratelimit": {
+          "characteristics": ["cf.colo.id", "ip.src"],
+          "period": 10,
+          "requests_per_period": 40,
+          "mitigation_timeout": 10
+        }
+      }
+    ]
+  }
+}
