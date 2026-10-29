@@ -1,5 +1,5 @@
 import {cleanup, fireEvent, render, screen, within} from "@testing-library/react";
-import {afterEach, describe, expect, it, vi} from "vitest";
+import {afterEach, beforeAll, describe, expect, it, vi} from "vitest";
 import {
   bareEventPage,
   eventPageFixtureNow,
@@ -19,6 +19,13 @@ vi.mock("../../organizers/observeOrganizerProviders", () => ({observeOrganizerPr
 vi.mock("../../organizers/analytics", () => ({trackOrganizerAnalytics, observeOrganizerPageView}));
 vi.mock("../GuestEventEntry", () => ({GuestEventEntry: ({eventId}: {eventId: string}) => <p>{`Guest entry for ${eventId}`}</p>}));
 afterEach(() => {cleanup(); vi.clearAllMocks();});
+// jsdom runs no container queries, so the sticky aside's probe never measures a phone.
+beforeAll(() => {
+  globalThis.ResizeObserver ??= class {
+    observe() {}
+    disconnect() {}
+  } as unknown as typeof ResizeObserver;
+});
 
 const listing = hostListings[0];
 const view = (page: EventPageData, now = eventPageFixtureNow) => buildEventPageView(page, now);
@@ -92,8 +99,7 @@ describe("Event page sections", () => {
 describe("Event booking card", () => {
   const card = (page: EventPageData, now?: number) => {
     const onExternalClick = vi.fn();
-    render(<EventBookingCard catchEntry={<p>Guest entry</p>} externalAction={(button, note) => <>{button}<p>{note}</p></>}
-      onExternalClick={onExternalClick} view={view(page, now)} />);
+    render(<EventBookingCard catchEntry={<p>Guest entry</p>} onExternalClick={onExternalClick} view={view(page, now)} />);
     return onExternalClick;
   };
 
@@ -146,7 +152,8 @@ describe("EventDetailPage", () => {
     render(<EventDetailPage listing={listing} page={{...fullEventPage, item: {...fullEventPage.item,
       event: {...fullEventPage.item.event, startTime: "2099-11-22T00:15:00.000Z", endTime: "2099-11-22T03:00:00.000Z"}},
     } as EventPageData} />);
-    expect(screen.getByText("Guest entry for salt-air-15k-training")).toBeTruthy();
+    const booking = screen.getByRole("complementary", {name: "Booking"});
+    expect(within(booking).getByText("Guest entry for salt-air-15k-training")).toBeTruthy();
   });
 
   it("draws the server's map of the meeting point when maps are on", () => {

@@ -1,176 +1,171 @@
-import {CatchField} from "@catch/web-ui";
-import {useEffect, useState, type ReactNode} from "react";
-import {EventGuestActions, EventGuestDialog} from "../../shared/ui/primitives/eventDetail";
-import {guestEventAction} from "./guestEventAction";
-import {
-  Button,
-  ButtonLink,
-  FormStatus,
-  EventRegistrationForm,
-  EventRegistrationPrivacy,
-  ActionGroup,
-  CheckboxField,
-} from "../../shared/ui/primitives";
-import {guestEventCopy as copy, approvalNotificationCopy as notificationCopy} from "../../content/events";
-import {useGuestEventController} from "./useGuestEventController";
-import {PublicEventRegistration} from "./PublicEventRegistration";
-import type {GetEventViewerStateCallableResponse} from "../../shared/contracts/generated/getEventViewerStateCallableResponse";
-
-import {useApprovalNotificationsController} from "./useApprovalNotificationsController";
+import {CatchButton, CatchCheckboxInput, CatchField, CatchGap, CatchText} from "@catch/web-ui";
+import {useState} from "react";
+import {offerCodeSent} from "../../content/eventOffer";
+import {approvalNotificationCopy as notificationCopy, eventPageCopy, guestEventCopy as copy} from "../../content/events";
 import type {User} from "../../firebase";
+import {usePendingRequestNavigationBlocked} from "../../shared/pendingRequest";
+import {Form} from "../../shared/ui/primitives";
+import {guestEventAction, type GuestEventState} from "./guestEventAction";
+import {PublicEventRegistration} from "./PublicEventRegistration";
+import {useApprovalNotificationsController} from "./useApprovalNotificationsController";
+import {useGuestEventController} from "./useGuestEventController";
 
-type Guest = NonNullable<GetEventViewerStateCallableResponse["viewer"]["guest"]>;
-export function GuestEventEntry({eventId, invitation}: {
-  eventId: string; invitation?: {price: string; title: string};
-}) {
-  const controller = useGuestEventController(eventId);
-  const notifications = controller.user?.phoneNumber && controller.viewer?.guest?.applicationStatus ?
-    <ApprovalNotifications key={`${eventId}:${controller.user.uid}`} eventId={eventId} user={controller.user} /> : null;
-  return invitation ? <GuestInvitation eventId={eventId} controller={controller}
-    invitation={invitation} notifications={notifications} /> : <>
-    <GuestEventEntryView eventId={eventId} controller={controller} />{notifications}
-  </>;
+type Controller = ReturnType<typeof useGuestEventController>;
+type Flow = {uid: string; mode: "free" | "paid"};
+const noop = () => undefined;
+
+/**
+ * A Catch event's booking steps in the event page's booking card (CAT-252).
+ * The card sticks beside the page, or opens in a sheet on a phone, so each
+ * step takes the last one's place: the start, the guest's phone and code,
+ * the existing free registration or paid checkout, then their place. The
+ * server chooses admission; this only presents its answer.
+ */
+export function GuestEventEntry({eventId, startLabel}: {eventId: string; startLabel?: string}) {
+  return <GuestEventEntryView controller={useGuestEventController(eventId)} eventId={eventId} startLabel={startLabel} />;
 }
-function GuestInvitation({eventId, controller: c, invitation, notifications}: {
-  eventId: string; controller: ReturnType<typeof useGuestEventController>;
-  invitation: {price: string; title: string}; notifications: ReactNode;
+
+export function GuestEventEntryView({eventId, controller: c, startLabel}: {
+  eventId: string; controller: Controller;
+  /** The start action before the guest's state is known, such as "Book now". Without one the steps begin at once. */
+  startLabel?: string;
 }) {
-  const [open, setOpen] = useState(false);
-  const [visited, setVisited] = useState(false);
-  // A refresh may discover a held payment while checkout is open. Keep its
-  // transaction controller mounted until the guest leaves or changes identity.
-  const [flow, setFlow] = useState<{uid: string; mode: "free" | "paid"} | null>(null);
-  useEffect(() => {
-    if (flow && flow.uid !== c.user?.uid) setFlow(null);
-  }, [flow, c.user?.uid]);
-  const guest = c.viewer?.guest;
-  const action = !c.user?.phoneNumber ? {label: copy.signIn, status: copy.ready, href: undefined} :
-    guest && !c.error ? guestEventAction(guest, eventId) : {label: copy.refresh, status: copy.unavailable, href: undefined};
-  function beginRegistration() {
-    if (c.user && (guest?.action === "registerFree" || guest?.action === "bookPaid")) {
-      setFlow({uid: c.user.uid, mode: guest.action === "bookPaid" ? "paid" : "free"});
-    }
+  const [started, setStarted] = useState(startLabel === undefined);
+  const [flow, setFlow] = useState<Flow | null>(null);
+  const uid = c.user?.phoneNumber ? c.user.uid : null;
+  const guest = c.error ? null : c.viewer?.guest ?? null;
+  const mode = guest?.action === "registerFree" ? "free" : guest?.action === "bookPaid" ? "paid" : null;
+  // A status refresh can move a guest mid-checkout to recoverPayment, so the
+  // transaction stays mounted until the guest changes identity. A guest who
+  // started before signing in goes straight on once the server allows it.
+  if (flow && flow.uid !== uid) setFlow(null);
+  else if (!flow && started && uid && mode) setFlow({uid, mode});
+
+  if (c.loading) return <CatchButton fullWidth label={copy.loading} onPressed={null} />;
+  if (flow && flow.uid === uid) {
+    return <PublicEventRegistration eventId={eventId} key={`${eventId}:${flow.uid}`} mode={flow.mode} />;
   }
-  function show() {
-    setVisited(true); setOpen(true); beginRegistration();
+  if (!uid) {
+    return started || startLabel === undefined ? <PhoneStep c={c} /> :
+      <Start label={startLabel} note={copy.ready} onStart={() => setStarted(true)} />;
   }
-  return <>
-    <EventGuestActions price={invitation.price} status={c.loading ? copy.loading : action.status}>
-      {action.href && !c.loading ? <ButtonLink href={action.href}>{action.label}</ButtonLink> :
-        <Button disabled={c.loading} onClick={show}>{c.loading ? copy.loading : action.label}</Button>}
-    </EventGuestActions>
-    {c.user?.phoneNumber && (notifications || action.href || action.label !== copy.details) ? <Button variant="ghost" onClick={() => {setVisited(true); setOpen(true);}}>
-      {notifications ? copy.updates : copy.details}</Button> : null}
-    <EventGuestDialog open={open} title={invitation.title} closeLabel={copy.close}
-      onClose={() => {setOpen(false); setFlow(null); if (!c.pending) c.changePhone(); if (c.user?.phoneNumber) void c.refresh();}}>
-      {visited ? <>
-        {flow && flow.uid === c.user?.uid ? <PublicEventRegistration key={`${eventId}:${flow.uid}`}
-          eventId={eventId} mode={flow.mode} /> : <GuestEventEntryView eventId={eventId}
-          controller={c} onBeginRegistration={beginRegistration} />}
-        {notifications}
-      </> : null}
-    </EventGuestDialog>
-  </>;
+  const notifications = c.user && guest?.applicationStatus ?
+    <ApprovalNotifications eventId={eventId} key={`${eventId}:${uid}`} user={c.user} /> : null;
+  const next = guest && mode ? guestEventAction(guest, eventId) : null;
+  return (
+    <CatchGap size="section">
+      {!guest ? <CatchText as="p" color="ink2" role="status" variant="bodyM">{copy.unavailable}</CatchText> :
+        next && mode ? <Start label={next.label} note={next.status} onStart={() => setFlow({uid, mode})} /> :
+          <GuestStatus eventId={eventId} guest={guest} />}
+      {notifications}
+      <CatchGap direction="horizontal" size="inline" wrap>
+        <CatchButton label={copy.refresh} onPressed={() => void c.refresh()} size="sm" variant="quiet" />
+        <CatchButton label={copy.changeAccount} onPressed={() => void c.changeAccount()} size="sm" variant="quiet" />
+      </CatchGap>
+    </CatchGap>
+  );
 }
-export function GuestEventEntryView({eventId, controller: c, onBeginRegistration, invitation}: {
-  eventId: string; controller: ReturnType<typeof useGuestEventController>; onBeginRegistration?: () => void;
-  invitation?: {price: string; title: string};
-}) {
-  if (invitation) return <GuestInvitation eventId={eventId} controller={c} invitation={invitation} notifications={null} />;
-  if (c.loading) return <p role="status">{copy.loading}</p>;
-  if (!c.user?.phoneNumber) return <EventRegistrationForm onSubmit={c.submit}>
-    <CatchField
-      recipe="input"
-      id={`${c.recaptchaId}-phone`}
-      title={copy.phone}
-      autoComplete="tel"
-      value={c.phone}
-      inputMode={c.pending || c.codeSent ? "inactive" : "editable"}
-      onChanged={(value) => c.setPhone(value)}
-      keyboardType="phone"
-    />
-    {c.codeSent ? <CatchField
-      recipe="input"
-      id={`${c.recaptchaId}-code`}
-      title={copy.code}
-      autoComplete="one-time-code"
-      maxLength={6}
-      value={c.code}
-      onChanged={(value) => c.setCode(value.replace(/\D/gu, ""))}
-      keyboardType="number"
-    /> : null}
-    <div id={c.recaptchaId} />
-    <Button type="submit" loading={c.pending}>{c.codeSent ? copy.verify : copy.continue}</Button>
-    {c.codeSent ? <Button type="button" variant="ghost" disabled={c.pending}
-      onClick={c.changePhone}>{copy.changePhone}</Button> : null}
-    <FormStatus status={{message: c.message, tone: "is-error"}} />
-    <EventRegistrationPrivacy>{copy.privacy}</EventRegistrationPrivacy>
-  </EventRegistrationForm>;
-  const guest = c.viewer?.guest;
-  if (!guest || c.error) return <>
-    <p role="status">{copy.unavailable}</p>
-    <Button onClick={() => void c.refresh()}>{copy.refresh}</Button>
-    <Button variant="ghost" onClick={() => void c.changeAccount()}>{copy.changeAccount}</Button>
-  </>;
-  return <>
-    <GuestStatus guest={guest} eventId={eventId} onBeginRegistration={onBeginRegistration} />
-    <Button variant="ghost" onClick={() => void c.refresh()}>{copy.refresh}</Button>
-    <Button variant="ghost" onClick={() => void c.changeAccount()}>{copy.changeAccount}</Button>
-  </>;
+
+function Start({label, note, onStart}: {label: string; note: string; onStart: () => void}) {
+  return (
+    <CatchGap size="related">
+      <CatchButton fullWidth label={label} onPressed={onStart} />
+      <CatchText as="p" color="ink2" role="status" variant="bodyS">{note}</CatchText>
+    </CatchGap>
+  );
 }
-function GuestStatus({guest, eventId, onBeginRegistration}: {guest: Guest; eventId: string; onBeginRegistration?: () => void}) {
-  if (guest.action === "registerFree" || guest.action === "bookPaid") {
-    if (onBeginRegistration) return <Button onClick={onBeginRegistration}>{guestEventAction(guest, eventId).label}</Button>;
-    return <PublicEventRegistration eventId={eventId}
-      mode={guest.action === "bookPaid" ? "paid" : "free"} />;
-  }
-  return <>
-    <p role="status">{copy.status[guest.action]}</p>
-    <ActionGroup variant="flow">
-      {guest.action === "apply" && guest.publicFormId ?
-        <ButtonLink href={`/f/${encodeURIComponent(guest.publicFormId)}/`}>{copy.apply}</ButtonLink> : null}
-      {guest.action === "offer" && guest.offerGrantId ?
-        <ButtonLink href={`/offer/?grant=${encodeURIComponent(guest.offerGrantId)}`}>{copy.offer}</ButtonLink> : null}
-      {guest.offerPaymentId ? <ButtonLink href={`/offer/?payment=${encodeURIComponent(guest.offerPaymentId)}`}>
-        {copy.payment}</ButtonLink> : null}
-      {guest.publicPaymentId ? <ButtonLink href={`/booking/${encodeURIComponent(eventId)}/?payment=${encodeURIComponent(guest.publicPaymentId)}`}>
-        {copy.payment}</ButtonLink> : null}
-      {guest.action === "registered" && guest.runtimeId ?
-        <ButtonLink href={`/join/${encodeURIComponent(guest.runtimeId)}`}>{copy.runtime}</ButtonLink> : null}
-      {["unsupported", "unavailable", "awaitingOffer", "declined"].includes(guest.action) ?
-        <ButtonLink href="/help/" variant="ghost">{copy.help}</ButtonLink> : null}
-    </ActionGroup>
-  </>;
+
+function PhoneStep({c}: {c: Controller}) {
+  return (
+    <Form noValidate onSubmit={c.submit} pending={c.pending}>
+      <CatchGap size="related">
+        {c.codeSent ? (
+          <CatchField
+            autoComplete="one-time-code"
+            errorText={c.message || null}
+            helperText={offerCodeSent(c.phone)}
+            id={`${c.recaptchaId}-code`}
+            keyboardType="number"
+            maxLength={6}
+            onChanged={(value) => c.setCode(value.replace(/\D/gu, ""))}
+            recipe="input"
+            title={copy.code}
+            value={c.code}
+          />
+        ) : (
+          <CatchField
+            autoComplete="tel"
+            errorText={c.message || null}
+            helperText={eventPageCopy.booking.phoneNote}
+            id={`${c.recaptchaId}-phone`}
+            inputMode={c.pending ? "inactive" : "editable"}
+            keyboardType="phone"
+            onChanged={(value) => c.setPhone(value)}
+            recipe="input"
+            title={copy.phone}
+            value={c.phone}
+          />
+        )}
+        <div id={c.recaptchaId} />
+        <CatchButton fullWidth label={c.codeSent ? copy.verify : copy.continue} onPressed={noop}
+          status={c.pending ? "loading" : "idle"} type="submit" />
+        {c.codeSent ? <CatchButton fullWidth label={copy.changePhone} onPressed={c.pending ? null : c.changePhone}
+          variant="quiet" /> : null}
+        <CatchText as="p" color="ink2" variant="bodyS">{copy.privacy}</CatchText>
+      </CatchGap>
+    </Form>
+  );
+}
+
+/** A state the guest can't book from here: what it means, and where it goes next. */
+function GuestStatus({guest, eventId}: {guest: GuestEventState; eventId: string}) {
+  // Links hold while a booking request is in flight.
+  const go = usePendingRequestNavigationBlocked() ? null : noop;
+  const action = guestEventAction(guest, eventId);
+  const payment = guest.action === "recoverPayment" ? undefined :
+    guest.offerPaymentId ? `/offer/?payment=${encodeURIComponent(guest.offerPaymentId)}` :
+      guest.publicPaymentId ? `/booking/${encodeURIComponent(eventId)}/?payment=${encodeURIComponent(guest.publicPaymentId)}` :
+        undefined;
+  const help = ["unsupported", "unavailable", "awaitingOffer", "declined"].includes(guest.action);
+  return (
+    <CatchGap size="related">
+      <CatchText as="p" role="status" variant="bodyM">{action.status}</CatchText>
+      {action.href ? <CatchButton fullWidth href={action.href} label={action.label} onPressed={go} /> : null}
+      {payment ? <CatchButton fullWidth href={payment} label={copy.payment} onPressed={go} variant="secondary" /> : null}
+      {help ? <CatchButton fullWidth href="/help/" label={copy.help} onPressed={go} variant="secondary" /> : null}
+    </CatchGap>
+  );
 }
 
 function ApprovalNotifications({eventId, user}: {eventId: string; user: User}) {
   const c = useApprovalNotificationsController(eventId, user);
-  const copy = notificationCopy;
-  if (c.loading) return <p role="status">{copy.loading}</p>;
-  return <EventRegistrationForm onSubmit={c.save}>
-    <h3>{copy.title}</h3>
-    <p>{copy.explanation}</p>
-    {c.value && c.choices ? <>
-      {!c.value.available ? <p>{copy.unavailable}</p> : null}
-      <CheckboxField checked={c.choices.phoneUpdates}
-        disabled={c.pending || !c.value.phoneVerified && !c.choices.phoneUpdates}
-        onChange={(event) => c.choose("phoneUpdates", event.target.checked)}>{c.value.terms.phone}</CheckboxField>
-      <CheckboxField checked={c.choices.emailUpdates}
-        disabled={c.pending || !c.value.emailVerified && !c.choices.emailUpdates}
-        onChange={(event) => c.choose("emailUpdates", event.target.checked)}>{c.value.terms.email}</CheckboxField>
-      {!c.value.emailVerified ? <>
-        <p>{copy.verifyFirst}</p>
-        <CatchField recipe="input" id={`${c.id}-email`} title={copy.email} keyboardType="emailAddress"
-          autoComplete="email" value={c.email}
-          inputMode={c.pending ? "inactive" : user.email ? "readOnly" : "editable"}
-          onChanged={(value) => c.setEmail(value)} />
-        <Button type="button" disabled={c.pending || !c.email.trim()}
-          onClick={() => void c.verify()}>{copy.verify}</Button>
-      </> : null}
-      <Button type="submit" formNoValidate loading={c.pending}>{copy.save}</Button>
-    </> : null}
-    <Button type="button" variant="ghost" disabled={c.pending}
-      onClick={() => void c.refresh()}>{copy.refresh}</Button>
-    <FormStatus status={{message: c.message || (c.error ? copy.error : ""), tone: ""}} />
-  </EventRegistrationForm>;
+  if (c.loading) return <CatchText as="p" color="ink2" role="status" variant="bodyS">{notificationCopy.loading}</CatchText>;
+  return (
+    <Form noValidate onSubmit={c.save} pending={c.pending}>
+      <CatchGap size="related">
+        <CatchText as="h3" variant="titleS">{notificationCopy.title}</CatchText>
+        <CatchText as="p" color="ink2" variant="bodyS">{notificationCopy.explanation}</CatchText>
+        {c.value && c.choices ? <>
+          {!c.value.available ? <CatchText as="p" variant="bodyS">{notificationCopy.unavailable}</CatchText> : null}
+          <CatchCheckboxInput label={c.value.terms.phone} value={c.choices.phoneUpdates}
+            onChanged={c.pending || !c.value.phoneVerified && !c.choices.phoneUpdates ? null :
+              (value) => c.choose("phoneUpdates", value)} />
+          <CatchCheckboxInput label={c.value.terms.email} value={c.choices.emailUpdates}
+            onChanged={c.pending || !c.value.emailVerified && !c.choices.emailUpdates ? null :
+              (value) => c.choose("emailUpdates", value)} />
+          {!c.value.emailVerified ? <>
+            <CatchText as="p" color="ink2" variant="bodyS">{notificationCopy.verifyFirst}</CatchText>
+            <CatchField autoComplete="email" id={`${c.id}-email`} keyboardType="emailAddress"
+              inputMode={c.pending ? "inactive" : user.email ? "readOnly" : "editable"}
+              onChanged={(value) => c.setEmail(value)} recipe="input" title={notificationCopy.email} value={c.email} />
+            <CatchButton label={notificationCopy.verify} onPressed={c.pending || !c.email.trim() ? null : () => void c.verify()}
+              variant="secondary" />
+          </> : null}
+          <CatchButton label={notificationCopy.save} onPressed={noop} status={c.pending ? "loading" : "idle"} type="submit" />
+        </> : null}
+        <CatchButton label={notificationCopy.refresh} onPressed={c.pending ? null : () => void c.refresh()} variant="quiet" />
+        <CatchText as="p" color="ink2" role="status" variant="bodyS">{c.message || (c.error ? notificationCopy.error : "")}</CatchText>
+      </CatchGap>
+    </Form>
+  );
 }
