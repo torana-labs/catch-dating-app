@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_indicator.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_stepper.dart';

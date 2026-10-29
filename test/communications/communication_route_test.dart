@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/communications/domain/communication_route.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/communication_route.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

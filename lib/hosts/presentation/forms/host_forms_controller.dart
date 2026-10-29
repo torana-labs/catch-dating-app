@@ -1,29 +1,29 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/data/host_forms_repository.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_conversion.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_editor.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_export.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_logic.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_question.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_section.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_share.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
-import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_logic.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_question.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_section.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_share.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'host_forms_controller.g.dart';
 part 'host_form_target_controller.dart';
+part 'host_forms_controller.g.dart';
 part 'host_forms_directory_state.dart';
 
 typedef HostFormAccountDirectoryScope = ({

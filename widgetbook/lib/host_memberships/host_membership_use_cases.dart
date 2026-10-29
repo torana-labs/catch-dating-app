@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/host_memberships/data/host_membership_repository.dart';
 import 'package:catch_dating_app/host_memberships/domain/host_membership.dart';
 import 'package:catch_dating_app/host_memberships/domain/host_membership_plan.dart';

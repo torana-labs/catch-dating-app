@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/event_success_moment_presentations.g.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 
 /// Portable visual assets shared by the Flutter and guest-web runtimes.
 enum EventSuccessMotionAsset {

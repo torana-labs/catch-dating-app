@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/messaging/domain/foreground_notification.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
-import 'package:catch_dating_app/notifications/domain/foreground_notification.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

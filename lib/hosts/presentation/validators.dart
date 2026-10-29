@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 

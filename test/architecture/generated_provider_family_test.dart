@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
-import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
-import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
-import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
+import 'package:catch_dating_app/contexts/discovery/data/explore_recommendations_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_companion_clock.dart';
+import 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
+import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/core/presentation/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart'
     show AppShellSideNavigation;
-import 'package:catch_dating_app/core/presentation/adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';

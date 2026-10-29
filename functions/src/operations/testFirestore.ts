@@ -38,7 +38,8 @@ class FakeQuery {
     private readonly filters: Array<[string, string, unknown]> = [],
     private readonly cursor: unknown[] | null = null,
     private readonly pageLimit: number | null = null,
-    private readonly orders: Array<[string, "asc" | "desc"]> = []
+    private readonly orders: Array<[string, "asc" | "desc"]> = [],
+    private readonly projection: string[] | null = null
   ) {}
 
   where(field: string, operator: string, value: unknown): FakeQuery {
@@ -48,14 +49,16 @@ class FakeQuery {
       [...this.filters, [field, operator, value]],
       this.cursor,
       this.pageLimit,
-      this.orders
+      this.orders,
+      this.projection
     );
   }
 
   orderBy(field: unknown, direction: "asc" | "desc" = "asc"): FakeQuery {
     return new FakeQuery(this.firestore, this.collectionPath, this.filters,
       this.cursor, this.pageLimit, [...this.orders,
-        [typeof field === "string" ? field : "__name__", direction]]);
+        [typeof field === "string" ? field : "__name__", direction]],
+      this.projection);
   }
 
   startAfter(...cursor: unknown[]): FakeQuery {
@@ -65,7 +68,8 @@ class FakeQuery {
       this.filters,
       cursor,
       this.pageLimit,
-      this.orders
+      this.orders,
+      this.projection
     );
   }
 
@@ -76,7 +80,21 @@ class FakeQuery {
       this.filters,
       this.cursor,
       limit,
-      this.orders
+      this.orders,
+      this.projection
+    );
+  }
+
+  /** Like Firestore select(): documents carry only these field paths. */
+  select(...fields: string[]): FakeQuery {
+    return new FakeQuery(
+      this.firestore,
+      this.collectionPath,
+      this.filters,
+      this.cursor,
+      this.pageLimit,
+      this.orders,
+      fields
     );
   }
 
@@ -123,9 +141,34 @@ class FakeQuery {
       }))
       .sort((left, right) => compareTo(left,
         orders.map(([field]) => read(right, field))));
-    const page = this.pageLimit === null ? docs : docs.slice(0, this.pageLimit);
+    const limited = this.pageLimit === null ? docs :
+      docs.slice(0, this.pageLimit);
+    const page = this.projection === null ? limited :
+      limited.map((snapshot) =>
+        new FakeSnapshot(snapshot.id, project(snapshot.data() ?? {},
+          this.projection ?? [])));
     return {docs: page, size: page.length, empty: page.length === 0};
   }
+}
+
+function project(value: FakeData, fields: string[]): FakeData {
+  const projected: FakeData = {};
+  for (const field of fields) {
+    const parts = field.split(".");
+    let source: unknown = value;
+    for (const part of parts) {
+      source = source && typeof source === "object" ?
+        (source as FakeData)[part] : undefined;
+    }
+    if (source === undefined) continue;
+    let target = projected;
+    for (const part of parts.slice(0, -1)) {
+      target[part] = (target[part] as FakeData | undefined) ?? {};
+      target = target[part] as FakeData;
+    }
+    target[parts[parts.length - 1]] = source;
+  }
+  return projected;
 }
 
 function compare(left: unknown, right: unknown): number | null {

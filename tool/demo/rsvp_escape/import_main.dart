@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/contexts/audience/data/host_roster_file_parser.dart';
+import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
-import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_ui/catch_ui.dart';

@@ -11,18 +11,18 @@
 library;
 
 // ── Domain models ───────────────────────────────────────────────────────────
-export 'domain/club.dart';
-export 'domain/club_draft.dart';
-export 'domain/club_host_defaults.dart';
-export 'domain/club_membership.dart';
-export 'domain/club_membership_extensions.dart';
-export 'domain/update_club_patch.dart';
+export 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+export 'package:catch_dating_app/contexts/organizers/domain/club_draft.dart';
+export 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
+export 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+export 'package:catch_dating_app/contexts/organizers/domain/club_membership_extensions.dart';
+export 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.dart';
 
 // ── Data ────────────────────────────────────────────────────────────────────
-export 'data/club_callable_responses.dart';
-export 'data/club_draft_repository.dart';
-export 'data/club_membership_repository.dart';
-export 'data/clubs_repository.dart';
+export 'package:catch_dating_app/contexts/organizers/data/club_callable_responses.dart';
+export 'package:catch_dating_app/contexts/organizers/data/club_draft_repository.dart';
+export 'package:catch_dating_app/contexts/organizers/data/club_membership_repository.dart';
+export 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 
 // ── Presentation — screens ──────────────────────────────────────────────────
 export 'presentation/detail/club_detail_read_only_preview.dart'; // public-api: provider-backed read-only club detail composition for owner previews
@@ -47,5 +47,5 @@ export 'shared/club_placeholder_cover.dart';
 export 'shared/club_transition_tags.dart';
 
 // ── Presentation — value types & formatters ─────────────────────────────────
-export 'data/club_name_lookup.dart';
+export 'package:catch_dating_app/contexts/organizers/data/club_name_lookup.dart';
 export 'shared/club_action_keys.dart';

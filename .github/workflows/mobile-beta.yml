@@ -25,6 +25,12 @@ on:
 permissions:
   contents: read
 
+env:
+  # Apps with a Google Play app record. Play's API cannot create an app, and
+  # its first bundle must be uploaded by hand in Play Console, so an app joins
+  # this list only after both are done (Consumer has no record yet).
+  PLAY_ROLES: host
+
 jobs:
   plan:
     name: Decide what to build
@@ -36,6 +42,7 @@ jobs:
       contents: read
     outputs:
       roles: ${{ steps.plan.outputs.roles }}
+      android_roles: ${{ steps.plan.outputs.android_roles }}
       ios: ${{ steps.plan.outputs.ios }}
       android: ${{ steps.plan.outputs.android }}
     steps:
@@ -67,8 +74,17 @@ jobs:
               android=false
             fi
           fi
+          android_roles="$(jq -c --arg play "$PLAY_ROLES" \
+            '[.[] | select(. as $role | ($play | split(" ")) | index($role))]' <<<"$roles")"
+          if [[ "$android" == true && "$android_roles" == "[]" ]]; then
+            echo "No requested app has a Google Play record yet; skipping Android." >> "$GITHUB_STEP_SUMMARY"
+            android=false
+          elif [[ "$android" == true && "$android_roles" != "$roles" ]]; then
+            echo "Android builds only $android_roles; the others have no Google Play record yet (PLAY_ROLES)." >> "$GITHUB_STEP_SUMMARY"
+          fi
           {
             echo "roles=$roles"
+            echo "android_roles=$android_roles"
             echo "ios=$ios"
             echo "android=$android"
           } >> "$GITHUB_OUTPUT"
@@ -154,7 +170,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        role: ${{ fromJSON(needs.plan.outputs.roles) }}
+        role: ${{ fromJSON(needs.plan.outputs.android_roles) }}
     runs-on: ubuntu-latest
     environment: prod-mobile
     timeout-minutes: 60

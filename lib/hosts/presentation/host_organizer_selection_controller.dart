@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_organizer_selection_controller.g.dart';

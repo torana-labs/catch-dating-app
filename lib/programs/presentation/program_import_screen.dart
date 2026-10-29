@@ -1,11 +1,11 @@
+import 'package:catch_dating_app/contexts/audience/data/host_roster_file_parser.dart';
+import 'package:catch_dating_app/contexts/audience/data/host_roster_file_service.dart';
+import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_manifest_mapper.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';
-import 'package:catch_dating_app/hosts/data/host_roster_file_service.dart';
-import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_manifest_mapper.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_workspace_controller.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

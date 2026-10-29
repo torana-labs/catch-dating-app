@@ -1,9 +1,9 @@
+import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_content_validation.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/core/schema_contracts/field_value_validation.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_content_validation.dart';
-import 'package:catch_dating_app/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/host_memberships/domain/host_membership.dart';
 import 'package:catch_dating_app/host_memberships/domain/host_membership_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

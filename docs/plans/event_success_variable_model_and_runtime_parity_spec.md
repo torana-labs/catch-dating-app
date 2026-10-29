@@ -50,7 +50,7 @@ be folded into it when the tranches close.
 Findings from a 2026-08-13 read of the tree. Do not re-derive these.
 
 1. **The variable model already exists and is good.**
-   [lib/event_success/domain/event_success_activity_profile/enums.dart](../../lib/event_success/domain/event_success_activity_profile/enums.dart)
+   [lib/contexts/formats/domain/event_success_activity_profile/enums.dart](../../lib/event_success/domain/event_success_activity_profile/enums.dart)
    declares `EventSuccessPhoneAvailability`, `EventSuccessRotationSuitability`,
    `EventSuccessAssignmentAlgorithm`, `EventSuccessCompatibilityPolicy`, and
    `EventSuccessRecommendationLevel` (including `unsupported`).

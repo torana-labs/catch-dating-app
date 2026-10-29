@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
@@ -13,7 +14,6 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/event_thumbnail.dart';
 import 'package:catch_dating_app/core/widgets/splash_screen.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -25,10 +25,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
 
-part 'catch_primitives_controls_tests.dart';
+part 'catch_primitives_async_feedback_tests.dart';
 part 'catch_primitives_button_tests.dart';
 part 'catch_primitives_composition_tests.dart';
-part 'catch_primitives_async_feedback_tests.dart';
+part 'catch_primitives_controls_tests.dart';
 part 'catch_primitives_error_async_tests.dart';
 part 'catch_primitives_search_menu_tests.dart';
 

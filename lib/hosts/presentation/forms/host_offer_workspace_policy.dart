@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:catch_dating_app/hosts/data/forms/host_offer_event_targets_gateway.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_offer_event_targets_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_response_query.dart';
 
 /// Offer construction, bounded reads and validation at the workspace boundary.
 /// Async account/generation fences remain owned by the workspace controller.

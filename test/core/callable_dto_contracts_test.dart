@@ -2,10 +2,22 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
-import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
-import 'package:catch_dating_app/clubs/data/club_callable_responses.dart';
-import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
+import 'package:catch_dating_app/contexts/connections/data/swipe_candidate_callable_response.dart';
+import 'package:catch_dating_app/contexts/discovery/data/explore_search_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
+import 'package:catch_dating_app/contexts/events/data/places_callable_requests.dart';
+import 'package:catch_dating_app/contexts/events/data/places_callable_responses.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/contexts/insights/data/user_analytics_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_success_callable_responses.dart';
+import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
+import 'package:catch_dating_app/contexts/organizers/data/club_callable_responses.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/update_club_patch.dart';
+import 'package:catch_dating_app/contexts/payments/data/payment_callable_requests.dart';
+import 'package:catch_dating_app/contexts/payments/data/payment_callable_responses.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show
         BlockUserCallableRequest,
@@ -30,19 +42,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
         UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schema_contracts;
-import 'package:catch_dating_app/event_success/data/event_success_callable_responses.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/events/data/event_callable_responses.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_constraints.dart';
-import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
-import 'package:catch_dating_app/locations/data/places_callable_requests.dart';
-import 'package:catch_dating_app/locations/data/places_callable_responses.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_dating_app/payments/data/payment_callable_requests.dart';
-import 'package:catch_dating_app/payments/data/payment_callable_responses.dart';
-import 'package:catch_dating_app/swipes/data/swipe_candidate_callable_response.dart';
-import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 

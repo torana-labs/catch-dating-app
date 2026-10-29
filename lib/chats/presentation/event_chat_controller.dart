@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
-import 'package:catch_dating_app/chats/domain/event_chat.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_timing.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_timing.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -371,10 +371,20 @@ class EventChatController extends _$EventChatController {
         if (announcement) true,
       ]),
       (repository, requestId) => announcement
-          ? repository.sendAnnouncement(current.uid, eventId, normalized,
-              replyToMessageId, requestId)
-          : repository.send(current.uid, eventId, normalized,
-              replyToMessageId, requestId),
+          ? repository.sendAnnouncement(
+              current.uid,
+              eventId,
+              normalized,
+              replyToMessageId,
+              requestId,
+            )
+          : repository.send(
+              current.uid,
+              eventId,
+              normalized,
+              replyToMessageId,
+              requestId,
+            ),
     );
     if (sent) draftChanged(false);
     return sent;
@@ -387,7 +397,9 @@ class EventChatController extends _$EventChatController {
     EventChatReportReason? reason,
   }) async {
     final current = state.asData?.value;
-    if (current == null || !current.active || current.busy ||
+    if (current == null ||
+        !current.active ||
+        current.busy ||
         !current.access.canReadMessages ||
         current.uid != reviewedUid) {
       return false;

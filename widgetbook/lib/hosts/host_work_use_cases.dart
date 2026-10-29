@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/hosts/work/data/host_work_repository.dart';
-import 'package:catch_dating_app/hosts/work/domain/host_work_assignment.dart';
+import 'package:catch_dating_app/contexts/programmes/data/host_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/host_work_assignment.dart';
 import 'package:catch_dating_app/hosts/work/presentation/host_work_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

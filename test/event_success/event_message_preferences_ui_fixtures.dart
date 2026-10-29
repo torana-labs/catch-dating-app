@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/event_success/data/event_participant_context_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_participant_context.dart';
-import 'package:catch_dating_app/event_success/domain/event_sender_preference.dart';
+import 'package:catch_dating_app/contexts/live/data/event_participant_context_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_participant_context.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_sender_preference.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'event_sender_preference_fixtures.dart';
 

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_request.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_progress.dart';
 
 import 'event_assistance_checkpoint_fixtures.dart';
 import 'event_assistance_departure_fixtures.dart';

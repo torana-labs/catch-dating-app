@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_count_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';

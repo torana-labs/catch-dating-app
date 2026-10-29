@@ -62,7 +62,7 @@ Typed handoffs:
 
 ## Shared dependencies
 
-- `lib/events/data/event_repository.dart` — The shared repository owns canonical event queries; Events owns inventory pagination and display policy.
+- `lib/contexts/events/data/event_repository.dart` — The shared repository owns canonical event queries; Events owns inventory pagination and display policy.
 - `lib/core/presentation/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
 - `lib/programs` — The Program domain retains creation orchestration and existing workspace behavior while Events owns the consolidated inventory entry point.
 

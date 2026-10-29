@@ -1,11 +1,11 @@
 import 'dart:io';
 
+import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_timeline.dart';
+import 'package:catch_dating_app/contexts/forms/data/host_application_repository.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
-import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_review_detail.dart';
@@ -27,38 +27,34 @@ void main() {
     'host_person_notes',
     'host_person_history',
   ]) {
-    testWidgets(
-      'captures actual Person catalog $id',
-      (tester) async {
-        final entry = findScreenCapture(id);
-        final artifacts = await captureCatchWidget(
-          tester,
-          id: entry.id,
-          builder: entry.builder,
-          drive: entry.drive,
-          cleanup: entry.cleanup,
-          device: entry.device,
-          textScale: entry.textScale,
-          disableAnimations: entry.disableAnimations,
-          includeOverlays: entry.includeOverlays,
-          precache: entry.precache,
-          providerOverrides: entry.providerOverrides,
-          outputDirectory: Directory(
-            'artifacts/ui-captures/audience-person-review',
-          ),
-        );
-        expect(tester.takeException(), isNull);
-        expect(artifacts.map((artifact) => artifact.theme.name), [
-          'light',
-          'dark',
-        ]);
-        for (final artifact in artifacts) {
-          expect(artifact.file.existsSync(), isTrue);
-          expect(artifact.file.lengthSync(), greaterThan(0));
-        }
-      },
-      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
-    );
+    testWidgets('captures actual Person catalog $id', (tester) async {
+      final entry = findScreenCapture(id);
+      final artifacts = await captureCatchWidget(
+        tester,
+        id: entry.id,
+        builder: entry.builder,
+        drive: entry.drive,
+        cleanup: entry.cleanup,
+        device: entry.device,
+        textScale: entry.textScale,
+        disableAnimations: entry.disableAnimations,
+        includeOverlays: entry.includeOverlays,
+        precache: entry.precache,
+        providerOverrides: entry.providerOverrides,
+        outputDirectory: Directory(
+          'artifacts/ui-captures/audience-person-review',
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      expect(artifacts.map((artifact) => artifact.theme.name), [
+        'light',
+        'dark',
+      ]);
+      for (final artifact in artifacts) {
+        expect(artifact.file.existsSync(), isTrue);
+        expect(artifact.file.lengthSync(), greaterThan(0));
+      }
+    }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
   }
 
   // These use the catalog's overrides, not a second test-only projection. The

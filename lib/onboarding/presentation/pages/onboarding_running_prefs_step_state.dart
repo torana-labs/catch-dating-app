@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingRunningPrefsState {

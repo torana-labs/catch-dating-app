@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
@@ -5,7 +6,6 @@ import 'package:catch_dating_app/event_success/presentation/host_components/even
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

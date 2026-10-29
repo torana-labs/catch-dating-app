@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen_state.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';

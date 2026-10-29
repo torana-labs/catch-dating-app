@@ -8280,6 +8280,74 @@ abstract final class CatchContractConstraints {
     maxItems: 50,
   );
 
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidates = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsBand = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.band',
+    required: true,
+    enumValues: <String>['match', 'probable', 'review', 'low'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsName = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.name',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.organizerId',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsRationale = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.rationale',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsScore = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCitySlug = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.citySlug',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckOrganizersCompared = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.organizersCompared',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckTruncated = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckVerdict = CatchContractFieldConstraints(
+    path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.verdict',
+    required: true,
+    enumValues: <String>['match', 'ambiguous', 'none'],
+  );
+
   static const adminListOrganizerListingReviewsCallableResponseRowsItemsKind = CatchContractFieldConstraints(
     path: 'adminListOrganizerListingReviewsCallableResponse.rows.items.kind',
     required: true,
@@ -9525,6 +9593,77 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
+  );
+
+  static const adminListSupplyNominatorsCallableResponseNominators = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 200,
+  );
+
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsActive = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsChannel = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.channel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['whatsapp'],
+  );
+
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsDefaultMarket = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.defaultMarket',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{1,49}\$',
+  );
+
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.displayName',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsNominatorId = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.nominatorId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^whatsapp-[a-f0-9]{64}\$',
+  );
+
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsPhoneLast4 = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.phoneLast4',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsRole = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['associate', 'partner'],
+  );
+
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsUid = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.uid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminListSupplyNominatorsCallableResponseNominatorsItemsUpdatedAt = CatchContractFieldConstraints(
+    path: 'adminListSupplyNominatorsCallableResponse.nominators.items.updatedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
   );
 
   static const adminNominateOrganizerCallablePayloadCategories = CatchContractFieldConstraints(
@@ -14287,6 +14426,80 @@ abstract final class CatchContractConstraints {
     path: 'adminSetSalesCustomFieldValueCallablePayload.value',
     maxLength: 500,
     valueTypes: <String>['string', 'number', 'boolean'],
+  );
+
+  static const adminSetSupplyNominatorCallablePayloadActive = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallablePayload.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetSupplyNominatorCallablePayloadDefaultMarket = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallablePayload.defaultMarket',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminSetSupplyNominatorCallablePayloadDisplayName = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallablePayload.displayName',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminSetSupplyNominatorCallablePayloadPhoneE164 = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallablePayload.phoneE164',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{6,14}\$',
+  );
+
+  static const adminSetSupplyNominatorCallablePayloadRole = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallablePayload.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['associate', 'partner'],
+  );
+
+  static const adminSetSupplyNominatorCallablePayloadUid = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallablePayload.uid',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{1,128}\$',
+  );
+
+  static const adminSetSupplyNominatorCallableResponseActive = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallableResponse.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetSupplyNominatorCallableResponseCreated = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallableResponse.created',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminSetSupplyNominatorCallableResponseDefaultMarket = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallableResponse.defaultMarket',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{1,49}\$',
+  );
+
+  static const adminSetSupplyNominatorCallableResponseNominatorId = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallableResponse.nominatorId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^whatsapp-[a-f0-9]{64}\$',
+  );
+
+  static const adminSetSupplyNominatorCallableResponsePhoneLast4 = CatchContractFieldConstraints(
+    path: 'adminSetSupplyNominatorCallableResponse.phoneLast4',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
   );
 
   static const adminShareSalesDemoPartnerReviewCallablePayloadBlueprintId = CatchContractFieldConstraints(
@@ -162301,7 +162514,7 @@ abstract final class CatchContractConstraints {
     path: 'supplyIntakeRequest.origin.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run', 'admin_event_refresh'],
+    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'message_nomination', 'discovery_run', 'admin_event_refresh'],
   );
 
   static const supplyIntakeRequestRequestId = CatchContractFieldConstraints(
@@ -162524,7 +162737,7 @@ abstract final class CatchContractConstraints {
     path: 'supplyIntakeRequestsDocument.request.origin.kind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'discovery_run', 'admin_event_refresh'],
+    enumValues: <String>['admin_nomination', 'sales_inbound_intent', 'message_nomination', 'discovery_run', 'admin_event_refresh'],
   );
 
   static const supplyIntakeRequestsDocumentRequestRequestId = CatchContractFieldConstraints(
@@ -162785,6 +162998,148 @@ abstract final class CatchContractConstraints {
     maximum: 599,
   );
 
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckAuthority = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.authority',
+    required: true,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidates = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 12,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsBand = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.band',
+    required: true,
+    enumValues: <String>['match', 'probable', 'review', 'low'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsConflicts = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.conflicts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 12,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsConflictsItems = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.conflicts.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9_]{0,79}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsName = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.name',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.organizerId',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsRationale = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.rationale',
+    maxLength: 2000,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsScore = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsSignals = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.signals',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 12,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsSignalsItems = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.signals.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9_]{0,79}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckInventoryCitySlug = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.citySlug',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckInventoryLimit = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10000,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckInventoryTruncated = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.truncated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckInventoryHash = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.inventoryHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckOrganizersCompared = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.organizersCompared',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckPolicyId = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.policyId',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckReasons = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.reasons',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 8,
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckReasonsItems = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.reasons.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9_]{0,79}\$',
+  );
+
+  static const supplyIntakeRequestsDocumentResultDuplicateCheckVerdict = CatchContractFieldConstraints(
+    path: 'supplyIntakeRequestsDocument.result.duplicateCheck.verdict',
+    required: true,
+    enumValues: <String>['match', 'ambiguous', 'none'],
+  );
+
   static const supplyIntakeRequestsDocumentResultEventCount = CatchContractFieldConstraints(
     path: 'supplyIntakeRequestsDocument.result.eventCount',
     required: true,
@@ -162930,6 +163285,96 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     format: 'date-time',
+  );
+
+  static const supplyNominatorDocumentActive = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.active',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const supplyNominatorDocumentChannel = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.channel',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['whatsapp'],
+  );
+
+  static const supplyNominatorDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.createdAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const supplyNominatorDocumentDefaultMarket = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.defaultMarket',
+    valueTypes: <String>['string'],
+    pattern: '^[a-z][a-z0-9-]{1,49}\$',
+  );
+
+  static const supplyNominatorDocumentDisplayName = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.displayName',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyNominatorDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const supplyNominatorDocumentNominatorId = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.nominatorId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^whatsapp-[a-f0-9]{64}\$',
+  );
+
+  static const supplyNominatorDocumentPhoneLast4 = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.phoneLast4',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[0-9]{4}\$',
+  );
+
+  static const supplyNominatorDocumentRole = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['associate', 'partner'],
+  );
+
+  static const supplyNominatorDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.schemaVersion',
+    required: true,
+  );
+
+  static const supplyNominatorDocumentUid = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.uid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const supplyNominatorDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const supplyNominatorDocumentUpdatedByUid = CatchContractFieldConstraints(
+    path: 'supplyNominatorDocument.updatedByUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const swipeDocumentComment = CatchContractFieldConstraints(
@@ -176913,6 +177358,16 @@ abstract final class CatchContractConstraints {
     'adminListOrganizerListingReviewsCallableResponse.canApprove': adminListOrganizerListingReviewsCallableResponseCanApprove,
     'adminListOrganizerListingReviewsCallableResponse.nextCursor': adminListOrganizerListingReviewsCallableResponseNextCursor,
     'adminListOrganizerListingReviewsCallableResponse.rows': adminListOrganizerListingReviewsCallableResponseRows,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidates,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.band': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsBand,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.name': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsName,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.organizerId': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsOrganizerId,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.rationale': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsRationale,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.candidates.items.score': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCandidatesItemsScore,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.citySlug': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckCitySlug,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.organizersCompared': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckOrganizersCompared,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.truncated': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckTruncated,
+    'adminListOrganizerListingReviewsCallableResponse.rows.items.duplicateCheck.verdict': adminListOrganizerListingReviewsCallableResponseRowsItemsDuplicateCheckVerdict,
     'adminListOrganizerListingReviewsCallableResponse.rows.items.kind': adminListOrganizerListingReviewsCallableResponseRowsItemsKind,
     'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.categories': adminListOrganizerListingReviewsCallableResponseRowsItemsListingCategories,
     'adminListOrganizerListingReviewsCallableResponse.rows.items.listing.categories.items': adminListOrganizerListingReviewsCallableResponseRowsItemsListingCategoriesItems,
@@ -177086,6 +177541,16 @@ abstract final class CatchContractConstraints {
     'adminListSupplyIntakePoliciesCallableResponse.policies.items.limits': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLimits,
     'adminListSupplyIntakePoliciesCallableResponse.policies.items.limits.items.label': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLimitsItemsLabel,
     'adminListSupplyIntakePoliciesCallableResponse.policies.items.limits.items.value': adminListSupplyIntakePoliciesCallableResponsePoliciesItemsLimitsItemsValue,
+    'adminListSupplyNominatorsCallableResponse.nominators': adminListSupplyNominatorsCallableResponseNominators,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.active': adminListSupplyNominatorsCallableResponseNominatorsItemsActive,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.channel': adminListSupplyNominatorsCallableResponseNominatorsItemsChannel,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.defaultMarket': adminListSupplyNominatorsCallableResponseNominatorsItemsDefaultMarket,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.displayName': adminListSupplyNominatorsCallableResponseNominatorsItemsDisplayName,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.nominatorId': adminListSupplyNominatorsCallableResponseNominatorsItemsNominatorId,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.phoneLast4': adminListSupplyNominatorsCallableResponseNominatorsItemsPhoneLast4,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.role': adminListSupplyNominatorsCallableResponseNominatorsItemsRole,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.uid': adminListSupplyNominatorsCallableResponseNominatorsItemsUid,
+    'adminListSupplyNominatorsCallableResponse.nominators.items.updatedAt': adminListSupplyNominatorsCallableResponseNominatorsItemsUpdatedAt,
     'adminNominateOrganizerCallablePayload.categories': adminNominateOrganizerCallablePayloadCategories,
     'adminNominateOrganizerCallablePayload.categories.items': adminNominateOrganizerCallablePayloadCategoriesItems,
     'adminNominateOrganizerCallablePayload.market': adminNominateOrganizerCallablePayloadMarket,
@@ -177732,6 +178197,17 @@ abstract final class CatchContractConstraints {
     'adminSetSalesCustomFieldValueCallablePayload.organizerId': adminSetSalesCustomFieldValueCallablePayloadOrganizerId,
     'adminSetSalesCustomFieldValueCallablePayload.requestId': adminSetSalesCustomFieldValueCallablePayloadRequestId,
     'adminSetSalesCustomFieldValueCallablePayload.value': adminSetSalesCustomFieldValueCallablePayloadValue,
+    'adminSetSupplyNominatorCallablePayload.active': adminSetSupplyNominatorCallablePayloadActive,
+    'adminSetSupplyNominatorCallablePayload.defaultMarket': adminSetSupplyNominatorCallablePayloadDefaultMarket,
+    'adminSetSupplyNominatorCallablePayload.displayName': adminSetSupplyNominatorCallablePayloadDisplayName,
+    'adminSetSupplyNominatorCallablePayload.phoneE164': adminSetSupplyNominatorCallablePayloadPhoneE164,
+    'adminSetSupplyNominatorCallablePayload.role': adminSetSupplyNominatorCallablePayloadRole,
+    'adminSetSupplyNominatorCallablePayload.uid': adminSetSupplyNominatorCallablePayloadUid,
+    'adminSetSupplyNominatorCallableResponse.active': adminSetSupplyNominatorCallableResponseActive,
+    'adminSetSupplyNominatorCallableResponse.created': adminSetSupplyNominatorCallableResponseCreated,
+    'adminSetSupplyNominatorCallableResponse.defaultMarket': adminSetSupplyNominatorCallableResponseDefaultMarket,
+    'adminSetSupplyNominatorCallableResponse.nominatorId': adminSetSupplyNominatorCallableResponseNominatorId,
+    'adminSetSupplyNominatorCallableResponse.phoneLast4': adminSetSupplyNominatorCallableResponsePhoneLast4,
     'adminShareSalesDemoPartnerReviewCallablePayload.blueprintId': adminShareSalesDemoPartnerReviewCallablePayloadBlueprintId,
     'adminShareSalesDemoPartnerReviewCallablePayload.decision': adminShareSalesDemoPartnerReviewCallablePayloadDecision,
     'adminShareSalesDemoPartnerReviewCallablePayload.expectedAssignmentRevision': adminShareSalesDemoPartnerReviewCallablePayloadExpectedAssignmentRevision,
@@ -197980,6 +198456,26 @@ abstract final class CatchContractConstraints {
     'supplyIntakeRequestsDocument.result.captureReceipts.items.snapshotBytes': supplyIntakeRequestsDocumentResultCaptureReceiptsItemsSnapshotBytes,
     'supplyIntakeRequestsDocument.result.captureReceipts.items.snapshotHash': supplyIntakeRequestsDocumentResultCaptureReceiptsItemsSnapshotHash,
     'supplyIntakeRequestsDocument.result.captureReceipts.items.status': supplyIntakeRequestsDocumentResultCaptureReceiptsItemsStatus,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.authority': supplyIntakeRequestsDocumentResultDuplicateCheckAuthority,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates': supplyIntakeRequestsDocumentResultDuplicateCheckCandidates,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.band': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsBand,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.conflicts': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsConflicts,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.conflicts.items': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsConflictsItems,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.name': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsName,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.organizerId': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsOrganizerId,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.rationale': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsRationale,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.score': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsScore,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.signals': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsSignals,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.candidates.items.signals.items': supplyIntakeRequestsDocumentResultDuplicateCheckCandidatesItemsSignalsItems,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.citySlug': supplyIntakeRequestsDocumentResultDuplicateCheckInventoryCitySlug,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.limit': supplyIntakeRequestsDocumentResultDuplicateCheckInventoryLimit,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.inventory.truncated': supplyIntakeRequestsDocumentResultDuplicateCheckInventoryTruncated,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.inventoryHash': supplyIntakeRequestsDocumentResultDuplicateCheckInventoryHash,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.organizersCompared': supplyIntakeRequestsDocumentResultDuplicateCheckOrganizersCompared,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.policyId': supplyIntakeRequestsDocumentResultDuplicateCheckPolicyId,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.reasons': supplyIntakeRequestsDocumentResultDuplicateCheckReasons,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.reasons.items': supplyIntakeRequestsDocumentResultDuplicateCheckReasonsItems,
+    'supplyIntakeRequestsDocument.result.duplicateCheck.verdict': supplyIntakeRequestsDocumentResultDuplicateCheckVerdict,
     'supplyIntakeRequestsDocument.result.eventCount': supplyIntakeRequestsDocumentResultEventCount,
     'supplyIntakeRequestsDocument.result.eventWorkItemIds': supplyIntakeRequestsDocumentResultEventWorkItemIds,
     'supplyIntakeRequestsDocument.result.eventWorkItemIds.items': supplyIntakeRequestsDocumentResultEventWorkItemIdsItems,
@@ -198000,6 +198496,19 @@ abstract final class CatchContractConstraints {
     'supplyIntakeUsageDocument.networkRequests': supplyIntakeUsageDocumentNetworkRequests,
     'supplyIntakeUsageDocument.schemaVersion': supplyIntakeUsageDocumentSchemaVersion,
     'supplyIntakeUsageDocument.updatedAt': supplyIntakeUsageDocumentUpdatedAt,
+    'supplyNominatorDocument.active': supplyNominatorDocumentActive,
+    'supplyNominatorDocument.channel': supplyNominatorDocumentChannel,
+    'supplyNominatorDocument.createdAt': supplyNominatorDocumentCreatedAt,
+    'supplyNominatorDocument.defaultMarket': supplyNominatorDocumentDefaultMarket,
+    'supplyNominatorDocument.displayName': supplyNominatorDocumentDisplayName,
+    'supplyNominatorDocument.endpointHash': supplyNominatorDocumentEndpointHash,
+    'supplyNominatorDocument.nominatorId': supplyNominatorDocumentNominatorId,
+    'supplyNominatorDocument.phoneLast4': supplyNominatorDocumentPhoneLast4,
+    'supplyNominatorDocument.role': supplyNominatorDocumentRole,
+    'supplyNominatorDocument.schemaVersion': supplyNominatorDocumentSchemaVersion,
+    'supplyNominatorDocument.uid': supplyNominatorDocumentUid,
+    'supplyNominatorDocument.updatedAt': supplyNominatorDocumentUpdatedAt,
+    'supplyNominatorDocument.updatedByUid': supplyNominatorDocumentUpdatedByUid,
     'swipeDocument.comment': swipeDocumentComment,
     'swipeDocument.createdAt._nanoseconds': swipeDocumentCreatedAtNanoseconds,
     'swipeDocument.createdAt._seconds': swipeDocumentCreatedAtSeconds,

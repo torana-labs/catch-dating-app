@@ -63,7 +63,6 @@ on:
       - "tool/firebase_with_env.sh"
       - "tool/marketing/**"
       - "tool/lib/repo_paths.mjs"
-      - "tool/organizer_intake/**"
   workflow_dispatch:
     inputs:
       update_visual_baselines:

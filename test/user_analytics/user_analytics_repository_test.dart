@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/user_analytics/data/user_analytics_repository.dart';
+import 'package:catch_dating_app/contexts/insights/data/user_analytics_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

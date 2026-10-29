@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/programs/domain/program_access_policy.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_access_policy.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

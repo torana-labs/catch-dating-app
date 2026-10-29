@@ -1,6 +1,11 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
+import 'package:catch_dating_app/contexts/account/data/force_update_provider.dart';
+import 'package:catch_dating_app/contexts/profiles/data/public_profiles_lookup.dart';
+import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
+import 'package:catch_dating_app/contexts/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
@@ -10,19 +15,14 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
-import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/host_memberships/host_memberships.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/host_analytics_consent_dialog.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_state.dart';
 import 'package:catch_dating_app/safety/presentation/settings_account_view_model.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
