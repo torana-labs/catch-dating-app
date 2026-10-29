@@ -4,6 +4,7 @@ import requestSchema from "../../../../contracts/operations/supply_intake_reques
 import {hashValue} from "../../platform/canonical-json.mjs";
 import {OperationsError, invariant} from "../../platform/errors.mjs";
 import {finalizeSupplyInputSnapshot, SUPPLY_INPUT_SNAPSHOT_VERSION} from "./input-snapshot.mjs";
+import {createOrganizerMatcher} from "./organizer-matching/matcher.mjs";
 import {extractWithAdapters, pageAdapterFor} from "./sources/index.mjs";
 import {normalizeOrganizerSurfaceUrl, surfaceForOrganizerPage} from "./sources/surfaces.mjs";
 
@@ -126,9 +127,12 @@ function followUrls(extraction, via) {
 /**
  * Merge gathered evidence into one reviewable listing with per-field sources.
  * Research findings (quoted facts from pages the agent read) rank below
- * adapter-read facts and above the nominator's typed name.
+ * adapter-read facts and above the nominator's typed name. When the caller
+ * injects the organizers Catch already lists, the listing carries an advisory
+ * duplicate check for the reviewer; it never blocks or merges anything.
  */
-export function buildIntakeListing({request, gathered, now, findings = [], research = null}) {
+export function buildIntakeListing({request, gathered, now, findings = [], research = null,
+  existingOrganizers = null}) {
   const intake = assertSupplyIntakeRequest(request);
   invariant(gathered?.requestId === intake.requestId, "INVALID_INTAKE_EVIDENCE",
     "Gathered evidence belongs to another intake request.");
@@ -175,6 +179,12 @@ export function buildIntakeListing({request, gathered, now, findings = [], resea
     gaps.push("name_differs_from_nomination");
   }
   if (research && research.identityConfident === false) gaps.push("identity_unconfirmed");
+  const identityKeys = [...new Set(links.map((link) => link.normalizedKey).filter(Boolean))].sort();
+  const duplicateCheck = existingOrganizers === null ? null : duplicateCheckFor({
+    listingId: `intake-${intake.requestId}`, market: intake.market, seed: intake.seed,
+    organizer: {name, links, identityKeys},
+  }, existingOrganizers);
+  if (duplicateCheck?.flagged) gaps.push(duplicateCheck.gap);
   const listing = {
     schemaVersion: 1,
     listingId: `intake-${intake.requestId}`,
@@ -191,8 +201,9 @@ export function buildIntakeListing({request, gathered, now, findings = [], resea
       locality,
       categories: intake.seed.categories,
       links,
-      identityKeys: [...new Set(links.map((link) => link.normalizedKey).filter(Boolean))].sort(),
+      identityKeys,
     },
+    ...(duplicateCheck === null ? {} : {duplicateCheck: duplicateCheck.summary}),
     fieldEvidence,
     events,
     pastEventCount,
@@ -219,6 +230,32 @@ export function buildIntakeListing({request, gathered, now, findings = [], resea
     observedAt,
   };
   return {...listing, contentHash: hashValue(listing)};
+}
+
+// The reviewer's view of likely duplicates: who, how strongly, and why.
+function duplicateCheckFor(subject, existingOrganizers) {
+  const result = createOrganizerMatcher({organizers: existingOrganizers}).matchListing(subject);
+  return {
+    flagged: result.flag !== null,
+    gap: result.flag?.gap ?? null,
+    summary: {
+      policyId: result.policyId,
+      authority: result.authority,
+      verdict: result.verdict,
+      reasons: result.reasons,
+      organizersCompared: result.organizersCompared,
+      inventoryHash: result.inventoryHash,
+      candidates: result.candidates.map((candidate) => ({
+        organizerId: candidate.organizerId,
+        name: candidate.name,
+        score: candidate.score,
+        band: candidate.band,
+        signals: candidate.signals.map((signal) => signal.code),
+        conflicts: candidate.conflicts.map((conflict) => conflict.code),
+        rationale: candidate.rationale,
+      })),
+    },
+  };
 }
 
 const RESEARCH_GAPS = new Set(["organizer_name_missing", "description_missing", "organizer_page_missing",

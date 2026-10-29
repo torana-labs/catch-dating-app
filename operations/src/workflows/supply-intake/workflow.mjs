@@ -37,6 +37,7 @@ import {
   supplyInputSummary,
 } from "./input-snapshot.mjs";
 import {loadSupplyModelPolicy} from "./model-fallback.mjs";
+import {POSSIBLE_DUPLICATE_GAP, POSSIBLE_DUPLICATE_TASK_FLAG} from "./organizer-matching/matcher.mjs";
 
 export const MAX_SUPPLY_INTAKE_WORK_ITEMS_PER_RUN = MAX_WORK_ITEMS_PER_RUN;
 export const SUPPLY_INTAKE_WORKFLOW_ID = "supply-intake";
@@ -2014,6 +2015,8 @@ function reviewIntakeListing(item, now) {
       "listing_review",
       ...(listing.researchNeeded ? ["research_needed"] : []),
       ...(listing.gaps.includes("name_differs_from_nomination") ? ["identity_review"] : []),
+      // Advisory: a likely duplicate is the reviewer's call, never a blocker.
+      ...(listing.gaps.includes(POSSIBLE_DUPLICATE_GAP) ? [POSSIBLE_DUPLICATE_TASK_FLAG] : []),
     ],
     owner: "human",
     overall: blockers.length > 0 ? 0.25 : complete ? 0.8 : 0.6,
