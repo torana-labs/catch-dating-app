@@ -86,6 +86,13 @@
   content: "";
 }
 
+/* Initials come from CSS so they never join a surrounding control's visible text. */
+.person::before,
+.activity::before,
+.monogram::before {
+  content: attr(data-initials);
+}
+
 .count {
   background: var(--catch-theme-raised);
   color: var(--catch-theme-ink2);

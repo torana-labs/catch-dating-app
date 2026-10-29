@@ -1261,6 +1261,10 @@ button {
   color: var(--on-primary);
 }
 
+.admin-account-avatar::before {
+  content: attr(data-initials);
+}
+
 .admin-account-trigger-copy {
   display: block;
   min-width: 0;
@@ -2010,34 +2014,12 @@ select {
   gap: var(--catch-space-micro6);
 }
 
-.roadmap-summary {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.3fr);
-  gap: var(--catch-space-s3);
-}
-
-.roadmap-summary div,
 .roadmap-list-item {
   min-width: 0;
   padding: var(--catch-space-micro10);
   border: var(--catch-stroke-hairline) solid var(--line);
   border-radius: var(--catch-radius-sm);
   background: var(--surface-subtle);
-}
-
-.roadmap-summary span {
-  display: block;
-  color: var(--muted);
-  font-size: var(--catch-typography-brand-kicker-size);
-  font-weight: var(--catch-typography-brand-kicker-weight);
-  text-transform: uppercase;
-}
-
-.roadmap-summary p {
-  margin: var(--catch-space-s1) 0 0;
-  color: var(--ink);
-  font-size: var(--catch-typography-web-context-size);
-  line-height: 1.4;
 }
 
 .roadmap-list {
@@ -4086,10 +4068,6 @@ th {
   .workbench-toolbar .search-control {
     max-width: none;
     flex: 0 0 36px;
-  }
-
-  .roadmap-summary {
-    grid-template-columns: minmax(0, 1fr);
   }
 
   .intake-state-grid,
