@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.19.0
+version: 2.20.0
 updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
@@ -602,6 +602,19 @@ checks npm, Pub, and GitHub Actions each Wednesday, groups compatible minor and
 patch updates into at most one open pull request per ecosystem, and keeps
 security updates grouped separately. Major versions are deliberately excluded:
 each major upgrade needs its own impact review and full selected CI evidence.
+
+Dependabot pull requests merge without a click.
+`.github/workflows/dependabot-auto-merge.yml` turns on auto-merge for every
+Dependabot pull request that is not a major version, so it joins the merge
+queue once Required CI passes. It acts as the repository's auto-merge GitHub
+App, not the built-in Actions token: GitHub starts no workflows for events
+that token causes, and a dependency merge must start `main`'s workflows like
+any other. The App has read-and-write Contents, Pull requests and Workflows
+permissions (Dependabot also updates workflow files) and is installed on this
+repository only; its ID and private key are the Dependabot secrets
+`AUTOMERGE_APP_ID` and `AUTOMERGE_APP_PRIVATE_KEY`, because a workflow
+Dependabot triggers can read only Dependabot secrets. Without them the
+workflow leaves each update for a manual merge.
 
 The 2026-08-10 Pub baseline upgraded every release resolvable under the current
 constraints: 74 packages (33 in the Firebase family and 41 in the remaining
@@ -2594,6 +2607,42 @@ The smoke define emits one nonfatal Crashlytics event with reason
 prod release smoke. After the dashboard rows appear, run the manual
 `Observability Evidence` workflow and record the app build, Crashlytics proof,
 Analytics proof, and GA4 BigQuery export status.
+
+## Mobile releases
+
+Test builds and store releases for the Consumer and Host apps run through
+fastlane (`fastlane/Fastfile`, pinned in `Gemfile.lock`). Two workflows call it,
+both from `main` only:
+
+- `Mobile Beta` (`.github/workflows/mobile-beta.yml`) builds, verifies and
+  uploads test builds to TestFlight internal testers and the Play internal
+  track. It runs nightly at 03:07 IST when app sources changed since its last
+  successful run, and on demand for any app and platform. It uses the
+  approval-free `prod-mobile` environment.
+- `Mobile Production` (`.github/workflows/mobile-production.yml`) ships a
+  build testers already have. On iOS it submits that TestFlight build for App
+  Store review as a phased release, which is released by hand after approval.
+  On Android it promotes that internal-track version code to production as a
+  staged rollout. It rebuilds nothing. It uses the `prod-mobile-release`
+  environment, which requires a reviewer's approval.
+
+Each beta build runs the same checks as before upload: the IPA identity, the
+Google Maps configuration, the Android bundle identity and signing certificate,
+the package size and payload policy, and the live callable dependency check
+for the app's role. iOS build numbers come from the latest TestFlight build
+plus one. Android version codes come from the highest code on any Play track
+plus one, and never go below 100000. Each run attests its IPA or AAB with
+GitHub build provenance and keeps the file and its verification records as a
+30-day workflow artifact.
+
+Run a lane locally with `bundle exec fastlane ios beta role:host` or
+`bundle exec fastlane android beta role:consumer`, given the same environment
+variables the workflow passes. `bundle exec fastlane lanes` lists every lane.
+
+The older `Mobile Internal Release` and `Mobile Internal Promote` workflows
+keep running until the fastlane path has shipped each app once. The migration
+plan, `plans/mobile_release_fastlane_migration.md`, owns the cutover, the
+regression ledger and the delete list.
 
 ## Mobile Internal Release Ownership
 
