@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/events/presentation/event_attendee_lookup.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_attendee_lookup_controller.g.dart';

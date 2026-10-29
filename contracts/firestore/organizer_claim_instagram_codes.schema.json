@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_claim_instagram_codes.schema.json",
+  "title": "OrganizerClaimInstagramCodeDocument",
+  "description": "Server-only reservation of a live Instagram claim code, stored at organizerClaimInstagramCodes/{code}. Keying by the code keeps live codes unique and lets the webhook find the attempt without a query. Firestore TTL deletes it after expiresAt.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerClaimInstagramCodes",
+  "x-firestore-path": "organizerClaimInstagramCodes/{code}",
+  "x-document-id-field": "code",
+  "x-owner": "startOrganizerClaimVerification callable and instagramClaimWebhook",
+  "required": ["code", "attemptId", "organizerId", "expiresAt", "consumedAt"],
+  "properties": {
+    "code": {"type": "string", "pattern": "^[0-9]{6}$", "x-catch-ownership": "server-only"},
+    "attemptId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId", "x-catch-ownership": "server-only"},
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
+    "consumedAt": {
+      "description": "Set when the code verified a claim or its attempt was superseded. A consumed code stays reserved until expiresAt, so a replay gets a clear answer.",
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "x-catch-ownership": "server-only"
+    }
+  }
+}

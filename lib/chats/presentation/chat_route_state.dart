@@ -1,12 +1,12 @@
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
-import 'package:catch_dating_app/chats/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/chats/presentation/chat_thread_lookup_state.dart';
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
+import 'package:catch_dating_app/contexts/connections/domain/match.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 
 class ChatRouteStateArgs {
   const ChatRouteStateArgs({

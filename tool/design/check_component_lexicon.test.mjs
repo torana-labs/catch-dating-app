@@ -30,7 +30,7 @@ test("component lexicon rejects a declared surface symbol that does not exist", 
 test("component lexicon rejects a surface adapter of a Flutter-only contract", () => {
   const result = run(["--known-bad-adapter", "--surfaces-only"]);
   assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /known_bad_adapter: BadgeRow points at catch\.sheet, a T3 contract/u);
+  assert.match(result.stderr, /known_bad_adapter: BadgeRow points at catch\.tab_bar, a T3 contract/u);
 });
 
 test("one registry assigns identity and the retired web-ui registry stays deleted", () => {

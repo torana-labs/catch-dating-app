@@ -1,5 +1,4 @@
 import type {
-  AdminGetEventSupplyReadinessResponse,
   EventIntakeBridge,
   MarketingEventCandidate,
   MarketingOpsBridge,
@@ -242,63 +241,4 @@ export const sampleMarketingOpsBridge: MarketingOpsBridge = {
   }],
   auditTrail: [],
   commands: {},
-};
-
-export const sampleEventSupplyReadiness:
-AdminGetEventSupplyReadinessResponse = {
-  generatedAt,
-  source: "sample",
-  importPlan: {
-    summary: {
-      candidates: 0,
-      proposedCreates: 0,
-      writeReady: 0,
-      blocked: 0,
-      waitingReview: 0,
-      rejected: 0,
-      duplicateEventKeys: 0,
-      actionsByStatus: {},
-      actionsByPlatform: {},
-    },
-    policy: {
-      status: "disabled",
-      writeEnabled: false,
-      reason: "Synthetic preview data never enables event imports.",
-    },
-    generatedFrom: {
-      externalEventCandidateQueue: "sample",
-      batches: [],
-      reviewDecisionBatches: [],
-      locationResolutionBatches: [],
-    },
-    guardrails: ["No canonical event writes."],
-    actions: [],
-    commands: {},
-  },
-  executionPlan: {
-    summary: {
-      importActions: 0,
-      createActions: 0,
-      skipped: 0,
-      blocked: 0,
-      schemaInvalid: 0,
-      wouldCreate: 0,
-      payloadValid: 0,
-      payloadInvalid: 0,
-      actionsByStatus: {},
-    },
-    policy: {
-      status: "disabled",
-      writeEnabled: false,
-      authorityModel: "sample",
-      reason: "Synthetic preview data never enables event imports.",
-    },
-    generatedFrom: {
-      externalEventImportPlan: "sample",
-      importPlanGeneratedFrom: {},
-    },
-    guardrails: ["No canonical event writes."],
-    actions: [],
-    commands: {},
-  },
 };

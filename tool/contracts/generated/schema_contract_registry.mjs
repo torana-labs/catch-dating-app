@@ -30965,7 +30965,7 @@ export const supplyIntakeRequestSchema = {
       "format": "date-time"
     },
     "origin": {
-      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
+      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a message a registered nominator forwarded to Catch (id is the message's receipt id), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
       "anyOf": [
         {
           "type": "null"
@@ -30983,6 +30983,7 @@ export const supplyIntakeRequestSchema = {
               "enum": [
                 "admin_nomination",
                 "sales_inbound_intent",
+                "message_nomination",
                 "discovery_run",
                 "admin_event_refresh"
               ]
@@ -31325,7 +31326,7 @@ export const supplyIntakeRequestsDocumentSchema = {
           "format": "date-time"
         },
         "origin": {
-          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
+          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a message a registered nominator forwarded to Catch (id is the message's receipt id), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
           "anyOf": [
             {
               "type": "null"
@@ -31343,6 +31344,7 @@ export const supplyIntakeRequestsDocumentSchema = {
                   "enum": [
                     "admin_nomination",
                     "sales_inbound_intent",
+                    "message_nomination",
                     "discovery_run",
                     "admin_event_refresh"
                   ]
@@ -31762,6 +31764,152 @@ export const supplyIntakeRequestsDocumentSchema = {
                   }
                 }
               }
+            },
+            "duplicateCheck": {
+              "description": "The listing's advisory comparison with the organizers Catch already lists, copied from the listing its contentHash covers. Null when the request was not compared (an event_refresh names its organizer); absent on requests completed before the worker compared listings.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "policyId",
+                    "authority",
+                    "verdict",
+                    "reasons",
+                    "organizersCompared",
+                    "inventoryHash",
+                    "inventory",
+                    "candidates"
+                  ],
+                  "properties": {
+                    "policyId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "authority": {
+                      "const": "advisory"
+                    },
+                    "verdict": {
+                      "enum": [
+                        "match",
+                        "ambiguous",
+                        "none"
+                      ]
+                    },
+                    "reasons": {
+                      "type": "array",
+                      "maxItems": 8,
+                      "items": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                      }
+                    },
+                    "organizersCompared": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    },
+                    "inventoryHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "inventory": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "citySlug",
+                        "limit",
+                        "truncated"
+                      ],
+                      "properties": {
+                        "citySlug": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 80
+                        },
+                        "limit": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 10000
+                        },
+                        "truncated": {
+                          "type": "boolean"
+                        }
+                      }
+                    },
+                    "candidates": {
+                      "type": "array",
+                      "maxItems": 12,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "organizerId",
+                          "name",
+                          "score",
+                          "band",
+                          "signals",
+                          "conflicts",
+                          "rationale"
+                        ],
+                        "properties": {
+                          "organizerId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "maxLength": 500
+                          },
+                          "score": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "band": {
+                            "enum": [
+                              "match",
+                              "probable",
+                              "review",
+                              "low"
+                            ]
+                          },
+                          "signals": {
+                            "type": "array",
+                            "maxItems": 12,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                            }
+                          },
+                          "conflicts": {
+                            "type": "array",
+                            "maxItems": 12,
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                            }
+                          },
+                          "rationale": {
+                            "type": "string",
+                            "maxLength": 2000
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
             }
           }
         }
@@ -31872,6 +32020,148 @@ export const supplyIntakeRequestsDocumentSchema = {
       "minLength": 1,
       "maxLength": 240,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]{0,79}$"
+    },
+    "duplicateCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "authority",
+        "verdict",
+        "reasons",
+        "organizersCompared",
+        "inventoryHash",
+        "inventory",
+        "candidates"
+      ],
+      "properties": {
+        "policyId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "authority": {
+          "const": "advisory"
+        },
+        "verdict": {
+          "enum": [
+            "match",
+            "ambiguous",
+            "none"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,79}$"
+          }
+        },
+        "organizersCompared": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "inventoryHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "inventory": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "citySlug",
+            "limit",
+            "truncated"
+          ],
+          "properties": {
+            "citySlug": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "truncated": {
+              "type": "boolean"
+            }
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "name",
+              "score",
+              "band",
+              "signals",
+              "conflicts",
+              "rationale"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 500
+              },
+              "score": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "band": {
+                "enum": [
+                  "match",
+                  "probable",
+                  "review",
+                  "low"
+                ]
+              },
+              "signals": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                }
+              },
+              "conflicts": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z][a-z0-9_]{0,79}$"
+                }
+              },
+              "rationale": {
+                "type": "string",
+                "maxLength": 2000
+              }
+            }
+          }
+        }
+      }
     },
     "hash": {
       "type": "string",
@@ -32068,6 +32358,97 @@ export const supplyIntakeUsageDocumentSchema = {
     "updatedAt": {
       "type": "string",
       "format": "date-time"
+    }
+  }
+};
+
+export const supplyNominatorDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/supply_nominators.schema.json",
+  "title": "SupplyNominatorDocument",
+  "description": "A person staff have allowed to nominate organizers by messaging Catch. A WhatsApp nominator is keyed by the hash of their number, which is the same endpoint hash the WhatsApp receipts use, so the number itself is never stored; only its last four digits are kept so staff can tell entries apart. Each message from an active nominator becomes Supply Intake nominations credited to their Catch account. Their authority (a sales role, or a current partner membership) is checked again on every message.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supplyNominators",
+  "x-firestore-path": "supplyNominators/{nominatorId}",
+  "x-document-id-field": "nominatorId",
+  "x-owner": "Admin nominator registry callables",
+  "required": [
+    "schemaVersion",
+    "nominatorId",
+    "channel",
+    "endpointHash",
+    "phoneLast4",
+    "role",
+    "uid",
+    "displayName",
+    "defaultMarket",
+    "active",
+    "createdAt",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "nominatorId": {
+      "type": "string",
+      "pattern": "^whatsapp-[a-f0-9]{64}$"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "whatsapp"
+      ]
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "phoneLast4": {
+      "type": "string",
+      "pattern": "^[0-9]{4}$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "associate",
+        "partner"
+      ]
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "defaultMarket": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   }
 };
@@ -147606,7 +147987,7 @@ export const externalEventPublicationReceiptDocumentSchema = {
   "x-firestore-collection": "externalEventPublicationReceipts",
   "x-firestore-path": "externalEventPublicationReceipts/{receiptId}",
   "x-document-id-field": "receiptId",
-  "x-owner": "adminPublishExternalEvent and adminTakedownExternalEvent callables",
+  "x-owner": "adminPublishListingEvents and adminTakedownExternalEvent callables and the onSupplyIntakeListingApproved trigger",
   "required": [
     "schemaVersion",
     "receiptId",
@@ -155203,6 +155584,101 @@ export const organizerDocumentSchema = {
                 "maxLength": 2048
               }
             }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "ownerLinks": {
+      "type": "array",
+      "maxItems": 20,
+      "description": "Links the owner, or staff for them, put on the organizer page, in display order. Written only by adminUpdateOrganizerDetails after the owner-link URL policy in functions/src/organizers/organizerLinks.ts.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One owner-managed link on the organizer page (CAT-254). Pinned links lead; a link with showUntil disappears after that time.",
+        "required": [
+          "id",
+          "label",
+          "subtitle",
+          "url",
+          "icon",
+          "pinned",
+          "showUntil"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "subtitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 4096,
+            "pattern": "^https://"
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "link",
+              "website",
+              "community",
+              "social",
+              "tickets",
+              "calendar",
+              "shop",
+              "partner",
+              "video",
+              "route",
+              null
+            ],
+            "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
+          },
+          "pinned": {
+            "type": "boolean"
+          },
+          "showUntil": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -185575,6 +186051,490 @@ export const organizerClaimRequestDocumentSchema = {
   }
 };
 
+export const organizerClaimVerificationDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_claim_verifications.schema.json",
+  "title": "OrganizerClaimVerificationDocument",
+  "description": "One signed-in user's attempt to prove they run an organizer listing, stored at organizerClaimVerifications/{attemptId}. The requester reads their own attempt to show its code and to follow its status; a verified attempt records the evidence and the claim request it approved.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerClaimVerifications",
+  "x-firestore-path": "organizerClaimVerifications/{attemptId}",
+  "x-document-id-field": "attemptId",
+  "x-owner": "startOrganizerClaimVerification callable and instagramClaimWebhook",
+  "required": [
+    "attemptId",
+    "organizerId",
+    "requesterUid",
+    "method",
+    "status",
+    "code",
+    "proofTarget",
+    "createdAt",
+    "updatedAt",
+    "expiresAt",
+    "verifiedAt",
+    "claimRequestId",
+    "evidence",
+    "lastRejection"
+  ],
+  "properties": {
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "requesterUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "callable-owned"
+    },
+    "method": {
+      "description": "instagramMessage: the organiser sends the code to Catch's Instagram account from the listing's handle. lumaDescription: the organiser puts the code in the listing's Luma calendar description.",
+      "type": "string",
+      "enum": [
+        "instagramMessage",
+        "lumaDescription"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "status": {
+      "description": "awaitingProof until the proof arrives. An attempt still awaitingProof after expiresAt has expired; readers treat it so.",
+      "type": "string",
+      "enum": [
+        "awaitingProof",
+        "verified",
+        "expired",
+        "superseded"
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "code": {
+      "description": "The one-time code the requester shows the proof surface. Only the requester and the server can read it.",
+      "type": "string",
+      "pattern": "^[0-9]{6}$",
+      "x-catch-ownership": "callable-owned"
+    },
+    "proofTarget": {
+      "description": "Where the proof must come from: the listing's Instagram username without @, or its Luma calendar URL.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "x-catch-ownership": "callable-owned"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "verifiedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "claimRequestId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "evidence": {
+      "description": "What proved the claim. Null until verified.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source",
+            "observedIdentity",
+            "messageKey",
+            "observedAt"
+          ],
+          "properties": {
+            "source": {
+              "type": "string",
+              "enum": [
+                "instagramMessage",
+                "lumaDescription"
+              ]
+            },
+            "observedIdentity": {
+              "description": "The Instagram username Graph API returned for the sender, or the Luma calendar URL that showed the code.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "messageKey": {
+              "description": "SHA-256 of the Instagram message id. Null for Luma.",
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "observedAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    },
+    "lastRejection": {
+      "description": "The latest proof that arrived and did not verify, so the claim page can say what to fix.",
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reason",
+            "at"
+          ],
+          "properties": {
+            "reason": {
+              "type": "string",
+              "enum": [
+                "wrongSender",
+                "codeNotFound"
+              ]
+            },
+            "at": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "callable-owned"
+    }
+  }
+};
+
+export const organizerClaimInstagramCodeDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_claim_instagram_codes.schema.json",
+  "title": "OrganizerClaimInstagramCodeDocument",
+  "description": "Server-only reservation of a live Instagram claim code, stored at organizerClaimInstagramCodes/{code}. Keying by the code keeps live codes unique and lets the webhook find the attempt without a query. Firestore TTL deletes it after expiresAt.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerClaimInstagramCodes",
+  "x-firestore-path": "organizerClaimInstagramCodes/{code}",
+  "x-document-id-field": "code",
+  "x-owner": "startOrganizerClaimVerification callable and instagramClaimWebhook",
+  "required": [
+    "code",
+    "attemptId",
+    "organizerId",
+    "expiresAt",
+    "consumedAt"
+  ],
+  "properties": {
+    "code": {
+      "type": "string",
+      "pattern": "^[0-9]{6}$",
+      "x-catch-ownership": "server-only"
+    },
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "consumedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Set when the code verified a claim or its attempt was superseded. A consumed code stays reserved until expiresAt, so a replay gets a clear answer.",
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const organizerClaimInstagramMessageDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_claim_instagram_messages.schema.json",
+  "title": "OrganizerClaimInstagramMessageDocument",
+  "description": "Server-only receipt for one Instagram direct message the claim webhook handled, stored at organizerClaimInstagramMessages/{messageKey}. Meta retries deliveries, so the receipt makes each message count once. It keeps no message text or sender id. Firestore TTL deletes it after expiresAt.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerClaimInstagramMessages",
+  "x-firestore-path": "organizerClaimInstagramMessages/{messageKey}",
+  "x-document-id-field": "messageKey",
+  "x-owner": "instagramClaimWebhook",
+  "required": [
+    "messageKey",
+    "outcome",
+    "attemptId",
+    "receivedAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "messageKey": {
+      "description": "SHA-256 of the Instagram message id.",
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "x-catch-ownership": "server-only"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "wrongSender",
+        "expiredCode",
+        "codeAlreadyUsed",
+        "unknownCode",
+        "claimUnavailable",
+        "senderUnknown",
+        "rateLimited"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "attemptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "receivedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const organizerScheduleLockDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_schedule_locks.schema.json",
@@ -189658,16 +190618,18 @@ export const organizerPublicPageDocumentSchema = {
     },
     "links": {
       "type": "array",
-      "description": "Owner links in display order. Empty until owner link editing ships (CAT-254).",
+      "description": "The owner's live links from organizers/{id}.ownerLinks (CAT-254): pinned first, otherwise in the owner's order, without links whose showUntil had passed when the page was built. Readers also hide links that have since expired.",
       "maxItems": 20,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "description": "One owner-managed link on the organizer page. Pinned links lead; a link with showUntil disappears after that time.",
+        "description": "One owner-managed link on the organizer page (CAT-254). Pinned links lead; a link with showUntil disappears after that time.",
         "required": [
           "id",
           "label",
+          "subtitle",
           "url",
+          "icon",
           "pinned",
           "showUntil"
         ],
@@ -189681,11 +190643,39 @@ export const organizerPublicPageDocumentSchema = {
             "minLength": 1,
             "maxLength": 80
           },
+          "subtitle": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 80
+          },
           "url": {
             "type": "string",
             "format": "uri",
             "maxLength": 4096,
             "pattern": "^https://"
+          },
+          "icon": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "link",
+              "website",
+              "community",
+              "social",
+              "tickets",
+              "calendar",
+              "shop",
+              "partner",
+              "video",
+              "route",
+              null
+            ],
+            "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
           },
           "pinned": {
             "type": "boolean"
@@ -189751,7 +190741,7 @@ export const organizerPublicPageDocumentSchema = {
                 "pattern": "^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/$"
               },
               "event": {
-                "description": "The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.",
+                "description": "The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.",
                 "allOf": [
                   {
                     "type": "object",
@@ -189777,15 +190767,14 @@ export const organizerPublicPageDocumentSchema = {
                       "catchExperienceActivities": {
                         "type": "array",
                         "minItems": 1,
-                        "maxItems": 3,
+                        "maxItems": 2,
                         "uniqueItems": true,
                         "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                         "items": {
                           "type": "string",
                           "enum": [
                             "introductions",
-                            "sharedActivities",
-                            "rotations"
+                            "sharedActivities"
                           ]
                         }
                       },
@@ -190046,15 +191035,14 @@ export const organizerPublicPageDocumentSchema = {
                       },
                       "admissionLabels": {
                         "type": "array",
-                        "maxItems": 4,
+                        "maxItems": 3,
                         "uniqueItems": true,
                         "items": {
                           "type": "string",
                           "enum": [
                             "approval",
                             "invitation",
-                            "membership",
-                            "balanced"
+                            "membership"
                           ]
                         }
                       },
@@ -190109,62 +191097,18 @@ export const organizerPublicPageDocumentSchema = {
                       "priceLabel": {
                         "type": "string",
                         "minLength": 1
-                      },
-                      "scorecard": {
-                        "anyOf": [
-                          {
-                            "type": "object",
-                            "additionalProperties": true
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
                       }
                     }
                   }
                 ],
                 "not": {
-                  "anyOf": [
-                    {
-                      "properties": {
-                        "activityKind": {
-                          "const": "singlesMixer"
-                        }
-                      },
-                      "required": [
-                        "activityKind"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "admissionLabels": {
-                          "contains": {
-                            "const": "balanced"
-                          }
-                        }
-                      },
-                      "required": [
-                        "admissionLabels"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "catchExperienceActivities": {
-                          "contains": {
-                            "const": "rotations"
-                          }
-                        }
-                      },
-                      "required": [
-                        "catchExperienceActivities"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "scorecard"
-                      ]
+                  "properties": {
+                    "activityKind": {
+                      "const": "singlesMixer"
                     }
+                  },
+                  "required": [
+                    "activityKind"
                   ]
                 }
               },
@@ -190397,7 +191341,7 @@ export const organizerPublicPageDocumentSchema = {
                 "pattern": "^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/$"
               },
               "event": {
-                "description": "The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.",
+                "description": "The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.",
                 "allOf": [
                   {
                     "type": "object",
@@ -190423,15 +191367,14 @@ export const organizerPublicPageDocumentSchema = {
                       "catchExperienceActivities": {
                         "type": "array",
                         "minItems": 1,
-                        "maxItems": 3,
+                        "maxItems": 2,
                         "uniqueItems": true,
                         "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                         "items": {
                           "type": "string",
                           "enum": [
                             "introductions",
-                            "sharedActivities",
-                            "rotations"
+                            "sharedActivities"
                           ]
                         }
                       },
@@ -190692,15 +191635,14 @@ export const organizerPublicPageDocumentSchema = {
                       },
                       "admissionLabels": {
                         "type": "array",
-                        "maxItems": 4,
+                        "maxItems": 3,
                         "uniqueItems": true,
                         "items": {
                           "type": "string",
                           "enum": [
                             "approval",
                             "invitation",
-                            "membership",
-                            "balanced"
+                            "membership"
                           ]
                         }
                       },
@@ -190755,62 +191697,18 @@ export const organizerPublicPageDocumentSchema = {
                       "priceLabel": {
                         "type": "string",
                         "minLength": 1
-                      },
-                      "scorecard": {
-                        "anyOf": [
-                          {
-                            "type": "object",
-                            "additionalProperties": true
-                          },
-                          {
-                            "type": "null"
-                          }
-                        ]
                       }
                     }
                   }
                 ],
                 "not": {
-                  "anyOf": [
-                    {
-                      "properties": {
-                        "activityKind": {
-                          "const": "singlesMixer"
-                        }
-                      },
-                      "required": [
-                        "activityKind"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "admissionLabels": {
-                          "contains": {
-                            "const": "balanced"
-                          }
-                        }
-                      },
-                      "required": [
-                        "admissionLabels"
-                      ]
-                    },
-                    {
-                      "properties": {
-                        "catchExperienceActivities": {
-                          "contains": {
-                            "const": "rotations"
-                          }
-                        }
-                      },
-                      "required": [
-                        "catchExperienceActivities"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "scorecard"
-                      ]
+                  "properties": {
+                    "activityKind": {
+                      "const": "singlesMixer"
                     }
+                  },
+                  "required": [
+                    "activityKind"
                   ]
                 }
               },
@@ -191748,15 +192646,14 @@ export const organizerPublicPageDocumentSchema = {
                     "catchExperienceActivities": {
                       "type": "array",
                       "minItems": 1,
-                      "maxItems": 3,
+                      "maxItems": 2,
                       "uniqueItems": true,
                       "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                       "items": {
                         "type": "string",
                         "enum": [
                           "introductions",
-                          "sharedActivities",
-                          "rotations"
+                          "sharedActivities"
                         ]
                       }
                     },
@@ -192017,15 +192914,14 @@ export const organizerPublicPageDocumentSchema = {
                     },
                     "admissionLabels": {
                       "type": "array",
-                      "maxItems": 4,
+                      "maxItems": 3,
                       "uniqueItems": true,
                       "items": {
                         "type": "string",
                         "enum": [
                           "approval",
                           "invitation",
-                          "membership",
-                          "balanced"
+                          "membership"
                         ]
                       }
                     },
@@ -192080,17 +192976,6 @@ export const organizerPublicPageDocumentSchema = {
                     "priceLabel": {
                       "type": "string",
                       "minLength": 1
-                    },
-                    "scorecard": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "additionalProperties": true
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
                     }
                   }
                 }
@@ -192191,51 +193076,6 @@ export const organizerPublicPageDocumentSchema = {
                     }
                   }
                 }
-              },
-              "eventSuccessSummary": {
-                "anyOf": [
-                  {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "bookedCount",
-                      "checkedInCount",
-                      "mutualMatchCount",
-                      "chatStartedCount",
-                      "catchSentCount",
-                      "safetyIncidentCount"
-                    ],
-                    "properties": {
-                      "bookedCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "checkedInCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "mutualMatchCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "chatStartedCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "catchSentCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      },
-                      "safetyIncidentCount": {
-                        "type": "integer",
-                        "minimum": 0
-                      }
-                    }
-                  },
-                  {
-                    "type": "null"
-                  }
-                ]
               },
               "eventEvidence": {
                 "type": "array",
@@ -192982,15 +193822,14 @@ export const organizerPublicPageDocumentSchema = {
                   "catchExperienceActivities": {
                     "type": "array",
                     "minItems": 1,
-                    "maxItems": 3,
+                    "maxItems": 2,
                     "uniqueItems": true,
                     "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                     "items": {
                       "type": "string",
                       "enum": [
                         "introductions",
-                        "sharedActivities",
-                        "rotations"
+                        "sharedActivities"
                       ]
                     }
                   },
@@ -193251,15 +194090,14 @@ export const organizerPublicPageDocumentSchema = {
                   },
                   "admissionLabels": {
                     "type": "array",
-                    "maxItems": 4,
+                    "maxItems": 3,
                     "uniqueItems": true,
                     "items": {
                       "type": "string",
                       "enum": [
                         "approval",
                         "invitation",
-                        "membership",
-                        "balanced"
+                        "membership"
                       ]
                     }
                   },
@@ -193314,17 +194152,6 @@ export const organizerPublicPageDocumentSchema = {
                   "priceLabel": {
                     "type": "string",
                     "minLength": 1
-                  },
-                  "scorecard": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "additionalProperties": true
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
                   }
                 }
               },
@@ -193419,44 +194246,6 @@ export const organizerPublicPageDocumentSchema = {
                   "dedupeKey": {
                     "type": "string",
                     "minLength": 1
-                  }
-                }
-              },
-              "eventSuccessSummary": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "bookedCount",
-                  "checkedInCount",
-                  "mutualMatchCount",
-                  "chatStartedCount",
-                  "catchSentCount",
-                  "safetyIncidentCount"
-                ],
-                "properties": {
-                  "bookedCount": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "checkedInCount": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "mutualMatchCount": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "chatStartedCount": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "catchSentCount": {
-                    "type": "integer",
-                    "minimum": 0
-                  },
-                  "safetyIncidentCount": {
-                    "type": "integer",
-                    "minimum": 0
                   }
                 }
               },
@@ -194126,11 +194915,6 @@ export const organizerPublicPageDocumentSchema = {
         "not": {
           "anyOf": [
             {
-              "required": [
-                "eventSuccessSummary"
-              ]
-            },
-            {
               "properties": {
                 "catchEvents": {
                   "minItems": 1
@@ -194439,15 +195223,14 @@ export const organizerPublicPageDocumentSchema = {
                   "catchExperienceActivities": {
                     "type": "array",
                     "minItems": 1,
-                    "maxItems": 3,
+                    "maxItems": 2,
                     "uniqueItems": true,
                     "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                     "items": {
                       "type": "string",
                       "enum": [
                         "introductions",
-                        "sharedActivities",
-                        "rotations"
+                        "sharedActivities"
                       ]
                     }
                   },
@@ -194708,15 +195491,14 @@ export const organizerPublicPageDocumentSchema = {
                   },
                   "admissionLabels": {
                     "type": "array",
-                    "maxItems": 4,
+                    "maxItems": 3,
                     "uniqueItems": true,
                     "items": {
                       "type": "string",
                       "enum": [
                         "approval",
                         "invitation",
-                        "membership",
-                        "balanced"
+                        "membership"
                       ]
                     }
                   },
@@ -194771,17 +195553,6 @@ export const organizerPublicPageDocumentSchema = {
                   "priceLabel": {
                     "type": "string",
                     "minLength": 1
-                  },
-                  "scorecard": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "additionalProperties": true
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
                   }
                 }
               }
@@ -194882,51 +195653,6 @@ export const organizerPublicPageDocumentSchema = {
                   }
                 }
               }
-            },
-            "eventSuccessSummary": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "bookedCount",
-                    "checkedInCount",
-                    "mutualMatchCount",
-                    "chatStartedCount",
-                    "catchSentCount",
-                    "safetyIncidentCount"
-                  ],
-                  "properties": {
-                    "bookedCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "checkedInCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "mutualMatchCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "chatStartedCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "catchSentCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "safetyIncidentCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    }
-                  }
-                },
-                {
-                  "type": "null"
-                }
-              ]
             },
             "eventEvidence": {
               "type": "array",
@@ -195673,15 +196399,14 @@ export const organizerPublicPageDocumentSchema = {
                 "catchExperienceActivities": {
                   "type": "array",
                   "minItems": 1,
-                  "maxItems": 3,
+                  "maxItems": 2,
                   "uniqueItems": true,
                   "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                   "items": {
                     "type": "string",
                     "enum": [
                       "introductions",
-                      "sharedActivities",
-                      "rotations"
+                      "sharedActivities"
                     ]
                   }
                 },
@@ -195942,15 +196667,14 @@ export const organizerPublicPageDocumentSchema = {
                 },
                 "admissionLabels": {
                   "type": "array",
-                  "maxItems": 4,
+                  "maxItems": 3,
                   "uniqueItems": true,
                   "items": {
                     "type": "string",
                     "enum": [
                       "approval",
                       "invitation",
-                      "membership",
-                      "balanced"
+                      "membership"
                     ]
                   }
                 },
@@ -196005,17 +196729,6 @@ export const organizerPublicPageDocumentSchema = {
                 "priceLabel": {
                   "type": "string",
                   "minLength": 1
-                },
-                "scorecard": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "additionalProperties": true
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
                 }
               }
             },
@@ -196110,44 +196823,6 @@ export const organizerPublicPageDocumentSchema = {
                 "dedupeKey": {
                   "type": "string",
                   "minLength": 1
-                }
-              }
-            },
-            "eventSuccessSummary": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "bookedCount",
-                "checkedInCount",
-                "mutualMatchCount",
-                "chatStartedCount",
-                "catchSentCount",
-                "safetyIncidentCount"
-              ],
-              "properties": {
-                "bookedCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "checkedInCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "mutualMatchCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "chatStartedCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "catchSentCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "safetyIncidentCount": {
-                  "type": "integer",
-                  "minimum": 0
                 }
               }
             },
@@ -196817,11 +197492,6 @@ export const organizerPublicPageDocumentSchema = {
       "not": {
         "anyOf": [
           {
-            "required": [
-              "eventSuccessSummary"
-            ]
-          },
-          {
             "properties": {
               "catchEvents": {
                 "minItems": 1
@@ -196942,7 +197612,7 @@ export const eventPublicPageDocumentSchema = {
               "pattern": "^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/$"
             },
             "event": {
-              "description": "The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.",
+              "description": "The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.",
               "allOf": [
                 {
                   "type": "object",
@@ -196968,15 +197638,14 @@ export const eventPublicPageDocumentSchema = {
                     "catchExperienceActivities": {
                       "type": "array",
                       "minItems": 1,
-                      "maxItems": 3,
+                      "maxItems": 2,
                       "uniqueItems": true,
                       "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                       "items": {
                         "type": "string",
                         "enum": [
                           "introductions",
-                          "sharedActivities",
-                          "rotations"
+                          "sharedActivities"
                         ]
                       }
                     },
@@ -197237,15 +197906,14 @@ export const eventPublicPageDocumentSchema = {
                     },
                     "admissionLabels": {
                       "type": "array",
-                      "maxItems": 4,
+                      "maxItems": 3,
                       "uniqueItems": true,
                       "items": {
                         "type": "string",
                         "enum": [
                           "approval",
                           "invitation",
-                          "membership",
-                          "balanced"
+                          "membership"
                         ]
                       }
                     },
@@ -197300,62 +197968,18 @@ export const eventPublicPageDocumentSchema = {
                     "priceLabel": {
                       "type": "string",
                       "minLength": 1
-                    },
-                    "scorecard": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "additionalProperties": true
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
                     }
                   }
                 }
               ],
               "not": {
-                "anyOf": [
-                  {
-                    "properties": {
-                      "activityKind": {
-                        "const": "singlesMixer"
-                      }
-                    },
-                    "required": [
-                      "activityKind"
-                    ]
-                  },
-                  {
-                    "properties": {
-                      "admissionLabels": {
-                        "contains": {
-                          "const": "balanced"
-                        }
-                      }
-                    },
-                    "required": [
-                      "admissionLabels"
-                    ]
-                  },
-                  {
-                    "properties": {
-                      "catchExperienceActivities": {
-                        "contains": {
-                          "const": "rotations"
-                        }
-                      }
-                    },
-                    "required": [
-                      "catchExperienceActivities"
-                    ]
-                  },
-                  {
-                    "required": [
-                      "scorecard"
-                    ]
+                "properties": {
+                  "activityKind": {
+                    "const": "singlesMixer"
                   }
+                },
+                "required": [
+                  "activityKind"
                 ]
               }
             },
@@ -198242,15 +198866,14 @@ export const eventPublicPageDocumentSchema = {
                   "catchExperienceActivities": {
                     "type": "array",
                     "minItems": 1,
-                    "maxItems": 3,
+                    "maxItems": 2,
                     "uniqueItems": true,
                     "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                     "items": {
                       "type": "string",
                       "enum": [
                         "introductions",
-                        "sharedActivities",
-                        "rotations"
+                        "sharedActivities"
                       ]
                     }
                   },
@@ -198511,15 +199134,14 @@ export const eventPublicPageDocumentSchema = {
                   },
                   "admissionLabels": {
                     "type": "array",
-                    "maxItems": 4,
+                    "maxItems": 3,
                     "uniqueItems": true,
                     "items": {
                       "type": "string",
                       "enum": [
                         "approval",
                         "invitation",
-                        "membership",
-                        "balanced"
+                        "membership"
                       ]
                     }
                   },
@@ -198574,17 +199196,6 @@ export const eventPublicPageDocumentSchema = {
                   "priceLabel": {
                     "type": "string",
                     "minLength": 1
-                  },
-                  "scorecard": {
-                    "anyOf": [
-                      {
-                        "type": "object",
-                        "additionalProperties": true
-                      },
-                      {
-                        "type": "null"
-                      }
-                    ]
                   }
                 }
               }
@@ -198685,51 +199296,6 @@ export const eventPublicPageDocumentSchema = {
                   }
                 }
               }
-            },
-            "eventSuccessSummary": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "bookedCount",
-                    "checkedInCount",
-                    "mutualMatchCount",
-                    "chatStartedCount",
-                    "catchSentCount",
-                    "safetyIncidentCount"
-                  ],
-                  "properties": {
-                    "bookedCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "checkedInCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "mutualMatchCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "chatStartedCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "catchSentCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "safetyIncidentCount": {
-                      "type": "integer",
-                      "minimum": 0
-                    }
-                  }
-                },
-                {
-                  "type": "null"
-                }
-              ]
             },
             "eventEvidence": {
               "type": "array",
@@ -199476,15 +200042,14 @@ export const eventPublicPageDocumentSchema = {
                 "catchExperienceActivities": {
                   "type": "array",
                   "minItems": 1,
-                  "maxItems": 3,
+                  "maxItems": 2,
                   "uniqueItems": true,
                   "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
                   "items": {
                     "type": "string",
                     "enum": [
                       "introductions",
-                      "sharedActivities",
-                      "rotations"
+                      "sharedActivities"
                     ]
                   }
                 },
@@ -199745,15 +200310,14 @@ export const eventPublicPageDocumentSchema = {
                 },
                 "admissionLabels": {
                   "type": "array",
-                  "maxItems": 4,
+                  "maxItems": 3,
                   "uniqueItems": true,
                   "items": {
                     "type": "string",
                     "enum": [
                       "approval",
                       "invitation",
-                      "membership",
-                      "balanced"
+                      "membership"
                     ]
                   }
                 },
@@ -199808,17 +200372,6 @@ export const eventPublicPageDocumentSchema = {
                 "priceLabel": {
                   "type": "string",
                   "minLength": 1
-                },
-                "scorecard": {
-                  "anyOf": [
-                    {
-                      "type": "object",
-                      "additionalProperties": true
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
                 }
               }
             },
@@ -199913,44 +200466,6 @@ export const eventPublicPageDocumentSchema = {
                 "dedupeKey": {
                   "type": "string",
                   "minLength": 1
-                }
-              }
-            },
-            "eventSuccessSummary": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "bookedCount",
-                "checkedInCount",
-                "mutualMatchCount",
-                "chatStartedCount",
-                "catchSentCount",
-                "safetyIncidentCount"
-              ],
-              "properties": {
-                "bookedCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "checkedInCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "mutualMatchCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "chatStartedCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "catchSentCount": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "safetyIncidentCount": {
-                  "type": "integer",
-                  "minimum": 0
                 }
               }
             },
@@ -200620,11 +201135,6 @@ export const eventPublicPageDocumentSchema = {
       "not": {
         "anyOf": [
           {
-            "required": [
-              "eventSuccessSummary"
-            ]
-          },
-          {
             "properties": {
               "catchEvents": {
                 "minItems": 1
@@ -200705,6 +201215,713 @@ export const publicPageBuildDocumentSchema = {
     "eventPageCount": {
       "type": "integer",
       "minimum": 0
+    }
+  }
+};
+
+export const cityPlansDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/city_plans.schema.json",
+  "title": "CityPlansDocument",
+  "description": "Read model holding what the website shows for one city, stored at cityPlans/{citySlug}: the plans starting in the next 14 days, how many there are of each format, the organisers behind them and whether the city is live or launching soon. Functions build it from the published organizer page read models (and, for cities that have not launched, from published organizers), so it adds no publication rule of its own. It never holds contact details, owner identities, rosters or dating fields. Only the Admin SDK reads it.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "cityPlans",
+  "x-firestore-path": "cityPlans/{citySlug}",
+  "x-document-id-field": "citySlug",
+  "x-catch-ownership": "trigger-owned",
+  "x-owner": "functions/src/cityPlans: the organizer page trigger and the hourly rebuild. No client reads or writes.",
+  "required": [
+    "schemaVersion",
+    "citySlug",
+    "cityLabel",
+    "marketStatus",
+    "status",
+    "builtAt",
+    "windowStart",
+    "windowEnd",
+    "planCount",
+    "formatCounts",
+    "plans",
+    "organizers"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "citySlug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 60
+    },
+    "cityLabel": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "marketStatus": {
+      "type": "string",
+      "description": "The market's launch status in functions/src/locations/marketConfig.ts.",
+      "enum": [
+        "launched",
+        "planned"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "description": "live when the market has launched and has enough plans in the window to fill a page; otherwise launchingSoon, so a thin city never renders a sparse page.",
+      "enum": [
+        "live",
+        "launchingSoon"
+      ]
+    },
+    "builtAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "windowStart": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the build read its sources. Plans that ended before this are left out."
+    },
+    "windowEnd": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Fourteen days after windowStart. Plans starting at or after this are left out."
+    },
+    "planCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Every plan in the window, which may be more than plans holds."
+    },
+    "formatCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Plans in the window by format.",
+      "required": [
+        "run",
+        "dinner",
+        "games",
+        "courts",
+        "nightsOut",
+        "other"
+      ],
+      "properties": {
+        "run": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dinner": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "games": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "courts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nightsOut": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "other": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "plans": {
+      "type": "array",
+      "description": "Plans in the window, soonest first.",
+      "maxItems": 120,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "One plan as a city page lists it. Live booking terms are rechecked on its event page, never trusted from this snapshot.",
+        "required": [
+          "source",
+          "eventId",
+          "path",
+          "title",
+          "format",
+          "activityKind",
+          "startTime",
+          "endTime",
+          "date",
+          "location",
+          "priceLabel",
+          "photoUrl",
+          "spotsLeft",
+          "organizer"
+        ],
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": [
+              "catch",
+              "external"
+            ]
+          },
+          "eventId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+          },
+          "path": {
+            "type": "string",
+            "maxLength": 200,
+            "pattern": "^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "format": {
+            "type": "string",
+            "description": "The homepage format a plan's activity belongs to.",
+            "enum": [
+              "run",
+              "dinner",
+              "games",
+              "courts",
+              "nightsOut",
+              "other"
+            ]
+          },
+          "activityKind": {
+            "type": "string",
+            "minLength": 1,
+            "not": {
+              "const": "singlesMixer"
+            }
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "date": {
+            "type": "string",
+            "minLength": 1
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priceLabel": {
+            "type": "string",
+            "minLength": 1
+          },
+          "photoUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 4096,
+                "pattern": "^https://"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "spotsLeft": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Places left on a Catch plan; null for an imported plan, which books on its source."
+          },
+          "organizer": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "name",
+              "path"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "path": {
+                "type": "string",
+                "maxLength": 240,
+                "pattern": "^/organizers/(?:[a-z0-9-]+/){1,2}$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "organizers": {
+      "type": "array",
+      "description": "Organisers in the city: those with a plan in the window first, soonest plan first, then by followers.",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "name",
+          "path",
+          "category",
+          "logo",
+          "formats",
+          "followerCount",
+          "claimState",
+          "upcomingPlanCount",
+          "nextPlan"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "description": "The organiser page, or null while the city has not launched and the organiser has no public page yet.",
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 240,
+                "pattern": "^/organizers/(?:[a-z0-9-]+/){1,2}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1
+          },
+          "logo": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mode",
+              "text",
+              "status"
+            ],
+            "properties": {
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "monogram"
+                ]
+              },
+              "text": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "formats": {
+            "type": "array",
+            "description": "Formats the organiser runs, from its plans and its listed formats.",
+            "maxItems": 6,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "description": "The homepage format a plan's activity belongs to.",
+              "enum": [
+                "run",
+                "dinner",
+                "games",
+                "courts",
+                "nightsOut",
+                "other"
+              ]
+            }
+          },
+          "followerCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "claimState": {
+            "type": "string",
+            "enum": [
+              "unclaimed",
+              "claimPending",
+              "claimed",
+              "verified"
+            ]
+          },
+          "upcomingPlanCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The organiser's plans in the window."
+          },
+          "nextPlan": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "eventId",
+                  "path",
+                  "title",
+                  "startTime",
+                  "date"
+                ],
+                "properties": {
+                  "eventId": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+                  },
+                  "path": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "pattern": "^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/$"
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "startTime": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "date": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "format": {
+      "type": "string",
+      "description": "The homepage format a plan's activity belongs to.",
+      "enum": [
+        "run",
+        "dinner",
+        "games",
+        "courts",
+        "nightsOut",
+        "other"
+      ]
+    },
+    "cityPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "One plan as a city page lists it. Live booking terms are rechecked on its event page, never trusted from this snapshot.",
+      "required": [
+        "source",
+        "eventId",
+        "path",
+        "title",
+        "format",
+        "activityKind",
+        "startTime",
+        "endTime",
+        "date",
+        "location",
+        "priceLabel",
+        "photoUrl",
+        "spotsLeft",
+        "organizer"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "catch",
+            "external"
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 200,
+          "pattern": "^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "format": {
+          "type": "string",
+          "description": "The homepage format a plan's activity belongs to.",
+          "enum": [
+            "run",
+            "dinner",
+            "games",
+            "courts",
+            "nightsOut",
+            "other"
+          ]
+        },
+        "activityKind": {
+          "type": "string",
+          "minLength": 1,
+          "not": {
+            "const": "singlesMixer"
+          }
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "date": {
+          "type": "string",
+          "minLength": 1
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priceLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "photoUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 4096,
+              "pattern": "^https://"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spotsLeft": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Places left on a Catch plan; null for an imported plan, which books on its source."
+        },
+        "organizer": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerId",
+            "name",
+            "path"
+          ],
+          "properties": {
+            "organizerId": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "path": {
+              "type": "string",
+              "maxLength": 240,
+              "pattern": "^/organizers/(?:[a-z0-9-]+/){1,2}$"
+            }
+          }
+        }
+      }
+    },
+    "cityOrganizer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "name",
+        "path",
+        "category",
+        "logo",
+        "formats",
+        "followerCount",
+        "claimState",
+        "upcomingPlanCount",
+        "nextPlan"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "path": {
+          "description": "The organiser page, or null while the city has not launched and the organiser has no public page yet.",
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 240,
+              "pattern": "^/organizers/(?:[a-z0-9-]+/){1,2}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "logo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "text",
+            "status"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "monogram"
+              ]
+            },
+            "text": {
+              "type": "string",
+              "minLength": 1
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "formats": {
+          "type": "array",
+          "description": "Formats the organiser runs, from its plans and its listed formats.",
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "description": "The homepage format a plan's activity belongs to.",
+            "enum": [
+              "run",
+              "dinner",
+              "games",
+              "courts",
+              "nightsOut",
+              "other"
+            ]
+          }
+        },
+        "followerCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "claimState": {
+          "type": "string",
+          "enum": [
+            "unclaimed",
+            "claimPending",
+            "claimed",
+            "verified"
+          ]
+        },
+        "upcomingPlanCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The organiser's plans in the window."
+        },
+        "nextPlan": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "eventId",
+                "path",
+                "title",
+                "startTime",
+                "date"
+              ],
+              "properties": {
+                "eventId": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+                },
+                "path": {
+                  "type": "string",
+                  "maxLength": 200,
+                  "pattern": "^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "startTime": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "date": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
     }
   }
 };
@@ -246560,7 +247777,8 @@ export const hostAnalyticsEventSchema = {
         "eventSave",
         "contactClick",
         "claimClick",
-        "outboundClick"
+        "outboundClick",
+        "linkClick"
       ]
     },
     "club_id": {
@@ -246605,6 +247823,37 @@ export const hostAnalyticsEventSchema = {
         "null"
       ],
       "maxLength": 40
+    },
+    "link_id": {
+      "description": "The owner link a linkClick opened; null for other events.",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "traffic_source": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "instagram",
+        "whatsapp",
+        "facebook",
+        "google",
+        "qr",
+        "email",
+        "direct",
+        "other",
+        null
+      ],
+      "description": "Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent."
     },
     "ingested_at": {
       "type": "string",
@@ -249241,6 +250490,7 @@ export const hostAnalyticsSnapshotDocumentSchema = {
         "topEvents",
         "reviewSummary",
         "discoverySummary",
+        "linkSummary",
         "dataQuality"
       ],
       "properties": {
@@ -249668,7 +250918,8 @@ export const hostAnalyticsSnapshotDocumentSchema = {
             "eventSaves",
             "contactClicks",
             "claimClicks",
-            "outboundClicks"
+            "outboundClicks",
+            "linkClicks"
           ],
           "properties": {
             "listingViews": {
@@ -249702,6 +250953,90 @@ export const hostAnalyticsSnapshotDocumentSchema = {
             "outboundClicks": {
               "type": "integer",
               "minimum": 0
+            },
+            "linkClicks": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "linkSummary": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Owner link clicks in the range (CAT-254): each link's total, most clicked first, and where the clicking visitors came from. Event-scoped reports have none.",
+          "required": [
+            "links",
+            "trafficSources"
+          ],
+          "properties": {
+            "links": {
+              "type": "array",
+              "maxItems": 50,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "organizerId",
+                  "linkId",
+                  "label",
+                  "clicks"
+                ],
+                "properties": {
+                  "organizerId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "linkId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "label": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80,
+                    "description": "The link's current label; null once the owner has removed it."
+                  },
+                  "clicks": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "trafficSources": {
+              "type": "array",
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "source",
+                  "clicks"
+                ],
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "instagram",
+                      "whatsapp",
+                      "facebook",
+                      "google",
+                      "qr",
+                      "email",
+                      "direct",
+                      "other"
+                    ]
+                  },
+                  "clicks": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                }
+              }
             }
           }
         },
@@ -251555,416 +252890,6 @@ export const organizerIntakeFieldCorrectionDocumentSchema = {
             "maxLength": 500
           }
         }
-      ]
-    }
-  }
-};
-
-export const organizerEventCandidateReviewDecisionDocumentSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/organizer_event_candidate_review_decisions.schema.json",
-  "title": "OrganizerEventCandidateReviewDecisionDocument",
-  "description": "Latest admin event-candidate review decision stored at organizerEventCandidateReviewDecisions/{decisionId}. Raw provider event evidence and imported events are not stored here.",
-  "type": "object",
-  "additionalProperties": false,
-  "x-firestore-collection": "organizerEventCandidateReviewDecisions",
-  "x-firestore-path": "organizerEventCandidateReviewDecisions/{decisionId}",
-  "x-document-id-field": "decisionId",
-  "x-owner": "adminDecideOrganizerEventCandidate callable",
-  "required": [
-    "schemaVersion",
-    "decisionId",
-    "candidateId",
-    "decision",
-    "decisionStatus",
-    "checklist",
-    "note",
-    "reviewedByUid",
-    "reviewedAt",
-    "updatedAt",
-    "importState"
-  ],
-  "properties": {
-    "schemaVersion": {
-      "type": "integer",
-      "const": 1
-    },
-    "decisionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "candidateId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "approve_for_import",
-        "hold",
-        "reject"
-      ]
-    },
-    "decisionStatus": {
-      "type": "string",
-      "enum": [
-        "approved_for_import",
-        "held",
-        "rejected"
-      ]
-    },
-    "checklist": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "identityReviewed",
-        "sourceEventReviewed",
-        "timeReviewed",
-        "locationReviewed",
-        "dedupeReviewed",
-        "ownerSafeCopyReviewed",
-        "importPolicyAcknowledged"
-      ],
-      "properties": {
-        "identityReviewed": {
-          "type": "boolean"
-        },
-        "sourceEventReviewed": {
-          "type": "boolean"
-        },
-        "timeReviewed": {
-          "type": "boolean"
-        },
-        "locationReviewed": {
-          "type": "boolean"
-        },
-        "dedupeReviewed": {
-          "type": "boolean"
-        },
-        "ownerSafeCopyReviewed": {
-          "type": "boolean"
-        },
-        "importPolicyAcknowledged": {
-          "type": "boolean"
-        }
-      }
-    },
-    "blockerResolutions": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "title": "ExternalEventBlockerResolution",
-        "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "blockerCode",
-          "outcome",
-          "policyGapDecisionId",
-          "note"
-        ],
-        "properties": {
-          "blockerCode": {
-            "type": "string",
-            "enum": [
-              "missing_exact_coordinates",
-              "missing_end_time",
-              "missing_location_detail",
-              "requires_event_defaults_policy",
-              "requires_owner_safe_copy_review",
-              "duplicate_normalized_event_key"
-            ]
-          },
-          "outcome": {
-            "type": "string",
-            "enum": [
-              "resolved",
-              "waived"
-            ]
-          },
-          "policyGapDecisionId": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "note": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1000
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "outcome": {
-                  "const": "waived"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "policyGapDecisionId": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "outcome": {
-                  "const": "resolved"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "policyGapDecisionId": {
-                  "type": "null"
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-    "note": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    },
-    "reviewedByUid": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "reviewedAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      }
-    },
-    "updatedAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      }
-    },
-    "importState": {
-      "type": "string",
-      "enum": [
-        "blocked_by_policy",
-        "not_importable",
-        "pending_import"
-      ]
-    }
-  }
-};
-
-export const organizerEventLocationResolutionDecisionDocumentSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/organizer_event_location_resolution_decisions.schema.json",
-  "title": "OrganizerEventLocationResolutionDecisionDocument",
-  "description": "Latest admin-reviewed event location resolution stored at organizerEventLocationResolutionDecisions/{resolutionId}. Raw provider lookup responses and imported events are not stored here.",
-  "type": "object",
-  "additionalProperties": false,
-  "x-firestore-collection": "organizerEventLocationResolutionDecisions",
-  "x-firestore-path": "organizerEventLocationResolutionDecisions/{resolutionId}",
-  "x-document-id-field": "resolutionId",
-  "x-owner": "adminResolveOrganizerEventLocation callable",
-  "required": [
-    "schemaVersion",
-    "resolutionId",
-    "candidateId",
-    "location",
-    "checklist",
-    "note",
-    "reviewedByUid",
-    "reviewedAt",
-    "updatedAt",
-    "resolutionStatus"
-  ],
-  "properties": {
-    "schemaVersion": {
-      "type": "integer",
-      "const": 1
-    },
-    "resolutionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "candidateId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    },
-    "location": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "name",
-        "latitude",
-        "longitude"
-      ],
-      "properties": {
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "address": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 500
-        },
-        "placeId": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1,
-          "maxLength": 256
-        },
-        "latitude": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "minimum": -90,
-          "maximum": 90
-        },
-        "longitude": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "minimum": -180,
-          "maximum": 180
-        },
-        "notes": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      }
-    },
-    "checklist": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "sourceLocationReviewed",
-        "coordinatesReviewed",
-        "placeIdentityReviewed",
-        "importSafetyReviewed"
-      ],
-      "properties": {
-        "sourceLocationReviewed": {
-          "type": "boolean"
-        },
-        "coordinatesReviewed": {
-          "type": "boolean"
-        },
-        "placeIdentityReviewed": {
-          "type": "boolean"
-        },
-        "importSafetyReviewed": {
-          "type": "boolean"
-        }
-      }
-    },
-    "note": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    },
-    "reviewedByUid": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "reviewedAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      }
-    },
-    "updatedAt": {
-      "type": "object",
-      "description": "Serialized Firestore Timestamp fixture shape.",
-      "x-firestore-type": "timestamp",
-      "additionalProperties": false,
-      "required": [
-        "_seconds",
-        "_nanoseconds"
-      ],
-      "properties": {
-        "_seconds": {
-          "type": "integer"
-        },
-        "_nanoseconds": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 999999999
-        }
-      }
-    },
-    "resolutionStatus": {
-      "type": "string",
-      "enum": [
-        "resolved"
       ]
     }
   }
@@ -256435,6 +257360,187 @@ export const requestOrganizerClaimCallableResponseSchema = {
   }
 };
 
+export const startOrganizerClaimVerificationCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/start_organizer_claim_verification_payload.schema.json",
+  "title": "StartOrganizerClaimVerificationCallablePayload",
+  "description": "Callable payload accepted by startOrganizerClaimVerification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "method"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "instagramMessage",
+        "lumaDescription"
+      ]
+    }
+  }
+};
+
+export const startOrganizerClaimVerificationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/start_organizer_claim_verification_response.schema.json",
+  "title": "StartOrganizerClaimVerificationCallableResponse",
+  "description": "Callable response returned by startOrganizerClaimVerification: the live attempt and the code to show. Starting again while an attempt has more than five minutes left returns that attempt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attemptId",
+    "organizerId",
+    "method",
+    "code",
+    "proofTarget",
+    "catchInstagramHandle",
+    "expiresAt"
+  ],
+  "properties": {
+    "attemptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "method": {
+      "type": "string",
+      "enum": [
+        "instagramMessage",
+        "lumaDescription"
+      ]
+    },
+    "code": {
+      "type": "string",
+      "pattern": "^[0-9]{6}$"
+    },
+    "proofTarget": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "catchInstagramHandle": {
+      "description": "Catch's Instagram username without @, for instagramMessage attempts.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 30
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+};
+
+export const getOrganizerClaimVerificationOptionsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_claim_verification_options_payload.schema.json",
+  "title": "GetOrganizerClaimVerificationOptionsCallablePayload",
+  "description": "Callable payload accepted by getOrganizerClaimVerificationOptions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const organizerClaimVerificationOptionsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_claim_verification_options_response.schema.json",
+  "title": "OrganizerClaimVerificationOptionsCallableResponse",
+  "description": "Callable response returned by getOrganizerClaimVerificationOptions: which ways of proving ownership this listing offers the signed-in user. Staff review stays available whatever this says.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "methods",
+    "catchInstagramHandle"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "methods": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "method",
+          "available",
+          "proofTarget",
+          "unavailableReason"
+        ],
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": [
+              "instagramMessage",
+              "lumaDescription"
+            ]
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "proofTarget": {
+            "description": "The listing's Instagram username without @, or its Luma calendar URL.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "unavailableReason": {
+            "description": "turnedOff: Catch has not switched this method on. noSourceOnListing: the listing has no Instagram account or Luma calendar to check.",
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "turnedOff",
+                  "noSourceOnListing"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "catchInstagramHandle": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 30
+    }
+  }
+};
+
 export const adminDecideOrganizerClaimCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_decide_organizer_claim_payload.schema.json",
@@ -257939,6 +259045,7 @@ export const hostAnalyticsCallableResponseSchema = {
     "topEvents",
     "reviewSummary",
     "discoverySummary",
+    "linkSummary",
     "dataQuality"
   ],
   "properties": {
@@ -258366,7 +259473,8 @@ export const hostAnalyticsCallableResponseSchema = {
         "eventSaves",
         "contactClicks",
         "claimClicks",
-        "outboundClicks"
+        "outboundClicks",
+        "linkClicks"
       ],
       "properties": {
         "listingViews": {
@@ -258400,6 +259508,90 @@ export const hostAnalyticsCallableResponseSchema = {
         "outboundClicks": {
           "type": "integer",
           "minimum": 0
+        },
+        "linkClicks": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "linkSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Owner link clicks in the range (CAT-254): each link's total, most clicked first, and where the clicking visitors came from. Event-scoped reports have none.",
+      "required": [
+        "links",
+        "trafficSources"
+      ],
+      "properties": {
+        "links": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organizerId",
+              "linkId",
+              "label",
+              "clicks"
+            ],
+            "properties": {
+              "organizerId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "linkId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "label": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 80,
+                "description": "The link's current label; null once the owner has removed it."
+              },
+              "clicks": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "trafficSources": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "source",
+              "clicks"
+            ],
+            "properties": {
+              "source": {
+                "type": "string",
+                "enum": [
+                  "instagram",
+                  "whatsapp",
+                  "facebook",
+                  "google",
+                  "qr",
+                  "email",
+                  "direct",
+                  "other"
+                ]
+              },
+              "clicks": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
         }
       }
     },
@@ -260311,161 +261503,6 @@ export const adminRecordActionExecutionCallablePayloadSchema = {
   }
 };
 
-export const adminDecideOrganizerEventCandidateCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
-  "title": "AdminDecideOrganizerEventCandidateCallablePayload",
-  "description": "Callable payload accepted by adminDecideOrganizerEventCandidate. This records a manual admin review decision for a private external event candidate without importing the event.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "candidateId",
-    "decision",
-    "checklist",
-    "blockerResolutions",
-    "note"
-  ],
-  "properties": {
-    "candidateId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    },
-    "decision": {
-      "type": "string",
-      "enum": [
-        "approve_for_import",
-        "hold",
-        "reject"
-      ]
-    },
-    "checklist": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "identityReviewed",
-        "sourceEventReviewed",
-        "timeReviewed",
-        "locationReviewed",
-        "dedupeReviewed",
-        "ownerSafeCopyReviewed",
-        "importPolicyAcknowledged"
-      ],
-      "properties": {
-        "identityReviewed": {
-          "type": "boolean"
-        },
-        "sourceEventReviewed": {
-          "type": "boolean"
-        },
-        "timeReviewed": {
-          "type": "boolean"
-        },
-        "locationReviewed": {
-          "type": "boolean"
-        },
-        "dedupeReviewed": {
-          "type": "boolean"
-        },
-        "ownerSafeCopyReviewed": {
-          "type": "boolean"
-        },
-        "importPolicyAcknowledged": {
-          "type": "boolean"
-        }
-      }
-    },
-    "blockerResolutions": {
-      "type": "array",
-      "maxItems": 6,
-      "items": {
-        "title": "ExternalEventBlockerResolution",
-        "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "blockerCode",
-          "outcome",
-          "policyGapDecisionId",
-          "note"
-        ],
-        "properties": {
-          "blockerCode": {
-            "type": "string",
-            "enum": [
-              "missing_exact_coordinates",
-              "missing_end_time",
-              "missing_location_detail",
-              "requires_event_defaults_policy",
-              "requires_owner_safe_copy_review",
-              "duplicate_normalized_event_key"
-            ]
-          },
-          "outcome": {
-            "type": "string",
-            "enum": [
-              "resolved",
-              "waived"
-            ]
-          },
-          "policyGapDecisionId": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "minLength": 1,
-            "maxLength": 180
-          },
-          "note": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 1000
-          }
-        },
-        "allOf": [
-          {
-            "if": {
-              "properties": {
-                "outcome": {
-                  "const": "waived"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "policyGapDecisionId": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          {
-            "if": {
-              "properties": {
-                "outcome": {
-                  "const": "resolved"
-                }
-              }
-            },
-            "then": {
-              "properties": {
-                "policyGapDecisionId": {
-                  "type": "null"
-                }
-              }
-            }
-          }
-        ]
-      }
-    },
-    "note": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    }
-  }
-};
-
 export const adminNominateOrganizerCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/admin_nominate_organizer_payload.schema.json",
@@ -260760,7 +261797,8 @@ export const adminListOrganizerListingReviewsCallableResponseSchema = {
           "origin",
           "market",
           "suggestedSlug",
-          "listing"
+          "listing",
+          "duplicateCheck"
         ],
         "properties": {
           "requestId": {
@@ -260931,6 +261969,96 @@ export const adminListOrganizerListingReviewsCallableResponseSchema = {
                 "minimum": 0
               }
             }
+          },
+          "duplicateCheck": {
+            "description": "How the listing compares with the organizers Catch already lists. Advisory: it never blocks approval. Null when the listing was not compared, or was built before listings were compared.",
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "verdict",
+                  "organizersCompared",
+                  "citySlug",
+                  "truncated",
+                  "candidates"
+                ],
+                "properties": {
+                  "verdict": {
+                    "enum": [
+                      "match",
+                      "ambiguous",
+                      "none"
+                    ]
+                  },
+                  "organizersCompared": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "citySlug": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 80,
+                    "description": "The city the comparison was limited to; null when it compared every city."
+                  },
+                  "truncated": {
+                    "type": "boolean",
+                    "description": "Whether more published organizers existed than were compared."
+                  },
+                  "candidates": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "organizerId",
+                        "name",
+                        "score",
+                        "band",
+                        "rationale"
+                      ],
+                      "properties": {
+                        "organizerId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        "name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "maxLength": 500
+                        },
+                        "score": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "band": {
+                          "enum": [
+                            "match",
+                            "probable",
+                            "review",
+                            "low"
+                          ]
+                        },
+                        "rationale": {
+                          "type": "string",
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
           }
         }
       }
@@ -261455,11 +262583,253 @@ export const adminPublishListingEventsCallablePayloadSchema = {
           }
         }
       }
+    },
+    "eventLocations": {
+      "type": "array",
+      "maxItems": 60,
+      "description": "Map locations the reviewer supplied for events whose source page gave none. The coordinates clear missing_exact_coordinates; a venue name or address fills one the page left out.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventWorkItemId",
+          "name",
+          "address",
+          "placeId",
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "eventWorkItemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "address": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "placeId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "latitude": {
+            "type": "number",
+            "minimum": -90,
+            "maximum": 90
+          },
+          "longitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180
+          }
+        }
+      }
     }
   },
   "x-callable-aliases": [
     "adminPublishListingEvents"
   ]
+};
+
+export const adminSetSupplyNominatorCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_set_supply_nominator_payload.schema.json",
+  "title": "AdminSetSupplyNominatorCallablePayload",
+  "description": "Adds or updates someone who may nominate organizers by sending links to Catch's WhatsApp number. Messages from this number become Supply Intake nominations credited to the uid. The uid must hold a sales role (associate) or a current partner membership (partner). Setting active to false stops new messages counting; nothing is deleted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "phoneE164",
+    "uid",
+    "role",
+    "displayName",
+    "defaultMarket",
+    "active"
+  ],
+  "properties": {
+    "phoneE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "uid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "associate",
+        "partner"
+      ]
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "defaultMarket": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "active": {
+      "type": "boolean"
+    }
+  },
+  "x-callable-aliases": [
+    "adminSetSupplyNominator"
+  ]
+};
+
+export const adminSetSupplyNominatorCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_set_supply_nominator_response.schema.json",
+  "title": "AdminSetSupplyNominatorCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nominatorId",
+    "created",
+    "phoneLast4",
+    "defaultMarket",
+    "active"
+  ],
+  "properties": {
+    "nominatorId": {
+      "type": "string",
+      "pattern": "^whatsapp-[a-f0-9]{64}$"
+    },
+    "created": {
+      "type": "boolean"
+    },
+    "phoneLast4": {
+      "type": "string",
+      "pattern": "^[0-9]{4}$"
+    },
+    "defaultMarket": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    },
+    "active": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const adminListSupplyNominatorsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_supply_nominators_payload.schema.json",
+  "title": "AdminListSupplyNominatorsCallablePayload",
+  "description": "Lists everyone who may nominate organizers by messaging Catch, active or not. Numbers appear only as their last four digits.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "x-callable-aliases": [
+    "adminListSupplyNominators"
+  ]
+};
+
+export const adminListSupplyNominatorsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_supply_nominators_response.schema.json",
+  "title": "AdminListSupplyNominatorsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nominators"
+  ],
+  "properties": {
+    "nominators": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "nominatorId",
+          "channel",
+          "phoneLast4",
+          "role",
+          "uid",
+          "displayName",
+          "defaultMarket",
+          "active",
+          "updatedAt"
+        ],
+        "properties": {
+          "nominatorId": {
+            "type": "string",
+            "pattern": "^whatsapp-[a-f0-9]{64}$"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "whatsapp"
+            ]
+          },
+          "phoneLast4": {
+            "type": "string",
+            "pattern": "^[0-9]{4}$"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "associate",
+              "partner"
+            ]
+          },
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "defaultMarket": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-z][a-z0-9-]{1,49}$"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
 };
 
 export const adminListSupplyIntakePoliciesCallablePayloadSchema = {
@@ -261869,111 +263239,6 @@ export const adminDecideOrganizerPolicyGapCallablePayloadSchema = {
           "type": "boolean"
         },
         "behaviorStillDisabledAcknowledged": {
-          "type": "boolean"
-        }
-      }
-    },
-    "note": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    }
-  }
-};
-
-export const adminResolveOrganizerEventLocationCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
-  "title": "AdminResolveOrganizerEventLocationCallablePayload",
-  "description": "Callable payload accepted by adminResolveOrganizerEventLocation. This records reviewed coordinates for a private external event candidate without importing the event.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "candidateId",
-    "location",
-    "checklist",
-    "note"
-  ],
-  "properties": {
-    "candidateId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    },
-    "location": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "name",
-        "latitude",
-        "longitude"
-      ],
-      "properties": {
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "address": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 500
-        },
-        "placeId": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1,
-          "maxLength": 256
-        },
-        "latitude": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "minimum": -90,
-          "maximum": 90
-        },
-        "longitude": {
-          "type": [
-            "number",
-            "null"
-          ],
-          "minimum": -180,
-          "maximum": 180
-        },
-        "notes": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      }
-    },
-    "checklist": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "sourceLocationReviewed",
-        "coordinatesReviewed",
-        "placeIdentityReviewed",
-        "importSafetyReviewed"
-      ],
-      "properties": {
-        "sourceLocationReviewed": {
-          "type": "boolean"
-        },
-        "coordinatesReviewed": {
-          "type": "boolean"
-        },
-        "placeIdentityReviewed": {
-          "type": "boolean"
-        },
-        "importSafetyReviewed": {
           "type": "boolean"
         }
       }
@@ -262522,6 +263787,80 @@ export const adminUpdateClubDetailsCallablePayloadSchema = {
             }
           }
         },
+        "ownerLinks": {
+          "type": "array",
+          "maxItems": 20,
+          "description": "Replaces the organizer page links, in display order. An empty array removes them.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "An owner link as an admin edit sends it. showUntil is an ISO date-time; the server checks the URL against the owner-link policy before saving.",
+            "required": [
+              "id",
+              "label",
+              "subtitle",
+              "url",
+              "icon",
+              "pinned",
+              "showUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "subtitle": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 4096,
+                "pattern": "^https://"
+              },
+              "icon": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "link",
+                  "website",
+                  "community",
+                  "social",
+                  "tickets",
+                  "calendar",
+                  "shop",
+                  "partner",
+                  "video",
+                  "route",
+                  null
+                ],
+                "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
+              },
+              "pinned": {
+                "type": "boolean"
+              },
+              "showUntil": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
+            }
+          }
+        },
         "publicProfile": {
           "type": "object",
           "additionalProperties": false,
@@ -262923,6 +264262,80 @@ export const adminUpdateOrganizerDetailsCallablePayloadSchema = {
                 "sourceBacked",
                 "ownerVerified"
               ]
+            }
+          }
+        },
+        "ownerLinks": {
+          "type": "array",
+          "maxItems": 20,
+          "description": "Replaces the organizer page links, in display order. An empty array removes them.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "An owner link as an admin edit sends it. showUntil is an ISO date-time; the server checks the URL against the owner-link policy before saving.",
+            "required": [
+              "id",
+              "label",
+              "subtitle",
+              "url",
+              "icon",
+              "pinned",
+              "showUntil"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,179}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "subtitle": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 4096,
+                "pattern": "^https://"
+              },
+              "icon": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "link",
+                  "website",
+                  "community",
+                  "social",
+                  "tickets",
+                  "calendar",
+                  "shop",
+                  "partner",
+                  "video",
+                  "route",
+                  null
+                ],
+                "description": "What an owner link is for, which picks its icon. Null lets the page infer one from the URL."
+              },
+              "pinned": {
+                "type": "boolean"
+              },
+              "showUntil": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "date-time"
+              }
             }
           }
         },
@@ -264110,76 +265523,6 @@ export const adminUpdateEventDetailsCallablePayloadSchema = {
               "minimum": 0
             }
           }
-        }
-      }
-    }
-  }
-};
-
-export const adminPublishExternalEventCallablePayloadSchema = {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
-  "title": "AdminPublishExternalEventCallablePayload",
-  "description": "Callable payload accepted by adminPublishExternalEvent. This publishes one preflight-approved read-only externalEvents/{eventId} document from eventSupplyReadiness/current.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "sourceActionId",
-    "targetPath",
-    "executionMode",
-    "idempotencyKey",
-    "reviewNote",
-    "checklist"
-  ],
-  "properties": {
-    "sourceActionId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 240
-    },
-    "targetPath": {
-      "type": "string",
-      "pattern": "^externalEvents/[A-Za-z0-9_-]{1,180}$"
-    },
-    "executionMode": {
-      "type": "string",
-      "enum": [
-        "dry_run",
-        "apply"
-      ]
-    },
-    "idempotencyKey": {
-      "type": "string",
-      "minLength": 8,
-      "maxLength": 180,
-      "pattern": "^[A-Za-z0-9:_-]+$"
-    },
-    "reviewNote": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1000
-    },
-    "checklist": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "preflightActionReviewed",
-        "outboundLinksReviewed",
-        "noCatchBookingPaymentsWaitlist",
-        "ownerSafeCopyReviewed"
-      ],
-      "properties": {
-        "preflightActionReviewed": {
-          "type": "boolean"
-        },
-        "outboundLinksReviewed": {
-          "type": "boolean"
-        },
-        "noCatchBookingPaymentsWaitlist": {
-          "type": "boolean"
-        },
-        "ownerSafeCopyReviewed": {
-          "type": "boolean"
         }
       }
     }
@@ -279204,8 +280547,40 @@ export const recordOrganizerAnalyticsEventCallablePayloadSchema = {
         "eventSave",
         "contactClick",
         "claimClick",
-        "outboundClick"
+        "outboundClick",
+        "linkClick"
       ]
+    },
+    "linkId": {
+      "description": "The owner link a linkClick opened, one of the organizer's ownerLinks ids. Other events send null.",
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "trafficSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "instagram",
+        "whatsapp",
+        "facebook",
+        "google",
+        "qr",
+        "email",
+        "direct",
+        "other",
+        null
+      ],
+      "description": "Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent."
     },
     "pagePath": {
       "type": "string",
@@ -279232,6 +280607,26 @@ export const recordOrganizerAnalyticsEventCallablePayloadSchema = {
         "null"
       ],
       "maxLength": 40
+    }
+  },
+  "definitions": {
+    "trafficSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "instagram",
+        "whatsapp",
+        "facebook",
+        "google",
+        "qr",
+        "email",
+        "direct",
+        "other",
+        null
+      ],
+      "description": "Where the visitor came from, mapped by the page from its referrer host or ?via= to this fixed list. Raw referrers and campaign values are never sent."
     }
   }
 };
@@ -333676,15 +335071,14 @@ export const websiteHostListingProjectionSchema = {
           "catchExperienceActivities": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 3,
+            "maxItems": 2,
             "uniqueItems": true,
             "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
             "items": {
               "type": "string",
               "enum": [
                 "introductions",
-                "sharedActivities",
-                "rotations"
+                "sharedActivities"
               ]
             }
           },
@@ -333945,15 +335339,14 @@ export const websiteHostListingProjectionSchema = {
           },
           "admissionLabels": {
             "type": "array",
-            "maxItems": 4,
+            "maxItems": 3,
             "uniqueItems": true,
             "items": {
               "type": "string",
               "enum": [
                 "approval",
                 "invitation",
-                "membership",
-                "balanced"
+                "membership"
               ]
             }
           },
@@ -334008,17 +335401,6 @@ export const websiteHostListingProjectionSchema = {
           "priceLabel": {
             "type": "string",
             "minLength": 1
-          },
-          "scorecard": {
-            "anyOf": [
-              {
-                "type": "object",
-                "additionalProperties": true
-              },
-              {
-                "type": "null"
-              }
-            ]
           }
         }
       }
@@ -334119,51 +335501,6 @@ export const websiteHostListingProjectionSchema = {
           }
         }
       }
-    },
-    "eventSuccessSummary": {
-      "anyOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "bookedCount",
-            "checkedInCount",
-            "mutualMatchCount",
-            "chatStartedCount",
-            "catchSentCount",
-            "safetyIncidentCount"
-          ],
-          "properties": {
-            "bookedCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "checkedInCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "mutualMatchCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "chatStartedCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "catchSentCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "safetyIncidentCount": {
-              "type": "integer",
-              "minimum": 0
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ]
     },
     "eventEvidence": {
       "type": "array",
@@ -334910,15 +336247,14 @@ export const websiteHostListingProjectionSchema = {
         "catchExperienceActivities": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 3,
+          "maxItems": 2,
           "uniqueItems": true,
           "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
           "items": {
             "type": "string",
             "enum": [
               "introductions",
-              "sharedActivities",
-              "rotations"
+              "sharedActivities"
             ]
           }
         },
@@ -335179,15 +336515,14 @@ export const websiteHostListingProjectionSchema = {
         },
         "admissionLabels": {
           "type": "array",
-          "maxItems": 4,
+          "maxItems": 3,
           "uniqueItems": true,
           "items": {
             "type": "string",
             "enum": [
               "approval",
               "invitation",
-              "membership",
-              "balanced"
+              "membership"
             ]
           }
         },
@@ -335242,17 +336577,6 @@ export const websiteHostListingProjectionSchema = {
         "priceLabel": {
           "type": "string",
           "minLength": 1
-        },
-        "scorecard": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": true
-            },
-            {
-              "type": "null"
-            }
-          ]
         }
       }
     },
@@ -335347,44 +336671,6 @@ export const websiteHostListingProjectionSchema = {
         "dedupeKey": {
           "type": "string",
           "minLength": 1
-        }
-      }
-    },
-    "eventSuccessSummary": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "bookedCount",
-        "checkedInCount",
-        "mutualMatchCount",
-        "chatStartedCount",
-        "catchSentCount",
-        "safetyIncidentCount"
-      ],
-      "properties": {
-        "bookedCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "checkedInCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "mutualMatchCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "chatStartedCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "catchSentCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "safetyIncidentCount": {
-          "type": "integer",
-          "minimum": 0
         }
       }
     },
@@ -339774,12 +341060,10 @@ export const joinWaitlistHTTPRequestSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/http/join_waitlist_request.schema.json",
   "title": "Join Waitlist HTTP Request",
-  "description": "Version 1 request body for member waitlist and optional Host operating-application submissions.",
+  "description": "Version 1 request body for member waitlist and optional Host operating-application submissions. A member may instead ask for one WhatsApp message when Catch opens in their city: that path carries `whatsapp` and needs no name or email.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "fullName",
-    "email",
     "city",
     "role"
   ],
@@ -340224,6 +341508,34 @@ export const joinWaitlistHTTPRequestSchema = {
           "type": "string",
           "format": "date-time",
           "maxLength": 80
+        }
+      }
+    },
+    "whatsapp": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A member's request for one WhatsApp message on the day Catch opens in their city. The launch notice is the explicit purpose of the form; marketing permission is a separate choice that is off unless the person chose it (CAT-72). consentVersion names the wording they saw.",
+      "required": [
+        "phone",
+        "launchNotice",
+        "marketing",
+        "consentVersion"
+      ],
+      "properties": {
+        "phone": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$",
+          "description": "E.164 mobile number."
+        },
+        "launchNotice": {
+          "const": true
+        },
+        "marketing": {
+          "type": "boolean"
+        },
+        "consentVersion": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,40}$"
         }
       }
     }
@@ -340732,7 +342044,55 @@ export const joinWaitlistHTTPRequestSchema = {
           "maxLength": 80
         }
       }
+    },
+    "whatsappLaunchNotice": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A member's request for one WhatsApp message on the day Catch opens in their city. The launch notice is the explicit purpose of the form; marketing permission is a separate choice that is off unless the person chose it (CAT-72). consentVersion names the wording they saw.",
+      "required": [
+        "phone",
+        "launchNotice",
+        "marketing",
+        "consentVersion"
+      ],
+      "properties": {
+        "phone": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{7,14}$",
+          "description": "E.164 mobile number."
+        },
+        "launchNotice": {
+          "const": true
+        },
+        "marketing": {
+          "type": "boolean"
+        },
+        "consentVersion": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,40}$"
+        }
+      }
     }
+  },
+  "if": {
+    "required": [
+      "whatsapp"
+    ]
+  },
+  "then": {
+    "description": "The WhatsApp launch notice is for members only.",
+    "properties": {
+      "role": {
+        "const": "member"
+      }
+    }
+  },
+  "else": {
+    "description": "The email waitlist and Host application need a name and email.",
+    "required": [
+      "fullName",
+      "email"
+    ]
   }
 };
 

@@ -1,8 +1,10 @@
 import type {Meta, StoryObj} from "@storybook/react-vite";
+import {expect, userEvent, within} from "storybook/test";
 import {ReferenceComparison} from "../stories/referenceScreens";
 import {StoryPage} from "../stories/websiteV2Story";
 import {CatchBand} from "./CatchBand";
 import {CatchButton} from "./CatchButton";
+import {CatchField} from "./CatchField";
 import {CatchGap} from "./CatchGap";
 import {CatchGrid} from "./CatchGrid";
 import {CatchGroundCard} from "./CatchGroundCard";
@@ -52,6 +54,40 @@ export const Grounds: Story = {
       </CatchBand>
     </StoryPage>
   ),
+};
+
+/**
+ * The field contract: a CatchField in a card takes the boards' boxed input at
+ * rest (a white fill and a stroke in the ground's ink), on the dark ink ground
+ * a light tint. The play step focuses the paper card's name to show the active
+ * tile over the resting box; outside a card a field stays a quiet row.
+ */
+export const WithFields: Story = {
+  parameters: {catchComponent: {id: "shared_ground_card", routeIds: storyRoutes, states: ["boxed-fields"]}},
+  render: () => (
+    <StoryPage>
+      <CatchBand aria-label="Fields in cards" pb="compact" pt="compact">
+        <CatchGrid columns={3} compactColumns={1}>
+          {(["paper", "white", "ink"] as const).map((ground) => (
+            <CatchGroundCard ground={ground} key={ground} outlined={ground === "white"}>
+              <CatchGap size="formField">
+                <CatchField id={`ground-card-name-${ground}`} recipe="input" title="Name" />
+                <CatchField<string> hintText="Choose a city" id={`ground-card-city-${ground}`} itemLabelBuilder={(city) => city}
+                  recipe="select" title="City" values={["Mumbai", "Pune", "Bengaluru"]} />
+                <CatchField errorText="Enter a 10-digit mobile number" id={`ground-card-phone-${ground}`} initialValue="98765"
+                  keyboardType="phone" recipe="input" title="Phone number" />
+              </CatchGap>
+            </CatchGroundCard>
+          ))}
+        </CatchGrid>
+      </CatchBand>
+    </StoryPage>
+  ),
+  play: async ({canvasElement}) => {
+    const name = within(canvasElement).getAllByLabelText("Name")[0];
+    await userEvent.click(name);
+    await expect(name).toHaveFocus();
+  },
 };
 
 /** The organiser page's share card: the page's QR code, its address and a copy action. */

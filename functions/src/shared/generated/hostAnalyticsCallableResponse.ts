@@ -95,6 +95,39 @@ export interface HostAnalyticsCallableResponse {
     contactClicks: number;
     claimClicks: number;
     outboundClicks: number;
+    linkClicks: number;
+  };
+  /**
+   * Owner link clicks in the range (CAT-254): each link's total, most clicked first, and where the clicking visitors came from. Event-scoped reports have none.
+   */
+  linkSummary: {
+    /**
+     * @maxItems 50
+     */
+    links: {
+      organizerId: string;
+      linkId: string;
+      /**
+       * The link's current label; null once the owner has removed it.
+       */
+      label: string | null;
+      clicks: number;
+    }[];
+    /**
+     * @maxItems 8
+     */
+    trafficSources: {
+      source:
+        | "instagram"
+        | "whatsapp"
+        | "facebook"
+        | "google"
+        | "qr"
+        | "email"
+        | "direct"
+        | "other";
+      clicks: number;
+    }[];
   };
   dataQuality: {
     id: string;

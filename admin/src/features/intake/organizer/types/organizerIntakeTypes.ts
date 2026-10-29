@@ -7,8 +7,6 @@ import type {
   OrganizerCurationOperation,
   OrganizerCurationSurface,
   OrganizerEntityKind,
-  OrganizerEventCandidateDecision,
-  OrganizerEventBlockerResolution,
   OrganizerIntakeDecision,
   OrganizerIntakeIndexStatus,
   OrganizerIntakePublishStatus,
@@ -46,8 +44,6 @@ export interface OrganizerIntakeBridge {
   discoverySearchPlan: OrganizerDiscoverySearchPlan;
   sourceMentionResolution: OrganizerSourceMentionResolution;
   searchCandidates: OrganizerSearchCandidateQueue;
-  externalEventCandidates: OrganizerExternalEventCandidateQueue;
-  externalEventLocationResolution: OrganizerExternalEventLocationResolutionQueue;
   externalEventImportPlan: OrganizerExternalEventImportPlan;
   externalEventImportExecutionPlan: OrganizerExternalEventImportExecutionPlan;
   curation: OrganizerCurationState;
@@ -1805,153 +1801,6 @@ export interface OrganizerExistingEntityMatch {
   reason: string;
 }
 
-export interface OrganizerExternalEventCandidateQueue {
-  summary: {
-    batches: number;
-    events: number;
-    candidates: number;
-    platforms: Record<string, number>;
-    duplicateEventKeys: number;
-    blocked: number;
-    reviewed: number;
-    approvedForImport: number;
-    held: number;
-    rejected: number;
-    locationResolved?: number;
-  };
-  policy: {
-    status: string;
-    reason: string;
-    importWritesEnabled: boolean;
-  };
-  generatedFrom: {
-    batches: string[];
-    reviewDecisionBatches: string[];
-    locationResolutionBatches?: string[];
-  };
-  candidates: OrganizerExternalEventCandidate[];
-  duplicateEventKeys: Array<{
-    normalizedEventKey: string;
-    candidateIds: string[];
-  }>;
-  warnings: string[];
-  errors: string[];
-  commands: Record<string, string>;
-}
-
-export interface OrganizerExternalEventCandidate {
-  candidateId: string;
-  entityId: string;
-  surfaceId: string;
-  platform: string;
-  title: string;
-  startAt: string;
-  endAt: string | null;
-  timezone: string | null;
-  reviewStatus: string;
-  reviewDecision: OrganizerExternalEventReviewDecision | null;
-  importReadiness: string;
-  importState: string;
-  blockers: string[];
-  eventUrl: string | null;
-  location: {
-    name: string | null;
-    address?: string | null;
-    citySlug: string | null;
-    countryCode: string | null;
-    latitude?: number | null;
-    longitude?: number | null;
-    placeId?: string | null;
-    notes?: string | null;
-  };
-  locationResolution: OrganizerExternalEventLocationResolutionDecision | null;
-  diagnostics: string[];
-}
-
-export interface OrganizerExternalEventReviewDecision {
-  checklist: {
-    identityReviewed: boolean;
-    sourceEventReviewed: boolean;
-    timeReviewed: boolean;
-    locationReviewed: boolean;
-    dedupeReviewed: boolean;
-    ownerSafeCopyReviewed: boolean;
-    importPolicyAcknowledged: boolean;
-  };
-  blockerResolutions: OrganizerEventBlockerResolution[];
-  decidedAt: string;
-  decision: OrganizerEventCandidateDecision;
-  eventReviewBatchId: string;
-  note: string;
-  reviewer: string;
-}
-
-export interface OrganizerExternalEventLocationResolutionQueue {
-  summary: {
-    candidates: number;
-    tasks: number;
-    missingExactCoordinates: number;
-    missingLocationText: number;
-    providerDisabled: number;
-    tasksByPlatform: Record<string, number>;
-    tasksByCountry: Record<string, number>;
-  };
-  policy: {
-    status: string;
-    providerLookupEnabled: boolean;
-    provider: string;
-    reason: string;
-  };
-  generatedFrom: {
-    externalEventCandidateQueue: string;
-    batches: string[];
-    reviewDecisionBatches: string[];
-    locationResolutionBatches?: string[];
-  };
-  guardrails: string[];
-  tasks: OrganizerExternalEventLocationResolutionTask[];
-  commands: Record<string, string>;
-}
-
-export interface OrganizerExternalEventLocationResolutionTask {
-  taskId: string;
-  candidateId: string;
-  entityId: string;
-  platform: string;
-  sourceEventKey: string;
-  eventUrl: string | null;
-  sourceUrl: string | null;
-  title: string;
-  startAt: string;
-  citySlug: string | null;
-  countryCode: string;
-  sourceLocation: {
-    name: string | null;
-    address: string | null;
-    latitude: number | null;
-    longitude: number | null;
-    placeId?: string | null;
-  };
-  locationResolution: OrganizerExternalEventLocationResolutionDecision | null;
-  resolutionQuery: string;
-  resolutionState: string;
-  blockers: string[];
-  expectedOutput: Record<string, string>;
-}
-
-export interface OrganizerExternalEventLocationResolutionDecision {
-  checklist: {
-    sourceLocationReviewed: boolean;
-    coordinatesReviewed: boolean;
-    placeIdentityReviewed: boolean;
-    importSafetyReviewed: boolean;
-  };
-  locationResolutionBatchId: string;
-  note: string;
-  resolvedAt: string;
-  reviewer: string;
-}
-
 export type OrganizerExternalEventImportPlan = ExternalEventImportPlan;
 export type OrganizerExternalEventImportAction = ExternalEventImportAction;
 export type OrganizerExternalEventImportExecutionPlan =
@@ -2007,16 +1856,6 @@ export interface OrganizerCurationFormState {
   newEntityId: string;
   decision: OrganizerSurfaceDecision;
   reason: string;
-}
-
-export interface OrganizerLocationResolutionFormState {
-  name: string;
-  address: string;
-  placeId: string;
-  latitude: string;
-  longitude: string;
-  notes: string;
-  note: string;
 }
 
 export interface OrganizerPromotionPolicy {

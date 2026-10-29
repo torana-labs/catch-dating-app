@@ -842,7 +842,7 @@
     {
       "id": "harness-scoped-control",
       "paths": {"include": [
-        "tool/harness/**/*.test.mjs", "tool/ci/**/*.test.mjs", ".github/workflows/host-measurement-preview.yml", ".github/workflows/website-next-preview.yml", ".github/workflows/website-next-promote.yml", ".github/workflows/admin-website.yml", ".github/workflows/marketing-website.yml", ".github/workflows/host-website.yml", ".github/workflows/_web-hosting-build.yml", ".github/workflows/mobile-internal-release.yml", ".github/workflows/mobile-internal-promote.yml", ".github/workflows/_mobile-platform-authority.yml", ".github/workflows/release-readiness.yml", ".github/workflows/observability-evidence.yml", ".github/workflows/website-production-observability.yml", ".github/workflows/data-validation.yml", ".github/workflows/branch-hygiene.yml", "tool/ci/host_measurement_preview.mjs", "tool/ci/mobile_promotion_core.mjs", "tool/ci/wait_main_marketing_validation.mjs"
+        "tool/harness/**/*.test.mjs", "tool/ci/**/*.test.mjs", ".github/workflows/host-measurement-preview.yml", ".github/workflows/website-next-preview.yml", ".github/workflows/website-next-promote.yml", ".github/workflows/admin-website.yml", ".github/workflows/marketing-website.yml", ".github/workflows/host-website.yml", ".github/workflows/_web-hosting-build.yml", ".github/workflows/mobile-internal-release.yml", ".github/workflows/mobile-internal-promote.yml", ".github/workflows/mobile-beta.yml", ".github/workflows/mobile-production.yml", ".github/workflows/dependabot-auto-merge.yml", "fastlane/**", "Gemfile", "Gemfile.lock", ".github/workflows/_mobile-platform-authority.yml", ".github/workflows/release-readiness.yml", ".github/workflows/observability-evidence.yml", ".github/workflows/website-production-observability.yml", ".github/workflows/data-validation.yml", ".github/workflows/branch-hygiene.yml", "tool/ci/host_measurement_preview.mjs", "tool/ci/mobile_promotion_core.mjs", "tool/ci/wait_main_marketing_validation.mjs"
       ], "exclude": [ "tool/ci/package_firebase_delivery.test.mjs", "tool/ci/web_hosting_workflow.test.mjs"
       ]},
       "components": ["repo.harness-scoped"],
@@ -1156,7 +1156,7 @@
     {
       "id": "flutter.l10n",
       "owner": "app_platform",
-      "inputs": ["lib/l10n/app_en.arb", "l10n.yaml", "tool/harness/lib/check_flutter_l10n_generated.mjs"],
+      "inputs": ["lib/l10n/app_en.arb", "l10n.yaml", "pubspec.yaml", "tool/ci/toolchain.env", "tool/harness/lib/check_flutter_l10n_generated.mjs"],
       "outputs": ["lib/l10n/generated/app_localizations.dart", "lib/l10n/generated/app_localizations_en.dart"],
       "checkCommand": "node tool/harness/lib/check_flutter_l10n_generated.mjs --check",
       "writeCommand": "flutter gen-l10n",
@@ -1196,7 +1196,7 @@
       "id": "copy.event-success-questionnaires",
       "owner": "content_system",
       "inputs": ["copy/event_success_questionnaires_en.json", "tool/copy/sync_event_success_questionnaires.mjs"],
-      "outputs": ["lib/event_success/domain/event_success_compatibility_response/questionnaire_packs.dart"],
+      "outputs": ["lib/contexts/formats/domain/event_success_compatibility_response/questionnaire_packs.dart"],
       "checkCommand": "node tool/copy/sync_event_success_questionnaires.mjs --check",
       "writeCommand": "node tool/copy/sync_event_success_questionnaires.mjs --write",
       "platforms": ["darwin", "linux"],
@@ -1209,7 +1209,7 @@
       "id": "copy.structured-domain",
       "owner": "content_system",
       "inputs": ["copy/structured_domain_copy_en.json", "tool/copy/sync_structured_domain_copy.dart", "tool/copy/templates/structured_domain_copy/**", "pubspec.yaml", "pubspec.lock"],
-      "outputs": ["lib/l10n/generated/structured_domain_copy.g.dart", "lib/event_success/domain/event_success_coach.dart", "lib/event_success/domain/event_success_playbooks/library.dart", "lib/event_success/domain/event_success_playbooks/modules.dart", "lib/event_success/domain/event_success_playbooks/metrics.dart", "lib/event_policies/domain/event_policy/cancellation.dart", "lib/event_policies/domain/event_policy/cohort.dart", "lib/event_policies/domain/event_policy/settlement.dart"],
+      "outputs": ["lib/l10n/generated/structured_domain_copy.g.dart", "lib/contexts/formats/domain/event_success_coach.dart", "lib/contexts/formats/domain/event_success_playbooks/library.dart", "lib/contexts/formats/domain/event_success_playbooks/modules.dart", "lib/contexts/formats/domain/event_success_playbooks/metrics.dart", "lib/contexts/events/domain/event_policy/cancellation.dart", "lib/contexts/events/domain/event_policy/cohort.dart", "lib/contexts/events/domain/event_policy/settlement.dart"],
       "checkCommand": "dart run tool/copy/sync_structured_domain_copy.dart --check",
       "writeCommand": "dart run tool/copy/sync_structured_domain_copy.dart --write",
       "platforms": ["darwin", "linux"],

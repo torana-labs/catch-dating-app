@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/design_fixtures/catches_surface_fixtures.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/catches_pass_button.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';

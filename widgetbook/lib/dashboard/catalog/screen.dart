@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/design_fixtures/dashboard_surface_fixtures.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

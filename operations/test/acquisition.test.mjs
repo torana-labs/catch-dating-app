@@ -14,7 +14,7 @@ import {
 import {SupplyIntakeWorkflow} from
   "../src/workflows/supply-intake/workflow.mjs";
 import {buildSearchResultBatchFromCapture} from
-  "../../tool/organizer_intake/lib/search_capture_core.mjs";
+  "../src/workflows/supply-intake/sources/search/capture.mjs";
 import {
   createFixtureRepository,
   fixtureWorkflowOptions,
@@ -23,8 +23,8 @@ import {
 
 const NOW = "2026-07-26T12:00:00.000Z";
 const RAW_SEARCH_FIXTURE = fileURLToPath(new URL(
-  "../../tool/organizer_intake/fixtures/" +
-    "search_capture.afterfly.serpapi.raw.json",
+  "../src/workflows/supply-intake/fixtures/search/" +
+    "afterfly.serpapi.raw.json",
   import.meta.url
 ));
 
@@ -49,8 +49,20 @@ test("acquisition policy keeps provider fetches and Firestore payloads off",
         policy.pageFetch.decisionId, policy.pageFetch.policyGapId,
         policy.pageFetch.maxRequestsPerIntake,
         policy.pageFetch.maxRequestsPerMonth],
-      [false, null, null, "on_demand_page_fetch_policy", 0, 0]
+      // The owner accepted on-demand page fetching (CAT-266); it stays capped.
+      [true, "page_fetch", "policy-on-demand-page-fetch-policy",
+        "on_demand_page_fetch_policy", 12, 600]
     );
+    // Batch web search is kept but off until the owner accepts it.
+    assert.deepEqual(policy.webSearch, {
+      enabled: false,
+      adapterId: null,
+      policyGapId: "batch_web_search_policy",
+      decisionId: null,
+      maxResultsPerQuery: 10,
+      maxQueriesPerRun: 0,
+      maxQueriesPerMonth: 0,
+    });
     assert.deepEqual(policy.rawPayload, {
       firestorePersistenceAllowed: false,
       persistence: "external_artifact_store_only",
@@ -415,7 +427,43 @@ test("page fetching can be enabled only with its adapter, decision and positive 
       await assert.rejects(load({...enabled, ...override}),
         {code: "INVALID_ACQUISITION_POLICY"}, JSON.stringify(override));
     }
-    await assert.rejects(load({maxRequestsPerIntake: 5}),
+    await assert.rejects(load({enabled: false, adapterId: null, decisionId: null,
+      maxRequestsPerIntake: 5, maxRequestsPerMonth: 0}),
       {code: "INVALID_ACQUISITION_POLICY"},
       "a disabled channel carries no allowance");
+  });
+
+test("web search can be enabled only with its adapter, decision and positive caps",
+  async () => {
+    const base = await loadSupplyAcquisitionPolicy();
+    const load = (webSearch) => loadSupplyAcquisitionPolicy({
+      readFile: async (file, encoding) => file.endsWith("acquisition_policy.json") ?
+        JSON.stringify({...base, webSearch: {...base.webSearch, ...webSearch}}) :
+        fs.readFile(file, encoding),
+    });
+    const enabled = {enabled: true, adapterId: "serp_api",
+      decisionId: "policy-batch-web-search-policy", maxQueriesPerRun: 40,
+      maxQueriesPerMonth: 1_000};
+    assert.equal((await load(enabled)).webSearch.enabled, true);
+    for (const override of [
+      {decisionId: null},
+      {adapterId: null},
+      {adapterId: "other_search"},
+      {maxQueriesPerRun: 0},
+      {maxQueriesPerMonth: 0},
+      {maxResultsPerQuery: 0},
+      {maxResultsPerQuery: 101},
+      {policyGapId: "recurring_event_crawl_policy"},
+    ]) {
+      await assert.rejects(load({...enabled, ...override}),
+        {code: "INVALID_ACQUISITION_POLICY"}, JSON.stringify(override));
+    }
+    await assert.rejects(load({maxQueriesPerMonth: 5}),
+      {code: "INVALID_ACQUISITION_POLICY"},
+      "a disabled channel carries no allowance");
+    const {webSearch: _webSearch, ...withoutChannel} = base;
+    assert.throws(() => acquisitionBudgetLedgers({
+      policy: withoutChannel,
+      monthKey: "2026-07",
+    }), {code: "INVALID_ACQUISITION_POLICY"});
   });

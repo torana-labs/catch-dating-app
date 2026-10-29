@@ -25,7 +25,6 @@ export const adminQueryKeys = {
       [...adminQueryKeys.all, "events", "external-list", payloadKey] as const,
     detail: (eventId: string) =>
       [...adminQueryKeys.all, "events", "detail", eventId] as const,
-    supplyReadiness: () => [...adminQueryKeys.all, "events", "supply-readiness"] as const,
   },
   eventIntake: {
     dashboardBridge: () =>
@@ -65,10 +64,6 @@ export const adminQueryKeys = {
       [...adminQueryKeys.all, "organizer-intake", "create-draft"] as const,
     curation: () => [...adminQueryKeys.all, "organizer-intake", "curation"] as const,
     decision: () => [...adminQueryKeys.all, "organizer-intake", "decision"] as const,
-    eventDecision: () =>
-      [...adminQueryKeys.all, "organizer-intake", "event-decision"] as const,
-    locationResolution: () =>
-      [...adminQueryKeys.all, "organizer-intake", "location-resolution"] as const,
     policyDecision: () =>
       [...adminQueryKeys.all, "organizer-intake", "policy-decision"] as const,
   },

@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/contexts/account/data/launch_access_repository.dart';
+import 'package:catch_dating_app/contexts/account/domain/launch_access_application.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
-import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -21,6 +21,7 @@ const schemaHostAnalyticsCallableResponseSchema = <String, Object?>{
     'topEvents',
     'reviewSummary',
     'discoverySummary',
+    'linkSummary',
     'dataQuality',
   ],
   'properties': <String, Object?>{
@@ -449,6 +450,7 @@ const schemaHostAnalyticsCallableResponseSchema = <String, Object?>{
         'contactClicks',
         'claimClicks',
         'outboundClicks',
+        'linkClicks',
       ],
       'properties': <String, Object?>{
         'listingViews': <String, Object?>{
@@ -482,6 +484,90 @@ const schemaHostAnalyticsCallableResponseSchema = <String, Object?>{
         'outboundClicks': <String, Object?>{
           'type': 'integer',
           'minimum': 0,
+        },
+        'linkClicks': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+        },
+      },
+    },
+    'linkSummary': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'description': 'Owner link clicks in the range (CAT-254): each link\'s total, most clicked first, and where the clicking visitors came from. Event-scoped reports have none.',
+      'required': <Object?>[
+        'links',
+        'trafficSources',
+      ],
+      'properties': <String, Object?>{
+        'links': <String, Object?>{
+          'type': 'array',
+          'maxItems': 50,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'organizerId',
+              'linkId',
+              'label',
+              'clicks',
+            ],
+            'properties': <String, Object?>{
+              'organizerId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'linkId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'label': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'maxLength': 80,
+                'description': 'The link\'s current label; null once the owner has removed it.',
+              },
+              'clicks': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+          },
+        },
+        'trafficSources': <String, Object?>{
+          'type': 'array',
+          'maxItems': 8,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'source',
+              'clicks',
+            ],
+            'properties': <String, Object?>{
+              'source': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'instagram',
+                  'whatsapp',
+                  'facebook',
+                  'google',
+                  'qr',
+                  'email',
+                  'direct',
+                  'other',
+                ],
+              },
+              'clicks': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+          },
         },
       },
     },

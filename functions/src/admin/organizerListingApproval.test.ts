@@ -8,6 +8,7 @@ import type {Firestore} from "firebase-admin/firestore";
 import type {OperationRun, OperationWorkItem} from "../operations/models";
 import type {ProjectionImportWriter} from "../operations/projectionImporter";
 import {FakeFirestore} from "../operations/testFirestore";
+import {acceptPageFetch, notFoundTransport} from "../operations/supplyIntake/testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "../operations/supplyIntake/worker";
 import {
   schemaErrorMessages,
@@ -70,8 +71,10 @@ async function harness({submittedBy = {role: "associate", uid: "associate-1", pa
     createdAt: NOW, updatedAt: NOW});
   if (origin && intent) db.write(`salesInboundIntents/${origin.id}`, intent);
   const writer = new MemoryWriter();
+  acceptPageFetch(db);
   const outcome = await processSupplyIntakeRequest({db: db as unknown as Firestore, now: () => new Date(NOW),
-    projectionWriter: writer, putSnapshot: async () => "supply-intake/snapshots/x.json"}, requestId);
+    projectionWriter: writer, transport: notFoundTransport, putSnapshot: async () => "supply-intake/snapshots/x.json"},
+  requestId);
   const stored = db.read(`${supplyIntakeCollections.requests}/${requestId}`) as {result: {listingWorkItemId: string}, failure: unknown};
   assert.equal(outcome, "completed", JSON.stringify(stored.failure));
   const workItem = structuredClone(writer.items.get(stored.result.listingWorkItemId)!);

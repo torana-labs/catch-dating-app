@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/host_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/host_work_assignment.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/work/data/host_work_repository.dart';
-import 'package:catch_dating_app/hosts/work/domain/host_work_assignment.dart';
 import 'package:catch_dating_app/hosts/work/presentation/host_work_screen.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';

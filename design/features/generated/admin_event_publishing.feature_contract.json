@@ -2,22 +2,22 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/admin_event_publishing.feature.json",
-  "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:2ac69052dfaef24757e5c0906bb7355a85d01875a48cad5ace912b54460e37c9",
+  "generatedFor": "2026-10-29",
+  "sourceDigest": "sha256:0eeaa91ea2c8f38b719633cd7a0261cae009b14178b13a459f2a3453886241f6",
   "resolvedDigest": "sha256:ce5f08d4b4733addae89a020eaa857f18dfde22376cc4e12b41c35262e564a71",
   "feature": {
     "id": "feature.admin_event_publishing",
     "name": "Admin Event Publishing",
     "owner": "admin_console",
     "status": "pilot",
-    "description": "Orchestrates canonical event directory and editor work, supply-readiness review, external-event inspection, and explicitly gated external publication."
+    "description": "Orchestrates canonical event directory and editor work and external-event inspection."
   },
   "coverage": {
     "surfaces": 1,
     "states": 1,
     "scenarios": 1,
-    "actionCases": 9,
-    "actions": 12,
+    "actionCases": 7,
+    "actions": 8,
     "captures": 0,
     "previews": 1,
     "testFiles": 2,
@@ -32,10 +32,9 @@
         "id": "route_event_publishing"
       },
       "actionScope": {
-        "included": "Switching event workspaces, selecting canonical or external evidence, returning to lists, refreshing each source, saving canonical edits, selecting readiness actions, publishing reviewed external supply, and freezing the complete Admin workspace during either write.",
+        "included": "Switching event workspaces, selecting canonical or external evidence, returning to lists, refreshing each source, saving canonical edits, and freezing the complete Admin workspace during the write.",
         "excluded": [
-          "Search, filter, editor field, checklist, and review-note changes remain query or form data.",
-          "External publication creates read-only supply and does not silently enable Catch booking."
+          "Search, filter, editor field, checklist, and review-note changes remain query or form data."
         ]
       },
       "bindings": {
@@ -64,7 +63,6 @@
           "contracts/callables/admin_get_event_details_payload.schema.json",
           "contracts/callables/admin_update_event_details_payload.schema.json",
           "contracts/callables/admin_list_external_event_details_payload.schema.json",
-          "contracts/callables/admin_publish_external_event_payload.schema.json",
           "contracts/firestore/events.schema.json",
           "contracts/firestore/external_events.schema.json"
         ],
@@ -96,20 +94,6 @@
             "callable": "adminListExternalEventDetails",
             "requestValidation": "strict_schema",
             "responseValidation": "structural_object"
-          },
-          {
-            "kind": "admin_callable",
-            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
-            "callable": "adminGetEventSupplyReadiness",
-            "requestValidation": "strict_schema",
-            "responseValidation": "structural_object"
-          },
-          {
-            "kind": "admin_callable",
-            "registry": "admin/src/generated/validators/adminCallableValidators.ts",
-            "callable": "adminPublishExternalEvent",
-            "requestValidation": "strict_schema",
-            "responseValidation": "structural_object"
           }
         ],
         "testEvidence": {
@@ -122,8 +106,8 @@
       "coverage": {
         "states": 1,
         "scenarios": 1,
-        "actionCases": 9,
-        "actions": 12,
+        "actionCases": 7,
+        "actions": 8,
         "captures": 0,
         "previews": 1,
         "testFiles": 2,
@@ -135,7 +119,6 @@
           "values": [
             "directory",
             "canonical_detail",
-            "readiness",
             "external_list",
             "external_detail"
           ]
@@ -177,7 +160,7 @@
               ]
             }
           ],
-          "description": "Switches among canonical directory, supply readiness, and external inventory.",
+          "description": "Switches between the canonical directory and external inventory.",
           "implementationStatus": "implemented"
         },
         {
@@ -217,7 +200,7 @@
               ]
             }
           ],
-          "description": "Returns from the selected event, readiness action, or external item to its owning list.",
+          "description": "Returns from the selected event or external item to its owning list.",
           "implementationStatus": "implemented"
         },
         {
@@ -266,66 +249,6 @@
           "implementationStatus": "implemented"
         },
         {
-          "id": "open_event_readiness",
-          "owner": "controller",
-          "codeValue": "openReadiness",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "adminSessionId",
-            "readinessVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "canonical-directory"
-              ]
-            }
-          ],
-          "description": "Opens the external-import readiness workspace.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "select_readiness_action",
-          "owner": "controller",
-          "codeValue": "selectReadinessAction",
-          "cardinality": "unbounded",
-          "scopeKeys": [
-            "adminSessionId",
-            "sourceActionId"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "canonical-directory"
-              ]
-            }
-          ],
-          "description": "Selects one exact import-readiness action and its blockers.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "refresh_event_readiness",
-          "owner": "controller",
-          "codeValue": "refreshSupplyReadiness",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "adminSessionId",
-            "readinessVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "canonical-directory"
-              ]
-            }
-          ],
-          "description": "Refetches the immutable import and execution readiness plans.",
-          "implementationStatus": "implemented"
-        },
-        {
           "id": "open_external_event_supply",
           "owner": "controller",
           "codeValue": "openExternalSupply",
@@ -362,7 +285,7 @@
               ]
             }
           ],
-          "description": "Opens one source-backed external event and its import review.",
+          "description": "Opens one source-backed external event.",
           "implementationStatus": "implemented"
         },
         {
@@ -383,31 +306,6 @@
             }
           ],
           "description": "Refetches the external-event inventory.",
-          "implementationStatus": "implemented"
-        },
-        {
-          "id": "publish_external_event",
-          "owner": "controller",
-          "codeValue": "publishExternalEvent",
-          "cardinality": "singleton",
-          "scopeKeys": [
-            "reviewerUid",
-            "sourceActionId",
-            "reviewVersion"
-          ],
-          "outcomes": [
-            {
-              "kind": "surface_state",
-              "stateIds": [
-                "canonical-directory"
-              ]
-            },
-            {
-              "kind": "side_effect",
-              "id": "admin.external_event_published"
-            }
-          ],
-          "description": "Publishes one checklist-reviewed external event as read-only public supply.",
           "implementationStatus": "implemented"
         }
       ],
@@ -446,18 +344,14 @@
                   "select_event_workspace",
                   "select_canonical_event",
                   "refresh_canonical_events",
-                  "open_event_readiness",
                   "open_external_event_supply"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "back_to_event_list",
                   "save_canonical_event",
-                  "select_readiness_action",
-                  "refresh_event_readiness",
                   "select_external_event",
-                  "refresh_external_events",
-                  "publish_external_event"
+                  "refresh_external_events"
                 ]
               }
             },
@@ -479,13 +373,9 @@
                 "notAllowed": [
                   "back_to_event_list",
                   "save_canonical_event",
-                  "open_event_readiness",
-                  "select_readiness_action",
-                  "refresh_event_readiness",
                   "open_external_event_supply",
                   "select_external_event",
-                  "refresh_external_events",
-                  "publish_external_event"
+                  "refresh_external_events"
                 ]
               }
             },
@@ -506,13 +396,9 @@
                 "notAllowed": [
                   "select_canonical_event",
                   "refresh_canonical_events",
-                  "open_event_readiness",
-                  "select_readiness_action",
-                  "refresh_event_readiness",
                   "open_external_event_supply",
                   "select_external_event",
-                  "refresh_external_events",
-                  "publish_external_event"
+                  "refresh_external_events"
                 ]
               }
             },
@@ -533,40 +419,9 @@
                 "notAllowed": [
                   "select_canonical_event",
                   "refresh_canonical_events",
-                  "open_event_readiness",
-                  "select_readiness_action",
-                  "refresh_event_readiness",
                   "open_external_event_supply",
                   "select_external_event",
-                  "refresh_external_events",
-                  "publish_external_event"
-                ]
-              }
-            },
-            {
-              "id": "readiness",
-              "dimensions": {
-                "workspace": "readiness",
-                "source": "ready",
-                "mutation": "idle"
-              },
-              "actions": {
-                "enabled": [
-                  "select_event_workspace",
-                  "back_to_event_list",
-                  "select_readiness_action",
-                  "refresh_event_readiness",
-                  "open_external_event_supply"
-                ],
-                "disabled": [],
-                "notAllowed": [
-                  "select_canonical_event",
-                  "refresh_canonical_events",
-                  "save_canonical_event",
-                  "open_event_readiness",
-                  "select_external_event",
-                  "refresh_external_events",
-                  "publish_external_event"
+                  "refresh_external_events"
                 ]
               }
             },
@@ -582,18 +437,14 @@
                   "select_event_workspace",
                   "back_to_event_list",
                   "select_external_event",
-                  "refresh_external_events",
-                  "open_event_readiness"
+                  "refresh_external_events"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "select_canonical_event",
                   "refresh_canonical_events",
                   "save_canonical_event",
-                  "select_readiness_action",
-                  "refresh_event_readiness",
-                  "open_external_event_supply",
-                  "publish_external_event"
+                  "open_external_event_supply"
                 ]
               }
             },
@@ -608,44 +459,13 @@
                 "enabled": [
                   "select_event_workspace",
                   "back_to_event_list",
-                  "refresh_external_events",
-                  "publish_external_event"
+                  "refresh_external_events"
                 ],
                 "disabled": [],
                 "notAllowed": [
                   "select_canonical_event",
                   "refresh_canonical_events",
                   "save_canonical_event",
-                  "open_event_readiness",
-                  "select_readiness_action",
-                  "refresh_event_readiness",
-                  "open_external_event_supply",
-                  "select_external_event"
-                ]
-              }
-            },
-            {
-              "id": "external_publish_pending_frozen_workspace",
-              "dimensions": {
-                "workspace": "external_detail",
-                "source": "ready",
-                "mutation": "pending"
-              },
-              "actions": {
-                "enabled": [],
-                "disabled": [
-                  "select_event_workspace",
-                  "back_to_event_list",
-                  "refresh_external_events",
-                  "publish_external_event"
-                ],
-                "notAllowed": [
-                  "select_canonical_event",
-                  "refresh_canonical_events",
-                  "save_canonical_event",
-                  "open_event_readiness",
-                  "select_readiness_action",
-                  "refresh_event_readiness",
                   "open_external_event_supply",
                   "select_external_event"
                 ]
@@ -662,7 +482,6 @@
                 "enabled": [
                   "select_event_workspace",
                   "refresh_canonical_events",
-                  "refresh_event_readiness",
                   "refresh_external_events"
                 ],
                 "disabled": [],
@@ -670,11 +489,8 @@
                   "select_canonical_event",
                   "back_to_event_list",
                   "save_canonical_event",
-                  "open_event_readiness",
-                  "select_readiness_action",
                   "open_external_event_supply",
-                  "select_external_event",
-                  "publish_external_event"
+                  "select_external_event"
                 ]
               }
             }

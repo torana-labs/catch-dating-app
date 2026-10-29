@@ -18,10 +18,10 @@ const laneJobs = {
   flutter_build_ios: "app-builds", flutter_build_web: "app-builds", flutter_web_smoke: "app-builds",
 };
 const shaPattern = /^[0-9a-f]{40}$/;
-// Pure-validation lanes a successful merge-queue run of the exact same source
-// already proved. Lanes whose jobs produce delivery evidence never qualify.
-export const queueReusableLanes = Object.freeze(
-  ["admin", "docs", "flutter", "operations", "policy_docs", "tools", "visual_integration"]);
+// A successful merge-queue run of the exact same source already proved every
+// validation lane, so main re-runs none of them. Delivery reads its evidence
+// from that queue run (or builds what it ships), not from a second execution.
+export const queueReusableLanes = Object.freeze(Object.keys(laneJobs));
 
 export function requireValidationLanes(plan, needs, {queueVerifiedRun = ""} = {}) {
   assert.equal(needs?.plan?.result, "success", "The initial planner must succeed.");

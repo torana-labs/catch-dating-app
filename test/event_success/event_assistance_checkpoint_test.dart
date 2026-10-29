@@ -1,10 +1,11 @@
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_checkpoint_change.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/record_event_assistance_checkpoint_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
     as schemas;
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
+
 import 'event_assistance_checkpoint_fixtures.dart';
 
 void main() {

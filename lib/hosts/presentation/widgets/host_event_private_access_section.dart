@@ -1,6 +1,9 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
@@ -9,9 +12,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_invite_link.dart';
-import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
@@ -500,75 +500,66 @@ class HostInviteLinkRow extends StatelessWidget {
   }
 }
 
-Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
-  final labelController = TextEditingController();
-  final sourceController = TextEditingController();
-  try {
-    return showDialog<HostInviteLinkDraft>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          final label = labelController.text.trim();
-          final source = sourceController.text.trim();
-          return CatchDialog(
-            title: context.l10n.hostsHostEventManageScreenTitleNewInviteLink,
-            actions: [
-              CatchButton.text(
-                label: context.l10n.hostsHostEventManageScreenLabelCancel,
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              CatchButton.text(
-                label: context.l10n.hostsHostEventManageScreenLabelCreate,
-                onPressed: label.isEmpty
-                    ? null
-                    : () => Navigator.of(context).pop(
-                        HostInviteLinkDraft(
-                          label: label,
-                          source: source.isEmpty ? null : source,
-                        ),
-                      ),
-              ),
-            ],
-            child: CatchFieldLanes.custom(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CatchField.input(
-                    copy: catchFieldCopy(context.l10n),
-                    title: context.l10n.hostsHostEventManageScreenTitleLabel,
-                    contract: CatchContractConstraints
-                        .createEventInviteLinkCallablePayloadLabel,
-                    controller: labelController,
-                    placeholder: context
-                        .l10n
-                        .hostsHostEventManageScreenPlaceholderInstagramBio,
-                    textCapitalization: TextCapitalization.words,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  gapH12,
-                  CatchField.input(
-                    copy: catchFieldCopy(context.l10n),
-                    title: context.l10n.hostsHostEventManageScreenTitleSource,
-                    contract: CatchContractConstraints
-                        .createEventInviteLinkCallablePayloadSource,
-                    labelMode: CatchFieldLabelTextMode.optional,
-                    controller: sourceController,
-                    placeholder: context
-                        .l10n
-                        .hostsHostEventManageScreenPlaceholderInstagram,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                ],
-              ),
+Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) {
+  var label = '';
+  var source = '';
+  return showDialog<HostInviteLinkDraft>(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) {
+        return CatchDialog(
+          title: context.l10n.hostsHostEventManageScreenTitleNewInviteLink,
+          actions: [
+            CatchButton.text(
+              label: context.l10n.hostsHostEventManageScreenLabelCancel,
+              onPressed: () => Navigator.of(context).pop(),
             ),
-          );
-        },
-      ),
-    );
-  } finally {
-    labelController.dispose();
-    sourceController.dispose();
-  }
+            CatchButton.text(
+              label: context.l10n.hostsHostEventManageScreenLabelCreate,
+              onPressed: label.isEmpty
+                  ? null
+                  : () => Navigator.of(context).pop(
+                      HostInviteLinkDraft(
+                        label: label,
+                        source: source.isEmpty ? null : source,
+                      ),
+                    ),
+            ),
+          ],
+          child: CatchFieldLanes.custom(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.hostsHostEventManageScreenTitleLabel,
+                  contract: CatchContractConstraints
+                      .createEventInviteLinkCallablePayloadLabel,
+                  placeholder: context
+                      .l10n
+                      .hostsHostEventManageScreenPlaceholderInstagramBio,
+                  textCapitalization: TextCapitalization.words,
+                  onChanged: (value) => setState(() => label = value.trim()),
+                ),
+                gapH12,
+                CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.hostsHostEventManageScreenTitleSource,
+                  contract: CatchContractConstraints
+                      .createEventInviteLinkCallablePayloadSource,
+                  labelMode: CatchFieldLabelTextMode.optional,
+                  placeholder: context
+                      .l10n
+                      .hostsHostEventManageScreenPlaceholderInstagram,
+                  onChanged: (value) => setState(() => source = value.trim()),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  );
 }
 
 String? hostEventInviteUrl({

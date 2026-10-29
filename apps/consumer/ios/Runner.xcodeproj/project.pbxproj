@@ -113,7 +113,6 @@
 		E3E60E56687246DB5BB34DB1 /* Pods-Runner.release-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-dev.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-dev.xcconfig"; sourceTree = "<group>"; };
 		E524D01422568D4299D058B5 /* Pods-Runner.profile-host-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-host-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-host-prod.xcconfig"; sourceTree = "<group>"; };
 		EE7BFC394176CE8154470F2A /* Pods-Runner.release-host-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-host-dev.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-host-dev.xcconfig"; sourceTree = "<group>"; };
-		F839F5E8658E688FDBB68B93 /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Runner/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F94DE2454DA5F240615E9AEF /* Pods-RunnerTests.release-staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release-staging.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release-staging.xcconfig"; sourceTree = "<group>"; };
 		FB9D8F06CB8DFAE1F9A9D4A4 /* Profile-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Profile-dev.xcconfig"; path = "Flutter/Profile-dev.xcconfig"; sourceTree = "<group>"; };
 		FEF1662EFD7CD2DD48AE1C09 /* Pods-RunnerTests.debug-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug-dev.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug-dev.xcconfig"; sourceTree = "<group>"; };
@@ -234,7 +233,6 @@
 				97C146F01CF9000F007C117D /* Runner */,
 				97C146EF1CF9000F007C117D /* Products */,
 				331C8082294A63A400263BE5 /* RunnerTests */,
-				F839F5E8658E688FDBB68B93 /* GoogleService-Info.plist */,
 				114BC7C9079FFF35BE3AC483 /* Pods */,
 				80811038BAFBFBDFF86868C5 /* Frameworks */,
 			);

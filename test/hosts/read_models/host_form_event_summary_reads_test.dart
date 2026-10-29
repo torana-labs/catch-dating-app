@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/hosts/data/read_models/host_event_summary_reads.dart';
-import 'package:catch_dating_app/hosts/data/read_models/host_form_summary_reads.dart';
+import 'package:catch_dating_app/contexts/events/data/read_models/host_event_summary_reads.dart';
+import 'package:catch_dating_app/contexts/events/domain/private_event_setup_inventory.dart';
+import 'package:catch_dating_app/contexts/forms/data/read_models/host_form_summary_reads.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/data/read_models/host_summary_reader.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/hosts/domain/private_event_setup_inventory.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 

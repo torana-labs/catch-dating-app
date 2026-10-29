@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {createRequire} from "node:module";
 import {fileURLToPath, pathToFileURL} from "node:url";
+import {readFirebaseProjectAliases} from "../lib/firebase_project.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "../..");
@@ -462,12 +463,10 @@ function requireValue(argv, index, flag) {
 }
 
 function resolveEnvSpecs(args) {
-  const firebaserc = JSON.parse(
-    fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8")
-  );
+  const projects = readFirebaseProjectAliases();
   const envNames = args.all ? ["dev", "staging", "prod"] : args.envs;
   return envNames.map((name) => {
-    const projectId = firebaserc.projects?.[name];
+    const projectId = projects[name];
     if (!projectId) {
       throw new Error(`No Firebase project alias found for env: ${name}`);
     }

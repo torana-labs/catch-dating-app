@@ -36,7 +36,7 @@ It regenerates:
 
 `generate_native_brand_assets.dart` regenerates:
 
-- the launcher web colors and native splash colors in `pubspec.yaml`
+- the Consumer native splash colors in `apps/consumer/pubspec.yaml`
 - `assets/branding/generated/catch_icon_dev.png`
 - `assets/branding/generated/catch_icon_staging.png`
 - `assets/branding/generated/catch_icon_host_dev.png`
@@ -69,7 +69,14 @@ resources. Host native and Flutter startup frames use the separate centered
 Dev and staging flavors use diagonal corner ribbons, so internal builds stay
 visually distinct without covering the consumer or host wordmarks.
 
-`flutter_native_splash:create` owns the base launch-screen assets and may
-replace the storyboard. Run `generate_native_brand_assets.dart` after it so the
+`flutter_native_splash:create`, run from `apps/consumer`, owns the Consumer
+base launch-screen assets (Android drawables, iOS launch images, web splash)
+and may replace the storyboard. Run `generate_native_brand_assets.dart` after it so the
 Consumer responsive launch geometry and the Host-specific centered
 storyboard/assets are reapplied from source.
+
+Launcher icons have no third-party generator: this generator owns every native
+launcher catalog. Do not reintroduce `flutter_launcher_icons`; it rewrites the
+Consumer Xcode project's per-flavor `ASSETCATALOG_COMPILER_APPICON_NAME`, so
+dev and staging builds would show the production icon. The Consumer web icons
+under `apps/consumer/web/icons` are static copies of `catch_icon.png`.

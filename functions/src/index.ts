@@ -218,6 +218,10 @@ export {
   refreshPublicPageFollowers,
 } from "./publicPages/triggers";
 export {
+  onCityPlansOrganizerPageWritten,
+  rebuildCityPlansHourly,
+} from "./cityPlans/triggers";
+export {
   archiveOrganizer,
   deleteOrganizer,
   updateOrganizer,
@@ -383,6 +387,11 @@ export {
   adminDecideOrganizerClaim,
   requestOrganizerClaim,
 } from "./organizers/organizerClaims";
+export {
+  getOrganizerClaimVerificationOptions,
+  startOrganizerClaimVerification,
+} from "./organizers/organizerClaimVerification";
+export {instagramClaimWebhook} from "./organizers/instagramClaimWebhook";
 export {onSwipeCreated} from "./matching/onSwipeCreated";
 export {fetchSwipeCandidates} from "./matching/fetchSwipeCandidates";
 export {onMatchCreated} from "./matching/onMatchCreated";
@@ -547,12 +556,6 @@ export {
   adminListExternalEventDetails,
 } from "./admin/externalEventDetails";
 export {
-  adminGetEventSupplyReadiness,
-} from "./admin/eventSupplyReadiness";
-export {
-  adminPublishExternalEvent,
-} from "./admin/externalEventPublishing";
-export {
   adminTakedownExternalEvent,
 } from "./admin/externalEventTakedown";
 export {
@@ -590,12 +593,6 @@ export {
 export {
   adminRecordEventIntakeReviewDecision,
 } from "./admin/eventIntakeReview";
-export {
-  adminDecideOrganizerEventCandidate,
-} from "./admin/organizerEventIntake";
-export {
-  adminResolveOrganizerEventLocation,
-} from "./admin/organizerEventLocationResolution";
 export {
   adminDecideOrganizerPolicyGap,
 } from "./admin/organizerPolicyGap";
@@ -885,6 +882,10 @@ export {
   adminNominateOrganizer,
   onSalesInboundIntentForIntake,
 } from "./operations/supplyIntake/nominations";
+export {
+  adminListSupplyNominators,
+  adminSetSupplyNominator,
+} from "./operations/supplyIntake/nominators";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,

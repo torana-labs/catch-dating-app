@@ -31,6 +31,14 @@ separate stage counts are not historical cohort conversions.
   `club_id` and `club_name` column names remain stable for deployed readers;
   they do not make the legacy Firestore collection authoritative. Event/review
   JSON prefers nonempty `organizerId` and falls back to historical `clubId`.
+  `link_clicks` counts owner link clicks (CAT-254) on the organizer page.
+- `catch_analytics.mart_host_link_daily`: owner link clicks at
+  organizer/link/traffic-source/date grain, so the insights roll-up can show
+  each link's clicks and where visitors came from. The traffic source is the
+  page's fixed list (instagram, whatsapp, facebook, google, qr, email, direct,
+  other), mapped from its referrer host or `?via=`; raw referrers and campaign
+  values are never recorded. The same refresh rebuilds it in one transaction
+  with the event mart.
 
 Host behavioral counts use `COUNT(DISTINCT analytics_event_id)` at the
 organizer/event/name/day grain. Streaming insert IDs alone are best-effort;

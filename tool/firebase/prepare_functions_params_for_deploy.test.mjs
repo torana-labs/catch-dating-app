@@ -52,6 +52,11 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256=" "',
     'CATCH_WHATSAPP_WABA_ID=" "',
     'CATCH_WHATSAPP_PHONE_NUMBER_ID=" "',
+    'CATCH_INSTAGRAM_CLAIMS_ENABLED="false"',
+    'CATCH_INSTAGRAM_ACCOUNT_ID=" "',
+    'CATCH_INSTAGRAM_HANDLE=" "',
+    'CATCH_INSTAGRAM_GRAPH_VERSION="v26.0"',
+    'SUPPLY_MESSAGE_NOMINATIONS_ENABLED="false"',
     'EVENT_ASSISTANCE_RCS_ENABLED="false"',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
     'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
@@ -103,6 +108,11 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'CATCH_WHATSAPP_REPLY_EVIDENCE_SHA256=" "',
     'CATCH_WHATSAPP_WABA_ID=" "',
     'CATCH_WHATSAPP_PHONE_NUMBER_ID=" "',
+    'CATCH_INSTAGRAM_CLAIMS_ENABLED="false"',
+    'CATCH_INSTAGRAM_ACCOUNT_ID=" "',
+    'CATCH_INSTAGRAM_HANDLE=" "',
+    'CATCH_INSTAGRAM_GRAPH_VERSION="v26.0"',
+    'SUPPLY_MESSAGE_NOMINATIONS_ENABLED="false"',
     'EVENT_ASSISTANCE_RCS_ENABLED="false"',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
     'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
@@ -240,6 +250,35 @@ test("event assistance flags reject non-boolean values before writing", () => {
   }), /EVENT_ASSISTANCE_SMS_REPORTS_ENABLED must be true or false/);
   assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
     false);
+});
+
+test("Instagram claims switch on only with Catch's account and handle", () => {
+  const functionsDir = fixture();
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir,
+    projectId: "catchdates-dev",
+    environment: {
+      ...publicIds,
+      CATCH_INSTAGRAM_CLAIMS_ENABLED: "true",
+      CATCH_INSTAGRAM_ACCOUNT_ID: "17841400000000001",
+      CATCH_INSTAGRAM_HANDLE: "@Catch_Dates",
+    },
+  });
+  const contents = fs.readFileSync(result.outputPath, "utf8");
+  assert.match(contents, /CATCH_INSTAGRAM_CLAIMS_ENABLED="true"/);
+  assert.match(contents, /CATCH_INSTAGRAM_ACCOUNT_ID="17841400000000001"/);
+  assert.match(contents, /CATCH_INSTAGRAM_HANDLE="catch_dates"/);
+  for (const [environment, message] of [
+    [{CATCH_INSTAGRAM_CLAIMS_ENABLED: "true"},
+      /requires the Instagram account id and handle/],
+    [{CATCH_INSTAGRAM_ACCOUNT_ID: "@catch"}, /numeric Instagram account id/],
+    [{CATCH_INSTAGRAM_GRAPH_VERSION: "latest"}, /must look like v26.0/],
+  ]) {
+    assert.throws(() => prepareFunctionsParamsForDeploy({
+      functionsDir: fixture(), projectId: "catchdates-dev",
+      environment: {...publicIds, ...environment},
+    }), message);
+  }
 });
 
 test("form partner config is opt-in and pins only a project-local version", () => {

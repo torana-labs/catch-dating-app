@@ -2,7 +2,7 @@ import {CatchField, CatchGap} from "@catch/web-ui";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import type {FormEvent} from "react";
 import {PageShell, WebsitePageMain} from "../shared/site/PageShell";
-import {Button, ButtonLink, ClaimBandGrid, ClaimBandRail, ClaimBandSection, ClaimFlowHero, ClaimFlowMain, ClaimFlowPanel, ClaimFlowStage, ClaimFlowWorkspace, ClaimListingResults, ClaimRequestForm, ClaimRequestPanel, ClaimRequestPanelHeading, ClaimResultButton, ContentGrid, FormStatus, HostApplicationCompletenessSummary, HostApplicationPanel, HostApplicationReviewCard, HostApplicationReviewGrid, HostApplicationShell, HostApplicationStage, HostApplicationSubmitted, HostPreviewFaqList, HostPreviewSection, HostPreviewSectionHead, OperationalNote, OwnerUnlockBoard, SelectedListingCard, UiLabel, VerificationMethodGrid} from "../shared/ui/primitives";
+import {Button, ClaimFlowHero, ClaimFlowMain, ClaimFlowPanel, ClaimFlowStage, ClaimFlowWorkspace, ClaimListingResults, ClaimRequestForm, ClaimResultButton, ContentGrid, FormStatus, HostApplicationCompletenessSummary, HostApplicationPanel, HostApplicationReviewCard, HostApplicationReviewGrid, HostApplicationShell, HostApplicationStage, HostApplicationSubmitted, HostPreviewFaqList, HostPreviewSection, HostPreviewSectionHead, OperationalNote, OwnerUnlockBoard, SelectedListingCard, UiLabel, VerificationMethodGrid} from "../shared/ui/primitives";
 
 const listingRouteIds = ["organizer_listing_canonical", "organizer_listing_legacy"];
 
@@ -111,41 +111,6 @@ export const ClaimFlowShellStory: Story = {
   ),
 };
 
-export const ClaimBandShellStory: Story = {
-  name: "Listing claim band shell",
-  parameters: {
-    catchComponent: {
-      id: "shared_claim_shell",
-      routeIds: listingRouteIds,
-      states: ["claim-band", "rail", "request-panel"],
-    },
-  },
-  render: () => (
-    <ClaimBandSection>
-      <ClaimBandGrid>
-        <div>
-          <UiLabel>Claim page</UiLabel>
-          <h2>Unlock owner controls for this organizer profile.</h2>
-          <p>Claim-band shells keep generated listing claim CTAs and owner proof rails aligned.</p>
-        </div>
-        <ClaimBandRail>
-          <strong>Review checks</strong>
-          <span>Public source</span>
-          <span>Owner role</span>
-          <span>Business contact</span>
-        </ClaimBandRail>
-      </ClaimBandGrid>
-      <ClaimRequestPanel reveal>
-        <ClaimRequestPanelHeading>
-          <UiLabel>Request ownership</UiLabel>
-          <h3>Staff reviews proof before the page changes state.</h3>
-        </ClaimRequestPanelHeading>
-        <ButtonLink href="/claim/afterfly/">Start claim</ButtonLink>
-      </ClaimRequestPanel>
-    </ClaimBandSection>
-  ),
-};
-
 export const ListingClaimShellStory: Story = {
   name: "Listing claim form shell",
   parameters: {
@@ -156,29 +121,23 @@ export const ListingClaimShellStory: Story = {
     },
   },
   render: () => (
-    <ClaimRequestPanel>
-      <ClaimRequestPanelHeading>
-        <UiLabel>Claim this listing</UiLabel>
-        <h3>Request ownership</h3>
-      </ClaimRequestPanelHeading>
-      <ClaimRequestForm onSubmit={preventSubmit}>
-        <CatchField
-          recipe="input"
-          id="storybook-listing-claim-name"
-          title="Requester name"
-          name="requesterName"
-        />
-        <CatchField
-          recipe="input"
-          id="storybook-listing-claim-email"
-          title="Business email"
-          name="businessEmail"
-          keyboardType="emailAddress"
-        />
-        <Button type="submit">Send claim request</Button>
-        <FormStatus status={{message: "Storybook claim request is ready for review.", tone: "is-success"}} />
-      </ClaimRequestForm>
-    </ClaimRequestPanel>
+    <ClaimRequestForm onSubmit={preventSubmit}>
+      <CatchField
+        recipe="input"
+        id="storybook-listing-claim-name"
+        title="Requester name"
+        name="requesterName"
+      />
+      <CatchField
+        recipe="input"
+        id="storybook-listing-claim-email"
+        title="Business email"
+        name="businessEmail"
+        keyboardType="emailAddress"
+      />
+      <Button type="submit">Send claim request</Button>
+      <FormStatus status={{message: "Storybook claim request is ready for review.", tone: "is-success"}} />
+    </ClaimRequestForm>
   ),
 };
 

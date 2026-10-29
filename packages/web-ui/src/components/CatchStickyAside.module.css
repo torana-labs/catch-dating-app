@@ -1,0 +1,64 @@
+/*
+ * Website v2 sticky aside (CAT-248). From 840px the aside sticks 20px below
+ * the top of the viewport; it fills its column, so place it in a stretched
+ * CatchSplit rail. Below 840px a CatchDock is fixed to the bottom
+ * edge with the summary and a D20 medium open action, and the page keeps its
+ * height clear at the end. Before the page width is measured the aside shows
+ * in flow, so the content stays readable without script.
+ */
+.anchor {
+  min-width: 0;
+  height: 100%;
+}
+
+.aside {
+  position: sticky;
+  top: var(--catch-space-s5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-micro14);
+}
+
+.dock {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 30;
+  box-shadow: 0 -10px 30px color-mix(in srgb, var(--catch-palette-ink) 8%, transparent);
+}
+
+/*
+ * A CSS Modules rule must name a local class, so the page clearance keys on
+ * the dock's. The page keeps the dock's height clear at its end, and focus
+ * scrolls a control clear of the dock, focus ring included (WCAG 2.4.11).
+ * The height here is the one-line estimate; the component sets the measured
+ * height on the root element once the dock renders.
+ */
+:global(html):has(.dock) {
+  --catch-sticky-aside-dock-clearance: calc(2 * var(--catch-space-s3) + var(--catch-space-s10) + var(--catch-stroke-hairline) + env(safe-area-inset-bottom));
+  scroll-padding-bottom: calc(var(--catch-sticky-aside-dock-clearance) + var(--catch-space-s3));
+}
+
+:global(body):has(.dock) {
+  padding-bottom: var(--catch-sticky-aside-dock-clearance);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s3);
+}
+
+.summary { min-width: 0; }
+
+.probe {
+  display: block;
+  width: 0;
+  height: 0;
+}
+
+@container catch-page (width < 840px) {
+  .aside { position: static; }
+  .probe { width: 1px; }
+}

@@ -72,10 +72,31 @@ export function parseProbeDiagnostics(output) {
   });
 }
 
+// Flutter's bin/dart wrapper (bin/internal/shared.sh) prints this exact block
+// to stderr when it runs as root outside Docker or CI, as cloud agent sessions
+// do. It is not analyzer output, so only this verbatim block is removed; any
+// other unrecognized line still fails the probe run.
+const flutterRootBanner = [
+  "   Woah! You appear to be trying to run flutter as root.",
+  "   We strongly recommend running the flutter tool without superuser privileges.",
+  "  /",
+  "\u{1F4CE}",
+];
+
+function withoutFlutterRootBanner(text) {
+  const lines = text.split("\n");
+  const start = lines.findIndex((_, index) => flutterRootBanner.every(
+    (expected, offset) => lines[index + offset]?.replace(/\r$/u, "") === expected));
+  if (start === -1) return text;
+  lines.splice(start, flutterRootBanner.length);
+  return lines.join("\n");
+}
+
 export function verifyProbeResult({cases, expectations}, result) {
   if (result.error) throw result.error;
   if (result.signal) throw new Error(`Analyzer terminated by ${result.signal}`);
-  const diagnostics = parseProbeDiagnostics((result.stdout ?? "") + (result.stderr ?? ""));
+  const diagnostics = parseProbeDiagnostics(
+    (result.stdout ?? "") + withoutFlutterRootBanner(result.stderr ?? ""));
   const expectedStatus = diagnostics.some((entry) => entry.severity === "ERROR") ? 3 :
     diagnostics.some((entry) => entry.severity === "WARNING") ? 2 : 0;
   if (result.status !== expectedStatus) throw new Error(`Analyzer status ${result.status} contradicts its diagnostics`);

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/payments/domain/payment.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_state.dart';
 import 'package:flutter/material.dart';

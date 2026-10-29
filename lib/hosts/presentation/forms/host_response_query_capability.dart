@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/domain/forms/host_response_query.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_response_query.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_workspace_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_query_editor_section.dart';

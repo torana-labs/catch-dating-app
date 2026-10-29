@@ -32,6 +32,9 @@ node tool/organizer_intake/ingest_search_results.mjs
 node tool/organizer_intake/ingest_search_results.mjs --check
 ```
 
+2026-10-29: those scripts were retired with `tool/organizer_intake`; rerun a
+saved capture with `node operations/src/cli/search-capture-input.mjs` instead.
+
 The generated queue reports:
 
 - 2 evidence batches;

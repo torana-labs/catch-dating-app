@@ -8,10 +8,12 @@ import type {OrganizerPageRecord} from "./organizerPage";
 const accountApi = vi.hoisted(() => ({watch: vi.fn(), read: vi.fn(), follow: vi.fn()}));
 const trackMarketingEvent = vi.hoisted(() => vi.fn());
 const trackOrganizerAnalytics = vi.hoisted(() => vi.fn());
+const trackOrganizerLinkClick = vi.hoisted(() => vi.fn());
 vi.mock("../../firebase", async (original) => ({...await original<object>(), watchWebsiteAccountAuthState: accountApi.watch,
   manageWebsiteAccount: accountApi.read, setWebsiteOrganizerFollow: accountApi.follow}));
 vi.mock("../../analytics", () => ({trackMarketingEvent, getMarketingConsent: () => null, marketingConsentChangedEvent: "catch:marketing-consent-changed"}));
-vi.mock("./analytics", () => ({trackOrganizerAnalytics, observeOrganizerPageView: vi.fn(() => () => undefined)}));
+vi.mock("./analytics", () => ({trackOrganizerAnalytics, trackOrganizerLinkClick,
+  observeOrganizerPageView: vi.fn(() => () => undefined)}));
 vi.mock("./observeOrganizerProviders", () => ({observeOrganizerProviders: vi.fn(() => () => undefined)}));
 
 import {useOrganizerPageController, type OrganizerPageBackends} from "./useOrganizerPageController";
@@ -163,5 +165,9 @@ describe("useOrganizerPageController", () => {
     const claimed = renderController().result.current;
     claimed.openEvent(claimed.view.events.rows[0]);
     expect(trackOrganizerAnalytics).toHaveBeenLastCalledWith(expect.anything(), "outboundClick", "catch_event_card", "lantern-sun-1");
+    const calls = trackOrganizerAnalytics.mock.calls.length;
+    claimed.openLink(claimed.view.links[1]);
+    expect(trackOrganizerLinkClick).toHaveBeenLastCalledWith(expect.anything(), "whatsapp", "organizer_page");
+    expect(trackOrganizerAnalytics).toHaveBeenCalledTimes(calls);
   });
 });

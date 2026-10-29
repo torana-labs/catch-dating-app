@@ -8,6 +8,7 @@ import type {Firestore} from "firebase-admin/firestore";
 import type {OperationRun, OperationWorkItem} from "../operations/models";
 import type {ProjectionImportWriter} from "../operations/projectionImporter";
 import {FakeFirestore} from "../operations/testFirestore";
+import {acceptPageFetch, notFoundTransport} from "../operations/supplyIntake/testPageFetch";
 import {processSupplyIntakeRequest, supplyIntakeCollections} from "../operations/supplyIntake/worker";
 import {schemaErrorMessages, validateAdminListOrganizerListingReviewsCallableResponse} from "../shared/generated/schemaValidators";
 import {adminListOrganizerListingReviewsHandler, publicSlugFor} from "./organizerListingReviewQueue";
@@ -33,8 +34,10 @@ class MemoryWriter implements ProjectionImportWriter {
 }
 
 /** Three listings the real worker built, completed an hour apart, oldest first. */
-async function harness() {
+async function harness({organizers = {} as Record<string, Record<string, unknown>>} = {}) {
   const db = new FakeFirestore();
+  acceptPageFetch(db);
+  for (const [organizerId, organizer] of Object.entries(organizers)) db.write(`organizers/${organizerId}`, organizer);
   const writer = new MemoryWriter();
   const names = ["Afterfly", "The Bhag", "Sunday Sketchers"];
   for (const [index, name] of names.entries()) {
@@ -47,7 +50,8 @@ async function harness() {
       status: "queued", attempts: 0, leaseUntil: null, result: null, failure: null, approval: null,
       createdAt: at, updatedAt: at});
     const outcome = await processSupplyIntakeRequest({db: db as unknown as Firestore, now: () => new Date(at),
-      projectionWriter: writer, putSnapshot: async () => "supply-intake/snapshots/x.json"}, requestId);
+      projectionWriter: writer, transport: notFoundTransport, putSnapshot: async () => "supply-intake/snapshots/x.json"},
+    requestId);
     const stored = db.read(`${supplyIntakeCollections.requests}/${requestId}`) as {result: {listingWorkItemId: string}, failure: unknown};
     assert.equal(outcome, "completed", JSON.stringify(stored.failure));
     db.write(`operationWorkItems/${stored.result.listingWorkItemId}`,
@@ -82,6 +86,40 @@ test("listings awaiting approval are listed newest first, a page at a time", asy
   // A market Catch has not opened cannot take an approval until it opens.
   assert.deepEqual([first.rows[0].market.slug, first.rows[0].market.marketId, first.rows[0].market.open],
     ["bengaluru", "in-ka-bengaluru", false]);
+});
+
+test("each row shows how its listing compares with the organizers Catch already lists", async () => {
+  const listed = {name: "Afterfly", instagramHandle: null,
+    publicPage: {slug: "afterfly", citySlug: "mumbai", publishStatus: "published"}, publicSources: []};
+  const h = await harness({organizers: {"org-afterfly": listed}});
+  const response = await h.call({limit: 10, cursor: null});
+  valid(response);
+  const [sketchers, bhag, afterfly] = response.rows;
+  assert.ok(afterfly.listing.gaps.includes("possible_duplicate_organizer"));
+  assert.equal(afterfly.duplicateCheck?.verdict, "match");
+  assert.deepEqual([afterfly.duplicateCheck?.citySlug, afterfly.duplicateCheck?.truncated,
+    afterfly.duplicateCheck?.organizersCompared], ["mumbai", false, 1]);
+  assert.deepEqual(afterfly.duplicateCheck?.candidates.map((candidate) => [candidate.organizerId, candidate.name, candidate.band]),
+    [["org-afterfly", "Afterfly", "match"]]);
+  assert.match(afterfly.duplicateCheck?.candidates[0].rationale ?? "", /exact_name/);
+  assert.equal(bhag.duplicateCheck?.verdict, "none");
+  assert.ok(!bhag.listing.gaps.includes("possible_duplicate_organizer"));
+  // Bengaluru lists no organizer, so its listing was compared with none.
+  assert.deepEqual([sketchers.duplicateCheck?.verdict, sketchers.duplicateCheck?.organizersCompared], ["none", 0]);
+
+  // A check recorded for another build of the listing, or before listings
+  // were compared, is not shown.
+  const path0 = `${supplyIntakeCollections.requests}/nom-listing-0`;
+  const stored = h.db.read(path0) as {result: Record<string, unknown>};
+  h.db.write(path0, {...stored, result: {...stored.result, listingContentHash: "f".repeat(64)}});
+  const path1 = `${supplyIntakeCollections.requests}/nom-listing-1`;
+  const older = h.db.read(path1) as {result: Record<string, unknown>};
+  const withoutCheck = {...older.result};
+  delete withoutCheck.duplicateCheck;
+  h.db.write(path1, {...older, result: withoutCheck});
+  const reread = await h.call({limit: 10, cursor: null});
+  valid(reread);
+  assert.deepEqual(reread.rows.map((row) => row.duplicateCheck?.verdict ?? null), ["none", null, null]);
 });
 
 test("approved, unfinished and unreadable listings are not offered for review", async () => {

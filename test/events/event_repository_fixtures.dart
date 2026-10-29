@@ -63,8 +63,9 @@ Future<void> _seedParticipation(
       .set(participation.toJson());
 }
 
-class _IdleEventRepository extends Fake implements EventRepository {
-  _IdleEventRepository({required this.signedUpEventsStream});
+class _IdleBookedEventsRepository extends Fake
+    implements BookedEventsRepository {
+  _IdleBookedEventsRepository({required this.signedUpEventsStream});
 
   final Stream<List<Event>> signedUpEventsStream;
 

@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS `%s.%s.host_analytics_events` (
   source STRING,
   session_hash STRING,
   platform STRING,
+  link_id STRING,
+  traffic_source STRING,
   ingested_at TIMESTAMP NOT NULL
 )
 PARTITION BY event_date
@@ -28,4 +30,16 @@ CLUSTER BY club_id, target_event_id, event_name
 OPTIONS(
   description = 'Aggregate-safe host discovery event stream. Firestore is not the source of truth for these counters.'
 )
+""", analytics_project, analytics_dataset);
+
+-- Owner link clicks (CAT-254): the link a linkClick opened and the fixed-list
+-- traffic source the page mapped from its referrer or ?via=.
+EXECUTE IMMEDIATE FORMAT("""
+ALTER TABLE `%s.%s.host_analytics_events`
+ADD COLUMN IF NOT EXISTS link_id STRING
+""", analytics_project, analytics_dataset);
+
+EXECUTE IMMEDIATE FORMAT("""
+ALTER TABLE `%s.%s.host_analytics_events`
+ADD COLUMN IF NOT EXISTS traffic_source STRING
 """, analytics_project, analytics_dataset);

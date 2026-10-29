@@ -1,14 +1,14 @@
-import 'package:catch_dating_app/hosts/domain/forms/host_form_analytics.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_automation.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_logic.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_question.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_section.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_share.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_analytics.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_automation.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_conversion.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_logic.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_question.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_section.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_share.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -71,30 +71,48 @@ void main() {
       },
     );
 
-    test('event audience stays separate and clears when profile is disabled', () {
-      final question = HostFormQuestion.create(
-        questionId: 'drink', kind: HostFormQuestionKind.shortText,
-      ).copyWith(answerDestination: HostFormAnswerDestination.organizerCard,
-        eventProfileAudience: true,
-        hostPresentation: HostFormPresentation.filterable);
-      expect(question.proposesEventProfile, true);
-      expect(question.canonicalFieldId, isNull);
-      expect(question.hostPresentation, HostFormPresentation.filterable);
-      expect(question.copyWith(
-        answerDestination: HostFormAnswerDestination.organizerOnly,
-      ).proposesEventProfile, false);
-      final definition = HostFormDefinition.fromMap(_definitionMap());
-      final withQuestion = definition.replaceSection(0,
-        definition.sections.single.replaceQuestion(0, question));
-      final enabled = withQuestion.withEventProfileEnabled(true);
-      expect(enabled.eventProfileEnabled, true);
-      expect(enabled.sections.single.questions.single.proposesEventProfile,
-        true);
-      final disabled = enabled.withEventProfileEnabled(false);
-      expect(disabled.eventProfileEnabled, false);
-      expect(disabled.sections.single.questions.single.proposesEventProfile,
-        false);
-    });
+    test(
+      'event audience stays separate and clears when profile is disabled',
+      () {
+        final question =
+            HostFormQuestion.create(
+              questionId: 'drink',
+              kind: HostFormQuestionKind.shortText,
+            ).copyWith(
+              answerDestination: HostFormAnswerDestination.organizerCard,
+              eventProfileAudience: true,
+              hostPresentation: HostFormPresentation.filterable,
+            );
+        expect(question.proposesEventProfile, true);
+        expect(question.canonicalFieldId, isNull);
+        expect(question.hostPresentation, HostFormPresentation.filterable);
+        expect(
+          question
+              .copyWith(
+                answerDestination: HostFormAnswerDestination.organizerOnly,
+              )
+              .proposesEventProfile,
+          false,
+        );
+        final definition = HostFormDefinition.fromMap(_definitionMap());
+        final withQuestion = definition.replaceSection(
+          0,
+          definition.sections.single.replaceQuestion(0, question),
+        );
+        final enabled = withQuestion.withEventProfileEnabled(true);
+        expect(enabled.eventProfileEnabled, true);
+        expect(
+          enabled.sections.single.questions.single.proposesEventProfile,
+          true,
+        );
+        final disabled = enabled.withEventProfileEnabled(false);
+        expect(disabled.eventProfileEnabled, false);
+        expect(
+          disabled.sections.single.questions.single.proposesEventProfile,
+          false,
+        );
+      },
+    );
 
     test('section and question mutations are ordered and non-destructive', () {
       final definition = HostFormDefinition.fromMap(_definitionMap());

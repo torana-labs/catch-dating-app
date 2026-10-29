@@ -71,8 +71,11 @@ evidence and scoped live approvals remain prerequisites for activation.
 
 These rows name current `src/index.ts` exports, including exports that remain
 dormant pending activation. Historical Function names belong in prose outside
-the inventory.
+the inventory. `node tool/audit/check_fn_readme_inventory.mjs --write` keeps the
+rows between the markers in step with `src/index.ts`: it drops removed exports
+and lists new ones under "Not yet described" for you to move and describe.
 
+<!-- fn-inventory:start (generated rows: node tool/audit/check_fn_readme_inventory.mjs --write) -->
 | Function | File | Purpose |
 |----------|------|---------|
 | `onHostContactSummaryChanged` / `onHostContactTraitsSummaryChanged` / `onHostContactChannelSummaryChanged` / `onHostContactVocabularySummaryChanged` / `onHostAudienceSummaryCoverageChanged` / `onHostFormSummaryChanged` / `onHostEventSummaryChanged` / `onHostGroupSummaryChanged` / `onHostResponseSummaryChanged` / `onHostApplicationSummaryChanged` / `onHostApplicationEvidenceSummaryChanged` / `onHostApplicationGrantSummaryChanged` / `onHostResponseConversionSummaryChanged` / `onHostResponseSourceLabelSummaryChanged` / `onHostResponseContactOriginChanged` | `src/hostReadModels/triggers.ts` | Current-source, organizer-scoped People/Forms/private Events/Groups/Responses read-model reconciliation; views are SDK-readable metadata, never mutation or permission authority. |
@@ -133,7 +136,9 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `addOrganizerManager` / `removeOrganizerManager` / `transferOrganizerOwnership` | `src/organizers/` | Organizer team and ownership management surface |
 | `followOrganizer` / `unfollowOrganizer` / `setOrganizerNotificationPreference` | `src/organizers/` | Follow/unfollow an organizer and manage follower notifications |
 | `createOrganizerPost` | `src/organizers/` | Moderated, idempotent organizer follower update with quota, durable delivery operation and bounded immediate fan-out |
-| `requestOrganizerClaim` / `adminDecideOrganizerClaim` | `src/organizers/organizerClaims.ts` | Canonical organizer claim submission and audited admin decision |
+| `requestOrganizerClaim` / `adminDecideOrganizerClaim` | `src/organizers/organizerClaims.ts` | Canonical organizer claim submission and audited admin decision; approval itself is `prepareOrganizerClaimApproval` in `src/organizers/organizerClaimApproval.ts` |
+| `getOrganizerClaimVerificationOptions` / `startOrganizerClaimVerification` | `src/organizers/organizerClaimVerification.ts` | Which proofs a listing offers, and a 30-minute claim code bound to one listing and account; Instagram stays off until `CATCH_INSTAGRAM_CLAIMS_ENABLED` |
+| `instagramClaimWebhook` | `src/organizers/instagramClaimWebhook.ts` | Dormant until the Meta app exists. Meta webhook for direct messages to Catch's Instagram account: signed, once per message, rate-limited per sender; a code from the listing's own account approves the claim |
 | `startOrganizerConversation` | `src/clubs/clubHostConversations.ts` | Start or resume a viewer conversation with an organizer |
 | `sendEventBroadcast` | `src/events/` | Host-only, event-scoped Activity and preference-gated push broadcast with an idempotent receipt and organizer Sends projection |
 | `importEventAttendees` / `markEventAttendeeAttendance` | `src/events/eventAttendees.ts` | Import or manually add an external roster and manage operational check-in without Consumer booking |
@@ -309,9 +314,8 @@ These are generic software capabilities. Strategy policies, prospect records and
 | `adminPublishListingEvents` | `src/admin/listingEventImports.ts` | Admin, owner or support dry-run or publish chosen imported events of one approved listing as read-only, outbound-only external events; full checklist, per-event resolutions, one transaction and receipt per event |
 | `adminListSupplyIntakePolicies` | `src/admin/supplyIntakePolicies.ts` | Admin, owner or support read the Supply Intake capabilities that wait for the owner's decision, with the decision and whether the policy file switches each on |
 | `adminRefreshOrganizerEvents` | `src/operations/supplyIntake/organizerEventRefresh.ts` | Admin, owner, support or sales staff queue an event refresh for an unclaimed listed organizer, created with its approval; audited, rate-limited and idempotent per caller key |
+| `adminSetSupplyNominator` / `adminListSupplyNominators` | `src/operations/supplyIntake/nominators.ts` | Admin or owner registers a sales associate or partner whose WhatsApp messages to Catch become organizer nominations, or switches them off; stores only a hash of the number and its last four digits, audited and rate-limited. Sales staff can list the registry. Messages count only while `SUPPLY_MESSAGE_NOMINATIONS_ENABLED` and the receipt consumers are on, and only while the account keeps its sales role or partner membership |
 | `adminNominateOrganizer` | `src/operations/supplyIntake/nominations.ts` | Admin, owner or sales staff nominate an organizer; audited, rate-limited and idempotent per nominator request id. Creates a queued Supply Intake request; nothing is published until staff review the listing |
-| `adminGetEventSupplyReadiness` | `src/admin/eventSupplyReadiness.ts` | Admin read-only external event import plan and preflight snapshot |
-| `adminPublishExternalEvent` | `src/admin/externalEventPublishing.ts` | Admin audited publish of one preflight-approved read-only `externalEvents/{id}` document |
 | `adminTakedownExternalEvent` | `src/admin/externalEventTakedown.ts` | Admin audited dry-run/apply takedown of one published external event without deleting its source or publication receipts |
 | `adminGetMarketingOpsDashboard` | `src/admin/marketingOps.ts` | Admin read-only marketing ops dashboard bridge |
 | `adminRecordMarketingReviewDecision` | `src/admin/marketingOps.ts` | Admin audited marketing review decision, no publish |
@@ -343,6 +347,7 @@ enter previews.
 | `syncAlgoliaOrganizerIndex` | `src/search/` | `organizers/{organizerId}` onWrite — synchronizes organizer discovery search records |
 | `syncExternalEventVisibility` | `src/organizers/externalEventVisibility.ts` | `organizers/{organizerId}` onWrite — when the organizer's app visibility changes (or it is deleted), sets `discovery.appVisibility` on its `externalEvents` to match, so app discovery never shows an event whose organizer is hidden |
 | `onPublicPageOrganizerWritten` / `onPublicPageEventWritten` / `onPublicPageExternalEventWritten` / `onPublicPageReviewWritten` | `src/publicPages/triggers.ts` | `organizers`, `events`, `externalEvents` and `reviews` onWrite — when the changed document's public projection differs, rebuilds its organizer's `organizerPublicPage` and `eventPublicPage` read models (CAT-250); follower-only changes wait for the batched refresh |
+| `onCityPlansOrganizerPageWritten` | `src/cityPlans/triggers.ts` | `organizerPublicPage` onWrite — rebuilds the `cityPlans` read model of the city the page left and the city it is in (CAT-260) |
 | `onSwipeCreated` | `src/matching/` | `profileDecisions/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
 | `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread conversation flag + FCM |
@@ -390,6 +395,7 @@ enter previews.
 | `expireCrossPathsPairHolds` | `src/crossPaths/` | Every 5 minutes — releases expired companion reservations and invalidates their invitation receipt |
 | `retryOrganizerAutomations` | `src/organizers/organizerFormAutomations.ts` | Every minute — resumes due automation runs and expired leases with bounded retries and per-action deduplication |
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
+| `rebuildCityPlansHourly` | `src/cityPlans/triggers.ts` | Hourly, rebuilds every city's `cityPlans` read model so plans move into and out of the 14-day window (CAT-260) |
 | `refreshPublicPageFollowers` | `src/publicPages/triggers.ts` | Every 30 minutes, rebuilds the public pages of organizers whose follower count changed |
 | `reconcilePublicPages` | `src/publicPages/triggers.ts` | Daily, rebuilds every organizer's public page read models, so ended events move to past moments and missed changes heal |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
@@ -416,6 +422,7 @@ enter previews.
 | `expireHostAcquisitionConsent` | `src/acquisition/` | Bounded transactional expiry of private grants and withdrawal tombstones |
 | `ingestEventRosterWebhook` | `src/events/eventRosterHandoffs.ts` | Receive one HMAC-verified, provider-authenticated roster attachment through a capability-bound email or WhatsApp handoff |
 | `organizerWhatsappWebhook` | `src/organizers/organizerWhatsappWebhook.ts` | Verify Meta webhook signatures and project delivery or STOP events without retaining message content |
+<!-- fn-inventory:end -->
 
 ## Shared modules
 

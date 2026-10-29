@@ -33,6 +33,7 @@ const schemaAdminListOrganizerListingReviewsCallableResponseSchema = <String, Ob
           'market',
           'suggestedSlug',
           'listing',
+          'duplicateCheck',
         ],
         'properties': <String, Object?>{
           'requestId': <String, Object?>{
@@ -203,6 +204,96 @@ const schemaAdminListOrganizerListingReviewsCallableResponseSchema = <String, Ob
                 'minimum': 0,
               },
             },
+          },
+          'duplicateCheck': <String, Object?>{
+            'description': 'How the listing compares with the organizers Catch already lists. Advisory: it never blocks approval. Null when the listing was not compared, or was built before listings were compared.',
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'null',
+              },
+              <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'verdict',
+                  'organizersCompared',
+                  'citySlug',
+                  'truncated',
+                  'candidates',
+                ],
+                'properties': <String, Object?>{
+                  'verdict': <String, Object?>{
+                    'enum': <Object?>[
+                      'match',
+                      'ambiguous',
+                      'none',
+                    ],
+                  },
+                  'organizersCompared': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                  },
+                  'citySlug': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'maxLength': 80,
+                    'description': 'The city the comparison was limited to; null when it compared every city.',
+                  },
+                  'truncated': <String, Object?>{
+                    'type': 'boolean',
+                    'description': 'Whether more published organizers existed than were compared.',
+                  },
+                  'candidates': <String, Object?>{
+                    'type': 'array',
+                    'maxItems': 12,
+                    'items': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'organizerId',
+                        'name',
+                        'score',
+                        'band',
+                        'rationale',
+                      ],
+                      'properties': <String, Object?>{
+                        'organizerId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 200,
+                        },
+                        'name': <String, Object?>{
+                          'type': <Object?>[
+                            'string',
+                            'null',
+                          ],
+                          'maxLength': 500,
+                        },
+                        'score': <String, Object?>{
+                          'type': 'number',
+                          'minimum': 0,
+                          'maximum': 1,
+                        },
+                        'band': <String, Object?>{
+                          'enum': <Object?>[
+                            'match',
+                            'probable',
+                            'review',
+                            'low',
+                          ],
+                        },
+                        'rationale': <String, Object?>{
+                          'type': 'string',
+                          'maxLength': 2000,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
           },
         },
       },

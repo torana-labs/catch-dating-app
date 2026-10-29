@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'private_event_media_service.g.dart';

@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Version 1 request body for member waitlist and optional Host operating-application submissions.
+ * Version 1 request body for member waitlist and optional Host operating-application submissions. A member may instead ask for one WhatsApp message when Catch opens in their city: that path carries `whatsapp` and needs no name or email.
  */
 export interface JoinWaitlistHTTPRequest {
   hostMeasurement?: {
@@ -12,8 +12,8 @@ export interface JoinWaitlistHTTPRequest {
     fbclid?: string;
     clickCapturedAt?: number;
   };
-  fullName: string;
-  email: string;
+  fullName?: string;
+  email?: string;
   city: string;
   role: "member" | "runner" | "host" | "both";
   instagram?: string;
@@ -102,5 +102,17 @@ export interface JoinWaitlistHTTPRequest {
     pagePath: string;
     pageTitle: string;
     submittedAt: string;
+  };
+  /**
+   * A member's request for one WhatsApp message on the day Catch opens in their city. The launch notice is the explicit purpose of the form; marketing permission is a separate choice that is off unless the person chose it (CAT-72). consentVersion names the wording they saw.
+   */
+  whatsapp?: {
+    /**
+     * E.164 mobile number.
+     */
+    phone: string;
+    launchNotice: true;
+    marketing: boolean;
+    consentVersion: string;
   };
 }

@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_profile.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_configuration.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_operations.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 
 EventRehearsalSetup eventRehearsalConfigurationSetup(

@@ -1,0 +1,41 @@
+/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/contracts/generate_schema_contracts.mjs
+
+export const adminSetSupplyNominatorCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_set_supply_nominator_response.schema.json",
+  "title": "AdminSetSupplyNominatorCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nominatorId",
+    "created",
+    "phoneLast4",
+    "defaultMarket",
+    "active"
+  ],
+  "properties": {
+    "nominatorId": {
+      "type": "string",
+      "pattern": "^whatsapp-[a-f0-9]{64}$"
+    },
+    "created": {
+      "type": "boolean"
+    },
+    "phoneLast4": {
+      "type": "string",
+      "pattern": "^[0-9]{4}$"
+    },
+    "defaultMarket": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    },
+    "active": {
+      "type": "boolean"
+    }
+  }
+} as const;

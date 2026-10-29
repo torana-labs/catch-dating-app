@@ -85,6 +85,12 @@
             }
           }
         },
+        "ownerLinks": {
+          "type": "array",
+          "maxItems": 20,
+          "description": "Replaces the organizer page links, in display order. An empty array removes them.",
+          "items": {"$ref": "../shared/public_page_common.schema.json#/definitions/ownerLinkInput"}
+        },
         "publicProfile": {
           "type": "object",
           "additionalProperties": false,

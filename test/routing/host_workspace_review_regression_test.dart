@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_screen.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart';

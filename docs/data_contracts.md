@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.177.0
-updated: 2026-10-25
+version: 1.179.0
+updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -1654,6 +1654,53 @@ Production canonical parity completed on 2026-07-22; because the application
 has not launched, the owner approved local compatibility retirement rather than
 a released-client support window. Remote synthetic-data reset and deployment
 remain separately authorized operations.
+
+### Organizer claim verification
+
+An organiser proves they run a listing in one of two ways, and staff review of
+`organizerClaimRequests` stays the fallback for every case.
+
+- Instagram. Catch never messages first, because Instagram only lets a
+  business reply to someone who messaged it. `startOrganizerClaimVerification`
+  shows a six-digit code that lasts 30 minutes. The code is bound to one
+  attempt, for one account and one listing. The organiser sends it from the
+  listing's Instagram account to Catch's account.
+- Luma. The organiser puts a code in their Luma calendar description.
+
+The attempt is stored at `organizerClaimVerifications/{attemptId}`:
+
+- There is one attempt per listing, account and method. Starting again keeps
+  a code that has more than five minutes left; otherwise it issues a new one.
+- Only the requester may `get` the attempt. That is how the claim page shows
+  the code and moves on by itself.
+
+Two collections are server-only, and Firestore TTL deletes both after
+`expiresAt`:
+
+- `organizerClaimInstagramCodes/{code}` reserves each live code, so codes are
+  unique and the webhook finds the attempt without a query.
+- `organizerClaimInstagramMessages/{messageKey}` holds one receipt per signed
+  message, keyed by the SHA-256 of Meta's message id. It makes redeliveries
+  count once, and it keeps no text or sender id.
+
+`instagramClaimWebhook` checks `X-Hub-Signature-256` with the app secret and
+ignores echoes and other accounts. It rate-limits each sender. It reads the
+sender's username through the Graph API user profile call. The claim completes
+only when that username equals the listing's handle and the code is live and
+unused. Each failure gets its own reply in the thread: wrong sender, expired,
+used or replaced, or unknown code.
+
+A verified attempt approves through `prepareOrganizerClaimApproval`, the same
+transaction path staff approval uses:
+
+- It creates or approves the requester's `organizerClaimRequests` row with
+  `decidedByUid: null`.
+- It supersedes another account's request that is waiting for staff review.
+- The attempt records the evidence: the observed username, the message key,
+  and the approved request id.
+
+Both paths require an account (a name and a verified phone), not a social
+profile.
 
 Public organizer website content is also owned by the canonical organizer
 document. `publicPage` controls publication, indexing, canonical and legacy
@@ -4358,9 +4405,7 @@ checks, and accepted waivers, with an immutable
 idempotency key; a replay returns the same result and changed input is
 rejected. A published event is never overwritten by a later import and a
 withdrawn one is never republished. Nothing writes a canonical Catch-hosted
-`events/{id}` record. `adminPublishExternalEvent` remains only for the retired
-`eventSupplyReadiness/current` snapshot, which no environment has, and is
-retired with it.
+`events/{id}` record.
 
 The governed blockers are `missing_exact_coordinates`, `missing_end_time`,
 `missing_location_detail`, `requires_event_defaults_policy`,
@@ -4392,9 +4437,9 @@ renders each page from one Admin SDK read (CAT-250). Their contracts are
 `contracts/firestore/event_public_pages.schema.json` and the shared
 definitions in `contracts/shared/public_page_common.schema.json`.
 
-- The organizer page holds identity, owner links (empty until CAT-254),
-  upcoming events from every source with their booking target, past moments,
-  a review summary (verified-only rating, count and distribution of every
+- The organizer page holds identity, the owner's live links, upcoming
+  events from every source with their booking target, past moments, a
+  review summary (verified-only rating, count and distribution of every
   published review) with the latest reviews marked verified or unverified,
   the follower count, claim state, capabilities and today's recommendation
   rail. The event page holds every public event field, a capacity snapshot,
@@ -4408,6 +4453,14 @@ definitions in `contracts/shared/public_page_common.schema.json`.
   expected output the website reader writes; the Functions port must
   reproduce it. A page that fails those rules has no document, and an id
   published as both a Catch and an imported event has no event page.
+- Owner links (CAT-254) live in the callable-owned `organizers/{id}.ownerLinks`
+  list, which only `adminUpdateOrganizerDetails` writes, after
+  `functions/src/organizers/organizerLinks.ts` checks each address (https,
+  no credentials or port, a public dotted host, no link shorteners, at most
+  2048 characters) and the operator-wording rule. The page carries the links
+  still live at build time, pinned first; readers also hide a link once its
+  `showUntil` passes. `icon` names what a link is for, and null lets the
+  page pick an icon from the address.
 - The pages never hold contact details, owner identities, rosters or dating
   framing: no `balanced` admission label, `rotations` experience,
   `singlesMixer` activity, Event Success scorecard or `mutualMatchCount`. The
@@ -4427,6 +4480,32 @@ definitions in `contracts/shared/public_page_common.schema.json`.
   `--apply` writes, `--allow-prod` for prod). Until an environment is
   backfilled the website assembles a page without a read model from its
   sources under the same rules.
+
+### City plans
+
+`cityPlans/{citySlug}` holds what the website shows for one city: the plans
+starting in the next 14 days, how many there are of each homepage format
+(run, dinner, games, courts, nights out and other, grouped as
+`formatActivityKinds` in `@catch/web-ui`), the
+organisers in the city and whether the city is `live` or `launchingSoon`
+(CAT-260). Its contract is `contracts/firestore/city_plans.schema.json`.
+
+- Every launched and planned market in `functions/src/locations/marketConfig.ts`
+  has a document. A launched city is built only from its
+  `organizerPublicPage` documents, so it adds no publication rule of its own.
+- A launched city reads as `launchingSoon` until it has four plans in the
+  window, so a thin city never renders a sparse page.
+- A planned city has no plans. It lists the published organisers joining it,
+  projected under the organiser page rules with that city treated as live.
+  They carry no page link, because their pages stay withheld until the city
+  launches.
+- Like the pages it reads, it never holds contact details, owner identities,
+  rosters or dating framing; the schema rejects the `singlesMixer` activity.
+- An organiser page write rebuilds the cities it left and joined, and
+  `rebuildCityPlansHourly` rebuilds every city, which moves plans into and
+  out of the window. Each commit is a transaction that discards a rebuild
+  which read its sources before the stored `builtAt`.
+- The collection is server-only in `firestore.rules`.
 
 ## Read Path Discipline
 
@@ -4630,7 +4709,7 @@ confirmation. Preserve user documents and both canonical organizer documents
 and legacy club projections through any remote migration.
 
 If remote cleanup is approved, first export or back up existing `users`,
-`publicProfiles`, and old `runClubs` documents for each Firebase environment.
+`publicProfiles`, and old `run` documents for each Firebase environment.
 Then copy any host organizations worth preserving into `organizers`, reset
 event-specific legacy collections and edges such as old `runs`,
 `runParticipations`, `savedRuns`, reviews, event schedule locks, event-derived
@@ -5541,7 +5620,7 @@ live IAM, tenant configuration or every authorized principal:
 | `functions/src/safety/accountDeletion.ts` | Writes the recipient `deletedUsers` tombstone before Auth deletion. Readiness reads that guard; direct Auth deletion bypasses this application path. |
 | `tool/demo/cross_paths_demo_core.mjs` | Privileged fixture tooling can clear/reassign phone numbers, create users and alter test-phone configuration. It has scoped guards including an explicitly pinned production path, not a readiness lock. |
 | `tool/firebase/probe_chat_storage_rules.mjs` | Mints and exchanges a custom token for a selected user after its own data preflight; it does not establish a readiness authority fence. |
-| `lib/auth/data/auth_repository.dart`, `admin/src/shared/api/firebase.ts`, `website/src/firebase.ts` | Establish phone/email-link sessions, Google Admin sessions and sign out. These source flows do not fence backend role, identity or session mutations. |
+| `lib/contexts/account/data/auth_repository.dart`, `admin/src/shared/api/firebase.ts`, `website/src/firebase.ts` | Establish phone/email-link sessions, Google Admin sessions and sign out. These source flows do not fence backend role, identity or session mutations. |
 
 The client SDK also exposes account deletion, linking/unlinking, password and
 phone mutation capabilities independently of whether the current application UI

@@ -9,11 +9,12 @@
 /// exported here; import them by their direct path.
 library;
 
-export 'data/host_analytics_repository.dart';
-export 'data/host_profile_repository.dart';
-export 'domain/host_attendance_window.dart';
-export 'domain/host_profile.dart';
-export 'domain/host_report_export.dart';
+export 'package:catch_dating_app/contexts/bookings/domain/host_attendance_window.dart';
+export 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
+export 'package:catch_dating_app/contexts/insights/domain/host_report_export.dart';
+export 'package:catch_dating_app/contexts/organizers/data/host_profile_repository.dart';
+export 'package:catch_dating_app/contexts/organizers/domain/host_profile.dart';
+
 export 'events/presentation/host_events_screen.dart'; // public-api: route entry point exposed to app routing
 export 'events/presentation/host_events_state.dart'; // public-api: provider-free display state reused by tests and routes
 export 'presentation/club_management/create/create_club_controller.dart'; // public-api: command seam for route-owned actions

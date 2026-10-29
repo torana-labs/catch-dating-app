@@ -63,7 +63,6 @@
 
 /* Begin PBXFileReference section */
 		0033CA765B6D1593085A9F53 /* Pods-Runner.profile-host-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-host-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-host-prod.xcconfig"; sourceTree = "<group>"; };
-		03A67EFB7C64AD9DAF2AFDCA /* GoogleService-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Runner/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0F471115475F466CA6D503CA /* Pods-Runner.release-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-prod.xcconfig"; sourceTree = "<group>"; };
 		0FEE53F979FD3739780A952E /* Pods-Runner.debug-host-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug-host-dev.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug-host-dev.xcconfig"; sourceTree = "<group>"; };
 		1AAD5D15B6A01B5EBF3355A4 /* AppInfo-Debug-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "AppInfo-Debug-prod.xcconfig"; path = "Runner/Configs/AppInfo-Debug-prod.xcconfig"; sourceTree = "<group>"; };
@@ -216,7 +215,6 @@
 				331C80D6294CF71000263BE5 /* RunnerTests */,
 				33CC10EE2044A3C60003C045 /* Products */,
 				D73912EC22F37F3D000D13A0 /* Frameworks */,
-				03A67EFB7C64AD9DAF2AFDCA /* GoogleService-Info.plist */,
 				E158F9E4F516783093BEFA2F /* Pods */,
 			);
 			sourceTree = "<group>";

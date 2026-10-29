@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -128,7 +128,7 @@ void main() {
             'grantExpiresAtMillis': null,
             'capabilities': [],
             'pickupPoints': [],
-    'functions': [],
+            'functions': [],
             'hotels': [],
             'vehicleClasses': [],
           });

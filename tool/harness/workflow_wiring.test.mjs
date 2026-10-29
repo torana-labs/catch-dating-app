@@ -685,7 +685,17 @@ for (const filtered of [true, false]) {
     const result = run();
     assert.equal(result.status, filtered ? 1 : 0, result.stderr);
     if (filtered) {
-      assert.match(result.stderr, /bad object|unable to read|missing|invalid object/u);
+      // Both outcomes mean "object unavailable offline". Some Git builds
+      // report the absent blob directly; others (Git 2.43, as shipped by
+      // Ubuntu 24.04 and cloud agent sessions) die in the promisor path
+      // after refusing the lazy fetch. The refusal only counts when Git
+      // also says lazy fetching was disabled, and the receipt assertion
+      // below still proves the remote was never invoked.
+      const missingObject = /bad object|unable to read|missing|invalid object/u;
+      const refusedLazyFetch =
+        /lazy fetching disabled[\s\S]*could not fetch [0-9a-f]{40,64} from promisor remote/u;
+      assert.ok(missingObject.test(result.stderr) || refusedLazyFetch.test(result.stderr),
+        `expected an offline missing-object failure, got:\n${result.stderr}`);
     } else {
       const report = JSON.parse(result.stdout);
       assert.equal(report.pass, true);
@@ -908,7 +918,9 @@ test("Tools reuses only marketing builds and browser checks owned by the require
   assert.ok(toolJob);
   assert.match(toolJob, /marketing_checks_in_react: \$\{\{ needs\.plan\.outputs\.marketing == 'true' \}\}/u);
   const marketingJob = ci.match(/\n  marketing:\n([\s\S]*?)\n  operations:/u)?.[1];
-  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.plan\.outputs\.marketing == 'true' \}\}/u);
+  assert.match(marketingJob, /if: \$\{\{ needs\.plan\.outputs\.producer_attempt == format\('\{0\}', github\.run_attempt\) && needs\.plan\.outputs\.marketing == 'true' && !needs\.plan\.outputs\.queue_verified_run \}\}/u);
+  // Tools reads Marketing's same-run results, so both skip under the same queue proof.
+  assert.match(toolJob, /!needs\.plan\.outputs\.queue_verified_run/u);
   assert.match(marketingJob, /uses: \.\/\.github\/workflows\/react-surface-validation.yml/u);
   assert.match(marketingJob, /surface: marketing/u);
   assert.doesNotMatch(marketingJob, /skip_deployable_build:/u);
@@ -1125,6 +1137,7 @@ test("app builds fail fast on structure and fan iOS roles out in parallel", () =
 
   const structural = namedStep(builds, "Fail-fast app structural gates");
   for (const checkId of [
+    "audit:context-map",
     "audit:dependency-direction",
     "audit:mutation-error-surfaces",
     "audit:route-string-literals",
@@ -1436,7 +1449,8 @@ test("only pull requests narrow the strict emulator list", () => {
   const source = workflow("firestore-rules-ci.yml");
   const select = namedStep(source, "Select the emulator tests this pull request can affect");
   assert.match(select, /if: \$\{\{ inputs\.mode == 'pr' && inputs\.base_sha != '' \}\}/u);
-  assert.match(select, /node tool\/impact\/emulator_test_selection\.mjs --paths "\$paths" --output build\/ci\/emulator-selection\.json/u);
+  assert.match(select, /git diff --name-only --no-renames "\$BASE_SHA" HEAD > build\/ci\/changed-paths\.txt/u);
+  assert.match(select, /node tool\/impact\/emulator_test_selection\.mjs --paths-file build\/ci\/changed-paths\.txt --output build\/ci\/emulator-selection\.json/u);
   assert.match(namedStep(source, "Execute backend Rules and integration assertions"),
     /CATCH_TEST_SELECTION: \$\{\{ steps\.selection\.outcome == 'success' && format\('\{0\}\/build\/ci\/emulator-selection\.json', github\.workspace\) \|\| '' \}\}/u);
   const ci = workflow("ci.yml");
@@ -1657,7 +1671,7 @@ test("Tools check shells independently request capture and inventory producer pr
 });
 
 
-test("main reuses a successful merge-queue run of the exact source for pure-validation lanes only", (t) => {
+test("main reuses a successful merge-queue run of the exact source for every validation lane", (t) => {
   const ci = workflow("ci.yml");
   const plan = ci.slice(ci.indexOf("\n  plan:\n"), ci.indexOf("\n  source-preflight:\n"));
   assert.match(plan, /queue_verified_run: \$\{\{ steps\.queue\.outputs\.run_id \}\}/u);
@@ -1665,13 +1679,13 @@ test("main reuses a successful merge-queue run of the exact source for pure-vali
   assert.ok(lookup?.run, "missing merge-queue lookup step");
   assert.match(lookup.if, /github\.event_name == 'push'/u);
   const job = (id) => ci.slice(ci.indexOf(`\n  ${id}:\n`) + 1).split(/\n  [a-z-]+:\n/u)[0];
-  for (const id of ["flutter", "visual-integration", "tools", "admin", "operations", "docs-policy"]) {
+  for (const id of ["source-preflight", "flutter", "visual-integration", "tools", "admin", "operations",
+    "docs-policy", "functions", "firestore-rules", "contracts", "marketing", "capture-freshness", "app-builds"]) {
     assert.match(job(id), /!needs\.plan\.outputs\.queue_verified_run/u, `${id} skips when the queue proved main`);
   }
-  for (const id of ["functions", "firestore-rules", "contracts", "marketing", "capture-freshness",
-    "app-builds", "finalize-plan", "package-firebase", "required"]) {
+  for (const id of ["finalize-plan", "package-firebase", "required"]) {
     assert.doesNotMatch(job(id).split("\n    steps:")[0], /queue_verified_run/u,
-      `${id} produces or checks delivery evidence and always runs`);
+      `${id} plans, packages or checks delivery and always runs`);
   }
   // Execute the actual lookup against a fake GitHub API.
   const step = extractSteps(ci).find((entry) => entry.name === "Find the merge-queue validation of this exact source");

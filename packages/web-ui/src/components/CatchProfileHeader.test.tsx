@@ -26,7 +26,7 @@ describe("CatchProfileHeader", () => {
     expect(screen.getByText("Bandra West, Mumbai")).toBeTruthy();
     expect(container.querySelector("p:last-of-type")?.textContent).toBe("2,140 followers12 events hosted");
     // The monogram repeats the name, so it is hidden from assistive tech.
-    expect(screen.getByText("LL").closest("[aria-hidden='true']")).toBeTruthy();
+    expect(container.querySelector("[data-initials='LL']")?.closest("[aria-hidden='true']")).toBeTruthy();
   });
 
   it("sits the monogram on a ground cover without a photo and shows a tag instead of a seal", () => {
@@ -34,7 +34,7 @@ describe("CatchProfileHeader", () => {
     expect(container.querySelector("[data-ground='mint']")).toBeTruthy();
     expect(screen.queryByRole("img")).toBeNull();
     expect(screen.getByText("Built from public pages · not claimed yet")).toBeTruthy();
-    expect(screen.getByText("HL")).toBeTruthy();
+    expect(container.querySelector("[data-initials='HL']")).toBeTruthy();
   });
 
   it("renders the caller's actions under the identity", () => {

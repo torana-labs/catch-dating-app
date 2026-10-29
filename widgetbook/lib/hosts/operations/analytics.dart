@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/insights/data/host_analytics_repository.dart';
+import 'package:catch_dating_app/contexts/organizers/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
-import 'package:catch_dating_app/hosts/data/host_tracking_settings_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_tracking_settings_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_analytics_observed_stages_section.dart';

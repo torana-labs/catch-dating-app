@@ -6,7 +6,7 @@ const root = process.cwd();
 const sourcePath = path.join(root, 'copy/event_success_questionnaires_en.json');
 const outputPath = path.join(
   root,
-  'lib/event_success/domain/event_success_compatibility_response/questionnaire_packs.dart',
+  'lib/contexts/formats/domain/event_success_compatibility_response/questionnaire_packs.dart',
 );
 const write = process.argv.includes('--write');
 

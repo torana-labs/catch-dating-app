@@ -548,6 +548,74 @@ test("adminUpdateClubDetailsHandler saves allowed cleanup fields", async () => {
   assert.equal(h.firestore.auditLogs().length, 1);
 });
 
+test("adminUpdateClubDetailsHandler replaces the organizer page links",
+  async () => {
+    const h = harness({"organizers/afterfly-run-club-indore": clubDoc()});
+
+    await adminUpdateClubDetailsHandler(
+      callableRequest("admin-1", {
+        clubId: "afterfly-run-club-indore",
+        fields: {ownerLinks: [
+          {id: "tickets", label: " Tickets ", subtitle: " ",
+            url: " https://www.district.in/afterfly ", icon: "tickets",
+            pinned: false, showUntil: null},
+          {id: "drop", label: "Diwali run kit", subtitle: "Pre-order",
+            url: "https://shop.afterfly.in/kit", icon: null, pinned: true,
+            showUntil: "2026-11-14T12:00:00.000Z"},
+        ]},
+        reviewNote: "Owner sent their links over WhatsApp.",
+      }, {admin: true}),
+      h.deps
+    );
+
+    const links = h.firestore.get("organizers/afterfly-run-club-indore")
+      ?.ownerLinks as FakeData[];
+    assert.deepEqual(links[0], {id: "tickets", label: "Tickets",
+      subtitle: null, url: "https://www.district.in/afterfly",
+      icon: "tickets", pinned: false, showUntil: null});
+    assert.equal(links[1].id, "drop");
+    assert.equal((links[1].showUntil as {_seconds: number})._seconds,
+      Date.parse("2026-11-14T12:00:00.000Z") / 1000);
+
+    const read = await adminGetClubDetailsHandler(
+      callableRequest("admin-1", {clubId: "afterfly-run-club-indore"},
+        {support: true}),
+      h.deps
+    );
+    assert.deepEqual(read.club.ownerLinks.map((link) => link.showUntil),
+      [null, "2026-11-14T12:00:00.000Z"]);
+  });
+
+test("adminUpdateClubDetailsHandler refuses links the page may not show",
+  async () => {
+    const before = clubDoc();
+    const h = harness({"organizers/afterfly-run-club-indore": before});
+    const link = {id: "short", label: "Tickets", subtitle: null,
+      url: "https://bit.ly/afterfly", icon: null, pinned: false,
+      showUntil: null};
+    for (const [ownerLinks, code] of [
+      [[link], "invalid-argument"],
+      [[{...link, url: "http://afterfly.in/"}], "invalid-argument"],
+      [[{...link, url: "https://afterfly.in/",
+        label: "Seed listing for owner review"}], "failed-precondition"],
+    ] as const) {
+      await assert.rejects(
+        () => adminUpdateClubDetailsHandler(
+          callableRequest("admin-1", {
+            clubId: "afterfly-run-club-indore",
+            fields: {ownerLinks},
+            reviewNote: "Added the owner's links.",
+          }, {admin: true}),
+          h.deps
+        ),
+        (error) => assertHttpsCode(error, code),
+        JSON.stringify(ownerLinks)
+      );
+    }
+    assert.deepEqual(h.firestore.get("organizers/afterfly-run-club-indore"),
+      before);
+  });
+
 test("first edit of source-seeded fields records immutable corrections",
   async () => {
     const source = {

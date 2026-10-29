@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/programs/domain/program_lodging_setup.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<String, Object?> setupCatalogJson() => {

@@ -60,10 +60,32 @@ updates:
         update-types:
           - "minor"
           - "patch"
+        # Grouped pub updates pull in the FlutterFire 5 majors despite the
+        # ignore rules below, so these leave the group until CAT-281 lands.
+        exclude-patterns:
+          - "firebase_*"
+          - "cloud_firestore*"
+          - "cloud_functions*"
+          - "fake_cloud_firestore"
+          - "firebase_auth_mocks"
     ignore:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+      # These minor bumps require majors the major rule above cannot hold
+      # back: the Firebase mocks need FlutterFire 5 (CAT-281), and
+      # analysis_server_plugin needs analyzer 14 (CAT-274). Remove each
+      # pair when its migration lands.
+      - dependency-name: "fake_cloud_firestore"
+      - dependency-name: "firebase_auth_mocks"
+      - dependency-name: "analysis_server_plugin"
+      - dependency-name: "analyzer"
+      # These releases need Dart 3.13, which the analyzer 12 behind
+      # catch_ui_lints cannot resolve, so its CatchText scan fails on their
+      # importers. Remove them with the analyzer pair above (CAT-274).
+      - dependency-name: "xml"
+      - dependency-name: "petitparser"
+      - dependency-name: "google_maps_flutter"
 
   - package-ecosystem: "github-actions"
     directory: "/"

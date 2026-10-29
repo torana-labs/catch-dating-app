@@ -1,0 +1,58 @@
+/*
+ * Website v2 site footer (CAT-260): four link columns over a hairline, then
+ * the wordmark and tagline. Two columns below 840px, the expanded window size.
+ */
+.groups {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--catch-space-s6);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--catch-space-s3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link,
+.brand {
+  color: var(--catch-theme-ink);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.link:focus-visible,
+.brand:focus-visible {
+  border-radius: var(--catch-radius-xs);
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--catch-space-s4);
+  margin-top: var(--catch-space-s12);
+  padding-top: var(--catch-space-s7);
+  border-top: var(--catch-stroke-hairline) solid color-mix(in srgb, var(--catch-theme-ink) 14%, transparent);
+}
+
+@container catch-page (width < 840px) {
+  .groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

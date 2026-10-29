@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_runtime_draft.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings_change.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_runtime_draft.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_settings_change.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_settings_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_preview_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_section.dart';

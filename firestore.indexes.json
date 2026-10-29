@@ -4153,6 +4153,10 @@
           "mode": "ASCENDING"
         },
         {
+          "fieldPath": "appVisibility",
+          "mode": "ASCENDING"
+        },
+        {
           "fieldPath": "createdAt",
           "mode": "DESCENDING"
         }
@@ -4178,6 +4182,10 @@
       "fields": [
         {
           "fieldPath": "locationMarketId",
+          "mode": "ASCENDING"
+        },
+        {
+          "fieldPath": "appVisibility",
           "mode": "ASCENDING"
         },
         {
@@ -6601,6 +6609,44 @@
     },
     {
       "collectionGroup": "rateLimits",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "organizerClaimInstagramCodes",
+      "fieldPath": "expiresAt",
+      "ttl": true,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "organizerClaimInstagramMessages",
       "fieldPath": "expiresAt",
       "ttl": true,
       "indexes": [

@@ -59,7 +59,6 @@
     "functions/src/admin/organizerAdminSearch.ts",
     "functions/src/organizers/createOrganizer.ts",
     "admin/src/features/organizers/controllers/organizerPublishingHelpers.ts",
-    "tool/organizer_intake/organizer_intake.mjs",
     "website/scripts/next/organizerProjection.mjs",
     "website/scripts/organizerListingReadiness.mjs"
   ],

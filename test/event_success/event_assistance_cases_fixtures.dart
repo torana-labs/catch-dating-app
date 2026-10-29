@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/event_success/domain/event_assistance_case.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_case_scope.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_cases_page.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_cases_page.dart';
 
 EventAssistanceCaseQuery caseQuery({
   String organizerId = 'organizer-1',

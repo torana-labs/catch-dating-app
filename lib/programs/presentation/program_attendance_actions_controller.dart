@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_attendance_export.dart';
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/programs/data/program_work_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_attendance_export.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'program_attendance_actions_controller.g.dart';

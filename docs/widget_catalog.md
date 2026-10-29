@@ -304,10 +304,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OtpStep</code> | <code>lib/auth/presentation/otp_step.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>PhoneCountryCodePicker</code> | <code>lib/auth/presentation/phone_step.dart:303</code> | — | — | No class documentation or registry summary. |
 | <code>PhoneStep</code> | <code>lib/auth/presentation/phone_step.dart:23</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatParticipantsRowList</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:191</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatPageBody</code> | <code>lib/chats/presentation/event_chat_screen.dart:499</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatDirectoryRowList</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:47</code> | — | — | Sliver directory of currently admitted events, including rooms not open yet. |
-| <code>EventChatDirectorySection</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:14</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatParticipantsRowList</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:192</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatPageBody</code> | <code>lib/chats/presentation/event_chat_screen.dart:500</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatDirectoryRowList</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:48</code> | — | — | Sliver directory of currently admitted events, including rooms not open yet. |
+| <code>EventChatDirectorySection</code> | <code>lib/chats/presentation/inbox/event_chat_directory_section.dart:15</code> | — | — | No class documentation or registry summary. |
 | <code>ChatConversationsList</code> | <code>lib/chats/presentation/inbox/widgets/chat_conversations_list.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>ChatsEmptyState</code> | <code>lib/chats/presentation/inbox/widgets/chats_empty_state.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>ChatPersonRowSkeleton</code> | <code>lib/chats/presentation/inbox/widgets/chats_list.dart:122</code> | — | — | No class documentation or registry summary. |
@@ -326,7 +326,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventChatReactionSection</code> | <code>lib/chats/presentation/widgets/event_chat_message_tile.dart:212</code> | — | — | No class documentation or registry summary. |
 | <code>EventProfileAnswerField</code> | <code>lib/chats/presentation/widgets/event_profile_answer_field.dart:7</code> | — | — | An entire reviewed answer, never an ellipsized summary of what will be shared. The optional toggle uses the same interaction and tokens as CatchField. |
 | <code>EventProfileEditorSection</code> | <code>lib/chats/presentation/widgets/event_profile_editor_section.dart:14</code> | — | — | Explicit sharing choices for eligible core values and one claimed organizer card. |
-| <code>EventProfileIdentitySection</code> | <code>lib/chats/presentation/widgets/event_profile_identity_section.dart:11</code> | — | — | Renders the protected event projection with an ephemeral in-memory photo. |
+| <code>EventProfileIdentitySection</code> | <code>lib/chats/presentation/widgets/event_profile_identity_section.dart:12</code> | — | — | Renders the protected event projection with an ephemeral in-memory photo. |
 | <code>EventProfilePhotoField</code> | <code>lib/chats/presentation/widgets/event_profile_photo_field.dart:9</code> | — | — | An owned photo choice that stays disabled until its current preview decodes. |
 | <code>MediaMessageBody</code> | <code>lib/chats/presentation/widgets/message_bubble.dart:104</code> | — | — | No class documentation or registry summary. |
 | <code>MessageBubble</code> | <code>lib/chats/presentation/widgets/message_bubble.dart:8</code> | — | — | No class documentation or registry summary. |
@@ -578,7 +578,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventSuccessReportSectionList</code> | <code>lib/event_success/presentation/event_success_conversation_cue_card.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>ConversationCueRow</code> | <code>lib/event_success/presentation/event_success_conversation_cue_row.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessDefaultsSection</code> | <code>lib/event_success/presentation/event_success_defaults_section.dart:16</code> | — | — | Create-event panel that lets the host enable the live event guide and tune the saved defaults inline. The configuration UI is shared with the Host Manage Setup tab via [EventSuccessSetupBody]. |
-| <code>EventSuccessHostSection</code> | <code>lib/event_success/presentation/event_success_host_screen.dart:60</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessHostSection</code> | <code>lib/event_success/presentation/event_success_host_screen.dart:61</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessHostWorkspacePageBody</code> | <code>lib/event_success/presentation/event_success_host_workspace_page_body.dart:29</code> | — | — | No class documentation or registry summary. |
 | <code>CustomQuestionnaireField</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:475</code> | — | — | One accordion text field of a custom questionnaire: the set name, a question prompt or an answer option. |
 | <code>CustomQuestionnaireSection</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:156</code> | — | — | No class documentation or registry summary. |
@@ -829,7 +829,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostOfferPaymentModeSection</code> | <code>lib/hosts/presentation/event_management/create/host_offer_payment_mode_section.dart:11</code> | — | — | The collection-mode decision itself: an expanded picker while the host is choosing, then a collapsed summary tile whose tap (or Change action) reopens the picker. Catch checkout stays visible but gated until provider activation lands. |
 | <code>HostOfferPaymentModeTile</code> | <code>lib/hosts/presentation/event_management/create/host_offer_payment_mode_tile.dart:46</code> | — | — | One collection-mode option. Catch checkout stays visible but disabled until verified provider activation lands; the rest stage on tap. |
 | <code>HostOfferPaymentReviewSheet</code> | <code>lib/hosts/presentation/event_management/create/host_offer_payment_review_sheet.dart:79</code> | — | — | Server-reviewed diff of the staged payment terms before the command lands. Cancel leaves the draft intact; confirm applies the reviewed request. |
-| <code>HostOfferPaymentSetupPageBody</code> | <code>lib/hosts/presentation/event_management/create/host_offer_payment_setup_page_body.dart:25</code> | — | — | Modeled as a decision, not a preference grid: the host picks how guests pay, sees only the fields that mode needs, and reads how payment confirmation works before saving. Draft edits stage on the controller; Save runs the server preview and an explicit confirm keeps the reviewed commit. |
+| <code>HostOfferPaymentSetupPageBody</code> | <code>lib/hosts/presentation/event_management/create/host_offer_payment_setup_page_body.dart:26</code> | — | — | Modeled as a decision, not a preference grid: the host picks how guests pay, sees only the fields that mode needs, and reads how payment confirmation works before saving. Draft edits stage on the controller; Save runs the server preview and an explicit confirm keeps the reviewed commit. |
 | <code>HostPrivateEventBasicsSection</code> | <code>lib/hosts/presentation/event_management/create/host_private_event_basics_section.dart:8</code> | — | — | Presentation-only first-save fields. The route owns draft and command state. |
 | <code>HostPrivateEventListingSection</code> | <code>lib/hosts/presentation/event_management/create/host_private_event_listing_section.dart:18</code> | — | — | Listing fields on the existing private-event editor. Local terms stay a draft until saved together; setting a price does not open registration. |
 | <code>PrivateEventContentSection</code> | <code>lib/hosts/presentation/event_management/create/private_event_content_section.dart:26</code> | — | — | Optional content uses the same editors as the complete create flow. Each saved edit goes through the private setup revision and retry journal. |
@@ -1220,8 +1220,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>UserAnalyticsTipRow</code> | <code>lib/user_analytics/shared/user_analytics_section.dart:394</code> | — | — | No class documentation or registry summary. |
 | <code>UserAnalyticsTipsSection</code> | <code>lib/user_analytics/shared/user_analytics_section.dart:380</code> | — | — | No class documentation or registry summary. |
 | <code>UserAnalyticsTrendSection</code> | <code>lib/user_analytics/shared/user_analytics_section.dart:304</code> | — | — | No class documentation or registry summary. |
-| <code>FormProfilePhotoField</code> | <code>lib/user_profile/presentation/form_profile_photo_field.dart:13</code> | — | — | No class documentation or registry summary. |
-| <code>FormProfilePhotoSelectionField</code> | <code>lib/user_profile/presentation/form_profile_photo_field.dart:54</code> | — | — | Keep the private image in memory only and evict its decoder entry on leave. The selection remains disabled until the actual image has rendered. |
+| <code>FormProfilePhotoField</code> | <code>lib/user_profile/presentation/form_profile_photo_field.dart:14</code> | — | — | No class documentation or registry summary. |
+| <code>FormProfilePhotoSelectionField</code> | <code>lib/user_profile/presentation/form_profile_photo_field.dart:55</code> | — | — | Keep the private image in memory only and evict its decoder entry on leave. The selection remains disabled until the actual image has rendered. |
 | <code>FormProfileReviewPageBody</code> | <code>lib/user_profile/presentation/form_profile_review_screen.dart:86</code> | — | — | No class documentation or registry summary. |
 | <code>FormProfilesAsyncBoundary</code> | <code>lib/user_profile/presentation/form_profiles_screen.dart:36</code> | — | — | The authenticated form directory can render inside the account pager before the applicant has a Consumer profile. It owns its independent async state. |
 | <code>FormProfilesSectionList</code> | <code>lib/user_profile/presentation/form_profiles_screen.dart:58</code> | — | — | No class documentation or registry summary. |
@@ -1259,9 +1259,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>MyApp</code> | <code>lib/app.dart:42</code> | — | — | No class documentation or registry summary. |
 | <code>AuthScreen</code> | <code>lib/auth/presentation/auth_screen.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>ChatScreen</code> | <code>lib/chats/presentation/chat_screen.dart:36</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatParticipantsScreen</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:16</code> | — | — | No class documentation or registry summary. |
-| <code>EventChatScreen</code> | <code>lib/chats/presentation/event_chat_screen.dart:22</code> | — | — | No class documentation or registry summary. |
-| <code>EventProfileScreen</code> | <code>lib/chats/presentation/event_profile_screen.dart:17</code> | — | — | Account-bound editor and protected participant view for one event chat. |
+| <code>EventChatParticipantsScreen</code> | <code>lib/chats/presentation/event_chat_participants_screen.dart:17</code> | — | — | No class documentation or registry summary. |
+| <code>EventChatScreen</code> | <code>lib/chats/presentation/event_chat_screen.dart:23</code> | — | — | No class documentation or registry summary. |
+| <code>EventProfileScreen</code> | <code>lib/chats/presentation/event_profile_screen.dart:18</code> | — | — | Account-bound editor and protected participant view for one event chat. |
 | <code>ChatsListScreen</code> | <code>lib/chats/presentation/inbox/chat_inbox_screen.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailScreen</code> | <code>lib/clubs/presentation/detail/club_detail_screen.dart:31</code> | — | — | No class documentation or registry summary. |
 | <code>CatchConsumerBootScreen</code> | <code>lib/consumer_bootstrap.dart:172</code> | — | — | The animated Consumer cold-start surface shown above auth and routing. |
@@ -1301,19 +1301,19 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostApplicationDetailScreen</code> | <code>lib/hosts/presentation/applications/host_application_detail_screen.dart:5</code> | — | — | Compatibility entry for saved application URLs; all detail UI has one owner. |
 | <code>CreateClubScreen</code> | <code>lib/hosts/presentation/club_management/create/create_club_screen.dart:35</code> | — | — | No class documentation or registry summary. |
 | <code>HostCreateClubScreen</code> | <code>lib/hosts/presentation/club_management/host_create_club_screen.dart:4</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomerDetailScreen</code> | <code>lib/hosts/presentation/customers/host_customer_detail_screen.dart:47</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomerDetailScreen</code> | <code>lib/hosts/presentation/customers/host_customer_detail_screen.dart:48</code> | — | — | No class documentation or registry summary. |
 | <code>HostAddCustomerScreen</code> | <code>lib/hosts/presentation/customers/host_customer_editor.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomersScreen</code> | <code>lib/hosts/presentation/customers/host_customers_screen.dart:69</code> | — | — | No class documentation or registry summary. |
 | <code>HostSavedAudienceEditorScreen</code> | <code>lib/hosts/presentation/customers/host_saved_audience_editor.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EditHostedEventRouteScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_route_screen.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>EditHostedEventScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_screen.dart:62</code> | — | — | No class documentation or registry summary. |
+| <code>EditHostedEventScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_screen.dart:63</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_screen.dart:73</code> | — | — | No class documentation or registry summary. |
 | <code>CreateEventSuccessScreen</code> | <code>lib/hosts/presentation/event_management/create/create_event_success_screen.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>EventPublicationScreen</code> | <code>lib/hosts/presentation/event_management/create/event_publication_screen.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventOfferPreferencesScreen</code> | <code>lib/hosts/presentation/event_management/create/host_event_offer_preferences_screen.dart:14</code> | — | — | Manager settings for future offers; existing offers retain recorded terms. |
-| <code>PrivateEventCreateScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_create_screen.dart:49</code> | — | — | The first page of the single progressive event editor. |
+| <code>PrivateEventCreateScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_create_screen.dart:50</code> | — | — | The first page of the single progressive event editor. |
 | <code>PrivateEventDetailsScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_details_screen.dart:26</code> | — | — | Actual optional schedule, place and format of one saved private event. Organizer defaults appear only as explicit copy-on-save choices. |
-| <code>PrivateEventPreferencesScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_preferences_screen.dart:19</code> | — | — | Manager-only settings on a saved event. Private and published events share controls; each controller retains its own authoritative command protocol. |
+| <code>PrivateEventPreferencesScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_preferences_screen.dart:20</code> | — | — | Manager-only settings on a saved event. Private and published events share controls; each controller retains its own authoritative command protocol. |
 | <code>PrivateEventSetupScreen</code> | <code>lib/hosts/presentation/event_management/create/private_event_setup_screen.dart:14</code> | — | — | Progressive actions for one already-saved canonical event. |
 | <code>HostCreateEventRouteLoadingScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>HostCreateEventRouteScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:53</code> | — | — | No class documentation or registry summary. |
@@ -1329,7 +1329,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostResponseOfferPreferencesRouteScreen</code> | <code>lib/hosts/presentation/forms/host_response_offer_preferences_route_screen.dart:5</code> | — | — | Public route boundary for the shared offer settings editor. |
 | <code>HostResponseOfferScreen</code> | <code>lib/hosts/presentation/forms/host_response_offer_screen.dart:30</code> | — | — | Shared continuation for one response or a reviewed query selection. The originating page stays mounted; save/cancel returns to the same context. |
 | <code>HostEventManageRouteScreen</code> | <code>lib/hosts/presentation/host_event_manage_route_screen.dart:5</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventManageScreen</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:58</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventManageScreen</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:59</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventOperatorScreen</code> | <code>lib/hosts/presentation/host_event_operator_screen.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventPublicationRouteScreen</code> | <code>lib/hosts/presentation/host_event_publication_route_screen.dart:5</code> | — | — | The publication editor uses its existing step-flow content after the same uid/organizer/event authorization boundary as management. |
 | <code>HostClubEventDefaultsScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_event_defaults_screen.dart:3</code> | — | — | No class documentation or registry summary. |

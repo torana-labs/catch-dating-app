@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
-import 'package:catch_dating_app/payments/domain/payment.dart';
+import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
+import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

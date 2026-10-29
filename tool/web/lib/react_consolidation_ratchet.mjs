@@ -33,8 +33,6 @@ export const strandedByRetirementCeiling = Object.freeze({
     "website/src/shared/ui/primitives/feedback.tsx::AuthStatusRow": "CAT-256",
     "website/src/shared/ui/primitives/forms.tsx::ClaimRequestForm": "CAT-256",
     "website/src/shared/ui/primitives/layout.tsx::ContentGrid": "CAT-256",
-    "website/src/shared/ui/primitives/organizer3.tsx::ReviewSignalCard": "CAT-252",
-    "website/src/shared/ui/primitives/organizer3.tsx::ReviewSignalLane": "CAT-252",
   }),
 });
 

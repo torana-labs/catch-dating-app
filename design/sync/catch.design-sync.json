@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-10-28",
+  "updated": "2026-10-29",
   "sourceOfTruth": {
     "behavior": "Contracts in design/components/catch.components.json; Flutter is the reference implementation",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "beb304d7bb5ac1bf40264cf89439deb32a103586fc94c2e841d5dc74932c3860",
+  "sourceDigest": "80a0346d67e2c1daaa96d04b25da002d155f40783ac641ddf5e530c777296b54",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "beb304d7bb5ac1bf40264cf89439deb32a103586fc94c2e841d5dc74932c3860",
-    "contractDigest": "beb304d7bb5ac1bf40264cf89439deb32a103586fc94c2e841d5dc74932c3860"
+    "digest": "80a0346d67e2c1daaa96d04b25da002d155f40783ac641ddf5e530c777296b54",
+    "contractDigest": "80a0346d67e2c1daaa96d04b25da002d155f40783ac641ddf5e530c777296b54"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "121dca91de5a63305c17c5b1fc91992af2f6de51a7abb8e2d847552d5d5414a5",
+    "handoffRequestDigest": "8a77dba64e535e863095f7a48cfbaf4db58fafb70985b20ab30af3e0e2899990",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -461,7 +461,7 @@
     "claudeAllowed": 71,
     "reactImplementationStates": {
       "headless-control": 6,
-      "styled": 20
+      "styled": 23
     },
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
@@ -1162,9 +1162,9 @@
       "conceptId": "catch.sheet",
       "dartSymbol": "CatchSheet",
       "dartFile": "packages/catch_ui/lib/src/components/catch_sheet.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchSheet",
+      "reactFile": "packages/web-ui/src/components/CatchSheet.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Sheet",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1189,7 +1189,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "dbaf84d72bc4c0fe856777eec302aa4712128364b87b4f77cb200f6c13c80ccd"
+      "contractDigest": "d08bee3a62de45e0153e8d3904392912f640b4baa3ea973688d45bb905383f39"
     },
     {
       "contractId": "catch.icon",
@@ -1267,9 +1267,9 @@
       "conceptId": "catch.menu",
       "dartSymbol": "CatchMenu",
       "dartFile": "packages/catch_ui/lib/src/components/catch_menu.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchMenu",
+      "reactFile": "packages/web-ui/src/components/CatchMenu.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/Menu",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1294,7 +1294,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Menu",
       "claudeAllowed": true,
-      "contractDigest": "17cf435bfd079356139ed7857c58c358b5394ecdb8eac81d1263d51886588e89"
+      "contractDigest": "e0732d68680ff16f09f95d01ef0583a5351cbe151f9fb881c6c0a2a87e0e6395"
     },
     {
       "contractId": "catch.icon_tile",
@@ -2562,9 +2562,9 @@
       "conceptId": "catch.bottom_action",
       "dartSymbol": "CatchDock",
       "dartFile": "packages/catch_ui/lib/src/components/catch_dock.dart",
-      "reactSymbol": null,
-      "reactFile": null,
-      "reactApi": null,
+      "reactSymbol": "CatchDock",
+      "reactFile": "packages/web-ui/src/components/CatchDock.tsx",
+      "reactApi": "styled",
       "figmaName": "Catch/DockSurface",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -2589,7 +2589,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "DockSurface",
       "claudeAllowed": true,
-      "contractDigest": "85fb763cf7e1282dc1a06a75a80693006901854559f1cb0b1b5e5994f357e591"
+      "contractDigest": "1562606d55c3623cb32954500d1d39231086a313542139ea5cb75894b64bc251"
     },
     {
       "contractId": "catch.map_preview",

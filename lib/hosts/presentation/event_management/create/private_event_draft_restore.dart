@@ -1,8 +1,8 @@
 import 'dart:math';
 
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:flutter/material.dart';
 
 /// Restores both canonical local dates and older wizard draft dates.

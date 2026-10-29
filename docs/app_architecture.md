@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.87.0
-updated: 2026-10-26
+version: 1.91.0
+updated: 2026-10-29
 owner: app_architecture
 status: active
 ---
@@ -56,9 +56,9 @@ section under 120 lines.
 | L2 | primitives | one visual job: text, surface, icon, gap, tap target | `packages/catch_ui/lib/src/primitives` | unchanged | L0–L1 |
 | L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` | `packages/catch_ui` | L0–L2 |
 | L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` | `packages/catch_ui` | L0–L3 |
-| L4a | riverpod adapters | `CatchAsyncBoundary`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
-| L5 | feature UI | arranges L2–L4 components and binds domain data to their props; draws nothing itself (D18) | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
-| L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
+| L4a | riverpod adapters | `CatchAsyncBoundary`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` | `lib/platform/riverpod_ui/` | L0–L4 + Riverpod |
+| L5 | feature UI | arranges L2–L4 components and binds domain data to their props; draws nothing itself (D18) | `lib/<feature>/presentation/widgets/**` | `lib/contexts/<context>/parts/` | L0–L4 + own context |
+| L6 | screens | route wiring, providers, view models, navigation | `lib/<feature>/presentation/**` | `apps/<app>/lib/<destination>/`, or `lib/pages/` when both apps show it | everything below |
 
 Shared foundations are imported through `package:catch_ui/catch_ui.dart`.
 The package owns its branded fonts, the vendored icon font and their licenses,
@@ -195,8 +195,10 @@ binary/source compatibility and may not justify new club-specific persistence,
 routes, or copy. Their removal follows the remote parity and released-client
 window in `docs/migrations/clubs_to_organizers.md`.
 
-1. Keep the canonical feature folder shape as `domain`, `data`, and
-   `presentation`. Do not rename `data` to `repositories`.
+1. Inside a bounded context the folders are `domain`, `data`, `actions` and
+   `parts` (see [Bounded Context Contract](#bounded-context-contract)). Legacy
+   feature folders keep `domain`, `data` and `presentation` until they move.
+   Do not rename `data` to `repositories`.
 
 2. A data-using screen does not have to use `CatchAsyncBoundary` directly.
    It does have to use a named async state boundary: `CatchAsyncBoundary`,
@@ -259,59 +261,205 @@ Each layer should have one clear job:
 The rule is not "more layers are always better." The rule is "state and side
 effects have one predictable owner."
 
-## Feature Folder Contract
+## Bounded Context Contract
 
-Most app features should use this shape:
+Screens are shaped by the design; data is shaped by who owns it. The two live
+in different places, so a redesign that regroups tabs or renames a flow moves
+app folders without touching repositories, and data ownership never depends
+on which tab shows the data.
 
-```text
-lib/<feature>/
-  domain/
-    <model>.dart
-    <value_object>.dart
-    <pure_policy>.dart
-  data/
-    <feature>_repository.dart
-    <feature>_service.dart
-    <feature>_providers.dart
-  presentation/
-    <surface>_screen.dart
-    <surface>_controller.dart
-    <surface>_view_model.dart
-    <surface>_state.dart
-    widgets/
-      <surface>_<role>.dart
-```
+`tool/architecture/context_map.json` is the source of truth for the contexts,
+their order and where every current folder belongs. `audit:context-map`
+(`tool/architecture/check_context_map.mjs`) checks it on every app build.
 
-Small features do not need every file. A feature may have only a repository and
-one screen if the behavior is simple. Large features may split by surface under
-`presentation/`, but should keep route-level screens easy to find.
-
-The authenticated Host app applies the same rule below its product domain. Its
-five global destinations are feature boundaries, not modes of one Home screen:
+### Target layout
 
 ```text
-lib/hosts/
-  today/{domain,data,presentation}
-  events/{domain,data,presentation}
-  audience/{domain,data,presentation}
-  inbox/{domain,data,presentation}
-  organizer/{domain,data,presentation}
+apps/host/lib/<destination>/      host screens and view models
+apps/consumer/lib/<destination>/  consumer screens and view models
+lib/                              package:catch_dating_app
+  pages/<page>/                   pages both apps show: event page, organiser page, sign-in, settings
+  contexts/<context>/             the bounded contexts below
+  kernel/                         ids and plain shared values: UserId, EventId, Money, Format, City
+  platform/                       Firebase, errors, analytics, l10n, media, device, push
+packages/catch_ui, packages/catch_tokens
 ```
 
-The reviewed responsibility source for those five destinations is
-`design/features/host_feature_responsibilities.json`. It generates a local
-`README.md` at each target root and cross-checks the Host shell order, typed
-routes, existing feature-contract action owners, Dart symbols, specialist data
-contracts, and focused tests. Edit the machine-readable source and regenerate;
-do not hand-maintain five summaries. A generated README may name legacy current
-roots while a destination is migrating, but that status is not permission to
-add new destination-owned behavior to the legacy aggregate.
+### Layers
 
-Only create a layer when the destination has an owner for it. Shared event,
-organizer, roster, or shell behavior must live with its real authority and may
-be consumed across these destination folders; destination presentation code
-must never become the persistence owner merely because two tabs display the
-same entity.
+| Layer | Holds | May import |
+|---|---|---|
+| app | screens, view models, flow controllers, shells, routes | everything below |
+| pages | page compositions both apps render | contexts, platform, kernel |
+| context | one bounded context | contexts declared before it, platform, kernel |
+| platform | framework and service seams | kernel |
+| kernel | ids and plain values | the kernel only |
+
+`apps/host` and `apps/consumer` depend on `catch_dating_app`, so the compiler
+already stops anything in `lib/` from importing a screen there. That also
+enforces the role rule that the consumer app never mounts host screens.
+
+### Contexts
+
+A context may import only contexts above it in this table. The checker fails
+when this table and the map disagree.
+
+| # | Context | Owns |
+|---|---|---|
+| 1 | `account` | Sign-in, session, app role, launch access and forced updates. |
+| 2 | `profiles` | A person's private profile, public projection, photos and saved answers. |
+| 3 | `safety` | Blocking, reporting and account deletion. |
+| 4 | `formats` | What each format is and how it is set up: playbooks, modules, structures, questionnaires, activity profiles and the default settings an organiser or event picks. |
+| 5 | `events` | Events, schedules, venues and event policies. |
+| 6 | `organizers` | Organisers, their team and roles, organiser pages, follows and claims. |
+| 7 | `payments` | Guest payments, refunds, an organiser's Razorpay connection and the Catch bill. |
+| 8 | `bookings` | Bookings, waitlists, tickets, the door, attendance and guest lists. |
+| 9 | `reviews` | Ratings after an event. |
+| 10 | `audience` | The people a host knows: groups, tags, notes and imports. |
+| 11 | `forms` | Questions, applications, responses and offers. |
+| 12 | `discovery` | Search, recommendations, maps, saved events and cities. |
+| 13 | `connections` | Staying in touch after an event: picks, mutual connections and cross paths. |
+| 14 | `messaging` | Chats, group chats, the inbox, broadcasts, scheduled messages and channels. |
+| 15 | `live` | The live formats engine at runtime: rotations, pods, teams, grouping, assistance, the guest companion and rehearsal. |
+| 16 | `programmes` | Multi-day programmes: functions, households, travel, stays, transport and crew. |
+| 17 | `insights` | Reports, stats and the alerts that need a host's attention. |
+
+The order follows who embeds whose types. Formats sit low because organiser
+and event defaults embed format settings, and the live runtime builds on them.
+Organizers sit after events because an organiser's defaults embed event
+policies, while an event refers to its organiser only by id. Forms sit after
+audience because turning responses into contacts and offers acts on people and
+bookings.
+
+### Inside a context
+
+```text
+lib/contexts/bookings/
+  bookings.dart   public API: the only file other contexts, pages and apps import
+  domain/         Freezed models, value objects, pure rules
+  data/           repositories, Firebase adapters, query providers
+  actions/        mutations and their controllers: book, cancel, check in
+  parts/          L5 bindings from domain data to catch_ui components; they draw nothing
+```
+
+A context needs only the folders it uses. Screen-shaped code (screens, view
+models, typed screen state and multi-step flow controllers) lives in an app or
+in `lib/pages/`, never in a context. A `parts/` widget takes values, domain
+models and callbacks; it does not watch providers (checked:
+`partsProviderCoupling`, a hard gate). `actions/` files are controllers: they
+may read repositories and platform plugins.
+
+### Rules
+
+1. Layers import only downward. Checked: `upwardLayerImport`.
+2. A context imports only contexts declared before it. Checked:
+   `contextOrderImport`.
+3. Code under `lib/contexts/` crosses into another context only through that
+   context's public API file, `lib/contexts/<name>/<name>.dart`. Checked:
+   `contextBarrelBypass`.
+4. Every handwritten `lib/` Dart file is placed. A new top-level folder, or a
+   new file in a legacy folder the map does not cover, needs a map entry in
+   the same PR. Checked: `unmappedFile`, `unknownContext`.
+5. Domain and data code lives under `lib/contexts/`. A legacy feature folder
+   keeps only its screens (`presentation/`, `shared/`) and its barrel until
+   they are redrawn. Checked: `legacyContextFile`.
+6. When a screen needs two contexts, its view model combines them. A context
+   never learns about another to save a screen work; that shortcut is how the
+   events and hosts folders came to import each other. Rule 2 catches the
+   result.
+7. One context writes each Firestore collection and calls each callable,
+   matching `docs/backend_operation_catalog.md`. Manual review: the author of
+   each move PR names the collections and callables the context writes.
+8. Context names are product nouns used the same way in Flutter,
+   `functions/src` and the website. Manual review when a context is added.
+
+Imports in legacy folders that already break rules 1 and 2 are listed in
+`tool/architecture/context_map_baseline.json`. CI fails on a new one and on a
+listed one that no longer exists, so the list only shrinks. Files under
+`lib/contexts/`, `lib/pages/`, `lib/kernel/` and `lib/platform/` cannot be
+listed, and rules 3 to 5 cannot be listed anywhere.
+
+### Placing legacy folders
+
+The map's `legacy` list places today's folders; the longest matching path
+prefix wins, so one file can be placed apart from its folder. Since the phase
+3 move, a legacy folder holds only `presentation/` and `shared/` folders, which
+count as app composition until they are redrawn, and its feature barrel, which
+may re-export its own screens and the moved files until it is split.
+`tool/architecture/move_to_contexts.mjs --imports-only --from <move-commit>`
+updates a branch that predates the move.
+
+### Host destinations
+
+Host destinations are app folders, `apps/host/lib/<destination>/`. They read
+contexts and own no persistence: shared event, organizer, roster or shell
+behavior lives with its context, and a destination never becomes the owner of
+data because two tabs show it. Regrouping tabs, such as the proposed merge of
+Audience and Inbox into People, moves app folders only.
+
+`design/features/host_feature_responsibilities.json` keeps generating the
+product guide and route-owner `README.md` for each current host root until
+that destination's screens move. It does not make a destination a context.
+Edit the machine-readable source and regenerate; do not hand-maintain the
+summaries.
+
+### Migration by phase
+
+#### Phase 1: contract and check
+
+This contract and `audit:context-map`.
+
+#### Phase 2: teach path-keyed checks the new roots
+
+`audit:dependency-direction` places each file by layer rather than matching
+`lib/<feature>/<layer>/`, so its rules keep applying after a move. Context
+`domain/` and `data/` folders and `lib/kernel/` get the domain and data rules,
+`actions/` the controller exemptions, `parts/` the provider-free rule, and
+`lib/pages/` and `apps/<app>/lib/<destination>/` the screen rules. Findings
+under these roots can never be baselined, so moved code arrives clean.
+
+The other screen checks still read only `lib/`, and the app packages don't
+load the Catch UI or Riverpod analyzer plugins. Closing that gap is a
+prerequisite for phase 4, not for phase 3. Tools that name specific files
+update in the PR that moves those files.
+
+#### Phase 3: move domain and data
+
+Move domain and data into contexts, and shared values out of `lib/core/` and
+`lib/activity/` into the kernel and platform, with no behavior change, in three
+PRs:
+
+1. **Untangle.** Fix every import that breaks the order and every misplaced
+   file, so the move itself is mechanical. This empties the baseline.
+2. **Move.** A committed script moves every context's `domain/` and `data/`
+   folders under `lib/contexts/<context>/`, rewrites every import and every
+   path mention outside Dart (contracts, generators, registries), writes each
+   context's public API file from what other contexts import, and removes the
+   map's legacy entries for moved files. A context's root files other than its
+   barrel go to `data/`; legacy feature barrels stay as re-exports for the
+   screens that still use them. The diff holds only renames and directive or
+   path lines; conflicts are resolved by rerunning the script on the latest
+   main, and its imports-only mode updates other open branches.
+3. **Finish.** Sort `lib/core/` into platform, kernel, pages and context parts,
+   and complete the Club to Organizer rename in code.
+
+The baseline is empty when this phase ends.
+
+#### Phase 4: move screens when they are redrawn
+
+Each redrawn screen is written in `apps/<app>/lib/<destination>/`, or
+`lib/pages/` when both apps show it, and the old screen is deleted in the same
+PR (Migration Protocol v2). Destinations are disjoint folders, so these PRs can
+run in parallel. The first one proves Riverpod code generation and tests inside
+an app package with one host destination; if that proves too costly, screens go
+to `lib/apps/<app>/` instead, placed as the app layer in the map.
+
+#### Phase 5: delete empty legacy folders
+
+Delete a legacy folder and its map entries once it is empty. The rule sunsets
+when the legacy list is empty.
+
+### Screen state files
 
 Files under `lib/**/presentation/**` ending in `_state.dart` are provider-free
 display adapters by naming convention. They may depend on domain/core/value
@@ -325,19 +473,10 @@ the exhaustive presentation phase: initial loading, retrying, data,
 refreshing data, stale data with an error, or terminal error. A loading retry
 without credible data always renders loading, never its previous error.
 
-Allowed exceptions:
-
-- `lib/core/**` for app-wide primitives, theme, shared widgets, global app
-  shell, shared services, and error/logging infrastructure.
-- `lib/routing/**` for GoRouter configuration and route-path constants.
-- `lib/exceptions/**` for app exception and logging infrastructure.
-- `lib/firebase_options_*.dart` and generated config files.
-- Intentional in-development feature folders documented by audit rules, such
-  as `event_policies` and `event_success`.
-
 ### Event Dress Rehearsal Boundary
 
-`lib/event_rehearsal/` is the first-class Host practice capability. Its two
+`lib/event_rehearsal/` is the first-class Host practice capability, placed in
+the `live` context as the practice mode of live formats. Its two
 Host routes create a room and operate preparation, virtual live controls,
 synthetic guest behavior, issue simulation, and recap. The feature follows the
 ordinary domain/data/presentation split, owns one Functions repository and one
@@ -382,29 +521,36 @@ already the component's nonlocalized fallback.
 
 Do not create parallel top-level folders such as `services`, `repositories`,
 `view_models`, or `widgets` for feature-owned code. If code is genuinely shared,
-move it to a clear `core` owner or a domain-specific shared feature with a doc
-entry.
+place it in the context that owns its data, the kernel or the platform, through
+the context map.
 
 ### Current Boundary Cleanup Baseline
 
-The first folder-boundary cleanup applied after this spec uses these owners:
+These placements predate the [Bounded Context Contract](#bounded-context-contract);
+domain and data have since moved under `lib/contexts/`, and the screen folders
+named here move when they are redrawn. The first folder-boundary cleanup
+applied after this spec uses these owners:
 
 - App analytics instrumentation lives in `lib/core/analytics`, not a top-level
   `lib/analytics` feature.
-- Explore search lives under `lib/explore/data`; it is part of the Explore
-  aggregate surface, not a standalone `search` feature.
+- Explore search lives under `lib/contexts/discovery/data`; it is part of the
+  Explore aggregate surface, not a standalone `search` feature.
 - The calendar route lives under `lib/events/presentation/calendar` because it
   is an event agenda surface. Do not recreate top-level `lib/calendar`.
 - Chat and host-inbox list UI lives under `lib/chats/presentation/inbox`.
-  `lib/matches` remains responsible for match lifecycle data/domain behavior and
-  match-specific presentation such as the celebration dialog.
+  Match lifecycle data and domain behavior live in `lib/contexts/connections`;
+  `lib/matches/presentation` keeps match-specific screens such as the
+  celebration dialog.
 - Event formatters, arrival policy, QR payloads, map links, calendar links,
-  invite/share copy, and check-in location services live in `events/domain` or
-  `events/data` according to whether they are pure logic or service seams.
+  invite/share copy, and check-in location services live in
+  `lib/contexts/events/domain` or `lib/contexts/events/data` (check-in services
+  in `lib/contexts/bookings/data`) according to whether they are pure logic or
+  service seams.
   They should not be imported from `events/presentation`.
 - Shared activity/event visual primitives used by core widgets live in
   `lib/core/widgets`, not under `events/presentation/widgets`.
-- Club display-name lookup is a data/provider seam in `lib/clubs/data`.
+- Club display-name lookup is a data/provider seam in
+  `lib/contexts/organizers/data`.
 
 ### Explore discovery scope and filter boundary
 
@@ -483,7 +629,9 @@ core -> lower-level platform/framework APIs and explicit feature-neutral types
 Hard rules:
 
 - `domain` must not import Flutter, Riverpod, Firebase, platform plugins, or
-  feature presentation files.
+  feature presentation files. The layer rules apply by placement: context
+  `domain/` folders and `lib/kernel/` are domain, context `data/` folders are
+  data, and `lib/pages/` and `apps/<app>/lib/<destination>/` are screens.
 - `data` must not import feature presentation files.
 - `presentation/widgets/**` must not call repository methods or watch
   repository providers directly.
@@ -520,6 +668,10 @@ Hard rules:
 - Platform/plugin effects such as URL launch, share, image picker, location,
   calendar, clipboard, haptics, notifications, and connectivity need a seam
   that tests can replace.
+
+Between contexts and layers, the
+[Bounded Context Contract](#bounded-context-contract) adds the context order,
+the public API rule and the layer order; `audit:context-map` checks them.
 
 Temporary exceptions require an override comment described in
 `Enforcement And Overrides`.
@@ -2506,8 +2658,8 @@ section models when that removes business logic from widgets.
 
 Reference files:
 
-- `lib/clubs/data/club_name_lookup.dart`
-- `lib/clubs/data/club_name_lookup.g.dart`
+- `lib/contexts/organizers/data/club_name_lookup.dart`
+- `lib/contexts/organizers/data/club_name_lookup.g.dart`
 - `test/architecture/generated_provider_family_test.dart`
 
 Use generated function providers for feature-owned async families. Keep the
@@ -2690,7 +2842,9 @@ Widgets have two normal homes:
   in the component registry. Like feature widgets they arrange and bind; what
   they draw lives in `catch_ui` (D18).
 - `lib/<feature>/presentation/widgets/**` for feature-owned UI that depends on
-  feature domain/state language.
+  feature domain/state language. Its target home is
+  `lib/contexts/<context>/parts/**` when it binds one context's data, or the
+  app destination that composes it.
 
 Feature widgets own (D18, `docs/plans/ui_system_blueprint_and_conformance_audit.md`):
 
@@ -3897,8 +4051,8 @@ Reference files:
 
 - `functions/src/communications/organizerCommunicationPlan.ts`
 - `functions/src/organizers/organizerCommunicationPlans.ts`
-- `lib/hosts/domain/crm/host_communication_plan.dart`
-- `lib/hosts/data/crm/host_communication_repository.dart`
+- `lib/contexts/audience/domain/crm/host_communication_plan.dart`
+- `lib/contexts/audience/data/crm/host_communication_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_card.dart`
 
@@ -3955,8 +4109,8 @@ Reference files:
 
 - `contracts/firestore/organizer_manual_send_tasks.schema.json`
 - `functions/src/organizers/organizerManualSendTasks.ts`
-- `lib/hosts/domain/crm/host_manual_send_task.dart`
-- `lib/hosts/data/crm/host_communication_repository.dart`
+- `lib/contexts/audience/domain/crm/host_manual_send_task.dart`
+- `lib/contexts/audience/data/crm/host_communication_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
 - `lib/hosts/presentation/inbox/host_manual_send_list.dart`
 - `test/hosts/host_crm_repository_test.dart`
@@ -4019,8 +4173,8 @@ Reference files:
 - `contracts/firestore/organizer_saved_audiences.schema.json`
 - `functions/src/organizers/organizerSavedAudiences.ts`
 - `functions/src/organizers/organizerCampaigns.ts`
-- `lib/hosts/domain/crm/host_saved_audience.dart`
-- `lib/hosts/data/crm/host_saved_audience_repository.dart`
+- `lib/contexts/audience/domain/crm/host_saved_audience.dart`
+- `lib/contexts/audience/data/crm/host_saved_audience_repository.dart`
 - `lib/hosts/presentation/customers/host_customers_screen.dart`
 - `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart`
 - `lib/hosts/presentation/customers/host_saved_audience_editor.dart`
@@ -4202,18 +4356,18 @@ still require a sanitized server-owned suggestion response.
 Reference files:
 
 - `lib/cross_paths/cross_paths.dart`
-- `lib/cross_paths/data/cross_paths_repository.dart`
-- `lib/cross_paths/domain/cross_paths_suggestion.dart`
+- `lib/contexts/connections/data/cross_paths_repository.dart`
+- `lib/contexts/connections/domain/cross_paths_suggestion.dart`
 - `lib/explore/presentation/explore_cross_paths_provider.dart`
 - `lib/cross_paths/presentation/cross_paths_explore_card.dart`
-- `lib/cross_paths/domain/cross_paths_invitation.dart`
-- `lib/cross_paths/domain/cross_paths_pair_hold.dart`
+- `lib/contexts/connections/domain/cross_paths_invitation.dart`
+- `lib/contexts/connections/domain/cross_paths_pair_hold.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_screen.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_state.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_section.dart`
-- `lib/events/domain/event.dart`
+- `lib/contexts/events/domain/event.dart`
 - `lib/safety/presentation/settings_screen.dart`
 - `functions/src/crossPaths/pilotPolicy.ts`
 - `functions/src/crossPaths/setCrossPathsEventConsent.ts`
@@ -4945,8 +5099,8 @@ Reference implementation:
 - `lib/explore/presentation/explore_discovery_window_controller.dart` is the
   reference provider family: the normalized query pair is its identity, the
   notifier alone accumulates pages, and views receive immutable state.
-- `lib/events/data/event_discovery_repository.dart` and
-  `lib/events/data/external_event_repository.dart` retain raw Firestore cursors
+- `lib/contexts/discovery/data/event_discovery_repository.dart` and
+  `lib/contexts/events/data/external_event_repository.dart` retain raw Firestore cursors
   through client-side post-filtering so rejected documents are never fetched
   repeatedly or skipped.
 - `lib/core/data/read_limit_policy.dart` owns every numeric Firestore page or
@@ -4971,7 +5125,9 @@ Firestore index-parity check whenever query shape changes.
 
 ## Migration Plan
 
-Use this order for architecture cleanup:
+Folder moves follow the migration steps in the
+[Bounded Context Contract](#bounded-context-contract). Use this order for
+architecture cleanup within a feature or context:
 
 1. Plan from current source.
    - inspect the Git diff and the relevant owner docs;
@@ -5056,17 +5212,27 @@ An architecture migration slice is done when:
 
 ## Implementation Notes For New Features
 
-When adding a new feature, start with the thinnest structure that satisfies the
+When adding a new feature, first find the context that owns its data in
+`tool/architecture/context_map.json`. Until that context has moved, add to its
+legacy folder; once it has moved, add under `lib/contexts/<context>/`. Declare a
+new context only for data no existing context owns, in dependency order, with
+a manual naming review. Start with the thinnest structure that satisfies the
 contract:
 
 ```text
-lib/new_feature/
+lib/contexts/<context>/
   domain/new_feature_model.dart
   data/new_feature_repository.dart
-  presentation/new_feature_screen.dart
-  presentation/new_feature_view_model.dart
-  presentation/widgets/new_feature_body.dart
+  actions/new_feature_controller.dart
+  parts/new_feature_row.dart
+apps/<app>/lib/<destination>/
+  new_feature_screen.dart
+  new_feature_view_model.dart
 ```
+
+Screens go in the app destination once the first app-package screen lands
+(migration phase 4); until then they stay in the legacy feature's
+`presentation/` folder.
 
 Event setup and offer flows use generated auto-dispose provider families with
 immutable state. Private details, private preferences, published offer settings,
@@ -5110,7 +5276,8 @@ existing `Catch*` primitives.
 
 Use this checklist during code review:
 
-- Is this file in the layer that owns the behavior?
+- Is this file in the layer that owns the behavior, and in the context that
+  owns its data according to `tool/architecture/context_map.json`?
 - Does the screen own page chrome, safe area, padding, scroll, and top async
   boundary?
 - Is any repository provider read from a widget?

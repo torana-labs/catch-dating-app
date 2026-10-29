@@ -246,6 +246,42 @@ test("a governed blocker needs a staff resolution, and ended events stay blocked
   assert.equal(externalEvents(ended.db).length, 0);
 });
 
+test("a reviewer supplies the map location a page left out; a resolved note alone cannot", async () => {
+  const h = await harness({editEvent: (event) => {
+    event.latitude = null;
+    event.longitude = null;
+    event.venue = null;
+    event.address = null;
+  }});
+  await h.approved();
+  const list = await h.call(adminListListingEventImportsHandler, {limit: 10, cursor: null});
+  assert.ok(list.rows[0].events.every((event) => event.resolvableBlockers.includes("missing_exact_coordinates")));
+  const noted = await h.call(adminPublishListingEventsHandler, staffPayload(h.eventWorkItemIds, {
+    idempotencyKey: "staff-publish-0010", blockerResolutions: h.eventWorkItemIds.flatMap((eventWorkItemId) =>
+      ["missing_exact_coordinates", "missing_location_detail"].map((blockerCode) => ({eventWorkItemId, blockerCode,
+        outcome: "resolved", policyGapDecisionId: null, note: "Checked the venue on Luma."})))}));
+  assert.ok(noted.results.every((entry) => entry.outcome === "blocked" &&
+    entry.blockers.includes("missing_exact_coordinates")), "a note does not publish an event with no map location");
+  const located = await h.call(adminPublishListingEventsHandler, staffPayload(h.eventWorkItemIds, {
+    idempotencyKey: "staff-publish-0011", eventLocations: h.eventWorkItemIds.map((eventWorkItemId) => ({
+      eventWorkItemId, name: "Carter Road Promenade", address: "Bandra West, Mumbai", placeId: null,
+      latitude: 19.0596, longitude: 72.8227}))}));
+  valid(validateAdminPublishListingEventsCallableResponse, located, "located publish response");
+  assert.equal(located.counts.published, h.eventWorkItemIds.length);
+  for (const [, doc] of externalEvents(h.db)) {
+    valid(validateExternalEventDocument, doc, "located external event");
+    const location = (doc as {meetingLocation: Record<string, unknown>}).meetingLocation;
+    assert.deepEqual([location.name, location.address, location.latitude, location.longitude],
+      ["Carter Road Promenade", "Bandra West, Mumbai", 19.0596, 72.8227]);
+  }
+  await assert.rejects(h.call(adminPublishListingEventsHandler, staffPayload(h.eventWorkItemIds, {
+    eventLocations: [{eventWorkItemId: "another-event", name: null, address: null, placeId: null, latitude: 19,
+      longitude: 72}]})), /not being published/);
+  await assert.rejects(h.call(adminPublishListingEventsHandler, staffPayload(h.eventWorkItemIds, {
+    eventLocations: [{eventWorkItemId: h.eventWorkItemIds[0], name: null, address: null, placeId: null,
+      latitude: 91, longitude: 72}]})), /invalid|maximum|latitude/i);
+});
+
 test("a withdrawn event is never brought back, and an unapproved listing publishes nothing", async () => {
   const h = await harness();
   const [first] = (await h.approved())!;

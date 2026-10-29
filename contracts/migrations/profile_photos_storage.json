@@ -91,7 +91,7 @@
   ],
   "knownConsumers": [
     "lib/user_profile/presentation/widgets/profile_tab.dart",
-    "lib/public_profile/domain/profile_insights.dart",
+    "lib/contexts/profiles/domain/profile_insights.dart",
     "functions/src/profiles/generateProfilePhotoThumbnail.ts",
     "functions/src/safety/accountDeletion.ts",
     "functions/scripts/backfill-profile-thumbnails.cjs",

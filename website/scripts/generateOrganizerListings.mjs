@@ -1,7 +1,5 @@
-import {projectExternalEventDocument, timestampIso, validTimezone, eventDateLabelForTimezone, platformLabel, titleCaseText} from "./next/externalEventProjection.mjs";
-import {listingFromFirestoreOrganizer, listingFromOrganizerDocument, organizerAuthority, enumValue, staticPublicApi, disabledPublicApi, organizerTypeLabel, canonicalOrganizerType, initialsForName, publicReviewsForListing, dateLabel, publicOwnerResponse, publicSourcesForListing, listingCapabilities, claimCapabilityReason, searchText} from "./next/organizerProjection.mjs";
+import {listingFromFirestoreOrganizer, organizerAuthority, staticPublicApi, initialsForName, dateLabel, listingCapabilities, searchText} from "./next/organizerProjection.mjs";
 export {listingFromFirestoreOrganizer} from "./next/organizerProjection.mjs";
-import crypto from "node:crypto";
 import fs from "node:fs";
 import {createRequire} from "node:module";
 import path from "node:path";
@@ -15,7 +13,6 @@ import {
 } from "../../tool/contracts/generated/schema_contract_validators.mjs";
 import {
   civilInstant,
-  eventOutcomesAt,
   eventStateAt,
   personaForPerson,
   validateDemoWorld,
@@ -31,53 +28,11 @@ const args = parseArgs(isMain ? process.argv.slice(2) : []);
 if (args.readinessReceipt && !args.firestoreProject) {
   fail("--readiness-receipt requires a current --firestore-project snapshot.");
 }
-if (args.firestoreProject && (args.claimTargetReadinessReceipt ||
-    process.env.ORGANIZER_CLAIM_TARGET_RECEIPT)) {
-  fail("Firestore-native materialization cannot consume a legacy plan readiness receipt.");
-}
 if (args.help) {
   printHelp();
   process.exit(0);
 }
 
-const intakeProjectionPath = path.resolve(args.projectionPlan ?? path.join(
-  repoRoot,
-  "tool",
-  "organizer_intake",
-  "generated",
-  "public_projection_plan.json"
-));
-const externalEventReadinessPath = path.resolve(
-  args.externalEventReadiness ?? path.join(
-    repoRoot,
-    "tool",
-    "organizer_intake",
-    "generated",
-    "external_event_import_execution_plan.json"
-  )
-);
-const claimTargetSyncPreviewPath = path.resolve(
-  args.claimTargetSyncPreview ?? path.join(
-    repoRoot,
-    "tool",
-    "organizer_intake",
-    "generated",
-    "organizer_claim_target_sync_preview.json"
-  )
-);
-const claimTargetPlanPath = path.resolve(
-  args.claimTargetPlan ?? path.join(
-    repoRoot,
-    "tool",
-    "organizer_intake",
-    "generated",
-    "organizer_claim_targets.json"
-  )
-);
-const claimTargetReadinessReceiptPath =
-  args.claimTargetReadinessReceipt ??
-  process.env.ORGANIZER_CLAIM_TARGET_RECEIPT ??
-  null;
 const demoScenarioRoot = path.resolve(
   args.demoScenarioRoot ??
     path.join(repoRoot, "tool", "demo", "demo_seed", "scenarios")
@@ -90,21 +45,10 @@ const generatedPath = path.resolve(
     path.join(websiteRoot, "src", "generated", "hostListings.json")
 );
 const checkOnly = args.check;
-if (
-  checkOnly &&
-  !args.firestoreProject &&
-  !args.projectionPlan &&
-  !fs.existsSync(intakeProjectionPath)
-) {
+if (checkOnly && !args.firestoreProject) {
   validateExistingProjection(generatedPath, {includeDemo: args.includeDemo});
   process.exit(0);
 }
-const claimTargetSyncPreview = readJsonIfExists(claimTargetSyncPreviewPath);
-const claimTargetReadinessReceipt = claimTargetReadinessReceiptPath ?
-  readAndValidateClaimTargetReadinessReceipt(
-    path.resolve(claimTargetReadinessReceiptPath)
-  ) :
-  null;
 const firestoreWebsiteDocuments = args.firestoreProject ?
   await readFirestoreWebsiteDocuments(args.firestoreProject) :
   null;
@@ -113,10 +57,6 @@ const liveMarketKeys = new Set(
     .filter((city) => city.status === "live")
     .flatMap((city) => [city.slug, city.label, ...city.aliases])
     .map(normalizeMarketKey)
-);
-const approvedIntakeProjections = organizerIntakeProjectionEntries();
-const productionIntakeProjections = approvedIntakeProjections.filter(
-  organizerIntakeProjectionHasLiveMarket
 );
 const firestoreListings = firestoreWebsiteDocuments ?
   firestoreWebsiteDocuments.organizers
@@ -131,20 +71,11 @@ const firestoreListings = firestoreWebsiteDocuments ?
     .map((document) => listingFromFirestoreOrganizer(document))
     .filter(Boolean)
     .filter((listing) => args.includeDemo || listingHasLiveMarket(listing)) :
-  null;
-const publicExternalEventsByHostId =
-  publicExternalEventsByCanonicalHostId(readJsonIfExists(externalEventReadinessPath));
+  [];
 const listings = [
-  ...(firestoreListings ?? (
-    (args.includeDemo ? approvedIntakeProjections : productionIntakeProjections)
-      .map((entry) => listingFromOrganizerIntakeProjection(entry, {
-        liveMarketsOnly: !args.includeDemo,
-      }))
-  )),
+  ...firestoreListings,
   ...(args.includeDemo ? appCreatedDemoListings() : []),
-]
-  .map(withPublicExternalEvents)
-  .sort((a, b) => compareText(a.name, b.name));
+].sort((a, b) => compareText(a.name, b.name));
 if (isMain) {
   validateListingProjections(listings);
   const renderedListings = `${JSON.stringify(listings, null, 2)}\n`;
@@ -177,31 +108,13 @@ if (isMain) {
   }
 }
 
-function organizerIntakeProjectionEntries() {
-  if (!fs.existsSync(intakeProjectionPath)) return [];
-  const projectionPlan = JSON.parse(fs.readFileSync(intakeProjectionPath, "utf8"));
-  return (projectionPlan.entries ?? [])
-    .filter((entry) =>
-      entry?.projectionStatus === "ready" &&
-      entry?.publicListing &&
-      entry?.publishStatus === "published"
-    )
-    .sort((a, b) => compareText(a.entityId, b.entityId));
-}
-
-function readJsonIfExists(filePath) {
-  if (!fs.existsSync(filePath)) return null;
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
-}
-
 function validateExistingProjection(filePath, {includeDemo}) {
   if (!fs.existsSync(filePath)) {
     fail(`Missing generated organizer listings: ${filePath}`);
   }
   const existing = JSON.parse(fs.readFileSync(filePath, "utf8"));
   validateListingProjections(existing);
-  if (!includeDemo && existing.some((listing) =>
-    listing.catchEvents?.length || listing.eventSuccessSummary)) {
+  if (!includeDemo && existing.some((listing) => listing.catchEvents?.length)) {
     fail("Production organizer projection must not contain mutable Catch event snapshots.");
   }
   const containsDemo = existing.some((listing) =>
@@ -246,55 +159,6 @@ async function readFirestoreWebsiteDocuments(projectId) {
   }
 }
 
-function readAndValidateClaimTargetReadinessReceipt(filePath) {
-  const receipt = readJsonIfExists(filePath);
-  if (!receipt) {
-    fail(`Missing organizer claim-target readiness receipt: ${filePath}`);
-  }
-  if (receipt.schemaVersion !== 1 ||
-      receipt.receiptType !== "organizer_claim_target_readiness") {
-    fail(`Unsupported organizer claim-target readiness receipt: ${filePath}`);
-  }
-  if (receipt.mode?.source !== "firestore_read" ||
-      receipt.mode?.remoteWrites !== 0) {
-    fail("Organizer claim-target readiness must come from a read-only Firestore receipt.");
-  }
-  const receiptTime = Date.parse(receipt.generatedAt);
-  const ageMs = Date.now() - receiptTime;
-  if (!Number.isFinite(receiptTime) || ageMs < -5 * 60 * 1000 || ageMs > 24 * 60 * 60 * 1000) {
-    fail("Organizer claim-target readiness receipt is stale or has an invalid timestamp.");
-  }
-  if (typeof receipt.projectId !== "string" || !receipt.projectId.trim()) {
-    fail("Organizer claim-target readiness receipt project is missing.");
-  }
-  const expectedProjectId =
-    process.env.ORGANIZER_CLAIM_TARGET_PROJECT_ID?.trim() || null;
-  if (expectedProjectId && receipt.projectId !== expectedProjectId) {
-    fail(
-      `Organizer claim-target receipt project ${receipt.projectId ?? "missing"} ` +
-        `does not match ${expectedProjectId}.`
-    );
-  }
-  const planHash = crypto.createHash("sha256")
-    .update(fs.readFileSync(claimTargetPlanPath))
-    .digest("hex");
-  if (receipt.plan?.sha256 !== planHash) {
-    fail("Organizer claim-target readiness receipt does not match the current plan.");
-  }
-  if (!Array.isArray(receipt.actions)) {
-    fail("Organizer claim-target readiness receipt actions are missing.");
-  }
-  const identities = new Set();
-  for (const action of receipt.actions) {
-    if (!action?.entityId || identities.has(action.entityId) ||
-        ![`organizers/${action.entityId}`, `clubs/${action.entityId}`].includes(action.path)) {
-      fail("Organizer claim-target readiness receipt has contradictory target identities.");
-    }
-    identities.add(action.entityId);
-  }
-  return receipt;
-}
-
 function compareText(a, b) {
   const left = String(a ?? "");
   const right = String(b ?? "");
@@ -312,161 +176,8 @@ function isLiveMarketValue(value) {
   return key.length > 0 && liveMarketKeys.has(key);
 }
 
-function organizerIntakeProjectionHasLiveMarket(entry) {
-  return (entry?.publicListing?.markets ?? []).some((market) =>
-    isLiveMarketValue(market?.marketSlug) ||
-      isLiveMarketValue(market?.displayName)
-  );
-}
-
 function listingHasLiveMarket(listing) {
   return isLiveMarketValue(listing?.citySlug) || isLiveMarketValue(listing?.city);
-}
-
-function publicExternalEventsByCanonicalHostId(readiness) {
-  const grouped = new Map();
-  for (const event of publicExternalEventProjections(readiness)) {
-    for (const hostId of [event.canonicalHostId, event.compatibilityClubId]) {
-      if (!hostId) continue;
-      const hostEvents = grouped.get(hostId) ?? [];
-      hostEvents.push(event.projection);
-      grouped.set(hostId, hostEvents);
-    }
-  }
-  for (const [hostId, events] of grouped) {
-    grouped.set(
-      hostId,
-      uniqueById(events)
-        .sort((a, b) => Date.parse(a.startTime) - Date.parse(b.startTime))
-    );
-  }
-  return grouped;
-}
-
-function publicExternalEventProjections(readiness) {
-  if (!readiness || typeof readiness !== "object") return [];
-  const actions = externalEventReadinessActions(readiness);
-  return actions
-    .filter(isPublishableExternalEventAction)
-    .map((action) => projectExternalEventDocument(action.externalEventDocument))
-    .filter(Boolean);
-}
-
-function externalEventReadinessActions(readiness) {
-  if (Array.isArray(readiness.actions)) return readiness.actions;
-  if (Array.isArray(readiness.executionPlan?.actions)) {
-    return readiness.executionPlan.actions;
-  }
-  return [];
-}
-
-function isPublishableExternalEventAction(action) {
-  const document = action?.externalEventDocument;
-  return Boolean(
-    action &&
-    typeof action === "object" &&
-    action.sourceAction === "publish_read_only_external_event" &&
-    action.status === "would_publish_read_only" &&
-    Array.isArray(action.blockers) &&
-    action.blockers.length === 0 &&
-    action.payloadValidation?.valid === true &&
-    action.projectionValidation?.valid === true &&
-    document?.status === "active" &&
-    document?.publicationStatus === "public" &&
-    document?.discovery?.availability === "read_only_external" &&
-    document?.booking?.mode === "external_outbound_only" &&
-    document?.booking?.catchBookingEnabled === false &&
-    document?.booking?.catchPaymentsEnabled === false &&
-    document?.booking?.catchReservationsEnabled === false &&
-    document?.booking?.catchWaitlistEnabled === false
-  );
-}
-
-function withPublicExternalEvents(listing) {
-  const externalEvents = publicExternalEventsByHostId.get(listing.id) ?? [];
-  if (!externalEvents.length) return listing;
-  return {
-    ...listing,
-    externalEvents,
-    searchText: searchText([
-      listing.searchText,
-      ...externalEvents.flatMap((event) => [
-        event.title,
-        event.activityKind,
-        event.date,
-        event.location,
-        event.priceLabel,
-        event.sourceLabel,
-      ]),
-    ]),
-  };
-}
-
-function publicApiForOrganizerIntake(entityId) {
-  const action = claimTargetAction(claimTargetReadinessReceipt, entityId);
-  if (!claimTargetReadinessReceipt) {
-    const previewAction = claimTargetAction(claimTargetSyncPreview, entityId);
-    return disabledPublicApi(
-      "Claiming is not available until target readiness is verified against Firestore.",
-      previewAction && previewAction.status !== "in_sync" ?
-        "write_needed" :
-        "unknown"
-    );
-  }
-  if (!action) {
-    return disabledPublicApi(
-      "Claiming is not available because the organizer is absent from the readiness receipt.",
-      "unknown"
-    );
-  }
-  if (
-    action.status === "in_sync" &&
-    action.path === `organizers/${entityId}`
-  ) {
-    return {
-      state: "enabled",
-      reason: "The organizer claim target is ready.",
-      claimTargetSyncStatus: "in_sync",
-    };
-  }
-  if (action.status === "in_sync") {
-    return disabledPublicApi(
-      "Claiming is unavailable until the canonical organizer target is ready.",
-      "unknown"
-    );
-  }
-  return disabledPublicApi(
-    "Claiming is not available for this organizer yet.",
-    "write_needed"
-  );
-}
-
-function publicReviewTargetForOrganizerIntake(entityId) {
-  const action = claimTargetAction(claimTargetReadinessReceipt, entityId);
-  if (
-    action?.status === "in_sync" &&
-    [
-      `organizers/${entityId}`,
-    ].includes(action.path)
-  ) {
-    return {
-      state: "enabled",
-      reason: "The canonical public review target is ready.",
-    };
-  }
-  return {
-    state: "disabled",
-    reason: !claimTargetReadinessReceipt ?
-      "Public reviews are unavailable until canonical target readiness is verified." :
-      "Public reviews are unavailable until the canonical organizer target is ready.",
-  };
-}
-
-function claimTargetAction(readiness, entityId) {
-  return (readiness?.actions ?? []).find((item) =>
-    item?.entityId === entityId &&
-    item?.path === `organizers/${entityId}`
-  );
 }
 
 function validateListingProjections(listings) {
@@ -494,114 +205,6 @@ function appCreatedDemoListings() {
   });
 }
 
-function listingFromOrganizerIntakeProjection(entry, {liveMarketsOnly = false} = {}) {
-  const projection = entry.publicListing;
-  const markets = (projection.markets ?? []).filter((market) =>
-    !liveMarketsOnly ||
-      isLiveMarketValue(market?.marketSlug) ||
-      isLiveMarketValue(market?.displayName)
-  );
-  const primaryMarket = markets[0] ?? null;
-  const allMarketNames = markets.map((market) => market.displayName).filter(Boolean);
-  const city = allMarketNames.length > 1 ?
-    "Multiple cities" :
-    primaryMarket?.displayName ?? "Unknown";
-  const citySlug = primaryMarket?.marketSlug ?? "multi-city";
-  const country = countryNameForCode(primaryMarket?.countryCode);
-  const sources = publicSourcesForOrganizerIntake(projection.sources ?? []);
-  const sourceConfidence = highestSourceConfidence(sources);
-  const claimState = enumValue(
-    projection.status,
-    ["unclaimed", "claimPending", "claimed", "verified", "suppressed"],
-    "unclaimed"
-  );
-  const authority = organizerAuthority({
-    ownershipState: claimState === "claimed" || claimState === "verified" ?
-      "claimed" : "programmatic",
-    claimState,
-    provenanceOrigin: "import",
-    sourceConfidence,
-    verificationStatus: claimState === "verified" ?
-      "ownerVerified" :
-      ["medium", "high"].includes(sourceConfidence) ? "sourceBacked" : "unverified",
-    appVisibility: entry.appVisibility ?? "hidden",
-    publishStatus: projection.indexing === "index, follow" ? "published" : "qa",
-    indexStatus: projection.indexing === "index, follow" ? "indexed" : "noindex",
-  });
-  const publicApi = publicApiForOrganizerIntake(entry.entityId);
-  const publicReviewTarget = publicReviewTargetForOrganizerIntake(
-    entry.entityId
-  );
-
-  return {
-    id: projection.id,
-    listingVariant: "unclaimedScraped",
-    dataOrigin: "organizerIntake",
-    name: projection.name,
-    slug: projection.slug,
-    city,
-    citySlug,
-    region: "",
-    country,
-    path: projection.path,
-    legacyPaths: entry.legacyPaths ?? [],
-    category: projection.category,
-    status: claimState,
-    indexing: projection.indexing,
-    sourceConfidence,
-    headline: projection.headline ?? `${projection.name} organizer profile`,
-    description: projection.description,
-    sourceSummary: projection.sourceSummary,
-    logo: {
-      mode: "monogram",
-      text: initialsForName(projection.name),
-      status: "not_verified",
-    },
-    formats: projection.formats ?? [],
-    facts: [
-      ...(allMarketNames.length ? [{
-        label: allMarketNames.length > 1 ? "Markets" : "Market",
-        value: allMarketNames.join(", "),
-      }] : []),
-      {label: "Organizer type", value: projection.category},
-      {label: "Claim state", value: titleCaseText(projection.status)},
-      {label: "Indexing", value: projection.indexing},
-      {label: "App visibility", value: entry.appVisibility ?? "hidden"},
-      {label: "Source surfaces", value: String(sources.length)},
-    ],
-    eventEvidence: [],
-    reviews: [],
-    fitNotes: [
-      "This profile was promoted from organizer intake after manual admin review.",
-      "Events remain market-filtered under one canonical organizer identity.",
-      "Claiming unlocks owner-managed copy, official media, Catch events, and verified reviews.",
-    ],
-    missingEvidence: projection.missingEvidence ?? [],
-    sources,
-    claim: {
-      href: claimState === "unclaimed" ? `${projection.path}#claim` : projection.path,
-      label: claimState === "unclaimed" ? "Claim this listing" : "View organizer profile",
-    },
-    publicApi,
-    authority,
-    capabilities: listingCapabilities(
-      authority,
-      publicApi,
-      publicReviewTarget
-    ),
-    lastVerifiedAt: dateLabel(entry.reviewDecision?.decidedAt),
-    searchText: searchText([
-      projection.name,
-      projection.category,
-      city,
-      citySlug,
-      ...(projection.formats ?? []),
-      ...allMarketNames,
-      ...sources.flatMap((source) => [source.label, source.detail]),
-    ]),
-  };
-}
-
 function listingFromDemoWorld(world, moment) {
   const club = world.organizer;
   const market = marketForIdOrAlias(club.city);
@@ -613,7 +216,6 @@ function listingFromDemoWorld(world, moment) {
   const now = civilInstant(world.timeZone, world.moments[moment]);
   const events = demoWorldEvents(world, moment, now);
   const reviews = demoWorldReviews(world, now);
-  const reported = latestEndedEvent(world, moment);
   const nextEvent = events.find((event) => event.timeline === "upcoming");
   const authority = organizerAuthority({
     ownershipState: "userCreated",
@@ -676,7 +278,6 @@ function listingFromDemoWorld(world, moment) {
       avatarUrl: null,
     },
     catchEvents: events,
-    eventSuccessSummary: reported ? eventSuccessSummary(world, reported.id, moment) : null,
     eventEvidence: [],
     reviews,
     fitNotes: [
@@ -711,23 +312,6 @@ function listingFromDemoWorld(world, moment) {
   };
 }
 
-function publicSourcesForOrganizerIntake(sources) {
-  return sources.map((source) => {
-    const label = source.label ?? source.type ?? "Public source";
-    const confidence = source.confidence ?? "medium";
-    const listingSource = {
-      type: source.type ?? "organizer_intake_surface",
-      label,
-      detail:
-        source.detail ??
-        `${label} was reviewed as an organizer-intake surface with ${confidence} confidence.`,
-      confidence,
-    };
-    if (source.href) listingSource.href = source.href;
-    return listingSource;
-  });
-}
-
 // Each world event as the website shows it at the moment; counts are
 // derived from the world's guest records.
 function demoWorldEvents(world, moment, now) {
@@ -755,30 +339,9 @@ function demoWorldEvents(world, moment, now) {
         checkedInCount: state.checkedIn,
         waitlistedCount: state.waitlisted,
         priceLabel: priceLabel(event.priceInPaise),
-        scorecard: null,
       };
     })
     .sort((a, b) => b.startTime.localeCompare(a.startTime));
-}
-
-function latestEndedEvent(world, moment) {
-  return world.events
-    .filter((event) => eventStateAt(world, event.id, moment).phase === "ended")
-    .sort((a, b) => `${b.civilDate}T${b.endTime}`.localeCompare(`${a.civilDate}T${a.endTime}`))[0] ?? null;
-}
-
-// The format has no safety incident records, so the count is zero.
-function eventSuccessSummary(world, eventId, moment) {
-  const state = eventStateAt(world, eventId, moment);
-  const outcomes = eventOutcomesAt(world, eventId, moment);
-  return {
-    bookedCount: state.booked,
-    checkedInCount: state.checkedIn,
-    mutualMatchCount: outcomes.mutualMatches,
-    chatStartedCount: outcomes.chatsStarted,
-    catchSentCount: outcomes.catchSent,
-    safetyIncidentCount: 0,
-  };
 }
 
 // Reviews written by the moment, newest first.
@@ -837,14 +400,6 @@ function priceLabel(priceInPaise) {
   return `$${(priceInPaise / 100 / 83).toFixed(0)}`;
 }
 
-function uniqueById(items) {
-  const byId = new Map();
-  for (const item of items) {
-    if (!byId.has(item.id)) byId.set(item.id, item);
-  }
-  return Array.from(byId.values());
-}
-
 function titleCaseList(values) {
   return values.map((value) =>
     String(value)
@@ -878,13 +433,9 @@ function parseArgs(argv) {
   const parsed = {
     check: false,
     demoScenarioRoot: null,
-    externalEventReadiness: null,
     help: false,
     includeDemo: false,
     output: null,
-    projectionPlan: null,
-    claimTargetPlan: null,
-    claimTargetReadinessReceipt: null,
     firestoreProject: null,
     readinessReceipt: null,
   };
@@ -899,16 +450,6 @@ function parseArgs(argv) {
       parsed.demoScenarioRoot = requiredValue(argv, ++index, arg);
     } else if (arg === "--output") {
       parsed.output = requiredValue(argv, ++index, arg);
-    } else if (arg === "--projection-plan") {
-      parsed.projectionPlan = requiredValue(argv, ++index, arg);
-    } else if (arg === "--external-event-readiness") {
-      parsed.externalEventReadiness = requiredValue(argv, ++index, arg);
-    } else if (arg === "--claim-target-sync-preview") {
-      parsed.claimTargetSyncPreview = requiredValue(argv, ++index, arg);
-    } else if (arg === "--claim-target-plan") {
-      parsed.claimTargetPlan = requiredValue(argv, ++index, arg);
-    } else if (arg === "--claim-target-readiness-receipt") {
-      parsed.claimTargetReadinessReceipt = requiredValue(argv, ++index, arg);
     } else if (arg === "--readiness-receipt") {
       parsed.readinessReceipt = requiredValue(argv, ++index, arg);
     } else if (arg === "--firestore-project") {
@@ -931,15 +472,8 @@ function printHelp() {
   console.log(`Usage: node website/scripts/generateOrganizerListings.mjs [options]
 
 Options:
-  --check                         Check generated hostListings.json drift.
-  --projection-plan <path>         Read a specific organizer public projection plan.
-  --external-event-readiness <path>
-                                  Read a specific external event readiness/preflight plan.
-  --claim-target-sync-preview <path>
-                                  Read a specific claim target sync preview.
-  --claim-target-plan <path>       Read a specific claim target plan for receipt validation.
-  --claim-target-readiness-receipt <path>
-                                  Read a Firestore readiness receipt for public claim APIs.
+  --check                         Validate the committed output; with
+                                  --firestore-project, also check drift.
   --firestore-project <project>    Read canonical content and readiness in one Firestore snapshot.
   --readiness-receipt <path>       Save project/target/projection-bound read-only evidence.
                                   This evidence cannot be reused to enable capabilities.

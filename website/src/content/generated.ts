@@ -360,7 +360,6 @@ export const websiteCopy = {
   "publicdiscovery_0358": "Location",
   "publicdiscovery_0359": "Open source page",
   "publicdiscovery_0360": "Price",
-  "publicdiscovery_0361": "See outcomes",
   "publicdiscovery_0362": "Source",
   "publicdiscovery_0363": "waitlisted",
   "listingclaimsections_0364": "Anything Catch should know before approving ownership",

@@ -1,9 +1,9 @@
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_logic.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_logic.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_availability_field.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_section.dart';

@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/contexts/bookings/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools_rail.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeleton.dart';

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/hosts/events/data/organizer_moments_repository.dart';
-import 'package:catch_dating_app/hosts/events/domain/organizer_moment.dart';
+import 'package:catch_dating_app/contexts/events/data/organizer_moments_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/organizer_moment.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

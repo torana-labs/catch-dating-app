@@ -134,6 +134,37 @@ test("receipt dispatcher and saved-operation reconciliation close early race",
     assert.equal(f.fake.records.get(f.key)?.deliveryStatus, "read");
   });
 
+test("inbound messages reach the router; STOPs and statuses never do",
+  async () => {
+    const f = fixture();
+    const inbound = (id: string, body: string) => {
+      const raw = Buffer.from(JSON.stringify({
+        object: "whatsapp_business_account",
+        entry: [{id: scope.wabaId, changes: [{field: "messages", value: {
+          messaging_product: "whatsapp", metadata: {phone_number_id: "456"},
+          messages: [{id, from: "919000000001", type: "text",
+            timestamp: String(time / 1000 + 1), text: {body}}],
+        }}]}]}));
+      const event = parseCatchWhatsappWebhook(raw, scope)[0];
+      f.fake.records.set(CATCH_RECEIPTS + "/" + event.eventId, {...event,
+        receivedAtMillis: time + 2000,
+        expiresAt: Timestamp.fromMillis(time + WEBHOOK_RETENTION_MILLIS)});
+      return event.eventId;
+    };
+    const routed: string[] = [];
+    const route = async (receipt: {text: string | null}) => {
+      routed.push(receipt.text ?? "");
+    };
+    assert.equal(await processCatchWhatsappReceipt(f.db,
+      inbound("wamid.nomination", "@afterfly.in"), scope, time + 3000, route),
+    "unchanged");
+    assert.equal(await processCatchWhatsappReceipt(f.db,
+      inbound("wamid.stop", "STOP"), scope, time + 3000, route), "applied");
+    await processCatchWhatsappReceipt(f.db, f.receipt("delivered"), scope,
+      time + 3000, route);
+    assert.deepEqual(routed, ["@afterfly.in"]);
+  });
+
 test("dispatch lookup is scoped and rejects ambiguous ownership",
   async () => {
     const f = fixture(); const eventId = f.receipt("delivered");

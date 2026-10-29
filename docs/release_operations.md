@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.16.1
-updated: 2026-10-26
+version: 2.21.2
+updated: 2026-10-29
 owner: recursive_audit_loop
 status: active
 ---
@@ -239,14 +239,17 @@ short enough to be read before a deploy.
 
 ## Native Splash Assets
 
-The native splash is generated from the `flutter_native_splash:` block in
-`pubspec.yaml`; edit that config and run `dart run flutter_native_splash:create`
-instead of hand-editing platform drawables/storyboards. Before regenerating,
+The Consumer native splash is generated from the `flutter_native_splash:` block
+in `apps/consumer/pubspec.yaml`; edit that config and run
+`dart run flutter_native_splash:create` from `apps/consumer` instead of
+hand-editing platform drawables/storyboards. Host splash assets come only from
+the brand generator below. Before regenerating,
 verify the configured splash image is a transparent mark that composites cleanly
 on both `#F4F4F1` and `#0F0E10`; a baked app-icon tile is not an acceptable
 native splash image. The native splash mark is generated as transparent output
 by `tool/branding/generate_catch_icon.swift` and is a separate asset from the
-opaque launcher icon; edit the generator and `pubspec.yaml`, then re-run the
+opaque launcher icon; edit the generator and `apps/consumer/pubspec.yaml`, then
+re-run the
 Swift generator and `flutter_native_splash:create`. Finally run
 `dart run tool/branding/generate_native_brand_assets.dart`: it reapplies the
 Consumer-only iOS responsive launch constraints that align `Catch_` with the
@@ -266,12 +269,14 @@ required check permanently pending. Required CI has no mandatory human backend
 source-review job. The merge queue reruns it on the exact combined source of
 each group before `main` moves, so a pull request result never needs to stay
 current with `main`. A `main` push whose exact commit already passed a
-successful merge-queue run reuses that proof for pure-validation lanes (Flutter,
-visual integration, Tools, docs and policy, Admin and Operations). Jobs that
-produce or prove delivery evidence (Functions, Rules, contracts, app builds,
-Marketing and captures, the finalizer and Firebase packaging) still run, and
-the finalizer records the reused run ID. Without a successful queue run of the
-same commit, `main` runs every selected lane.
+successful merge-queue run re-runs no validation lane, source preflight
+included: it only plans, finalizes, packages Firebase delivery and writes the
+delivery authority, and the finalizer records the reused run ID. Firebase
+packaging compiles Functions from that same commit, and Marketing Website reads
+the queue run's Marketing and capture evidence, validating its own source when
+the queue run selected neither. App builds then run in nightly validation and in
+Mobile Internal Release, which builds each released app. Without a successful
+queue run of the same commit, `main` runs every selected lane.
 
 `.github/workflows/ci.yml` is the orchestration owner. Its planner reads
 `tool/harness/component_graph.json`, fails closed for an unmapped or ambiguous
@@ -601,6 +606,19 @@ patch updates into at most one open pull request per ecosystem, and keeps
 security updates grouped separately. Major versions are deliberately excluded:
 each major upgrade needs its own impact review and full selected CI evidence.
 
+Dependabot pull requests merge without a click.
+`.github/workflows/dependabot-auto-merge.yml` turns on auto-merge for every
+Dependabot pull request that is not a major version, so it joins the merge
+queue once Required CI passes. It acts as the repository's auto-merge GitHub
+App, not the built-in Actions token: GitHub starts no workflows for events
+that token causes, and a dependency merge must start `main`'s workflows like
+any other. The App has read-and-write Contents, Pull requests and Workflows
+permissions (Dependabot also updates workflow files) and is installed on this
+repository only; its ID and private key are the Dependabot secrets
+`AUTOMERGE_APP_ID` and `AUTOMERGE_APP_PRIVATE_KEY`, because a workflow
+Dependabot triggers can read only Dependabot secrets. Without them the
+workflow leaves each update for a manual merge.
+
 The 2026-08-10 Pub baseline upgraded every release resolvable under the current
 constraints: 74 packages (33 in the Firebase family and 41 in the remaining
 Flutter/tooling family). `flutter pub outdated --json` then reported zero
@@ -881,6 +899,42 @@ Before merging a workflow that requires this identity, verify the service
 account's project roles, its exact impersonation principal, and both GitHub
 environment variables. A repository-wide principal is not an acceptable
 substitute for the environment-scoped attribute.
+
+## Cloudflare edge for catchdates.com
+
+catchdates.com's DNS already lives on Cloudflare (`byron`/`carioca.ns.cloudflare.com`), with the apex A record and `www` CNAME set to DNS-only. Proxying them puts the Cloudflare free plan in front of the site:
+
+- Bot Fight Mode;
+- Cloudflare's AI-crawler block;
+- a managed challenge for scripted clients (curl, Python, headless Chrome and similar) on organizer, event and explore pages;
+- one rate-limit rule: 40 requests per 10 seconds per IP on organizer, event and preview-card paths.
+
+Verified search engines and link-preview fetchers pass. robots.txt stays ours (`website/app/robots.ts`), not Cloudflare's managed one.
+
+`tool/cloudflare/edge_policy.json` is the desired state, and `tool/cloudflare/apply_edge_policy.mjs` applies it. A run without `--apply` only reads and prints the plan. Rules whose description lacks the `catch-edge: ` prefix are kept exactly as they are.
+
+Token, created by the zone owner in the Cloudflare dashboard:
+- **Scope:** zone `catchdates.com` only.
+- **Permissions:** Zone Settings Edit, DNS Edit, Zone WAF Edit, Bot Management Edit, and Zone Read.
+
+```sh
+CLOUDFLARE_API_TOKEN=... node tool/cloudflare/apply_edge_policy.mjs           # plan
+CLOUDFLARE_API_TOKEN=... node tool/cloudflare/apply_edge_policy.mjs --apply   # make it so
+CLOUDFLARE_API_TOKEN=... node tool/cloudflare/apply_edge_policy.mjs           # expect 0 changes
+```
+
+TLS goes to Full (strict) before any record is proxied. Firebase Hosting already holds a certificate for both names, and it renews through the HTTP challenge, which still reaches Firebase through the proxy.
+
+After applying, verify:
+1. `curl -sI https://catchdates.com` shows a `cf-ray` header and a 200.
+2. A shared organizer link still previews in WhatsApp, Instagram, X and LinkedIn.
+3. Google Search Console's URL inspection fetches an organizer page.
+4. `curl -s -o /dev/null -w '%{http_code}' https://catchdates.com/organizers/` returns a challenge (403), while a browser loads the page.
+5. Sign-in, checkout and the forms still work.
+
+The production Firebase hosts (`catch-dating-app-64e51.web.app` and `.firebaseapp.com`) would otherwise bypass Cloudflare. The production website therefore answers them with a 301 to catchdates.com, except Firebase's `/__/` Auth handlers and `/api/`. Preview channels are not redirected.
+
+**Rollback:** set the two records back to DNS-only in the dashboard (or `PATCH` `proxied: false`). The site then serves directly from Firebase Hosting again. The Bot Fight Mode and rule settings can stay; they only act on proxied traffic.
 
 ## Custom form domain onboarding
 
@@ -1237,7 +1291,9 @@ As of 2026-07-11, `androidpublisher.googleapis.com` is enabled and
 exists with zero project roles. Its only IAM binding is
 `roles/iam.workloadIdentityUser` for
 `principalSet://iam.googleapis.com/projects/574779808785/locations/global/workloadIdentityPools/github-actions/attribute.repository_environment/1170579691:prod-mobile`
-(CAT-210 replaced the earlier name-based subject). Play Console must
+(CAT-210 replaced the earlier name-based subject). On 2026-10-29 a second
+member was added for the `prod-mobile-release` environment that
+`Mobile Production` uses; see [Mobile releases](#mobile-releases). Play Console must
 still invite that identity separately, scoped to the two app records and only
 read-app plus testing-track release permissions.
 
@@ -1369,6 +1425,49 @@ WABA/number, credentials, templates, consent/suppression ledger, webhook/thread
 authority, retention policy and support owner. Enabling organizer WhatsApp must
 not make the Catch route active. Personal `wa.me` handoff requires no backend
 provider activation and generates no Catch delivery receipt.
+
+### Instagram claim verification activation
+
+Organisers prove a claim by sending a code from the listing's Instagram
+account to Catch's Instagram account. The method stays hidden, and
+`instagramClaimWebhook` stays out of every deploy plan as a dormant target in
+`tool/firebase/list_firebase_function_targets.mjs`, until the owner completes
+these steps:
+
+1. Create three secrets in Secret Manager in every project that deploys from
+   main. Readiness blocks any deploy that includes `instagramClaimWebhook`
+   until they exist:
+   - `CATCH_INSTAGRAM_APP_SECRET`: the app secret that signs webhooks. For
+     Instagram Login, that is the Instagram app secret shown under API setup
+     with Instagram login.
+   - `CATCH_INSTAGRAM_ACCESS_TOKEN`: a long-lived Instagram user token for
+     Catch's account, with `instagram_business_basic` and
+     `instagram_business_manage_messages`.
+   - `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: a random string of at least 32
+     characters.
+2. Set these GitHub environment variables:
+   - `CATCH_INSTAGRAM_ACCOUNT_ID`: the professional account id.
+   - `CATCH_INSTAGRAM_HANDLE`: the username, without @.
+   - `CATCH_INSTAGRAM_GRAPH_VERSION`: optional; the default is `v26.0`.
+3. Remove `functions:instagramClaimWebhook` from
+   `dormantFirebaseFunctionTargets` in a PR. Its merge deploys the webhook.
+4. In the Meta app dashboard, under API setup with Instagram login:
+   - Configure webhooks with the callback URL
+     `https://asia-south1-<project>.cloudfunctions.net/instagramClaimWebhook`
+     and the same verify token.
+   - Subscribe the `messages` field.
+   - Turn on the webhook subscription for Catch's account.
+   A Meta app has one callback URL, so only one environment receives these
+   messages at a time.
+5. On Catch's Instagram account, turn on Allow access to messages under
+   Message controls, Connected tools.
+6. Send a test message from an account with a role on the app. Check that the
+   webhook answers it, then set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` and
+   deploy again.
+
+Until App Review grants Advanced Access, only accounts with a role on the
+Meta app can message through the API. With the method switched off, the
+webhook still answers the handshake and acknowledges signed deliveries.
 
 ### Protected Catch WhatsApp operator CLI
 
@@ -2259,7 +2358,8 @@ The required IAM is not optional. The Functions runtime service account needs
 `roles/bigquery.jobUser` at project scope plus access to `catch_analytics`
 because the public analytics callable inserts into
 `catch_analytics.host_analytics_events` and the host/admin callables read
-`catch_analytics.mart_host_event_daily`. The deployer or scheduled-query
+`catch_analytics.mart_host_event_daily` and `catch_analytics.mart_host_link_daily`.
+The deployer or scheduled-query
 identity needs `roles/bigquery.jobUser`, write access to `catch_analytics`, and
 read access to `catch_marketplace_metrics` for Event Success scorecard joins.
 The `bq-host-*` extension service accounts must retain write access to their
@@ -2434,9 +2534,12 @@ A smoke build can also emit a single canary event with
   `observability-evidence.yml` after the first daily table lands.
 - **Host analytics marts**: source-controlled DDL and refresh SQL live under
   `analytics/sql/**`. `getHostAnalytics` and `adminGetHostAnalytics` read
-  `catch_analytics.mart_host_event_daily`; `recordOrganizerAnalyticsEvent`
-  writes aggregate-safe discovery events to
-  `catch_analytics.host_analytics_events`. The mart also reads
+  `catch_analytics.mart_host_event_daily`, and the owner link roll-up reads
+  `catch_analytics.mart_host_link_daily`; `recordOrganizerAnalyticsEvent`
+  writes aggregate-safe discovery events, including owner `linkClick`s, to
+  `catch_analytics.host_analytics_events`. Apply the DDL before deploying
+  Functions that read the link mart; until then the roll-up reports a missing
+  `owner-link-clicks` data-quality row instead of failing. The mart also reads
   `analytics_526484083.events_*` for `organizer_<eventName>` GA4 exports when
   the dataset/tables exist, using the larger direct-vs-GA4 daily count per
   club/event/event-name key to avoid double-counting mirrored browser events.
@@ -2545,6 +2648,55 @@ The smoke define emits one nonfatal Crashlytics event with reason
 prod release smoke. After the dashboard rows appear, run the manual
 `Observability Evidence` workflow and record the app build, Crashlytics proof,
 Analytics proof, and GA4 BigQuery export status.
+
+## Mobile releases
+
+Test builds and store releases for the Consumer and Host apps run through
+fastlane (`fastlane/Fastfile`, pinned in `Gemfile.lock`). Two workflows call it,
+both from `main` only:
+
+- `Mobile Beta` (`.github/workflows/mobile-beta.yml`) builds, verifies and
+  uploads test builds to TestFlight internal testers and the Play internal
+  track. It runs nightly at 03:07 IST when app sources changed since its last
+  successful run, and on demand for any app and platform. It uses the
+  approval-free `prod-mobile` environment.
+- `Mobile Production` (`.github/workflows/mobile-production.yml`) ships a
+  build testers already have. On iOS it submits that TestFlight build for App
+  Store review as a phased release, which is released by hand after approval.
+  On Android it promotes that internal-track version code to production as a
+  staged rollout. It rebuilds nothing. It uses the `prod-mobile-release`
+  environment, which requires a reviewer's approval.
+
+Both environments deploy only from `main` and hold the same credentials: the
+`catch-github-mobile-prod` App Store Connect API key in the three
+`APP_STORE_CONNECT_API_*` secrets, and the `GCP_WORKLOAD_IDENTITY_PROVIDER` and
+`GOOGLE_PLAY_SERVICE_ACCOUNT_EMAIL` variables. The Play publisher service
+account's `roles/iam.workloadIdentityUser` binding names exactly the two
+environment principals,
+`attribute.repository_environment/1170579691:prod-mobile` and
+`attribute.repository_environment/1170579691:prod-mobile-release`
+(added 2026-10-29).
+
+Each beta build runs the same checks as before upload: the IPA identity, the
+Google Maps configuration, the Android bundle identity and signing certificate,
+the package size and payload policy, and the live callable dependency check
+for the app's role. Android builds run only for the apps listed in the
+workflow's `PLAY_ROLES` (Host today). Google Play's API cannot create an app,
+so a new app's record and its first bundle are made by hand in Play Console
+before the app is added there. iOS build numbers come from the latest TestFlight build
+plus one. Android version codes come from the highest code on any Play track
+plus one, and never go below 100000. Each run attests its IPA or AAB with
+GitHub build provenance and keeps the file and its verification records as a
+30-day workflow artifact.
+
+Run a lane locally with `bundle exec fastlane ios beta role:host` or
+`bundle exec fastlane android beta role:consumer`, given the same environment
+variables the workflow passes. `bundle exec fastlane lanes` lists every lane.
+
+The older `Mobile Internal Release` and `Mobile Internal Promote` workflows
+keep running until the fastlane path has shipped each app once. The migration
+plan, `plans/mobile_release_fastlane_migration.md`, owns the cutover, the
+regression ledger and the delete list.
 
 ## Mobile Internal Release Ownership
 
