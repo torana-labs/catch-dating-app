@@ -94,12 +94,6 @@
       "type": "array",
       "items": {"$ref": "#/definitions/externalEvent"}
     },
-    "eventSuccessSummary": {
-      "anyOf": [
-        {"$ref": "#/definitions/eventSuccessSummary"},
-        {"type": "null"}
-      ]
-    },
     "eventEvidence": {
       "type": "array",
       "items": {"$ref": "#/definitions/eventEvidence"}
@@ -223,7 +217,7 @@
         "priceLabel"
       ],
       "properties": {
-        "catchExperienceActivities": {"type": "array", "minItems": 1, "maxItems": 3, "uniqueItems": true, "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.", "items": {"type": "string", "enum": ["introductions", "sharedActivities", "rotations"]}},
+        "catchExperienceActivities": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.", "items": {"type": "string", "enum": ["introductions", "sharedActivities"]}},
         "id": {"$ref": "#/definitions/nonEmptyString"},
         "role": {"$ref": "#/definitions/nonEmptyString"},
         "title": {"$ref": "#/definitions/nonEmptyString"},
@@ -243,7 +237,7 @@
         "accessibility": {"type": "string"},
         "included": {"type": "string", "maxLength": 2000},
       "registrationAccess": {"type": "string", "enum": ["open", "restricted", "app"]},
-      "admissionLabels": {"type": "array", "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "enum": ["approval", "invitation", "membership", "balanced"]}},
+      "admissionLabels": {"type": "array", "maxItems": 3, "uniqueItems": true, "items": {"type": "string", "enum": ["approval", "invitation", "membership"]}},
       "waitlistAvailable": {"type": "boolean"},
       "cancellationPolicy": {"type": "string", "enum": ["notApplicable", "flexible", "standard", "strict"]},
       "capacityLimit": {"type": "integer", "minimum": 0},
@@ -254,13 +248,7 @@
         "registrationMode": {"type": "string", "enum": ["closed", "free", "paid"]},
         "amountPaise": {"type": "integer", "minimum": 0, "maximum": 100000000},
         "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
-        "priceLabel": {"$ref": "#/definitions/nonEmptyString"},
-        "scorecard": {
-          "anyOf": [
-            {"type": "object", "additionalProperties": true},
-            {"type": "null"}
-          ]
-        }
+        "priceLabel": {"$ref": "#/definitions/nonEmptyString"}
       }
     },
     "externalEvent": {
@@ -304,26 +292,6 @@
         "sourceHref": {"type": "string", "format": "uri"},
         "externalLinkCount": {"type": "integer", "minimum": 1},
         "dedupeKey": {"$ref": "#/definitions/nonEmptyString"}
-      }
-    },
-    "eventSuccessSummary": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "bookedCount",
-        "checkedInCount",
-        "mutualMatchCount",
-        "chatStartedCount",
-        "catchSentCount",
-        "safetyIncidentCount"
-      ],
-      "properties": {
-        "bookedCount": {"type": "integer", "minimum": 0},
-        "checkedInCount": {"type": "integer", "minimum": 0},
-        "mutualMatchCount": {"type": "integer", "minimum": 0},
-        "chatStartedCount": {"type": "integer", "minimum": 0},
-        "catchSentCount": {"type": "integer", "minimum": 0},
-        "safetyIncidentCount": {"type": "integer", "minimum": 0}
       }
     },
     "eventEvidence": {

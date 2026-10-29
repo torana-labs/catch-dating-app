@@ -286,15 +286,14 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
           "catchExperienceActivities": {
             "type": "array",
             "minItems": 1,
-            "maxItems": 3,
+            "maxItems": 2,
             "uniqueItems": true,
             "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
             "items": {
               "type": "string",
               "enum": [
                 "introductions",
-                "sharedActivities",
-                "rotations"
+                "sharedActivities"
               ]
             }
           },
@@ -555,15 +554,14 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
           },
           "admissionLabels": {
             "type": "array",
-            "maxItems": 4,
+            "maxItems": 3,
             "uniqueItems": true,
             "items": {
               "type": "string",
               "enum": [
                 "approval",
                 "invitation",
-                "membership",
-                "balanced"
+                "membership"
               ]
             }
           },
@@ -618,17 +616,6 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
           "priceLabel": {
             "type": "string",
             "minLength": 1
-          },
-          "scorecard": {
-            "anyOf": [
-              {
-                "type": "object",
-                "additionalProperties": true
-              },
-              {
-                "type": "null"
-              }
-            ]
           }
         }
       }
@@ -729,51 +716,6 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
           }
         }
       }
-    },
-    "eventSuccessSummary": {
-      "anyOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "bookedCount",
-            "checkedInCount",
-            "mutualMatchCount",
-            "chatStartedCount",
-            "catchSentCount",
-            "safetyIncidentCount"
-          ],
-          "properties": {
-            "bookedCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "checkedInCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "mutualMatchCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "chatStartedCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "catchSentCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "safetyIncidentCount": {
-              "type": "integer",
-              "minimum": 0
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ]
     },
     "eventEvidence": {
       "type": "array",
@@ -1520,15 +1462,14 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
         "catchExperienceActivities": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 3,
+          "maxItems": 2,
           "uniqueItems": true,
           "description": "Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.",
           "items": {
             "type": "string",
             "enum": [
               "introductions",
-              "sharedActivities",
-              "rotations"
+              "sharedActivities"
             ]
           }
         },
@@ -1789,15 +1730,14 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
         },
         "admissionLabels": {
           "type": "array",
-          "maxItems": 4,
+          "maxItems": 3,
           "uniqueItems": true,
           "items": {
             "type": "string",
             "enum": [
               "approval",
               "invitation",
-              "membership",
-              "balanced"
+              "membership"
             ]
           }
         },
@@ -1852,17 +1792,6 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
         "priceLabel": {
           "type": "string",
           "minLength": 1
-        },
-        "scorecard": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": true
-            },
-            {
-              "type": "null"
-            }
-          ]
         }
       }
     },
@@ -1957,44 +1886,6 @@ export const websiteHostListingProjectionSchema: Record<string, unknown> = {
         "dedupeKey": {
           "type": "string",
           "minLength": 1
-        }
-      }
-    },
-    "eventSuccessSummary": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "bookedCount",
-        "checkedInCount",
-        "mutualMatchCount",
-        "chatStartedCount",
-        "catchSentCount",
-        "safetyIncidentCount"
-      ],
-      "properties": {
-        "bookedCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "checkedInCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "mutualMatchCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "chatStartedCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "catchSentCount": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "safetyIncidentCount": {
-          "type": "integer",
-          "minimum": 0
         }
       }
     },

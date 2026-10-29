@@ -28,53 +28,20 @@
       "pattern": "^https://"
     },
     "publicCatchEvent": {
-      "description": "The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.",
+      "description": "The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.",
       "allOf": [
         {
           "$ref": "../public/website_host_listing_projection.schema.json#/definitions/catchEvent"
         }
       ],
       "not": {
-        "anyOf": [
-          {
-            "properties": {
-              "activityKind": {
-                "const": "singlesMixer"
-              }
-            },
-            "required": [
-              "activityKind"
-            ]
-          },
-          {
-            "properties": {
-              "admissionLabels": {
-                "contains": {
-                  "const": "balanced"
-                }
-              }
-            },
-            "required": [
-              "admissionLabels"
-            ]
-          },
-          {
-            "properties": {
-              "catchExperienceActivities": {
-                "contains": {
-                  "const": "rotations"
-                }
-              }
-            },
-            "required": [
-              "catchExperienceActivities"
-            ]
-          },
-          {
-            "required": [
-              "scorecard"
-            ]
+        "properties": {
+          "activityKind": {
+            "const": "singlesMixer"
           }
+        },
+        "required": [
+          "activityKind"
         ]
       }
     },
@@ -517,11 +484,6 @@
       ],
       "not": {
         "anyOf": [
-          {
-            "required": [
-              "eventSuccessSummary"
-            ]
-          },
           {
             "properties": {
               "catchEvents": {

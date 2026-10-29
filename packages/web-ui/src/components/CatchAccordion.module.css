@@ -1,0 +1,67 @@
+/*
+ * Website v2 accordion (CAT-249): each question a full-width row between line
+ * hairlines with 20px above and below, a plus that turns to a minus when
+ * open, and the answer under it in the secondary ink, at most 560px wide,
+ * with 20px below. Keyboard focus draws an inset ring on the question.
+ */
+.accordion {
+  border-bottom: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+}
+
+.item {
+  border-top: var(--catch-stroke-hairline) solid var(--catch-theme-line);
+}
+
+.question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--catch-space-s4);
+  padding: var(--catch-space-s5) 0;
+  color: var(--catch-theme-ink);
+  cursor: pointer;
+  list-style: none;
+}
+
+.question::-webkit-details-marker { display: none; }
+
+.question:focus-visible {
+  outline: var(--catch-stroke-focus-ring) solid var(--catch-theme-ink);
+  outline-offset: var(--catch-space-micro2);
+}
+
+.sign {
+  position: relative;
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+.sign::before,
+.sign::after {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: var(--catch-stroke-emphasis);
+  border-radius: var(--catch-radius-pill);
+  background: currentColor;
+  content: "";
+  transform: translateY(-50%);
+  transition: transform var(--catch-motion-fast) var(--catch-motion-standard-curve);
+}
+
+.sign::after { transform: translateY(-50%) rotate(90deg); }
+.item[open] .sign::after { transform: translateY(-50%) rotate(0deg); }
+
+.answer {
+  max-width: 560px;
+  padding-bottom: var(--catch-space-s5);
+}
+
+.answer > p { margin: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sign::before,
+  .sign::after { transition: none; }
+}

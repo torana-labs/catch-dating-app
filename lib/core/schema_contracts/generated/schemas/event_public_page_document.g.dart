@@ -99,7 +99,7 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
               'pattern': '^/events/[A-Za-z0-9][A-Za-z0-9_-]{0,179}/\$',
             },
             'event': <String, Object?>{
-              'description': 'The public Catch event projection with the dating framing removed: no balanced admission label, no rotations experience, no singlesMixer activity and no Event Success scorecard.',
+              'description': 'The public Catch event projection. The listing schema already leaves out the balanced label, the rotations experience and the Event Success scorecard; this also refuses the singlesMixer activity.',
               'allOf': <Object?>[
                 <String, Object?>{
                   'type': 'object',
@@ -125,7 +125,7 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                     'catchExperienceActivities': <String, Object?>{
                       'type': 'array',
                       'minItems': 1,
-                      'maxItems': 3,
+                      'maxItems': 2,
                       'uniqueItems': true,
                       'description': 'Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.',
                       'items': <String, Object?>{
@@ -133,7 +133,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                         'enum': <Object?>[
                           'introductions',
                           'sharedActivities',
-                          'rotations',
                         ],
                       },
                     },
@@ -394,7 +393,7 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                     },
                     'admissionLabels': <String, Object?>{
                       'type': 'array',
-                      'maxItems': 4,
+                      'maxItems': 3,
                       'uniqueItems': true,
                       'items': <String, Object?>{
                         'type': 'string',
@@ -402,7 +401,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                           'approval',
                           'invitation',
                           'membership',
-                          'balanced',
                         ],
                       },
                     },
@@ -458,61 +456,17 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                       'type': 'string',
                       'minLength': 1,
                     },
-                    'scorecard': <String, Object?>{
-                      'anyOf': <Object?>[
-                        <String, Object?>{
-                          'type': 'object',
-                          'additionalProperties': true,
-                        },
-                        <String, Object?>{
-                          'type': 'null',
-                        },
-                      ],
-                    },
                   },
                 },
               ],
               'not': <String, Object?>{
-                'anyOf': <Object?>[
-                  <String, Object?>{
-                    'properties': <String, Object?>{
-                      'activityKind': <String, Object?>{
-                        'const': 'singlesMixer',
-                      },
-                    },
-                    'required': <Object?>[
-                      'activityKind',
-                    ],
+                'properties': <String, Object?>{
+                  'activityKind': <String, Object?>{
+                    'const': 'singlesMixer',
                   },
-                  <String, Object?>{
-                    'properties': <String, Object?>{
-                      'admissionLabels': <String, Object?>{
-                        'contains': <String, Object?>{
-                          'const': 'balanced',
-                        },
-                      },
-                    },
-                    'required': <Object?>[
-                      'admissionLabels',
-                    ],
-                  },
-                  <String, Object?>{
-                    'properties': <String, Object?>{
-                      'catchExperienceActivities': <String, Object?>{
-                        'contains': <String, Object?>{
-                          'const': 'rotations',
-                        },
-                      },
-                    },
-                    'required': <Object?>[
-                      'catchExperienceActivities',
-                    ],
-                  },
-                  <String, Object?>{
-                    'required': <Object?>[
-                      'scorecard',
-                    ],
-                  },
+                },
+                'required': <Object?>[
+                  'activityKind',
                 ],
               },
             },
@@ -1399,7 +1353,7 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                   'catchExperienceActivities': <String, Object?>{
                     'type': 'array',
                     'minItems': 1,
-                    'maxItems': 3,
+                    'maxItems': 2,
                     'uniqueItems': true,
                     'description': 'Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.',
                     'items': <String, Object?>{
@@ -1407,7 +1361,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                       'enum': <Object?>[
                         'introductions',
                         'sharedActivities',
-                        'rotations',
                       ],
                     },
                   },
@@ -1668,7 +1621,7 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                   },
                   'admissionLabels': <String, Object?>{
                     'type': 'array',
-                    'maxItems': 4,
+                    'maxItems': 3,
                     'uniqueItems': true,
                     'items': <String, Object?>{
                       'type': 'string',
@@ -1676,7 +1629,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                         'approval',
                         'invitation',
                         'membership',
-                        'balanced',
                       ],
                     },
                   },
@@ -1731,17 +1683,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                   'priceLabel': <String, Object?>{
                     'type': 'string',
                     'minLength': 1,
-                  },
-                  'scorecard': <String, Object?>{
-                    'anyOf': <Object?>[
-                      <String, Object?>{
-                        'type': 'object',
-                        'additionalProperties': true,
-                      },
-                      <String, Object?>{
-                        'type': 'null',
-                      },
-                    ],
                   },
                 },
               },
@@ -1842,51 +1783,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                   },
                 },
               },
-            },
-            'eventSuccessSummary': <String, Object?>{
-              'anyOf': <Object?>[
-                <String, Object?>{
-                  'type': 'object',
-                  'additionalProperties': false,
-                  'required': <Object?>[
-                    'bookedCount',
-                    'checkedInCount',
-                    'mutualMatchCount',
-                    'chatStartedCount',
-                    'catchSentCount',
-                    'safetyIncidentCount',
-                  ],
-                  'properties': <String, Object?>{
-                    'bookedCount': <String, Object?>{
-                      'type': 'integer',
-                      'minimum': 0,
-                    },
-                    'checkedInCount': <String, Object?>{
-                      'type': 'integer',
-                      'minimum': 0,
-                    },
-                    'mutualMatchCount': <String, Object?>{
-                      'type': 'integer',
-                      'minimum': 0,
-                    },
-                    'chatStartedCount': <String, Object?>{
-                      'type': 'integer',
-                      'minimum': 0,
-                    },
-                    'catchSentCount': <String, Object?>{
-                      'type': 'integer',
-                      'minimum': 0,
-                    },
-                    'safetyIncidentCount': <String, Object?>{
-                      'type': 'integer',
-                      'minimum': 0,
-                    },
-                  },
-                },
-                <String, Object?>{
-                  'type': 'null',
-                },
-              ],
             },
             'eventEvidence': <String, Object?>{
               'type': 'array',
@@ -2633,7 +2529,7 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                 'catchExperienceActivities': <String, Object?>{
                   'type': 'array',
                   'minItems': 1,
-                  'maxItems': 3,
+                  'maxItems': 2,
                   'uniqueItems': true,
                   'description': 'Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.',
                   'items': <String, Object?>{
@@ -2641,7 +2537,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                     'enum': <Object?>[
                       'introductions',
                       'sharedActivities',
-                      'rotations',
                     ],
                   },
                 },
@@ -2902,7 +2797,7 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                 },
                 'admissionLabels': <String, Object?>{
                   'type': 'array',
-                  'maxItems': 4,
+                  'maxItems': 3,
                   'uniqueItems': true,
                   'items': <String, Object?>{
                     'type': 'string',
@@ -2910,7 +2805,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                       'approval',
                       'invitation',
                       'membership',
-                      'balanced',
                     ],
                   },
                 },
@@ -2965,17 +2859,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                 'priceLabel': <String, Object?>{
                   'type': 'string',
                   'minLength': 1,
-                },
-                'scorecard': <String, Object?>{
-                  'anyOf': <Object?>[
-                    <String, Object?>{
-                      'type': 'object',
-                      'additionalProperties': true,
-                    },
-                    <String, Object?>{
-                      'type': 'null',
-                    },
-                  ],
                 },
               },
             },
@@ -3070,44 +2953,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
                 'dedupeKey': <String, Object?>{
                   'type': 'string',
                   'minLength': 1,
-                },
-              },
-            },
-            'eventSuccessSummary': <String, Object?>{
-              'type': 'object',
-              'additionalProperties': false,
-              'required': <Object?>[
-                'bookedCount',
-                'checkedInCount',
-                'mutualMatchCount',
-                'chatStartedCount',
-                'catchSentCount',
-                'safetyIncidentCount',
-              ],
-              'properties': <String, Object?>{
-                'bookedCount': <String, Object?>{
-                  'type': 'integer',
-                  'minimum': 0,
-                },
-                'checkedInCount': <String, Object?>{
-                  'type': 'integer',
-                  'minimum': 0,
-                },
-                'mutualMatchCount': <String, Object?>{
-                  'type': 'integer',
-                  'minimum': 0,
-                },
-                'chatStartedCount': <String, Object?>{
-                  'type': 'integer',
-                  'minimum': 0,
-                },
-                'catchSentCount': <String, Object?>{
-                  'type': 'integer',
-                  'minimum': 0,
-                },
-                'safetyIncidentCount': <String, Object?>{
-                  'type': 'integer',
-                  'minimum': 0,
                 },
               },
             },
@@ -3776,11 +3621,6 @@ const schemaEventPublicPageDocumentSchema = <String, Object?>{
       ],
       'not': <String, Object?>{
         'anyOf': <Object?>[
-          <String, Object?>{
-            'required': <Object?>[
-              'eventSuccessSummary',
-            ],
-          },
           <String, Object?>{
             'properties': <String, Object?>{
               'catchEvents': <String, Object?>{
