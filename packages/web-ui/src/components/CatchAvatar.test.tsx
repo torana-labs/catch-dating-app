@@ -24,14 +24,15 @@ describe("CatchAvatar", () => {
     expect(root(container).getAttribute("aria-hidden")).toBe("true");
     expect(root(container).style.getPropertyValue("--catch-avatar-size")).toBe("88px");
     expect(root(container).style.getPropertyValue("--catch-avatar-inner")).toBe("80px");
-    expect(surface(container).textContent).toBe("DM");
+    expect(surface(container).dataset.initials).toBe("DM");
+    expect(container.textContent).toBe("");
   });
 
   it("falls back from a failed photo to the activity initials", () => {
     const {container} = render(<CatchAvatar colors={colors} imageUrl="https://example.invalid/a.jpg" initials="RC" size={56} />);
     fireEvent.error(container.querySelector("img")!);
     expect(container.querySelector("img")).toBeNull();
-    expect(surface(container).textContent).toBe("RC");
+    expect(surface(container).dataset.initials).toBe("RC");
   });
 
   it("obscures photos and person initials, never an activity fallback, and shows the online dot", () => {
@@ -55,7 +56,8 @@ describe("CatchAvatar", () => {
   it("sets a monogram on its ground and switches to the display voice from 24px initials", () => {
     const small = render(<CatchAvatar ground="pink" name="Riya S." recipe="monogram" size={36} />);
     const smallSurface = surface(small.container);
-    expect(smallSurface.textContent).toBe("RS");
+    expect(smallSurface.dataset.initials).toBe("RS");
+    expect(smallSurface.textContent).toBe("");
     expect(smallSurface.dataset).toMatchObject({ground: "pink"});
     expect(smallSurface.dataset.display).toBeUndefined();
     cleanup();
