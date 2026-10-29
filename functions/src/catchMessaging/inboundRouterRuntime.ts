@@ -1,10 +1,10 @@
 import {getAuth} from "firebase-admin/auth";
 import type {Firestore} from "firebase-admin/firestore";
-import {defineBoolean, defineString} from "firebase-functions/params";
+import {defineBoolean} from "firebase-functions/params";
 import {defaultMessageNominationDeps} from
   "../operations/supplyIntake/messageNominations";
 import {sendCatchAutoReply} from "./autoReply";
-import {catchTextSender} from "./catchSender";
+import {autoReplyCredentialVersion, catchTextSender} from "./catchSender";
 import type {CatchInboundRouterDeps} from "./inboundRouter";
 
 // Production wiring for the inbound router: the owner's switches, the
@@ -14,10 +14,6 @@ import type {CatchInboundRouterDeps} from "./inboundRouter";
 // the owner to switch message nominations on.
 export const messageNominationsEnabled = defineBoolean(
   "SUPPLY_MESSAGE_NOMINATIONS_ENABLED", {default: false});
-// A pinned CATCH_WHATSAPP_ACCESS_TOKEN version. Blank keeps replies off
-// while routing still works.
-export const autoReplyCredentialVersion = defineString(
-  "CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION", {default: ""});
 
 export interface CatchSenderScope {wabaId: string; phoneNumberId: string}
 

@@ -1,5 +1,6 @@
 import {SecretManagerServiceClient} from "@google-cloud/secret-manager";
 import {getApp} from "firebase-admin/app";
+import {defineString} from "firebase-functions/params";
 import {MetaWhatsappProvider} from "../organizers/organizerWhatsappProvider";
 import type {CatchTextSender} from "./autoReply";
 import {
@@ -8,6 +9,11 @@ import {
 } from "./whatsappReplyProvider";
 
 const SEND_TIMEOUT_MS = 10_000;
+
+// A pinned CATCH_WHATSAPP_ACCESS_TOKEN version. Blank keeps replies off
+// while routing still works.
+export const autoReplyCredentialVersion = defineString(
+  "CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION", {default: ""});
 
 /**
  * A text sender for Catch's own WhatsApp number, from a pinned version of
