@@ -13662,6 +13662,111 @@
       ]
     },
     {
+      "id": "host_memberships",
+      "name": "Paid host memberships",
+      "priority": "P3",
+      "status": "in_progress",
+      "nextPass": "host-memberships-routed-state-proof",
+      "screens": [
+        {
+          "id": "memberships.mine",
+          "routeId": "myMembershipsScreen",
+          "implementationPaths": [
+            "lib/host_memberships/presentation/my_memberships_screen.dart",
+            "lib/host_memberships/presentation/my_memberships_controller.dart",
+            "lib/host_memberships/presentation/my_memberships_state.dart",
+            "lib/host_memberships/presentation/my_memberships_view_model.dart",
+            "lib/host_memberships/presentation/host_membership_section.dart",
+            "lib/host_memberships/data/host_membership_repository.dart"
+          ],
+          "componentIds": [
+            "catch.badge",
+            "catch.button",
+            "catch.section",
+            "catch.top_bar"
+          ],
+          "captureIds": [],
+          "designRefs": [
+            {
+              "id": "repo.host-memberships-spec",
+              "kind": "repo",
+              "status": "available",
+              "path": "docs/plans/host_memberships_spec.md",
+              "notes": "Host memberships MVP consumer surface: statuses, savings and self-serve actions."
+            }
+          ],
+          "states": [
+            {
+              "id": "loading",
+              "kind": "loading",
+              "status": "implemented",
+              "captureIds": [],
+              "notes": "The shared async boundary renders while uid or the membership streams load; routed capture proof remains open."
+            },
+            {
+              "id": "error",
+              "kind": "error",
+              "status": "implemented",
+              "captureIds": [],
+              "notes": "The shared localized error state with retry; routed capture proof remains open."
+            },
+            {
+              "id": "populated",
+              "kind": "populated",
+              "status": "tested",
+              "captureIds": [],
+              "tests": [
+                "test/host_memberships/host_membership_widgets_test.dart",
+                "test/host_memberships/host_membership_domain_test.dart"
+              ],
+              "notes": "Widget and state tests cover status labels, savings totals and the actions offered per status."
+            },
+            {
+              "id": "empty",
+              "kind": "empty",
+              "status": "implemented",
+              "captureIds": [],
+              "notes": "The provider-free list renders a no-memberships empty state; Widgetbook previews it."
+            },
+            {
+              "id": "signed_out",
+              "kind": "permission",
+              "status": "implemented",
+              "captureIds": [],
+              "notes": "A signed-out viewer sees a sign-in empty state; the route is also behind the private consumer guard."
+            },
+            {
+              "id": "self_serve_change",
+              "kind": "mutation",
+              "status": "implemented",
+              "captureIds": [],
+              "notes": "Pause and cancel confirm first, run through MyMembershipsController, disable row actions while pending and surface failures in a localized banner. Widget tests cover the offered actions; the controller round trip has no routed test yet."
+            }
+          ],
+          "gaps": [
+            {
+              "id": "DP-MEMBERSHIPS-MINE-ROUTED-001",
+              "status": "open",
+              "nextAction": "Add deterministic route captures for loading, error, empty, populated, host-paused and signed-out states once memberships leave Razorpay test mode."
+            },
+            {
+              "id": "DP-MEMBERSHIPS-MINE-ACCESSIBILITY-001",
+              "status": "open",
+              "nextAction": "Verify and capture the route in dark theme, large text, reduced motion and offline."
+            }
+          ]
+        }
+      ],
+      "lintCandidates": [],
+      "previewPlan": [
+        {
+          "id": "DP-MEMBERSHIPS-WIDGETBOOK-001",
+          "status": "closed",
+          "nextAction": "Widgetbook use cases cover every new public membership widget with synthetic fixtures and an offline render test; routed golden proof remains separately open."
+        }
+      ]
+    },
+    {
       "id": "programs_lodging",
       "name": "Socially aware program lodging",
       "priority": "P1",
