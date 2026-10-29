@@ -31,7 +31,7 @@ Map<String, Object?> _access(String duty) => {
   ],
   'capabilities': ['arrivalsTransport'],
   'pickupPoints': [],
-    'functions': [],
+  'functions': [],
   'hotels': [],
   'vehicleClasses': [],
 };

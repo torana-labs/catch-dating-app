@@ -310,7 +310,9 @@ void main() {
     final saved = <EventProfileSelection?>[];
     await pumpProfile(tester, editor(editorState(), onSave: saved.add));
     final firstName = find.byKey(const ValueKey('event-profile-first-name'));
-    final introduction = find.byKey(const ValueKey('event-profile-introduction'));
+    final introduction = find.byKey(
+      const ValueKey('event-profile-introduction'),
+    );
     expect(firstName, findsOneWidget);
     expect(introduction, findsOneWidget);
     await tester.enterText(
@@ -423,9 +425,8 @@ void main() {
     tester,
   ) async {
     final repo = ProfileRepository()
-      ..readPreview = (_) async => settingsFixture(
-        preview: miniProfile(name: 'Mira'),
-      );
+      ..readPreview = (_) async =>
+          settingsFixture(preview: miniProfile(name: 'Mira'));
     await tester.pumpWidget(
       ProviderScope(
         overrides: [

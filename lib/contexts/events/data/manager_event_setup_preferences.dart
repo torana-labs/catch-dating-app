@@ -15,6 +15,7 @@ class ReusableOrganizerPaymentPage {
   });
 
   final String url;
+
   /// Explicit Host attestation; a pasted personal request is never reusable.
   final bool reusableForEvents;
 }
@@ -45,10 +46,12 @@ bool isCanonicalPublicPaymentPageUrl(String value) {
   }
   final labels = host.split('.');
   if (labels.length < 2 ||
-      labels.any((label) =>
-          label.isEmpty ||
-          label.length > 63 ||
-          !RegExp(r'^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$').hasMatch(label))) {
+      labels.any(
+        (label) =>
+            label.isEmpty ||
+            label.length > 63 ||
+            !RegExp(r'^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$').hasMatch(label),
+      )) {
     return false;
   }
   return RegExp(r'^[a-z]{2,}$').hasMatch(labels.last);
@@ -85,9 +88,15 @@ class ManagerEventSetupPreferences {
     Map<String, Object?> json,
   ) {
     const keys = {
-      'timezone', 'usualDurationMinutes', 'preferredVenueId', 'offerValidityMinutes',
-      'collectionPreference', 'currency', 'offerMessageTemplate',
-      'paymentInstructions', 'reusablePaymentPage',
+      'timezone',
+      'usualDurationMinutes',
+      'preferredVenueId',
+      'offerValidityMinutes',
+      'collectionPreference',
+      'currency',
+      'offerMessageTemplate',
+      'paymentInstructions',
+      'reusablePaymentPage',
     };
     if (json.keys.any((key) => !keys.contains(key)) ||
         json.values.any((value) => value == null)) {
@@ -97,13 +106,17 @@ class ManagerEventSetupPreferences {
     final page = json['reusablePaymentPage'];
     if (collection != null &&
         (collection is! String ||
-            !EventCollectionPreference.values.any((v) => v.name == collection))) {
+            !EventCollectionPreference.values.any(
+              (v) => v.name == collection,
+            ))) {
       throw const FormatException('Invalid collection preference');
     }
     if (page != null && page is! Map) {
       throw const FormatException('Invalid reusable payment page');
     }
-    final pageData = page == null ? null : Map<String, Object?>.from(page as Map);
+    final pageData = page == null
+        ? null
+        : Map<String, Object?>.from(page as Map);
     if (pageData != null &&
         (pageData.length != 2 ||
             pageData['url'] is! String ||
@@ -115,14 +128,18 @@ class ManagerEventSetupPreferences {
       usualDurationMinutes: json['usualDurationMinutes'] as int?,
       preferredVenueId: json['preferredVenueId'] as String?,
       offerValidityMinutes: json['offerValidityMinutes'] as int?,
-      collectionPreference: collection == null ? null :
-          EventCollectionPreference.values.byName(collection as String),
+      collectionPreference: collection == null
+          ? null
+          : EventCollectionPreference.values.byName(collection as String),
       currency: json['currency'] as String?,
       offerMessageTemplate: json['offerMessageTemplate'] as String?,
       paymentInstructions: json['paymentInstructions'] as String?,
-      reusablePaymentPage: pageData == null ? null :
-          ReusableOrganizerPaymentPage(
-            pageData['url'] as String, reusableForEvents: true),
+      reusablePaymentPage: pageData == null
+          ? null
+          : ReusableOrganizerPaymentPage(
+              pageData['url'] as String,
+              reusableForEvents: true,
+            ),
     );
     if (!preferences.isValid) {
       throw const FormatException('Invalid private setup preferences');
@@ -160,8 +177,7 @@ class ManagerEventSetupPreferences {
     if (currency != null) 'currency': currency,
     if (offerMessageTemplate != null)
       'offerMessageTemplate': offerMessageTemplate,
-    if (paymentInstructions != null)
-      'paymentInstructions': paymentInstructions,
+    if (paymentInstructions != null) 'paymentInstructions': paymentInstructions,
     if (reusablePaymentPage != null)
       'reusablePaymentPage': {
         'url': reusablePaymentPage!.url,

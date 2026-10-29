@@ -291,15 +291,10 @@ void main() {
         _Snapshots(),
         () => 'actor',
       );
-      await repository.propose(
-        'program',
-        review.proposal,
-        [
-          for (final p in review.proposal.placements)
-            Map<String, Object?>.from(p),
-        ],
-        expectedRevisions: lodgingJsonMap(review.snapshot['revisions']),
-      );
+      await repository.propose('program', review.proposal, [
+        for (final p in review.proposal.placements)
+          Map<String, Object?>.from(p),
+      ], expectedRevisions: lodgingJsonMap(review.snapshot['revisions']));
       expect(
         (functions.payload as Map)['expectedRevisions'],
         review.snapshot['revisions'],

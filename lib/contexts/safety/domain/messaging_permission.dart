@@ -1,11 +1,15 @@
 import 'package:meta/meta.dart';
 
 enum MessagingPermissionStatus { unknown, optedIn, optedOut }
+
 enum MessagingPermissionPurpose { eventOperations, marketing }
 
 @immutable
 class MessagingPurposeDecision {
-  const MessagingPurposeDecision({required this.status, required this.receiptId});
+  const MessagingPurposeDecision({
+    required this.status,
+    required this.receiptId,
+  });
   factory MessagingPurposeDecision.fromMap(Map<Object?, Object?> json) =>
       MessagingPurposeDecision(
         status: MessagingPermissionStatus.values.byName(
@@ -46,9 +50,12 @@ class MessagingPermission {
   final MessagingPermissionStatus status;
   final String? receiptId;
   final Map<MessagingPermissionPurpose, MessagingPurposeDecision> purposes;
-  MessagingPermissionStatus get effectiveStatus => purposes.values.any(
-    (decision) => decision.status == MessagingPermissionStatus.optedIn,
-  ) ? MessagingPermissionStatus.optedIn : status;
+  MessagingPermissionStatus get effectiveStatus =>
+      purposes.values.any(
+        (decision) => decision.status == MessagingPermissionStatus.optedIn,
+      )
+      ? MessagingPermissionStatus.optedIn
+      : status;
   String get key => organizerId == null ? 'catch' : 'organizer:$organizerId';
   String get scope => organizerId == null ? 'catch' : 'organizer';
 
@@ -61,9 +68,7 @@ class MessagingPermission {
       receiptId: withdrawalReceiptId,
     );
     final updatedPurposes = purpose == null
-        ? {
-            for (final key in purposes.keys) key: stopped,
-          }
+        ? {for (final key in purposes.keys) key: stopped}
         : {...purposes, purpose: stopped};
     final anyActive = updatedPurposes.values.any(
       (value) => value.status == MessagingPermissionStatus.optedIn,

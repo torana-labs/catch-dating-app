@@ -70,7 +70,9 @@ class EventAssistanceDeliveries extends _$EventAssistanceDeliveries {
           eventAssistanceDeliveriesForAccountProvider(query, account: account),
         );
         final pageState = catchAsyncStateFromAsyncValue(page);
-        if ((pageState.isLoading || pageState.isRefreshing || pageState.retrying)) {
+        if ((pageState.isLoading ||
+            pageState.isRefreshing ||
+            pageState.retrying)) {
           return const AsyncLoading();
         }
         if (pageState.error != null) {

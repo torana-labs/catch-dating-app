@@ -57,11 +57,13 @@ class EventSuccessController extends _$EventSuccessController {
     List<String> sourceFormIds = const [],
   }) async {
     requireSignedInUid(ref, action: 'preview event matching coverage');
-    return ref.read(eventSuccessRepositoryProvider).previewAssignmentFeatures(
-      eventId: eventId,
-      rules: rules,
-      sourceFormIds: sourceFormIds,
-    );
+    return ref
+        .read(eventSuccessRepositoryProvider)
+        .previewAssignmentFeatures(
+          eventId: eventId,
+          rules: rules,
+          sourceFormIds: sourceFormIds,
+        );
   }
 
   Future<EventSuccessAssignmentFeatureSaveResult> configureAssignmentFeatures({
@@ -71,12 +73,14 @@ class EventSuccessController extends _$EventSuccessController {
     required List<EventSuccessAssignmentFeatureRule> rules,
   }) async {
     requireSignedInUid(ref, action: 'save event matching preferences');
-    return ref.read(eventSuccessRepositoryProvider).configureAssignmentFeatures(
-      eventId: eventId,
-      expectedRevision: expectedRevision,
-      requestId: requestId,
-      rules: rules,
-    );
+    return ref
+        .read(eventSuccessRepositoryProvider)
+        .configureAssignmentFeatures(
+          eventId: eventId,
+          expectedRevision: expectedRevision,
+          requestId: requestId,
+          rules: rules,
+        );
   }
 
   Future<EventSuccessPlan> ensurePlan(Event event) async {

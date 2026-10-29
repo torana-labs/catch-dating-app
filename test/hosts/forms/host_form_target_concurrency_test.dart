@@ -21,47 +21,59 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
-  test('reload waits for sent save then newer target edit saves at fresh revision',
-      () async {
-    final accounts = StreamController<String?>();
-    addTearDown(accounts.close);
-    final auth = _Auth('host-one');
-    final repository = _Repository()..actor = () => auth.uid;
-    final container = _container(accounts, auth, repository);
-    addTearDown(container.dispose);
-    accounts.add('host-one');
-    await container.pump();
-    final provider = hostFormEditorControllerProvider('org', 'form');
-    final subscription = container.listen(provider, (_, _) {});
-    addTearDown(subscription.close);
-    await container.read(provider.future);
-    final notifier = container.read(provider.notifier);
+  test(
+    'reload waits for sent save then newer target edit saves at fresh revision',
+    () async {
+      final accounts = StreamController<String?>();
+      addTearDown(accounts.close);
+      final auth = _Auth('host-one');
+      final repository = _Repository()..actor = () => auth.uid;
+      final container = _container(accounts, auth, repository);
+      addTearDown(container.dispose);
+      accounts.add('host-one');
+      await container.pump();
+      final provider = hostFormEditorControllerProvider('org', 'form');
+      final subscription = container.listen(provider, (_, _) {});
+      addTearDown(subscription.close);
+      await container.read(provider.future);
+      final notifier = container.read(provider.notifier);
 
-    notifier.updateTarget(kind: HostFormTargetKind.event,
-        eventId: 'event-one', accountId: 'host-one');
-    repository.pendingSave = Completer<void>();
-    final save = notifier.saveNow();
-    await flushTestEventQueue();
-    expect(repository.saves, 1);
-    expect(repository.reads, 1);
+      notifier.updateTarget(
+        kind: HostFormTargetKind.event,
+        eventId: 'event-one',
+        accountId: 'host-one',
+      );
+      repository.pendingSave = Completer<void>();
+      final save = notifier.saveNow();
+      await flushTestEventQueue();
+      expect(repository.saves, 1);
+      expect(repository.reads, 1);
 
-    final reload = notifier.reload();
-    await flushTestEventQueue();
-    expect(repository.reads, 1); // No stale GET before the write settles.
-    repository.pendingSave!.complete();
-    expect(await save, isFalse);
-    await reload;
-    expect(repository.reads, 2);
-    expect(container.read(provider).requireValue.editor.definition
-        .defaultTargetId, 'event-one');
-    notifier.updateTarget(kind: HostFormTargetKind.event,
-        eventId: 'event-two', accountId: 'host-one');
-    expect(await notifier.saveNow(), isTrue);
-    expect(repository.saves, 2);
-    expect(repository.serverRevision, 4);
-    expect(container.read(provider).requireValue.editor.definition
-        .defaultTargetId, 'event-two');
-  });
+      final reload = notifier.reload();
+      await flushTestEventQueue();
+      expect(repository.reads, 1); // No stale GET before the write settles.
+      repository.pendingSave!.complete();
+      expect(await save, isFalse);
+      await reload;
+      expect(repository.reads, 2);
+      expect(
+        container.read(provider).requireValue.editor.definition.defaultTargetId,
+        'event-one',
+      );
+      notifier.updateTarget(
+        kind: HostFormTargetKind.event,
+        eventId: 'event-two',
+        accountId: 'host-one',
+      );
+      expect(await notifier.saveNow(), isTrue);
+      expect(repository.saves, 2);
+      expect(repository.serverRevision, 4);
+      expect(
+        container.read(provider).requireValue.editor.definition.defaultTargetId,
+        'event-two',
+      );
+    },
+  );
 
   test('account rebuild waits for old save before manager read', () async {
     final accounts = StreamController<String?>();
@@ -77,8 +89,11 @@ void main() {
     addTearDown(subscription.close);
     await container.read(provider.future);
     final notifier = container.read(provider.notifier);
-    notifier.updateTarget(kind: HostFormTargetKind.event,
-        eventId: 'event-one', accountId: 'host-one');
+    notifier.updateTarget(
+      kind: HostFormTargetKind.event,
+      eventId: 'event-one',
+      accountId: 'host-one',
+    );
     repository.pendingSave = Completer<void>();
     final save = notifier.saveNow();
     await flushTestEventQueue();
@@ -107,8 +122,11 @@ void main() {
     final subscription = container.listen(provider, (_, _) {});
     await container.read(provider.future);
     final notifier = container.read(provider.notifier);
-    notifier.updateTarget(kind: HostFormTargetKind.event,
-        eventId: 'event-one', accountId: 'host-one');
+    notifier.updateTarget(
+      kind: HostFormTargetKind.event,
+      eventId: 'event-one',
+      accountId: 'host-one',
+    );
     repository.pendingSave = Completer<void>();
     final save = notifier.saveNow();
     await flushTestEventQueue();
@@ -138,8 +156,11 @@ void main() {
     addTearDown(subscription.close);
     await container.read(provider.future);
     final notifier = container.read(provider.notifier);
-    notifier.updateTarget(kind: HostFormTargetKind.event,
-        eventId: 'event-one', accountId: 'host-one');
+    notifier.updateTarget(
+      kind: HostFormTargetKind.event,
+      eventId: 'event-one',
+      accountId: 'host-one',
+    );
     repository.pendingSave = Completer<void>();
     final save = notifier.saveNow();
     await flushTestEventQueue();
@@ -156,37 +177,44 @@ void main() {
     expect(notifier.editorBoundTo('host-two'), isTrue);
   });
 
-  test('undo after a successful target save cannot write as next actor',
-      () async {
-    final accounts = StreamController<String?>();
-    addTearDown(accounts.close);
-    final auth = _Auth('host-one');
-    final repository = _Repository()..actor = () => auth.uid;
-    final container = _container(accounts, auth, repository);
-    addTearDown(container.dispose);
-    accounts.add('host-one');
-    await container.pump();
-    final provider = hostFormEditorControllerProvider('org', 'form');
-    final subscription = container.listen(provider, (_, _) {});
-    addTearDown(subscription.close);
-    await container.read(provider.future);
-    final notifier = container.read(provider.notifier);
-    notifier.updateTarget(kind: HostFormTargetKind.event,
-        eventId: 'event-one', accountId: 'host-one');
-    expect(await notifier.saveNow(), isTrue);
-    expect(repository.saves, 1);
+  test(
+    'undo after a successful target save cannot write as next actor',
+    () async {
+      final accounts = StreamController<String?>();
+      addTearDown(accounts.close);
+      final auth = _Auth('host-one');
+      final repository = _Repository()..actor = () => auth.uid;
+      final container = _container(accounts, auth, repository);
+      addTearDown(container.dispose);
+      accounts.add('host-one');
+      await container.pump();
+      final provider = hostFormEditorControllerProvider('org', 'form');
+      final subscription = container.listen(provider, (_, _) {});
+      addTearDown(subscription.close);
+      await container.read(provider.future);
+      final notifier = container.read(provider.notifier);
+      notifier.updateTarget(
+        kind: HostFormTargetKind.event,
+        eventId: 'event-one',
+        accountId: 'host-one',
+      );
+      expect(await notifier.saveNow(), isTrue);
+      expect(repository.saves, 1);
 
-    // Firebase Auth can switch before its UID stream publishes the new value.
-    auth.uid = 'host-two';
-    notifier.undo();
-    accounts.add('host-two');
-    await container.pump();
-    await container.read(provider.future);
-    expect(repository.saves, 1);
-    expect(container.read(provider).requireValue.editor.definition
-        .defaultTargetId, 'event-two');
-    expect(notifier.editorBoundTo('host-two'), isTrue);
-  });
+      // Firebase Auth can switch before its UID stream publishes the new value.
+      auth.uid = 'host-two';
+      notifier.undo();
+      accounts.add('host-two');
+      await container.pump();
+      await container.read(provider.future);
+      expect(repository.saves, 1);
+      expect(
+        container.read(provider).requireValue.editor.definition.defaultTargetId,
+        'event-two',
+      );
+      expect(notifier.editorBoundTo('host-two'), isTrue);
+    },
+  );
 
   test('account change rebuilds editor and rejects late old read', () async {
     final accounts = StreamController<String?>();
@@ -256,57 +284,65 @@ void main() {
     expect(container.read(provider.notifier).editorBoundTo('host-one'), isTrue);
   });
 
-  test('A to B to A cursor cycle stops without accepting repeated page',
-      () async {
-    final controller = HostFormTargetController(
-      organizerId: 'org', accountId: 'host-one',
-      currentAccountId: () => 'host-one',
-      loadPage: ({required organizerId, cursor}) async => switch (cursor) {
-        null => HostOfferEventTargetPage([_event('one')], 'A'),
-        'A' => HostOfferEventTargetPage([_event('two')], 'B'),
-        _ => HostOfferEventTargetPage([_event('three')], 'A'),
-      },
-    );
-    addTearDown(controller.dispose);
-    await controller.refresh();
-    await controller.loadMore();
-    await controller.loadMore();
-    expect(controller.hasLoadFailure, isTrue);
-    expect(controller.canLoadMore, isFalse);
-    expect(controller.events.map((event) => event.eventId), ['one', 'two']);
-    expect(controller.event('three'), isNull);
-  });
+  test(
+    'A to B to A cursor cycle stops without accepting repeated page',
+    () async {
+      final controller = HostFormTargetController(
+        organizerId: 'org',
+        accountId: 'host-one',
+        currentAccountId: () => 'host-one',
+        loadPage: ({required organizerId, cursor}) async => switch (cursor) {
+          null => HostOfferEventTargetPage([_event('one')], 'A'),
+          'A' => HostOfferEventTargetPage([_event('two')], 'B'),
+          _ => HostOfferEventTargetPage([_event('three')], 'A'),
+        },
+      );
+      addTearDown(controller.dispose);
+      await controller.refresh();
+      await controller.loadMore();
+      await controller.loadMore();
+      expect(controller.hasLoadFailure, isTrue);
+      expect(controller.canLoadMore, isFalse);
+      expect(controller.events.map((event) => event.eventId), ['one', 'two']);
+      expect(controller.event('three'), isNull);
+    },
+  );
 
-  testWidgets('bound event refreshes when actor settles after first frame',
-      (tester) async {
+  testWidgets('bound event refreshes when actor settles after first frame', (
+    tester,
+  ) async {
     final accounts = StreamController<String?>();
     addTearDown(accounts.close);
     final auth = _Auth('host-two');
     final notifier = _PickerNotifier();
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        uidProvider.overrideWith((ref) => accounts.stream),
-        firebaseAuthProvider.overrideWithValue(auth),
-      ],
-      child: MaterialApp(
-        theme: AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Scaffold(body: SingleChildScrollView(
-          child: HostFormTargetSection(
-            organizerId: 'org',
-            definition: HostFormDefinition.fromMap(_definition).withTarget(
-              kind: HostFormTargetKind.event,
-              eventId: 'event-two',
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => accounts.stream),
+          firebaseAuthProvider.overrideWithValue(auth),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: HostFormTargetSection(
+                organizerId: 'org',
+                definition: HostFormDefinition.fromMap(_definition).withTarget(
+                  kind: HostFormTargetKind.event,
+                  eventId: 'event-two',
+                ),
+                notifier: notifier,
+                accountId: 'host-two',
+                enableEventTargetSettings: true,
+                hasPublishedVersion: false,
+              ),
             ),
-            notifier: notifier,
-            accountId: 'host-two',
-            enableEventTargetSettings: true,
-            hasPublishedVersion: false,
           ),
-        )),
+        ),
       ),
-    ));
+    );
     await pumpFeatureUi(tester);
     expect(notifier._reads, 0);
     accounts.add('host-two');
@@ -317,12 +353,17 @@ void main() {
   });
 }
 
-ProviderContainer _container(StreamController<String?> accounts, _Auth auth,
-    _Repository repository) => ProviderContainer(overrides: [
-  uidProvider.overrideWith((ref) => accounts.stream),
-  firebaseAuthProvider.overrideWithValue(auth),
-  hostFormsRepositoryProvider.overrideWithValue(repository),
-]);
+ProviderContainer _container(
+  StreamController<String?> accounts,
+  _Auth auth,
+  _Repository repository,
+) => ProviderContainer(
+  overrides: [
+    uidProvider.overrideWith((ref) => accounts.stream),
+    firebaseAuthProvider.overrideWithValue(auth),
+    hostFormsRepositoryProvider.overrideWithValue(repository),
+  ],
+);
 
 class _Auth extends Fake implements FirebaseAuth {
   _Auth(this.uid);
@@ -349,8 +390,10 @@ class _Repository extends Fake implements HostFormsRepository {
   String? serverTargetId;
 
   @override
-  Future<HostFormEditor> getEditor({required String organizerId,
-      required String formId}) async {
+  Future<HostFormEditor> getEditor({
+    required String organizerId,
+    required String formId,
+  }) async {
     reads++;
     readActors.add(actor?.call());
     if (pendingReads.isNotEmpty) {
@@ -358,14 +401,19 @@ class _Repository extends Fake implements HostFormsRepository {
       if (started != null && !started.isCompleted) started.complete();
       return pendingReads.removeFirst().future;
     }
-    return _editor(targetId: actor?.call() == 'host-two'
-        ? 'event-two' : serverTargetId, draftRevision: serverRevision);
+    return _editor(
+      targetId: actor?.call() == 'host-two' ? 'event-two' : serverTargetId,
+      draftRevision: serverRevision,
+    );
   }
 
   @override
-  Future<HostFormEditor> updateDraft({required String organizerId,
-      required String formId, required int expectedRevision,
-      required HostFormDefinition definition}) async {
+  Future<HostFormEditor> updateDraft({
+    required String organizerId,
+    required String formId,
+    required int expectedRevision,
+    required HostFormDefinition definition,
+  }) async {
     saves++;
     if (pendingSave case final pending?) await pending.future;
     if (expectedRevision != serverRevision) {
@@ -373,8 +421,7 @@ class _Repository extends Fake implements HostFormsRepository {
     }
     serverRevision++;
     serverTargetId = definition.defaultTargetId;
-    return _editor(targetId: serverTargetId,
-        draftRevision: serverRevision);
+    return _editor(targetId: serverTargetId, draftRevision: serverRevision);
   }
 }
 
@@ -391,15 +438,19 @@ class _PickerNotifier extends HostFormEditorController {
   }
 }
 
-HostFormEditor _editor({String? targetId, int draftRevision = 2}) => HostFormEditor(
-  form: HostFormSummary.fromMap({..._summary, 'draftRevision': draftRevision}),
-  definition: HostFormDefinition.fromMap({
-    ..._definition,
-    'defaultTargetKind': targetId == null ? 'organizer' : 'event',
-    'defaultTargetId': targetId,
-  }),
-  validationIssues: const [],
-);
+HostFormEditor _editor({String? targetId, int draftRevision = 2}) =>
+    HostFormEditor(
+      form: HostFormSummary.fromMap({
+        ..._summary,
+        'draftRevision': draftRevision,
+      }),
+      definition: HostFormDefinition.fromMap({
+        ..._definition,
+        'defaultTargetKind': targetId == null ? 'organizer' : 'event',
+        'defaultTargetId': targetId,
+      }),
+      validationIssues: const [],
+    );
 
 HostOfferEventTarget _event(String id) => HostOfferEventTarget(
   eventId: id,
@@ -411,25 +462,45 @@ HostOfferEventTarget _event(String id) => HostOfferEventTarget(
 );
 
 const _definition = <String, Object?>{
-  'title': 'Community intake', 'description': null,
-  'purpose': 'application', 'identityPolicy': 'phoneVerified',
-  'defaultTargetKind': 'organizer', 'defaultTargetId': null,
-  'sections': <Object?>[], 'logicRules': <Object?>[],
-  'appearance': {'preset': 'minimal'}, 'availability': <String, Object?>{},
-  'consent': {'consentCopy': 'I consent.', 'consentVersion': 'v1',
-    'retentionCopy': 'Retained for this purpose.'},
+  'title': 'Community intake',
+  'description': null,
+  'purpose': 'application',
+  'identityPolicy': 'phoneVerified',
+  'defaultTargetKind': 'organizer',
+  'defaultTargetId': null,
+  'sections': <Object?>[],
+  'logicRules': <Object?>[],
+  'appearance': {'preset': 'minimal'},
+  'availability': <String, Object?>{},
+  'consent': {
+    'consentCopy': 'I consent.',
+    'consentVersion': 'v1',
+    'retentionCopy': 'Retained for this purpose.',
+  },
   'completion': {'title': 'Thanks', 'actionKind': 'none'},
 };
 
 const _summary = <String, Object?>{
-  'organizerId': 'org', 'formId': 'form', 'title': 'Community intake',
-  'description': null, 'purpose': 'application', 'status': 'published',
-  'templateId': 'community_application', 'publicFormId': 'public-form',
-  'defaultTargetKind': 'organizer', 'defaultTargetId': null,
-  'activeVersionId': 'version-one', 'draftRevision': 2,
-  'publishedVersion': 1, 'submittedResponseCount': 0,
-  'consequences': {'coverage': 'exact', 'identityPolicy': 'phoneVerified',
-    'enabledAutomationActionKinds': <Object?>[]},
-  'updatedAtMillis': 1, 'publishedAtMillis': 1,
+  'organizerId': 'org',
+  'formId': 'form',
+  'title': 'Community intake',
+  'description': null,
+  'purpose': 'application',
+  'status': 'published',
+  'templateId': 'community_application',
+  'publicFormId': 'public-form',
+  'defaultTargetKind': 'organizer',
+  'defaultTargetId': null,
+  'activeVersionId': 'version-one',
+  'draftRevision': 2,
+  'publishedVersion': 1,
+  'submittedResponseCount': 0,
+  'consequences': {
+    'coverage': 'exact',
+    'identityPolicy': 'phoneVerified',
+    'enabledAutomationActionKinds': <Object?>[],
+  },
+  'updatedAtMillis': 1,
+  'publishedAtMillis': 1,
   'lastResponseAtMillis': null,
 };

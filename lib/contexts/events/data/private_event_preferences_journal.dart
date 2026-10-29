@@ -23,12 +23,16 @@ class PrivateEventPreferencesJournal {
       final raw = prefs.getString(_key(userId, organizerId, eventId));
       if (raw == null) return null;
       final decoded = jsonDecode(raw);
-      if (decoded is! Map) throw const FormatException('Invalid pending event preferences');
+      if (decoded is! Map) {
+        throw const FormatException('Invalid pending event preferences');
+      }
       final request = PrivateEventPreferencesUpdateRequest.fromJson(
         Map<String, dynamic>.from(decoded),
       );
       if (request.organizerId != organizerId || request.eventId != eventId) {
-        throw const FormatException('Pending event preferences identity changed');
+        throw const FormatException(
+          'Pending event preferences identity changed',
+        );
       }
       return request;
     },

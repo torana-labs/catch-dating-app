@@ -164,20 +164,23 @@ void main() {
     await container.read(editor.future);
     final c = container.read(editor.notifier);
     final selected = selectionFixture();
-    repo.readPreview = (_) async => settingsFixture(
-      preview: miniProfile(name: 'Mira'),
+    repo.readPreview = (_) async =>
+        settingsFixture(preview: miniProfile(name: 'Mira'));
+    expect(
+      await c.preview(selected, reviewedUid: 'person', reviewedRevision: 0),
+      isNull,
     );
-    expect(await c.preview(selected,
-      reviewedUid: 'person', reviewedRevision: 0), isNull);
-    expect(await c.preview(selected,
-      reviewedUid: 'person', reviewedRevision: 1),
-      isA<EventParticipantProfile>());
+    expect(
+      await c.preview(selected, reviewedUid: 'person', reviewedRevision: 1),
+      isA<EventParticipantProfile>(),
+    );
     expect(repo.writes, isEmpty);
-    repo.readPreview = (_) async => settingsFixture(
-      revision: 2, preview: miniProfile(name: 'Changed'),
+    repo.readPreview = (_) async =>
+        settingsFixture(revision: 2, preview: miniProfile(name: 'Changed'));
+    expect(
+      await c.preview(selected, reviewedUid: 'person', reviewedRevision: 1),
+      isNull,
     );
-    expect(await c.preview(selected,
-      reviewedUid: 'person', reviewedRevision: 1), isNull);
     expect(repo.writes, isEmpty);
   });
   test('pending save freezes duplicates, card changes and refreshes', () async {

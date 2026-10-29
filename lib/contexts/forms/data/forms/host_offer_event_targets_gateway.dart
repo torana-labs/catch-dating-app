@@ -23,9 +23,11 @@ class HostOfferEventTarget {
     final timezone = map['timezone'];
     final publication = map['publicationState'];
     final revision = map['setupRevision'];
-    if (eventId is! String || eventId.isEmpty ||
+    if (eventId is! String ||
+        eventId.isEmpty ||
         name != null && name is! String ||
-        start is! int || start <= 0 ||
+        start is! int ||
+        start <= 0 ||
         timezone != null && timezone is! String ||
         publication != 'private' && publication != 'published' ||
         revision != null && (revision is! int || revision < 1)) {
@@ -53,7 +55,8 @@ class HostOfferEventTargetPage {
   const HostOfferEventTargetPage(this.events, this.nextCursor);
 
   factory HostOfferEventTargetPage.fromCallableData(Object? raw) {
-    if (raw is! Map || raw['events'] is! List ||
+    if (raw is! Map ||
+        raw['events'] is! List ||
         raw['nextCursor'] != null && raw['nextCursor'] is! String) {
       throw const FormatException('Invalid offer event page.');
     }
@@ -66,7 +69,9 @@ class HostOfferEventTargetPage {
       throw const FormatException('Offer event page repeats an event.');
     }
     return HostOfferEventTargetPage(
-      List.unmodifiable(parsed), raw['nextCursor'] as String?);
+      List.unmodifiable(parsed),
+      raw['nextCursor'] as String?,
+    );
   }
 
   final List<HostOfferEventTarget> events;
@@ -97,12 +102,19 @@ class HostOfferEventConfiguration {
     final now = map['nowMillis'];
     final terms = map['paymentTerms'];
     final expiry = map['suggestedExpiresAtMillis'];
-    if (organizerId is! String || organizerId.isEmpty ||
-        eventId is! String || eventId.isEmpty ||
-        revision is! int || revision < 1 ||
-        starts is! int || starts <= 0 || now is! int || now < 0 ||
+    if (organizerId is! String ||
+        organizerId.isEmpty ||
+        eventId is! String ||
+        eventId.isEmpty ||
+        revision is! int ||
+        revision < 1 ||
+        starts is! int ||
+        starts <= 0 ||
+        now is! int ||
+        now < 0 ||
         terms != null && terms is! Map ||
-        expiry != null && (expiry is! int || expiry <= now || expiry > starts)) {
+        expiry != null &&
+            (expiry is! int || expiry <= now || expiry > starts)) {
       throw const FormatException('Invalid offer setup.');
     }
     return HostOfferEventConfiguration(
@@ -111,10 +123,12 @@ class HostOfferEventConfiguration {
       eventSourceRevision: revision,
       startsAt: DateTime.fromMillisecondsSinceEpoch(starts),
       serverNow: DateTime.fromMillisecondsSinceEpoch(now),
-      paymentTerms: terms == null ? null : Map.unmodifiable(
-        (terms as Map).cast<String, Object?>()),
-      suggestedExpiresAt: expiry == null ? null :
-        DateTime.fromMillisecondsSinceEpoch(expiry as int),
+      paymentTerms: terms == null
+          ? null
+          : Map.unmodifiable((terms as Map).cast<String, Object?>()),
+      suggestedExpiresAt: expiry == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(expiry as int),
     );
   }
 
@@ -170,8 +184,9 @@ class CallableHostOfferEventTargetsGateway
     required String eventId,
   }) => withBackendErrorContext(
     () async => HostOfferEventConfiguration.fromCallableData(
-      (await functions.httpsCallable('getEventOfferConfiguration')
-          .call<Object?>({'organizerId': organizerId, 'eventId': eventId}))
+      (await functions
+              .httpsCallable('getEventOfferConfiguration')
+              .call<Object?>({'organizerId': organizerId, 'eventId': eventId}))
           .data,
     ),
     context: const BackendErrorContext(

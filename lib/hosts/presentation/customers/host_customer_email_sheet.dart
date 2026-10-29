@@ -105,13 +105,15 @@ class _HostCustomerEmailHandoffSheetState
     if (email == null || email.trim().isEmpty) return;
     setState(() => _opening = true);
     try {
-      final opened = await ref.read(externalLinkControllerProvider).open(
-        Uri(
-          scheme: 'mailto',
-          path: email,
-          queryParameters: {'body': _message.text.trim()},
-        ),
-      );
+      final opened = await ref
+          .read(externalLinkControllerProvider)
+          .open(
+            Uri(
+              scheme: 'mailto',
+              path: email,
+              queryParameters: {'body': _message.text.trim()},
+            ),
+          );
       if (!opened) {
         if (!mounted) return;
         throw ExternalActionException(
@@ -131,9 +133,7 @@ class _HostCustomerEmailHandoffSheetState
         if (!mounted) return;
         showCatchNoticeError(
           context,
-          ExternalActionException(
-            context.l10n.hostCustomersEmailRecordFailed,
-          ),
+          ExternalActionException(context.l10n.hostCustomersEmailRecordFailed),
           errorContext: AppErrorContext.customer,
         );
       }

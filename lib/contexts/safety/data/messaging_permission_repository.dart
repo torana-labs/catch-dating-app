@@ -23,9 +23,9 @@ class MessagingPermissionRepository {
       );
   Future<MessagingPermission> withdraw(
     MessagingPermission permission,
-    String requestId,
-    {MessagingPermissionPurpose? purpose}
-  ) async {
+    String requestId, {
+    MessagingPermissionPurpose? purpose,
+  }) async {
     final data = await _call(
       'withdrawParticipantMessagingPermission',
       WithdrawParticipantMessagingPermissionCallableRequest(

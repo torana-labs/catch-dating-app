@@ -9,10 +9,7 @@ void main() {
       'organizerId': 'org',
       'items': <Object?>[],
       'nextCursor': null,
-      'versionScope': {
-        'activeVersionId': 'form_v3',
-        'publishedVersion': 3,
-      },
+      'versionScope': {'activeVersionId': 'form_v3', 'publishedVersion': 3},
     });
     expect(page.versionScope?.activeVersionId, 'form_v3');
     expect(page.versionScope?.publishedVersion, 3);
@@ -47,15 +44,17 @@ void main() {
       expect(request.copyWith(cursor: 'next').versionId, 'form_v2');
       expect(
         request,
-        isNot(const HostFormResponseListRequest(
-          organizerId: 'org',
-          formId: 'form',
-          versionId: 'form_v1',
-          answerFilters: {
-            'city': {'Mumbai', 'Delhi'},
-            'diet': {'vegetarian', 'vegan'},
-          },
-        )),
+        isNot(
+          const HostFormResponseListRequest(
+            organizerId: 'org',
+            formId: 'form',
+            versionId: 'form_v1',
+            answerFilters: {
+              'city': {'Mumbai', 'Delhi'},
+              'diet': {'vegetarian', 'vegan'},
+            },
+          ),
+        ),
       );
     },
   );

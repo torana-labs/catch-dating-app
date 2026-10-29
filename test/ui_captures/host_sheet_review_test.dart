@@ -91,41 +91,37 @@ void main() {
     ),
   };
   for (final entry in cases.entries) {
-    testWidgets(
-      'Host sheet review ${entry.key}',
-      (tester) async {
-        if (output.isEmpty) return;
-        await captureCatchWidget(
-          tester,
-          id: entry.key,
-          outputDirectory: Directory(output),
-          device: CaptureDevice.iphone17Pro,
-          includeOverlays: true,
-          builder: (context) => Center(
-            child: CatchButton(
-              label: 'Open',
-              onPressed: () {
-                showCatchBottomSheet<void>(
-                  context: context,
-                  builder: entry.value,
-                );
-              },
-            ),
+    testWidgets('Host sheet review ${entry.key}', (tester) async {
+      if (output.isEmpty) return;
+      await captureCatchWidget(
+        tester,
+        id: entry.key,
+        outputDirectory: Directory(output),
+        device: CaptureDevice.iphone17Pro,
+        includeOverlays: true,
+        builder: (context) => Center(
+          child: CatchButton(
+            label: 'Open',
+            onPressed: () {
+              showCatchBottomSheet<void>(
+                context: context,
+                builder: entry.value,
+              );
+            },
           ),
-          drive: (tester) async {
-            await tester.tap(find.text('Open'));
+        ),
+        drive: (tester) async {
+          await tester.tap(find.text('Open'));
+          await pumpFeatureUi(tester);
+          if (entry.key == 'people-filter') _expectChipClearance(tester);
+          if (entry.key == 'people-sort') {
+            await tester.tap(find.text('Sort: Last seen'));
             await pumpFeatureUi(tester);
-            if (entry.key == 'people-filter') _expectChipClearance(tester);
-            if (entry.key == 'people-sort') {
-              await tester.tap(find.text('Sort: Last seen'));
-              await pumpFeatureUi(tester);
-            }
-          },
-        );
-        expect(tester.takeException(), isNull);
-      },
-      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
-    );
+          }
+        },
+      );
+      expect(tester.takeException(), isNull);
+    }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
   }
   for (final responses in [false, true]) {
     testWidgets(

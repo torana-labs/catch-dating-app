@@ -52,19 +52,17 @@ void main() {
     );
   }, tags: const ['golden']);
 
-  testWidgets(
-    'profile redesign missing photos dynamic type (light + dark)',
-    (tester) async {
-      await matchCatchGolden(
-        tester,
-        'profile_redesign_missing_photos_dynamic_type',
-        size: const Size(390, 1960),
-        textScale: 1.3,
-        builder: (context) => ProfileBody(data: _missingPhotoProfileView()),
-      );
-    },
-    tags: const ['golden'],
-  );
+  testWidgets('profile redesign missing photos dynamic type (light + dark)', (
+    tester,
+  ) async {
+    await matchCatchGolden(
+      tester,
+      'profile_redesign_missing_photos_dynamic_type',
+      size: const Size(390, 1960),
+      textScale: 1.3,
+      builder: (context) => ProfileBody(data: _missingPhotoProfileView()),
+    );
+  }, tags: const ['golden']);
 }
 
 ProfileReactionTarget _target(

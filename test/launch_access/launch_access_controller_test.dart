@@ -53,9 +53,7 @@ void main() {
         launchAccessControllerProvider,
         (_, _) {},
       );
-      container
-          .read(launchAccessControllerProvider.notifier)
-          .setCity('mumbai');
+      container.read(launchAccessControllerProvider.notifier).setCity('mumbai');
       expect(subscription.read().city, 'mumbai');
 
       subscription.close();

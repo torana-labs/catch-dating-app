@@ -371,10 +371,20 @@ class EventChatController extends _$EventChatController {
         if (announcement) true,
       ]),
       (repository, requestId) => announcement
-          ? repository.sendAnnouncement(current.uid, eventId, normalized,
-              replyToMessageId, requestId)
-          : repository.send(current.uid, eventId, normalized,
-              replyToMessageId, requestId),
+          ? repository.sendAnnouncement(
+              current.uid,
+              eventId,
+              normalized,
+              replyToMessageId,
+              requestId,
+            )
+          : repository.send(
+              current.uid,
+              eventId,
+              normalized,
+              replyToMessageId,
+              requestId,
+            ),
     );
     if (sent) draftChanged(false);
     return sent;
@@ -387,7 +397,9 @@ class EventChatController extends _$EventChatController {
     EventChatReportReason? reason,
   }) async {
     final current = state.asData?.value;
-    if (current == null || !current.active || current.busy ||
+    if (current == null ||
+        !current.active ||
+        current.busy ||
         !current.access.canReadMessages ||
         current.uid != reviewedUid) {
       return false;

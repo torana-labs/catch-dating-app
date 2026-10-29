@@ -100,20 +100,19 @@ const communicationRouteCatalog =
             supportsReplies: true,
             supportsScheduling: false,
           ),
-      CommunicationRouteId.personalEmailHandoff:
-          CommunicationRouteCapability(
-            id: CommunicationRouteId.personalEmailHandoff,
-            transport: CommunicationTransport.email,
-            adapterKey: 'mailto_handoff',
-            senderIdentity: CommunicationSenderIdentity.hostPersonalDevice,
-            deliveryMode: CommunicationDeliveryMode.externalHandoff,
-            audienceScope: CommunicationAudienceScope.singleContact,
-            consentScope: CommunicationConsentScope.directUserAction,
-            observability: CommunicationObservability.none,
-            requiresHostFinalSend: true,
-            supportsReplies: true,
-            supportsScheduling: false,
-          ),
+      CommunicationRouteId.personalEmailHandoff: CommunicationRouteCapability(
+        id: CommunicationRouteId.personalEmailHandoff,
+        transport: CommunicationTransport.email,
+        adapterKey: 'mailto_handoff',
+        senderIdentity: CommunicationSenderIdentity.hostPersonalDevice,
+        deliveryMode: CommunicationDeliveryMode.externalHandoff,
+        audienceScope: CommunicationAudienceScope.singleContact,
+        consentScope: CommunicationConsentScope.directUserAction,
+        observability: CommunicationObservability.none,
+        requiresHostFinalSend: true,
+        supportsReplies: true,
+        supportsScheduling: false,
+      ),
       CommunicationRouteId.organizerWhatsappCampaign:
           CommunicationRouteCapability(
             id: CommunicationRouteId.organizerWhatsappCampaign,

@@ -135,11 +135,10 @@ void main() {
       status: MessagingPermissionStatus.optedOut,
       receiptId: 'old-stop',
       purposes: {
-        MessagingPermissionPurpose.eventOperations:
-            MessagingPurposeDecision(
-              status: MessagingPermissionStatus.optedIn,
-              receiptId: 'fresh-grant',
-            ),
+        MessagingPermissionPurpose.eventOperations: MessagingPurposeDecision(
+          status: MessagingPermissionStatus.optedIn,
+          receiptId: 'fresh-grant',
+        ),
       },
     );
     final state = MessagingPermissionsState(
@@ -165,7 +164,7 @@ Future<void> _pump(
   MessagingPermissionsState state,
   ValueChanged<MessagingPermission> onWithdraw, {
   void Function(MessagingPermission, MessagingPermissionPurpose)?
-      onWithdrawPurpose,
+  onWithdrawPurpose,
   bool dark = false,
   double scale = 1,
 }) async {

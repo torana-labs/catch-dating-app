@@ -71,30 +71,48 @@ void main() {
       },
     );
 
-    test('event audience stays separate and clears when profile is disabled', () {
-      final question = HostFormQuestion.create(
-        questionId: 'drink', kind: HostFormQuestionKind.shortText,
-      ).copyWith(answerDestination: HostFormAnswerDestination.organizerCard,
-        eventProfileAudience: true,
-        hostPresentation: HostFormPresentation.filterable);
-      expect(question.proposesEventProfile, true);
-      expect(question.canonicalFieldId, isNull);
-      expect(question.hostPresentation, HostFormPresentation.filterable);
-      expect(question.copyWith(
-        answerDestination: HostFormAnswerDestination.organizerOnly,
-      ).proposesEventProfile, false);
-      final definition = HostFormDefinition.fromMap(_definitionMap());
-      final withQuestion = definition.replaceSection(0,
-        definition.sections.single.replaceQuestion(0, question));
-      final enabled = withQuestion.withEventProfileEnabled(true);
-      expect(enabled.eventProfileEnabled, true);
-      expect(enabled.sections.single.questions.single.proposesEventProfile,
-        true);
-      final disabled = enabled.withEventProfileEnabled(false);
-      expect(disabled.eventProfileEnabled, false);
-      expect(disabled.sections.single.questions.single.proposesEventProfile,
-        false);
-    });
+    test(
+      'event audience stays separate and clears when profile is disabled',
+      () {
+        final question =
+            HostFormQuestion.create(
+              questionId: 'drink',
+              kind: HostFormQuestionKind.shortText,
+            ).copyWith(
+              answerDestination: HostFormAnswerDestination.organizerCard,
+              eventProfileAudience: true,
+              hostPresentation: HostFormPresentation.filterable,
+            );
+        expect(question.proposesEventProfile, true);
+        expect(question.canonicalFieldId, isNull);
+        expect(question.hostPresentation, HostFormPresentation.filterable);
+        expect(
+          question
+              .copyWith(
+                answerDestination: HostFormAnswerDestination.organizerOnly,
+              )
+              .proposesEventProfile,
+          false,
+        );
+        final definition = HostFormDefinition.fromMap(_definitionMap());
+        final withQuestion = definition.replaceSection(
+          0,
+          definition.sections.single.replaceQuestion(0, question),
+        );
+        final enabled = withQuestion.withEventProfileEnabled(true);
+        expect(enabled.eventProfileEnabled, true);
+        expect(
+          enabled.sections.single.questions.single.proposesEventProfile,
+          true,
+        );
+        final disabled = enabled.withEventProfileEnabled(false);
+        expect(disabled.eventProfileEnabled, false);
+        expect(
+          disabled.sections.single.questions.single.proposesEventProfile,
+          false,
+        );
+      },
+    );
 
     test('section and question mutations are ordered and non-destructive', () {
       final definition = HostFormDefinition.fromMap(_definitionMap());

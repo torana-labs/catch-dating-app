@@ -31,8 +31,8 @@ class ForegroundNotification {
   String get route => kind == ForegroundNotificationKind.eventChatMessage
       ? '/events/${Uri.encodeComponent(eventId!)}/chat'
       : role.isHost
-          ? '/host/inbox/${Uri.encodeComponent(matchId!)}'
-          : '/chats/${Uri.encodeComponent(matchId!)}';
+      ? '/host/inbox/${Uri.encodeComponent(matchId!)}'
+      : '/chats/${Uri.encodeComponent(matchId!)}';
   String get dedupeKey => 'arrival.$route';
 
   static ForegroundNotification? parse({
@@ -69,8 +69,7 @@ class ForegroundNotification {
         _text(data['messageId']);
     // Message bodies are not event identities. Without an id, fail closed
     // rather than replaying/replacing unrelated messages with identical copy.
-    if (deliveryIdentity == null &&
-        kind != ForegroundNotificationKind.match) {
+    if (deliveryIdentity == null && kind != ForegroundNotificationKind.match) {
       return null;
     }
     final avatar = _text(data['actorAvatarUrl']);

@@ -136,7 +136,7 @@ void main() {
     (tester) async {
       final repository = _Repository(emptyProgramSnapshots());
       await _pump(tester, repository);
-expect(find.text('Sangeet', skipOffstage: false), findsOneWidget);
+      expect(find.text('Sangeet', skipOffstage: false), findsOneWidget);
       expect(find.text('Taj Palace', skipOffstage: false), findsOneWidget);
       expect(find.text('142 GUESTS'), findsOneWidget);
       expect(find.text('58 HOUSEHOLDS'), findsOneWidget);

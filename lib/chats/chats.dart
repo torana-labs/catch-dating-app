@@ -5,7 +5,8 @@
 /// depend on.
 library;
 
-export 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart' show ConversationRepository;
+export 'package:catch_dating_app/contexts/messaging/data/conversation_repository.dart'
+    show ConversationRepository;
 export 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 export 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
 // public-api: Host shares Chat authorization and attachment commands.

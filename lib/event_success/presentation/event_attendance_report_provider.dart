@@ -33,7 +33,9 @@ class EventAttendanceReport extends _$EventAttendanceReport {
           eventAttendanceReportForAccountProvider(scope, account: account),
         );
         final resultState = catchAsyncStateFromAsyncValue(result);
-        if ((resultState.isLoading || resultState.isRefreshing || resultState.retrying)) {
+        if ((resultState.isLoading ||
+            resultState.isRefreshing ||
+            resultState.retrying)) {
           return const AsyncLoading();
         }
         if (resultState.error != null) {

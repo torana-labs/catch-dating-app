@@ -15,11 +15,15 @@ final class HostFormAdmissionScope {
   });
 
   factory HostFormAdmissionScope.fromOffer(
-    HostEventOffer offer, {String? responseId}
-  ) {
-    final sourceResponseId = offer.sourceKind == HostOfferSourceKind.formResponse
-        ? offer.sourceId : responseId;
-    if (sourceResponseId == null || sourceResponseId.isEmpty ||
+    HostEventOffer offer, {
+    String? responseId,
+  }) {
+    final sourceResponseId =
+        offer.sourceKind == HostOfferSourceKind.formResponse
+        ? offer.sourceId
+        : responseId;
+    if (sourceResponseId == null ||
+        sourceResponseId.isEmpty ||
         responseId != null && responseId != sourceResponseId) {
       throw const FormatException('Admission requires its submitted response.');
     }
@@ -186,11 +190,20 @@ final class HostFormAdmissionCommand {
     expectedLedgerRevision: ledgerRevision,
   ).toJson();
 
-  String get requestHash => sha256Digest(jsonEncode([
-    'form-admission-v1', scope.organizerId, scope.eventId, scope.responseId,
-    scope.contactId, scope.offerId, requestId, offerRevision,
-    offerGeneration, ledgerRevision,
-  ]));
+  String get requestHash => sha256Digest(
+    jsonEncode([
+      'form-admission-v1',
+      scope.organizerId,
+      scope.eventId,
+      scope.responseId,
+      scope.contactId,
+      scope.offerId,
+      requestId,
+      offerRevision,
+      offerGeneration,
+      ledgerRevision,
+    ]),
+  );
 }
 
 final class HostFormAdmissionReceipt {

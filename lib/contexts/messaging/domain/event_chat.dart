@@ -88,12 +88,17 @@ class EventChatAccess {
   bool get announcementsOnly => roomStatus == 'announcementsOnly';
 
   int revisionFor(EventChatAction action) => switch (action) {
-    EventChatAction.open || EventChatAction.close ||
-    EventChatAction.pause || EventChatAction.announcementsOnly ||
-    EventChatAction.resume || EventChatAction.archive ||
+    EventChatAction.open ||
+    EventChatAction.close ||
+    EventChatAction.pause ||
+    EventChatAction.announcementsOnly ||
+    EventChatAction.resume ||
+    EventChatAction.archive ||
     EventChatAction.schedule => roomRevision,
-    EventChatAction.join || EventChatAction.leave ||
-    EventChatAction.mute || EventChatAction.unmute => membershipRevision,
+    EventChatAction.join ||
+    EventChatAction.leave ||
+    EventChatAction.mute ||
+    EventChatAction.unmute => membershipRevision,
   };
 }
 

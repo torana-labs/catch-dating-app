@@ -52,18 +52,20 @@ Future<void> _pump(
   Stream<String?> auth, {
   String eventId = 'event-1',
 }) async {
-  await tester.pumpWidget(ProviderScope(
-    overrides: [
-      uidProvider.overrideWith((ref) => auth),
-      eventAssignmentFeatureChoiceStoreProvider.overrideWithValue(store),
-    ],
-    child: MaterialApp(
-      theme: AppTheme.light,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: EventAssignmentFeatureSheet(eventId: eventId)),
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        uidProvider.overrideWith((ref) => auth),
+        eventAssignmentFeatureChoiceStoreProvider.overrideWithValue(store),
+      ],
+      child: MaterialApp(
+        theme: AppTheme.light,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(body: EventAssignmentFeatureSheet(eventId: eventId)),
+      ),
     ),
-  ));
+  );
   await tester.pump();
 }
 
@@ -83,14 +85,12 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(store.reads, hasLength(2));
-    store.reads[0].complete(const EventAssignmentFeatureChoices(
-      'event-1', [_choice],
-    ));
+    store.reads[0].complete(
+      const EventAssignmentFeatureChoices('event-1', [_choice]),
+    );
     await tester.pump();
     expect(find.textContaining('Easy pace'), findsNothing);
-    store.reads[1].complete(const EventAssignmentFeatureChoices(
-      'event-1', [],
-    ));
+    store.reads[1].complete(const EventAssignmentFeatureChoices('event-1', []));
     await tester.pump();
     expect(find.textContaining('Easy pace'), findsNothing);
   });
@@ -101,9 +101,9 @@ void main() {
     final store = _ChoiceStore();
     await _pump(tester, store, Stream.value('runner-1'));
     expect(store.reads, hasLength(1));
-    store.reads.single.complete(const EventAssignmentFeatureChoices(
-      'event-1', [_choice],
-    ));
+    store.reads.single.complete(
+      const EventAssignmentFeatureChoices('event-1', [_choice]),
+    );
     await tester.pump();
     expect(find.textContaining('Easy pace'), findsOneWidget);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
@@ -113,9 +113,9 @@ void main() {
     await tester.pump();
     expect(store.reads, hasLength(2));
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-    store.reads.last.complete(const EventAssignmentFeatureChoices(
-      'event-1', [_choice],
-    ));
+    store.reads.last.complete(
+      const EventAssignmentFeatureChoices('event-1', [_choice]),
+    );
     await tester.pump();
     expect(find.textContaining('Easy pace'), findsNothing);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
@@ -126,9 +126,9 @@ void main() {
   ) async {
     final store = _ChoiceStore();
     await _pump(tester, store, Stream.value('runner-1'));
-    store.reads.single.complete(const EventAssignmentFeatureChoices(
-      'event-1', [_choice],
-    ));
+    store.reads.single.complete(
+      const EventAssignmentFeatureChoices('event-1', [_choice]),
+    );
     await tester.pump();
     await tester.tap(find.text('Allow for this event'));
     await tester.pump();
@@ -136,9 +136,9 @@ void main() {
     store.writes.single.completeError(StateError('write failed'));
     await tester.pump();
     expect(store.reads, hasLength(2));
-    store.reads.last.complete(const EventAssignmentFeatureChoices(
-      'event-1', [_choice],
-    ));
+    store.reads.last.complete(
+      const EventAssignmentFeatureChoices('event-1', [_choice]),
+    );
     await tester.pump();
     expect(find.byType(CatchLocalizedErrorBanner), findsOneWidget);
     expect(find.textContaining('Easy pace'), findsOneWidget);

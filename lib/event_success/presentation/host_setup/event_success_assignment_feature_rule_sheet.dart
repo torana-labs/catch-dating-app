@@ -25,18 +25,23 @@ class EventSuccessAssignmentFeatureRuleSheet extends StatefulWidget {
 
 class _EventSuccessAssignmentFeatureRuleSheetState
     extends State<EventSuccessAssignmentFeatureRuleSheet> {
-  late String _kind = widget.current?.kind ?? switch (widget.question.kind) {
-    'multiChoice' => 'set',
-    'number' => 'number',
-    _ => 'category',
-  };
+  late String _kind =
+      widget.current?.kind ??
+      switch (widget.question.kind) {
+        'multiChoice' => 'set',
+        'number' => 'number',
+        _ => 'category',
+      };
   late String _mode = widget.current?.mode ?? 'preferSimilar';
   late double _weight = widget.current?.weight ?? 1;
-  late final List<String> _ordinalOrder = widget.current?.scoreByOptionId == null
+  late final List<String> _ordinalOrder =
+      widget.current?.scoreByOptionId == null
       ? widget.question.options.map((item) => item.optionId).toList()
-      : (widget.question.options.map((item) => item.optionId).toList()
-          ..sort((a, b) => (widget.current!.scoreByOptionId![a] ?? 0)
-              .compareTo(widget.current!.scoreByOptionId![b] ?? 0)));
+      : (widget.question.options.map((item) => item.optionId).toList()..sort(
+          (a, b) => (widget.current!.scoreByOptionId![a] ?? 0).compareTo(
+            widget.current!.scoreByOptionId![b] ?? 0,
+          ),
+        ));
   late final TextEditingController _minimum = TextEditingController(
     text: (widget.current?.minimum ?? widget.question.minNumber)?.toString(),
   );
@@ -61,10 +66,12 @@ class _EventSuccessAssignmentFeatureRuleSheetState
         mode: _mode,
         weight: _weight,
         ordinalOrder: _kind == 'ordinal' ? _ordinalOrder : null,
-        minimum: _kind == 'number' ?
-            double.tryParse(_minimum.text.trim()) : null,
-        maximum: _kind == 'number' ?
-            double.tryParse(_maximum.text.trim()) : null,
+        minimum: _kind == 'number'
+            ? double.tryParse(_minimum.text.trim())
+            : null,
+        maximum: _kind == 'number'
+            ? double.tryParse(_maximum.text.trim())
+            : null,
       );
       Navigator.of(context).pop(rule);
     } on ArgumentError {
@@ -110,7 +117,9 @@ class _EventSuccessAssignmentFeatureRuleSheetState
                 contract: CatchContractConstraints
                     .configureEventAssignmentFeaturesCallablePayloadRulesItemsMode,
                 values: const [
-                  'preferSimilar', 'preferDifferent', 'balanceAcrossGroups',
+                  'preferSimilar',
+                  'preferDifferent',
+                  'balanceAcrossGroups',
                 ],
                 itemLabelBuilder: (mode) => switch (mode) {
                   'preferDifferent' => l10n.eventMatchingHostDifferent,
@@ -133,8 +142,8 @@ class _EventSuccessAssignmentFeatureRuleSheetState
                 step: 1,
                 decreaseSemanticLabel: l10n.eventMatchingHostDecreaseWeight,
                 increaseSemanticLabel: l10n.eventMatchingHostIncreaseWeight,
-                onChanged: (weight) => setState(() => _weight =
-                    weight.toDouble()),
+                onChanged: (weight) =>
+                    setState(() => _weight = weight.toDouble()),
               ),
               if (_kind == 'number') ...[
                 if (widget.question.minNumber == null ||
@@ -151,7 +160,8 @@ class _EventSuccessAssignmentFeatureRuleSheetState
                       .configureEventAssignmentFeaturesCallablePayloadRulesItemsMinimum,
                   controller: _minimum,
                   keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true, signed: true,
+                    decimal: true,
+                    signed: true,
                   ),
                 ),
                 CatchField.input(
@@ -161,7 +171,8 @@ class _EventSuccessAssignmentFeatureRuleSheetState
                       .configureEventAssignmentFeaturesCallablePayloadRulesItemsMaximum,
                   controller: _maximum,
                   keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true, signed: true,
+                    decimal: true,
+                    signed: true,
                   ),
                 ),
               ],
@@ -169,14 +180,19 @@ class _EventSuccessAssignmentFeatureRuleSheetState
                 for (var index = 0; index < _ordinalOrder.length; index++)
                   CatchField.nav(
                     copy: catchFieldCopy(l10n),
-                    title: widget.question.options.firstWhere((option) =>
-                        option.optionId == _ordinalOrder[index]).label,
+                    title: widget.question.options
+                        .firstWhere(
+                          (option) => option.optionId == _ordinalOrder[index],
+                        )
+                        .label,
                     body: l10n.eventMatchingHostMoveEarlier,
                     valueText: '${index + 1}',
-                    onTap: index == 0 ? null : () => setState(() {
-                      final item = _ordinalOrder.removeAt(index);
-                      _ordinalOrder.insert(index - 1, item);
-                    }),
+                    onTap: index == 0
+                        ? null
+                        : () => setState(() {
+                            final item = _ordinalOrder.removeAt(index);
+                            _ordinalOrder.insert(index - 1, item);
+                          }),
                   ),
               if (_invalid)
                 CatchField.content(

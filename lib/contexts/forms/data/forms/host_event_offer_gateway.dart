@@ -14,27 +14,30 @@ class CallableHostEventOfferGateway implements HostEventOfferGateway {
 
   final FirebaseFunctions _functions;
 
-  Future<T> _call<T>(String name, Map<String, Object?> payload,
-      String action, T Function(Object?) decode) =>
-      withBackendErrorContext(
-        () async => decode((await _functions.httpsCallable(name)
-                .call<Object?>(payload))
-            .data),
-        context: BackendErrorContext(
-          service: BackendService.functions,
-          action: action,
-          resource: 'event_offers',
-        ),
-        mapper: mapMissingCallableAsUnavailable,
-      );
+  Future<T> _call<T>(
+    String name,
+    Map<String, Object?> payload,
+    String action,
+    T Function(Object?) decode,
+  ) => withBackendErrorContext(
+    () async => decode(
+      (await _functions.httpsCallable(name).call<Object?>(payload)).data,
+    ),
+    context: BackendErrorContext(
+      service: BackendService.functions,
+      action: action,
+      resource: 'event_offers',
+    ),
+    mapper: mapMissingCallableAsUnavailable,
+  );
 
   @override
   Future<HostOfferPreview> preview(HostOfferBatchDraft draft) => _call(
-        'previewEventOffers',
-        draft.toJson(),
-        'preview event offers',
-        HostOfferPreview.fromCallableData,
-      );
+    'previewEventOffers',
+    draft.toJson(),
+    'preview event offers',
+    HostOfferPreview.fromCallableData,
+  );
 
   @override
   Future<HostOfferCommitReceipt> commit({
@@ -42,34 +45,42 @@ class CallableHostEventOfferGateway implements HostEventOfferGateway {
     required HostOfferPreview preview,
     required String requestId,
   }) => _call(
-        'commitEventOffers',
-        {...draft.toJson(), 'planDigest': preview.planDigest,
-          'requestId': requestId},
-        'commit event offers',
-        HostOfferCommitReceipt.fromCallableData,
-      );
+    'commitEventOffers',
+    {
+      ...draft.toJson(),
+      'planDigest': preview.planDigest,
+      'requestId': requestId,
+    },
+    'commit event offers',
+    HostOfferCommitReceipt.fromCallableData,
+  );
 
   Map<String, Object?> _row(HostEventOffer offer) => {
-        'organizerId': offer.organizerId,
-        'eventId': offer.eventId,
-        'contactId': offer.contactId,
-        'applicationId': offer.sourceId,
-        'sourceKind': offer.sourceKind.name,
-      };
+    'organizerId': offer.organizerId,
+    'eventId': offer.eventId,
+    'contactId': offer.contactId,
+    'applicationId': offer.sourceId,
+    'sourceKind': offer.sourceKind.name,
+  };
 
   Future<HostEventOffer> _mutate(
     HostEventOffer offer,
     Map<String, Object?> action,
   ) async {
     await mutateWrite({'row': _row(offer), 'action': action});
-    return getOffer(organizerId: offer.organizerId, eventId: offer.eventId,
-      contactId: offer.contactId);
+    return getOffer(
+      organizerId: offer.organizerId,
+      eventId: offer.eventId,
+      contactId: offer.contactId,
+    );
   }
 
   /// Returns only after a matching server action receipt is observed.
   Future<void> mutateWrite(Map<String, Object?> payload) => _call(
-    'mutateEventOffer', payload, 'review event offer', (value) =>
-      validateOfferMutationAcknowledgement(payload, value),
+    'mutateEventOffer',
+    payload,
+    'review event offer',
+    (value) => validateOfferMutationAcknowledgement(payload, value),
   );
 
   @override
@@ -78,12 +89,12 @@ class CallableHostEventOfferGateway implements HostEventOfferGateway {
     required String reference,
     required String requestId,
   }) => _mutate(offer, {
-        'kind': HostOfferMutationKind.recordEvidence.name,
-        'requestId': requestId,
-        'expectedRevision': offer.revision,
-        'expectedGeneration': offer.generation,
-        'evidenceReference': reference,
-      });
+    'kind': HostOfferMutationKind.recordEvidence.name,
+    'requestId': requestId,
+    'expectedRevision': offer.revision,
+    'expectedGeneration': offer.generation,
+    'evidenceReference': reference,
+  });
 
   @override
   Future<HostEventOffer> reviewReference({
@@ -93,61 +104,76 @@ class CallableHostEventOfferGateway implements HostEventOfferGateway {
     required bool bankReceiptChecked,
     required String requestId,
   }) => _mutate(offer, {
-        'kind': HostOfferMutationKind.reconcileEvidence.name,
-        'requestId': requestId,
-        'expectedRevision': offer.revision,
-        'expectedGeneration': offer.generation,
-        'decision': decision.name,
-        'reviewNote': note,
-        'bankReceiptChecked': bankReceiptChecked,
-      });
+    'kind': HostOfferMutationKind.reconcileEvidence.name,
+    'requestId': requestId,
+    'expectedRevision': offer.revision,
+    'expectedGeneration': offer.generation,
+    'decision': decision.name,
+    'reviewNote': note,
+    'bankReceiptChecked': bankReceiptChecked,
+  });
 
   Future<HostEventOffer> getOffer({
     required String organizerId,
     required String eventId,
     required String contactId,
-  }) => _call('getEventOffer', {
-        'organizerId': organizerId,
-        'eventId': eventId,
-        'contactId': contactId,
-      }, 'load event offer', HostEventOffer.fromCallableData);
+  }) => _call(
+    'getEventOffer',
+    {'organizerId': organizerId, 'eventId': eventId, 'contactId': contactId},
+    'load event offer',
+    HostEventOffer.fromCallableData,
+  );
 
   Future<Map<String, Object?>> listOffers({
     required String organizerId,
     required String eventId,
     String? afterOfferId,
     int limit = 50,
-  }) => _call('listEventOffers', {
-        'organizerId': organizerId,
-        'eventId': eventId,
-        'afterOfferId': ?afterOfferId,
-        'limit': limit,
-      }, 'list event offers', (value) {
-        if (value is! Map || value['items'] is! List) {
-          throw const FormatException('Event offer list is invalid.');
-        }
-        return value.cast<String, Object?>();
-      });
+  }) => _call(
+    'listEventOffers',
+    {
+      'organizerId': organizerId,
+      'eventId': eventId,
+      'afterOfferId': ?afterOfferId,
+      'limit': limit,
+    },
+    'list event offers',
+    (value) {
+      if (value is! Map || value['items'] is! List) {
+        throw const FormatException('Event offer list is invalid.');
+      }
+      return value.cast<String, Object?>();
+    },
+  );
 
-  Future<HostOfferHandoff> prepareHandoff({
-    required HostEventOffer offer,
-  }) => _call('prepareEventOfferHandoff', {
-        'organizerId': offer.organizerId,
-        'eventId': offer.eventId,
-        'contactId': offer.contactId,
-        'expectedOfferRevision': offer.revision,
-        'expectedGeneration': offer.generation,
-      }, 'prepare event offer handoff', HostOfferHandoff.fromCallableData);
+  Future<HostOfferHandoff> prepareHandoff({required HostEventOffer offer}) =>
+      _call(
+        'prepareEventOfferHandoff',
+        {
+          'organizerId': offer.organizerId,
+          'eventId': offer.eventId,
+          'contactId': offer.contactId,
+          'expectedOfferRevision': offer.revision,
+          'expectedGeneration': offer.generation,
+        },
+        'prepare event offer handoff',
+        HostOfferHandoff.fromCallableData,
+      );
 }
 
 /// Checked before the local mutation journal acknowledges its saved command.
 /// A receipt for a different offer, generation, action or request is not an
 /// acknowledgement even if the callable itself returned successfully.
 void validateOfferMutationAcknowledgement(
-    Map<String, Object?> payload, Object? value) {
-  if (value is! Map || value['offer'] is! Map ||
-      value['receipt'] is! Map || value['replayed'] is! bool ||
-      payload['row'] is! Map || payload['action'] is! Map) {
+  Map<String, Object?> payload,
+  Object? value,
+) {
+  if (value is! Map ||
+      value['offer'] is! Map ||
+      value['receipt'] is! Map ||
+      value['replayed'] is! bool ||
+      payload['row'] is! Map ||
+      payload['action'] is! Map) {
     throw const FormatException('Event offer receipt is invalid.');
   }
   final row = (payload['row']! as Map).cast<String, Object?>();
@@ -159,16 +185,24 @@ void validateOfferMutationAcknowledgement(
   final expectedRevision = action['expectedRevision'];
   final expectedGeneration = action['expectedGeneration'];
   final requestId = action['requestId'];
-  final offerIdentityHash = sha256.convert(utf8.encode([
-    row['organizerId'], row['eventId'], row['contactId'],
-  ].join('\u001f'))).toString().substring(0, 40);
+  final offerIdentityHash = sha256
+      .convert(
+        utf8.encode(
+          [row['organizerId'], row['eventId'], row['contactId']].join('\u001f'),
+        ),
+      )
+      .toString()
+      .substring(0, 40);
   // copy:allow-inline(Server offer document identity, never rendered as product copy.)
   final expectedOfferId = 'applicationoffer_$offerIdentityHash';
   if ((kind != HostOfferMutationKind.recordEvidence.name &&
           kind != HostOfferMutationKind.reconcileEvidence.name) ||
-      expectedRevision is! int || expectedRevision < 1 ||
-      expectedGeneration is! int || expectedGeneration < 1 ||
-      requestId is! String || requestId.isEmpty ||
+      expectedRevision is! int ||
+      expectedRevision < 1 ||
+      expectedGeneration is! int ||
+      expectedGeneration < 1 ||
+      requestId is! String ||
+      requestId.isEmpty ||
       offer['organizerId'] != row['organizerId'] ||
       offer['eventId'] != row['eventId'] ||
       offer['contactId'] != row['contactId'] ||
@@ -188,21 +222,39 @@ void validateOfferMutationAcknowledgement(
     throw const FormatException('Event offer receipt is invalid.');
   }
   final terms = kind == HostOfferMutationKind.recordEvidence.name
-      ? [receipt['offerId'], kind, requestId, expectedRevision,
-          expectedGeneration, (action['evidenceReference'] as String?)?.trim()]
-      : [receipt['offerId'], kind, requestId, expectedRevision,
-          expectedGeneration, action['decision'],
+      ? [
+          receipt['offerId'],
+          kind,
+          requestId,
+          expectedRevision,
+          expectedGeneration,
+          (action['evidenceReference'] as String?)?.trim(),
+        ]
+      : [
+          receipt['offerId'],
+          kind,
+          requestId,
+          expectedRevision,
+          expectedGeneration,
+          action['decision'],
           (action['reviewNote'] as String?)?.trim(),
-          action['bankReceiptChecked']];
-  final expectedHash = sha256.convert(utf8.encode(jsonEncode(terms))).toString();
+          action['bankReceiptChecked'],
+        ];
+  final expectedHash = sha256
+      .convert(utf8.encode(jsonEncode(terms)))
+      .toString();
   if (receipt['requestHash'] != expectedHash) {
     throw const FormatException('Event offer receipt is invalid.');
   }
 }
 
 class _OfferCommitCommand {
-  const _OfferCommitCommand({required this.draft, required this.preview,
-    required this.requestId, required this.createdAtMillis});
+  const _OfferCommitCommand({
+    required this.draft,
+    required this.preview,
+    required this.requestId,
+    required this.createdAtMillis,
+  });
 
   factory _OfferCommitCommand.fromJson(Map<String, Object?> map) =>
       _OfferCommitCommand(
@@ -257,12 +309,17 @@ class JournalHostOfferCommitOutbox implements HostOfferCommitOutbox {
     required String organizerId,
     required String eventId,
   }) async {
-    final entries = await _journal.load(accountId,
-      scope: '$organizerId|$eventId');
+    final entries = await _journal.load(
+      accountId,
+      scope: '$organizerId|$eventId',
+    );
     if (entries.isEmpty) return null;
     final entry = entries.first;
-    return HostOfferPendingCommit(draft: entry.draft,
-      preview: entry.preview, requestId: entry.requestId);
+    return HostOfferPendingCommit(
+      draft: entry.draft,
+      preview: entry.preview,
+      requestId: entry.requestId,
+    );
   }
 
   @override
@@ -276,32 +333,50 @@ class JournalHostOfferCommitOutbox implements HostOfferCommitOutbox {
     final entries = await _journal.load(accountId, scope: scope);
     if (entries.isNotEmpty) {
       final saved = entries.first;
-      if (entries.length != 1 || saved.requestId != requestId ||
+      if (entries.length != 1 ||
+          saved.requestId != requestId ||
           jsonEncode(saved.draft.toJson()) != jsonEncode(draft.toJson()) ||
           jsonEncode(saved.preview.toJson()) != jsonEncode(preview.toJson())) {
         throw StateError('Resolve the saved offer operation before editing.');
       }
     } else {
-      await _journal.append(accountId, _OfferCommitCommand(
-        draft: draft, preview: preview, requestId: requestId,
-        createdAtMillis: DateTime.now().millisecondsSinceEpoch,
-      ));
+      await _journal.append(
+        accountId,
+        _OfferCommitCommand(
+          draft: draft,
+          preview: preview,
+          requestId: requestId,
+          createdAtMillis: DateTime.now().millisecondsSinceEpoch,
+        ),
+      );
     }
     HostOfferCommitReceipt? receipt;
     await _journal.flush(accountId, scope, (entry) async {
-      final result = await gateway.commit(draft: entry.draft,
-        preview: entry.preview, requestId: entry.requestId);
+      final result = await gateway.commit(
+        draft: entry.draft,
+        preview: entry.preview,
+        requestId: entry.requestId,
+      );
       final expected = entry.preview.rows.map((row) => row.offerId).toSet();
       final actual = result.results.map((row) => row.offerId).toSet();
-      final shape = [entry.draft.organizerId, entry.draft.eventId,
-        entry.draft.mode, [
+      final shape = [
+        entry.draft.organizerId,
+        entry.draft.eventId,
+        entry.draft.mode,
+        [
           for (final row in entry.draft.rows)
-            [row.sourceKind.name, row.sourceId, row.contactId,
+            [
+              row.sourceKind.name,
+              row.sourceId,
+              row.contactId,
               row.expiresAt.millisecondsSinceEpoch,
-              row.organizerPaymentLink?.toString()],
-        ]];
-      final expectedHash = sha256.convert(utf8.encode(
-        jsonEncode([shape, entry.preview.planDigest]))).toString();
+              row.organizerPaymentLink?.toString(),
+            ],
+        ],
+      ];
+      final expectedHash = sha256
+          .convert(utf8.encode(jsonEncode([shape, entry.preview.planDigest])))
+          .toString();
       final finalRevision = entry.draft.mode == 'offer' ? 2 : 1;
       if (result.organizerId != entry.draft.organizerId ||
           result.eventId != entry.draft.eventId ||
@@ -311,8 +386,9 @@ class JournalHostOfferCommitOutbox implements HostOfferCommitOutbox {
           expected.length != entry.draft.rows.length ||
           actual.length != result.results.length ||
           !actual.containsAll(expected) ||
-          result.results.any((row) => row.revision != finalRevision ||
-              row.generation != 1)) {
+          result.results.any(
+            (row) => row.revision != finalRevision || row.generation != 1,
+          )) {
         throw const FormatException('Offer commit receipt is invalid.');
       }
       receipt = result;
@@ -322,8 +398,11 @@ class JournalHostOfferCommitOutbox implements HostOfferCommitOutbox {
 }
 
 class _OfferMutationCommand {
-  const _OfferMutationCommand({required this.payload,
-    required this.requestId, required this.createdAtMillis});
+  const _OfferMutationCommand({
+    required this.payload,
+    required this.requestId,
+    required this.createdAtMillis,
+  });
 
   factory _OfferMutationCommand.fromJson(Map<String, Object?> map) =>
       _OfferMutationCommand(
@@ -336,8 +415,8 @@ class _OfferMutationCommand {
   final String requestId;
   final int createdAtMillis;
 
-  Map<String, Object?> get row => (payload['row']! as Map)
-      .cast<String, Object?>();
+  Map<String, Object?> get row =>
+      (payload['row']! as Map).cast<String, Object?>();
   String get scope => '${row['organizerId']}|${row['eventId']}';
   String get contactId => row['contactId']! as String;
 
@@ -374,16 +453,24 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
     required String? Function() currentAccountId,
     required CallableHostEventOfferGateway gateway,
   }) => JournalHostOfferMutationOutbox(
-    storage: storage, currentAccountId: currentAccountId,
+    storage: storage,
+    currentAccountId: currentAccountId,
     write: gateway.mutateWrite,
     refresh: ({required organizerId, required eventId, required contactId}) =>
-      gateway.getOffer(organizerId: organizerId,
-        eventId: eventId, contactId: contactId),
+        gateway.getOffer(
+          organizerId: organizerId,
+          eventId: eventId,
+          contactId: contactId,
+        ),
   );
 
   final Future<void> Function(Map<String, Object?>) write;
-  final Future<HostEventOffer> Function({required String organizerId,
-    required String eventId, required String contactId}) refresh;
+  final Future<HostEventOffer> Function({
+    required String organizerId,
+    required String eventId,
+    required String contactId,
+  })
+  refresh;
   final LocalCommandJournal<_OfferMutationCommand> _journal;
 
   @override
@@ -392,15 +479,16 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
     required String organizerId,
     required String eventId,
   }) async {
-    final entries = await _journal.load(accountId,
-      scope: '$organizerId|$eventId');
+    final entries = await _journal.load(
+      accountId,
+      scope: '$organizerId|$eventId',
+    );
     if (entries.isEmpty) return null;
     if (entries.length != 1) {
       throw StateError('Resolve saved payment reviews one at a time.');
     }
     final entry = entries.single;
-    final action = (entry.payload['action']! as Map)
-        .cast<String, Object?>();
+    final action = (entry.payload['action']! as Map).cast<String, Object?>();
     return HostOfferPendingMutation(
       requestId: entry.requestId,
       contactId: entry.contactId,
@@ -426,8 +514,11 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
       throw StateError('Saved payment review scope changed.');
     }
     await _flushMutation(accountId, scope);
-    return refresh(organizerId: organizerId,
-      eventId: eventId, contactId: entry.contactId);
+    return refresh(
+      organizerId: organizerId,
+      eventId: eventId,
+      contactId: entry.contactId,
+    );
   }
 
   Future<void> _flushMutation(String accountId, String scope) async {
@@ -437,8 +528,10 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
       acknowledged = true;
     });
     if (!acknowledged) {
-      throw StateError('Payment review result is uncertain. Retry the saved '
-          'request before editing.');
+      throw StateError(
+        'Payment review result is uncertain. Retry the saved '
+        'request before editing.',
+      );
     }
   }
 
@@ -466,18 +559,26 @@ class JournalHostOfferMutationOutbox implements HostOfferMutationOutbox {
     final existing = await _journal.load(accountId, scope: scope);
     if (existing.isNotEmpty) {
       final saved = existing.first;
-      if (existing.length != 1 || saved.requestId != requestId ||
+      if (existing.length != 1 ||
+          saved.requestId != requestId ||
           jsonEncode(saved.payload) != jsonEncode(payload)) {
         throw StateError('Resolve the saved payment review before editing.');
       }
     } else {
-      await _journal.append(accountId, _OfferMutationCommand(
-        payload: payload, requestId: requestId,
-        createdAtMillis: DateTime.now().millisecondsSinceEpoch,
-      ));
+      await _journal.append(
+        accountId,
+        _OfferMutationCommand(
+          payload: payload,
+          requestId: requestId,
+          createdAtMillis: DateTime.now().millisecondsSinceEpoch,
+        ),
+      );
     }
     await _flushMutation(accountId, scope);
-    return refresh(organizerId: offer.organizerId,
-      eventId: offer.eventId, contactId: offer.contactId);
+    return refresh(
+      organizerId: offer.organizerId,
+      eventId: offer.eventId,
+      contactId: offer.contactId,
+    );
   }
 }

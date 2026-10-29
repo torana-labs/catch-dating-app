@@ -53,6 +53,7 @@ class HostFormDefinition {
         : null;
     return HostFormDefinition._(next);
   }
+
   HostFormIdentityPolicy get identityPolicy => formDefinitionEnumByName(
     HostFormIdentityPolicy.values,
     formDefinitionStringValue(_json['identityPolicy']),
@@ -133,18 +134,22 @@ class HostFormDefinition {
         settings.containsKey('organizerMarketingWhatsapp') ||
         settings.containsKey('catchMarketingWhatsapp');
   }
+
   bool get offersOrganizerOperationsWhatsapp =>
       formDefinitionDeepStringMap(
         _json['messagingConsent'],
-      )['organizerOperationsWhatsapp'] == true;
+      )['organizerOperationsWhatsapp'] ==
+      true;
   bool get offersOrganizerMarketingWhatsapp =>
       formDefinitionDeepStringMap(
         _json['messagingConsent'],
-      )['organizerMarketingWhatsapp'] == true;
+      )['organizerMarketingWhatsapp'] ==
+      true;
   bool get offersCatchMarketingWhatsapp =>
       formDefinitionDeepStringMap(
         _json['messagingConsent'],
-      )['catchMarketingWhatsapp'] == true;
+      )['catchMarketingWhatsapp'] ==
+      true;
 
   bool get eventProfileEnabled =>
       formDefinitionDeepStringMap(_json['eventProfile'])['enabled'] == true;
@@ -177,6 +182,7 @@ class HostFormDefinition {
     }
     return HostFormDefinition._(next);
   }
+
   HostFormDefinition withMessagingConsent({
     bool? organizerWhatsapp,
     bool? catchWhatsapp,
@@ -185,18 +191,21 @@ class HostFormDefinition {
     bool? catchMarketingWhatsapp,
   }) {
     final next = toJson();
-    final purposeEdit = organizerOperationsWhatsapp != null ||
-        organizerMarketingWhatsapp != null || catchMarketingWhatsapp != null;
+    final purposeEdit =
+        organizerOperationsWhatsapp != null ||
+        organizerMarketingWhatsapp != null ||
+        catchMarketingWhatsapp != null;
     next['messagingConsent'] = purposeEdit || usesPurposeMessaging
         ? <String, Object?>{
             'organizerWhatsapp': false,
             'catchWhatsapp': false,
-            'organizerOperationsWhatsapp': organizerOperationsWhatsapp ??
+            'organizerOperationsWhatsapp':
+                organizerOperationsWhatsapp ??
                 offersOrganizerOperationsWhatsapp,
-            'organizerMarketingWhatsapp': organizerMarketingWhatsapp ??
-                offersOrganizerMarketingWhatsapp,
-            'catchMarketingWhatsapp': catchMarketingWhatsapp ??
-                offersCatchMarketingWhatsapp,
+            'organizerMarketingWhatsapp':
+                organizerMarketingWhatsapp ?? offersOrganizerMarketingWhatsapp,
+            'catchMarketingWhatsapp':
+                catchMarketingWhatsapp ?? offersCatchMarketingWhatsapp,
           }
         : <String, Object?>{
             'organizerWhatsapp': organizerWhatsapp ?? offersOrganizerWhatsapp,

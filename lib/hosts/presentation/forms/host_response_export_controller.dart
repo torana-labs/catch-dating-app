@@ -6,13 +6,24 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_que
 import 'package:flutter/foundation.dart';
 
 enum HostResponseExportStatus {
-  idle, recovering, preparing, pending, ready, stale, failure,
+  idle,
+  recovering,
+  preparing,
+  pending,
+  ready,
+  stale,
+  failure,
 }
 
 @immutable
 class HostResponseExportView {
-  const HostResponseExportView(this.status, {this.command, this.receipt,
-    this.error, this.downloadOpened = false});
+  const HostResponseExportView(
+    this.status, {
+    this.command,
+    this.receipt,
+    this.error,
+    this.downloadOpened = false,
+  });
 
   final HostResponseExportStatus status;
   final HostResponseExportCommand? command;
@@ -53,19 +64,23 @@ class HostResponseExportController extends ChangeNotifier {
   bool _disposed = false;
   String? _staleResultHash;
   HostResponseExportView _view = const HostResponseExportView(
-    HostResponseExportStatus.idle);
+    HostResponseExportStatus.idle,
+  );
   HostResponseExportView get view => _view;
 
   bool _sameApplied(HostResponseExportCommand command) {
     final current = queryController.view;
     final request = current.request;
     return request != null &&
-      (current.status == HostResponseQueryStatus.ready ||
-        current.status == HostResponseQueryStatus.empty) &&
-      command.accountId == accountId &&
-      command.matches(request, current.queryHash ?? '',
-        current.resultHash ?? '') &&
-      request.cursor == null;
+        (current.status == HostResponseQueryStatus.ready ||
+            current.status == HostResponseQueryStatus.empty) &&
+        command.accountId == accountId &&
+        command.matches(
+          request,
+          current.queryHash ?? '',
+          current.resultHash ?? '',
+        ) &&
+        request.cursor == null;
   }
 
   void _queryChanged() {
@@ -73,7 +88,8 @@ class HostResponseExportController extends ChangeNotifier {
     if (command == null) {
       final current = queryController.view;
       if (_view.status == HostResponseExportStatus.stale &&
-          _staleResultHash != null && current.resultHash != null &&
+          _staleResultHash != null &&
+          current.resultHash != null &&
           current.resultHash != _staleResultHash &&
           (current.status == HostResponseQueryStatus.ready ||
               current.status == HostResponseQueryStatus.empty)) {
@@ -85,12 +101,19 @@ class HostResponseExportController extends ChangeNotifier {
     final matches = _sameApplied(command);
     if (!matches && _view.status != HostResponseExportStatus.stale) {
       ++_generation;
-      _publish(HostResponseExportView(HostResponseExportStatus.stale,
-        command: command));
-    } else if (matches &&
-        _view.status == HostResponseExportStatus.stale) {
-      _publish(HostResponseExportView(HostResponseExportStatus.pending,
-        command: command));
+      _publish(
+        HostResponseExportView(
+          HostResponseExportStatus.stale,
+          command: command,
+        ),
+      );
+    } else if (matches && _view.status == HostResponseExportStatus.stale) {
+      _publish(
+        HostResponseExportView(
+          HostResponseExportStatus.pending,
+          command: command,
+        ),
+      );
     }
   }
 
@@ -109,18 +132,30 @@ class HostResponseExportController extends ChangeNotifier {
     final generation = ++_generation;
     _publish(const HostResponseExportView(HostResponseExportStatus.recovering));
     try {
-      final saved = await gateway.pending(accountId: accountId,
-        organizerId: organizerId, formId: formId);
+      final saved = await gateway.pending(
+        accountId: accountId,
+        organizerId: organizerId,
+        formId: formId,
+      );
       if (!_current(generation)) return;
-      _publish(saved == null
-        ? const HostResponseExportView(HostResponseExportStatus.idle)
-        : HostResponseExportView(_sameApplied(saved)
-          ? HostResponseExportStatus.pending : HostResponseExportStatus.stale,
-          command: saved));
+      _publish(
+        saved == null
+            ? const HostResponseExportView(HostResponseExportStatus.idle)
+            : HostResponseExportView(
+                _sameApplied(saved)
+                    ? HostResponseExportStatus.pending
+                    : HostResponseExportStatus.stale,
+                command: saved,
+              ),
+      );
     } on Object catch (error) {
       if (_current(generation)) {
-        _publish(HostResponseExportView(
-          HostResponseExportStatus.failure, error: error));
+        _publish(
+          HostResponseExportView(
+            HostResponseExportStatus.failure,
+            error: error,
+          ),
+        );
       }
     }
   }
@@ -137,13 +172,21 @@ class HostResponseExportController extends ChangeNotifier {
     final initialQueryHash = initial.queryHash;
     final initialResultHash = initial.resultHash;
     try {
-      final pending = await gateway.pending(accountId: accountId,
-        organizerId: organizerId, formId: formId);
+      final pending = await gateway.pending(
+        accountId: accountId,
+        organizerId: organizerId,
+        formId: formId,
+      );
       if (!_current(generation)) return;
       if (pending != null) {
-        _publish(HostResponseExportView(_sameApplied(pending)
-          ? HostResponseExportStatus.pending : HostResponseExportStatus.stale,
-          command: pending));
+        _publish(
+          HostResponseExportView(
+            _sameApplied(pending)
+                ? HostResponseExportStatus.pending
+                : HostResponseExportStatus.stale,
+            command: pending,
+          ),
+        );
         if (_sameApplied(pending)) await _run(pending, generation);
         return;
       }
@@ -158,16 +201,21 @@ class HostResponseExportController extends ChangeNotifier {
       }
       if (request == null ||
           (applied.status != HostResponseQueryStatus.ready &&
-            applied.status != HostResponseQueryStatus.empty) ||
-          request.organizerId != organizerId || request.formId != formId ||
-          request.cursor != null || applied.queryHash == null ||
+              applied.status != HostResponseQueryStatus.empty) ||
+          request.organizerId != organizerId ||
+          request.formId != formId ||
+          request.cursor != null ||
+          applied.queryHash == null ||
           applied.resultHash == null) {
         return;
       }
       final command = HostResponseExportCommand(
-        accountId: accountId, organizerId: organizerId, formId: formId,
+        accountId: accountId,
+        organizerId: organizerId,
+        formId: formId,
         versionId: request.versionId,
-        requestId: _newRequestId(), format: format,
+        requestId: _newRequestId(),
+        format: format,
         statuses: request.statuses.toList()..sort(),
         responseQuery: request.withCursor(null).toJson(),
         expectedQueryHash: applied.queryHash!,
@@ -177,16 +225,21 @@ class HostResponseExportController extends ChangeNotifier {
       await _run(command, generation);
     } on Object catch (error) {
       if (_current(generation)) {
-        _publish(HostResponseExportView(
-          HostResponseExportStatus.failure,
-          command: _view.command, error: error));
+        _publish(
+          HostResponseExportView(
+            HostResponseExportStatus.failure,
+            command: _view.command,
+            error: error,
+          ),
+        );
       }
     }
   }
 
   Future<void> retryPending() async {
     final command = _view.command;
-    if (command == null || !_sameAccount ||
+    if (command == null ||
+        !_sameAccount ||
         _view.status == HostResponseExportStatus.preparing) {
       return;
     }
@@ -196,32 +249,51 @@ class HostResponseExportController extends ChangeNotifier {
 
   /// A changed query can still settle the original journaled request. Its
   /// terminal receipt releases the journal but is never opened for new rows.
-  Future<void> _run(HostResponseExportCommand command, int generation,
-      {bool resolveOnly = false}) async {
+  Future<void> _run(
+    HostResponseExportCommand command,
+    int generation, {
+    bool resolveOnly = false,
+  }) async {
     if (!_sameAccount || !resolveOnly && !_sameApplied(command)) {
-      _publish(HostResponseExportView(HostResponseExportStatus.stale,
-        command: command));
+      _publish(
+        HostResponseExportView(
+          HostResponseExportStatus.stale,
+          command: command,
+        ),
+      );
       return;
     }
-    _publish(HostResponseExportView(HostResponseExportStatus.preparing,
-      command: command));
+    _publish(
+      HostResponseExportView(
+        HostResponseExportStatus.preparing,
+        command: command,
+      ),
+    );
     try {
       for (var attempt = 0; attempt < 12; attempt++) {
         final receipt = await gateway.execute(command);
-        if (!_current(generation) || !_sameAccount ||
+        if (!_current(generation) ||
+            !_sameAccount ||
             !resolveOnly && !_sameApplied(command)) {
           return;
         }
         if (receipt.status == HostFormExportStatus.pending ||
             receipt.status == HostFormExportStatus.running) {
           if (attempt == 11) {
-            _publish(HostResponseExportView(resolveOnly
-                ? HostResponseExportStatus.stale : HostResponseExportStatus.pending,
-              command: command, receipt: receipt));
+            _publish(
+              HostResponseExportView(
+                resolveOnly
+                    ? HostResponseExportStatus.stale
+                    : HostResponseExportStatus.pending,
+                command: command,
+                receipt: receipt,
+              ),
+            );
             return;
           }
           await wait(hostFormExportReceiptPollingInterval);
-          if (!_current(generation) || !_sameAccount ||
+          if (!_current(generation) ||
+              !_sameAccount ||
               !resolveOnly && !_sameApplied(command)) {
             return;
           }
@@ -233,14 +305,22 @@ class HostResponseExportController extends ChangeNotifier {
         }
         if (receipt.errorCode == 'response-query-stale') {
           _staleResultHash = command.expectedResultHash;
-          _publish(HostResponseExportView(HostResponseExportStatus.stale,
-            receipt: receipt));
+          _publish(
+            HostResponseExportView(
+              HostResponseExportStatus.stale,
+              receipt: receipt,
+            ),
+          );
           return;
         }
         if (receipt.status != HostFormExportStatus.completed ||
             receipt.downloadUrl == null) {
-          _publish(HostResponseExportView(HostResponseExportStatus.failure,
-            receipt: receipt));
+          _publish(
+            HostResponseExportView(
+              HostResponseExportStatus.failure,
+              receipt: receipt,
+            ),
+          );
           return;
         }
         final uri = Uri.tryParse(receipt.downloadUrl!);
@@ -252,16 +332,28 @@ class HostResponseExportController extends ChangeNotifier {
         }
         final opened = await openDownload(uri);
         if (_current(generation) && _sameAccount && _sameApplied(command)) {
-          _publish(HostResponseExportView(HostResponseExportStatus.ready,
-            command: command, receipt: receipt, downloadOpened: opened));
+          _publish(
+            HostResponseExportView(
+              HostResponseExportStatus.ready,
+              command: command,
+              receipt: receipt,
+              downloadOpened: opened,
+            ),
+          );
         }
         return;
       }
     } on Object catch (error) {
       if (_current(generation) && _sameAccount) {
-        _publish(HostResponseExportView(resolveOnly
-            ? HostResponseExportStatus.stale : HostResponseExportStatus.pending,
-          command: command, error: error));
+        _publish(
+          HostResponseExportView(
+            resolveOnly
+                ? HostResponseExportStatus.stale
+                : HostResponseExportStatus.pending,
+            command: command,
+            error: error,
+          ),
+        );
       }
     }
   }
@@ -269,8 +361,10 @@ class HostResponseExportController extends ChangeNotifier {
   Future<void> openReady() async {
     final receipt = _view.receipt;
     final command = _view.command;
-    if (receipt?.downloadUrl == null || command == null ||
-        !_sameApplied(command) || !_sameAccount) {
+    if (receipt?.downloadUrl == null ||
+        command == null ||
+        !_sameApplied(command) ||
+        !_sameAccount) {
       return;
     }
     final uri = Uri.tryParse(receipt!.downloadUrl!);
@@ -279,15 +373,23 @@ class HostResponseExportController extends ChangeNotifier {
     if (!_sameAccount) return;
     final opened = await openDownload(uri);
     if (_current(generation) && _sameAccount && _sameApplied(command)) {
-      _publish(HostResponseExportView(HostResponseExportStatus.ready,
-        command: command, receipt: receipt, downloadOpened: opened));
+      _publish(
+        HostResponseExportView(
+          HostResponseExportStatus.ready,
+          command: command,
+          receipt: receipt,
+          downloadOpened: opened,
+        ),
+      );
     }
   }
 
   static String _newRequestId() {
     final time = DateTime.now().microsecondsSinceEpoch.toRadixString(36);
-    final random = List.generate(3,
-      (_) => _entropy.nextInt(1 << 32).toRadixString(36)).join();
+    final random = List.generate(
+      3,
+      (_) => _entropy.nextInt(1 << 32).toRadixString(36),
+    ).join();
     return 'export_${time}_$random';
   }
 

@@ -92,28 +92,34 @@ class MessagingPermissionsController extends _$MessagingPermissionsController {
 
   Future<void> withdraw(
     String reviewedUid,
-    MessagingPermission permission,
-    {MessagingPermissionPurpose? purpose}
-  ) async {
+    MessagingPermission permission, {
+    MessagingPermissionPurpose? purpose,
+  }) async {
     final current = state.asData?.value;
     if (current == null || current.busy) return;
     final uid = requireSignedInUid(ref, action: 'stop WhatsApp updates');
     if (uid != reviewedUid || uid != current.uid) return;
     final row = current.page.permission(permission.key);
-    if (row == null || row.receiptId != permission.receiptId ||
+    if (row == null ||
+        row.receiptId != permission.receiptId ||
         (purpose == null &&
-          row.effectiveStatus == MessagingPermissionStatus.optedOut) ||
+            row.effectiveStatus == MessagingPermissionStatus.optedOut) ||
         (purpose != null &&
-          (row.purposes[purpose]?.receiptId !=
-            permission.purposes[purpose]?.receiptId ||
-            row.purposes[purpose]?.status !=
-                MessagingPermissionStatus.optedIn))) {
+            (row.purposes[purpose]?.receiptId !=
+                    permission.purposes[purpose]?.receiptId ||
+                row.purposes[purpose]?.status !=
+                    MessagingPermissionStatus.optedIn))) {
       return;
     }
     final generation = _generation;
-    final key = jsonEncode([uid, permission.key, purpose?.name,
-      purpose == null ? permission.receiptId :
-        permission.purposes[purpose]?.receiptId]);
+    final key = jsonEncode([
+      uid,
+      permission.key,
+      purpose?.name,
+      purpose == null
+          ? permission.receiptId
+          : permission.purposes[purpose]?.receiptId,
+    ]);
     final requestId = _requests.putIfAbsent(
       key,
       () => base64Url.encode(
@@ -124,8 +130,9 @@ class MessagingPermissionsController extends _$MessagingPermissionsController {
       MessagingPermissionsState(
         uid: uid,
         page: current.page,
-        pendingKey: purpose == null ? permission.key :
-          '${permission.key}:${purpose.name}',
+        pendingKey: purpose == null
+            ? permission.key
+            : '${permission.key}:${purpose.name}',
       ),
     );
     try {

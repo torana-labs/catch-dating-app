@@ -14,7 +14,8 @@ class PrivateEventUpdateJournal {
     required String userId,
     required String organizerId,
     required String eventId,
-  }) => 'private_event_basics_update_${Uri.encodeComponent(userId)}_'
+  }) =>
+      'private_event_basics_update_${Uri.encodeComponent(userId)}_'
       '${Uri.encodeComponent(organizerId)}_${Uri.encodeComponent(eventId)}';
 
   Future<PrivateEventBasicsUpdateRequest?> load({
@@ -24,11 +25,9 @@ class PrivateEventUpdateJournal {
   }) => withAppErrorContext<PrivateEventBasicsUpdateRequest?>(
     () async {
       final prefs = await SharedPreferences.getInstance();
-      final raw = prefs.getString(_key(
-        userId: userId,
-        organizerId: organizerId,
-        eventId: eventId,
-      ));
+      final raw = prefs.getString(
+        _key(userId: userId, organizerId: organizerId, eventId: eventId),
+      );
       if (raw == null) return null;
       final decoded = jsonDecode(raw);
       if (decoded is! Map) {

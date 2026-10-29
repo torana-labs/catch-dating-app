@@ -39,21 +39,30 @@ class ManagerEventSetupDefaults {
     }
     final data = Map<String, Object?>.from(response);
     const keys = {
-      'organizerId', 'city', 'timezone', 'organizerDefaultsRevision',
-      'basicsReviewedHash', 'preferencesRevision', 'preferences',
-      'preferencesHash', 'reviewedDefaultsHash',
+      'organizerId',
+      'city',
+      'timezone',
+      'organizerDefaultsRevision',
+      'basicsReviewedHash',
+      'preferencesRevision',
+      'preferences',
+      'preferencesHash',
+      'reviewedDefaultsHash',
     };
-    if (data.length != keys.length || data.keys.any((key) => !keys.contains(key))) {
+    if (data.length != keys.length ||
+        data.keys.any((key) => !keys.contains(key))) {
       throw const FormatException('Invalid manager defaults response');
     }
     final cityRaw = data['city'];
     if (cityRaw != null && cityRaw is! Map) {
       throw const FormatException('Invalid organizer city');
     }
-    final city = cityRaw == null ? null :
-        Map<String, Object?>.from(cityRaw as Map);
+    final city = cityRaw == null
+        ? null
+        : Map<String, Object?>.from(cityRaw as Map);
     if (city != null &&
-        (city.length != 2 || city['cityId'] is! String ||
+        (city.length != 2 ||
+            city['cityId'] is! String ||
             city['marketId'] is! String ||
             !_idPattern.hasMatch(city['cityId'] as String) ||
             !_idPattern.hasMatch(city['marketId'] as String))) {
@@ -67,17 +76,26 @@ class ManagerEventSetupDefaults {
     final preferenceRaw = data['preferences'];
     final preferenceHash = data['preferencesHash'];
     final reviewedHash = data['reviewedDefaultsHash'];
-    if (organizerId is! String || !_idPattern.hasMatch(organizerId) ||
+    if (organizerId is! String ||
+        !_idPattern.hasMatch(organizerId) ||
         (timezone != null &&
-            (timezone is! String || timezone.isEmpty || timezone.length > 100)) ||
+            (timezone is! String ||
+                timezone.isEmpty ||
+                timezone.length > 100)) ||
         (publicRevision != null &&
-            (publicRevision is! int || publicRevision < 0 ||
+            (publicRevision is! int ||
+                publicRevision < 0 ||
                 publicRevision > 1000000000)) ||
-        basicsHash is! String || !_hashPattern.hasMatch(basicsHash) ||
-        revision is! int || revision < 0 || revision > 1000000000 ||
+        basicsHash is! String ||
+        !_hashPattern.hasMatch(basicsHash) ||
+        revision is! int ||
+        revision < 0 ||
+        revision > 1000000000 ||
         preferenceRaw is! Map ||
-        preferenceHash is! String || !_hashPattern.hasMatch(preferenceHash) ||
-        reviewedHash is! String || !_hashPattern.hasMatch(reviewedHash)) {
+        preferenceHash is! String ||
+        !_hashPattern.hasMatch(preferenceHash) ||
+        reviewedHash is! String ||
+        !_hashPattern.hasMatch(reviewedHash)) {
       throw const FormatException('Invalid manager defaults response');
     }
     final preferences = ManagerEventSetupPreferences.fromSparseJson(
@@ -119,9 +137,15 @@ class ManagerEventSetupDefaultsUpdateRequest {
   final Map<String, Object?> changes;
 
   static const fieldNames = {
-    'timezone', 'usualDurationMinutes', 'preferredVenueId', 'offerValidityMinutes',
-    'collectionPreference', 'currency', 'offerMessageTemplate',
-    'paymentInstructions', 'reusablePaymentPage',
+    'timezone',
+    'usualDurationMinutes',
+    'preferredVenueId',
+    'offerValidityMinutes',
+    'collectionPreference',
+    'currency',
+    'offerMessageTemplate',
+    'paymentInstructions',
+    'reusablePaymentPage',
   };
 
   factory ManagerEventSetupDefaultsUpdateRequest.forChange({
@@ -171,9 +195,11 @@ class ManagerEventSetupDefaultsUpdateRequest {
   bool get isValid {
     if (!_idPattern.hasMatch(organizerId) ||
         !_requestPattern.hasMatch(requestId) ||
-        expectedRevision < 0 || expectedRevision > 1000000000 ||
+        expectedRevision < 0 ||
+        expectedRevision > 1000000000 ||
         !_hashPattern.hasMatch(reviewedDefaultsHash) ||
-        changes.isEmpty || changes.length > 9 ||
+        changes.isEmpty ||
+        changes.length > 9 ||
         changes.keys.any((key) => !fieldNames.contains(key))) {
       return false;
     }
@@ -186,7 +212,9 @@ class ManagerEventSetupDefaultsUpdateRequest {
       } else if (change['mode'] == 'set') {
         if (change.length != 2 || !change.containsKey('value')) return false;
         try {
-          ManagerEventSetupPreferences.fromSparseJson({entry.key: change['value']});
+          ManagerEventSetupPreferences.fromSparseJson({
+            entry.key: change['value'],
+          });
         } catch (_) {
           return false;
         }
@@ -225,12 +253,18 @@ class ManagerEventSetupDefaultsUpdateReceipt {
   final ManagerEventSetupDefaults current;
   final bool replayed;
 
-  factory ManagerEventSetupDefaultsUpdateReceipt.fromResponse(Object? response) {
-    if (response is! Map) throw const FormatException('Invalid defaults receipt');
+  factory ManagerEventSetupDefaultsUpdateReceipt.fromResponse(
+    Object? response,
+  ) {
+    if (response is! Map) {
+      throw const FormatException('Invalid defaults receipt');
+    }
     final data = Map<String, Object?>.from(response);
     final revision = data['appliedRevision'];
     final replayed = data['replayed'];
-    if (data.length != 3 || revision is! int || revision < 1 ||
+    if (data.length != 3 ||
+        revision is! int ||
+        revision < 1 ||
         replayed is! bool) {
       throw const FormatException('Invalid defaults receipt');
     }
@@ -239,7 +273,9 @@ class ManagerEventSetupDefaultsUpdateReceipt {
       throw const FormatException('Invalid defaults receipt revision');
     }
     return ManagerEventSetupDefaultsUpdateReceipt(
-      appliedRevision: revision, current: current, replayed: replayed,
+      appliedRevision: revision,
+      current: current,
+      replayed: replayed,
     );
   }
 }
@@ -258,7 +294,9 @@ class ManagerEventSetupDefaultsRepository {
         final response = await _functions
             .httpsCallable('getOrganizerEventSetupDefaults')
             .call<Object?>({'organizerId': organizerId});
-        final projection = ManagerEventSetupDefaults.fromResponse(response.data);
+        final projection = ManagerEventSetupDefaults.fromResponse(
+          response.data,
+        );
         if (projection.organizerId != organizerId) {
           throw const FormatException('Manager defaults identity changed');
         }
@@ -286,7 +324,9 @@ class ManagerEventSetupDefaultsRepository {
         );
         if (receipt.current.organizerId != request.organizerId ||
             receipt.appliedRevision <= request.expectedRevision) {
-          throw const FormatException('Manager defaults receipt changed identity');
+          throw const FormatException(
+            'Manager defaults receipt changed identity',
+          );
         }
         return receipt;
       },

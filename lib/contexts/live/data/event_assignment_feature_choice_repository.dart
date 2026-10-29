@@ -20,7 +20,9 @@ abstract interface class EventAssignmentFeatureChoiceStore {
 
 @riverpod
 EventAssignmentFeatureChoiceStore eventAssignmentFeatureChoiceStore(Ref ref) =>
-    EventAssignmentFeatureChoiceRepository(ref.watch(firebaseFunctionsProvider));
+    EventAssignmentFeatureChoiceRepository(
+      ref.watch(firebaseFunctionsProvider),
+    );
 
 /// Matching consent is independent of form sharing and messaging permission.
 class EventAssignmentFeatureChoiceRepository
@@ -68,12 +70,14 @@ class EventAssignmentFeatureChoiceRepository
             'requestId': requestId,
           });
       final body = result.data;
-      if (body is! Map || body['eventId'] != eventId ||
+      if (body is! Map ||
+          body['eventId'] != eventId ||
           body['featureId'] != choice.featureId ||
           body['status'] != (grant ? 'granted' : 'withdrawn') ||
           body['revision'] is! int ||
           (body['revision'] as int) <= choice.revision ||
-          body['receiptId'] is! String || body['replayed'] is! bool) {
+          body['receiptId'] is! String ||
+          body['replayed'] is! bool) {
         throw const FormatException('Invalid matching decision response.');
       }
     },

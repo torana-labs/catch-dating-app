@@ -30,11 +30,15 @@ final class EventAssignmentFeatureChoice {
     final status = raw['status'];
     final revision = raw['revision'];
     final canGrant = raw['canGrant'];
-    if (featureId is! String || featureId.isEmpty ||
-        responseId is! String || responseId.isEmpty ||
+    if (featureId is! String ||
+        featureId.isEmpty ||
+        responseId is! String ||
+        responseId.isEmpty ||
         (questionLabel != null && questionLabel is! String) ||
         (answerLabel != null && answerLabel is! String) ||
-        revision is! int || revision < 0 || canGrant is! bool) {
+        revision is! int ||
+        revision < 0 ||
+        canGrant is! bool) {
       throw const FormatException('Invalid matching choice.');
     }
     final parsedStatus = switch (status) {

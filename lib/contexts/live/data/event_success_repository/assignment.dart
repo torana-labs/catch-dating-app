@@ -20,9 +20,7 @@ mixin _EventSuccessAssignmentRepository on _EventSuccessRepositoryCore {
               sourceFormIds: sourceFormIds.isEmpty ? null : sourceFormIds,
             ).toJson(),
           );
-      return EventSuccessAssignmentFeaturePreview.fromCallableData(
-        result.data,
-      );
+      return EventSuccessAssignmentFeaturePreview.fromCallableData(result.data);
     },
     context: const BackendErrorContext(
       service: BackendService.functions,

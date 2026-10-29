@@ -784,6 +784,3 @@ Future<ProgramTripList> programTripList(
   retainProgramProjection(ref, result.accessExpiresAt);
   return result;
 }
-
-
-

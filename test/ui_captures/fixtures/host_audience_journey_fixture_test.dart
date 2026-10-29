@@ -27,38 +27,34 @@ void main() {
     'host_person_notes',
     'host_person_history',
   ]) {
-    testWidgets(
-      'captures actual Person catalog $id',
-      (tester) async {
-        final entry = findScreenCapture(id);
-        final artifacts = await captureCatchWidget(
-          tester,
-          id: entry.id,
-          builder: entry.builder,
-          drive: entry.drive,
-          cleanup: entry.cleanup,
-          device: entry.device,
-          textScale: entry.textScale,
-          disableAnimations: entry.disableAnimations,
-          includeOverlays: entry.includeOverlays,
-          precache: entry.precache,
-          providerOverrides: entry.providerOverrides,
-          outputDirectory: Directory(
-            'artifacts/ui-captures/audience-person-review',
-          ),
-        );
-        expect(tester.takeException(), isNull);
-        expect(artifacts.map((artifact) => artifact.theme.name), [
-          'light',
-          'dark',
-        ]);
-        for (final artifact in artifacts) {
-          expect(artifact.file.existsSync(), isTrue);
-          expect(artifact.file.lengthSync(), greaterThan(0));
-        }
-      },
-      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
-    );
+    testWidgets('captures actual Person catalog $id', (tester) async {
+      final entry = findScreenCapture(id);
+      final artifacts = await captureCatchWidget(
+        tester,
+        id: entry.id,
+        builder: entry.builder,
+        drive: entry.drive,
+        cleanup: entry.cleanup,
+        device: entry.device,
+        textScale: entry.textScale,
+        disableAnimations: entry.disableAnimations,
+        includeOverlays: entry.includeOverlays,
+        precache: entry.precache,
+        providerOverrides: entry.providerOverrides,
+        outputDirectory: Directory(
+          'artifacts/ui-captures/audience-person-review',
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      expect(artifacts.map((artifact) => artifact.theme.name), [
+        'light',
+        'dark',
+      ]);
+      for (final artifact in artifacts) {
+        expect(artifact.file.existsSync(), isTrue);
+        expect(artifact.file.lengthSync(), greaterThan(0));
+      }
+    }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
   }
 
   // These use the catalog's overrides, not a second test-only projection. The

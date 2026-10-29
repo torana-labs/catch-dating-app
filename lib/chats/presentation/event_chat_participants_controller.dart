@@ -88,7 +88,8 @@ class EventChatParticipantsController
         person.uid == current.uid ||
         person.isHost ||
         !current.page.items.any(
-          (row) => row.uid == person.uid &&
+          (row) =>
+              row.uid == person.uid &&
               row.membershipRevision == person.membershipRevision &&
               row.membershipStatus == person.membershipStatus,
         )) {
@@ -114,14 +115,16 @@ class EventChatParticipantsController
     _timer?.cancel();
     state = const AsyncLoading();
     try {
-      await ref.read(eventChatRepositoryProvider).manageMember(
-        uid!,
-        current.access!,
-        person.uid,
-        action,
-        person.membershipRevision,
-        requestId,
-      );
+      await ref
+          .read(eventChatRepositoryProvider)
+          .manageMember(
+            uid!,
+            current.access!,
+            person.uid,
+            action,
+            person.membershipRevision,
+            requestId,
+          );
       _requests.remove(key);
       await refresh();
       return true;

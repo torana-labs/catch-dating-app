@@ -50,14 +50,12 @@ void main() {
       await cache.save('acct_1', 'arrivals:p1:t3', {'rows': 'terminal3'});
       await cache.save('acct_1', 'arrivals:p1:t4', {'rows': 'terminal4'});
 
-      expect(
-        (await cache.load('acct_1', 'arrivals:p1:t3'))!.data,
-        {'rows': 'terminal3'},
-      );
-      expect(
-        (await cache.load('acct_1', 'arrivals:p1:t4'))!.data,
-        {'rows': 'terminal4'},
-      );
+      expect((await cache.load('acct_1', 'arrivals:p1:t3'))!.data, {
+        'rows': 'terminal3',
+      });
+      expect((await cache.load('acct_1', 'arrivals:p1:t4'))!.data, {
+        'rows': 'terminal4',
+      });
       expect(await cache.load('acct_1', 'arrivals:p2:t3'), isNull);
     });
 
@@ -84,10 +82,7 @@ void main() {
       await cache.save('acct_1', 'plan:p1', {'version': 1});
       await cache.save('acct_1', 'plan:p1', {'version': 2});
 
-      expect(
-        (await cache.load('acct_1', 'plan:p1'))!.data,
-        {'version': 2},
-      );
+      expect((await cache.load('acct_1', 'plan:p1'))!.data, {'version': 2});
     });
 
     test('null payload is never persisted', () async {
@@ -102,10 +97,7 @@ void main() {
 
   group('programSnapshotScope', () {
     test('builds station-scoped and program-scoped keys', () {
-      expect(
-        programSnapshotScope('arrivals', 'p1', 't3'),
-        'arrivals:p1:t3',
-      );
+      expect(programSnapshotScope('arrivals', 'p1', 't3'), 'arrivals:p1:t3');
       expect(programSnapshotScope('plan', 'p1'), 'plan:p1');
       expect(
         programSnapshotScope('arrivals', 'p1', 't3') ==

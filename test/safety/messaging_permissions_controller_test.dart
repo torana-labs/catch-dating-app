@@ -24,9 +24,9 @@ class _Repository extends Fake implements MessagingPermissionRepository {
   @override
   Future<MessagingPermission> withdraw(
     MessagingPermission permission,
-    String requestId,
-    {MessagingPermissionPurpose? purpose}
-  ) {
+    String requestId, {
+    MessagingPermissionPurpose? purpose,
+  }) {
     withdrawnPurposes.add(purpose);
     final call = Completer<MessagingPermission>();
     withdrawals.add((permission, requestId, call));
@@ -197,8 +197,10 @@ void main() {
       permission,
       purpose: MessagingPermissionPurpose.eventOperations,
     );
-    expect(repository.withdrawnPurposes.single,
-        MessagingPermissionPurpose.eventOperations);
+    expect(
+      repository.withdrawnPurposes.single,
+      MessagingPermissionPurpose.eventOperations,
+    );
     repository.withdrawals.single.$3.complete(
       permission.afterWithdrawal(
         MessagingPermissionPurpose.eventOperations,
@@ -212,59 +214,75 @@ void main() {
         .page
         .organizers
         .single;
-    expect(saved.purposes[MessagingPermissionPurpose.eventOperations]?.status,
-        MessagingPermissionStatus.optedOut);
-    expect(saved.purposes[MessagingPermissionPurpose.marketing]?.status,
-        MessagingPermissionStatus.optedIn);
+    expect(
+      saved.purposes[MessagingPermissionPurpose.eventOperations]?.status,
+      MessagingPermissionStatus.optedOut,
+    );
+    expect(
+      saved.purposes[MessagingPermissionPurpose.marketing]?.status,
+      MessagingPermissionStatus.optedIn,
+    );
   });
 
-  test('Stop all reaches the repository after fresh purpose re-opt-in', () async {
-    final repository = _Repository();
-    final container = ProviderContainer(
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value('one')),
-        messagingPermissionRepositoryProvider.overrideWithValue(repository),
-      ],
-    );
-    addTearDown(container.dispose);
-    container.listen(messagingPermissionsControllerProvider, (_, _) {});
-    await flushTestEventQueue();
-    const permission = MessagingPermission(
-      organizerId: 'rsvp',
-      organizerName: 'RSVP',
-      status: MessagingPermissionStatus.optedOut,
-      receiptId: 'fresh-ops',
-      purposes: {
-        MessagingPermissionPurpose.eventOperations: MessagingPurposeDecision(
-          status: MessagingPermissionStatus.optedIn,
-          receiptId: 'fresh-ops',
+  test(
+    'Stop all reaches the repository after fresh purpose re-opt-in',
+    () async {
+      final repository = _Repository();
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('one')),
+          messagingPermissionRepositoryProvider.overrideWithValue(repository),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.listen(messagingPermissionsControllerProvider, (_, _) {});
+      await flushTestEventQueue();
+      const permission = MessagingPermission(
+        organizerId: 'rsvp',
+        organizerName: 'RSVP',
+        status: MessagingPermissionStatus.optedOut,
+        receiptId: 'fresh-ops',
+        purposes: {
+          MessagingPermissionPurpose.eventOperations: MessagingPurposeDecision(
+            status: MessagingPermissionStatus.optedIn,
+            receiptId: 'fresh-ops',
+          ),
+          MessagingPermissionPurpose.marketing: MessagingPurposeDecision(
+            status: MessagingPermissionStatus.optedOut,
+            receiptId: 'old-stop',
+          ),
+        },
+      );
+      repository.lists.last.complete(
+        MessagingPermissionPage(
+          catchPermission: _permission('catch'),
+          organizers: const [permission],
+          nextCursor: null,
         ),
-        MessagingPermissionPurpose.marketing: MessagingPurposeDecision(
-          status: MessagingPermissionStatus.optedOut,
-          receiptId: 'old-stop',
+      );
+      await container.read(messagingPermissionsControllerProvider.future);
+      final action = container
+          .read(messagingPermissionsControllerProvider.notifier)
+          .withdraw('one', permission);
+      expect(repository.withdrawals, hasLength(1));
+      expect(repository.withdrawnPurposes.single, isNull);
+      repository.withdrawals.single.$3.complete(
+        permission.afterWithdrawal(null, 'stop-all'),
+      );
+      await action;
+      final saved = container
+          .read(messagingPermissionsControllerProvider)
+          .requireValue
+          .page
+          .organizers
+          .single;
+      expect(saved.effectiveStatus, MessagingPermissionStatus.optedOut);
+      expect(
+        saved.purposes.values.every(
+          (row) => row.status == MessagingPermissionStatus.optedOut,
         ),
-      },
-    );
-    repository.lists.last.complete(MessagingPermissionPage(
-      catchPermission: _permission('catch'),
-      organizers: const [permission],
-      nextCursor: null,
-    ));
-    await container.read(messagingPermissionsControllerProvider.future);
-    final action = container
-        .read(messagingPermissionsControllerProvider.notifier)
-        .withdraw('one', permission);
-    expect(repository.withdrawals, hasLength(1));
-    expect(repository.withdrawnPurposes.single, isNull);
-    repository.withdrawals.single.$3.complete(
-      permission.afterWithdrawal(null, 'stop-all'),
-    );
-    await action;
-    final saved = container
-        .read(messagingPermissionsControllerProvider)
-        .requireValue.page.organizers.single;
-    expect(saved.effectiveStatus, MessagingPermissionStatus.optedOut);
-    expect(saved.purposes.values.every((row) =>
-        row.status == MessagingPermissionStatus.optedOut), isTrue);
-  });
+        isTrue,
+      );
+    },
+  );
 }

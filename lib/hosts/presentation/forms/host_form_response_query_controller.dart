@@ -249,7 +249,9 @@ class HostResponseQueryController extends ChangeNotifier {
     final view = _view;
     final request = view.request;
     final generation = _generation;
-    if (request == null || ids.isEmpty || ids.length > 25 ||
+    if (request == null ||
+        ids.isEmpty ||
+        ids.length > 25 ||
         view.status != HostResponseQueryStatus.ready ||
         view.resultHash != resultHash ||
         !view.selectedIds.containsAll(ids)) {
@@ -257,7 +259,8 @@ class HostResponseQueryController extends ChangeNotifier {
     }
     try {
       final page = await _gateway.query(request.withCursor(null));
-      if (!_isCurrent(generation) || _view.resultHash != resultHash ||
+      if (!_isCurrent(generation) ||
+          _view.resultHash != resultHash ||
           !_view.selectedIds.containsAll(ids) ||
           page.queryHash != view.queryHash ||
           page.resultHash != resultHash ||

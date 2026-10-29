@@ -75,7 +75,8 @@ class HostResponseExportCommand {
   factory HostResponseExportCommand.fromJson(Map<String, Object?> map) {
     final rawQuery = map['responseQuery'];
     final rawStatuses = map['statuses'];
-    if (rawQuery is! Map || rawStatuses is! List ||
+    if (rawQuery is! Map ||
+        rawStatuses is! List ||
         rawStatuses.any((value) => value is! String)) {
       throw const FormatException('Saved response export is invalid.');
     }
@@ -108,11 +109,16 @@ class HostResponseExportCommand {
 
   String get scope => '$organizerId|$formId';
 
-  bool matches(HostResponseQueryRequest request, String queryHash,
-      String resultHash) =>
-      organizerId == request.organizerId && formId == request.formId &&
+  bool matches(
+    HostResponseQueryRequest request,
+    String queryHash,
+    String resultHash,
+  ) =>
+      organizerId == request.organizerId &&
+      formId == request.formId &&
       versionId == request.versionId &&
-      expectedQueryHash == queryHash && expectedResultHash == resultHash;
+      expectedQueryHash == queryHash &&
+      expectedResultHash == resultHash;
 
   Map<String, Object?> toJson() => {
     'clientOperationId': requestId,
@@ -138,9 +144,11 @@ Object? _freezeExportValue(Object? value) {
     if (value.keys.any((key) => key is! String)) {
       throw const FormatException('Response export query keys are invalid.');
     }
-    return Map<String, Object?>.unmodifiable(value.map<String, Object?>(
-      (key, item) => MapEntry(key as String, _freezeExportValue(item)),
-    ));
+    return Map<String, Object?>.unmodifiable(
+      value.map<String, Object?>(
+        (key, item) => MapEntry(key as String, _freezeExportValue(item)),
+      ),
+    );
   }
   if (value is List) {
     return List<Object?>.unmodifiable(value.map(_freezeExportValue));
@@ -153,7 +161,10 @@ Object? _freezeExportValue(Object? value) {
 
 /// Data-layer adapter owns durable request identity and callable replay.
 abstract interface class HostResponseExportGateway {
-  Future<HostResponseExportCommand?> pending({required String accountId,
-    required String organizerId, required String formId});
+  Future<HostResponseExportCommand?> pending({
+    required String accountId,
+    required String organizerId,
+    required String formId,
+  });
   Future<HostFormExportReceipt> execute(HostResponseExportCommand command);
 }

@@ -251,45 +251,82 @@ void main() {
     expect(controller.view.canLoadMore, isFalse);
   });
 
-  test('offer review rechecks selected identities after event choice', () async {
-    final gateway = _QueueGateway();
-    final controller = HostResponseQueryController(gateway);
-    addTearDown(controller.dispose);
-    const request = HostResponseQueryRequest(
-      organizerId: 'org', formId: 'form', versionId: 'form_v3');
-    final first = controller.apply(request);
-    gateway.completeNext(_queryPage(
-      ids: ['kabir', 'maya'], visible: ['kabir'], hash: 'result-one'));
-    await first;
-    controller.toggleSelection('kabir');
+  test(
+    'offer review rechecks selected identities after event choice',
+    () async {
+      final gateway = _QueueGateway();
+      final controller = HostResponseQueryController(gateway);
+      addTearDown(controller.dispose);
+      const request = HostResponseQueryRequest(
+        organizerId: 'org',
+        formId: 'form',
+        versionId: 'form_v3',
+      );
+      final first = controller.apply(request);
+      gateway.completeNext(
+        _queryPage(
+          ids: ['kabir', 'maya'],
+          visible: ['kabir'],
+          hash: 'result-one',
+        ),
+      );
+      await first;
+      controller.toggleSelection('kabir');
 
-    final stillCurrent = controller.revalidateSelection(
-      ids: const ['kabir'], resultHash: 'result-one');
-    gateway.completeNext(_queryPage(
-      ids: ['kabir', 'maya'], visible: ['kabir'], hash: 'result-one'));
-    expect(await stillCurrent, isTrue);
+      final stillCurrent = controller.revalidateSelection(
+        ids: const ['kabir'],
+        resultHash: 'result-one',
+      );
+      gateway.completeNext(
+        _queryPage(
+          ids: ['kabir', 'maya'],
+          visible: ['kabir'],
+          hash: 'result-one',
+        ),
+      );
+      expect(await stillCurrent, isTrue);
 
-    final changed = controller.revalidateSelection(
-      ids: const ['kabir'], resultHash: 'result-one');
-    gateway.completeNext(_queryPage(
-      ids: ['maya'], visible: ['maya'], hash: 'result-two'));
-    expect(await changed, isFalse);
-    expect(controller.selectionIntent?.ids, ['kabir'],
-      reason: 'The caller must show refresh, not silently change review IDs.');
+      final changed = controller.revalidateSelection(
+        ids: const ['kabir'],
+        resultHash: 'result-one',
+      );
+      gateway.completeNext(
+        _queryPage(ids: ['maya'], visible: ['maya'], hash: 'result-two'),
+      );
+      expect(await changed, isFalse);
+      expect(
+        controller.selectionIntent?.ids,
+        ['kabir'],
+        reason: 'The caller must show refresh, not silently change review IDs.',
+      );
 
-    final interrupted = controller.revalidateSelection(
-      ids: const ['kabir'], resultHash: 'result-one');
-    final newFilter = controller.apply(
-      const HostResponseQueryRequest(
-        organizerId: 'org', formId: 'form', versionId: 'form_v3',
-        sort: HostResponseSort(direction: 'asc')));
-    gateway.completeNext(_queryPage(
-      ids: ['maya'], visible: ['maya'], hash: 'result-three'));
-    await newFilter;
-    gateway.completeAt(3, _queryPage(
-      ids: ['kabir', 'maya'], visible: ['kabir'], hash: 'result-one'));
-    expect(await interrupted, isFalse);
-  });
+      final interrupted = controller.revalidateSelection(
+        ids: const ['kabir'],
+        resultHash: 'result-one',
+      );
+      final newFilter = controller.apply(
+        const HostResponseQueryRequest(
+          organizerId: 'org',
+          formId: 'form',
+          versionId: 'form_v3',
+          sort: HostResponseSort(direction: 'asc'),
+        ),
+      );
+      gateway.completeNext(
+        _queryPage(ids: ['maya'], visible: ['maya'], hash: 'result-three'),
+      );
+      await newFilter;
+      gateway.completeAt(
+        3,
+        _queryPage(
+          ids: ['kabir', 'maya'],
+          visible: ['kabir'],
+          hash: 'result-one',
+        ),
+      );
+      expect(await interrupted, isFalse);
+    },
+  );
 
   test('an older request cannot replace a newer filter result', () async {
     final gateway = _QueueGateway();
@@ -322,40 +359,46 @@ void main() {
     expect(controller.view.request?.sort.direction, 'asc');
   });
 
-  test('typed repository stale failure clears selection and asks refresh',
-      () async {
-    final gateway = _QueueGateway();
-    final controller = HostResponseQueryController(gateway);
-    addTearDown(controller.dispose);
-    const request = HostResponseQueryRequest(
-      organizerId: 'org',
-      formId: 'form',
-      versionId: 'form_v3',
-    );
-    final first = controller.apply(request);
-    gateway.completeNext(_queryPage(
-      ids: ['kabir', 'maya'],
-      visible: ['kabir'],
-      hash: 'before',
-      nextCursor: 'page-two',
-    ));
-    await first;
-    controller.toggleSelection('kabir');
+  test(
+    'typed repository stale failure clears selection and asks refresh',
+    () async {
+      final gateway = _QueueGateway();
+      final controller = HostResponseQueryController(gateway);
+      addTearDown(controller.dispose);
+      const request = HostResponseQueryRequest(
+        organizerId: 'org',
+        formId: 'form',
+        versionId: 'form_v3',
+      );
+      final first = controller.apply(request);
+      gateway.completeNext(
+        _queryPage(
+          ids: ['kabir', 'maya'],
+          visible: ['kabir'],
+          hash: 'before',
+          nextCursor: 'page-two',
+        ),
+      );
+      await first;
+      controller.toggleSelection('kabir');
 
-    final more = controller.loadMore();
-    gateway.failNext(const BackendOperationException(
-      code: 'response-query-stale',
-      message: 'Refresh to continue.',
-      context: BackendErrorContext(
-        service: BackendService.functions,
-        action: 'query form responses',
-      ),
-    ));
-    await more;
-    expect(controller.view.status, HostResponseQueryStatus.stale);
-    expect(controller.view.selectedIds, isEmpty);
-    expect(controller.selectionIntent, isNull);
-  });
+      final more = controller.loadMore();
+      gateway.failNext(
+        const BackendOperationException(
+          code: 'response-query-stale',
+          message: 'Refresh to continue.',
+          context: BackendErrorContext(
+            service: BackendService.functions,
+            action: 'query form responses',
+          ),
+        ),
+      );
+      await more;
+      expect(controller.view.status, HostResponseQueryStatus.stale);
+      expect(controller.view.selectedIds, isEmpty);
+      expect(controller.selectionIntent, isNull);
+    },
+  );
 
   test(
     'scan budget and permission loss are separate from zero matches',

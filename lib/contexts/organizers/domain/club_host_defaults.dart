@@ -17,13 +17,13 @@ abstract class ClubHostDefaults with _$ClubHostDefaults {
     @Default(EventSuccessDefaults()) EventSuccessDefaults eventSuccess,
     @Default(<String, EventSuccessDefaults>{})
     Map<String, EventSuccessDefaults> eventSuccessByActivityKind,
+
     /// Suggested IANA timezone for future events; never rewrites saved events.
     /// Read only until the versioned updateOrganizer contract accepts it.
-    @JsonKey(includeToJson: false)
-    String? timezone,
+    @JsonKey(includeToJson: false) String? timezone,
+
     /// Server-managed revision used when an event inherits defaults.
-    @JsonKey(includeToJson: false)
-    int? revision,
+    @JsonKey(includeToJson: false) int? revision,
   }) = _ClubHostDefaults;
 
   factory ClubHostDefaults.fromJson(Map<String, dynamic> json) =>

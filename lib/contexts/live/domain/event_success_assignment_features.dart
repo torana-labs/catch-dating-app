@@ -29,12 +29,14 @@ final class EventSuccessAssignmentFeatureRule {
       weight: _number(map, 'weight'),
       transformVersion: _integer(map, 'transformVersion'),
       optionIds: switch (map['optionIds']) {
-        final List<Object?> values => List.unmodifiable(values.map((value) {
-          if (value is! String || value.isEmpty) {
-            throw const FormatException('Invalid matching option ID.');
-          }
-          return value;
-        })),
+        final List<Object?> values => List.unmodifiable(
+          values.map((value) {
+            if (value is! String || value.isEmpty) {
+              throw const FormatException('Invalid matching option ID.');
+            }
+            return value;
+          }),
+        ),
         null => null,
         _ => throw const FormatException('Invalid matching options.'),
       },
@@ -79,21 +81,36 @@ final class EventSuccessAssignmentFeatureRule {
     double? minimum,
     double? maximum,
   }) {
-    final published = source.questions.where((item) =>
-      item.questionId == question.questionId).firstOrNull;
+    final published = source.questions
+        .where((item) => item.questionId == question.questionId)
+        .firstOrNull;
     if (published == null) {
-      throw ArgumentError.value(question.questionId, 'question', 'Not in source');
+      throw ArgumentError.value(
+        question.questionId,
+        'question',
+        'Not in source',
+      );
     }
     if (!{'singleChoice', 'multiChoice', 'number'}.contains(published.kind)) {
-      throw ArgumentError.value(published.kind, 'question',
-          'Unsupported published answer type');
+      throw ArgumentError.value(
+        published.kind,
+        'question',
+        'Unsupported published answer type',
+      );
     }
-    if (!{'preferSimilar', 'preferDifferent', 'balanceAcrossGroups'}
-        .contains(mode) || !weight.isFinite || weight < 0 || weight > 100) {
+    if (!{
+          'preferSimilar',
+          'preferDifferent',
+          'balanceAcrossGroups',
+        }.contains(mode) ||
+        !weight.isFinite ||
+        weight < 0 ||
+        weight > 100) {
       throw ArgumentError.value(mode, 'mode', 'Invalid matching preference');
     }
     if (published.kind == 'singleChoice' &&
-        kind != 'category' && kind != 'ordinal') {
+        kind != 'category' &&
+        kind != 'ordinal') {
       throw ArgumentError.value(kind, 'kind', 'Invalid choice transform');
     }
     if (published.kind == 'multiChoice' && kind != 'set') {
@@ -104,20 +121,25 @@ final class EventSuccessAssignmentFeatureRule {
     }
     final optionIds = published.options.map((item) => item.optionId).toList();
     if (kind != 'number' &&
-        (optionIds.isEmpty || optionIds.length > 40 ||
-          optionIds.toSet().length != optionIds.length)) {
+        (optionIds.isEmpty ||
+            optionIds.length > 40 ||
+            optionIds.toSet().length != optionIds.length)) {
       throw ArgumentError.value(optionIds, 'options', 'Invalid source options');
     }
     final order = ordinalOrder ?? optionIds;
     if (kind == 'ordinal' &&
-        (order.length < 2 || order.toSet().length != order.length ||
-          !order.toSet().containsAll(optionIds) ||
-          !optionIds.toSet().containsAll(order))) {
+        (order.length < 2 ||
+            order.toSet().length != order.length ||
+            !order.toSet().containsAll(optionIds) ||
+            !optionIds.toSet().containsAll(order))) {
       throw ArgumentError.value(order, 'ordinalOrder', 'Incomplete ordering');
     }
     if (kind == 'number' &&
-        (minimum == null || maximum == null ||
-          !minimum.isFinite || !maximum.isFinite || minimum >= maximum)) {
+        (minimum == null ||
+            maximum == null ||
+            !minimum.isFinite ||
+            !maximum.isFinite ||
+            minimum >= maximum)) {
       throw ArgumentError.value(minimum, 'minimum', 'Invalid numeric range');
     }
     final digest = sha256Digest(
@@ -288,9 +310,10 @@ final class EventSuccessAssignmentFeaturePreview {
       sources: _list(map, 'sources')
           .map(EventSuccessAssignmentFeatureSource.fromJson)
           .toList(growable: false),
-      savedRules: _list(map, 'savedRules')
-          .map(EventSuccessAssignmentFeatureRule.fromJson)
-          .toList(growable: false),
+      savedRules: _list(
+        map,
+        'savedRules',
+      ).map(EventSuccessAssignmentFeatureRule.fromJson).toList(growable: false),
       coverage: _list(map, 'rows')
           .map(EventSuccessAssignmentFeatureCoverage.fromJson)
           .toList(growable: false),
@@ -299,6 +322,7 @@ final class EventSuccessAssignmentFeaturePreview {
 
   final String eventId;
   final int revision;
+
   /// Signed-up or attended current roster; not the final safety-filtered pool.
   final int rosterCount;
   final List<EventSuccessAssignmentFeatureSource> sources;

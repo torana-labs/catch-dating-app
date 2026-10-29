@@ -28,11 +28,13 @@ void main() {
   });
 
   test('structured stale detail becomes typed app failure', () async {
-    final functions = _Functions((_) => throw FirebaseFunctionsException(
-      code: 'aborted',
-      message: 'opaque server message',
-      details: const {'reason': 'response-query-stale', 'action': 'refresh'},
-    ));
+    final functions = _Functions(
+      (_) => throw FirebaseFunctionsException(
+        code: 'aborted',
+        message: 'opaque server message',
+        details: const {'reason': 'response-query-stale', 'action': 'refresh'},
+      ),
+    );
     final gateway = HostResponseQueryRepository(functions);
     await expectLater(
       gateway.query(request),
@@ -47,11 +49,13 @@ void main() {
   });
 
   test('unrelated aborted error does not become stale', () async {
-    final functions = _Functions((_) => throw FirebaseFunctionsException(
-      code: 'aborted',
-      message: 'another operation failed',
-      details: const {'reason': 'different'},
-    ));
+    final functions = _Functions(
+      (_) => throw FirebaseFunctionsException(
+        code: 'aborted',
+        message: 'another operation failed',
+        details: const {'reason': 'different'},
+      ),
+    );
     await expectLater(
       HostResponseQueryRepository(functions).query(request),
       throwsA(
@@ -60,29 +64,38 @@ void main() {
     );
   });
 
-  test('missing endpoint and malformed page remain normalized failures', () async {
-    final missing = _Functions((_) => throw FirebaseFunctionsException(
-      code: 'not-found',
-      message: 'Function not found',
-    ));
-    await expectLater(
-      HostResponseQueryRepository(missing).query(request),
-      throwsA(isA<AppException>().having(
-        (error) => error.code,
-        'code',
-        'callable-unavailable',
-      )),
-    );
-    final malformed = _Functions((_) => const {'items': <Object?>[]});
-    await expectLater(
-      HostResponseQueryRepository(malformed).query(request),
-      throwsA(isA<AppException>().having(
-        (error) => error.code,
-        'code',
-        'unexpected',
-      )),
-    );
-  });
+  test(
+    'missing endpoint and malformed page remain normalized failures',
+    () async {
+      final missing = _Functions(
+        (_) => throw FirebaseFunctionsException(
+          code: 'not-found',
+          message: 'Function not found',
+        ),
+      );
+      await expectLater(
+        HostResponseQueryRepository(missing).query(request),
+        throwsA(
+          isA<AppException>().having(
+            (error) => error.code,
+            'code',
+            'callable-unavailable',
+          ),
+        ),
+      );
+      final malformed = _Functions((_) => const {'items': <Object?>[]});
+      await expectLater(
+        HostResponseQueryRepository(malformed).query(request),
+        throwsA(
+          isA<AppException>().having(
+            (error) => error.code,
+            'code',
+            'unexpected',
+          ),
+        ),
+      );
+    },
+  );
 }
 
 const _page = {

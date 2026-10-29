@@ -22,7 +22,9 @@ class EventOfferPreferencesJournal {
       final raw = prefs.getString(_key(userId, organizerId, eventId));
       if (raw == null) return null;
       final decoded = jsonDecode(raw);
-      if (decoded is! Map) throw const FormatException('Invalid pending offer settings');
+      if (decoded is! Map) {
+        throw const FormatException('Invalid pending offer settings');
+      }
       final request = EventOfferPreferencesUpdateRequest.fromJson(
         Map<String, dynamic>.from(decoded),
       );

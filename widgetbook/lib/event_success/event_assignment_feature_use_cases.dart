@@ -46,20 +46,24 @@ class _PreviewState extends State<_Preview> {
     ],
     child: Scaffold(
       body: widget.bodyOnly
-          ? Consumer(builder: (context, ref, _) {
-              final session = ref.watch(authenticatedSessionProvider)
-                  .asData?.value;
-              if (session == null) return const CatchLoadingIndicator();
-              return SingleChildScrollView(
-                child: CatchPageBody(
-                  child: EventAssignmentFeatureChoicesPageBody(
-                    key: ValueKey(session),
-                    eventId: _eventId,
-                    session: session,
+          ? Consumer(
+              builder: (context, ref, _) {
+                final session = ref
+                    .watch(authenticatedSessionProvider)
+                    .asData
+                    ?.value;
+                if (session == null) return const CatchLoadingIndicator();
+                return SingleChildScrollView(
+                  child: CatchPageBody(
+                    child: EventAssignmentFeatureChoicesPageBody(
+                      key: ValueKey(session),
+                      eventId: _eventId,
+                      session: session,
+                    ),
                   ),
-                ),
-              );
-            })
+                );
+              },
+            )
           : const Align(
               alignment: Alignment.bottomCenter,
               child: EventAssignmentFeatureSheet(eventId: _eventId),

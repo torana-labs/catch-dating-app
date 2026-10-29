@@ -186,7 +186,9 @@ void main() {
         'optedIn',
       );
       expect(
-        detail.whatsappPermission.purposes['eventOperations']
+        detail
+            .whatsappPermission
+            .purposes['eventOperations']
             ?.deliveryAvailable,
         isFalse,
       );
@@ -204,10 +206,7 @@ void main() {
       expect(detail.sends.last.kind, HostCustomerSendKind.announcement);
       expect(detail.sends.last.eventId, 'event-1');
       expect(detail.timeline.length, 2);
-      expect(
-        detail.timeline.first,
-        isA<HostCustomerSendTimelineEntry>(),
-      );
+      expect(detail.timeline.first, isA<HostCustomerSendTimelineEntry>());
       final outreach = detail.timeline.last;
       expect(outreach, isA<HostCustomerOutreachTimelineEntry>());
       final logged = outreach as HostCustomerOutreachTimelineEntry;

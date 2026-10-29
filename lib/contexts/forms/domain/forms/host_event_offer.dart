@@ -112,24 +112,26 @@ class HostOfferBatchDraft {
         organizerId: _offerString(map, 'organizerId'),
         eventId: _offerString(map, 'eventId'),
         mode: _offerString(map, 'mode'),
-        rows: List.unmodifiable((map['rows']! as List).map((value) {
-          final row = _offerMap(value, 'offer row');
-          return HostOfferRow(
-            organizerId: _offerString(row, 'organizerId'),
-            eventId: _offerString(row, 'eventId'),
-            contactId: _offerString(row, 'contactId'),
-            sourceKind: HostOfferSourceKind.values.byName(
-              _offerString(row, 'sourceKind'),
-            ),
-            sourceId: _offerString(row, 'applicationId'),
-            expiresAt: DateTime.fromMillisecondsSinceEpoch(
-              _offerInt(row, 'expiresAtMillis'),
-            ),
-            organizerPaymentLink: row['organizerPaymentLink'] is String
-                ? Uri.parse(row['organizerPaymentLink']! as String)
-                : null,
-          );
-        })),
+        rows: List.unmodifiable(
+          (map['rows']! as List).map((value) {
+            final row = _offerMap(value, 'offer row');
+            return HostOfferRow(
+              organizerId: _offerString(row, 'organizerId'),
+              eventId: _offerString(row, 'eventId'),
+              contactId: _offerString(row, 'contactId'),
+              sourceKind: HostOfferSourceKind.values.byName(
+                _offerString(row, 'sourceKind'),
+              ),
+              sourceId: _offerString(row, 'applicationId'),
+              expiresAt: DateTime.fromMillisecondsSinceEpoch(
+                _offerInt(row, 'expiresAtMillis'),
+              ),
+              organizerPaymentLink: row['organizerPaymentLink'] is String
+                  ? Uri.parse(row['organizerPaymentLink']! as String)
+                  : null,
+            );
+          }),
+        ),
       );
 }
 
@@ -421,8 +423,8 @@ class HostOfferHandoff {
       throw const FormatException('Offer handoff kind is invalid.');
     }
     final blockers = map['blockers'];
-    if (kind == 'blocked' && (blockers is! List ||
-        blockers.any((entry) => entry is! String))) {
+    if (kind == 'blocked' &&
+        (blockers is! List || blockers.any((entry) => entry is! String))) {
       throw const FormatException('Offer handoff blockers are invalid.');
     }
     return HostOfferHandoff(
@@ -474,8 +476,11 @@ abstract interface class HostEventOfferGateway {
 
 @immutable
 class HostOfferPendingCommit {
-  const HostOfferPendingCommit({required this.draft,
-    required this.preview, required this.requestId});
+  const HostOfferPendingCommit({
+    required this.draft,
+    required this.preview,
+    required this.requestId,
+  });
   final HostOfferBatchDraft draft;
   final HostOfferPreview preview;
   final String requestId;

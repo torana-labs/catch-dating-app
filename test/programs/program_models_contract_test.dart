@@ -128,7 +128,7 @@ void main() {
             'grantExpiresAtMillis': null,
             'capabilities': [],
             'pickupPoints': [],
-    'functions': [],
+            'functions': [],
             'hotels': [],
             'vehicleClasses': [],
           });
