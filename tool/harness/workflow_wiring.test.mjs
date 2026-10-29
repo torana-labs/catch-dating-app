@@ -1439,7 +1439,8 @@ test("only pull requests narrow the strict emulator list", () => {
   const source = workflow("firestore-rules-ci.yml");
   const select = namedStep(source, "Select the emulator tests this pull request can affect");
   assert.match(select, /if: \$\{\{ inputs\.mode == 'pr' && inputs\.base_sha != '' \}\}/u);
-  assert.match(select, /node tool\/impact\/emulator_test_selection\.mjs --paths "\$paths" --output build\/ci\/emulator-selection\.json/u);
+  assert.match(select, /git diff --name-only --no-renames "\$BASE_SHA" HEAD > build\/ci\/changed-paths\.txt/u);
+  assert.match(select, /node tool\/impact\/emulator_test_selection\.mjs --paths-file build\/ci\/changed-paths\.txt --output build\/ci\/emulator-selection\.json/u);
   assert.match(namedStep(source, "Execute backend Rules and integration assertions"),
     /CATCH_TEST_SELECTION: \$\{\{ steps\.selection\.outcome == 'success' && format\('\{0\}\/build\/ci\/emulator-selection\.json', github\.workspace\) \|\| '' \}\}/u);
   const ci = workflow("ci.yml");

@@ -13,14 +13,18 @@ import {changedPathsSince} from "../harness/lib/git_changes.mjs";
 // pull requests; the merge queue, main and nightly run every listed test.
 const {values} = parseArgs({options: {
   base: {type: "string"}, head: {type: "string", default: "HEAD"},
-  paths: {type: "string"}, output: {type: "string"},
+  paths: {type: "string"}, "paths-file": {type: "string"}, output: {type: "string"},
 }});
-if (!values.base && !values.paths) {
-  console.error("Usage: emulator_test_selection.mjs (--base <ref> [--head <ref>] | --paths a,b) [--output file]");
+if (!values.base && !values.paths && !values["paths-file"]) {
+  console.error("Usage: emulator_test_selection.mjs (--base <ref> [--head <ref>] | --paths a,b | --paths-file file) [--output file]");
   process.exit(64);
 }
-const changedPaths = values.paths ? values.paths.split(",").filter(Boolean) :
-  changedPathsSince({base: values.base, head: values.head, committedOnly: true});
+// A large pull request's path list exceeds the kernel's per-argument limit,
+// so CI passes it as a newline-separated file.
+const changedPaths = values["paths-file"]
+  ? fs.readFileSync(values["paths-file"], "utf8").split("\n").map((line) => line.trim()).filter(Boolean)
+  : values.paths ? values.paths.split(",").filter(Boolean) :
+    changedPathsSince({base: values.base, head: values.head, committedOnly: true});
 const depcruise = await loadDependencyCruiser();
 if (!depcruise) {
   console.error("Emulator test selection needs `npm ci --prefix tool/impact`.");
