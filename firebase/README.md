@@ -36,11 +36,21 @@ firebase/<env>/host/macos/GoogleService-Info.plist
 firebase/<env>/host/web/firebase-messaging-sw.js
 ```
 
-`./tool/use_firebase_environment.sh <env> <consumer|host> apps/<role>` resolves
-the selected registration through `tool/app_targets.json` and copies it into
-that app project's active native/web working copies. Android app identity itself is owned by six explicit
-`consumerDev|consumerStaging|consumerProd|hostDev|hostStaging|hostProd`
-flavors; it is no longer selected through a mutable Gradle role property.
+Native builds read these files directly, so no build copies them:
+
+- Each Android flavor has `apps/<role>/android/app/src/<flavor>/google-services.json`,
+  a committed link to its file above. The google-services Gradle plugin reads
+  the selected flavor's file. Android app identity itself is owned by six explicit
+  `consumerDev|consumerStaging|consumerProd|hostDev|hostStaging|hostProd`
+  flavors.
+- The iOS and macOS "Copy Firebase Environment Config" build phase, written by
+  `tool/platform/configure_apple_flavors.rb`, copies the selected
+  configuration's plist from `firebase/` into the built app.
+
+Flutter web has no flavors, so `./tool/use_firebase_environment.sh <env>
+<consumer|host> apps/<role>` copies the selected registration's
+`firebase-messaging-sw.js` into `apps/<role>/web/`. `tool/flutter_with_env.sh`
+runs it before every non-local run or build.
 
 Current state:
 
@@ -182,9 +192,10 @@ Last consolidated from live environment evidence on 2026-05-21.
   the dev app target with the isolated `demo-catch` Firebase project.
 - Checked-in defaults live in `tool/env/dart_defines/dev.json`,
   `tool/env/dart_defines/staging.json`, and `tool/env/dart_defines/prod.json`.
-- Native Firebase files are activated by `./tool/use_firebase_environment.sh`.
-- Each app project's active Firebase files are mutable working copies.
-  Validate them with
+- Android and Apple builds read their Firebase file for the selected flavor or
+  configuration. The web service worker is the one working copy, refreshed by
+  `./tool/use_firebase_environment.sh`.
+- Validate the files each build reads with
   `./tool/validate_firebase_environment.sh <env> <consumer|host> apps/<role>`
   before debugging runtime Firebase issues.
 
@@ -212,7 +223,7 @@ project. Local data starts empty and is discarded on exit. See
 [`functions/README.md`](../functions/README.md#commands) for dependencies,
 placeholder integrations, ports, and restart behavior.
 
-Switch the active native/web Firebase config:
+Switch the web service worker to another environment:
 
 ```bash
 ./tool/use_firebase_environment.sh dev consumer apps/consumer
@@ -311,9 +322,8 @@ flutterfire configure --project=<firebase-project-id> --out=lib/firebase_options
    from the same Firebase project.
 5. Add the Firebase CLI alias with `firebase use --add` and map it to
    `staging` or `prod` in `.firebaserc`.
-6. Re-run `./tool/use_firebase_environment.sh dev <consumer|host> apps/<role>`
-   if you want to restore the default dev files in an app project after
-   generating another environment.
+6. For a new Android flavor, link `apps/<role>/android/app/src/<flavor>/google-services.json`
+   to its file under `firebase/`.
 
 Do not copy one environment's config into another environment. If a Firebase app
 is recreated, refresh both the Dart options file and the native/web config file

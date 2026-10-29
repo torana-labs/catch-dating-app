@@ -117,10 +117,10 @@
       <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
       <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
   </picture>
-  <!-- Web push is not enabled (no VAPID key) and there is no
-       firebase-messaging-sw.js, so no Firebase messaging service worker is
-       registered here. If web push is enabled later, add web/firebase-messaging-sw.js
-       and its registration together. -->
+  <!-- Web push needs no registration here. When the app asks for a push token
+       with FIREBASE_WEB_VAPID_KEY, the Firebase Messaging SDK registers
+       web/firebase-messaging-sw.js itself. tool/use_firebase_environment.sh
+       copies the selected environment's service worker into web/. -->
   <script src="flutter_bootstrap.js" async=""></script>
 
 
