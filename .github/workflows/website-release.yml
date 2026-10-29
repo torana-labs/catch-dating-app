@@ -5,6 +5,8 @@ name: Website Release
 # existing Next Website Preview workflow, waits for a reviewer to approve the
 # preview in the protected prod environment, then promotes that exact preview
 # with Next Website Promotion. Both workflows keep every check of their own.
+# When the website changed since live but main's head ran no website
+# validation of its own, the train first runs full CI on that head.
 # Trains queue rather than cancel, so an approval is never reset by a newer
 # merge; the newest pending train waits behind it. Operator guide:
 # docs/web_surface_architecture.md, "Release train".
@@ -28,7 +30,7 @@ concurrency:
 jobs:
   plan:
     name: Decide whether main's head should be released
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name != 'workflow_run' || github.event.workflow_run.event == 'push') }}
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name != 'workflow_run' || contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event.workflow_run.event)) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
@@ -37,10 +39,13 @@ jobs:
       deployments: read
     outputs:
       release: ${{ steps.plan.outputs.release }}
+      validate: ${{ steps.plan.outputs.validate }}
       source_sha: ${{ steps.plan.outputs.source_sha }}
     steps:
+      # Full history: the planner compares live with main's head.
       - uses: actions/checkout@v6
         with:
+          fetch-depth: 0
           persist-credentials: false
       - id: toolchain
         uses: ./.github/actions/load-toolchain
@@ -54,10 +59,38 @@ jobs:
           EVENT_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
         run: node website/scripts/next/releaseTrain.mjs plan
 
+  validate:
+    name: Validate main's head with full CI
+    needs: plan
+    if: ${{ needs.plan.outputs.validate == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    permissions:
+      actions: write
+      contents: read
+    outputs:
+      current: ${{ steps.validate.outputs.current }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - id: toolchain
+        uses: ./.github/actions/load-toolchain
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ steps.toolchain.outputs.node-version }}
+      - id: validate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ needs.plan.outputs.source_sha }}
+        run: node website/scripts/next/releaseTrain.mjs validate
+
   preview:
     name: Preview main's head
-    needs: plan
-    if: ${{ needs.plan.outputs.release == 'true' }}
+    needs: [plan, validate]
+    # A failed validation stops the train; one main moved past hands over to
+    # the next train.
+    if: ${{ !cancelled() && needs.plan.outputs.release == 'true' && (needs.validate.result == 'skipped' || (needs.validate.result == 'success' && needs.validate.outputs.current == 'true')) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     permissions:

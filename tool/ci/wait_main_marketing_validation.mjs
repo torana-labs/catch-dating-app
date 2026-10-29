@@ -12,13 +12,18 @@ const terminalFailures = new Set(["failure", "cancelled", "timed_out", "action_r
 const mergeQueueBranch = /^gh-readonly-queue\/main\/pr-[1-9][0-9]*-[0-9a-f]{40}$/u;
 
 /**
- * CI that ran a commit on its way to main: main's own push run, or the merge
- * queue run that tested the exact commit main then received.
+ * CI that ran a commit of main: main's own push run, the merge queue run that
+ * tested the exact commit main then received, or a nightly or dispatched run
+ * of main itself (the website release train dispatches one when main's head
+ * has no website validation of its own).
  */
 export function isMainCiSource(run) {
-  return (run?.event === "push" && run.head_branch === "main") ||
+  return (["push", "schedule", "workflow_dispatch"].includes(run?.event) && run.head_branch === "main") ||
     (run?.event === "merge_group" && mergeQueueBranch.test(run.head_branch ?? ""));
 }
+
+/** Completed CI of main, in the order its evidence is preferred. */
+const SETTLED_EVENTS = Object.freeze(["merge_group", "workflow_dispatch", "schedule"]);
 
 export function selectSameSourceRun({runs, canonical, repository, sourceSha, event = "push"}) {
   assert.ok(positive(canonical?.id) && canonical.path === workflowPath, "Canonical CI workflow identity is invalid.");
@@ -119,7 +124,9 @@ export async function waitMainMarketingValidation({repository, sourceSha, reques
   const canonical = await request(`repos/${repository}/actions/workflows/ci.yml`);
   const runs = `repos/${repository}/actions/workflows/${canonical.id}/runs`;
   const endpoints = {push: `${runs}?branch=main&event=push&head_sha=${sourceSha}&per_page=100`,
-    merge_group: `${runs}?event=merge_group&head_sha=${sourceSha}&per_page=100`};
+    merge_group: `${runs}?event=merge_group&head_sha=${sourceSha}&per_page=100`,
+    workflow_dispatch: `${runs}?branch=main&event=workflow_dispatch&head_sha=${sourceSha}&per_page=100`,
+    schedule: `${runs}?branch=main&event=schedule&head_sha=${sourceSha}&per_page=100`};
   const latestRun = async event => selectSameSourceRun({runs: (await request(endpoints[event])).workflow_runs,
     canonical, repository, sourceSha, event});
   // Jobs a cancelled run cancelled produced no evidence; jobs that already
@@ -151,24 +158,31 @@ export async function waitMainMarketingValidation({repository, sourceSha, reques
     sourceCiWorkflowId: canonical.id, sourceCiRunId: run.id, sourceCiRunAttempt: run.run_attempt, sourceCiEvent: run.event,
     authority: decision.validated ? "same-source-marketing-and-capture-jobs" : "standalone-validation-required", node: process.version});
   // The merge queue tested this exact commit before main received it, and no
-  // later merge cancels that run; main's own push run of it usually is.
-  // Callers therefore agree on one completed run. Main's push run remains the
+  // later merge cancels that run; main's own push run of it usually is. A
+  // nightly or dispatched full run of main validates a head whose own change
+  // ran no website validation. Callers therefore agree on one completed run,
+  // preferring one that validated the website. Main's push run remains the
   // evidence for a commit that reached main without the queue.
-  const queueEvidence = async () => {
-    const run = await latestRun("merge_group");
+  const settledEvidence = async event => {
+    const run = await latestRun(event);
     if (run?.status !== "completed" || run.conclusion !== "success") return null;
     const {allJobs, decision} = await inspect(run, false);
     if (!decision?.validated && !decision?.captureProduced) return null;
     const captureBinding = decision.captureProduced ? await bindingFor(run, allJobs) : undefined;
-    const current = await latestRun("merge_group");
+    const current = await latestRun(event);
     assert.ok(current?.id === run.id && current.run_attempt === run.run_attempt && current.conclusion === "success",
-      "Merge queue validation changed during inspection.");
+      `${event === "merge_group" ? "Merge queue" : "Main CI"} validation changed during inspection.`);
     return result(run, decision, captureBinding);
   };
   const started = now(); let previous = "";
   while (true) {
-    const queued = await queueEvidence();
-    if (queued) return queued;
+    let settled = null;
+    for (const event of SETTLED_EVENTS) {
+      const evidence = await settledEvidence(event);
+      if (evidence?.validated) return evidence;
+      settled ??= evidence;
+    }
+    if (settled) return settled;
     const run = await latestRun("push");
     if (run) {
       // A newer merge to main cancels this run (ci.yml concurrency).
