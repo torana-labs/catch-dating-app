@@ -288,7 +288,7 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           'catchExperienceActivities': <String, Object?>{
             'type': 'array',
             'minItems': 1,
-            'maxItems': 3,
+            'maxItems': 2,
             'uniqueItems': true,
             'description': 'Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.',
             'items': <String, Object?>{
@@ -296,7 +296,6 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
               'enum': <Object?>[
                 'introductions',
                 'sharedActivities',
-                'rotations',
               ],
             },
           },
@@ -557,7 +556,7 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           },
           'admissionLabels': <String, Object?>{
             'type': 'array',
-            'maxItems': 4,
+            'maxItems': 3,
             'uniqueItems': true,
             'items': <String, Object?>{
               'type': 'string',
@@ -565,7 +564,6 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
                 'approval',
                 'invitation',
                 'membership',
-                'balanced',
               ],
             },
           },
@@ -620,17 +618,6 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           'priceLabel': <String, Object?>{
             'type': 'string',
             'minLength': 1,
-          },
-          'scorecard': <String, Object?>{
-            'anyOf': <Object?>[
-              <String, Object?>{
-                'type': 'object',
-                'additionalProperties': true,
-              },
-              <String, Object?>{
-                'type': 'null',
-              },
-            ],
           },
         },
       },
@@ -731,51 +718,6 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
           },
         },
       },
-    },
-    'eventSuccessSummary': <String, Object?>{
-      'anyOf': <Object?>[
-        <String, Object?>{
-          'type': 'object',
-          'additionalProperties': false,
-          'required': <Object?>[
-            'bookedCount',
-            'checkedInCount',
-            'mutualMatchCount',
-            'chatStartedCount',
-            'catchSentCount',
-            'safetyIncidentCount',
-          ],
-          'properties': <String, Object?>{
-            'bookedCount': <String, Object?>{
-              'type': 'integer',
-              'minimum': 0,
-            },
-            'checkedInCount': <String, Object?>{
-              'type': 'integer',
-              'minimum': 0,
-            },
-            'mutualMatchCount': <String, Object?>{
-              'type': 'integer',
-              'minimum': 0,
-            },
-            'chatStartedCount': <String, Object?>{
-              'type': 'integer',
-              'minimum': 0,
-            },
-            'catchSentCount': <String, Object?>{
-              'type': 'integer',
-              'minimum': 0,
-            },
-            'safetyIncidentCount': <String, Object?>{
-              'type': 'integer',
-              'minimum': 0,
-            },
-          },
-        },
-        <String, Object?>{
-          'type': 'null',
-        },
-      ],
     },
     'eventEvidence': <String, Object?>{
       'type': 'array',
@@ -1522,7 +1464,7 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         'catchExperienceActivities': <String, Object?>{
           'type': 'array',
           'minItems': 1,
-          'maxItems': 3,
+          'maxItems': 2,
           'uniqueItems': true,
           'description': 'Explicit published declaration of Catch-assisted guest participation. Booking, payments, attendance and logistics alone do not qualify. Omit when not offered.',
           'items': <String, Object?>{
@@ -1530,7 +1472,6 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
             'enum': <Object?>[
               'introductions',
               'sharedActivities',
-              'rotations',
             ],
           },
         },
@@ -1791,7 +1732,7 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         },
         'admissionLabels': <String, Object?>{
           'type': 'array',
-          'maxItems': 4,
+          'maxItems': 3,
           'uniqueItems': true,
           'items': <String, Object?>{
             'type': 'string',
@@ -1799,7 +1740,6 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
               'approval',
               'invitation',
               'membership',
-              'balanced',
             ],
           },
         },
@@ -1854,17 +1794,6 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         'priceLabel': <String, Object?>{
           'type': 'string',
           'minLength': 1,
-        },
-        'scorecard': <String, Object?>{
-          'anyOf': <Object?>[
-            <String, Object?>{
-              'type': 'object',
-              'additionalProperties': true,
-            },
-            <String, Object?>{
-              'type': 'null',
-            },
-          ],
         },
       },
     },
@@ -1959,44 +1888,6 @@ const schemaWebsiteHostListingProjectionSchema = <String, Object?>{
         'dedupeKey': <String, Object?>{
           'type': 'string',
           'minLength': 1,
-        },
-      },
-    },
-    'eventSuccessSummary': <String, Object?>{
-      'type': 'object',
-      'additionalProperties': false,
-      'required': <Object?>[
-        'bookedCount',
-        'checkedInCount',
-        'mutualMatchCount',
-        'chatStartedCount',
-        'catchSentCount',
-        'safetyIncidentCount',
-      ],
-      'properties': <String, Object?>{
-        'bookedCount': <String, Object?>{
-          'type': 'integer',
-          'minimum': 0,
-        },
-        'checkedInCount': <String, Object?>{
-          'type': 'integer',
-          'minimum': 0,
-        },
-        'mutualMatchCount': <String, Object?>{
-          'type': 'integer',
-          'minimum': 0,
-        },
-        'chatStartedCount': <String, Object?>{
-          'type': 'integer',
-          'minimum': 0,
-        },
-        'catchSentCount': <String, Object?>{
-          'type': 'integer',
-          'minimum': 0,
-        },
-        'safetyIncidentCount': <String, Object?>{
-          'type': 'integer',
-          'minimum': 0,
         },
       },
     },

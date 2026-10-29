@@ -301,14 +301,7 @@ export function eventActionCardForListing(
     trackingLabel: "listing_event_open_details",
   }];
 
-  if (event.scorecard) {
-    actions.push({
-      href: "#event-success",
-      label: websiteCopy["publicdiscovery_0361"],
-      variant: "secondary",
-      trackingLabel: "listing_event_success",
-    });
-  } else if (organizerPolicyForListing(listing).canReadPublicReviews) {
+  if (organizerPolicyForListing(listing).canReadPublicReviews) {
     actions.push({
       href: "#reviews",
       label: organizerListingCopy.eventActions.readOrganizerReviews,

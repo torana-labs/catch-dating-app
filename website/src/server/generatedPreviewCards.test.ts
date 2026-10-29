@@ -39,7 +39,7 @@ function event(overrides: Partial<HostListingCatchEvent> = {}): HostListingCatch
     startTime: "2026-08-02T00:30:00.000Z", endTime: "2026-08-02T02:00:00.000Z", timezone: "Asia/Kolkata",
     date: when, location: area, locationDetails: "Meet at the gate by Asha's stall.",
     summary: "Guests list: Asha, Ravi.", capacityLimit: 40, bookedCount: 37, checkedInCount: 0, waitlistedCount: 3,
-    priceLabel: "₹299", publicRegistrationEnabled: true, scorecard: null, photoUrl: null, ...overrides,
+    priceLabel: "₹299", publicRegistrationEnabled: true, photoUrl: null, ...overrides,
   };
 }
 

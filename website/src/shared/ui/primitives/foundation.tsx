@@ -45,37 +45,6 @@ export const actionGroupClassNames: Record<ActionGroupVariant, string> = {
   "host-create-flow": "host-create-flow__actions",
 };
 
-export interface StatStripItem {
-  key?: string;
-  label: ReactNode;
-  value: ReactNode;
-}
-
-export function StatStrip({
-  className,
-  items,
-  reveal = false,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & {
-  items: StatStripItem[];
-  reveal?: boolean;
-}) {
-  return (
-    <div
-      {...props}
-      className={classNames("stat-strip", className)}
-      data-reveal={reveal || undefined}
-    >
-      {items.map((item, index) => (
-        <span key={item.key ?? index}>
-          <strong>{item.value}</strong>
-          {item.label}
-        </span>
-      ))}
-    </div>
-  );
-}
-
 export function OperationalNote({
   body,
   className,

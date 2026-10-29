@@ -5125,6 +5125,11 @@
               "id": "hostClubPaymentsScreen",
               "path": "/host/organizers/payments",
               "role": "host"
+            },
+            {
+              "id": "hostClubMembershipsScreen",
+              "path": "/host/organizers/memberships",
+              "role": "host"
             }
           ]
         },
