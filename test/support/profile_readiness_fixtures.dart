@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 
 import '../events/events_test_helpers.dart' as event_helpers;
 

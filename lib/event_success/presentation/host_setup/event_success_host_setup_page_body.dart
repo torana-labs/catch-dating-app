@@ -1,13 +1,14 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_profile.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_setup_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
@@ -16,7 +17,6 @@ import 'package:catch_dating_app/event_success/presentation/host_components/even
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_plan_field_lanes.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_target_attendees_field.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

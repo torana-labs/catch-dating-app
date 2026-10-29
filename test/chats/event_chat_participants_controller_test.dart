@@ -1,11 +1,13 @@
 import 'dart:async';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
-import 'package:catch_dating_app/chats/domain/event_chat.dart';
-import 'package:catch_dating_app/chats/domain/event_chat_participant.dart';
+
 import 'package:catch_dating_app/chats/presentation/event_chat_participants_controller.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/data/event_chat_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_participant.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../test_pump_helpers.dart';
 
 EventChatParticipantPage page(String name, {bool more = false}) =>

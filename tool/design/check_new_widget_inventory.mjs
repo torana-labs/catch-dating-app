@@ -18,6 +18,7 @@ import {
 } from "./lib/new_widget_inventory_declarations.mjs";
 import {
   isGeneratedProductionWidgetDartPath,
+  isWidgetInventoryPath,
   productionWidgetRoots,
 } from "./lib/production_widget_roots.mjs";
 
@@ -46,7 +47,7 @@ const shouldJson = args.includes("--json");
 const shouldNoWrite = args.includes("--no-write");
 const currentFiles = productionWidgetRoots.flatMap((root) =>
   fs.existsSync(fromRepo(root)) ? listCurrentDartFiles(fromRepo(root)) : [],
-).sort();
+).filter(isWidgetInventoryPath).sort();
 const baseInput = resolveBaseInput({
   ref: baseRef,
 });

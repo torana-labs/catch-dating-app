@@ -1078,7 +1078,7 @@ function validateDeepLinkOwnership({root, manifest, findings}) {
 
 function validateRemoteConfigOwnership({root, manifest, findings}) {
   const templatePath = path.join(root, "firebase/remote_config.template.json");
-  const providerPath = path.join(root, "lib/force_update/data/app_version_config_provider.dart");
+  const providerPath = path.join(root, "lib/contexts/account/data/app_version_config_provider.dart");
   if (!fs.existsSync(templatePath) || !fs.existsSync(providerPath)) {
     findings.push("missing force-update source files");
     return;
@@ -1106,7 +1106,7 @@ function validateRemoteConfigOwnership({root, manifest, findings}) {
   }
   findings.push(...validateHostReleaseVisibility({
     accessSource: fs.readFileSync(path.join(root,
-      "lib/hosts/audience/phone_import/domain/phone_import_access.dart"), "utf8"),
+      "lib/contexts/programmes/domain/phone_import_access.dart"), "utf8"),
     routeSource: fs.readFileSync(path.join(root,
       "lib/hosts/audience/phone_import/presentation/phone_import_route_controller.dart"), "utf8"),
     workSource: fs.readFileSync(path.join(root,

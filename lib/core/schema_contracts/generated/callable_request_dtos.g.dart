@@ -97,6 +97,7 @@ export 'callables/admin_send_catch_whatsapp_reply_callable_request.g.dart';
 export 'callables/admin_set_admin_user_roles_callable_request.g.dart';
 export 'callables/admin_set_club_index_status_callable_request.g.dart';
 export 'callables/admin_set_cross_paths_showcase_eligibility_callable_request.g.dart';
+export 'callables/admin_set_supply_nominator_callable_request.g.dart';
 export 'callables/admin_share_sales_demo_partner_review_callable_request.g.dart';
 export 'callables/admin_takedown_external_event_callable_request.g.dart';
 export 'callables/admin_update_sales_account_callable_request.g.dart';

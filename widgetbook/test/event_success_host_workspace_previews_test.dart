@@ -8,8 +8,8 @@ import 'package:catch_dating_app/event_success/presentation/host_setup/event_suc
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_target_attendees_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:flutter/material.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/event_success/host_workspace_components_use_cases.dart';

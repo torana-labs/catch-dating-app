@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
-import 'package:catch_dating_app/user_profile/domain/form_profile_photo_preview.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/form_profile_photo_preview.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profile_photo_field.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profile_review_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_controller.dart';

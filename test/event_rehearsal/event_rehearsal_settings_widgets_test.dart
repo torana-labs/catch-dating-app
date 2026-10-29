@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'dart:ui' as ui;
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_settings_change.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings_change.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_settings_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_section.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 import 'event_rehearsal_settings_ui_fixtures.dart';

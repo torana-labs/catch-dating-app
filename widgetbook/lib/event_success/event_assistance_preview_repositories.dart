@@ -1,17 +1,17 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership_receivers.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff_change.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_accountability_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_accountability_change.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_membership_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_membership.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_membership_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_accountability_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_membership_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_accountability_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_membership_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_participation.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_membership_receivers.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_staff_change.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/services.dart';
 

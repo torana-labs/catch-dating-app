@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

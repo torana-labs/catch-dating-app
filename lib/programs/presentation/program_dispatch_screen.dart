@@ -1,4 +1,11 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_operations_outbox.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_projection_lifetime.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_read_snapshots.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_snapshot_reader.dart';
+import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_access_policy.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
@@ -6,13 +13,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
-import 'package:catch_dating_app/programs/data/program_projection_lifetime.dart';
-import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
-import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
-import 'package:catch_dating_app/programs/data/program_work_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_access_policy.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
 import 'package:catch_ui/catch_ui.dart';

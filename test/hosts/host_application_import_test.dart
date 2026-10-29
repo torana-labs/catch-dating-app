@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/events/domain/event_attendee.dart';
-import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
-import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
+import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
+import 'package:catch_dating_app/contexts/forms/domain/host_application_import.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/chats/chats.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:flutter/foundation.dart';
 

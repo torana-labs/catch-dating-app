@@ -1,10 +1,10 @@
+import 'package:catch_dating_app/contexts/events/data/event_callable_responses.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
-import 'package:catch_dating_app/events/data/event_callable_responses.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/attendee_event_share_controller.dart';
 import 'package:catch_dating_app/events/shared/event_invite_share_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

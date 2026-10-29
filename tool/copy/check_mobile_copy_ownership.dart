@@ -478,7 +478,8 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
             continue;
           }
         } else if (invocation is EnumConstantArguments &&
-            file.startsWith('lib/event_success/domain/') &&
+            (file.startsWith('lib/contexts/live/domain/') ||
+                file.startsWith('lib/contexts/formats/domain/')) &&
             _looksLikeEnumDisplayCopy(text)) {
           return 'enum:display-argument';
         }
@@ -575,23 +576,23 @@ bool _isCandidate(String path, String root) {
     return false;
   }
   if (relative ==
-      'lib/event_success/domain/event_success_compatibility_response/questionnaire_packs.dart') {
+      'lib/contexts/formats/domain/event_success_compatibility_response/questionnaire_packs.dart') {
     return false;
   }
   if (relative ==
-          'lib/event_success/domain/event_success_playbooks/library.dart' ||
+          'lib/contexts/formats/domain/event_success_playbooks/library.dart' ||
       relative ==
-          'lib/event_success/domain/event_success_playbooks/modules.dart' ||
+          'lib/contexts/formats/domain/event_success_playbooks/modules.dart' ||
       relative ==
-          'lib/event_success/domain/event_success_playbooks/metrics.dart') {
+          'lib/contexts/formats/domain/event_success_playbooks/metrics.dart') {
     return false;
   }
-  if (relative == 'lib/event_success/domain/event_success_coach.dart') {
+  if (relative == 'lib/contexts/formats/domain/event_success_coach.dart') {
     return false;
   }
-  if (relative == 'lib/event_policies/domain/event_policy/cancellation.dart' ||
-      relative == 'lib/event_policies/domain/event_policy/cohort.dart' ||
-      relative == 'lib/event_policies/domain/event_policy/settlement.dart') {
+  if (relative == 'lib/contexts/events/domain/event_policy/cancellation.dart' ||
+      relative == 'lib/contexts/events/domain/event_policy/cohort.dart' ||
+      relative == 'lib/contexts/events/domain/event_policy/settlement.dart') {
     return false;
   }
   if (relative.startsWith('lib/l10n/') ||
@@ -775,7 +776,7 @@ Widget buildForm(BuildContext context) => Column(children: [
 ]);
 ''';
   final missedShapeFindings = scanDartSource(
-    'lib/event_success/domain/example_missed_shapes.dart',
+    'lib/contexts/formats/domain/example_missed_shapes.dart',
     missedShapesSource,
   );
   final missedShapeTexts = missedShapeFindings

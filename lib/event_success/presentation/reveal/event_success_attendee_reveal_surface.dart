@@ -1,6 +1,8 @@
-import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_group_rotation_row_list.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_pod_assignment_section.dart';
@@ -11,9 +13,7 @@ import 'package:catch_dating_app/event_success/presentation/reveal/event_success
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_waiting_notice.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_rotation_row_list.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_standings_section.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

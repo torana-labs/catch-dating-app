@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
-import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';

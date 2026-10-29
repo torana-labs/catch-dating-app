@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_deliveries_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_scope.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_deliveries_page.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_deliveries_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_deliveries_page.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_change.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:flutter/services.dart';
 
 import 'event_assistance_preview_repositories.dart' show previewUnconfirmed;

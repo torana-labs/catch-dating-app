@@ -1,16 +1,18 @@
 import 'dart:io';
 import 'dart:ui' as ui;
-import 'package:catch_dating_app/chats/domain/event_chat.dart';
+
 import 'package:catch_dating_app/chats/presentation/event_chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/event_chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/event_chat_message_tile.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 

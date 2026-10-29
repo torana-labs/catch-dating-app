@@ -189,7 +189,7 @@ outcome, hashes, sizes and budget window.
 
 #### Front doors
 
-Four front doors create requests today, all through one in-transaction
+Five front doors create requests today, all through one in-transaction
 service (`functions/src/operations/supplyIntake/requests.ts`). Each door
 derives its request id deterministically, so a retried submission finds its
 own request, and the same id with different content is refused rather than
@@ -205,6 +205,25 @@ overwritten. Every request records its `origin`.
   organizer or a link into a request: a `self_submission` for the website, a
   `nomination` credited to the partner for a partner. Applicant name and email
   stay on the intent; only the organizer name, link, city and notes travel.
+- **Message nominations.** A sales associate or partner forwards organizers to
+  Catch's WhatsApp number from their phone: a profile shared from Instagram, a
+  Luma link, a website or an `@handle`. Staff register who may do this with
+  `adminSetSupplyNominator` (roles `admin`, `adminOwner`), which checks the
+  account holds a sales role or a current partner membership and stores the
+  number only as the WhatsApp endpoint hash plus its last four digits
+  (`supplyNominators/{nominatorId}`). The receipt dispatcher hands each
+  inbound, complete, non-STOP text to the router, which re-checks the
+  nominator's role on every message, rate-limits them to 60 messages an hour
+  and parses the text with
+  `operations/src/workflows/supply-intake/message-nomination.mjs`: each line
+  with links is one organizer, and lines without links are notes for the
+  organizer above. A city named on a line places it; otherwise the
+  nominator's default city does. Each organizer becomes a `nomination` with
+  origin `message_nomination` (the receipt id), credited to the nominator, and
+  its id is keyed on the message and line so a redelivery adds nothing.
+  Messages from anyone else stay ordinary support traffic. It runs only while
+  `SUPPLY_MESSAGE_NOMINATIONS_ENABLED` and the receipt consumers are on, and
+  sends no reply yet.
 - **Event refresh.** `adminRefreshOrganizerEvents` (roles `admin`,
   `adminOwner`, `support`, `salesStaff`) reads new events for an unclaimed
   organizer Catch already lists, from links staff give or the event-calendar

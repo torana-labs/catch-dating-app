@@ -1,5 +1,13 @@
 import 'dart:async';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_communication_repository.dart';
+import 'package:catch_dating_app/contexts/audience/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_audience_contact_detail.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_communication_plan.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_contact_merge.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_memory.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_customer_timeline.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
@@ -9,13 +17,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_communication_plan.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_section.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tab_bar.dart';
@@ -39,8 +40,8 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-part 'host_customer_detail_body.dart';
 part 'host_customer_active_merges_section.dart';
+part 'host_customer_detail_body.dart';
 part 'host_customer_history_section.dart';
 part 'host_customer_submissions_section.dart';
 

@@ -193,7 +193,7 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
           "format": "date-time"
         },
         "origin": {
-          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
+          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a message a registered nominator forwarded to Catch (id is the message's receipt id), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
           "anyOf": [
             {
               "type": "null"
@@ -211,6 +211,7 @@ export const supplyIntakeRequestsDocumentSchema: Record<string, unknown> = {
                   "enum": [
                     "admin_nomination",
                     "sales_inbound_intent",
+                    "message_nomination",
                     "discovery_run",
                     "admin_event_refresh"
                   ]

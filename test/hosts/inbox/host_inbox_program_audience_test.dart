@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/contexts/programmes/data/program_setup_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_program_audience_controller.dart';
-import 'package:catch_dating_app/programs/data/program_setup_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

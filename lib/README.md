@@ -12,28 +12,33 @@ broad audit history.
 
 ## Structure
 
-`lib/` is moving to bounded contexts under `lib/contexts/`, with screens in
-`apps/<app>/lib/`. `tool/architecture/context_map.json` places every current
-folder in a context or layer, and `audit:context-map` fails on code that
-imports against the order; read the Bounded Context Contract in
-`docs/app_architecture.md` before adding a folder or moving code.
+Domain and data code lives in bounded contexts under
+`lib/contexts/<context>/{domain,data}/`. Screens, controllers and feature
+widgets still live in the legacy feature folders' `presentation/` and
+`shared/` folders until each is redrawn into `apps/<app>/lib/`.
+`tool/architecture/context_map.json` places every folder in a context or
+layer, and `audit:context-map` fails on imports against the order and on any
+new domain or data file outside `lib/contexts/`; read the Bounded Context
+Contract in `docs/app_architecture.md` before adding a folder or moving code.
 
-Until each folder moves, most app features follow the same shape:
-
-- `domain`: Freezed models, enums, value objects, and pure domain helpers.
-- `data`: repositories, Firebase adapters, and Riverpod providers.
-- `presentation`: screens, controllers, widgets, and feature UI state.
+- `lib/contexts/<context>/domain`: Freezed models, enums, value objects, and
+  pure domain helpers.
+- `lib/contexts/<context>/data`: repositories, Firebase adapters, and Riverpod
+  providers.
+- `lib/<feature>/presentation`: screens, controllers, widgets, and feature UI
+  state.
 
 Current ownership clarifications:
 
 - Cross-cutting analytics code lives in `core/analytics`, not a top-level
   feature folder.
-- Explore-owned search lives in `explore/data`.
+- Explore-owned search lives in `contexts/discovery/data`.
 - The calendar agenda route lives in `events/presentation/calendar`.
-- Chat and host-inbox list UI lives in `chats/presentation/inbox`; `matches`
-  owns match lifecycle models/repositories and match-specific presentation.
+- Chat and host-inbox list UI lives in `chats/presentation/inbox`; match
+  lifecycle models and repositories live in `contexts/connections`, and
+  `matches/presentation` keeps match-specific screens.
 - Event display helpers and platform seams that are not widgets live in
-  `events/domain` or `events/data`; shared event/activity visual primitives
+  `contexts/events/domain` or `contexts/events/data`; shared event/activity visual primitives
   used by core widgets live in `core/widgets`.
 
 Generated `*.g.dart`, `*.freezed.dart`, and Riverpod outputs live next to their

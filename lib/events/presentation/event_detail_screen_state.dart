@@ -1,20 +1,20 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_arrival_action.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/viewer_event_availability.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_capacity_labels.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_eligibility.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_profile_requirements.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_viewer_state.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
-import 'package:catch_dating_app/events/domain/event_capacity_labels.dart';
-import 'package:catch_dating_app/events/domain/event_eligibility.dart';
-import 'package:catch_dating_app/events/domain/event_formatters.dart';
-import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/domain/event_profile_requirements.dart';
-import 'package:catch_dating_app/events/domain/event_viewer_state.dart';
-import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 bool eventDetailHasBookingReadyProfile(
   UserProfile? userProfile, {

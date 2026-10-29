@@ -13,7 +13,7 @@
   "x-storage-rules-test-file": "functions/test/storage.rules.test.cjs",
   "x-storage-related-collection": "events",
   "x-storage-known-consumers": [
-    "lib/image_uploads/data/image_upload_repository.dart",
+    "lib/contexts/profiles/data/image_upload_repository.dart",
     "functions/src/media/generateAttachedMediaThumbnails.ts"
   ],
   "properties": {

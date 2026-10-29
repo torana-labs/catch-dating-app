@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 
 enum HostCreateEventRouteStatus { loading, error, notFound, forbidden, ready }

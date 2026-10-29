@@ -214,6 +214,7 @@ const schemaSpecs = [
   {"name": "SupplyIntakeRequest", "source": "operations/supply_intake_request.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeRequest.ts"},
   {"name": "SupplyIntakeRequestsDocument", "source": "firestore/supply_intake_requests.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeRequestsDocument.ts"},
   {"name": "SupplyIntakeUsageDocument", "source": "firestore/supply_intake_usage.schema.json", "typeOutput": "functions/src/shared/generated/supplyIntakeUsageDocument.ts"},
+  {"name": "SupplyNominatorDocument", "source": "firestore/supply_nominators.schema.json", "typeOutput": "functions/src/shared/generated/supplyNominatorDocument.ts"},
 
   {"name": "AdminSalesIntelligenceGenerateCallablePayload", "source": "callables/admin_sales_intelligence_generate_payload.schema.json", "typeOutput": "functions/src/shared/generated/adminSalesIntelligenceGenerateCallablePayload.ts"},
   {"name": "SalesOutreachJobsDocument", "source": "firestore/sales_outreach_jobs.schema.json", "typeOutput": "functions/src/shared/generated/salesOutreachJobsDocument.ts"},
@@ -3806,6 +3807,42 @@ const schemaSpecs = [
       "functions/src/shared/generated/adminPublishListingEventsCallablePayload.ts",
     additionalTypeOutputs: [
       "admin/src/generated/contracts/adminPublishListingEventsCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminSetSupplyNominatorCallablePayload",
+    source: "callables/admin_set_supply_nominator_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminSetSupplyNominatorCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminSetSupplyNominatorCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminSetSupplyNominatorCallableResponse",
+    source: "callable_responses/admin_set_supply_nominator_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminSetSupplyNominatorCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminSetSupplyNominatorCallableResponse.ts",
+    ],
+  },
+  {
+    name: "AdminListSupplyNominatorsCallablePayload",
+    source: "callables/admin_list_supply_nominators_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListSupplyNominatorsCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListSupplyNominatorsCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminListSupplyNominatorsCallableResponse",
+    source: "callable_responses/admin_list_supply_nominators_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/adminListSupplyNominatorsCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/adminListSupplyNominatorsCallableResponse.ts",
     ],
   },
   {
@@ -9354,7 +9391,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "ClubHostDefaults",
       imports: [
-        "import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';",
+        "import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9365,7 +9402,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "EventMeetingLocation",
       imports: [
-        "import 'package:catch_dating_app/events/domain/event_meeting_location.dart';",
+        "import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9376,7 +9413,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "EventPolicyBundle",
       imports: [
-        "import 'package:catch_dating_app/event_policies/domain/event_policy.dart';",
+        "import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9406,7 +9443,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "EventSuccessDefaults",
       imports: [
-        "import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';",
+        "import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9417,7 +9454,7 @@ const DART_CALLABLE_FIELD_OVERRIDES = new Map([
     {
       dartType: "EventConstraints",
       imports: [
-        "import 'package:catch_dating_app/events/domain/event_constraints.dart';",
+        "import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';",
       ],
       jsonExpression: (name) => `${name}.toJson()`,
       nullableJsonExpression: (name) => `${name}?.toJson()`,
@@ -9702,9 +9739,9 @@ function dartPatchClassConfig(specName) {
         includeTimestampJsonHelper: true,
         imports: [
           "import 'package:catch_dating_app/core/sentinels.dart';",
-          "import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';",
-          "import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';",
-          "import 'package:catch_dating_app/user_profile/domain/user_profile.dart';",
+          "import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';",
+          "import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';",
+          "import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';",
           "import 'package:cloud_firestore/cloud_firestore.dart';",
         ],
         objectFields: new Map([["activityPreferences", "ActivityPreferences"]]),
@@ -9721,7 +9758,7 @@ function dartPatchClassConfig(specName) {
         includeTimestampJsonHelper: false,
         imports: [
           "import 'package:catch_dating_app/core/sentinels.dart';",
-          "import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';",
+          "import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';",
         ],
         objectFields: new Map([["hostDefaults", "ClubHostDefaults"]]),
         listObjectFields: new Map(),

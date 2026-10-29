@@ -1,8 +1,8 @@
+import 'package:catch_dating_app/contexts/programmes/data/program_lodging_repository.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_board.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_review.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/programs/data/program_lodging_repository.dart';
-import 'package:catch_dating_app/programs/domain/program_lodging_board.dart';
-import 'package:catch_dating_app/programs/domain/program_lodging_review.dart';
-import 'package:catch_dating_app/programs/domain/program_lodging_setup.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_controller.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_layout.dart';
 import 'package:catch_dating_app/programs/presentation/program_lodging_screen.dart';

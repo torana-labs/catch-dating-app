@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/event_success_moment_presentations.g.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_motion_contract.dart';
 import 'package:flutter_test/flutter_test.dart';
 

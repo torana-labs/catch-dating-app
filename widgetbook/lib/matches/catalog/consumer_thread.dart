@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/chats/data/suvbot_repository.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/contexts/messaging/data/suvbot_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
 import 'package:flutter/material.dart';

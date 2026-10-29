@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:catch_dating_app/hosts/audience/phone_import/data/phone_contact_picker.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_contact.dart';
-import 'package:catch_dating_app/hosts/audience/phone_import/domain/phone_import_draft.dart';
+import 'package:catch_dating_app/contexts/programmes/data/phone_contact_picker.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/phone_contact.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/phone_import_draft.dart';
 import 'package:flutter/foundation.dart';
 
 enum PhoneImportNotice {

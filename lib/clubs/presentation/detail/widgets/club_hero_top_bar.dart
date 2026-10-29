@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
 import 'package:catch_dating_app/clubs/shared/club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

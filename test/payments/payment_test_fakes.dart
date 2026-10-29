@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/payments/data/razorpay_checkout.dart';
+import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 

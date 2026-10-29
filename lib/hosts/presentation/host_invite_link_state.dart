@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/events/domain/event_invite_link.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/events/domain/event_invite_link.dart';
-import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 
 class HostPrivateLinkActionState {

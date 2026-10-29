@@ -30965,7 +30965,7 @@ export const supplyIntakeRequestSchema = {
       "format": "date-time"
     },
     "origin": {
-      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
+      "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a message a registered nominator forwarded to Catch (id is the message's receipt id), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
       "anyOf": [
         {
           "type": "null"
@@ -30983,6 +30983,7 @@ export const supplyIntakeRequestSchema = {
               "enum": [
                 "admin_nomination",
                 "sales_inbound_intent",
+                "message_nomination",
                 "discovery_run",
                 "admin_event_refresh"
               ]
@@ -31325,7 +31326,7 @@ export const supplyIntakeRequestsDocumentSchema = {
           "format": "date-time"
         },
         "origin": {
-          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
+          "description": "What created the request: an Admin nomination, a sales inbound intent (a website host application or a partner nomination), a message a registered nominator forwarded to Catch (id is the message's receipt id), a discovery run, or staff refreshing a listed organizer's events. Null for requests made by hand.",
           "anyOf": [
             {
               "type": "null"
@@ -31343,6 +31344,7 @@ export const supplyIntakeRequestsDocumentSchema = {
                   "enum": [
                     "admin_nomination",
                     "sales_inbound_intent",
+                    "message_nomination",
                     "discovery_run",
                     "admin_event_refresh"
                   ]
@@ -32356,6 +32358,97 @@ export const supplyIntakeUsageDocumentSchema = {
     "updatedAt": {
       "type": "string",
       "format": "date-time"
+    }
+  }
+};
+
+export const supplyNominatorDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/supply_nominators.schema.json",
+  "title": "SupplyNominatorDocument",
+  "description": "A person staff have allowed to nominate organizers by messaging Catch. A WhatsApp nominator is keyed by the hash of their number, which is the same endpoint hash the WhatsApp receipts use, so the number itself is never stored; only its last four digits are kept so staff can tell entries apart. Each message from an active nominator becomes Supply Intake nominations credited to their Catch account. Their authority (a sales role, or a current partner membership) is checked again on every message.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "supplyNominators",
+  "x-firestore-path": "supplyNominators/{nominatorId}",
+  "x-document-id-field": "nominatorId",
+  "x-owner": "Admin nominator registry callables",
+  "required": [
+    "schemaVersion",
+    "nominatorId",
+    "channel",
+    "endpointHash",
+    "phoneLast4",
+    "role",
+    "uid",
+    "displayName",
+    "defaultMarket",
+    "active",
+    "createdAt",
+    "updatedAt",
+    "updatedByUid"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "nominatorId": {
+      "type": "string",
+      "pattern": "^whatsapp-[a-f0-9]{64}$"
+    },
+    "channel": {
+      "type": "string",
+      "enum": [
+        "whatsapp"
+      ]
+    },
+    "endpointHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "phoneLast4": {
+      "type": "string",
+      "pattern": "^[0-9]{4}$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "associate",
+        "partner"
+      ]
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "defaultMarket": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
     }
   }
 };
@@ -262554,6 +262647,189 @@ export const adminPublishListingEventsCallablePayloadSchema = {
   "x-callable-aliases": [
     "adminPublishListingEvents"
   ]
+};
+
+export const adminSetSupplyNominatorCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_set_supply_nominator_payload.schema.json",
+  "title": "AdminSetSupplyNominatorCallablePayload",
+  "description": "Adds or updates someone who may nominate organizers by sending links to Catch's WhatsApp number. Messages from this number become Supply Intake nominations credited to the uid. The uid must hold a sales role (associate) or a current partner membership (partner). Setting active to false stops new messages counting; nothing is deleted.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "phoneE164",
+    "uid",
+    "role",
+    "displayName",
+    "defaultMarket",
+    "active"
+  ],
+  "properties": {
+    "phoneE164": {
+      "type": "string",
+      "pattern": "^\\+[1-9][0-9]{6,14}$"
+    },
+    "uid": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,128}$"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "associate",
+        "partner"
+      ]
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "defaultMarket": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "active": {
+      "type": "boolean"
+    }
+  },
+  "x-callable-aliases": [
+    "adminSetSupplyNominator"
+  ]
+};
+
+export const adminSetSupplyNominatorCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_set_supply_nominator_response.schema.json",
+  "title": "AdminSetSupplyNominatorCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nominatorId",
+    "created",
+    "phoneLast4",
+    "defaultMarket",
+    "active"
+  ],
+  "properties": {
+    "nominatorId": {
+      "type": "string",
+      "pattern": "^whatsapp-[a-f0-9]{64}$"
+    },
+    "created": {
+      "type": "boolean"
+    },
+    "phoneLast4": {
+      "type": "string",
+      "pattern": "^[0-9]{4}$"
+    },
+    "defaultMarket": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-z][a-z0-9-]{1,49}$"
+    },
+    "active": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const adminListSupplyNominatorsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_list_supply_nominators_payload.schema.json",
+  "title": "AdminListSupplyNominatorsCallablePayload",
+  "description": "Lists everyone who may nominate organizers by messaging Catch, active or not. Numbers appear only as their last four digits.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {},
+  "x-callable-aliases": [
+    "adminListSupplyNominators"
+  ]
+};
+
+export const adminListSupplyNominatorsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_list_supply_nominators_response.schema.json",
+  "title": "AdminListSupplyNominatorsCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "nominators"
+  ],
+  "properties": {
+    "nominators": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "nominatorId",
+          "channel",
+          "phoneLast4",
+          "role",
+          "uid",
+          "displayName",
+          "defaultMarket",
+          "active",
+          "updatedAt"
+        ],
+        "properties": {
+          "nominatorId": {
+            "type": "string",
+            "pattern": "^whatsapp-[a-f0-9]{64}$"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "whatsapp"
+            ]
+          },
+          "phoneLast4": {
+            "type": "string",
+            "pattern": "^[0-9]{4}$"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "associate",
+              "partner"
+            ]
+          },
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "defaultMarket": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-z][a-z0-9-]{1,49}$"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
 };
 
 export const adminListSupplyIntakePoliciesCallablePayloadSchema = {

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
+import 'package:catch_dating_app/contexts/programmes/domain/program_lodging_board.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
-import 'package:catch_dating_app/programs/domain/program_lodging_board.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

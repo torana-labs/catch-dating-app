@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assistance_cases_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_scope.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assistance_cases_page.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_success/data/event_assistance_cases_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_case_scope.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_cases_page.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_queue_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_queue_sheet.dart';
 import 'package:flutter/material.dart';

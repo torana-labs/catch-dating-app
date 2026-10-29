@@ -882,6 +882,10 @@ export {
   adminNominateOrganizer,
   onSalesInboundIntentForIntake,
 } from "./operations/supplyIntake/nominations";
+export {
+  adminListSupplyNominators,
+  adminSetSupplyNominator,
+} from "./operations/supplyIntake/nominators";
 
 export {
   getSalesDemoSetup, prepareSalesDemoFormDraft, getSalesDemoPreview,

@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/auth/data/authenticated_session.dart';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/event_success/data/event_assignment_feature_choice_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_assignment_feature_choice.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
+import 'package:catch_dating_app/contexts/live/data/event_assignment_feature_choice_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_assignment_feature_choice.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assignment_feature_choices_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assignment_feature_sheet.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -46,20 +46,24 @@ class _PreviewState extends State<_Preview> {
     ],
     child: Scaffold(
       body: widget.bodyOnly
-          ? Consumer(builder: (context, ref, _) {
-              final session = ref.watch(authenticatedSessionProvider)
-                  .asData?.value;
-              if (session == null) return const CatchLoadingIndicator();
-              return SingleChildScrollView(
-                child: CatchPageBody(
-                  child: EventAssignmentFeatureChoicesPageBody(
-                    key: ValueKey(session),
-                    eventId: _eventId,
-                    session: session,
+          ? Consumer(
+              builder: (context, ref, _) {
+                final session = ref
+                    .watch(authenticatedSessionProvider)
+                    .asData
+                    ?.value;
+                if (session == null) return const CatchLoadingIndicator();
+                return SingleChildScrollView(
+                  child: CatchPageBody(
+                    child: EventAssignmentFeatureChoicesPageBody(
+                      key: ValueKey(session),
+                      eventId: _eventId,
+                      session: session,
+                    ),
                   ),
-                ),
-              );
-            })
+                );
+              },
+            )
           : const Align(
               alignment: Alignment.bottomCenter,
               child: EventAssignmentFeatureSheet(eventId: _eventId),

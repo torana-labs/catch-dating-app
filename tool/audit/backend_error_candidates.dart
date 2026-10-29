@@ -332,7 +332,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/image_uploads/data/image_upload_repository.dart' &&
+  if (path == 'lib/contexts/profiles/data/image_upload_repository.dart' &&
       rule.id == 'raw_firebase_exception_type') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
@@ -348,7 +348,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/launch_access/data/launch_access_repository.dart' &&
+  if (path == 'lib/contexts/account/data/launch_access_repository.dart' &&
       rule.id == 'direct_firestore_write') {
     return const CandidateDisposition(
       status: CandidateStatus.verified,
@@ -363,7 +363,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/matches/data/match_repository.dart' &&
+  if (path == 'lib/contexts/connections/data/match_repository.dart' &&
       rule.id == 'raw_firebase_exception_type') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
@@ -371,7 +371,7 @@ CandidateDisposition _dispositionFor({
     );
   }
 
-  if (path == 'lib/clubs/data/clubs_repository.dart' &&
+  if (path == 'lib/contexts/organizers/data/clubs_repository.dart' &&
       rule.id == 'raw_firebase_exception_type') {
     return const CandidateDisposition(
       status: CandidateStatus.intentional,
