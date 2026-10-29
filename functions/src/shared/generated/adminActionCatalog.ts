@@ -288,28 +288,8 @@ export const ADMIN_ACTION_CATALOG = {
       "support"
     ]
   },
-  "organizer-intake.decide-event-candidate": {
-    "callable": "adminDecideOrganizerEventCandidate",
-    "controlPlane": false,
-    "kind": "mutation",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "support"
-    ]
-  },
   "organizer-intake.decide-policy-gap": {
     "callable": "adminDecideOrganizerPolicyGap",
-    "controlPlane": false,
-    "kind": "mutation",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "support"
-    ]
-  },
-  "organizer-intake.resolve-location": {
-    "callable": "adminResolveOrganizerEventLocation",
     "controlPlane": false,
     "kind": "mutation",
     "roles": [
@@ -432,26 +412,6 @@ export const ADMIN_ACTION_CATALOG = {
     "callable": "adminListExternalEventDetails",
     "controlPlane": false,
     "kind": "read",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "support"
-    ]
-  },
-  "external-events.readiness": {
-    "callable": "adminGetEventSupplyReadiness",
-    "controlPlane": false,
-    "kind": "read",
-    "roles": [
-      "admin",
-      "adminOwner",
-      "support"
-    ]
-  },
-  "external-events.publish": {
-    "callable": "adminPublishExternalEvent",
-    "controlPlane": false,
-    "kind": "mutation",
     "roles": [
       "admin",
       "adminOwner",

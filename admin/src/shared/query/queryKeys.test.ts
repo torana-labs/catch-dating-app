@@ -8,10 +8,10 @@ describe("adminQueryKeys", () => {
       "finance",
       "overview",
     ]);
-    expect(adminQueryKeys.organizerIntake.eventDecision()).toEqual([
+    expect(adminQueryKeys.organizerIntake.policyDecision()).toEqual([
       "admin",
       "organizer-intake",
-      "event-decision",
+      "policy-decision",
     ]);
   });
 

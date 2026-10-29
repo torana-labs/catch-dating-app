@@ -1,7 +1,6 @@
 import {useQuery} from "@tanstack/react-query";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import type {
-  AdminGetEventSupplyReadinessResponse,
   AdminOverviewResponse,
   EventIntakeBridge,
   HostAnalyticsResponse,
@@ -11,7 +10,6 @@ import type {
 import {adminQueryKeys} from "../../../shared/query/queryKeys";
 import {
   loadDataQualityEventIntakeBridge,
-  loadDataQualityEventSupplyReadiness,
   loadDataQualityHostAnalytics,
   loadDataQualityMarketingBridge,
   loadDataQualityOverview,
@@ -21,8 +19,7 @@ export type DataQualitySourceId =
   | "overview"
   | "host-analytics"
   | "marketing-bridge"
-  | "event-intake"
-  | "event-supply-readiness";
+  | "event-intake";
 export type DataQualityState = "ok" | "warning" | "partial" | "missing" | "blocked";
 export type DataQualitySeverity = "all" | "blocked" | "warning" | "healthy";
 export type DataQualityFreshness = "current" | "stale" | "unknown";
@@ -118,26 +115,17 @@ export function useDataQualityController({
     queryKey: adminQueryKeys.dataQuality.source("event-intake"),
     queryFn: loadDataQualityEventIntakeBridge,
   });
-  const eventSupplyQuery = useQuery({
-    queryKey: adminQueryKeys.dataQuality.source("event-supply-readiness"),
-    queryFn: loadDataQualityEventSupplyReadiness,
-  });
 
   const sourceHealth = useMemo<DataQualitySourceHealth[]>(() => [
     buildSourceHealth("overview", "Overview quality", overviewQuery, overviewQuery.data?.generatedAt ?? null),
     buildSourceHealth("host-analytics", "Host analytics quality", hostAnalyticsQuery, hostAnalyticsQuery.data?.generatedAt ?? null),
     buildSourceHealth("marketing-bridge", "Marketing bridge", marketingBridgeQuery, marketingBridgeQuery.data?.generatedAt ?? null, runPlanConfiguration(marketingBridgeQuery.data?.runPlan)),
     buildSourceHealth("event-intake", "Event Intake projection", eventIntakeQuery, eventIntakeQuery.data?.generatedAt ?? null, runPlanConfiguration(eventIntakeQuery.data?.runPlan)),
-    buildSourceHealth("event-supply-readiness", "Event supply readiness", eventSupplyQuery, eventSupplyQuery.data?.generatedAt ?? null, "not_applicable"),
   ], [
     eventIntakeQuery.data,
     eventIntakeQuery.dataUpdatedAt,
     eventIntakeQuery.error,
     eventIntakeQuery.isPending,
-    eventSupplyQuery.data,
-    eventSupplyQuery.dataUpdatedAt,
-    eventSupplyQuery.error,
-    eventSupplyQuery.isPending,
     hostAnalyticsQuery.data,
     hostAnalyticsQuery.dataUpdatedAt,
     hostAnalyticsQuery.error,
@@ -153,13 +141,11 @@ export function useDataQualityController({
   ]);
   const rows = useMemo(() => buildDataQualityRows({
     eventIntake: eventIntakeQuery.data,
-    eventSupply: eventSupplyQuery.data,
     hostAnalytics: hostAnalyticsQuery.data,
     marketingBridge: marketingBridgeQuery.data,
     overview: overviewQuery.data,
   }), [
     eventIntakeQuery.data,
-    eventSupplyQuery.data,
     hostAnalyticsQuery.data,
     marketingBridgeQuery.data,
     overviewQuery.data,
@@ -178,10 +164,9 @@ export function useDataQualityController({
     const result = sourceId === "overview" ? await overviewQuery.refetch() :
       sourceId === "host-analytics" ? await hostAnalyticsQuery.refetch() :
       sourceId === "marketing-bridge" ? await marketingBridgeQuery.refetch() :
-      sourceId === "event-intake" ? await eventIntakeQuery.refetch() :
-      await eventSupplyQuery.refetch();
+      await eventIntakeQuery.refetch();
     return !result.error;
-  }, [eventIntakeQuery, eventSupplyQuery, hostAnalyticsQuery, marketingBridgeQuery, overviewQuery]);
+  }, [eventIntakeQuery, hostAnalyticsQuery, marketingBridgeQuery, overviewQuery]);
 
   const refresh = useCallback(async () => {
     const results = await Promise.allSettled([
@@ -189,10 +174,9 @@ export function useDataQualityController({
       hostAnalyticsQuery.refetch(),
       marketingBridgeQuery.refetch(),
       eventIntakeQuery.refetch(),
-      eventSupplyQuery.refetch(),
     ]);
     return results.some((result) => result.status === "fulfilled" && !result.value.error);
-  }, [eventIntakeQuery, eventSupplyQuery, hostAnalyticsQuery, marketingBridgeQuery, overviewQuery]);
+  }, [eventIntakeQuery, hostAnalyticsQuery, marketingBridgeQuery, overviewQuery]);
 
   const ownerOptions = useMemo(
     () => [...new Set(rows.map((row) => row.owner))].sort(),
@@ -240,13 +224,11 @@ export function useDataQualityController({
 
 export function buildDataQualityRows({
   eventIntake,
-  eventSupply,
   hostAnalytics,
   marketingBridge,
   overview,
 }: {
   eventIntake?: EventIntakeBridge;
-  eventSupply?: AdminGetEventSupplyReadinessResponse;
   hostAnalytics?: HostAnalyticsResponse;
   marketingBridge?: MarketingOpsBridge;
   overview?: AdminOverviewResponse;
@@ -334,9 +316,6 @@ export function buildDataQualityRows({
       owningWorkflowPath: "/intake/events",
     }));
   }
-  if (eventSupply) {
-    rows.push(...buildEventSupplyRows(eventSupply));
-  }
   return rows.sort((left, right) =>
     severityRank(right.severity) - severityRank(left.severity) ||
     left.owner.localeCompare(right.owner) || left.label.localeCompare(right.label)
@@ -423,72 +402,6 @@ function buildRunPlanConfigurationRow({
     updatedAt: runPlan.generatedAt,
     owningWorkflowPath,
   });
-}
-
-function buildEventSupplyRows(readiness: AdminGetEventSupplyReadinessResponse): DataQualityRow[] {
-  const generatedAt = readiness.generatedAt;
-  const isEmpty = readiness.source === "empty";
-  const isSample = readiness.source === "sample";
-  const sourceLabel = isSample ? "Local preview" : isEmpty ? "Empty" : "Published";
-  const freshness = freshnessFor(generatedAt);
-  const freshnessState: DataQualityState = isEmpty || freshness === "unknown" ? "missing" :
-    isSample ? "partial" : freshness === "stale" ? "warning" : "ok";
-  const blocked = readiness.importPlan.summary.blocked;
-  const writeReady = readiness.importPlan.summary.writeReady;
-  const candidates = readiness.importPlan.summary.candidates;
-  const payloadInvalid = readiness.executionPlan.summary.payloadInvalid;
-  const projectionInvalid = readiness.executionPlan.summary.projectionInvalidCount ??
-    readiness.executionPlan.summary.projectionInvalid ?? 0;
-  const issueCount = blocked + payloadInvalid + projectionInvalid;
-  const preflightState: DataQualityState = isEmpty ? "missing" : issueCount > 0 ? "partial" : "ok";
-  const policy = readiness.executionPlan.policy;
-  return [
-    qualityRow({
-      id: "event-supply-readiness-freshness",
-      sourceId: "event-supply-readiness",
-      source: "Event supply readiness",
-      category: "Source freshness",
-      label: "External event import readiness",
-      state: freshnessState,
-      detail: generatedAt ? `${sourceLabel} snapshot generated ${formatAge(generatedAt)}.` : "No readiness snapshot is published.",
-      stateDefinition: "Stale is a client heuristic when source generatedAt is more than 7 days old. Local-preview and empty sources are not production evidence.",
-      owner: "Events intake",
-      runbook: "tool/organizer_intake/publish_event_supply_readiness.mjs",
-      nextAction: freshnessState === "ok" ? "No action." : "Review and republish readiness from the Event readiness workflow.",
-      updatedAt: generatedAt,
-      owningWorkflowPath: "/events/readiness",
-    }),
-    qualityRow({
-      id: "event-supply-readiness-preflight",
-      sourceId: "event-supply-readiness",
-      source: "Event supply readiness",
-      category: "Preflight result",
-      label: "External event import blockers",
-      state: preflightState,
-      detail: `${candidates} candidates, ${writeReady} write-ready, ${blocked} blocked, ${payloadInvalid} payload-invalid, ${projectionInvalid} projection-invalid.`,
-      stateDefinition: "Counts come from the generated import and execution preflight plans; they are not write receipts.",
-      owner: "Events intake",
-      runbook: "admin > Events > Event readiness",
-      nextAction: issueCount > 0 ? "Resolve review, location, schema, or projection blockers." : "No preflight action.",
-      updatedAt: generatedAt,
-      owningWorkflowPath: "/events/readiness",
-    }),
-    qualityRow({
-      id: "event-import-execution-policy-configuration",
-      sourceId: "event-supply-readiness",
-      source: "Event import policy configuration",
-      category: "Execution-policy configuration",
-      label: "External event import execution policy",
-      state: isEmpty ? "missing" : policy.writeEnabled ? "ok" : "partial",
-      detail: `Configured policy: ${policy.status}; authority ${policy.authorityModel}; writes ${policy.writeEnabled ? "enabled" : "disabled"}.`,
-      stateDefinition: "This is configured policy state, not scheduler execution telemetry. Disabled writes are a deliberate guardrail, not a failed job.",
-      owner: "Events intake",
-      runbook: "tool/organizer_intake/preflight_external_event_imports.mjs",
-      nextAction: policy.writeEnabled ? "No policy action." : "Keep writes disabled until authority, defaults, and rollback policy are approved.",
-      updatedAt: generatedAt,
-      owningWorkflowPath: "/events/readiness",
-    }),
-  ];
 }
 
 function qualityRow(input: Omit<DataQualityRow, "freshness" | "severity" | "timestampLabel">): DataQualityRow {

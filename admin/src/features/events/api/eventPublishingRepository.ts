@@ -1,29 +1,22 @@
 import {
   listExternalEventDetails,
   listEventDetails,
-  loadEventSupplyReadiness as loadAdminEventSupplyReadiness,
   loadEventDetails,
-  publishExternalEvent,
   saveEventDetails,
   takedownExternalEvent,
 } from "../../../shared/api/adminApi";
 import type {
-  AdminGetEventSupplyReadinessResponse,
   AdminGetEventDetailsPayload,
   AdminGetEventDetailsResponse,
   AdminListExternalEventDetailsPayload,
   AdminListExternalEventDetailsResponse,
   AdminListEventDetailsPayload,
   AdminListEventDetailsResponse,
-  AdminPublishExternalEventPayload,
-  AdminPublishExternalEventResponse,
   AdminTakedownExternalEventPayload,
   AdminTakedownExternalEventResponse,
   AdminUpdateEventDetailsPayload,
   AdminUpdateEventDetailsResponse,
 } from "../../../shared/types/adminTypes";
-
-export type EventSupplyReadiness = AdminGetEventSupplyReadinessResponse;
 
 export function listEventProfiles(
   payload: AdminListEventDetailsPayload = {}
@@ -47,17 +40,6 @@ export function saveEventProfile(
   payload: AdminUpdateEventDetailsPayload
 ): Promise<AdminUpdateEventDetailsResponse> {
   return saveEventDetails(payload);
-}
-
-export async function loadEventSupplyReadiness():
-  Promise<EventSupplyReadiness> {
-  return loadAdminEventSupplyReadiness();
-}
-
-export function publishExternalEventProfile(
-  payload: AdminPublishExternalEventPayload
-): Promise<AdminPublishExternalEventResponse> {
-  return publishExternalEvent(payload);
 }
 
 export function takedownExternalEventProfile(

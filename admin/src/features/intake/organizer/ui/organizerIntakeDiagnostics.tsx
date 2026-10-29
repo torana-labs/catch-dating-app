@@ -56,22 +56,14 @@ function OrganizerIntakeDiagnostics({
     curationInFlight,
     decisionInFlight,
     decisionNotes,
-    eventDecisionInFlight,
-    eventDecisionNotes,
     handleAttachCandidate,
     handleDecision,
-    handleEventDecision,
     handleItemCuration,
-    handleLocationResolution,
     handlePendingInputDecision,
     handlePolicyGapDecision,
     localCuration,
     localDecisions,
-    localEventDecisions,
-    localLocationResolutions,
     localPolicyDecisions,
-    locationResolutionForms,
-    locationResolutionInFlight,
     manualReportAcknowledgements,
     metrics,
     policyDecisionInFlight,
@@ -79,8 +71,6 @@ function OrganizerIntakeDiagnostics({
     publicationPacketByEntity,
     setCurationForms,
     setDecisionNotes,
-    setEventDecisionNotes,
-    setLocationResolutionForms,
     setManualReportAcknowledgements,
     setPolicyDecisionNotes,
     selectedMatchByCandidate,
@@ -181,31 +171,6 @@ function OrganizerIntakeDiagnostics({
                 [candidateId]: organizerId}))}
             selectedMatchByCandidate={selectedMatchByCandidate}
             queue={bridge.searchCandidates}
-          />
-        </Panel>
-        <Panel span={2} icon={<Activity size={18} />} title="External event candidates" action={bridge.externalEventCandidates.policy.status}>
-          <organizerIntakeEventPanels.OrganizerExternalEventCandidateQueueView
-            decisionInFlight={eventDecisionInFlight}
-            localDecisions={localEventDecisions}
-            notes={eventDecisionNotes}
-            onDecision={(candidate, decision, blockerResolutions) =>
-              void handleEventDecision(
-                candidate,
-                decision,
-                blockerResolutions
-              )}
-            onNoteChange={(candidateId, note) => setEventDecisionNotes((current) => ({...current, [candidateId]: note}))}
-            queue={bridge.externalEventCandidates}
-          />
-        </Panel>
-        <Panel span={2} icon={<FolderSearch size={18} />} title="External event location resolution" action={`${bridge.externalEventLocationResolution.summary.tasks} tasks`}>
-          <organizerIntakeEventPanels.OrganizerExternalEventLocationResolutionView
-            forms={locationResolutionForms}
-            inFlight={locationResolutionInFlight}
-            localResolutions={localLocationResolutions}
-            onFormChange={(taskId, form) => setLocationResolutionForms((current) => ({...current, [taskId]: form}))}
-            onResolve={(task) => void handleLocationResolution(task)}
-            queue={bridge.externalEventLocationResolution}
           />
         </Panel>
         <Panel span={2} icon={<Database size={18} />} title="External event import plan" action={bridge.externalEventImportPlan.policy.status}>

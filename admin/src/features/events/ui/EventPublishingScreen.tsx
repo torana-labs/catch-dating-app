@@ -24,10 +24,6 @@ import type {
   AdminEventListRow,
   AdminExternalEventListRow,
   AdminEventPace,
-  ExternalEventImportAction,
-  ExternalEventImportExecutionAction,
-  ExternalEventImportExecutionPlan,
-  ExternalEventImportPlan,
 } from "../../../shared/types/adminTypes";
 import {
   AdminButton,
@@ -81,7 +77,6 @@ import {
   AdminTagRow,
 } from "../../../shared/ui/AdminPrimitives";
 import {
-  type ExternalEventPublishRequest,
   type ExternalEventSupplyFilter,
   type EventPublishingController,
   type EventPublishingFilter,
@@ -99,7 +94,6 @@ import {
   externalEventNeedsReview,
   formatEventLabel,
   type EventDiffRow,
-  type ExternalEventImportReview,
   type EventPublishingFormState,
   type EventValidationIssue,
 } from "../controllers/eventPublishingHelpers";
@@ -107,57 +101,25 @@ import {isLaunchMarketId} from "../../../shared/config/launchMarkets";
 import {useAdminFeedback} from "../../../shared/feedback/AdminFeedbackContext";
 import {eventPublishingDirectoryPanels} from "./eventPublishingDirectoryPanels";
 import {eventPublishingSupplyPanels} from "./eventPublishingSupplyPanels";
-import {eventPublishingReadinessPanels} from "./eventPublishingReadinessPanels";
 import {eventPublishingEditorPanels} from "./eventPublishingEditorPanels";
 // Panels from "./eventPublishingDirectoryPanels.tsx" and sibling modules stay feature-private.
 
-
-type EventImportReadinessFilter =
-  | "needsAction"
-  | "writeReady"
-  | "blocked"
-  | "waitingReview"
-  | "rejected"
-  | "all";
-
-interface EventImportReadinessRow {
-  key: string;
-  title: string;
-  platform: string;
-  status: ExternalEventImportAction["status"];
-  executionStatus: ExternalEventImportExecutionAction["status"] | null;
-  targetPath: string;
-  candidateId: string;
-  sourceEventKey: string;
-  canonicalHostId: string;
-  startTime: string | null;
-  outboundLinkCount: number;
-  primaryExternalUrl: string | null;
-  blockers: string[];
-  validationErrorCount: number;
-  sourceActionId: string;
-  publishReady: boolean;
-}
 export function EventPublishingScreen({
   activeWorkspace = "directory",
   onBackToList,
   onSelectEventId,
   onSelectExternalEventId,
-  onSelectReadinessActionId,
   onWorkspaceChange,
   selectedEventId,
   selectedExternalEventId,
-  selectedReadinessActionId,
 }: {
   activeWorkspace?: EventPublishingWorkspaceId;
   onBackToList?: () => void;
   onSelectEventId?: (eventId: string) => void;
   onSelectExternalEventId?: (eventId: string | null) => void;
-  onSelectReadinessActionId?: (sourceActionId: string | null) => void;
   onWorkspaceChange?: (workspace: EventPublishingWorkspaceId) => void;
   selectedEventId?: string | null;
   selectedExternalEventId?: string | null;
-  selectedReadinessActionId?: string | null;
 }) {
   const {setError: onError, setNotice: onNotice} = useAdminFeedback();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -168,11 +130,9 @@ export function EventPublishingScreen({
     onNotice,
     onSelectEventId,
     onSelectExternalEventId,
-    onSelectReadinessActionId,
     onWorkspaceChange,
     selectedEventId,
     selectedExternalEventId,
-    selectedReadinessActionId,
   });
 
   useEffect(() => {
@@ -263,7 +223,6 @@ export function EventPublishingWorkspace({
         ariaLabel="Event workspaces"
         options={[
           {id: "directory", label: "Directory"},
-          {id: "readiness", label: "Readiness"},
           {id: "external", label: "External inventory"},
         ]}
         onChange={onWorkspaceChange}
@@ -271,8 +230,6 @@ export function EventPublishingWorkspace({
       />
       {controller.view === "detail" ? (
         <eventPublishingDirectoryPanels.EventDetailView controller={controller} />
-      ) : controller.view === "readiness" ? (
-        <eventPublishingDirectoryPanels.EventReadinessView controller={controller} />
       ) : controller.view === "external" ? (
         <eventPublishingDirectoryPanels.ExternalEventInventoryView controller={controller} />
       ) : (

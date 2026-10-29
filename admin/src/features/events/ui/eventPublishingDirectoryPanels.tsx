@@ -1,8 +1,4 @@
 import {ArrowLeft, CalendarDays, ExternalLink, FileWarning, RefreshCw, Search} from "lucide-react";
-import type {
-  ExternalEventImportAction,
-  ExternalEventImportExecutionAction,
-} from "../../../shared/types/adminTypes";
 import {
   AdminButton,
   AdminDetailScreenStack,
@@ -25,35 +21,7 @@ import {
   type EventPublishingFilter,
 } from "../controllers/useEventPublishingController";
 import {eventPublishingSupplyPanels} from "./eventPublishingSupplyPanels";
-import {eventPublishingReadinessPanels} from "./eventPublishingReadinessPanels";
 import {eventPublishingEditorPanels} from "./eventPublishingEditorPanels";
-
-type EventImportReadinessFilter =
-  | "needsAction"
-  | "writeReady"
-  | "blocked"
-  | "waitingReview"
-  | "rejected"
-  | "all";
-
-interface EventImportReadinessRow {
-  key: string;
-  title: string;
-  platform: string;
-  status: ExternalEventImportAction["status"];
-  executionStatus: ExternalEventImportExecutionAction["status"] | null;
-  targetPath: string;
-  candidateId: string;
-  sourceEventKey: string;
-  canonicalHostId: string;
-  startTime: string | null;
-  outboundLinkCount: number;
-  primaryExternalUrl: string | null;
-  blockers: string[];
-  validationErrorCount: number;
-  sourceActionId: string;
-  publishReady: boolean;
-}
 
 function EventDirectoryView({
   activeCount,
@@ -125,28 +93,6 @@ function EventDetailView({
   );
 }
 
-function EventReadinessView({
-  controller,
-}: {
-  controller: EventPublishingController;
-}) {
-  return (
-    <AdminDetailScreenStack>
-      <eventPublishingReadinessPanels.EventSupplyReadinessPanel
-        executionPlan={controller.supplyReadiness?.executionPlan ?? null}
-        generatedAt={controller.supplyReadiness?.generatedAt ?? null}
-        importPlan={controller.supplyReadiness?.importPlan ?? null}
-        isLoading={controller.isSupplyReadinessLoading}
-        onPublishExternalEvent={controller.publishExternalEvent}
-        onSelectSourceActionId={controller.selectReadinessAction}
-        publishingExternalActionId={controller.publishingExternalActionId}
-        selectedSourceActionId={controller.selectedReadinessActionId}
-        source={controller.supplyReadiness?.source ?? null}
-      />
-    </AdminDetailScreenStack>
-  );
-}
-
 function ExternalEventInventoryView({
   controller,
 }: {
@@ -206,11 +152,6 @@ function ExternalEventInventoryView({
             {controller.selectedExternalEvent ? (
               <eventPublishingSupplyPanels.ExternalEventSupplyDetail
                 event={controller.selectedExternalEvent}
-              />
-            ) : null}
-            {controller.selectedExternalEvent ? (
-              <eventPublishingSupplyPanels.ExternalEventImportReviewPanel
-                review={controller.selectedExternalImportReview}
               />
             ) : null}
             {controller.isExternalListLoading || controller.isExternalDetailError ||
@@ -405,7 +346,6 @@ function ExternalEventSupplyPanel({
 export const eventPublishingDirectoryPanels = {
   EventDirectoryView,
   EventDetailView,
-  EventReadinessView,
   ExternalEventInventoryView,
   EventDirectoryPanel,
   EventDetailSummary,
