@@ -11,8 +11,11 @@ const defaultBaselinePath =
 const architectureRegistryPath =
   "tool/architecture/pattern_adoption.json";
 
+const appSourcePattern = /^apps\/[^/]+\/lib\//u;
+
 const hardGateRules = new Set([
   "barrelPresentationExport",
+  "partsProviderCoupling",
   "untrackedStateAdapter",
 ]);
 
@@ -93,7 +96,7 @@ export function scanDependencyDirection({snapshot, baseline = emptyBaseline()}) 
   const findings = [];
   const baselineFindings = [];
   for (const finding of allFindings) {
-    if (!hardGateRules.has(finding.rule) && baselineKeys.has(findingKey(finding))) {
+    if (isBaselineable(finding) && baselineKeys.has(findingKey(finding))) {
       baselineFindings.push(finding);
     } else {
       findings.push(finding);
@@ -183,6 +186,7 @@ export function scanFile({relativePath, source}) {
     if (
       isPresentationFile(relativePath) &&
       !isControllerOrServiceFile(relativePath) &&
+      !isActionsFile(relativePath) &&
       isPluginPackageImport(targetUri)
     ) {
       findings.push({
@@ -254,7 +258,7 @@ export function scanFile({relativePath, source}) {
       });
     }
 
-    if (!isControllerServiceOrViewModelFile(relativePath)) {
+    if (!isControllerServiceOrViewModelFile(relativePath) && !isActionsFile(relativePath)) {
       const repositoryRead = /ref\.(?:watch|read|listen)\s*\(\s*[a-z]\w*[Rr]epositoryProvider\b/u.exec(
         source,
       );
@@ -274,6 +278,15 @@ export function scanFile({relativePath, source}) {
         line: lineForStateFileProviderCoupling(source),
         reason:
           "presentation *_state.dart files are provider-free display adapters by naming convention",
+      });
+    }
+
+    if (isPartsFile(relativePath) && stateFileHasProviderCoupling(source)) {
+      addSourceFinding({
+        rule: "partsProviderCoupling",
+        line: lineForStateFileProviderCoupling(source),
+        reason:
+          "context parts/ widgets bind values to catch_ui components and must not import Riverpod or read providers",
       });
     }
 
@@ -308,7 +321,7 @@ export function scanFile({relativePath, source}) {
       });
     }
 
-    if (!relativePath.startsWith("lib/core/")) {
+    if (!/^lib\/(?:core|platform)\//u.test(relativePath)) {
       for (const providerDeclaration of manualProviderDeclarationMatches(source)) {
         addSourceFinding({
           rule: "manualProviderDeclaration",
@@ -334,7 +347,7 @@ function baselineFromFindings(findings) {
     description:
       "Current dependency-direction debt baseline. Normal scanner runs fail on findings not listed here.",
     allowedFindings: findings
-      .filter((finding) => !hardGateRules.has(finding.rule))
+      .filter(isBaselineable)
       .map(({rule, path: findingPath, import: uri, symbol, operation}) => {
         const finding = {rule, path: findingPath};
         if (uri != null) finding.import = uri;
@@ -371,16 +384,50 @@ function findingKey(finding) {
 }
 
 function collectDartFiles(snapshot) {
-  return snapshot
-    .listFiles({prefix: "lib/"})
+  return [
+    ...snapshot.listFiles({prefix: "lib/"}),
+    ...snapshot.listFiles({prefix: "apps/"}).filter((file) => appSourcePattern.test(file)),
+  ]
     .filter((file) => file.endsWith(".dart"))
     .filter((file) => !file.endsWith(".g.dart"))
     .filter((file) => !file.endsWith(".freezed.dart"))
     .sort((a, b) => a.localeCompare(b));
 }
 
+// Places a source file for the layer rules. Legacy features use
+// lib/<feature>/<layer>/; the bounded-context roots from the Bounded Context
+// Contract use lib/contexts/<context>/<layer>/, lib/kernel/ (pure values, held
+// to the domain rules), lib/platform/, lib/pages/<page>/ and app-package
+// destinations apps/<app>/lib/<destination>/ (screens). App entrypoints at the
+// app-package root are not placed.
+export function placeSource(relativePath) {
+  let match = /^lib\/contexts\/([^/]+)\/(domain|data|actions|parts)\/.+\.dart$/u.exec(relativePath);
+  if (match) return {root: "context", owner: `contexts/${match[1]}`, layer: match[2]};
+  if (/^lib\/kernel\/.+\.dart$/u.test(relativePath)) {
+    return {root: "kernel", owner: "kernel", layer: "domain"};
+  }
+  if (/^lib\/platform\/.+\.dart$/u.test(relativePath)) {
+    return {root: "platform", owner: "platform", layer: "platform"};
+  }
+  match = /^lib\/pages\/([^/]+)\/.+\.dart$/u.exec(relativePath);
+  if (match) return {root: "pages", owner: `pages/${match[1]}`, layer: "presentation"};
+  match = /^apps\/([^/]+)\/lib\/([^/]+)\/.+\.dart$/u.exec(relativePath);
+  if (match) return {root: "app", owner: `apps/${match[1]}/${match[2]}`, layer: "presentation"};
+  match = /^lib\/([^/]+)\/(domain|data|presentation)\/.+\.dart$/u.exec(relativePath);
+  if (match) return {root: "legacy", owner: match[1], layer: match[2]};
+  return null;
+}
+
+// Files under the bounded-context roots carry no debt: only legacy findings
+// may be baselined, and hard-gate rules never are.
+function isBaselineable(finding) {
+  if (hardGateRules.has(finding.rule)) return false;
+  const root = placeSource(finding.path ?? "")?.root;
+  return root == null || root === "legacy";
+}
+
 function isDomainFile(relativePath) {
-  return /^lib\/[^/]+\/domain\/.+\.dart$/u.test(relativePath);
+  return placeSource(relativePath)?.layer === "domain";
 }
 
 // Compare relative imports using the same app identity as package imports,
@@ -395,19 +442,34 @@ function resolveAppImport(relativePath, uri) {
 }
 
 function isDataOrDomainFile(relativePath) {
-  return /^lib\/[^/]+\/(?:data|domain)\//u.test(relativePath);
+  return ["data", "domain"].includes(placeSource(relativePath)?.layer);
 }
 
 function isDataFile(relativePath) {
-  return /^lib\/[^/]+\/data\/.+\.dart$/u.test(relativePath);
+  return placeSource(relativePath)?.layer === "data";
 }
 
 function isPresentationFile(relativePath) {
-  return /^lib\/[^/]+\/presentation\/.+\.dart$/u.test(relativePath);
+  return ["presentation", "actions", "parts"].includes(
+    placeSource(relativePath)?.layer,
+  );
 }
 
+function isActionsFile(relativePath) {
+  return placeSource(relativePath)?.layer === "actions";
+}
+
+function isPartsFile(relativePath) {
+  return placeSource(relativePath)?.layer === "parts";
+}
+
+// Sibling-presentation seams apply between legacy features; the context map
+// owns cross-context imports through each context's public API file.
 function presentationSourceFeature(relativePath) {
-  return /^lib\/([^/]+)\/presentation\//u.exec(relativePath)?.[1] ?? null;
+  const place = placeSource(relativePath);
+  return place?.root === "legacy" && place.layer === "presentation"
+    ? place.owner
+    : null;
 }
 
 function isSanctionedCrossFeaturePresentationSeam({sourcePath, targetImport}) {
@@ -444,8 +506,11 @@ function featurePresentationImportTarget(uri) {
   );
 }
 
+// Data and domain code must not reach up into screens, actions or parts.
 function isFeaturePresentationImport(uri) {
-  return /^package:catch_dating_app\/[^/]+\/presentation\//u.test(uri);
+  if (!uri.startsWith("package:catch_dating_app/")) return false;
+  const target = `lib/${uri.slice("package:catch_dating_app/".length)}`;
+  return isPresentationFile(target);
 }
 
 function scanArchitectureRegistryFindings({files, source}) {
@@ -508,7 +573,8 @@ function firstMatchingLine(source, predicate) {
 }
 
 function isStateFile(relativePath) {
-  return /^lib\/[^/]+\/presentation\/.+_state\.dart$/u.test(relativePath);
+  return placeSource(relativePath)?.layer === "presentation" &&
+    relativePath.endsWith("_state.dart");
 }
 
 function stateFileHasProviderCoupling(source) {
@@ -557,7 +623,7 @@ function lineForRouteScreenClass(source) {
 
 function isHandwrittenLibFile(relativePath) {
   return (
-    relativePath.startsWith("lib/") &&
+    (relativePath.startsWith("lib/") || appSourcePattern.test(relativePath)) &&
     relativePath.endsWith(".dart") &&
     !relativePath.endsWith(".g.dart") &&
     !relativePath.endsWith(".freezed.dart")
@@ -731,7 +797,12 @@ function printHelp() {
   node tool/architecture/check_dependency_direction.mjs --json
   node tool/architecture/check_dependency_direction.mjs --write-baseline
 
-Scans lib/**/*.dart for dependency-direction violations:
+Scans lib/**/*.dart and app-package sources (apps/*/lib/**/*.dart) for
+dependency-direction violations. Legacy features use lib/<feature>/<layer>/;
+the bounded-context roots are lib/contexts/<context>/{domain,data,actions,parts}/,
+lib/kernel/ (held to the domain rules), lib/platform/, lib/pages/<page>/ and
+app destinations apps/<app>/lib/<destination>/ (held to the screen rules).
+Rules:
 - domain files importing packages outside the small domain allowlist;
 - data/domain files importing feature presentation code;
 - feature presentation files importing sibling feature presentation internals;
@@ -746,13 +817,15 @@ Scans lib/**/*.dart for dependency-direction violations:
 - presentation files that declare multiple route screens;
 - domain files calling DateTime.now() internally;
 - data files wrapping streams in timeout() without an override comment;
-- presentation widgets importing plugin/platform packages outside controllers
-  and services.
+- presentation widgets importing plugin/platform packages outside controllers,
+  services and context actions;
+- context parts/ widgets importing Riverpod or reading providers.
 
 The baseline file ratchets existing debt. Normal runs fail on new findings and
 obsolete allowances in tool/architecture/dependency_direction_baseline.json.
-Hard-gate rules such as barrelPresentationExport and untrackedStateAdapter
-cannot be suppressed by the baseline.`);
+Hard-gate rules such as barrelPresentationExport, partsProviderCoupling and
+untrackedStateAdapter cannot be suppressed by the baseline, and findings under
+the bounded-context roots and app packages are never baselined.`);
 }
 
 function normalizePath(filePath) {
@@ -844,7 +917,7 @@ function runCli() {
 
   if (!args.json && !args.writeBaseline) {
     console.log(
-      `Dependency direction check passed (${result.checkedFiles} lib Dart files scanned; ${result.baselineFindings.length} baseline finding(s) acknowledged).`,
+      `Dependency direction check passed (${result.checkedFiles} Dart files scanned; ${result.baselineFindings.length} baseline finding(s) acknowledged).`,
     );
   }
 }
