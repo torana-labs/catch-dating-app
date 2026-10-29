@@ -39,7 +39,6 @@ on:
       - "tool/web/react_controller_test_targets.json"
       - "tool/web/react_dependency_graph.mjs"
       - "tool/web/check_admin_review_bridge.mjs"
-      - "tool/web/check_admin_review_bridge.test.mjs"
   workflow_dispatch:
     inputs:
       update_visual_baselines:
