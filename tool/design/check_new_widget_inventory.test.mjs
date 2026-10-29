@@ -257,6 +257,50 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
   assert.match(added.recommendedAction, /^Use CatchButton \(catch\.button\) instead/u);
 });
 
+test("context domain and data layers stay out of the new-widget inventory", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-new-widget-contexts-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  for (const file of [
+    "tool/lib/repo_paths.mjs",
+    "tool/design/check_new_widget_inventory.mjs",
+    "tool/design/component_concepts.mjs",
+    "tool/design/lib/component_naming.mjs",
+    "design/components/catch.components.schema.json",
+    "tool/design/lib/new_widget_inventory_declarations.mjs",
+    "tool/design/lib/owned_composition_renderers.mjs",
+    "tool/design/lib/production_widget_roots.mjs",
+  ]) {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
+  }
+  const git = (args) => {
+    const result = spawnSync("git", args, {cwd: root, encoding: "utf8"});
+    assert.equal(result.status, 0, result.stderr);
+  };
+  git(["init", "--quiet"]);
+  git(["-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
+    "-c", "commit.gpgsign=false", "commit", "--quiet", "--allow-empty", "-m", "Fixture base"]);
+  const write = (file, text) => {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.writeFileSync(path.join(root, file), text);
+  };
+  write("widgetbook/lib/main.directories.g.dart", "");
+  write("design/components/catch.components.json", JSON.stringify({components: []}));
+  const helper = "Widget eventBanner() => const SizedBox();\n";
+  write("lib/contexts/events/domain/event_banner.dart", helper);
+  write("lib/contexts/events/data/event_banner_repository.dart", helper);
+  write("lib/contexts/events/parts/event_banner_part.dart", helper);
+
+  const result = spawnSync(process.execPath,
+    ["tool/design/check_new_widget_inventory.mjs", "--base", "HEAD", "--json", "--no-write"],
+    {cwd: root, encoding: "utf8"});
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(
+    JSON.parse(result.stdout).addedWidgetHelpers.map(({file}) => file),
+    ["lib/contexts/events/parts/event_banner_part.dart"],
+  );
+});
+
 test("discovers direct and transitive widget subclasses without matching prose", () => {
   const source = `
 // class CommentedOutWidget extends StatelessWidget {}

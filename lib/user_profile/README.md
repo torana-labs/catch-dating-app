@@ -36,7 +36,7 @@ action, and other organizers cannot read private cards.
 
 Verified on 2026-06-29 against the profile tab (now
 `lib/user_profile/presentation/widgets/profile_tab_body.dart`),
-`lib/user_profile/domain/user_profile.dart`, and
+`lib/contexts/profiles/domain/user_profile.dart`, and
 `test/profile/profile_widgets_test.dart`:
 
 1. `Phone` is display-only in Profile. The profile patch contract excludes it,

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/events/data/event_draft_repository.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/contexts/events/data/event_draft_repository.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

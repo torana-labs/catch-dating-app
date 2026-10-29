@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/contexts/events/domain/event_draft.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
@@ -91,41 +91,37 @@ void main() {
     ),
   };
   for (final entry in cases.entries) {
-    testWidgets(
-      'Host sheet review ${entry.key}',
-      (tester) async {
-        if (output.isEmpty) return;
-        await captureCatchWidget(
-          tester,
-          id: entry.key,
-          outputDirectory: Directory(output),
-          device: CaptureDevice.iphone17Pro,
-          includeOverlays: true,
-          builder: (context) => Center(
-            child: CatchButton(
-              label: 'Open',
-              onPressed: () {
-                showCatchBottomSheet<void>(
-                  context: context,
-                  builder: entry.value,
-                );
-              },
-            ),
+    testWidgets('Host sheet review ${entry.key}', (tester) async {
+      if (output.isEmpty) return;
+      await captureCatchWidget(
+        tester,
+        id: entry.key,
+        outputDirectory: Directory(output),
+        device: CaptureDevice.iphone17Pro,
+        includeOverlays: true,
+        builder: (context) => Center(
+          child: CatchButton(
+            label: 'Open',
+            onPressed: () {
+              showCatchBottomSheet<void>(
+                context: context,
+                builder: entry.value,
+              );
+            },
           ),
-          drive: (tester) async {
-            await tester.tap(find.text('Open'));
+        ),
+        drive: (tester) async {
+          await tester.tap(find.text('Open'));
+          await pumpFeatureUi(tester);
+          if (entry.key == 'people-filter') _expectChipClearance(tester);
+          if (entry.key == 'people-sort') {
+            await tester.tap(find.text('Sort: Last seen'));
             await pumpFeatureUi(tester);
-            if (entry.key == 'people-filter') _expectChipClearance(tester);
-            if (entry.key == 'people-sort') {
-              await tester.tap(find.text('Sort: Last seen'));
-              await pumpFeatureUi(tester);
-            }
-          },
-        );
-        expect(tester.takeException(), isNull);
-      },
-      variant: TargetPlatformVariant.only(TargetPlatform.iOS),
-    );
+          }
+        },
+      );
+      expect(tester.takeException(), isNull);
+    }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
   }
   for (final responses in [false, true]) {
     testWidgets(

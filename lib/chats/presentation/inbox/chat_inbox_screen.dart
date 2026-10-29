@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
@@ -8,6 +7,7 @@ import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_s
 import 'package:catch_dating_app/chats/presentation/inbox/host_inbox_filter.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';

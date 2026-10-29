@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
-import 'package:catch_dating_app/payments/domain/payment.dart';
+import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
+import 'package:catch_dating_app/contexts/payments/data/payment_history_repository.dart';
+import 'package:catch_dating_app/contexts/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

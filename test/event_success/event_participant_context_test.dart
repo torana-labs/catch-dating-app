@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/event_success/data/event_participant_context_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_participant_context.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/live/data/event_participant_context_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_participant_context.dart';
 import 'package:catch_dating_app/event_success/presentation/event_participant_context_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/user_profile/domain/form_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/form_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 FormProfileSummary row(String id, String organizer, int day) =>

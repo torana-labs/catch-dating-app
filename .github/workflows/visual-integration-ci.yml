@@ -39,18 +39,18 @@ jobs:
           dart run build_runner build \
             --build-filter=lib/hosts/presentation/event_management/create/create_event_controller.g.dart \
             --build-filter=lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.g.dart \
-            --build-filter=lib/event_success/data/event_assignment_feature_choice_repository.g.dart \
-            --build-filter=lib/events/domain/event_draft.freezed.dart \
-            --build-filter=lib/events/domain/event_draft.g.dart \
-            --build-filter=lib/clubs/domain/club_host_defaults.freezed.dart \
-            --build-filter=lib/clubs/domain/club_host_defaults.g.dart \
+            --build-filter=lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart \
+            --build-filter=lib/contexts/events/domain/event_draft.freezed.dart \
+            --build-filter=lib/contexts/events/domain/event_draft.g.dart \
+            --build-filter=lib/contexts/organizers/domain/club_host_defaults.freezed.dart \
+            --build-filter=lib/contexts/organizers/domain/club_host_defaults.g.dart \
             --build-filter=lib/hosts/presentation/forms/host_forms_controller.g.dart \
             --build-filter=lib/hosts/presentation/forms/host_form_operations_controller.g.dart \
-            --build-filter=lib/hosts/data/crm/host_saved_audience_repository.g.dart \
+            --build-filter=lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart \
             --build-filter=lib/hosts/today/presentation/host_today_feed_controller.g.dart \
             --build-filter=lib/onboarding/presentation/onboarding_controller.g.dart \
             --build-filter=lib/dashboard/presentation/dashboard_full_view_model.g.dart \
-            --build-filter=lib/payments/data/payment_repository.g.dart \
+            --build-filter=lib/contexts/payments/data/payment_repository.g.dart \
             --build-filter=lib/events/presentation/event_booking_controller.g.dart
           # A clean filtered build deletes tracked outputs outside its filter.
           # Restore those unchanged outputs before downstream package analysis.
@@ -60,18 +60,18 @@ jobs:
           targets = {
               'lib/hosts/presentation/event_management/create/create_event_controller.g.dart',
               'lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.g.dart',
-              'lib/event_success/data/event_assignment_feature_choice_repository.g.dart',
-              'lib/events/domain/event_draft.freezed.dart',
-              'lib/events/domain/event_draft.g.dart',
-              'lib/clubs/domain/club_host_defaults.freezed.dart',
-              'lib/clubs/domain/club_host_defaults.g.dart',
+              'lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart',
+              'lib/contexts/events/domain/event_draft.freezed.dart',
+              'lib/contexts/events/domain/event_draft.g.dart',
+              'lib/contexts/organizers/domain/club_host_defaults.freezed.dart',
+              'lib/contexts/organizers/domain/club_host_defaults.g.dart',
               'lib/hosts/presentation/forms/host_forms_controller.g.dart',
               'lib/hosts/presentation/forms/host_form_operations_controller.g.dart',
-              'lib/hosts/data/crm/host_saved_audience_repository.g.dart',
+              'lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart',
               'lib/hosts/today/presentation/host_today_feed_controller.g.dart',
               'lib/onboarding/presentation/onboarding_controller.g.dart',
               'lib/dashboard/presentation/dashboard_full_view_model.g.dart',
-              'lib/payments/data/payment_repository.g.dart',
+              'lib/contexts/payments/data/payment_repository.g.dart',
               'lib/events/presentation/event_booking_controller.g.dart',
           }
           for target in targets:
@@ -122,18 +122,18 @@ jobs:
               generated.extend([
                   pathlib.Path('lib/hosts/presentation/event_management/create/create_event_controller.g.dart'),
                   pathlib.Path('lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.g.dart'),
-                  pathlib.Path('lib/event_success/data/event_assignment_feature_choice_repository.g.dart'),
-                  pathlib.Path('lib/events/domain/event_draft.freezed.dart'),
-                  pathlib.Path('lib/events/domain/event_draft.g.dart'),
-                  pathlib.Path('lib/clubs/domain/club_host_defaults.freezed.dart'),
-                  pathlib.Path('lib/clubs/domain/club_host_defaults.g.dart'),
+                  pathlib.Path('lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart'),
+                  pathlib.Path('lib/contexts/events/domain/event_draft.freezed.dart'),
+                  pathlib.Path('lib/contexts/events/domain/event_draft.g.dart'),
+                  pathlib.Path('lib/contexts/organizers/domain/club_host_defaults.freezed.dart'),
+                  pathlib.Path('lib/contexts/organizers/domain/club_host_defaults.g.dart'),
                   pathlib.Path('lib/hosts/presentation/forms/host_forms_controller.g.dart'),
                   pathlib.Path('lib/hosts/presentation/forms/host_form_operations_controller.g.dart'),
-                  pathlib.Path('lib/hosts/data/crm/host_saved_audience_repository.g.dart'),
+                  pathlib.Path('lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart'),
                   pathlib.Path('lib/hosts/today/presentation/host_today_feed_controller.g.dart'),
                   pathlib.Path('lib/onboarding/presentation/onboarding_controller.g.dart'),
                   pathlib.Path('lib/dashboard/presentation/dashboard_full_view_model.g.dart'),
-                  pathlib.Path('lib/payments/data/payment_repository.g.dart'),
+                  pathlib.Path('lib/contexts/payments/data/payment_repository.g.dart'),
                   pathlib.Path('lib/events/presentation/event_booking_controller.g.dart'),
               ])
           if os.environ['WIDGETBOOK_CODEGEN'] == 'success':
@@ -142,17 +142,17 @@ jobs:
                      pathlib.Path('lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.dart'),
                      pathlib.Path('widgetbook/pubspec.yaml'), pathlib.Path('widgetbook/pubspec.lock'),
                      pathlib.Path('pubspec.yaml'), pathlib.Path('pubspec.lock'),
-                     pathlib.Path('lib/event_success/data/event_assignment_feature_choice_repository.dart'),
-                     pathlib.Path('lib/events/domain/event_draft.dart'),
-                     pathlib.Path('lib/clubs/domain/club_host_defaults.dart'),
+                     pathlib.Path('lib/contexts/live/data/event_assignment_feature_choice_repository.dart'),
+                     pathlib.Path('lib/contexts/events/domain/event_draft.dart'),
+                     pathlib.Path('lib/contexts/organizers/domain/club_host_defaults.dart'),
                      pathlib.Path('lib/hosts/presentation/forms/host_forms_controller.dart'),
                      pathlib.Path('lib/hosts/presentation/forms/host_form_operations_controller.dart'),
-                     pathlib.Path('lib/hosts/data/crm/host_saved_audience_repository.dart'),
+                     pathlib.Path('lib/contexts/audience/data/crm/host_saved_audience_repository.dart'),
                      pathlib.Path('lib/hosts/today/presentation/host_today_feed_controller.dart'),
                      pathlib.Path('lib/hosts/presentation/forms/host_form_target_controller.dart'),
                      pathlib.Path('lib/onboarding/presentation/onboarding_controller.dart'),
                      pathlib.Path('lib/dashboard/presentation/dashboard_full_view_model.dart'),
-                     pathlib.Path('lib/payments/data/payment_repository.dart'),
+                     pathlib.Path('lib/contexts/payments/data/payment_repository.dart'),
                      pathlib.Path('lib/events/presentation/event_booking_controller.dart')]
           sources += sorted(path for path in pathlib.Path('widgetbook/lib').rglob('*.dart')
                             if not path.name.endswith('.g.dart'))
@@ -185,11 +185,11 @@ jobs:
         run: |
           git ls-files --error-unmatch -- lib/hosts/presentation/event_management/create/create_event_controller.g.dart lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.g.dart > /dev/null
           git diff --exit-code -- lib/hosts/presentation/event_management/create/create_event_controller.g.dart lib/hosts/presentation/event_management/create/create_event_photo_recovery_controller.g.dart
-          git diff --exit-code -- widgetbook/lib/main.directories.g.dart lib/event_success/data/event_assignment_feature_choice_repository.g.dart lib/events/domain/event_draft.freezed.dart lib/events/domain/event_draft.g.dart lib/clubs/domain/club_host_defaults.freezed.dart lib/clubs/domain/club_host_defaults.g.dart lib/hosts/presentation/forms/host_forms_controller.g.dart lib/onboarding/presentation/onboarding_controller.g.dart lib/dashboard/presentation/dashboard_full_view_model.g.dart
-          git ls-files --error-unmatch -- lib/event_success/data/event_assignment_feature_choice_repository.g.dart > /dev/null
+          git diff --exit-code -- widgetbook/lib/main.directories.g.dart lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart lib/contexts/events/domain/event_draft.freezed.dart lib/contexts/events/domain/event_draft.g.dart lib/contexts/organizers/domain/club_host_defaults.freezed.dart lib/contexts/organizers/domain/club_host_defaults.g.dart lib/hosts/presentation/forms/host_forms_controller.g.dart lib/onboarding/presentation/onboarding_controller.g.dart lib/dashboard/presentation/dashboard_full_view_model.g.dart
+          git ls-files --error-unmatch -- lib/contexts/live/data/event_assignment_feature_choice_repository.g.dart > /dev/null
           git diff --exit-code -- lib/hosts/presentation/forms/host_form_operations_controller.g.dart
-          git diff --exit-code -- lib/payments/data/payment_repository.g.dart lib/events/presentation/event_booking_controller.g.dart
-          git diff --exit-code -- lib/hosts/data/crm/host_saved_audience_repository.g.dart lib/hosts/today/presentation/host_today_feed_controller.g.dart
+          git diff --exit-code -- lib/contexts/payments/data/payment_repository.g.dart lib/events/presentation/event_booking_controller.g.dart
+          git diff --exit-code -- lib/contexts/audience/data/crm/host_saved_audience_repository.g.dart lib/hosts/today/presentation/host_today_feed_controller.g.dart
 
       - name: Widgetbook corpus contract gates
         run: >-

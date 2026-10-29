@@ -11,13 +11,13 @@
 library;
 
 // ── Domain models ───────────────────────────────────────────────────────────
-export 'domain/swipe.dart';
-export 'domain/swipe_extensions.dart';
-export 'domain/swipe_window.dart';
+export 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
+export 'package:catch_dating_app/contexts/connections/domain/swipe_extensions.dart';
+export 'package:catch_dating_app/contexts/connections/domain/swipe_window.dart';
 
 // ── Data ────────────────────────────────────────────────────────────────────
-export 'data/swipe_candidate_repository.dart';
-export 'data/swipe_repository.dart';
+export 'package:catch_dating_app/contexts/connections/data/swipe_candidate_repository.dart';
+export 'package:catch_dating_app/contexts/connections/data/swipe_repository.dart';
 
 // ── Presentation — screens ──────────────────────────────────────────────────
 export 'presentation/event_recap_screen.dart'; // public-api: route entry point exposed to app routing

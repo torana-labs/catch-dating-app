@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:catch_dating_app/chats/domain/event_chat_directory.dart';
+
 import 'package:catch_dating_app/chats/presentation/inbox/event_chat_directory_controller.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_directory.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';

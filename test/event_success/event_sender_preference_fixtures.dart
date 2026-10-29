@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/event_success/data/event_sender_preference_repository.dart';
-import 'package:catch_dating_app/event_success/domain/event_sender_preference.dart';
+import 'package:catch_dating_app/contexts/live/data/event_sender_preference_repository.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_sender_preference.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 EventSenderPreferenceScope senderScope(

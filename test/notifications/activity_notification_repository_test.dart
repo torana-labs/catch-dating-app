@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
-import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
+import 'package:catch_dating_app/contexts/messaging/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/activity_notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

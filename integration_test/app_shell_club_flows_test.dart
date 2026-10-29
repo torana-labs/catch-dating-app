@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/clubs/shared/club_action_keys.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -2111,7 +2111,7 @@
             "symbol": "EventBookingController"
           },
           {
-            "file": "lib/events/data/event_calendar_links.dart",
+            "file": "lib/contexts/events/data/event_calendar_links.dart",
             "symbol": "EventCalendarController"
           },
           {
@@ -3732,7 +3732,7 @@
             "symbol": "CrossPathsInvitationController"
           },
           {
-            "file": "lib/cross_paths/data/cross_paths_repository.dart",
+            "file": "lib/contexts/connections/data/cross_paths_repository.dart",
             "symbol": "CrossPathsRepository"
           }
         ],
@@ -5561,7 +5561,7 @@
             "symbol": "EventSuccessCompanionScreen"
           },
           {
-            "file": "lib/event_success/domain/event_success_runtime.dart",
+            "file": "lib/contexts/live/domain/event_success_runtime.dart",
             "symbol": "EventSuccessRuntime"
           },
           {
@@ -6675,11 +6675,11 @@
             "symbol": "SwipeQueueNotifier"
           },
           {
-            "file": "lib/swipes/data/swipe_candidate_repository.dart",
+            "file": "lib/contexts/connections/data/swipe_candidate_repository.dart",
             "symbol": "SwipeCandidateRepository"
           },
           {
-            "file": "lib/swipes/data/swipe_repository.dart",
+            "file": "lib/contexts/connections/data/swipe_repository.dart",
             "symbol": "SwipeRepository"
           },
           {
@@ -6693,7 +6693,7 @@
             "symbol": "SwipeQueueNotifier"
           },
           {
-            "file": "lib/swipes/data/swipe_repository.dart",
+            "file": "lib/contexts/connections/data/swipe_repository.dart",
             "symbol": "SwipeRepository"
           }
         ],
@@ -7401,17 +7401,17 @@
             "symbol": "ChatSearchQuery"
           },
           {
-            "file": "lib/matches/data/match_repository.dart",
+            "file": "lib/contexts/connections/data/match_repository.dart",
             "symbol": "watchMatchesForUser"
           },
           {
-            "file": "lib/matches/data/match_repository.dart",
+            "file": "lib/contexts/connections/data/match_repository.dart",
             "symbol": "collapseMatchesByOtherUser"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/matches/data/match_repository.dart",
+            "file": "lib/contexts/connections/data/match_repository.dart",
             "symbol": "MatchRepository"
           }
         ],
@@ -7982,7 +7982,7 @@
             "symbol": "SuvbotController"
           },
           {
-            "file": "lib/chats/data/conversation_repository.dart",
+            "file": "lib/contexts/messaging/data/conversation_repository.dart",
             "symbol": "watchConversationMessages"
           },
           {
@@ -8006,11 +8006,11 @@
             "symbol": "ChatRetryController"
           },
           {
-            "file": "lib/matches/data/match_repository.dart",
+            "file": "lib/contexts/connections/data/match_repository.dart",
             "symbol": "matchStream"
           },
           {
-            "file": "lib/chats/data/suvbot_repository.dart",
+            "file": "lib/contexts/messaging/data/suvbot_repository.dart",
             "symbol": "suvbotActions"
           }
         ],
@@ -8024,11 +8024,11 @@
             "symbol": "SuvbotController"
           },
           {
-            "file": "lib/chats/data/conversation_repository.dart",
+            "file": "lib/contexts/messaging/data/conversation_repository.dart",
             "symbol": "ConversationRepository"
           },
           {
-            "file": "lib/chats/data/suvbot_repository.dart",
+            "file": "lib/contexts/messaging/data/suvbot_repository.dart",
             "symbol": "SuvbotRepository"
           }
         ],
@@ -8830,7 +8830,7 @@
             "symbol": "SelfProfilePhotoIntentFactory"
           },
           {
-            "file": "lib/user_profile/data/user_profile_repository.dart",
+            "file": "lib/contexts/profiles/data/user_profile_repository.dart",
             "symbol": "watchUserProfile"
           },
           {
@@ -8842,7 +8842,7 @@
             "symbol": "ProfileEditController"
           },
           {
-            "file": "lib/public_profile/domain/public_profile.dart",
+            "file": "lib/contexts/profiles/domain/public_profile.dart",
             "symbol": "publicProfileFromUserProfile"
           }
         ],
@@ -8856,7 +8856,7 @@
             "symbol": "PhotoUploadController"
           },
           {
-            "file": "lib/user_profile/data/user_profile_repository.dart",
+            "file": "lib/contexts/profiles/data/user_profile_repository.dart",
             "symbol": "UserProfileRepository"
           }
         ],
@@ -9544,7 +9544,7 @@
             "symbol": "PublicProfileScreenState"
           },
           {
-            "file": "lib/public_profile/data/public_profile_repository.dart",
+            "file": "lib/contexts/profiles/data/public_profile_repository.dart",
             "symbol": "watchPublicProfile"
           },
           {
@@ -9556,7 +9556,7 @@
             "symbol": "ProfileSurface"
           },
           {
-            "file": "lib/user_profile/data/user_profile_repository.dart",
+            "file": "lib/contexts/profiles/data/user_profile_repository.dart",
             "symbol": "watchUserProfile"
           }
         ],
@@ -9566,7 +9566,7 @@
             "symbol": "PublicProfileController"
           },
           {
-            "file": "lib/safety/data/safety_repository.dart",
+            "file": "lib/contexts/safety/data/safety_repository.dart",
             "symbol": "SafetyRepository"
           }
         ],
@@ -10163,15 +10163,15 @@
             "symbol": "HostEventsRouteState"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "watchClubsHostedBy"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "watchClubsOwnedBy"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "EventRepository"
           },
           {
@@ -10960,19 +10960,19 @@
             "symbol": "HostClubDefaultsSaver"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "watchClubsHostedBy"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "watchClubsOwnedBy"
           },
           {
-            "file": "lib/payments/data/host_payment_account_repository.dart",
+            "file": "lib/contexts/payments/data/host_payment_account_repository.dart",
             "symbol": "watchHostPaymentAccounts"
           },
           {
-            "file": "lib/hosts/data/host_analytics_repository.dart",
+            "file": "lib/contexts/insights/data/host_analytics_repository.dart",
             "symbol": "hostAnalytics"
           },
           {
@@ -10996,11 +10996,11 @@
             "symbol": "HostClubTeamScreen"
           },
           {
-            "file": "lib/hosts/data/host_profile_repository.dart",
+            "file": "lib/contexts/organizers/data/host_profile_repository.dart",
             "symbol": "HostProfileRepository"
           },
           {
-            "file": "lib/hosts/domain/host_profile.dart",
+            "file": "lib/contexts/organizers/domain/host_profile.dart",
             "symbol": "HostProfile"
           },
           {
@@ -11012,11 +11012,11 @@
             "symbol": "HostProfileController"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "watchClubsOwnedBy"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "watchClubsHostedBy"
           },
           {
@@ -11026,11 +11026,11 @@
         ],
         "mutationOwners": [
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "ClubsRepository"
           },
           {
-            "file": "lib/payments/data/host_payment_account_repository.dart",
+            "file": "lib/contexts/payments/data/host_payment_account_repository.dart",
             "symbol": "HostPaymentAccountRepository"
           },
           {
@@ -13471,7 +13471,7 @@
             "symbol": "HostCreateEventRouteScreen"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "fetchClub"
           },
           {
@@ -13565,11 +13565,11 @@
             "symbol": "CreateEventDraftController"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "EventRepository"
           },
           {
-            "file": "lib/events/data/event_draft_repository.dart",
+            "file": "lib/contexts/events/data/event_draft_repository.dart",
             "symbol": "EventDraftRepository"
           }
         ],
@@ -14933,15 +14933,15 @@
             "symbol": "HostParticipantProfilesLookupState"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "fetchClub"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "watchEvent"
           },
           {
-            "file": "lib/events/data/event_participation_repository.dart",
+            "file": "lib/contexts/bookings/data/event_participation_repository.dart",
             "symbol": "watchEventParticipationRoster"
           },
           {
@@ -14957,11 +14957,11 @@
             "symbol": "EventSuccessHostSection"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "watchEventPrivateAccess"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "watchEventInviteLinks"
           },
           {
@@ -14975,7 +14975,7 @@
             "symbol": "EventBookingController"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "EventRepository"
           },
           {
@@ -16843,7 +16843,7 @@
             "symbol": "HostSavedAudienceMembersController"
           },
           {
-            "file": "lib/hosts/data/crm/host_contacts_repository.dart",
+            "file": "lib/contexts/audience/data/crm/host_contacts_repository.dart",
             "symbol": "hostAudienceContactDetail"
           },
           {
@@ -17685,11 +17685,11 @@
             "symbol": "ChatSearchQuery"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "watchEventsForClub"
           },
           {
-            "file": "lib/events/data/event_participation_repository.dart",
+            "file": "lib/contexts/bookings/data/event_participation_repository.dart",
             "symbol": "watchEventParticipationsForEvent"
           },
           {
@@ -17741,7 +17741,7 @@
             "symbol": "HostMessagingSetupScreen"
           },
           {
-            "file": "lib/hosts/data/crm/host_whatsapp_repository.dart",
+            "file": "lib/contexts/audience/data/crm/host_whatsapp_repository.dart",
             "symbol": "hostMessagingSetup"
           },
           {
@@ -18935,23 +18935,23 @@
             "symbol": "ChatScreen"
           },
           {
-            "file": "lib/matches/data/match_repository.dart",
+            "file": "lib/contexts/connections/data/match_repository.dart",
             "symbol": "matchStream"
           },
           {
-            "file": "lib/chats/data/conversation_repository.dart",
+            "file": "lib/contexts/messaging/data/conversation_repository.dart",
             "symbol": "watchConversationMessages"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "watchEvent"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "watchClub"
           },
           {
-            "file": "lib/public_profile/data/public_profile_repository.dart",
+            "file": "lib/contexts/profiles/data/public_profile_repository.dart",
             "symbol": "watchPublicProfile"
           },
           {
@@ -18981,7 +18981,7 @@
             "symbol": "ChatController"
           },
           {
-            "file": "lib/chats/data/conversation_repository.dart",
+            "file": "lib/contexts/messaging/data/conversation_repository.dart",
             "symbol": "ConversationRepository"
           }
         ],
@@ -20183,7 +20183,7 @@
             "symbol": "AuthController"
           },
           {
-            "file": "lib/auth/data/auth_repository.dart",
+            "file": "lib/contexts/account/data/auth_repository.dart",
             "symbol": "AuthRepository"
           }
         ],
@@ -20743,11 +20743,11 @@
             "symbol": "OnboardingController"
           },
           {
-            "file": "lib/onboarding/data/onboarding_draft_repository.dart",
+            "file": "lib/contexts/profiles/data/onboarding_draft_repository.dart",
             "symbol": "OnboardingDraftRepository"
           },
           {
-            "file": "lib/user_profile/data/user_profile_repository.dart",
+            "file": "lib/contexts/profiles/data/user_profile_repository.dart",
             "symbol": "UserProfileRepository"
           }
         ],
@@ -21446,15 +21446,15 @@
             "symbol": "CalendarHomeState"
           },
           {
-            "file": "lib/events/data/booked_events_repository.dart",
+            "file": "lib/contexts/bookings/data/booked_events_repository.dart",
             "symbol": "watchSignedUpEvents"
           },
           {
-            "file": "lib/events/data/saved_event_repository.dart",
+            "file": "lib/contexts/discovery/data/saved_event_repository.dart",
             "symbol": "watchSavedEventDetailsForUser"
           },
           {
-            "file": "lib/clubs/data/club_name_lookup.dart",
+            "file": "lib/contexts/organizers/data/club_name_lookup.dart",
             "symbol": "ClubNameLookupQuery"
           }
         ],
@@ -21896,17 +21896,17 @@
             "symbol": "SavedEventsListState"
           },
           {
-            "file": "lib/events/data/saved_event_repository.dart",
+            "file": "lib/contexts/discovery/data/saved_event_repository.dart",
             "symbol": "watchSavedEventDetailsForUser"
           },
           {
-            "file": "lib/clubs/data/club_name_lookup.dart",
+            "file": "lib/contexts/organizers/data/club_name_lookup.dart",
             "symbol": "ClubNameLookupQuery"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/events/data/saved_event_repository.dart",
+            "file": "lib/contexts/discovery/data/saved_event_repository.dart",
             "symbol": "SavedEventRepository"
           }
         ],
@@ -22268,7 +22268,7 @@
             "symbol": "FiltersController"
           },
           {
-            "file": "lib/user_profile/data/user_profile_repository.dart",
+            "file": "lib/contexts/profiles/data/user_profile_repository.dart",
             "symbol": "watchUserProfile"
           }
         ],
@@ -22278,7 +22278,7 @@
             "symbol": "FiltersController"
           },
           {
-            "file": "lib/user_profile/data/user_profile_repository.dart",
+            "file": "lib/contexts/profiles/data/user_profile_repository.dart",
             "symbol": "UserProfileRepository"
           }
         ],
@@ -22761,15 +22761,15 @@
             "symbol": "eventRecapViewModel"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "watchEvent"
           },
           {
-            "file": "lib/events/data/event_participation_repository.dart",
+            "file": "lib/contexts/bookings/data/event_participation_repository.dart",
             "symbol": "watchEventParticipationsForEvent"
           },
           {
-            "file": "lib/public_profile/data/public_profiles_lookup.dart",
+            "file": "lib/contexts/profiles/data/public_profiles_lookup.dart",
             "symbol": "publicProfilesByIds"
           }
         ],
@@ -23287,11 +23287,11 @@
             "symbol": "CreateClubDraftController"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "ClubsRepository"
           },
           {
-            "file": "lib/image_uploads/data/image_upload_repository.dart",
+            "file": "lib/contexts/profiles/data/image_upload_repository.dart",
             "symbol": "ImageUploadRepository"
           }
         ],
@@ -23889,11 +23889,11 @@
             "symbol": "EditHostedEventFooterState"
           },
           {
-            "file": "lib/clubs/data/clubs_repository.dart",
+            "file": "lib/contexts/organizers/data/clubs_repository.dart",
             "symbol": "fetchClub"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "watchEvent"
           },
           {
@@ -23915,7 +23915,7 @@
             "symbol": "EventBookingController"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "EventRepository"
           }
         ],
@@ -25004,7 +25004,7 @@
             "symbol": "ActivitySection"
           },
           {
-            "file": "lib/notifications/data/activity_notification_repository.dart",
+            "file": "lib/contexts/messaging/data/activity_notification_repository.dart",
             "symbol": "watchActivityNotifications"
           }
         ],
@@ -25014,7 +25014,7 @@
             "symbol": "ActivityController"
           },
           {
-            "file": "lib/notifications/data/activity_notification_repository.dart",
+            "file": "lib/contexts/messaging/data/activity_notification_repository.dart",
             "symbol": "ActivityNotificationRepository"
           }
         ],
@@ -25509,11 +25509,11 @@
             "symbol": "ReviewsHistoryState"
           },
           {
-            "file": "lib/reviews/data/reviews_repository.dart",
+            "file": "lib/contexts/reviews/data/reviews_repository.dart",
             "symbol": "watchReviewsByUser"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "watchEventsByIds"
           },
           {
@@ -25527,7 +25527,7 @@
             "symbol": "showWriteReviewSheet"
           },
           {
-            "file": "lib/reviews/data/reviews_repository.dart",
+            "file": "lib/contexts/reviews/data/reviews_repository.dart",
             "symbol": "ReviewsRepository"
           }
         ],
@@ -25985,15 +25985,15 @@
             "symbol": "SettingsController"
           },
           {
-            "file": "lib/safety/data/safety_repository.dart",
+            "file": "lib/contexts/safety/data/safety_repository.dart",
             "symbol": "SafetyRepository"
           },
           {
-            "file": "lib/user_profile/data/user_profile_repository.dart",
+            "file": "lib/contexts/profiles/data/user_profile_repository.dart",
             "symbol": "UserProfileRepository"
           },
           {
-            "file": "lib/public_profile/data/public_profiles_lookup.dart",
+            "file": "lib/contexts/profiles/data/public_profiles_lookup.dart",
             "symbol": "PublicProfilesQuery"
           },
           {
@@ -26748,11 +26748,11 @@
             "symbol": "LaunchAccessController"
           },
           {
-            "file": "lib/launch_access/data/launch_access_repository.dart",
+            "file": "lib/contexts/account/data/launch_access_repository.dart",
             "symbol": "LaunchAccessRepository"
           },
           {
-            "file": "lib/launch_access/domain/launch_access_application.dart",
+            "file": "lib/contexts/account/domain/launch_access_application.dart",
             "symbol": "LaunchAccessApplication"
           }
         ],
@@ -26762,7 +26762,7 @@
             "symbol": "LaunchAccessController"
           },
           {
-            "file": "lib/launch_access/data/launch_access_repository.dart",
+            "file": "lib/contexts/account/data/launch_access_repository.dart",
             "symbol": "LaunchAccessRepository"
           }
         ],
@@ -27055,7 +27055,7 @@
             "symbol": "PaymentHistoryScreen"
           },
           {
-            "file": "lib/payments/data/payment_history_repository.dart",
+            "file": "lib/contexts/payments/data/payment_history_repository.dart",
             "symbol": "watchPaymentsForUser"
           },
           {
@@ -27063,11 +27063,11 @@
             "symbol": "paymentHistoryViewModel"
           },
           {
-            "file": "lib/events/data/event_repository.dart",
+            "file": "lib/contexts/events/data/event_repository.dart",
             "symbol": "watchEventsByIds"
           },
           {
-            "file": "lib/payments/domain/payment.dart",
+            "file": "lib/contexts/payments/domain/payment.dart",
             "symbol": "Payment"
           }
         ],
@@ -27623,7 +27623,7 @@
             "symbol": "hostResponseReviewDetail"
           },
           {
-            "file": "lib/hosts/data/host_application_repository.dart",
+            "file": "lib/contexts/forms/data/host_application_repository.dart",
             "symbol": "hostApplicationDetail"
           }
         ],
@@ -27778,7 +27778,7 @@
         "primary": "eventRehearsalProvider + EventRehearsalController",
         "files": [
           {
-            "file": "lib/event_rehearsal/data/event_rehearsal_repository.dart",
+            "file": "lib/contexts/live/data/event_rehearsal_repository.dart",
             "symbol": "eventRehearsal"
           },
           {
@@ -28003,7 +28003,7 @@
             "symbol": "ProgramWorkScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository.dart",
             "symbol": "programWorkEntry"
           }
         ],
@@ -28397,7 +28397,7 @@
             "symbol": "ProgramWorkspaceScreen"
           },
           {
-            "file": "lib/programs/data/program_setup_repository.dart",
+            "file": "lib/contexts/programmes/data/program_setup_repository.dart",
             "symbol": "organizerProgramDetail"
           }
         ],
@@ -28558,11 +28558,11 @@
             "symbol": "ProgramGuestsScreen"
           },
           {
-            "file": "lib/programs/data/program_setup_repository.dart",
+            "file": "lib/contexts/programmes/data/program_setup_repository.dart",
             "symbol": "programGuestList"
           },
           {
-            "file": "lib/programs/data/program_setup_repository.dart",
+            "file": "lib/contexts/programmes/data/program_setup_repository.dart",
             "symbol": "organizerProgramDetail"
           }
         ],
@@ -28718,7 +28718,7 @@
             "symbol": "ProgramTeamScreen"
           },
           {
-            "file": "lib/programs/data/program_setup_repository.dart",
+            "file": "lib/contexts/programmes/data/program_setup_repository.dart",
             "symbol": "programStaffList"
           }
         ],
@@ -29094,7 +29094,7 @@
             "symbol": "OrganizerMomentsController"
           },
           {
-            "file": "lib/hosts/events/data/organizer_moments_repository.dart",
+            "file": "lib/contexts/events/data/organizer_moments_repository.dart",
             "symbol": "organizerMomentsRepository"
           }
         ],
@@ -29256,11 +29256,11 @@
             "symbol": "ProgramArrivalsScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository.dart",
             "symbol": "programArrivalsRoster"
           },
           {
-            "file": "lib/programs/data/program_operations_outbox.dart",
+            "file": "lib/contexts/programmes/data/program_operations_outbox.dart",
             "symbol": "programOperationsOutbox"
           },
           {
@@ -29433,11 +29433,11 @@
             "symbol": "ProgramFunctionDoorScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository_door.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository_door.dart",
             "symbol": "programFunctionDoorView"
           },
           {
-            "file": "lib/programs/data/program_operations_outbox.dart",
+            "file": "lib/contexts/programmes/data/program_operations_outbox.dart",
             "symbol": "programOperationsOutbox"
           },
           {
@@ -29613,11 +29613,11 @@
             "symbol": "ProgramDispatchScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository.dart",
             "symbol": "programTransportPlan"
           },
           {
-            "file": "lib/programs/data/program_operations_outbox.dart",
+            "file": "lib/contexts/programmes/data/program_operations_outbox.dart",
             "symbol": "programOperationsOutbox"
           },
           {
@@ -29790,7 +29790,7 @@
             "symbol": "ProgramHotelDeskScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository_rooms.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository_rooms.dart",
             "symbol": "programHotelInbound"
           },
           {
@@ -29962,13 +29962,13 @@
             "symbol": "ProgramHotelRoomsScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository_rooms.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository_rooms.dart",
             "symbol": "programHotelRooms"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/programs/data/program_work_repository.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository.dart",
             "symbol": "ProgramWorkRepository"
           }
         ],
@@ -30156,7 +30156,7 @@
             "symbol": "ProgramTripsScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository.dart",
             "symbol": "programTripList"
           },
           {
@@ -30317,7 +30317,7 @@
             "symbol": "ProgramAttendanceReportScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository_reports.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository_reports.dart",
             "symbol": "programAttendanceReport"
           },
           {
@@ -30478,7 +30478,7 @@
             "symbol": "ProgramStakeholderScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository.dart",
             "symbol": "getProgramStakeholderCounts"
           }
         ],
@@ -30629,7 +30629,7 @@
             "symbol": "ProgramNowNextScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository.dart",
             "symbol": "programWorkEntry"
           }
         ],
@@ -30768,7 +30768,7 @@
             "symbol": "ProgramAttentionScreen"
           },
           {
-            "file": "lib/programs/data/program_work_repository_reports.dart",
+            "file": "lib/contexts/programmes/data/program_work_repository_reports.dart",
             "symbol": "programStaffAttention"
           },
           {
@@ -30915,7 +30915,7 @@
             "symbol": "OrganizerMomentsController"
           },
           {
-            "file": "lib/hosts/events/data/organizer_moments_repository.dart",
+            "file": "lib/contexts/events/data/organizer_moments_repository.dart",
             "symbol": "organizerMomentsRepository"
           }
         ],
@@ -31077,7 +31077,7 @@
             "symbol": "HostWorkScreen"
           },
           {
-            "file": "lib/hosts/work/data/host_work_repository.dart",
+            "file": "lib/contexts/programmes/data/host_work_repository.dart",
             "symbol": "hostWorkAssignments"
           }
         ],

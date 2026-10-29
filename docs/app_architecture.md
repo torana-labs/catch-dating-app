@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.90.0
+version: 1.91.0
 updated: 2026-10-29
 owner: app_architecture
 status: active
@@ -360,29 +360,34 @@ may read repositories and platform plugins.
 4. Every handwritten `lib/` Dart file is placed. A new top-level folder, or a
    new file in a legacy folder the map does not cover, needs a map entry in
    the same PR. Checked: `unmappedFile`, `unknownContext`.
-5. When a screen needs two contexts, its view model combines them. A context
+5. Domain and data code lives under `lib/contexts/`. A legacy feature folder
+   keeps only its screens (`presentation/`, `shared/`) and its barrel until
+   they are redrawn. Checked: `legacyContextFile`.
+6. When a screen needs two contexts, its view model combines them. A context
    never learns about another to save a screen work; that shortcut is how the
    events and hosts folders came to import each other. Rule 2 catches the
    result.
-6. One context writes each Firestore collection and calls each callable,
+7. One context writes each Firestore collection and calls each callable,
    matching `docs/backend_operation_catalog.md`. Manual review: the author of
    each move PR names the collections and callables the context writes.
-7. Context names are product nouns used the same way in Flutter,
+8. Context names are product nouns used the same way in Flutter,
    `functions/src` and the website. Manual review when a context is added.
 
 Imports in legacy folders that already break rules 1 and 2 are listed in
 `tool/architecture/context_map_baseline.json`. CI fails on a new one and on a
 listed one that no longer exists, so the list only shrinks. Files under
 `lib/contexts/`, `lib/pages/`, `lib/kernel/` and `lib/platform/` cannot be
-listed, and rules 3 and 4 cannot be listed anywhere.
+listed, and rules 3 to 5 cannot be listed anywhere.
 
 ### Placing legacy folders
 
 The map's `legacy` list places today's folders; the longest matching path
-prefix wins, so one file can be placed apart from its folder. A folder placed
-in a context counts as that context, except its `presentation/` and `shared/`
-folders, which count as app composition until they are redrawn. A legacy
-feature barrel may re-export its own screens until it is split.
+prefix wins, so one file can be placed apart from its folder. Since the phase
+3 move, a legacy folder holds only `presentation/` and `shared/` folders, which
+count as app composition until they are redrawn, and its feature barrel, which
+may re-export its own screens and the moved files until it is split.
+`tool/architecture/move_to_contexts.mjs --imports-only --from <move-commit>`
+updates a branch that predates the move.
 
 ### Host destinations
 
@@ -521,26 +526,31 @@ the context map.
 
 ### Current Boundary Cleanup Baseline
 
-These placements describe the legacy folders until each moves under the
-[Bounded Context Contract](#bounded-context-contract). The first folder-boundary
-cleanup applied after this spec uses these owners:
+These placements predate the [Bounded Context Contract](#bounded-context-contract);
+domain and data have since moved under `lib/contexts/`, and the screen folders
+named here move when they are redrawn. The first folder-boundary cleanup
+applied after this spec uses these owners:
 
 - App analytics instrumentation lives in `lib/core/analytics`, not a top-level
   `lib/analytics` feature.
-- Explore search lives under `lib/explore/data`; it is part of the Explore
-  aggregate surface, not a standalone `search` feature.
+- Explore search lives under `lib/contexts/discovery/data`; it is part of the
+  Explore aggregate surface, not a standalone `search` feature.
 - The calendar route lives under `lib/events/presentation/calendar` because it
   is an event agenda surface. Do not recreate top-level `lib/calendar`.
 - Chat and host-inbox list UI lives under `lib/chats/presentation/inbox`.
-  `lib/matches` remains responsible for match lifecycle data/domain behavior and
-  match-specific presentation such as the celebration dialog.
+  Match lifecycle data and domain behavior live in `lib/contexts/connections`;
+  `lib/matches/presentation` keeps match-specific screens such as the
+  celebration dialog.
 - Event formatters, arrival policy, QR payloads, map links, calendar links,
-  invite/share copy, and check-in location services live in `events/domain` or
-  `events/data` according to whether they are pure logic or service seams.
+  invite/share copy, and check-in location services live in
+  `lib/contexts/events/domain` or `lib/contexts/events/data` (check-in services
+  in `lib/contexts/bookings/data`) according to whether they are pure logic or
+  service seams.
   They should not be imported from `events/presentation`.
 - Shared activity/event visual primitives used by core widgets live in
   `lib/core/widgets`, not under `events/presentation/widgets`.
-- Club display-name lookup is a data/provider seam in `lib/clubs/data`.
+- Club display-name lookup is a data/provider seam in
+  `lib/contexts/organizers/data`.
 
 ### Explore discovery scope and filter boundary
 
@@ -2648,8 +2658,8 @@ section models when that removes business logic from widgets.
 
 Reference files:
 
-- `lib/clubs/data/club_name_lookup.dart`
-- `lib/clubs/data/club_name_lookup.g.dart`
+- `lib/contexts/organizers/data/club_name_lookup.dart`
+- `lib/contexts/organizers/data/club_name_lookup.g.dart`
 - `test/architecture/generated_provider_family_test.dart`
 
 Use generated function providers for feature-owned async families. Keep the
@@ -4041,8 +4051,8 @@ Reference files:
 
 - `functions/src/communications/organizerCommunicationPlan.ts`
 - `functions/src/organizers/organizerCommunicationPlans.ts`
-- `lib/hosts/domain/crm/host_communication_plan.dart`
-- `lib/hosts/data/crm/host_communication_repository.dart`
+- `lib/contexts/audience/domain/crm/host_communication_plan.dart`
+- `lib/contexts/audience/data/crm/host_communication_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_card.dart`
 
@@ -4099,8 +4109,8 @@ Reference files:
 
 - `contracts/firestore/organizer_manual_send_tasks.schema.json`
 - `functions/src/organizers/organizerManualSendTasks.ts`
-- `lib/hosts/domain/crm/host_manual_send_task.dart`
-- `lib/hosts/data/crm/host_communication_repository.dart`
+- `lib/contexts/audience/domain/crm/host_manual_send_task.dart`
+- `lib/contexts/audience/data/crm/host_communication_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
 - `lib/hosts/presentation/inbox/host_manual_send_list.dart`
 - `test/hosts/host_crm_repository_test.dart`
@@ -4163,8 +4173,8 @@ Reference files:
 - `contracts/firestore/organizer_saved_audiences.schema.json`
 - `functions/src/organizers/organizerSavedAudiences.ts`
 - `functions/src/organizers/organizerCampaigns.ts`
-- `lib/hosts/domain/crm/host_saved_audience.dart`
-- `lib/hosts/data/crm/host_saved_audience_repository.dart`
+- `lib/contexts/audience/domain/crm/host_saved_audience.dart`
+- `lib/contexts/audience/data/crm/host_saved_audience_repository.dart`
 - `lib/hosts/presentation/customers/host_customers_screen.dart`
 - `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart`
 - `lib/hosts/presentation/customers/host_saved_audience_editor.dart`
@@ -4346,18 +4356,18 @@ still require a sanitized server-owned suggestion response.
 Reference files:
 
 - `lib/cross_paths/cross_paths.dart`
-- `lib/cross_paths/data/cross_paths_repository.dart`
-- `lib/cross_paths/domain/cross_paths_suggestion.dart`
+- `lib/contexts/connections/data/cross_paths_repository.dart`
+- `lib/contexts/connections/domain/cross_paths_suggestion.dart`
 - `lib/explore/presentation/explore_cross_paths_provider.dart`
 - `lib/cross_paths/presentation/cross_paths_explore_card.dart`
-- `lib/cross_paths/domain/cross_paths_invitation.dart`
-- `lib/cross_paths/domain/cross_paths_pair_hold.dart`
+- `lib/contexts/connections/domain/cross_paths_invitation.dart`
+- `lib/contexts/connections/domain/cross_paths_pair_hold.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_invitation_screen.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_controller.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_state.dart`
 - `lib/cross_paths/presentation/cross_paths_event_consent_section.dart`
-- `lib/events/domain/event.dart`
+- `lib/contexts/events/domain/event.dart`
 - `lib/safety/presentation/settings_screen.dart`
 - `functions/src/crossPaths/pilotPolicy.ts`
 - `functions/src/crossPaths/setCrossPathsEventConsent.ts`
@@ -5089,8 +5099,8 @@ Reference implementation:
 - `lib/explore/presentation/explore_discovery_window_controller.dart` is the
   reference provider family: the normalized query pair is its identity, the
   notifier alone accumulates pages, and views receive immutable state.
-- `lib/events/data/event_discovery_repository.dart` and
-  `lib/events/data/external_event_repository.dart` retain raw Firestore cursors
+- `lib/contexts/discovery/data/event_discovery_repository.dart` and
+  `lib/contexts/events/data/external_event_repository.dart` retain raw Firestore cursors
   through client-side post-filtering so rejected documents are never fetched
   repeatedly or skipped.
 - `lib/core/data/read_limit_policy.dart` owns every numeric Firestore page or

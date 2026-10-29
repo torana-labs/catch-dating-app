@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/contexts/connections/domain/match.dart';
+import 'package:catch_dating_app/contexts/profiles/data/public_profile_repository.dart';
 import 'package:catch_dating_app/matches/shared/match_celebration_dialog.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/chats/domain/event_chat_profile.dart';
+import 'package:catch_dating_app/contexts/messaging/domain/event_chat_profile.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/form_profile_draft.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/user_profile/domain/form_profile_draft.dart';
 import 'package:flutter/widgets.dart';
 
 String eventProfileValue(

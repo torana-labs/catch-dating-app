@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/events/domain/event_attendee.dart';
-import 'package:catch_dating_app/hosts/data/host_roster_intake_repository.dart';
-import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
+import 'package:catch_dating_app/contexts/audience/data/host_roster_intake_repository.dart';
+import 'package:catch_dating_app/contexts/audience/domain/host_roster_import.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_attendee.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_import_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_intake_review_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_roster_mapping_field.dart';

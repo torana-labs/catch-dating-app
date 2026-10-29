@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/contexts/profiles/domain/profile_photo_policy.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/profile_prompts.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_tokens/catch_tokens.dart'
     show CatchAspectRatio, CatchInsets, CatchLayout, CatchRadius, CatchStroke;
 import 'package:catch_ui/catch_ui.dart';

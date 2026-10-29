@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/hosts/data/event_offer_preferences_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_defaults_repository.dart';
-import 'package:catch_dating_app/hosts/data/manager_event_setup_preferences.dart';
-import 'package:catch_dating_app/hosts/data/private_event_preferences_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_defaults_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/manager_event_setup_preferences.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_preferences_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/event_offer_preferences_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/event_offer_preferences_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_confirmation_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_offer_payment_details_section.dart';
@@ -13,6 +13,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+
 import '../support/page_preview.dart';
 import 'event_editor_preview.dart';
 import 'operations/preview.dart';

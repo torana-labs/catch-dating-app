@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/events/domain/organizer_moment.dart';
+import 'package:catch_dating_app/contexts/events/domain/organizer_moment.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Map<Object?, Object?> momentMap({

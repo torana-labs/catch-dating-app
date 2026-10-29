@@ -1334,7 +1334,7 @@ whether the Host must complete the final Send action, and whether Catch can see
 delivery or replies. It must never use one undifferentiated “Message” action.
 
 The source registries are
-`lib/communications/domain/communication_route.dart` and
+`lib/contexts/messaging/domain/communication_route.dart` and
 `functions/src/communications/communicationRoutes.ts`. `adapterKey` selects the
 provider implementation. A future LINE, WeChat, KakaoTalk, SMS, or regional
 adapter adds a new route or replaces an adapter behind the same exact contract;
@@ -1876,9 +1876,9 @@ hand:
 | Public organizer creation | `contracts/callables/create_organizer_payload.schema.json`, `functions/src/organizers/createOrganizer.ts`, Host organizer create controller | retain for explicit public identity; add separate private-workspace operation/lifecycle |
 | Organizer authority | `contracts/firestore/organizers.schema.json`, `contracts/firestore/organizer_team_memberships.schema.json` | private lifecycle, fail-closed public capability, event-staff authority |
 | Event creation | `contracts/callables/create_event_payload.schema.json`, `contracts/firestore/events.schema.json`, `functions/src/events/mutateEvent.ts`, `lib/hosts/presentation/event_management/create/` | explicit title, provenance/capabilities, operations-only mutation branch with no public side effects |
-| Operational roster | `contracts/firestore/event_attendees.schema.json`, `contracts/firestore/event_attendee_imports.schema.json`, `functions/src/events/eventAttendees.ts`, `functions/src/events/eventAttendeeProjection.ts`, `lib/events/data/event_attendee_repository.dart` | preview/version token, correction, conditional undo receipt, absolute offline attendance operations, one Host roster |
+| Operational roster | `contracts/firestore/event_attendees.schema.json`, `contracts/firestore/event_attendee_imports.schema.json`, `functions/src/events/eventAttendees.ts`, `functions/src/events/eventAttendeeProjection.ts`, `lib/contexts/bookings/data/event_attendee_repository.dart` | preview/version token, correction, conditional undo receipt, absolute offline attendance operations, one Host roster |
 | Host event workspace | `lib/hosts/presentation/host_event_manage_route_screen.dart`, `lib/hosts/presentation/host_event_manage_screen.dart`, `lib/hosts/presentation/host_event_manage_controller.dart` | Prepare/Guests/Run/Follow up composition and lifecycle projection |
-| Event Success Host runtime | `lib/event_success/presentation/event_success_host_screen.dart`, `lib/event_success/presentation/host_parts/`, `lib/event_success/domain/`, `functions/src/eventSuccess/` | current-step Control Room, roster-agnostic rehearsal/runtime, optional reviewed manual-placement beat, recovery states |
+| Event Success Host runtime | `lib/event_success/presentation/event_success_host_screen.dart`, `lib/event_success/presentation/host_parts/`, `lib/contexts/live/domain/`, `lib/contexts/formats/domain/`, `functions/src/eventSuccess/` | current-step Control Room, roster-agnostic rehearsal/runtime, optional reviewed manual-placement beat, recovery states |
 | Reviews and feedback | `lib/hosts/presentation/widgets/host_event_reviews_panel.dart`, `functions/src/reviews/mutateReview.ts`, Event Success feedback/scorecard contracts | guest authorization, private feedback, external-attendee review provenance |
 | CRM contacts/segments | `lib/hosts/presentation/inbox/`, `lib/hosts/data/crm/`, `lib/hosts/domain/crm/`, `functions/src/organizers/organizerCrm.ts` | person directory/detail, contact/event/trait projections, merge receipts, saved/fixed segments and privacy actions |
 | Campaigns and WhatsApp | `functions/src/events/sendEventBroadcast.ts`, Operations platform, organizer communication-preference contract | campaign/recipient/sender/template contracts, organizer-owned WABA onboarding, dispatcher, webhook/status/STOP/reply/report surfaces |

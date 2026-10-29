@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/shared/club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/club_placeholder_cover.dart';
+import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_badge.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';

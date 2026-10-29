@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_details_repository.dart';
+import 'package:catch_dating_app/contexts/events/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/core/app_error_context.dart' as operation;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
@@ -9,8 +11,6 @@ import 'package:catch_dating_app/core/schema_contracts/field_value_validation.da
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/events.dart'
     show EventMeetingLocation, LocationPickerResult, LocationPickerScreen;
-import 'package:catch_dating_app/hosts/data/private_event_details_repository.dart';
-import 'package:catch_dating_app/hosts/data/private_event_setup_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/host_private_event_listing_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_content_section.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/private_event_details_controller.dart';

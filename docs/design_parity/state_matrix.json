@@ -1324,9 +1324,9 @@
           "implementationPaths": [
             "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
             "lib/cross_paths/presentation/cross_paths_invitation_controller.dart",
-            "lib/cross_paths/data/cross_paths_repository.dart",
-            "lib/cross_paths/domain/cross_paths_invitation.dart",
-            "lib/cross_paths/domain/cross_paths_pair_hold.dart"
+            "lib/contexts/connections/data/cross_paths_repository.dart",
+            "lib/contexts/connections/domain/cross_paths_invitation.dart",
+            "lib/contexts/connections/domain/cross_paths_pair_hold.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -2297,7 +2297,7 @@
           "routeId": "eventSuccessCompanionScreen",
           "implementationPaths": [
             "lib/event_success/presentation/event_success_companion_screen.dart",
-            "lib/event_success/domain/event_success_runtime.dart",
+            "lib/contexts/live/domain/event_success_runtime.dart",
             "lib/event_success/presentation/event_success_controller.dart",
             "lib/event_success/event_success_companion_launcher.dart",
             "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
@@ -4202,7 +4202,7 @@
           "implementationPaths": [
             "lib/public_profile/presentation/public_profile_screen.dart",
             "lib/public_profile/presentation/public_profile_controller.dart",
-            "lib/public_profile/data/public_profile_repository.dart",
+            "lib/contexts/profiles/data/public_profile_repository.dart",
             "lib/swipes/shared/profile_surface/profile_surface.dart",
             "lib/swipes/shared/profile_surface/profile_body.dart",
             "lib/swipes/shared/profile_surface/profile_view_mapper.dart"
@@ -4497,15 +4497,15 @@
             "lib/hosts/events/presentation/host_events_state.dart",
             "lib/hosts/events/presentation/host_events_view_model.dart",
             "lib/hosts/events/presentation/host_events_timeline_controller.dart",
-            "lib/hosts/data/host_attendance_outbox.dart",
-            "lib/hosts/today/data/host_attention_repository.dart",
-            "lib/hosts/today/domain/host_attention_item.dart",
+            "lib/contexts/bookings/data/host_attendance_outbox.dart",
+            "lib/contexts/insights/data/host_attention_repository.dart",
+            "lib/contexts/insights/domain/host_attention_item.dart",
             "lib/hosts/today/presentation/host_today_feed_controller.dart",
             "lib/hosts/today/presentation/host_today_screen.dart",
             "lib/hosts/today/presentation/host_today_state.dart",
             "lib/hosts/today/presentation/host_today_view_model.dart",
-            "lib/clubs/data/clubs_repository.dart",
-            "lib/events/data/event_repository.dart"
+            "lib/contexts/organizers/data/clubs_repository.dart",
+            "lib/contexts/events/data/event_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -4900,9 +4900,9 @@
             "lib/hosts/presentation/customers/host_customer_memory_section.dart",
             "lib/hosts/presentation/customers/host_customers_screen_state.dart",
             "lib/hosts/presentation/customers/host_customers_controller.dart",
-            "lib/hosts/data/crm/host_contacts_repository.dart",
-            "lib/hosts/data/crm/host_saved_audience_repository.dart",
-            "lib/hosts/data/crm/host_communication_repository.dart",
+            "lib/contexts/audience/data/crm/host_contacts_repository.dart",
+            "lib/contexts/audience/data/crm/host_saved_audience_repository.dart",
+            "lib/contexts/audience/data/crm/host_communication_repository.dart",
             "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
             "lib/hosts/presentation/host_audience_controller.dart"
           ],
@@ -5404,8 +5404,8 @@
           "implementationPaths": [
             "lib/hosts/presentation/applications/host_application_detail_screen.dart",
             "lib/hosts/presentation/applications/host_applications_controller.dart",
-            "lib/hosts/data/host_application_repository.dart",
-            "lib/hosts/domain/host_application_import.dart"
+            "lib/contexts/forms/data/host_application_repository.dart",
+            "lib/contexts/forms/domain/host_application_import.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -5492,9 +5492,9 @@
             "lib/hosts/presentation/host_operations/host_club_spoke_scaffold.dart",
             "lib/hosts/presentation/club_management/host_club_edit_controller.dart",
             "lib/hosts/presentation/club_management/host_club_defaults_saver.dart",
-            "lib/clubs/data/clubs_repository.dart",
-            "lib/payments/data/host_payment_account_repository.dart",
-            "lib/hosts/data/host_analytics_repository.dart",
+            "lib/contexts/organizers/data/clubs_repository.dart",
+            "lib/contexts/payments/data/host_payment_account_repository.dart",
+            "lib/contexts/insights/data/host_analytics_repository.dart",
             "lib/hosts/presentation/payments/host_payment_account_card.dart",
             "lib/hosts/presentation/widgets/host_team_management_section.dart"
           ],
@@ -7276,8 +7276,8 @@
             "lib/hosts/presentation/host_event_manage_screen.dart",
             "lib/hosts/presentation/widgets/host_event_participants_section.dart",
             "lib/events/shared/attendance_sheet_view_model.dart",
-            "lib/events/data/event_participation_repository.dart",
-            "lib/events/data/event_repository.dart",
+            "lib/contexts/bookings/data/event_participation_repository.dart",
+            "lib/contexts/events/data/event_repository.dart",
             "lib/events/presentation/event_booking_controller.dart",
             "lib/event_success/presentation/event_success_host_screen.dart",
             "lib/event_success/presentation/event_success_controller.dart"
@@ -8375,8 +8375,8 @@
             "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
             "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
             "lib/event_rehearsal/presentation/event_rehearsal_controller.dart",
-            "lib/event_rehearsal/data/event_rehearsal_repository.dart",
-            "lib/event_rehearsal/domain/event_rehearsal.dart"
+            "lib/contexts/live/data/event_rehearsal_repository.dart",
+            "lib/contexts/live/domain/event_rehearsal.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -8513,10 +8513,10 @@
             "lib/hosts/presentation/inbox/host_sends_page_body.dart",
             "lib/hosts/presentation/host_operations_screen.dart",
             "lib/hosts/presentation/host_operations/host_whatsapp_setup_section.dart",
-            "lib/hosts/data/crm/host_campaign_repository.dart",
-            "lib/hosts/data/crm/host_communication_repository.dart",
-            "lib/hosts/data/crm/host_saved_audience_repository.dart",
-            "lib/hosts/data/crm/host_whatsapp_repository.dart",
+            "lib/contexts/audience/data/crm/host_campaign_repository.dart",
+            "lib/contexts/audience/data/crm/host_communication_repository.dart",
+            "lib/contexts/audience/data/crm/host_saved_audience_repository.dart",
+            "lib/contexts/audience/data/crm/host_whatsapp_repository.dart",
             "lib/chats/presentation/inbox/chats_list_view_model.dart",
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
@@ -8525,8 +8525,8 @@
             "packages/catch_ui/lib/src/components/catch_field.dart",
             "packages/catch_ui/lib/src/patterns/catch_navigation_viewport.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
-            "lib/events/data/event_repository.dart",
-            "lib/events/data/event_participation_repository.dart"
+            "lib/contexts/events/data/event_repository.dart",
+            "lib/contexts/bookings/data/event_participation_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -9138,11 +9138,11 @@
             "lib/chats/presentation/chat_thread_action_controller.dart",
             "lib/chats/presentation/chat_retry_controller.dart",
             "lib/chats/presentation/chat_controller.dart",
-            "lib/chats/data/conversation_repository.dart",
-            "lib/matches/data/match_repository.dart",
-            "lib/events/data/event_repository.dart",
-            "lib/clubs/data/clubs_repository.dart",
-            "lib/public_profile/data/public_profile_repository.dart",
+            "lib/contexts/messaging/data/conversation_repository.dart",
+            "lib/contexts/connections/data/match_repository.dart",
+            "lib/contexts/events/data/event_repository.dart",
+            "lib/contexts/organizers/data/clubs_repository.dart",
+            "lib/contexts/profiles/data/public_profile_repository.dart",
             "packages/catch_ui/lib/src/components/catch_top_bar.dart",
             "lib/chats/presentation/widgets/chat_event_context_header.dart",
             "lib/chats/presentation/widgets/chat_message_list.dart",
@@ -9594,8 +9594,8 @@
             "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
             "lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart",
             "lib/hosts/events/presentation/moments/organizer_moments_controller.dart",
-            "lib/hosts/events/data/organizer_moments_repository.dart",
-            "lib/hosts/events/domain/organizer_moment.dart"
+            "lib/contexts/events/data/organizer_moments_repository.dart",
+            "lib/contexts/events/domain/organizer_moment.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -10181,9 +10181,9 @@
           "routeId": "calendarScreen",
           "implementationPaths": [
             "lib/events/presentation/calendar/calendar_screen.dart",
-            "lib/events/data/event_repository.dart",
-            "lib/events/data/saved_event_repository.dart",
-            "lib/clubs/data/club_name_lookup.dart"
+            "lib/contexts/events/data/event_repository.dart",
+            "lib/contexts/discovery/data/saved_event_repository.dart",
+            "lib/contexts/organizers/data/club_name_lookup.dart"
           ],
           "componentIds": [
             "catch.surface",
@@ -10354,8 +10354,8 @@
           "routeId": "savedEventsScreen",
           "implementationPaths": [
             "lib/events/presentation/saved_events_screen.dart",
-            "lib/events/data/saved_event_repository.dart",
-            "lib/clubs/data/club_name_lookup.dart"
+            "lib/contexts/discovery/data/saved_event_repository.dart",
+            "lib/contexts/organizers/data/club_name_lookup.dart"
           ],
           "componentIds": [
             "catch.surface",
@@ -10510,7 +10510,7 @@
           "implementationPaths": [
             "lib/swipes/presentation/filters_screen.dart",
             "lib/swipes/presentation/filters_controller.dart",
-            "lib/user_profile/data/user_profile_repository.dart"
+            "lib/contexts/profiles/data/user_profile_repository.dart"
           ],
           "componentIds": [
             "catch.surface",
@@ -10717,9 +10717,9 @@
             "lib/swipes/presentation/event_recap_screen.dart",
             "lib/swipes/presentation/event_recap_screen_state.dart",
             "lib/swipes/presentation/event_recap_view_model.dart",
-            "lib/events/data/event_repository.dart",
-            "lib/events/data/event_participation_repository.dart",
-            "lib/public_profile/data/public_profiles_lookup.dart"
+            "lib/contexts/events/data/event_repository.dart",
+            "lib/contexts/bookings/data/event_participation_repository.dart",
+            "lib/contexts/profiles/data/public_profiles_lookup.dart"
           ],
           "componentIds": [
             "catch.surface",
@@ -11194,7 +11194,7 @@
             "lib/dashboard/presentation/activity_controller.dart",
             "lib/dashboard/presentation/notifications_list_state.dart",
             "lib/dashboard/presentation/widgets/activity_section.dart",
-            "lib/notifications/data/activity_notification_repository.dart"
+            "lib/contexts/messaging/data/activity_notification_repository.dart"
           ],
           "componentIds": [
             "catch.surface",
@@ -11447,8 +11447,8 @@
           "implementationPaths": [
             "lib/reviews/presentation/reviews_history_screen.dart",
             "lib/reviews/presentation/reviews_history_state.dart",
-            "lib/reviews/data/reviews_repository.dart",
-            "lib/events/data/event_repository.dart",
+            "lib/contexts/reviews/data/reviews_repository.dart",
+            "lib/contexts/events/data/event_repository.dart",
             "lib/reviews/shared/write_review_sheet.dart"
           ],
           "componentIds": [
@@ -11679,8 +11679,8 @@
           "implementationPaths": [
             "lib/launch_access/presentation/launch_access_application_screen.dart",
             "lib/launch_access/presentation/launch_access_controller.dart",
-            "lib/launch_access/data/launch_access_repository.dart",
-            "lib/launch_access/domain/launch_access_application.dart"
+            "lib/contexts/account/data/launch_access_repository.dart",
+            "lib/contexts/account/domain/launch_access_application.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -11819,9 +11819,9 @@
             "lib/safety/presentation/settings_screen.dart",
             "lib/safety/presentation/settings_account_state.dart",
             "lib/safety/presentation/settings_controller.dart",
-            "lib/safety/data/safety_repository.dart",
-            "lib/user_profile/data/user_profile_repository.dart",
-            "lib/public_profile/data/public_profiles_lookup.dart",
+            "lib/contexts/safety/data/safety_repository.dart",
+            "lib/contexts/profiles/data/user_profile_repository.dart",
+            "lib/contexts/profiles/data/public_profiles_lookup.dart",
             "lib/auth/presentation/auth_session_controller.dart"
           ],
           "componentIds": [
@@ -12183,9 +12183,9 @@
           "implementationPaths": [
             "lib/payments/presentation/payment_history_screen.dart",
             "lib/payments/presentation/payment_history_state.dart",
-            "lib/payments/data/payment_history_repository.dart",
-            "lib/events/data/event_repository.dart",
-            "lib/payments/domain/payment.dart"
+            "lib/contexts/payments/data/payment_history_repository.dart",
+            "lib/contexts/events/data/event_repository.dart",
+            "lib/contexts/payments/domain/payment.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -12507,8 +12507,8 @@
           "routeId": "hostWorkScreen",
           "implementationPaths": [
             "lib/hosts/work/presentation/host_work_screen.dart",
-            "lib/hosts/work/data/host_work_repository.dart",
-            "lib/hosts/work/domain/host_work_assignment.dart"
+            "lib/contexts/programmes/data/host_work_repository.dart",
+            "lib/contexts/programmes/domain/host_work_assignment.dart"
           ],
           "componentIds": [
             "catch.empty_state",
@@ -12564,7 +12564,7 @@
           "routeId": "hostWorkProgramScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_work_screen.dart",
-            "lib/programs/data/program_work_repository.dart"
+            "lib/contexts/programmes/data/program_work_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -12621,9 +12621,9 @@
           "routeId": "hostWorkArrivalsScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_arrivals_screen.dart",
-            "lib/programs/data/program_work_repository.dart",
-            "lib/programs/data/program_operations_outbox.dart",
-            "lib/programs/domain/program_models.dart"
+            "lib/contexts/programmes/data/program_work_repository.dart",
+            "lib/contexts/programmes/data/program_operations_outbox.dart",
+            "lib/contexts/programmes/domain/program_models.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -12688,9 +12688,9 @@
           "routeId": "hostWorkDispatchScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_dispatch_screen.dart",
-            "lib/programs/data/program_work_repository.dart",
-            "lib/programs/data/program_work_repository_reports.dart",
-            "lib/programs/data/program_operations_outbox.dart"
+            "lib/contexts/programmes/data/program_work_repository.dart",
+            "lib/contexts/programmes/data/program_work_repository_reports.dart",
+            "lib/contexts/programmes/data/program_operations_outbox.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -12757,8 +12757,8 @@
           "routeId": "hostWorkHotelScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_hotel_desk_screen.dart",
-            "lib/programs/data/program_work_repository.dart",
-            "lib/programs/data/program_work_repository_rooms.dart",
+            "lib/contexts/programmes/data/program_work_repository.dart",
+            "lib/contexts/programmes/data/program_work_repository_rooms.dart",
             "lib/programs/presentation/program_trip_actions_controller.dart"
           ],
           "componentIds": [
@@ -12824,10 +12824,10 @@
           "routeId": "hostWorkDoorScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_door_screen.dart",
-            "lib/programs/data/program_work_repository.dart",
-            "lib/programs/data/program_work_repository_door.dart",
-            "lib/programs/data/program_operations_outbox.dart",
-            "lib/programs/domain/program_models.dart"
+            "lib/contexts/programmes/data/program_work_repository.dart",
+            "lib/contexts/programmes/data/program_work_repository_door.dart",
+            "lib/contexts/programmes/data/program_operations_outbox.dart",
+            "lib/contexts/programmes/domain/program_models.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -12892,7 +12892,7 @@
           "routeId": "hostWorkTripsScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_trips_screen.dart",
-            "lib/programs/data/program_work_repository.dart",
+            "lib/contexts/programmes/data/program_work_repository.dart",
             "lib/programs/presentation/program_trip_actions_controller.dart"
           ],
           "componentIds": [
@@ -12953,7 +12953,7 @@
           "implementationPaths": [
             "lib/programs/presentation/program_create_screen.dart",
             "lib/programs/presentation/program_create_controller.dart",
-            "lib/programs/data/program_inventory_repository.dart"
+            "lib/contexts/programmes/data/program_inventory_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13049,7 +13049,7 @@
             "lib/programs/presentation/program_workspace_screen.dart",
             "lib/programs/presentation/program_workspace_surface.dart",
             "lib/programs/presentation/program_workspace_controller.dart",
-            "lib/programs/data/program_setup_repository.dart"
+            "lib/contexts/programmes/data/program_setup_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13103,7 +13103,7 @@
           "implementationPaths": [
             "lib/programs/presentation/program_guests_screen.dart",
             "lib/programs/presentation/program_workspace_controller.dart",
-            "lib/programs/data/program_setup_repository.dart"
+            "lib/contexts/programmes/data/program_setup_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13158,7 +13158,7 @@
           "implementationPaths": [
             "lib/programs/presentation/program_team_screen.dart",
             "lib/programs/presentation/program_workspace_controller.dart",
-            "lib/programs/data/program_setup_repository.dart"
+            "lib/contexts/programmes/data/program_setup_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13213,7 +13213,7 @@
           "implementationPaths": [
             "lib/programs/presentation/program_import_screen.dart",
             "lib/programs/presentation/program_workspace_controller.dart",
-            "lib/programs/domain/program_manifest_mapper.dart"
+            "lib/contexts/programmes/domain/program_manifest_mapper.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13266,8 +13266,8 @@
             "lib/hosts/events/presentation/moments/organizer_moments_screen.dart",
             "lib/hosts/events/presentation/moments/organizer_moment_edit_screen.dart",
             "lib/hosts/events/presentation/moments/organizer_moments_controller.dart",
-            "lib/hosts/events/data/organizer_moments_repository.dart",
-            "lib/hosts/events/domain/organizer_moment.dart"
+            "lib/contexts/events/data/organizer_moments_repository.dart",
+            "lib/contexts/events/domain/organizer_moment.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13352,8 +13352,8 @@
           "routeId": "hostWorkCountsScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_stakeholder_screen.dart",
-            "lib/programs/data/program_work_repository.dart",
-            "lib/programs/data/program_work_repository_reports.dart"
+            "lib/contexts/programmes/data/program_work_repository.dart",
+            "lib/contexts/programmes/data/program_work_repository_reports.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13411,8 +13411,8 @@
           "implementationPaths": [
             "lib/programs/presentation/program_attendance_report_screen.dart",
             "lib/programs/presentation/program_attendance_actions_controller.dart",
-            "lib/programs/data/program_work_repository.dart",
-            "lib/programs/data/program_work_repository_reports.dart"
+            "lib/contexts/programmes/data/program_work_repository.dart",
+            "lib/contexts/programmes/data/program_work_repository_reports.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13469,7 +13469,7 @@
           "routeId": "hostWorkNowScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_now_next_screen.dart",
-            "lib/programs/data/program_work_repository.dart"
+            "lib/contexts/programmes/data/program_work_repository.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -13522,8 +13522,8 @@
           "routeId": "hostWorkAttentionScreen",
           "implementationPaths": [
             "lib/programs/presentation/program_attention_screen.dart",
-            "lib/programs/data/program_work_repository.dart",
-            "lib/programs/data/program_work_repository_reports.dart",
+            "lib/contexts/programmes/data/program_work_repository.dart",
+            "lib/contexts/programmes/data/program_work_repository_reports.dart",
             "functions/src/programs/programStaffAttention.ts"
           ],
           "componentIds": [
@@ -13577,8 +13577,8 @@
           "implementationPaths": [
             "lib/programs/presentation/program_hotel_rooms_screen.dart",
             "lib/programs/presentation/program_stay_actions_controller.dart",
-            "lib/programs/data/program_work_repository.dart",
-            "lib/programs/data/program_work_repository_rooms.dart",
+            "lib/contexts/programmes/data/program_work_repository.dart",
+            "lib/contexts/programmes/data/program_work_repository_rooms.dart",
             "functions/src/programs/programRooms.ts"
           ],
           "componentIds": [
@@ -13677,7 +13677,7 @@
             "lib/programs/presentation/program_lodging_setup_page_body.dart",
             "lib/programs/presentation/program_lodging_setup_form.dart",
             "lib/programs/presentation/program_lodging_layout.dart",
-            "lib/programs/data/program_lodging_repository.dart"
+            "lib/contexts/programmes/data/program_lodging_repository.dart"
           ],
           "componentIds": [
             "catch.button",

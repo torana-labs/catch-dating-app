@@ -17,7 +17,7 @@
   "x-storage-related-collection": "matches",
   "x-storage-known-consumers": [
     "lib/chats/presentation/chat_screen.dart",
-    "lib/chats/data/chat_repository.dart",
+    "lib/contexts/messaging/data/chat_repository.dart",
     "functions/src/safety/moderateChatMessage.ts"
   ],
   "properties": {

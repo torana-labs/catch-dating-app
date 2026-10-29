@@ -1,12 +1,14 @@
 import 'dart:convert';
+
+import 'package:catch_dating_app/contexts/forms/data/forms/host_event_offer_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/data/forms/host_event_offer_gateway.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_event_offer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_event_offer_review_section.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import '../../test_pump_helpers.dart';
 import 'event_offer_controller_test_support.dart';
 

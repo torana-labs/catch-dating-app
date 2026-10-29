@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
-import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
-import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
+import 'package:catch_dating_app/contexts/account/data/launch_access_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
+import 'package:catch_dating_app/contexts/account/domain/launch_access_application.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

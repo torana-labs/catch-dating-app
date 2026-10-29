@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_compatibility_response.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_compatibility_response.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_card.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_defaults_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';

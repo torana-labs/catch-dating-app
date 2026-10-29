@@ -92,8 +92,8 @@ const SPECS = [
   "className": "EventMeetingLocation",
   "schema": "shared/event_common.schema.json",
   "pointer": "/definitions/eventMeetingLocation",
-  "output": "lib/events/domain/event_meeting_location.dart",
-  "extensionFile": "lib/events/domain/event_meeting_location_extensions.dart",
+  "output": "lib/contexts/events/domain/event_meeting_location.dart",
+  "extensionFile": "lib/contexts/events/domain/event_meeting_location_extensions.dart",
   "classes": [
     {
       "name": "EventMeetingLocation",
@@ -130,10 +130,10 @@ const SPECS = [
   "className": "EventItineraryItem",
   "schema": "shared/event_common.schema.json",
   "pointer": "/definitions/eventItineraryItem",
-  "output": "lib/events/domain/event_itinerary.dart",
-  "extensionFile": "lib/events/domain/event_itinerary_extensions.dart",
+  "output": "lib/contexts/events/domain/event_itinerary.dart",
+  "extensionFile": "lib/contexts/events/domain/event_itinerary_extensions.dart",
   "imports": [
-    "import 'package:catch_dating_app/events/domain/event_meeting_location.dart';"
+    "import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';"
   ],
   "enums": [
     {
@@ -189,19 +189,19 @@ const SPECS = [
   {
   "className": "Event",
   "schema": "firestore/events.schema.json",
-  "output": "lib/events/domain/event.dart",
+  "output": "lib/contexts/events/domain/event.dart",
   "imports": [
     "import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';",
     "import 'package:catch_dating_app/core/country_markets.dart';",
     "import 'package:catch_dating_app/core/firestore_converters.dart';",
     "import 'package:catch_dating_app/core/media/uploaded_photo.dart';",
-    "import 'package:catch_dating_app/event_policies/domain/event_policy.dart';",
-    "import 'package:catch_dating_app/events/domain/event_constraints.dart';",
-    "import 'package:catch_dating_app/events/domain/event_itinerary.dart';",
-    "import 'package:catch_dating_app/events/domain/event_meeting_location.dart';",
-    "import 'package:catch_dating_app/events/domain/event_types.dart';"
+    "import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';",
+    "import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';",
+    "import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';",
+    "import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';",
+    "import 'package:catch_dating_app/contexts/events/domain/event_types.dart';"
   ],
-  "extensionFile": "lib/events/domain/event_extensions.dart",
+  "extensionFile": "lib/contexts/events/domain/event_extensions.dart",
   "exports": [
     "event_types.dart",
     "event_meeting_location.dart"
@@ -597,9 +597,9 @@ const SPECS = [
   {
     className: "Swipe",
     schema: "firestore/swipes.schema.json",
-    output: "lib/swipes/domain/swipe.dart",
+    output: "lib/contexts/connections/domain/swipe.dart",
     imports: [IMPORT_CONVERTERS],
-    extensionFile: "lib/swipes/domain/swipe_extensions.dart",
+    extensionFile: "lib/contexts/connections/domain/swipe_extensions.dart",
     enums: [
       {name: "SwipeDirection", schemaPointer: "/properties/direction"},
       {
@@ -629,9 +629,9 @@ const SPECS = [
   {
     className: "ClubMembership",
     schema: "firestore/club_memberships.schema.json",
-    output: "lib/clubs/domain/club_membership.dart",
+    output: "lib/contexts/organizers/domain/club_membership.dart",
     imports: [IMPORT_CONVERTERS],
-    extensionFile: "lib/clubs/domain/club_membership_extensions.dart",
+    extensionFile: "lib/contexts/organizers/domain/club_membership_extensions.dart",
     enums: [
       {name: "ClubMembershipRole", schemaPointer: "/properties/role"},
       {name: "ClubMembershipStatus", schemaPointer: "/properties/status"},
@@ -658,7 +658,7 @@ const SPECS = [
   {
     className: "Review",
     schema: "firestore/reviews.schema.json",
-    output: "lib/reviews/domain/review.dart",
+    output: "lib/contexts/reviews/domain/review.dart",
     imports: [IMPORT_CONVERTERS],
     classes: [
       {
@@ -705,10 +705,10 @@ const SPECS = [
     className: "EventConstraints",
     schema: "shared/event_common.schema.json",
     pointer: "/definitions/eventConstraints",
-    output: "lib/events/domain/event_constraints.dart",
+    output: "lib/contexts/events/domain/event_constraints.dart",
     // No extra imports: the generated class is pure scalars. Gender (used by
     // the extension's maxForGender) is imported only by the extension file.
-    extensionFile: "lib/events/domain/event_constraints_extensions.dart",
+    extensionFile: "lib/contexts/events/domain/event_constraints_extensions.dart",
     classes: [
       {
         name: "EventConstraints",
@@ -1130,7 +1130,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 // Covered domain classes intentionally NOT generated, and why. These stay
 // hand-written; do not try to force them through this generator.
 //
-//   Payment (lib/payments/domain/payment.dart)
+//   Payment (lib/contexts/payments/domain/payment.dart)
 //     PaymentStatus carries per-member doc comments and a deliberate decode
 //     fail-safe (@JsonKey(unknownEnumValue: PaymentStatus.failed)) so a stale
 //     client tolerates a newer server status (e.g. refundFailed) instead of
@@ -1141,12 +1141,12 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 //   nullable legacy mirrors are explicit projection choices; derived behavior
 //   and wire-name compatibility live in event_extensions.dart/event_types.dart.
 //
-//   PublicProfile (lib/public_profile/domain/public_profile.dart)
+//   PublicProfile (lib/contexts/profiles/domain/public_profile.dart)
 //     fromJson wraps a hand-written _migratePublicProfileJson() that rewrites
 //     legacy bio → profilePrompts and back-fills activityPreferences before
 //     decoding. Generating a plain fromJson would drop that migration.
 //
-//   Match (lib/matches/domain/match.dart)
+//   Match (lib/contexts/connections/domain/match.dart)
 //     eventIds uses @JsonKey(readValue: _readEventIds) to coalesce a legacy
 //     scalar eventId into the list. Schema also requires participantIds, which
 //     the curated client class deliberately does not carry.
@@ -1165,7 +1165,7 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
 //     Hand-rolled non-freezed value objects with enum-fallback fromJson and
 //     bespoke equality; out of scope for a json_serializable projection.
 //
-//   Club / ClubHostProfile (lib/clubs/domain/club.dart)
+//   Club / ClubHostProfile (lib/contexts/organizers/domain/club.dart)
 //     Club carries derived getters (isOwnedBy/isHostedBy/displayHostProfiles)
 //     and is a curated projection of a schema with ~20 extra fields
 //     (entityKind, ownership, claim, publicPage, verifiedReviewCount, ...).

@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/forms/data/forms/host_form_admission_gateway.dart';
+import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
-import 'package:catch_dating_app/hosts/data/forms/host_form_admission_gateway.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_admission.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_admission_section.dart';
 import 'package:flutter/material.dart';

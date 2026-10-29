@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
+import 'package:catch_dating_app/contexts/formats/domain/event_success_activity_profile.dart';
+import 'package:catch_dating_app/contexts/live/domain/event_success_standings.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

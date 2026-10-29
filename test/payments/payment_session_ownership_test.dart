@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
+import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/contexts/payments/data/razorpay_checkout.dart';
+import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/payments/data/payment_repository.dart';
-import 'package:catch_dating_app/payments/data/razorpay_checkout.dart';
-import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

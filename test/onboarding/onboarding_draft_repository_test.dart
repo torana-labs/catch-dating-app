@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/contexts/profiles/data/onboarding_draft_repository.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/onboarding_draft.dart';
+import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
-import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

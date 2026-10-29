@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:flutter_test/flutter_test.dart';

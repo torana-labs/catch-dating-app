@@ -79,30 +79,30 @@ flutter analyze --fatal-infos \
   lib/core/schema_contracts/generated/callables \
   lib/core/schema_contracts/generated/schema_contracts.g.dart \
   lib/core/schema_contracts/generated/schemas \
-  lib/clubs/data/clubs_repository.dart \
-  lib/clubs/data/club_callable_responses.dart \
-  lib/clubs/data/club_posts_repository.dart \
-  lib/image_uploads/data/image_upload_repository.dart \
+  lib/contexts/organizers/data/clubs_repository.dart \
+  lib/contexts/organizers/data/club_callable_responses.dart \
+  lib/contexts/organizers/data/club_posts_repository.dart \
+  lib/contexts/profiles/data/image_upload_repository.dart \
   lib/hosts/presentation/club_management/create/create_club_controller.dart \
-  lib/reviews/data/reviews_repository.dart \
-  lib/reviews/data/review_callable_adapters.dart \
+  lib/contexts/reviews/data/reviews_repository.dart \
+  lib/contexts/reviews/data/review_callable_adapters.dart \
   lib/reviews/shared/reviews_section.dart \
-  lib/events/data/event_repository.dart \
-  lib/events/data/event_callable_adapters.dart \
-  lib/events/data/event_callable_responses.dart \
-  lib/user_profile/data/user_profile_repository.dart \
-  lib/safety/data/safety_repository.dart \
-  lib/payments/data/payment_repository.dart \
-  lib/payments/data/payment_history_repository.dart \
-  lib/payments/data/payment_callable_requests.dart \
-  lib/payments/data/payment_callable_responses.dart \
-  lib/locations/data/places_repository.dart \
-  lib/locations/data/places_callable_requests.dart \
-  lib/locations/data/places_callable_responses.dart \
-  lib/matches/data/match_repository.dart \
-  lib/event_success/data/event_success_callable_responses.dart \
-  lib/event_success/data/event_success_repository.dart \
-  lib/public_profile/data/public_profile_repository.dart \
+  lib/contexts/events/data/event_repository.dart \
+  lib/contexts/events/data/event_callable_adapters.dart \
+  lib/contexts/events/data/event_callable_responses.dart \
+  lib/contexts/profiles/data/user_profile_repository.dart \
+  lib/contexts/safety/data/safety_repository.dart \
+  lib/contexts/payments/data/payment_repository.dart \
+  lib/contexts/payments/data/payment_history_repository.dart \
+  lib/contexts/payments/data/payment_callable_requests.dart \
+  lib/contexts/payments/data/payment_callable_responses.dart \
+  lib/contexts/events/data/places_repository.dart \
+  lib/contexts/events/data/places_callable_requests.dart \
+  lib/contexts/events/data/places_callable_responses.dart \
+  lib/contexts/connections/data/match_repository.dart \
+  lib/contexts/live/data/event_success_callable_responses.dart \
+  lib/contexts/live/data/event_success_repository.dart \
+  lib/contexts/profiles/data/public_profile_repository.dart \
   test/core/schema_contracts_generated_test.dart \
   test/core/callable_dto_contracts_test.dart \
   test/core/domain_fixture_parity_test.dart \
