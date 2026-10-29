@@ -2164,6 +2164,44 @@ export interface CatchWhatsappWebhookEventDocument {
   expiresAt: FirebaseFirestore.Timestamp;
 }
 
+/**
+ * One automatic reply from Catch's WhatsApp number to someone who just messaged it, claimed before sending so a redelivered message never sends twice. Keeps no message text, only which reply it was, the inbound receipt it answers, the sender's endpoint hash and the outcome. An uncertain send stays consumed. Expires after 30 days.
+ */
+export interface CatchWhatsappAutoReplyDocument {
+  schemaVersion: 1;
+  replyId: string;
+  kind:
+    | "nomination_queued"
+    | "nomination_without_links"
+    | "nomination_rate_limited"
+    | "clarification_question"
+    | "support_acknowledged"
+    | "listing_ready";
+  sourceEventId: string;
+  endpointHash: string;
+  state:
+    | "claimed"
+    | "sent"
+    | "unknown"
+    | "skipped_stop"
+    | "skipped_unavailable";
+  providerMessageId: string | null;
+  createdAtMillis: number;
+  updatedAtMillis: number;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Catch asked a nominator whether their last message was a nomination or a question, and is waiting for "1" or "2". Keyed by the sender's endpoint hash, so each sender has at most one open question; it names the inbound receipt the answer applies to and expires after 24 hours. Keeps no message text.
+ */
+export interface CatchWhatsappClarificationDocument {
+  schemaVersion: 1;
+  endpointHash: string;
+  sourceEventId: string;
+  askedAtMillis: number;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
 export interface SalesImportHistoryRowDocument {
   schemaVersion: 1;
   classification: "sales_private";

@@ -137,7 +137,7 @@
             "lib/auth/presentation/auth_screen.dart",
             "lib/auth/presentation/phone_step.dart",
             "lib/auth/presentation/otp_step.dart",
-            "lib/core/widgets/splash_screen.dart"
+            "lib/pages/startup/splash_screen.dart"
           ],
           "componentIds": [
             "catch.button",
@@ -10981,7 +10981,7 @@
             "lib/events/presentation/event_location_map_screen.dart",
             "lib/events/presentation/event_detail_view_model.dart",
             "lib/events/presentation/widgets/event_pins_map.dart",
-            "lib/core/external_links.dart"
+            "lib/platform/device/external_links.dart"
           ],
           "componentIds": [
             "catch.button",

@@ -1541,35 +1541,35 @@
   },
   "coreCatchErrorBannerLabelTryAgain": "Try again",
   "@coreCatchErrorBannerLabelTryAgain": {
-    "description": "Product copy used by lib/core/riverpod_ui/catch_localized_error_banner.dart (label).",
+    "description": "Product copy used by lib/platform/riverpod_ui/catch_localized_error_banner.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_banner"
   },
   "coreCatchFieldTooltipField": "field",
   "@coreCatchFieldTooltipField": {
-    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (tooltip).",
+    "description": "Product copy used by lib/platform/l10n/catch_ui_copy.dart (tooltip).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
   },
   "coreCatchFieldLabelCancel": "Cancel",
   "@coreCatchFieldLabelCancel": {
-    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (label).",
+    "description": "Product copy used by lib/platform/l10n/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
   },
   "coreCatchFieldLabelDone": "Done",
   "@coreCatchFieldLabelDone": {
-    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (label).",
+    "description": "Product copy used by lib/platform/l10n/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
   },
   "coreCatchFieldLabelSaving": "Saving…",
   "@coreCatchFieldLabelSaving": {
-    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (saving label).",
+    "description": "Product copy used by lib/platform/l10n/catch_ui_copy.dart (saving label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
@@ -1597,7 +1597,7 @@
   },
   "coreCatchFormFieldLabelTextOptional": "Optional",
   "@coreCatchFormFieldLabelTextOptional": {
-    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
+    "description": "Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_form_field_label"
@@ -1658,35 +1658,35 @@
   },
   "coreCatchFrameworkErrorViewTextSomethingWentWrong": "Something went wrong",
   "@coreCatchFrameworkErrorViewTextSomethingWentWrong": {
-    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
+    "description": "Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_framework_error_view"
   },
   "coreCatchFrameworkErrorViewTextDeveloperDetails": "Developer details",
   "@coreCatchFrameworkErrorViewTextDeveloperDetails": {
-    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
+    "description": "Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_framework_error_view"
   },
   "coreCatchPersonRowTextTyping": "Typing...",
   "@coreCatchPersonRowTextTyping": {
-    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart (Text).",
+    "description": "Product copy resolved by lib/platform/l10n/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_person_row"
   },
   "coreCatchPersonRowLabelUnreadChat": "Unread chat",
   "@coreCatchPersonRowLabelUnreadChat": {
-    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).",
+    "description": "Product copy resolved by lib/platform/l10n/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_person_row"
   },
   "coreCatchPersonRowLabelNewMatch": "New match",
   "@coreCatchPersonRowLabelNewMatch": {
-    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).",
+    "description": "Product copy resolved by lib/platform/l10n/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_person_row"
@@ -1707,7 +1707,7 @@
   },
   "coreOrderedPhotoPickerTextCover": "COVER",
   "@coreOrderedPhotoPickerTextCover": {
-    "description": "Product copy used by lib/core/widgets/ordered_photo_picker.dart (Text).",
+    "description": "Product copy used by lib/platform/media/ordered_photo_picker.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.ordered_photo_picker"
@@ -8089,7 +8089,7 @@
   },
   "coreBlockUserDialogTitleBlockName": "Block {name}?",
   "@coreBlockUserDialogTitleBlockName": {
-    "description": "Product copy used by lib/core/widgets/block_user_dialog.dart (title).",
+    "description": "Product copy used by lib/contexts/safety/parts/block_user_dialog.dart (title).",
     "placeholders": {
       "name": {}
     },
@@ -8099,7 +8099,7 @@
   },
   "coreCatchFieldTooltipClearValue1": "Clear {value1}",
   "@coreCatchFieldTooltipClearValue1": {
-    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (tooltip).",
+    "description": "Product copy used by lib/platform/l10n/catch_ui_copy.dart (tooltip).",
     "placeholders": {
       "value1": {}
     },
@@ -8109,7 +8109,7 @@
   },
   "coreCatchFormFieldLabelLabelLabelOptional": "{label}, optional",
   "@coreCatchFormFieldLabelLabelLabelOptional": {
-    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
+    "description": "Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (label).",
     "placeholders": {
       "label": {}
     },
@@ -8140,7 +8140,7 @@
   },
   "coreCatchPersonAvatarTextCount": "+{count}",
   "@coreCatchPersonAvatarTextCount": {
-    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (avatar count).",
+    "description": "Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (avatar count).",
     "placeholders": {
       "count": {}
     },
@@ -8150,7 +8150,7 @@
   },
   "coreCatchPersonRowLabelLabelUnreadChats": "{label} unread chats",
   "@coreCatchPersonRowLabelLabelUnreadChats": {
-    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart (label).",
+    "description": "Product copy resolved by lib/platform/l10n/catch_ui_copy.dart (label).",
     "placeholders": {
       "label": {}
     },
@@ -8160,7 +8160,7 @@
   },
   "coreCatchSearchFieldTooltipClearPlaceholder": "Clear {placeholder}",
   "@coreCatchSearchFieldTooltipClearPlaceholder": {
-    "description": "Search-field tooltip supplied by the app copy adapter in lib/core/presentation/catch_ui_copy.dart.",
+    "description": "Search-field tooltip supplied by the app copy adapter in lib/platform/l10n/catch_ui_copy.dart.",
     "placeholders": {
       "placeholder": {}
     },
@@ -8184,7 +8184,7 @@
   },
   "coreCatchStepFlowHeaderTextStepClampedstepOfTotal": "STEP {clampedStep} OF {total}",
   "@coreCatchStepFlowHeaderTextStepClampedstepOfTotal": {
-    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart for the shared wizard step counter.",
+    "description": "Product copy resolved by lib/platform/l10n/catch_ui_copy.dart for the shared wizard step counter.",
     "placeholders": {
       "clampedStep": {},
       "total": {}
@@ -8210,7 +8210,7 @@
   },
   "coreCatchTopBarLabelViewNameProfile": "View {name} profile",
   "@coreCatchTopBarLabelViewNameProfile": {
-    "description": "Product copy resolved by lib/core/presentation/catch_ui_copy.dart for shared identity-header semantics.",
+    "description": "Product copy resolved by lib/platform/l10n/catch_ui_copy.dart for shared identity-header semantics.",
     "placeholders": {
       "name": {}
     },
@@ -8220,7 +8220,7 @@
   },
   "coreOrderedPhotoPickerLabelPhotoValue1": "Photo {value1}",
   "@coreOrderedPhotoPickerLabelPhotoValue1": {
-    "description": "Product copy used by lib/core/widgets/ordered_photo_picker.dart (label).",
+    "description": "Product copy used by lib/platform/media/ordered_photo_picker.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -8230,7 +8230,7 @@
   },
   "coreOrderedPhotoPickerMessagePhotoValue1": "Photo {value1}",
   "@coreOrderedPhotoPickerMessagePhotoValue1": {
-    "description": "Product copy used by lib/core/widgets/ordered_photo_picker.dart (message).",
+    "description": "Product copy used by lib/platform/media/ordered_photo_picker.dart (message).",
     "placeholders": {
       "value1": {}
     },
@@ -8240,7 +8240,7 @@
   },
   "coreOrderedPhotoPickerMessageRemovePhotoValue1": "Remove photo {value1}",
   "@coreOrderedPhotoPickerMessageRemovePhotoValue1": {
-    "description": "Product copy used by lib/core/widgets/ordered_photo_picker.dart (message).",
+    "description": "Product copy used by lib/platform/media/ordered_photo_picker.dart (message).",
     "placeholders": {
       "value1": {}
     },
@@ -12332,14 +12332,14 @@
   },
   "coreBlockUserDialogMessageYouWillStopSeeing": "You will stop seeing each other in chats, matches, Catches, and future event slots where the other person is already booked.",
   "@coreBlockUserDialogMessageYouWillStopSeeing": {
-    "description": "Product copy used by lib/core/widgets/block_user_dialog.dart (message).",
+    "description": "Product copy used by lib/contexts/safety/parts/block_user_dialog.dart (message).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.block_user_dialog"
   },
   "coreCatchFrameworkErrorViewTextThisScreenHitA": "This screen hit a temporary app error. Please go back or try again in a moment.",
   "@coreCatchFrameworkErrorViewTextThisScreenHitA": {
-    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (Text).",
+    "description": "Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (Text).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_framework_error_view"
@@ -12971,112 +12971,112 @@
   },
   "coreEventActivityVisualsLabelSocialRun": "Social run",
   "@coreEventActivityVisualsLabelSocialRun": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelRunning": "Running",
   "@coreEventActivityVisualsLabelRunning": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelWalking": "Walking",
   "@coreEventActivityVisualsLabelWalking": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelPickleball": "Pickleball",
   "@coreEventActivityVisualsLabelPickleball": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelPadel": "Padel",
   "@coreEventActivityVisualsLabelPadel": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelTennis": "Tennis",
   "@coreEventActivityVisualsLabelTennis": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelBadminton": "Badminton",
   "@coreEventActivityVisualsLabelBadminton": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelCycling": "Cycling",
   "@coreEventActivityVisualsLabelCycling": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelSpinClass": "Spin class",
   "@coreEventActivityVisualsLabelSpinClass": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelYoga": "Yoga",
   "@coreEventActivityVisualsLabelYoga": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelStrength": "Strength",
   "@coreEventActivityVisualsLabelStrength": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelDinner": "Dinner",
   "@coreEventActivityVisualsLabelDinner": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelPubQuiz": "Pub quiz",
   "@coreEventActivityVisualsLabelPubQuiz": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelBarCrawl": "Bar crawl",
   "@coreEventActivityVisualsLabelBarCrawl": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelSinglesMixer": "Singles mixer",
   "@coreEventActivityVisualsLabelSinglesMixer": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
   },
   "coreEventActivityVisualsLabelOpenFormat": "Open format",
   "@coreEventActivityVisualsLabelOpenFormat": {
-    "description": "Product copy used by lib/core/widgets/event_activity_visuals.dart (label).",
+    "description": "Product copy used by lib/contexts/events/parts/event_activity_visuals.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.event_activity_visuals"
@@ -15512,7 +15512,7 @@
   },
   "coreBlockUserDialogVisiblecopyBlock": "Block",
   "@coreBlockUserDialogVisiblecopyBlock": {
-    "description": "Product copy used by lib/core/widgets/block_user_dialog.dart (visibleCopy).",
+    "description": "Product copy used by lib/contexts/safety/parts/block_user_dialog.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.block_user_dialog"
@@ -15558,7 +15558,7 @@
   },
   "coreCatchFieldVisiblecopySelect": "Select",
   "@coreCatchFieldVisiblecopySelect": {
-    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/l10n/catch_ui_copy.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
@@ -15572,7 +15572,7 @@
   },
   "coreCatchSearchFieldVisiblecopyCloseSearch": "Close search",
   "@coreCatchSearchFieldVisiblecopyCloseSearch": {
-    "description": "Search-field action copy supplied by the app copy adapter in lib/core/presentation/catch_ui_copy.dart.",
+    "description": "Search-field action copy supplied by the app copy adapter in lib/platform/l10n/catch_ui_copy.dart.",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_search_field"
@@ -18954,21 +18954,21 @@
   },
   "coreCatchPrivacyBadgeLabelPrivateToYou": "Private to you",
   "@coreCatchPrivacyBadgeLabelPrivateToYou": {
-    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
+    "description": "Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_privacy_badge"
   },
   "coreCatchPrivacyBadgeLabelHostCanSee": "Host can see",
   "@coreCatchPrivacyBadgeLabelHostCanSee": {
-    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
+    "description": "Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_privacy_badge"
   },
   "coreCatchPrivacyBadgeLabelCatchPrivate": "Catch private",
   "@coreCatchPrivacyBadgeLabelCatchPrivate": {
-    "description": "Product copy supplied by lib/core/presentation/catch_ui_copy.dart (label).",
+    "description": "Product copy supplied by lib/platform/l10n/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_privacy_badge"
@@ -19317,308 +19317,308 @@
   },
   "coreAppErrorMessageVisiblecopyExploreIsStillGetting": "Explore is still getting set up. Please try again in a moment.",
   "@coreAppErrorMessageVisiblecopyExploreIsStillGetting": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyConnectionIssue": "Connection issue",
   "@coreAppErrorMessageVisiblecopyConnectionIssue": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopySignInRequired": "Sign in required",
   "@coreAppErrorMessageVisiblecopySignInRequired": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyActionUnavailable": "Action unavailable",
   "@coreAppErrorMessageVisiblecopyActionUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyCheckYourDetails": "Check your details",
   "@coreAppErrorMessageVisiblecopyCheckYourDetails": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPaymentCancelled": "Payment cancelled",
   "@coreAppErrorMessageVisiblecopyPaymentCancelled": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPaymentVerificationFailed": "Payment verification failed",
   "@coreAppErrorMessageVisiblecopyPaymentVerificationFailed": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPaymentFailed": "Payment failed",
   "@coreAppErrorMessageVisiblecopyPaymentFailed": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPaymentUnavailable": "Payment unavailable",
   "@coreAppErrorMessageVisiblecopyPaymentUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyEventSignupUnavailable": "Event signup unavailable",
   "@coreAppErrorMessageVisiblecopyEventSignupUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyUploadFailed": "Upload failed",
   "@coreAppErrorMessageVisiblecopyUploadFailed": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyActionFailed": "Action failed",
   "@coreAppErrorMessageVisiblecopyActionFailed": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopySessionVerificationFailed": "Session verification failed",
   "@coreAppErrorMessageVisiblecopySessionVerificationFailed": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyNotificationsUnavailable": "Notifications unavailable",
   "@coreAppErrorMessageVisiblecopyNotificationsUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyUpdateCheckUnavailable": "Update check unavailable",
   "@coreAppErrorMessageVisiblecopyUpdateCheckUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopySignInProblem": "Sign in problem",
   "@coreAppErrorMessageVisiblecopySignInProblem": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyDashboardUnavailable": "Dashboard unavailable",
   "@coreAppErrorMessageVisiblecopyDashboardUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyExploreUnavailable": "Explore unavailable",
   "@coreAppErrorMessageVisiblecopyExploreUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyProfileUnavailable": "Profile unavailable",
   "@coreAppErrorMessageVisiblecopyProfileUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyEventUnavailable": "Event unavailable",
   "@coreAppErrorMessageVisiblecopyEventUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyClubUnavailable": "Organizer unavailable",
   "@coreAppErrorMessageVisiblecopyClubUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyMessagesUnavailable": "Messages unavailable",
   "@coreAppErrorMessageVisiblecopyMessagesUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyCatchesUnavailable": "Catches unavailable",
   "@coreAppErrorMessageVisiblecopyCatchesUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPaymentsUnavailable": "Payments unavailable",
   "@coreAppErrorMessageVisiblecopyPaymentsUnavailable": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopySomethingWentWrong": "Something went wrong",
   "@coreAppErrorMessageVisiblecopySomethingWentWrong": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopySignIn": "Sign in",
   "@coreAppErrorMessageVisiblecopySignIn": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyTryUploadAgain": "Try upload again",
   "@coreAppErrorMessageVisiblecopyTryUploadAgain": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyTryPaymentAgain": "Try payment again",
   "@coreAppErrorMessageVisiblecopyTryPaymentAgain": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyReloadMessages": "Reload messages",
   "@coreAppErrorMessageVisiblecopyReloadMessages": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyReloadExplore": "Reload Explore",
   "@coreAppErrorMessageVisiblecopyReloadExplore": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyReloadProfile": "Reload profile",
   "@coreAppErrorMessageVisiblecopyReloadProfile": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyReloadEvent": "Reload event",
   "@coreAppErrorMessageVisiblecopyReloadEvent": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyReloadClub": "Reload organizer",
   "@coreAppErrorMessageVisiblecopyReloadClub": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyReloadCatches": "Reload catches",
   "@coreAppErrorMessageVisiblecopyReloadCatches": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyReloadPayments": "Reload payments",
   "@coreAppErrorMessageVisiblecopyReloadPayments": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyTryAgain": "Try again",
   "@coreAppErrorMessageVisiblecopyTryAgain": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyProfileNotFound": "Profile not found",
   "@coreAppErrorMessageVisiblecopyProfileNotFound": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyExploreItemNotFound": "Explore item not found",
   "@coreAppErrorMessageVisiblecopyExploreItemNotFound": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyEventNotFound": "Event not found",
   "@coreAppErrorMessageVisiblecopyEventNotFound": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyClubNotFound": "Organizer not found",
   "@coreAppErrorMessageVisiblecopyClubNotFound": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyChatNotFound": "Chat not found",
   "@coreAppErrorMessageVisiblecopyChatNotFound": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyCatchesNotFound": "Catches not found",
   "@coreAppErrorMessageVisiblecopyCatchesNotFound": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPaymentNotFound": "Payment not found",
   "@coreAppErrorMessageVisiblecopyPaymentNotFound": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyNotFound": "Not found",
   "@coreAppErrorMessageVisiblecopyNotFound": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
@@ -19759,301 +19759,301 @@
   },
   "coreAppErrorMessageVisiblecopySomethingWentWrongPlease": "Something went wrong. Please try again.",
   "@coreAppErrorMessageVisiblecopySomethingWentWrongPlease": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyUnableToCheckThe": "Unable to check the latest app configuration right now.",
   "@coreAppErrorMessageVisiblecopyUnableToCheckThe": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyUnableToVerifyThis": "Unable to verify this app session. Please try again.",
   "@coreAppErrorMessageVisiblecopyUnableToVerifyThis": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyUnableToUpdateNotification": "Unable to update notification settings right now.",
   "@coreAppErrorMessageVisiblecopyUnableToUpdateNotification": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPleaseSignInTo": "Please sign in to continue.",
   "@coreAppErrorMessageVisiblecopyPleaseSignInTo": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPaymentWasCancelled": "Payment was cancelled.",
   "@coreAppErrorMessageVisiblecopyPaymentWasCancelled": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPaymentFailedPleaseTry": "Payment failed. Please try again.",
   "@coreAppErrorMessageVisiblecopyPaymentFailedPleaseTry": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPaymentCouldNotBe": "Payment could not be verified. Please contact support.",
   "@coreAppErrorMessageVisiblecopyPaymentCouldNotBe": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPaidBookingsAreOnly": "Paid bookings are only available on Android and iOS.",
   "@coreAppErrorMessageVisiblecopyPaidBookingsAreOnly": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyWeCouldNotFind": "We could not find what you requested.",
   "@coreAppErrorMessageVisiblecopyWeCouldNotFind": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyThatImageIsToo": "That image is too large. Please choose a smaller image.",
   "@coreAppErrorMessageVisiblecopyThatImageIsToo": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPleaseChooseAnImage": "Please choose an image file.",
   "@coreAppErrorMessageVisiblecopyPleaseChooseAnImage": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyThatImageCouldNot": "That image could not be uploaded. Please choose another image.",
   "@coreAppErrorMessageVisiblecopyThatImageCouldNot": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPleaseEnterAValid": "Please enter a valid phone number.",
   "@coreAppErrorMessageVisiblecopyPleaseEnterAValid": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyThatCodeIsInvalid": "That code is invalid. Please try again.",
   "@coreAppErrorMessageVisiblecopyThatCodeIsInvalid": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyThatCodeExpiredPlease": "That code expired. Please request a new one.",
   "@coreAppErrorMessageVisiblecopyThatCodeExpiredPlease": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyWeAreHavingTrouble": "We are having trouble connecting. Please check your internet and try again.",
   "@coreAppErrorMessageVisiblecopyWeAreHavingTrouble": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyTheRequestTimedOut": "The request timed out. Please try again.",
   "@coreAppErrorMessageVisiblecopyTheRequestTimedOut": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyTooManyAttemptsPlease": "Too many attempts. Please wait a bit and try again.",
   "@coreAppErrorMessageVisiblecopyTooManyAttemptsPlease": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyYouDoNotHave": "You do not have permission to do that.",
   "@coreAppErrorMessageVisiblecopyYouDoNotHave": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyThisAlreadyExists": "This already exists.",
   "@coreAppErrorMessageVisiblecopyThisAlreadyExists": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyTheOperationCouldNot": "The operation could not be completed. Please try again.",
   "@coreAppErrorMessageVisiblecopyTheOperationCouldNot": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyThisDataIsStill": "This data is still getting set up. Please try again in a moment.",
   "@coreAppErrorMessageVisiblecopyThisDataIsStill": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyThisSignInMethod": "This sign-in method is not enabled.",
   "@coreAppErrorMessageVisiblecopyThisSignInMethod": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyThisAccountHasBeen": "This account has been disabled.",
   "@coreAppErrorMessageVisiblecopyThisAccountHasBeen": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyUnableToFinishSign": "Unable to finish sign-in on this device. Please restart the app and request a new code.",
   "@coreAppErrorMessageVisiblecopyUnableToFinishSign": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyVerificationWasCancelledPlease": "Verification was cancelled. Please try again when ready.",
   "@coreAppErrorMessageVisiblecopyVerificationWasCancelledPlease": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyUnableToCompleteThe": "Unable to complete the verification check. Please close the verification window and try again.",
   "@coreAppErrorMessageVisiblecopyUnableToCompleteThe": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPleaseCompleteYourBasic": "Please complete your basic profile details before continuing.",
   "@coreAppErrorMessageVisiblecopyPleaseCompleteYourBasic": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPleaseChooseYourDating": "Please choose your dating preferences before continuing.",
   "@coreAppErrorMessageVisiblecopyPleaseChooseYourDating": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPleaseChooseWhoYou": "Please choose who you want to see before continuing.",
   "@coreAppErrorMessageVisiblecopyPleaseChooseWhoYou": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPleaseAddAValid": "Please add a valid phone number before continuing.",
   "@coreAppErrorMessageVisiblecopyPleaseAddAValid": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPleaseVerifyYourPhone": "Please verify your phone number before continuing.",
   "@coreAppErrorMessageVisiblecopyPleaseVerifyYourPhone": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyPleaseCompleteYourAccess": "Please complete your access application.",
   "@coreAppErrorMessageVisiblecopyPleaseCompleteYourAccess": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyThisAccessApplicationIs": "This access application is already locked for review.",
   "@coreAppErrorMessageVisiblecopyThisAccessApplicationIs": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyOnlyAClubHost": "Only an organizer manager can edit this organizer.",
   "@coreAppErrorMessageVisiblecopyOnlyAClubHost": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyOnlyTheClubOwner": "Only the organizer owner can edit organizer details.",
   "@coreAppErrorMessageVisiblecopyOnlyTheClubOwner": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyChooseAClubBefore": "Choose an organizer before creating the event.",
   "@coreAppErrorMessageVisiblecopyChooseAClubBefore": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyAddAMeetingLocation": "Add a meeting location before creating the event.",
   "@coreAppErrorMessageVisiblecopyAddAMeetingLocation": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyProfilesAreTakingToo": "Profiles are taking too long to load. Please check your connection and try again.",
   "@coreAppErrorMessageVisiblecopyProfilesAreTakingToo": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyProfileChangedWhileSaving": "Profile changed while saving. Please try again.",
   "@coreAppErrorMessageVisiblecopyProfileChangedWhileSaving": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreAppErrorMessageVisiblecopyCheckTheHighlightedDetails": "Check the highlighted details and try again.",
   "@coreAppErrorMessageVisiblecopyCheckTheHighlightedDetails": {
-    "description": "Product copy used by lib/core/app_error_message.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/errors/app_error_message.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.app_error_message"
   },
   "coreCatchFieldVisiblecopySelectTolowercase": "Select {toLowerCase}",
   "@coreCatchFieldVisiblecopySelectTolowercase": {
-    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).",
+    "description": "Product copy used by lib/platform/l10n/catch_ui_copy.dart (visibleCopy).",
     "placeholders": {
       "toLowerCase": {}
     },
@@ -20063,7 +20063,7 @@
   },
   "coreCatchFieldVisiblecopyAddFieldLabel": "Add {fieldLabel}",
   "@coreCatchFieldVisiblecopyAddFieldLabel": {
-    "description": "Canonical empty editable-row copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).",
+    "description": "Canonical empty editable-row copy used by lib/platform/l10n/catch_ui_copy.dart (visibleCopy).",
     "placeholders": {
       "fieldLabel": {}
     },

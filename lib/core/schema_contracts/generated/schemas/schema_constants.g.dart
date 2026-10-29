@@ -219,6 +219,8 @@ export 'cancel_event_callable_payload.g.dart';
 export 'catch_communication_permission_receipt_document.g.dart';
 export 'catch_communication_preference_document.g.dart';
 export 'catch_whatsapp_app_authority_document.g.dart';
+export 'catch_whatsapp_auto_reply_document.g.dart';
+export 'catch_whatsapp_clarification_document.g.dart';
 export 'catch_whatsapp_endpoint_stop_document.g.dart';
 export 'catch_whatsapp_ingress_evidence_document.g.dart';
 export 'catch_whatsapp_operator_setup_audit_document.g.dart';

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 
 final class AnalyticsEventCall {
   const AnalyticsEventCall(this.name, this.parameters);

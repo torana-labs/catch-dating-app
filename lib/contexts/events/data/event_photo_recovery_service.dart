@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/events/data/event_photo_recovery_journal.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_photo_recovery.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:image_picker/image_picker.dart';
 
 /// A transport adapter must return the original server receipt on same-request

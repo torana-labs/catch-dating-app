@@ -11,7 +11,7 @@ import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/design_fixtures/catches_surface_fixtures.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:flutter/material.dart';

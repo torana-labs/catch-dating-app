@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/contexts/organizers/domain/organizer_authority.dart';
-import 'package:catch_dating_app/organizers/domain/organizer_supply_capabilities.dart';
+import 'package:catch_dating_app/kernel/organizer_supply_capabilities.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

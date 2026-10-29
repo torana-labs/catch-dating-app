@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_assistance_case.dart
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_case_managers.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_parsing.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 typedef RehearsalHelpScope = ({
   String sessionId,

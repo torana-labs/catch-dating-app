@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
@@ -13,18 +12,7 @@ import 'package:catch_dating_app/contexts/events/domain/event_public_details.dar
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/business_rules.dart';
-import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_scope_notice.dart';
@@ -40,8 +28,20 @@ import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.d
 import 'package:catch_dating_app/hosts/presentation/hosted_event_membership_rules_section.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_policy_section.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_schedule_section.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/business_rules.dart';
+import 'package:catch_dating_app/kernel/city_catalog.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
+import 'package:catch_dating_app/platform/device/device_location.dart';
+import 'package:catch_dating_app/platform/errors/app_error_message.dart';
+import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
+import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

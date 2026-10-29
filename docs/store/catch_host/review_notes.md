@@ -61,7 +61,7 @@ status today.
 | Destination | Opened from | State on 2026-10-22 |
 | --- | --- | --- |
 | `https://catchdates.com/privacy/`, `/terms/`, `/help/` | Organizer → Account menu on `main` since PR #738 (merged 2026-10-22). The submitted build has no such links. | HTTP 200. Every page carries the site header with "Pricing and access" (`/host/#pricing`) and "Apply for a pilot" (`website/src/content/site.ts`). `/host/#pricing` says the pilot is free and lists no purchasable tiers (`website/src/content/hostProduct.ts`). |
-| `https://catchdates.com/host/organizer/<id>/messaging` | Organizer → messaging setup → "Connect WhatsApp Business" on iOS and Android (`lib/core/external_links.dart`, `openHostMessagingSetup`). Present in `171c1cb07`. | HTTP 404. No website route is registered in `design/website/routes.json`. |
+| `https://catchdates.com/host/organizer/<id>/messaging` | Organizer → messaging setup → "Connect WhatsApp Business" on iOS and Android (`lib/platform/device/external_links.dart`, `openHostMessagingSetup`). Present in `171c1cb07`. | HTTP 404. No website route is registered in `design/website/routes.json`. |
 | Stripe hosted onboarding, provider OAuth pages, `wa.me` handoffs, map directions | Payout setup, form payments, guest messaging, events | Third-party destinations with no Catch pricing |
 
 ## Review-facing facts about the submitted build

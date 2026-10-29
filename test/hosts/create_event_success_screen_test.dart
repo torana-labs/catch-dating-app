@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_success_screen.dart';
+import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';

@@ -2,8 +2,8 @@ import 'package:catch_dating_app/contexts/discovery/domain/explore_event_recomme
 import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/contexts/organizers/organizers.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
-import 'package:catch_dating_app/core/data/read_limit_policy.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
+import 'package:catch_dating_app/platform/firebase/read_limit_policy.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

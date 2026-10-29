@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
-import 'package:catch_dating_app/core/celebration/celebration_screen.dart';
+import 'package:catch_dating_app/pages/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/pages/celebration/celebration_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -272,18 +272,18 @@ Widget celebrationDetailRowCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CelebrationNote,
+  type: CelebrationNotice,
   path: '[Core catalog]/Moments',
 )
 Widget celebrationNoteCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CelebrationNote',
+    title: 'CelebrationNotice',
     catalogId: 'core.celebration.immersive_note',
     children: [
       WidgetbookCatalogStateCard(
         label: 'supporting note',
         child: _ImmersiveCelebrationFrame(
-          child: CelebrationNote(note: 'Matching opens after check-in.'),
+          child: CelebrationNotice(note: 'Matching opens after check-in.'),
         ),
       ),
     ],

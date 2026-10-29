@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_compatibility_response.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_feature_state.dart';
@@ -9,6 +8,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_defaul
 import 'package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

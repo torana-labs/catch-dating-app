@@ -218,7 +218,7 @@ test("does not join a section header to a section across intervening content", (
 
 test("flags thin dynamic kicker shells even inside core widgets", () => {
   const findings = scanSourceForSectionHeaders({
-    relativePath: "lib/core/widgets/catch_analytics_kit.dart",
+    relativePath: "lib/contexts/events/parts/catch_analytics_kit.dart",
     source: [
       "class CatchAnalyticsSection extends StatelessWidget {",
       "  const CatchAnalyticsSection({required this.label, required this.child});",

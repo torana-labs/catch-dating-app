@@ -351,8 +351,8 @@ String? _fileAllowanceReason(String source) {
 
 bool _supportsFileAllowance(String file) =>
     file.startsWith('lib/design_fixtures/') ||
-    file == 'lib/core/city_catalog.dart' ||
-    file == 'lib/core/country_markets.dart';
+    file == 'lib/kernel/city_catalog.dart' ||
+    file == 'lib/kernel/country_markets.dart';
 
 class _CopyVisitor extends RecursiveAstVisitor<void> {
   _CopyVisitor({required this.file, required this.source, required this.unit});
@@ -414,7 +414,7 @@ class _CopyVisitor extends RecursiveAstVisitor<void> {
     // AppException messages are diagnostic fallbacks. Presentation adapters
     // localize them before display, so treating their constructor defaults as
     // product copy would invert the ownership boundary.
-    if (file.startsWith('lib/exceptions/')) return null;
+    if (file.startsWith('lib/platform/errors/')) return null;
     AstNode? diagnosticAncestor = node.parent;
     while (diagnosticAncestor != null) {
       if (diagnosticAncestor is ThrowExpression ||

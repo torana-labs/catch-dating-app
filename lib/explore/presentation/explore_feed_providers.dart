@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
@@ -19,13 +18,14 @@ import 'package:catch_dating_app/contexts/organizers/data/club_membership_reposi
 import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
-import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
+import 'package:catch_dating_app/platform/device/device_location.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'explore_feed_providers.g.dart';

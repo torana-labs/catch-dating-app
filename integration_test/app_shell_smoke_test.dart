@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
-import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/platform/errors/error_logger.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/shell/app_shell_keys.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test/clubs/clubs_test_helpers.dart' as club_helpers;

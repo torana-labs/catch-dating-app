@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:catch_dating_app/contexts/organizers/data/club_callable_responses.dart';
 import 'package:catch_dating_app/contexts/organizers/data/club_posts_repository.dart';
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
+import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_club_post_controller.g.dart';

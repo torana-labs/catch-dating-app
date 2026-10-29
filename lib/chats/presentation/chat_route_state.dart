@@ -5,8 +5,8 @@ import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/chat_message.dart';
 import 'package:catch_dating_app/contexts/messaging/domain/suvbot_action_item.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/platform/catch_async_state.dart';
+import 'package:catch_dating_app/platform/device/external_share.dart';
 
 class ChatRouteStateArgs {
   const ChatRouteStateArgs({

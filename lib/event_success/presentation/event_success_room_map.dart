@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_layout.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_seat_positions.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/errors/app_error_message.dart';
+import 'package:catch_dating_app/platform/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';

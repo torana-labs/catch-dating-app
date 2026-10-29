@@ -2,11 +2,11 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/errors/app_error_message.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_feedback.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state.dart';

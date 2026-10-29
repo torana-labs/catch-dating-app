@@ -150,38 +150,38 @@
       "GestureDetector": 1,
       "Opacity": 2
     },
-    "lib/core/celebration/celebration_screen.dart": {
+    "lib/pages/celebration/celebration_screen.dart": {
       "BorderRadius": 3,
       "Icon": 5
     },
-    "lib/core/presentation/app_shell.dart": {
+    "lib/routing/shell/app_shell.dart": {
       "Border": 1,
       "BorderSide": 1,
       "BoxDecoration": 1,
       "DecoratedBox": 1,
       "Material": 1
     },
-    "lib/core/widgets/activity_map_pin.dart": {
+    "lib/contexts/events/parts/activity_map_pin.dart": {
       "Icon": 1
     },
-    "lib/core/widgets/event_activity_badge.dart": {
+    "lib/contexts/events/parts/event_activity_badge.dart": {
       "Icon": 1
     },
-    "lib/core/widgets/event_backdrop_image.dart": {
+    "lib/contexts/events/parts/event_backdrop_image.dart": {
       "CustomPaint": 1,
       "CustomPainter": 1,
       "Icon": 1,
       "LinearGradient": 1,
       "Radius": 1
     },
-    "lib/core/widgets/ordered_photo_picker.dart": {
+    "lib/platform/media/ordered_photo_picker.dart": {
       "CircleBorder": 1,
       "Icon": 5,
       "Image": 1,
       "Material": 1,
       "Tooltip": 3
     },
-    "lib/core/widgets/splash_screen.dart": {
+    "lib/pages/startup/splash_screen.dart": {
       "Image": 3
     },
     "lib/cross_paths/presentation/cross_paths_explore_card.dart": {

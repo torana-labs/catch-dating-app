@@ -2044,7 +2044,7 @@
           {
             "id": "catch.error_state.localized_error_state",
             "symbol": "CatchLocalizedErrorState",
-            "file": "lib/core/riverpod_ui/catch_localized_error_state.dart",
+            "file": "lib/platform/riverpod_ui/catch_localized_error_state.dart",
             "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
             "states": [
               "mapped-error",
@@ -2071,7 +2071,7 @@
           {
             "id": "catch.error_state.localized_error_scaffold",
             "symbol": "CatchLocalizedErrorScaffold",
-            "file": "lib/core/riverpod_ui/catch_localized_error_scaffold.dart",
+            "file": "lib/platform/riverpod_ui/catch_localized_error_scaffold.dart",
             "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
             "states": [
               "mapped-error",
@@ -2098,7 +2098,7 @@
           {
             "id": "catch.error_state.localized_sliver_error_state",
             "symbol": "CatchLocalizedSliverErrorState",
-            "file": "lib/core/riverpod_ui/catch_localized_sliver_error_state.dart",
+            "file": "lib/platform/riverpod_ui/catch_localized_sliver_error_state.dart",
             "summary": "App error and inherited-locale translation onto the shared recovery renderer; explicit recovery callbacks remain authoritative.",
             "states": [
               "mapped-error",
@@ -2446,7 +2446,7 @@
           {
             "id": "catch.banner.localized",
             "symbol": "CatchLocalizedErrorBanner",
-            "file": "lib/core/riverpod_ui/catch_localized_error_banner.dart",
+            "file": "lib/platform/riverpod_ui/catch_localized_error_banner.dart",
             "summary": "App-localized persistent error mapping and explicit recovery, with a mutation recipe that hides idle/pending/success states. Shared CatchBanner owns paint and actions.",
             "states": [
               "mapped-error",
@@ -2694,7 +2694,7 @@
           {
             "id": "catch.notice.host",
             "symbol": "CatchNoticeOverlay",
-            "file": "lib/core/riverpod_ui/catch_notice_overlay.dart",
+            "file": "lib/platform/riverpod_ui/catch_notice_overlay.dart",
             "summary": "One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchBanner.statuses below tabs.",
             "states": [
               "empty",
@@ -6262,7 +6262,7 @@
       "summary": "Exhaustive async-state boundary with typed data retention and one timeout/recovery lifecycle for box and sliver output.",
       "dart": {
         "symbol": "CatchAsyncBoundary",
-        "file": "lib/core/riverpod_ui/catch_async_boundary.dart",
+        "file": "lib/platform/riverpod_ui/catch_async_boundary.dart",
         "constructors": [
           "CatchAsyncBoundary",
           "CatchAsyncBoundary.sliver"
@@ -6438,7 +6438,7 @@
       "summary": "Branded app-start composition with the Catch logo and a delayed bounded loading indicator.",
       "dart": {
         "symbol": "SplashScreen",
-        "file": "lib/core/widgets/splash_screen.dart",
+        "file": "lib/pages/startup/splash_screen.dart",
         "constructors": [
           "SplashScreen"
         ]
@@ -6496,7 +6496,7 @@
           {
             "id": "catch.startup_loading_screen.brand_header",
             "symbol": "StartupBrandHeader",
-            "file": "lib/core/widgets/splash_screen.dart",
+            "file": "lib/pages/startup/splash_screen.dart",
             "summary": "Role-specific brand mark shared by Host startup and auth, kept identical so navigation only replaces the content below it.",
             "states": [
               "consumer",
@@ -7751,7 +7751,7 @@
           {
             "id": "catch.sheet.external_share",
             "symbol": "CatchExternalShareSheet",
-            "file": "lib/core/riverpod_ui/catch_external_share_sheet.dart",
+            "file": "lib/platform/riverpod_ui/catch_external_share_sheet.dart",
             "summary": "App adapter that captures the preview as PNG, uses ExternalShareController, records best-effort attribution and resolves localized failure copy.",
             "states": [
               "preview",
@@ -15670,7 +15670,7 @@
       "summary": "Event summary card: binds event media and metadata into the CatchTicket card recipe, which owns the ticket geometry.",
       "dart": {
         "symbol": "EventCard",
-        "file": "lib/core/widgets/event_card.dart",
+        "file": "lib/contexts/events/parts/event_card.dart",
         "constructors": [
           "EventCard"
         ]
@@ -15817,7 +15817,7 @@
           {
             "id": "catch.event_card.thumbnail",
             "symbol": "EventThumbnail",
-            "file": "lib/core/widgets/event_thumbnail.dart",
+            "file": "lib/contexts/events/parts/event_thumbnail.dart",
             "summary": "Event media member that renders uploaded event imagery with the global photo grade or falls back to activity artwork and configurable scrims.",
             "states": [
               "photo",
@@ -15839,7 +15839,7 @@
           {
             "id": "catch.event_card.activity_backdrop",
             "symbol": "EventBackdropImage",
-            "file": "lib/core/widgets/event_backdrop_image.dart",
+            "file": "lib/contexts/events/parts/event_backdrop_image.dart",
             "summary": "Shared activity artwork backdrop used by event cards, thumbnails, and no-photo event media states.",
             "states": [
               "dense",
@@ -15859,7 +15859,7 @@
           {
             "id": "catch.event_card.activity_stamp",
             "symbol": "EventActivityBadge",
-            "file": "lib/core/widgets/event_activity_badge.dart",
+            "file": "lib/contexts/events/parts/event_activity_badge.dart",
             "summary": "Circular activity glyph stamp used by event cards, agenda rows, and ticket compositions.",
             "states": [
               "default",
@@ -15948,7 +15948,7 @@
           {
             "id": "catch.event_card.event_thumbnail.activity_fallback",
             "symbol": "EventFallbackThumbnail",
-            "file": "lib/core/widgets/event_thumbnail.dart",
+            "file": "lib/contexts/events/parts/event_thumbnail.dart",
             "summary": "Direct event-thumbnail activity fallback renderer for no-photo states.",
             "states": [
               "run",
@@ -16340,7 +16340,7 @@
       "summary": "Canonical activity-colored map pin for resting and selected map marks with optional uppercased selected-state flag text.",
       "dart": {
         "symbol": "ActivityMapPin",
-        "file": "lib/core/widgets/activity_map_pin.dart",
+        "file": "lib/contexts/events/parts/activity_map_pin.dart",
         "constructors": [
           "ActivityMapPin"
         ]

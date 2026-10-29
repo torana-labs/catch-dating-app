@@ -1,7 +1,7 @@
 ---
 doc_id: composition_migration_spec
-version: 0.1.3
-updated: 2026-09-04
+version: 0.1.4
+updated: 2026-10-29
 owner: product_design_parity
 status: active
 ---
@@ -93,7 +93,7 @@ reference DTCG token ids.
 | Component contracts | `design/components/catch.components.json` and future split files under `design/components/` | Widgetbook primitive states, Figma/Claude handoff names, Code Connect templates, contract validators. |
 | Section contracts | Screen-local candidate sections stay nested in `design/screens/catch.screens.json`; reused product sections promote to future `design/sections/catch.sections.json`. | Widgetbook section states, screen composition validators, route captures. |
 | Screen contracts | Future `design/screens/catch.screens.json` plus `docs/design_parity/state_matrix.json` | Screen state captures, controller fixture requirements, route tests, visual comparison matrix. |
-| Flutter runtime behavior | `lib/core/widgets/**` and feature-owned widget folders | Widgetbook, Flutter tests, route captures, app runtime. |
+| Flutter runtime behavior | `lib/contexts/*/parts/**` and feature-owned widget folders | Widgetbook, Flutter tests, route captures, app runtime. |
 | Website/social implementations | `website/**`, Claude template exports, social-template tooling | CSS token output, shared screenshots, generated media packs. |
 
 ## Layer Model

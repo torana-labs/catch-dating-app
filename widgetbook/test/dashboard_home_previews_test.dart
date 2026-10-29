@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_list.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook_workspace/dashboard/catalog/event_focus.dart';

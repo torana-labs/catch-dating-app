@@ -6,7 +6,7 @@ import {fileURLToPath} from "node:url";
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "../..");
 const sourcePath = path.join(scriptDir, "business_rules.json");
-const dartPath = path.join(repoRoot, "lib/core/business_rules.dart");
+const dartPath = path.join(repoRoot, "lib/kernel/business_rules.dart");
 const tsPath = path.join(repoRoot, "functions/src/shared/businessRules.ts");
 const checkOnly = process.argv.includes("--check");
 

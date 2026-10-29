@@ -4,12 +4,12 @@ import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_reposi
 import 'package:catch_dating_app/contexts/messaging/data/host_whatsapp_embedded_signup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/club_posts_repository.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/l10n/catch_ui_copy.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

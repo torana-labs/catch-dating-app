@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/runner_activity.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
 enum HealthActivityConnectionStatus {
   unsupported,

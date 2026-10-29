@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/contexts/audience/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

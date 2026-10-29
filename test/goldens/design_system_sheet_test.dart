@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
-import 'package:catch_dating_app/core/widgets/event_backdrop_image.dart';
+import 'package:catch_dating_app/contexts/events/parts/event_activity_visuals.dart';
+import 'package:catch_dating_app/contexts/events/parts/event_backdrop_image.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';

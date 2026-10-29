@@ -4,8 +4,6 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/insights/data/host_today_preference_repository.dart';
 import 'package:catch_dating_app/contexts/insights/domain/host_today_preference.dart';
 import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_layout.dart';
@@ -13,6 +11,8 @@ import 'package:catch_dating_app/hosts/today/personalization/presentation/host_t
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_notice_overlay.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart'
     show hostOrganizerScreenForUri;
 import 'package:catch_dating_app/routing/route_contract.dart';

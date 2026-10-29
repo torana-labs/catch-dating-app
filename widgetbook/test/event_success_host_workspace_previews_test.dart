@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_funnel_section.dart';
@@ -8,6 +7,7 @@ import 'package:catch_dating_app/event_success/presentation/host_setup/event_suc
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_target_attendees_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

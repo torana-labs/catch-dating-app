@@ -6,8 +6,8 @@ import 'package:catch_dating_app/contexts/events/data/event_callable_responses.d
 import 'package:catch_dating_app/contexts/events/data/event_repository.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
-import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/firebase/firebase_providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:e7180899058fc3543571b5501886d614a8c0741ef0630f2799f58958495420ea",
+  "sourceDigest": "sha256:756ff1ce1097e28d8dfd6e12487ef6340468d7b648fbf71cc67f7386cc18aeb8",
   "resolvedDigest": "sha256:c588ef9ab0433d40b93f59d2067e71fb38993d83dd93121487674fd25ca1b664",
   "feature": {
     "id": "feature.account_settings",
@@ -71,7 +71,7 @@
           {
             "id": "external_links",
             "language": "dart",
-            "file": "lib/core/external_links.dart",
+            "file": "lib/platform/device/external_links.dart",
             "symbol": "ExternalLinkController"
           }
         ],

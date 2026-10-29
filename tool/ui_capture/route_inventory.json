@@ -1893,15 +1893,6 @@
   ],
   "imperativePageRoutes": [
     {
-      "siteId": "material-page:lib/core/widgets/ordered_photo_picker_actions.dart:98a67b416df73d67de94ec3a777cbd810fcd04baba950ee741a172767a41b673:1",
-      "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!))",
-      "sourcePath": "lib/core/widgets/ordered_photo_picker_actions.dart",
-      "ordinal": 1,
-      "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!)",
-      "presentationTarget": "OrderedPhotoManagerScreen",
-      "fullscreenDialogExpression": "true"
-    },
-    {
       "siteId": "material-page:lib/dashboard/presentation/widgets/dashboard_full.dart:03ec1c068682af42cd0066319469baec07744e2aa8ced4c703f0c061bf6b4048:1",
       "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(routeContext)=>EventCheckInCelebrationScreen(event:event,onViewEvent:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.eventDetailScreen.name,pathParameters:{'clubId':event.clubId,'eventId':event.id},extra:event);},onBackHome:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.dashboardScreen.name);}))",
       "sourcePath": "lib/dashboard/presentation/widgets/dashboard_full.dart",
@@ -2007,6 +1998,15 @@
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>Consumer(builder:(_,ref,_)=>MatchCelebrationDialog(match:match,otherUid:otherUid,onSendMessage:(){Navigator.of(routeContext).pop();final otherProfile=ref.read(watchPublicProfileProvider(otherUid)).asData?.value;context.goNamed(Routes.chatScreen.name,pathParameters:{'matchId':match.id},extra:otherProfile);},onKeepSwiping:()=>Navigator.of(routeContext).pop()))",
       "presentationTarget": "MatchCelebrationDialog",
+      "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/platform/media/ordered_photo_picker_actions.dart:98a67b416df73d67de94ec3a777cbd810fcd04baba950ee741a172767a41b673:1",
+      "routeExpression": "MaterialPageRoute<void>(fullscreenDialog:true,builder:(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!))",
+      "sourcePath": "lib/platform/media/ordered_photo_picker_actions.dart",
+      "ordinal": 1,
+      "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!)",
+      "presentationTarget": "OrderedPhotoManagerScreen",
       "fullscreenDialogExpression": "true"
     }
   ],

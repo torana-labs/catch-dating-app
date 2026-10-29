@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/forms/data/host_response_query_repository.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_response_query.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 

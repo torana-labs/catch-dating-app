@@ -15,6 +15,8 @@ export {adminReviewCatchWhatsappInbound, adminSendCatchWhatsappReply} from
 export {onCatchWhatsappWebhookEventCreated,
   onCatchWhatsappReplyOperationWritten} from
   "./catchMessaging/whatsappReceiptConsumer";
+export {onMessageNominationListingReady} from
+  "./catchMessaging/listingReadyReply";
 
 export {createRazorpayOrder} from "./payments/createRazorpayOrder";
 export {verifyRazorpayPayment} from "./payments/verifyRazorpayPayment";

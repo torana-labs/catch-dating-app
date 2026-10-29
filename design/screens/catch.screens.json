@@ -1610,7 +1610,7 @@
           "routes": [
             "paymentConfirmationScreen"
           ],
-          "file": "lib/core/celebration/celebration_screen.dart",
+          "file": "lib/pages/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -1953,7 +1953,7 @@
     "MatchCelebrationDialog": {
       "owners": [
         {
-          "file": "lib/core/celebration/celebration_screen.dart",
+          "file": "lib/pages/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -1966,7 +1966,7 @@
     "EventJoinedCelebrationScreen": {
       "owners": [
         {
-          "file": "lib/core/celebration/celebration_screen.dart",
+          "file": "lib/pages/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -1979,7 +1979,7 @@
     "EventCheckInCelebrationScreen": {
       "owners": [
         {
-          "file": "lib/core/celebration/celebration_screen.dart",
+          "file": "lib/pages/celebration/celebration_screen.dart",
           "symbol": "_CatchCelebrationScreenState",
           "family": "standalone",
           "expression": "CatchScaffold.standalone",
@@ -2005,7 +2005,7 @@
     "OrderedPhotoManagerScreen": {
       "owners": [
         {
-          "file": "lib/core/widgets/ordered_photo_picker.dart",
+          "file": "lib/platform/media/ordered_photo_picker.dart",
           "symbol": "_OrderedPhotoManagerScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
@@ -19884,7 +19884,7 @@
             "symbol": "OnboardingWelcomeBody"
           },
           {
-            "file": "lib/core/analytics/app_analytics.dart",
+            "file": "lib/platform/analytics/app_analytics.dart",
             "symbol": "AppAnalytics"
           }
         ],
@@ -24589,13 +24589,13 @@
             "symbol": "EventPinsMap"
           },
           {
-            "file": "lib/core/external_links.dart",
+            "file": "lib/platform/device/external_links.dart",
             "symbol": "ExternalLinkController"
           }
         ],
         "mutationOwners": [
           {
-            "file": "lib/core/external_links.dart",
+            "file": "lib/platform/device/external_links.dart",
             "symbol": "ExternalLinkController"
           }
         ],
@@ -26034,7 +26034,7 @@
             "symbol": "AuthSessionController"
           },
           {
-            "file": "lib/core/external_links.dart",
+            "file": "lib/platform/device/external_links.dart",
             "symbol": "ExternalLinkController"
           }
         ],

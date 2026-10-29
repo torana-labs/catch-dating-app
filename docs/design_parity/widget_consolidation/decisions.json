@@ -8884,7 +8884,7 @@
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },
         {
-          "name": "lib/core/widgets/ordered_photo_picker.dart:593",
+          "name": "lib/platform/media/ordered_photo_picker.dart:593",
           "action": "defer",
           "note": "Original CAT-241 packet location (2026-10-24), retained until its screen rebuild; current line numbers may move. Preserve wrapping/alignment and keep counted debt."
         },

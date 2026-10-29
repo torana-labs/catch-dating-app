@@ -2238,7 +2238,7 @@ API contract.
 
 Use sentinel-backed parameters only for patch/copy APIs where "leave unchanged"
 must be distinguishable from "clear this nullable field." Generated patch
-classes use `unsetSentinel` from `lib/core/sentinels.dart` and compare it with
+classes use `unsetSentinel` from `lib/kernel/sentinels.dart` and compare it with
 `identical`; callers should pass `null` only when the persisted value should be
 cleared. Do not add new ad hoc sentinels outside patch/copy semantics without
 first documenting the same clear-versus-omit distinction.
@@ -4551,8 +4551,8 @@ station filter require an adjacent contract and review alongside the base query.
 
 ### Canonical read limits and cursors
 
-`lib/core/data/read_limit_policy.dart` owns the numeric policy and
-`lib/core/data/cursor_page.dart` owns the shared `limit + 1`,
+`lib/platform/firebase/read_limit_policy.dart` owns the numeric policy and
+`lib/platform/firebase/cursor_page.dart` owns the shared `limit + 1`,
 `startAfterDocument`, honest-`hasMore` contract. Repository call sites must not
 introduce numeric limits directly. `node tool/run.mjs check
 contracts:firestore-read-limits` enforces that boundary and runs in Tools CI

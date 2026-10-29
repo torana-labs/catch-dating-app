@@ -17,7 +17,7 @@ import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audienc
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/contexts/audience/domain/crm/host_whatsapp_thread.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
-import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/country_markets.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/kernel/country_markets.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';

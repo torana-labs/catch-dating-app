@@ -3,11 +3,11 @@ import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_form_payment.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';

@@ -63,7 +63,7 @@ Typed handoffs:
 
 - `lib/chats/presentation/inbox` — Shared inquiry list/search presentation remains a cross-role chat implementation seam.
 - `lib/hosts/presentation/host_audience_controller.dart` — Legacy campaign orchestration is relocated by A4; the responsibility remains Inbox-owned now.
-- `lib/core/presentation/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
+- `lib/routing/shell/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
 
 ## Data contracts
 

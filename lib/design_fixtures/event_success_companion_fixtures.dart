@@ -1,5 +1,4 @@
 // copy:allow-file(Widgetbook and capture-only deterministic fixture data)
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_compatibility_response.dart';
@@ -11,6 +10,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_success_wingman_requ
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 
 /// Shared deterministic fixtures for Event Success attendee companion review.
 ///

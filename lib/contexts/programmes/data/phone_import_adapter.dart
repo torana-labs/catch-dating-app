@@ -3,7 +3,7 @@ import 'package:catch_dating_app/contexts/programmes/data/program_work_repositor
 import 'package:catch_dating_app/contexts/programmes/domain/phone_import_access.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/phone_import_batch.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 
 /// Canonical gateway adapter for the source-bound manifest authority. The route
 /// and every preview/commit use current canonical wedding-wide guest access.

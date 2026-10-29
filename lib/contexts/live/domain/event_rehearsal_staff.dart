@@ -4,7 +4,7 @@ import 'package:catch_dating_app/contexts/events/events.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_group_staff.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_parsing.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 String rehearsalOperatorId(Object? value) {
   final id = assistanceText(value, 75);

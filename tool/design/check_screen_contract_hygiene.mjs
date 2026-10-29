@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {isAppSharedWidgetSource} from "./lib/component_naming.mjs";
 
 const screenContractsPath = fromRepo("design/screens/catch.screens.json");
 const stateMatrixPath = fromRepo("docs/design_parity/state_matrix.json");
@@ -10,9 +11,6 @@ const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
 const maxRows = Number(valueAfter(args, "--max") ?? 25);
 
-const primitiveImplementationPrefixes = [
-  "lib/core/widgets/",
-];
 
 const rawMaterialPatterns = [
   /\bElevatedButton\b/gu,
@@ -130,7 +128,7 @@ function addBinding(files, binding) {
 }
 
 function isPrimitiveImplementation(file) {
-  return primitiveImplementationPrefixes.some((prefix) => file.startsWith(prefix));
+  return isAppSharedWidgetSource(file);
 }
 
 function collectMatches(source, patterns, {ignoreMatch = () => false} = {}) {

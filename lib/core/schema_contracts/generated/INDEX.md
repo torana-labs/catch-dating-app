@@ -93,6 +93,8 @@ Do not edit it by hand.
 | WorkspaceFieldAssertionDocument | `firestore/workspace_field_assertions.schema.json` | `functions/src/shared/generated/workspaceFieldAssertionDocument.ts` |
 | WorkspaceFieldDecisionDocument | `firestore/workspace_field_decisions.schema.json` | `functions/src/shared/generated/workspaceFieldDecisionDocument.ts` |
 | CatchWhatsappWebhookEventDocument | `firestore/catch_whatsapp_webhook_events.schema.json` | `functions/src/shared/generated/catchWhatsappWebhookEventDocument.ts` |
+| CatchWhatsappAutoReplyDocument | `firestore/catch_whatsapp_auto_replies.schema.json` | `functions/src/shared/generated/catchWhatsappAutoReplyDocument.ts` |
+| CatchWhatsappClarificationDocument | `firestore/catch_whatsapp_clarifications.schema.json` | `functions/src/shared/generated/catchWhatsappClarificationDocument.ts` |
 | SalesImportHistoryRowDocument | `firestore/sales_import_history_rows.schema.json` | `functions/src/shared/generated/salesImportHistoryRowDocument.ts` |
 | SalesImportHistoryRecordDocument | `firestore/sales_import_history_records.schema.json` | `functions/src/shared/generated/salesImportHistoryRecordDocument.ts` |
 | SalesPrivacyRestriction | `firestore/sales_privacy_restrictions.schema.json` | `functions/src/shared/generated/salesPrivacyRestriction.ts` |
@@ -1390,6 +1392,8 @@ Do not edit it by hand.
 | `schemaWorkspaceFieldAssertionDocumentSchema` | WorkspaceFieldAssertionDocument | `firestore/workspace_field_assertions.schema.json` | `lib/core/schema_contracts/generated/schemas/workspace_field_assertion_document.g.dart` |
 | `schemaWorkspaceFieldDecisionDocumentSchema` | WorkspaceFieldDecisionDocument | `firestore/workspace_field_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/workspace_field_decision_document.g.dart` |
 | `schemaCatchWhatsappWebhookEventDocumentSchema` | CatchWhatsappWebhookEventDocument | `firestore/catch_whatsapp_webhook_events.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_webhook_event_document.g.dart` |
+| `schemaCatchWhatsappAutoReplyDocumentSchema` | CatchWhatsappAutoReplyDocument | `firestore/catch_whatsapp_auto_replies.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_auto_reply_document.g.dart` |
+| `schemaCatchWhatsappClarificationDocumentSchema` | CatchWhatsappClarificationDocument | `firestore/catch_whatsapp_clarifications.schema.json` | `lib/core/schema_contracts/generated/schemas/catch_whatsapp_clarification_document.g.dart` |
 | `schemaSalesImportHistoryRowDocumentSchema` | SalesImportHistoryRowDocument | `firestore/sales_import_history_rows.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_history_row_document.g.dart` |
 | `schemaSalesImportHistoryRecordDocumentSchema` | SalesImportHistoryRecordDocument | `firestore/sales_import_history_records.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_import_history_record_document.g.dart` |
 | `schemaSalesPrivacyRestrictionSchema` | SalesPrivacyRestriction | `firestore/sales_privacy_restrictions.schema.json` | `lib/core/schema_contracts/generated/schemas/sales_privacy_restriction.g.dart` |

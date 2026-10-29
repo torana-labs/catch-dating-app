@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/contexts/formats/formats.dart';
-import 'package:catch_dating_app/core/business_rules.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/business_rules.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'event_draft.freezed.dart';

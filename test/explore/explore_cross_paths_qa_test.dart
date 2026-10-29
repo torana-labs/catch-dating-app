@@ -12,10 +12,10 @@ import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart'
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club_membership.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
-import 'package:catch_dating_app/core/data/cursor_page.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/platform/firebase/cursor_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

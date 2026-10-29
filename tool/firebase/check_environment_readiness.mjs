@@ -30,6 +30,10 @@ const projectNumberPattern = /^[1-9][0-9]*$/u;
 const serviceAccountPattern = /^[a-zA-Z0-9][a-zA-Z0-9._-]*@[a-zA-Z0-9.-]+\.gserviceaccount\.com$/u;
 const numericReferencePattern = /^projects\/([a-z0-9-]+)\/secrets\/([A-Za-z0-9_-]{1,255})\/versions\/([1-9][0-9]*)$/u;
 const metadataCommandTimeoutMs = 15_000;
+// Listing every v2 function in one call grows with the function count: prod
+// took about 27 s for 704 functions on 2026-10-29, past the per-call limit,
+// which made every secret binding unknown and blocked the deploy.
+export const functionListingTimeoutMs = 120_000;
 
 export class ReadinessUsageError extends Error {
   constructor(message) {
@@ -841,8 +845,9 @@ export function buildFunctionBindingsCommand({projectId, requirements}) {
   const fields = ["name", "state", "serviceConfig.serviceAccountEmail",
     "serviceConfig.secretEnvironmentVariables", "serviceConfig.environmentVariables.CATCH_DEPLOY_CONFIG_SHA256", ...params.map((name) =>
       `serviceConfig.environmentVariables.${name}`)];
-  return metadataOnlyCommand(["functions", "list", "--v2", "--regions=-",
-    `--project=${projectId}`, `--format=json(${fields.join(",")})`, "--quiet"]);
+  return {...metadataOnlyCommand(["functions", "list", "--v2", "--regions=-",
+    `--project=${projectId}`, `--format=json(${fields.join(",")})`, "--quiet"]),
+  timeoutMs: functionListingTimeoutMs};
 }
 
 // Receipts contain references and identities, never dotenv values. Strict shape
@@ -1367,7 +1372,8 @@ function defaultRunCommand(spec) {
       CLOUDSDK_CORE_DISABLE_PROMPTS: "1",
     },
     shell: false,
-    timeout: metadataCommandTimeoutMs,
+    timeout: Number.isSafeInteger(spec.timeoutMs) && spec.timeoutMs > 0 &&
+      spec.timeoutMs <= functionListingTimeoutMs ? spec.timeoutMs : metadataCommandTimeoutMs,
   });
   return normalizeCommandResult(result);
 }

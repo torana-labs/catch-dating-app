@@ -4,12 +4,12 @@ import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/external_event.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/activity_map_pin.dart';
+import 'package:catch_dating_app/contexts/events/parts/activity_map_pin.dart';
 import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
+import 'package:catch_dating_app/kernel/location_coordinate.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/shared/location_map.dart';
+import 'package:catch_dating_app/platform/theme/activity_palette.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart' show listEquals;

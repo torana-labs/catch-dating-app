@@ -17,12 +17,6 @@ import 'package:catch_dating_app/contexts/profiles/domain/profile_readiness.dart
 import 'package:catch_dating_app/contexts/profiles/domain/public_profile.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
-import 'package:catch_dating_app/core/analytics/app_analytics.dart';
-import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/app_shell.dart';
-import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/profile_requirements.g.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
@@ -76,6 +70,10 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart'
 import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
+import 'package:catch_dating_app/platform/analytics/app_analytics.dart';
+import 'package:catch_dating_app/platform/app_config.dart';
+import 'package:catch_dating_app/platform/errors/app_error_message.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_attendance_report_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_attention_screen.dart';
@@ -99,6 +97,8 @@ import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dar
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/host_navigation_workspace.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
+import 'package:catch_dating_app/routing/shell/app_shell.dart';
+import 'package:catch_dating_app/routing/shell/host_app_shell.dart';
 import 'package:catch_dating_app/safety/presentation/messaging_permissions_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';

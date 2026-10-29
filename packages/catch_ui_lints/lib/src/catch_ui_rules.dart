@@ -24,7 +24,7 @@ const _eventDetailPathFragments = <String>[
 
 const _excludedPathFragments = <String>[
   '/packages/catch_tokens/lib/',
-  '/lib/core/theme/',
+  '/lib/platform/theme/',
   '/lib/core/schema_contracts/generated/',
   '/lib/l10n/generated/',
 ];
@@ -599,8 +599,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
       isPresentationPath: _isPresentationPath(path),
       isSizingScannerPath: _isSizingScannerPath(path),
       isUiSystemScannerPath: _isUiSystemScannerPath(path),
-      allowRawControlConstructors:
-          _isCoreWidgetPrimitivePath(path) || _isRawChromeExceptionPath(path),
+      allowRawControlConstructors: _isRawChromeExceptionPath(path),
     );
     registry.addInstanceCreationExpression(this, visitor);
     registry.addNamedExpression(this, visitor);
@@ -642,9 +641,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
   }
 
   bool _isFeaturePresentationPath(String path) {
-    return path.contains('/lib/') &&
-        path.contains('/presentation/') &&
-        !path.contains('/lib/core/');
+    return path.contains('/lib/') && path.contains('/presentation/');
   }
 
   bool _isPresentationPath(String path) {
@@ -655,16 +652,20 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     return !path.contains('/lib/design_fixtures/');
   }
 
+  // Shared app UI lives in context parts, shared pages, the platform media
+  // and dialog helpers and the app shells; feature screens live in
+  // presentation folders. The celebration page predates the scan (it was
+  // lib/pages/celebration) and joins it when it is redrawn.
   bool _isUiSystemScannerPath(String path) {
     if (!_isSizingScannerPath(path)) return false;
     return path.contains('/packages/catch_ui/lib/src/') ||
-        path.contains('/lib/core/widgets/') ||
-        path.contains('/lib/core/presentation/') ||
+        RegExp(r'/lib/contexts/[^/]+/parts/').hasMatch(path) ||
+        (path.contains('/lib/pages/') &&
+            !path.contains('/lib/pages/celebration/')) ||
+        path.contains('/lib/platform/media/') ||
+        path.contains('/lib/platform/dialogs/') ||
+        path.contains('/lib/routing/shell/') ||
         path.contains('/presentation/');
-  }
-
-  bool _isCoreWidgetPrimitivePath(String path) {
-    return path.contains('/lib/core/widgets/');
   }
 
   bool _isRawChromeExceptionPath(String path) {
@@ -735,8 +736,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
           continue;
         }
         if (typeName == 'Image' &&
-            _constructorMemberName(drawing) == 'network' &&
-            !_isCoreWidgetPrimitivePath) {
+            _constructorMemberName(drawing) == 'network') {
           continue;
         }
       }
@@ -888,7 +888,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
     if (typeName == 'Image' &&
         constructorName == 'network' &&
-        !_isCoreWidgetPrimitivePath &&
         !path.endsWith(
           '/packages/catch_ui/lib/src/primitives/catch_network_image.dart',
         )) {
@@ -2013,13 +2012,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     );
   }
 
-  bool get _isCoreWidgetPrimitivePath {
-    return path.contains('/lib/core/widgets/');
-  }
-
   bool get _isShellImplementationPath {
-    return path.endsWith('/lib/core/presentation/app_shell.dart') ||
-        path.endsWith('/lib/core/presentation/host_app_shell.dart');
+    return path.endsWith('/lib/routing/shell/app_shell.dart') ||
+        path.endsWith('/lib/routing/shell/host_app_shell.dart');
   }
 
   int _lineForOffset(int offset) {

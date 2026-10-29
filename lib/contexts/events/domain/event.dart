@@ -4,16 +4,16 @@
 //
 // Data shape emitted from contracts/firestore/events.schema.json.
 // Derived behavior, if any, lives in a hand-written companion extension file.
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_meeting_location.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_types.dart';
-import 'package:catch_dating_app/core/country_markets.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/labelled.dart';
-import 'package:catch_dating_app/core/media/uploaded_photo.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/kernel/country_markets.dart';
+import 'package:catch_dating_app/kernel/labelled.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
+import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 export 'event_extensions.dart';

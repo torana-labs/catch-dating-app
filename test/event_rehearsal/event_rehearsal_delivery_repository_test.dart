@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/contexts/live/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_assistance_delivery.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 

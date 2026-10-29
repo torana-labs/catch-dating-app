@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/booked_events_repository.dart';
 import 'package:catch_dating_app/contexts/bookings/data/event_participation_repository.dart';
@@ -15,10 +14,11 @@ import 'package:catch_dating_app/contexts/organizers/data/clubs_repository.dart'
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/profiles/data/user_profile_repository.dart';
 import 'package:catch_dating_app/contexts/reviews/data/reviews_repository.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/presentation/calendar/calendar_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';

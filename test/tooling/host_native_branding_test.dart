@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image/image.dart' as image;

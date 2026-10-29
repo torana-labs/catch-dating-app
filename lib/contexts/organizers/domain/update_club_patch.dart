@@ -2,9 +2,9 @@
 
 import 'package:catch_dating_app/contexts/organizers/domain/club.dart';
 import 'package:catch_dating_app/contexts/organizers/domain/club_host_defaults.dart';
-import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/media/uploaded_photo.dart';
-import 'package:catch_dating_app/core/sentinels.dart';
+import 'package:catch_dating_app/kernel/sentinels.dart';
+import 'package:catch_dating_app/platform/firebase/firestore_converters.dart';
+import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
 
 /// Typed patch helper for the canonical `updateOrganizer` callable.
 ///

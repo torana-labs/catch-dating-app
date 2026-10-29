@@ -9,7 +9,7 @@ import 'package:catch_dating_app/contexts/live/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_assistance_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_rehearsal_movement.dart';
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 /// A configured destination in an actual, generation-bound movement review.
 /// Selecting it chooses a policy scope; it cannot confirm a group's position.

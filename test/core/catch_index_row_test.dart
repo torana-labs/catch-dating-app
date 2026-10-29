@@ -1,6 +1,6 @@
 import 'dart:ui' show Tristate;
 
-import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';

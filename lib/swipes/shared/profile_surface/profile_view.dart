@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/connections/domain/swipe.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:flutter/widgets.dart';
 
 /// Presentation model for the flagship profile surface ([ProfileBody]).

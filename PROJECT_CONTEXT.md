@@ -1,6 +1,6 @@
 ---
 doc_id: project_context
-version: 3.1.3
+version: 3.1.4
 updated: 2026-10-29
 owner: agent_operating_model
 status: active
@@ -15,7 +15,7 @@ This is an orientation map, not a detailed contract. Follow [AGENTS.md](AGENTS.m
 Catch combines social events and dating. Consumers discover clubs and events, book or join a waitlist, attend, review event experiences, browse eligible profiles, match, and chat. Hosts create and operate clubs/events. Internal operators use a separate admin console for intake, moderation, finance, and operational workflows.
 
 The product is India-first. Canonical market identity and fallback labels are
-owned in `lib/core/city_catalog.dart`, while Firestore-backed launch metadata is
+owned in `lib/kernel/city_catalog.dart`, while Firestore-backed launch metadata is
 exposed through `CityRepository`; do not add free-form city identity logic in
 features.
 
@@ -28,7 +28,7 @@ features.
 | Cloud Functions | `functions/src/` | [docs/backend_operation_catalog.md](docs/backend_operation_catalog.md) |
 | Marketing website | `website/` | [docs/marketing_website_architecture.md](docs/marketing_website_architecture.md) |
 | Admin console | `admin/` | [docs/web_surface_architecture.md](docs/web_surface_architecture.md) |
-| Design system and Widgetbook | `lib/core/theme/`, `lib/core/widgets/`, `widgetbook/` | [docs/design_language.md](docs/design_language.md), [docs/widget_catalog.md](docs/widget_catalog.md) |
+| Design system and Widgetbook | `lib/platform/theme/`, `packages/catch_ui/`, `lib/contexts/*/parts/`, `widgetbook/` | [docs/design_language.md](docs/design_language.md), [docs/widget_catalog.md](docs/widget_catalog.md) |
 | Firebase environments | `firebase/`, `.firebaserc`, `firebase.json` | [firebase/README.md](firebase/README.md) |
 | CI and release operations | `.github/`, `tool/ci/`, `tool/platform/` | [docs/release_operations.md](docs/release_operations.md) |
 | Governed automation | `tool/` | [tool/README.md](tool/README.md) |
@@ -64,7 +64,7 @@ Feature routes and implementation details change frequently; inspect the feature
 
 ## UI and state boundaries
 
-- Shared tokens live under `lib/core/theme/`; avoid feature-local color, type, spacing, and radius systems.
+- Shared tokens live under `lib/platform/theme/`; avoid feature-local color, type, spacing, and radius systems.
 - Repeated Flutter concepts converge on shared `Catch*` primitives and Widgetbook coverage.
 - Screens render controller state and dispatch explicit actions; repositories translate infrastructure failures into the shared error model.
 - React website/admin features compose their owning shared primitives and obey the boundary scanners documented in [docs/web_surface_architecture.md](docs/web_surface_architecture.md).

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/account/data/authenticated_session.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assignment_feature_choices_page_body.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/platform/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

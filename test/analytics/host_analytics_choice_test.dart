@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/core/analytics/host_analytics_choice.dart';
+import 'package:catch_dating_app/platform/analytics/host_analytics_choice.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

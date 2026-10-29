@@ -140,7 +140,7 @@ function buildOwnerDocs({task, selectionPaths, matchedSkills}) {
     addDoc(docs, "docs/backend_operation_catalog.md", "Backend operation ownership.");
   }
   if (matchesScopePatterns(selectionPaths, [
-    "lib/**/presentation/**", "lib/core/widgets/**", "widgetbook/**",
+    "lib/**/presentation/**", "lib/contexts/*/parts/**", "lib/pages/**", "widgetbook/**",
     "docs/design_parity/**", "design/components/**", "design/screens/**", "design/tokens/**",
   ])) {
     addDoc(docs, "docs/design_parity/README.md", "Design parity workflow.");

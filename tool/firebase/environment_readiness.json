@@ -1226,6 +1226,30 @@
       "recordReferences": false
     },
     {
+      "id": "functions.reference.catch-auto-reply",
+      "sourcePaths": [
+        "functions/src/catchMessaging/catchSender.ts"
+      ],
+      "owner": "catch-messaging",
+      "credentialClass": "provider-token",
+      "consumers": [
+        "onCatchWhatsappWebhookEventCreated",
+        "onMessageNominationListingReady"
+      ],
+      "binding": {
+        "kind": "parameter",
+        "exactReference": "same-project-numeric",
+        "identity": "observed-function-service-account",
+        "parameter": "CATCH_WHATSAPP_AUTOREPLY_CREDENTIAL_VERSION",
+        "optional": true,
+        "secret": "CATCH_WHATSAPP_ACCESS_TOKEN",
+        "enabledParameter": "SUPPLY_MESSAGE_NOMINATIONS_ENABLED"
+      },
+      "activationPolicy": "blank-current-reference-unconfigured",
+      "rotationCompatibility": "provider-overlap",
+      "recordReferences": false
+    },
+    {
       "id": "functions.reference.event-approval",
       "sourcePaths": [
         "functions/src/events/approvalNotifications/transports.ts"

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:catch_dating_app/core/persistence/command_journal_storage_sqlite.dart';
+import 'package:catch_dating_app/platform/persistence/command_journal_storage_sqlite.dart';
 import 'package:sqlite3/sqlite3.dart';
 
 /// Manual crash probe: `dart run <this file> crash <temporary database path>`,

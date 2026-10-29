@@ -6,8 +6,8 @@ import 'package:catch_dating_app/contexts/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/contexts/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/contexts/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

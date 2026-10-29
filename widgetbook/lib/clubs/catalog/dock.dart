@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

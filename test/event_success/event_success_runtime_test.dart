@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/formats/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_conversation_cue.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_plan.dart';
 import 'package:catch_dating_app/contexts/live/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:flutter_test/flutter_test.dart';
 

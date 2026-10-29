@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "80a0346d67e2c1daaa96d04b25da002d155f40783ac641ddf5e530c777296b54",
+  "sourceDigest": "ae614ef3a722f5cc134abdcb96c7b321421179fc4b1a6139631cc0b929f02450",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "80a0346d67e2c1daaa96d04b25da002d155f40783ac641ddf5e530c777296b54",
-    "contractDigest": "80a0346d67e2c1daaa96d04b25da002d155f40783ac641ddf5e530c777296b54"
+    "digest": "ae614ef3a722f5cc134abdcb96c7b321421179fc4b1a6139631cc0b929f02450",
+    "contractDigest": "ae614ef3a722f5cc134abdcb96c7b321421179fc4b1a6139631cc0b929f02450"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "8a77dba64e535e863095f7a48cfbaf4db58fafb70985b20ab30af3e0e2899990",
+    "handoffRequestDigest": "bece2f19eb506716e8cf05c1a8733e65cd22efda59938d682b0fe94800326420",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -684,7 +684,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ErrorState",
       "claudeAllowed": true,
-      "contractDigest": "289a545e22a00d6ac223a3730d4dad754f0eb559fe901dbb92f43c42412f4ae0"
+      "contractDigest": "b17aa87c2c5efa740ddc4ca277f7eade777b124f47b6ac95049aed77609414a6"
     },
     {
       "contractId": "catch.banner",
@@ -719,7 +719,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Banner",
       "claudeAllowed": true,
-      "contractDigest": "166fcd7ad5228200f19ca44a46d0f77a339ccf558630a762daa1e6cd5a879160"
+      "contractDigest": "c9b60f1cf75cd24a174500863266d085b108946c7a66cb49338b881fd0c51a9c"
     },
     {
       "contractId": "catch.notice",
@@ -754,7 +754,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Notice",
       "claudeAllowed": true,
-      "contractDigest": "56fa48ee3102f9560116a89cc4590d4519bd273cefb9d22f572430f6df57913f"
+      "contractDigest": "4c27a482f25ba8222182544cf6afd244f79aba54ec8c0b4fe91d1f5ef1b1785a"
     },
     {
       "contractId": "catch.field",
@@ -951,7 +951,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.async_value",
       "dartSymbol": "CatchAsyncBoundary",
-      "dartFile": "lib/core/riverpod_ui/catch_async_boundary.dart",
+      "dartFile": "lib/platform/riverpod_ui/catch_async_boundary.dart",
       "reactSymbol": null,
       "reactFile": null,
       "reactApi": null,
@@ -979,14 +979,14 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "AsyncValue",
       "claudeAllowed": true,
-      "contractDigest": "6f675c68d83ec3fe42f47f40f4e081171b2d5468eacb09d6a83fe1dd00d8fbd8"
+      "contractDigest": "6c950620817126a6c05ec6560752c1063794cfe27e32dc5d5027e8fe77487ec0"
     },
     {
       "contractId": "catch.startup_loading_screen",
       "conceptRole": "concept",
       "conceptId": "catch.startup_loading_screen",
       "dartSymbol": "SplashScreen",
-      "dartFile": "lib/core/widgets/splash_screen.dart",
+      "dartFile": "lib/pages/startup/splash_screen.dart",
       "reactSymbol": null,
       "reactFile": null,
       "reactApi": null,
@@ -1014,7 +1014,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "StartupLoadingScreen",
       "claudeAllowed": true,
-      "contractDigest": "73af130e6d2b1793421adc88ec391b021a999cde95ebe0c812e36d6c45bda76c"
+      "contractDigest": "60788cd9473e409f1f086c2f87a5d727b62238c30001c0ef9c8eadb343049ae7"
     },
     {
       "contractId": "catch.typography",
@@ -1189,7 +1189,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "d08bee3a62de45e0153e8d3904392912f640b4baa3ea973688d45bb905383f39"
+      "contractDigest": "5880dc56559e6603aee5674d1474e3908245fd2bc60cf140569b2000010b05cf"
     },
     {
       "contractId": "catch.icon",
@@ -2316,7 +2316,7 @@
       "conceptRole": "concept",
       "conceptId": "catch.event_card",
       "dartSymbol": "EventCard",
-      "dartFile": "lib/core/widgets/event_card.dart",
+      "dartFile": "lib/contexts/events/parts/event_card.dart",
       "reactSymbol": null,
       "reactFile": null,
       "reactApi": null,
@@ -2344,7 +2344,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "EventCard",
       "claudeAllowed": true,
-      "contractDigest": "df8689cfc9bd964894a3e381e7dfe28c3807d509f2ce97f0f989b5130235741b"
+      "contractDigest": "400bc0b9dcea2264fcee046b9e20a6b51147149638234e43d90be68f1556ef41"
     },
     {
       "contractId": "catch.graded_image",
@@ -2421,7 +2421,7 @@
       "conceptRole": "composition",
       "conceptId": null,
       "dartSymbol": "ActivityMapPin",
-      "dartFile": "lib/core/widgets/activity_map_pin.dart",
+      "dartFile": "lib/contexts/events/parts/activity_map_pin.dart",
       "reactSymbol": null,
       "reactFile": null,
       "reactApi": null,
@@ -2449,7 +2449,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ActivityMapPin",
       "claudeAllowed": true,
-      "contractDigest": "7927265150adcea93e89c3c4f6a708acf82d11aeda42d5b586f5607db439d90a"
+      "contractDigest": "02594773f2dfeb3fff630e4ea6fd0623cccc7c950df246f9fbd3cbe9f991d919"
     },
     {
       "contractId": "catch.event_detail_sections",

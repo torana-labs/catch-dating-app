@@ -4,9 +4,9 @@ import 'package:catch_dating_app/contexts/programmes/data/program_projection_lif
 import 'package:catch_dating_app/contexts/programmes/data/program_work_repository.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/program_models.dart';
 import 'package:catch_dating_app/contexts/programmes/domain/travel_leg_revision.dart';
-import 'package:catch_dating_app/core/connectivity_service.dart';
-import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/device/connectivity_service.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';

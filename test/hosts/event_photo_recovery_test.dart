@@ -4,8 +4,8 @@ import 'package:catch_dating_app/contexts/events/data/event_photo_recovery_journ
 import 'package:catch_dating_app/contexts/events/data/event_photo_recovery_service.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_photo_recovery.dart';
 import 'package:catch_dating_app/contexts/profiles/data/image_upload_repository.dart';
-import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/persistence/memory_command_journal_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';

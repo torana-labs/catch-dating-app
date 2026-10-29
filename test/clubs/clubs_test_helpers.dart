@@ -10,8 +10,8 @@ import 'package:catch_dating_app/contexts/profiles/domain/image_upload_job.dart'
 import 'package:catch_dating_app/contexts/profiles/domain/profile_photo.dart';
 import 'package:catch_dating_app/contexts/profiles/domain/user_profile.dart';
 import 'package:catch_dating_app/contexts/reviews/domain/review.dart';
-import 'package:catch_dating_app/core/media/uploaded_photo.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/platform/media/uploaded_photo.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

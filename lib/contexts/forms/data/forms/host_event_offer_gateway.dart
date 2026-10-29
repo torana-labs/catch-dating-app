@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/contexts/forms/domain/forms/host_event_offer.dart';
-import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
-import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/backend_error_util.dart';
+import 'package:catch_dating_app/platform/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/platform/persistence/local_command_journal.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:crypto/crypto.dart';
 

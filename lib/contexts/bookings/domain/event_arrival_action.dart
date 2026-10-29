@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/contexts/bookings/domain/event_participation.dart';
 import 'package:catch_dating_app/contexts/bookings/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/contexts/events/events.dart';
-import 'package:catch_dating_app/core/business_rules.dart';
+import 'package:catch_dating_app/kernel/business_rules.dart';
 
 enum EventArrivalActionKind { selfCheckIn, takeAttendance }
 

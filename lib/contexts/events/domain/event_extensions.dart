@@ -1,14 +1,14 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_eligibility.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_policy.dart';
 import 'package:catch_dating_app/contexts/events/domain/event_service.dart';
 import 'package:catch_dating_app/contexts/profiles/profiles.dart';
-import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
+import 'package:catch_dating_app/platform/time/time_formatters.dart';
 
 const _legacyUnattributedCohortId = 'legacyUnattributed';
 

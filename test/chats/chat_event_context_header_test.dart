@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/chats/presentation/chat_conversation_context.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_copy.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
 import 'package:catch_dating_app/contexts/events/domain/event.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/kernel/activity_taxonomy.dart';
+import 'package:catch_dating_app/platform/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

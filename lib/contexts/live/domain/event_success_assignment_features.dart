@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
+import 'package:catch_dating_app/platform/cryptography/sha256_digest.dart';
 
 /// Event-local matching preferences. These rules never grant answer use.
 final class EventSuccessAssignmentFeatureRule {

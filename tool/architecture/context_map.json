@@ -33,9 +33,6 @@
     {"path": "lib/app.dart", "layer": "app"},
     {"path": "lib/app_bootstrap.dart", "layer": "app"},
     {"path": "lib/consumer_bootstrap.dart", "layer": "app"},
-    {"path": "lib/core/presentation/app_shell.dart", "layer": "app"},
-    {"path": "lib/core/presentation/host_app_shell.dart", "layer": "app"},
-    {"path": "lib/core/widgets/event_thumbnail.dart", "layer": "app"},
     {"path": "lib/dashboard/", "layer": "app"},
     {"path": "lib/event_success/event_success_companion_launcher.dart", "layer": "app"},
     {"path": "lib/design_fixtures/", "layer": "app"},
@@ -45,16 +42,9 @@
 
     {"path": "lib/contracts.dart", "layer": "platform"},
     {"path": "lib/core/", "layer": "platform"},
-    {"path": "lib/exceptions/", "layer": "platform"},
     {"path": "lib/firebase_options", "layer": "platform"},
-    {"path": "lib/hosts/data/read_models/host_summary_reader.dart", "layer": "platform"},
     {"path": "lib/l10n/", "layer": "platform"},
     {"path": "lib/routing/route_contract.dart", "layer": "platform"},
-
-    {"path": "lib/activity/", "layer": "kernel"},
-    {"path": "lib/core/labelled.dart", "layer": "kernel"},
-    {"path": "lib/organizers/domain/organizer_supply_capabilities.dart", "layer": "kernel"},
-    {"path": "lib/locations/domain/location_coordinate.dart", "layer": "kernel"},
 
     {"path": "lib/auth/", "context": "account"},
     {"path": "lib/force_update/", "context": "account"},

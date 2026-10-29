@@ -128,7 +128,7 @@
       "leading": "backUnlessEmbedded"
     },
     {
-      "path": "lib/core/widgets/ordered_photo_picker.dart",
+      "path": "lib/platform/media/ordered_photo_picker.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",
       "owner": "CatchTopBar"

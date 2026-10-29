@@ -86,6 +86,8 @@ export {decideOrganizerCommunityMembershipCallableResponseSchema} from "./schema
 export {workspaceFieldAssertionDocumentSchema} from "./schemas/workspaceFieldAssertionDocument";
 export {workspaceFieldDecisionDocumentSchema} from "./schemas/workspaceFieldDecisionDocument";
 export {catchWhatsappWebhookEventDocumentSchema} from "./schemas/catchWhatsappWebhookEventDocument";
+export {catchWhatsappAutoReplyDocumentSchema} from "./schemas/catchWhatsappAutoReplyDocument";
+export {catchWhatsappClarificationDocumentSchema} from "./schemas/catchWhatsappClarificationDocument";
 export {salesImportHistoryRowDocumentSchema} from "./schemas/salesImportHistoryRowDocument";
 export {salesImportHistoryRecordDocumentSchema} from "./schemas/salesImportHistoryRecordDocument";
 export {salesPrivacyRestrictionSchema} from "./schemas/salesPrivacyRestriction";

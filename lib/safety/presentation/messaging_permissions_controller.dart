@@ -5,7 +5,7 @@ import 'package:catch_dating_app/contexts/account/data/auth_repository.dart';
 import 'package:catch_dating_app/contexts/account/data/require_signed_in_uid.dart';
 import 'package:catch_dating_app/contexts/safety/data/messaging_permission_repository.dart';
 import 'package:catch_dating_app/contexts/safety/domain/messaging_permission.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/platform/errors/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'messaging_permissions_controller.g.dart';
