@@ -20,7 +20,7 @@ import {
   AdminIntakeLayout,
   AdminIntakeSectionTitle,
   AdminIntakeSourceList,
-  AdminIntakeStateGrid,
+  AdminOrganizerIntakeSurfaceGrid,
   AdminMetricCard,
   AdminMetricGrid,
   AdminOrganizerIntakeCurationPanel,
@@ -194,12 +194,12 @@ function OrganizerIntakeDiagnostics({
           </AdminIntakeSourceList>
           <AdminOrganizerIntakeCurationPanel>
             <AdminIntakeSectionTitle>Dedupe curation</AdminIntakeSectionTitle>
-            <AdminIntakeStateGrid>
+            <AdminOrganizerIntakeSurfaceGrid>
               <StateRow label="Operations" value={String(bridge.curation.summary.operations)} />
               <StateRow label="Attached" value={String(bridge.curation.summary.attachedSurfaces ?? 0)} />
               <StateRow label="Merges" value={String(bridge.curation.summary.merges)} />
               <StateRow label="Surface decisions" value={String(bridge.curation.summary.surfaceDecisions)} />
-            </AdminIntakeStateGrid>
+            </AdminOrganizerIntakeSurfaceGrid>
             <AdminCommandStack>
               {Object.entries(bridge.curation.commands).map(([label, command]) => (
                 <AdminCommandRow key={label}><span>{label}</span><code>{command}</code></AdminCommandRow>
@@ -208,12 +208,12 @@ function OrganizerIntakeDiagnostics({
           </AdminOrganizerIntakeCurationPanel>
         </Panel>
         <Panel icon={<Activity size={18} />} title="Event crawl readiness" action={bridge.crawlPlan.policy.status}>
-          <AdminIntakeStateGrid>
+          <AdminOrganizerIntakeSurfaceGrid>
             <StateRow label="Scheduler" value={bridge.crawlPlan.policy.schedulerEnabled ? "enabled" : "disabled"} />
             <StateRow label="Default policy" value={bridge.crawlPlan.policy.defaultSurfacePolicy} />
             <StateRow label="Capable" value={String(bridge.crawlPlan.summary.crawlCapableSurfaces)} />
             <StateRow label="Blocked" value={String(bridge.crawlPlan.summary.blockedSurfaces)} />
-          </AdminIntakeStateGrid>
+          </AdminOrganizerIntakeSurfaceGrid>
           <AdminTagList>
             {Object.entries(bridge.crawlPlan.summary.platforms).map(([platform, count]) => (
               <CatchBadge key={platform} label={`${platform} x${count}`} />

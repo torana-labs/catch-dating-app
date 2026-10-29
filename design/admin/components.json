@@ -1965,25 +1965,6 @@
       "componentId": "catch.form_step_list"
     },
     {
-      "id": "shared_admin_intake_state_grid",
-      "kind": "feature-component",
-      "owner": "features/intake",
-      "source": "admin/src/shared/ui/AdminPrimitives/intake.tsx",
-      "exportName": "AdminIntakeStateGrid",
-      "css": [
-        "admin/src/styles.css"
-      ],
-      "preview": {
-        "status": "ready",
-        "story": "admin/src/stories/AdminIntakePrimitives.stories.tsx",
-        "exportName": "AdminIntakeStateGridStory",
-        "states": [
-          "metrics"
-        ]
-      },
-      "notes": "Shared admin intake primitive with deterministic preview coverage in admin/src/stories/AdminIntakePrimitives.stories.tsx."
-    },
-    {
       "id": "shared_admin_intake_task_toolbar",
       "kind": "feature-component",
       "owner": "features/intake",

@@ -220,10 +220,10 @@
       "count": 3
     },
     "react/forbid-dom-props": {
-      "count": 29
+      "count": 28
     },
     "react/forbid-elements": {
-      "count": 34
+      "count": 33
     }
   },
   "src/shared/ui/AdminPrimitives/intakeWorkbench.tsx": {

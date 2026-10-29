@@ -2372,7 +2372,6 @@ select {
   justify-content: flex-end;
 }
 
-.intake-state-grid,
 .intake-surface-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4070,7 +4069,6 @@ th {
     flex: 0 0 36px;
   }
 
-  .intake-state-grid,
   .intake-surface-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -4196,7 +4194,6 @@ th {
   }
 
   .publishing-loadbar,
-  .intake-state-grid,
   .intake-surface-grid,
   .marketing-event-library-grid,
   .marketing-media-grid,

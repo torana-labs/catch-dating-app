@@ -13,7 +13,6 @@ import {
   AdminIntakeGateList,
   AdminIntakeSection,
   AdminIntakeSectionTitle,
-  AdminIntakeStateGrid,
   AdminOrganizerCurationControlGrid,
   AdminOrganizerCurationControlSection,
   AdminOrganizerIntakeBadges,
@@ -73,7 +72,7 @@ function OrganizerExternalEventImportPlanView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Candidates" value={String(plan.summary.candidates)} />
         <StateRow
           label="Read-only events"
@@ -84,7 +83,7 @@ function OrganizerExternalEventImportPlanView({
         <StateRow label="Blocked" value={String(plan.summary.blocked)} />
         <StateRow label="Waiting" value={String(plan.summary.waitingReview)} />
         <StateRow label="Rejected" value={String(plan.summary.rejected)} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
         <strong>{plan.policy.writeEnabled ? "Writes enabled" : "Writes disabled"}</strong>
         <span>{plan.policy.reason}</span>
@@ -112,7 +111,7 @@ function OrganizerExternalEventImportPlanView({
                 <CatchBadge recipe="status" tone={action.status === "write_ready" ? "success" : "neutral"} label={action.action.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
-              <AdminIntakeStateGrid>
+              <AdminOrganizerIntakeSurfaceGrid>
                 <StateRow label="Candidate" value={action.candidateId} />
                 <StateRow label="Target" value={action.targetPath} />
                 <StateRow
@@ -130,7 +129,7 @@ function OrganizerExternalEventImportPlanView({
                   label="Catch booking"
                   value={action.proposedReadOnlyEventDraft.booking.catchBookingEnabled ? "enabled" : "disabled"}
                 />
-              </AdminIntakeStateGrid>
+              </AdminOrganizerIntakeSurfaceGrid>
 
               <AdminTagList>
                 {action.proposedReadOnlyEventDraft.booking.externalLinks.map((link) => (
@@ -171,7 +170,7 @@ function OrganizerExternalEventImportExecutionPlanView({
 
   return (
     <AdminSearchCandidatePanel>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Import actions" value={String(plan.summary.importActions)} />
         <StateRow
           label="Read-only actions"
@@ -190,7 +189,7 @@ function OrganizerExternalEventImportExecutionPlanView({
           label="Projection errors"
           value={String(plan.summary.projectionInvalidCount ?? plan.summary.payloadInvalid)}
         />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       <QualityRow tone="warning" icon={<Lock size={16} strokeWidth={1.9} />}>
         <strong>
           {plan.policy.writeEnabled ? "Execution writes enabled" : "Execution writes disabled"}
@@ -222,7 +221,7 @@ function OrganizerExternalEventImportExecutionPlanView({
                 <CatchBadge recipe="status" tone={action.status === "would_publish_read_only" ? "success" : "neutral"} label={action.sourceAction.replaceAll("_", " ")} />
               </AdminSearchCandidateHeader>
 
-              <AdminIntakeStateGrid>
+              <AdminOrganizerIntakeSurfaceGrid>
                 <StateRow label="Candidate" value={action.candidateId} />
                 <StateRow label="Target" value={action.targetPath} />
                 <StateRow
@@ -241,7 +240,7 @@ function OrganizerExternalEventImportExecutionPlanView({
                   label="Projection"
                   value={(action.projectionValidation ?? action.payloadValidation).valid ? "valid" : "invalid"}
                 />
-              </AdminIntakeStateGrid>
+              </AdminOrganizerIntakeSurfaceGrid>
 
               <AdminTagList>
                 {action.blockers.map((blocker) => (
@@ -354,12 +353,12 @@ function OrganizerIntakeCard({
           <CatchBadge label={item.relationshipToCatch} />
         </AdminOrganizerIntakeBadges>
       </AdminOrganizerIntakeCardHeader>
-      <AdminIntakeStateGrid>
+      <AdminOrganizerIntakeSurfaceGrid>
         <StateRow label="Entity ID" value={item.entityId} />
         <StateRow label="Canonical" value={item.canonicalPath} />
         <StateRow label="Website" value={`${item.publishStatus} / ${item.indexStatus}`} />
         <StateRow label="App" value={item.appVisibility} />
-      </AdminIntakeStateGrid>
+      </AdminOrganizerIntakeSurfaceGrid>
       {item.curation ? (
         <AdminOrganizerIntakeCurationPanel>
           <AdminIntakeSectionTitle>Curation</AdminIntakeSectionTitle>
