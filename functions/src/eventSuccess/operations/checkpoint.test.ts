@@ -450,10 +450,13 @@ test("Firestore competing report retries commit one immutable observation", {
   try {
     const h = await harness(getEmulatorFirestore(app), true, 1);
     const input = command(await h.view("sweep"), h.ids);
-    const results = await Promise.all(Array.from({length: 8}, () =>
+    // The emulator breaks each receipt-lock deadlock only by a ~2 s lock
+    // timeout; more contenders add rounds that can exhaust the SDK's five
+    // attempts on a loaded runner. Three still race one commit with replays.
+    const results = await Promise.all(Array.from({length: 3}, () =>
       h.checkpoints.record("sweep", input)));
     assert.equal(results.filter((r) => r.outcome === "applied").length, 1);
-    assert.equal(results.filter((r) => r.outcome === "replayed").length, 7);
+    assert.equal(results.filter((r) => r.outcome === "replayed").length, 2);
     assert.equal((await h.read(h.reportPath))!.revision, 1);
     assert.equal((await h.read(h.attendeePath))!.attendanceRevision, 7);
     const stale = command(await h.view("sweep"), [], "Correction");
