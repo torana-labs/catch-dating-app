@@ -6,6 +6,9 @@ import {CatchDock} from "./CatchDock";
 import {CatchSheet} from "./CatchSheet";
 import styles from "./CatchStickyAside.module.css";
 
+// Read by the stylesheet's page clearance on the root element.
+const dockClearanceProperty = "--catch-sticky-aside-dock-clearance";
+
 export interface CatchStickyAsideProps {
   /** Names the aside, and the sheet it becomes on a phone. */
   label: string;
@@ -28,6 +31,7 @@ export interface CatchStickyAsideProps {
  */
 export function CatchStickyAside({label, children, dock, openLabel, closeLabel, sheetTitle}: CatchStickyAsideProps) {
   const probe = useRef<HTMLSpanElement>(null);
+  const dockBar = useRef<HTMLDivElement>(null);
   const [compact, setCompact] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -47,12 +51,28 @@ export function CatchStickyAside({label, children, dock, openLabel, closeLabel, 
     if (!compact) setOpen(false);
   }, [compact]);
 
+  useEffect(() => {
+    // The page clears the docked bar's real height, which a two-line summary
+    // raises above the stylesheet's estimate.
+    const element = dockBar.current;
+    if (!element) return undefined;
+    const root = document.documentElement;
+    const measure = () => root.style.setProperty(dockClearanceProperty, `${element.offsetHeight}px`);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      root.style.removeProperty(dockClearanceProperty);
+    };
+  }, [compact]);
+
   return (
     <div className={styles.anchor} data-compact={compact || undefined}>
       <span aria-hidden="true" className={styles.probe} ref={probe} />
       {compact ? (
         <>
-          <div className={styles.dock} data-catch-sticky-dock="">
+          <div className={styles.dock} data-catch-sticky-dock="" ref={dockBar}>
             <CatchDock>
               <div className={styles.bar}>
                 <div className={styles.summary}>{dock}</div>
