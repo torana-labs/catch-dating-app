@@ -2986,7 +2986,7 @@
           "image-only"
         ]
       },
-      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption; website/src/shared/media/MediaSlot.tsx binds a tool/marketing/capture_manifest.json slot id to it. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame.",
+      "notes": "Website T4 under D18: @catch/web-ui draws a device-framed app capture with its caption; website/src/shared/media/captureSlot.ts resolves a tool/marketing/capture_manifest.json slot id to its props. Search aliases: AppScreenshot, AppCapture, DeviceFrame, PhoneFrame, PhoneMockup, ScreenshotFrame.",
       "comparedWith": [
         "catch.text"
       ],
@@ -3997,6 +3997,30 @@
       "comparisonReason": "Renders CatchText for its own copy; it is a Website v2 page part with its own layout, not a text style, so it uses catch.text rather than implementing it. It shows the organiser's monogram through CatchAvatar rather than implementing an avatar."
     },
     {
+      "id": "web_ui_catch_accordion",
+      "kind": "supporting-component",
+      "routeIds": [
+        "home"
+      ],
+      "owner": "shared/parts",
+      "source": "packages/web-ui/src/components/CatchAccordion.tsx",
+      "exportName": "CatchAccordion",
+      "css": [
+        "packages/web-ui/src/components/CatchAccordion.module.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "default"
+        ]
+      },
+      "notes": "The library's disclosure list (#948): the homepage FAQ, one question open at a time. Search aliases: FAQ, Disclosure, Collapsible, Expander.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchText for its questions and answers; it is a disclosure list with its own open state and layout, not a text style, so it uses catch.text rather than implementing it."
+    },
+    {
       "id": "web_ui_catch_chip",
       "kind": "supporting-component",
       "routeIds": [
@@ -4005,7 +4029,6 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchChip.tsx",
       "exportName": "CatchChip",
-      "componentId": "catch.chip",
       "css": [
         "packages/web-ui/src/components/CatchChip.module.css"
       ],
@@ -4015,7 +4038,11 @@
           "default"
         ]
       },
-      "notes": "The library's catch.chip twin, rendered on the website through CatchChoiceInput's filter chips."
+      "notes": "The library's catch.chip twin, rendered on the website through CatchChoiceInput's filter chips.",
+      "comparedWith": [
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchText for its label; it is the website's styled chip, not a text style, so it uses catch.text rather than implementing it."
     },
     {
       "id": "web_ui_catch_choice_input",
@@ -4026,7 +4053,6 @@
       "owner": "shared/parts",
       "source": "packages/web-ui/src/components/CatchChoiceInput.tsx",
       "exportName": "CatchChoiceInput",
-      "componentId": "catch.chip.field",
       "css": [
         "packages/web-ui/src/components/CatchChoiceInput.module.css"
       ],
@@ -4036,7 +4062,12 @@
           "default"
         ]
       },
-      "notes": "The library's catch.chip.field twin: the homepage's format filter and Explore's view, format and date choices."
+      "notes": "The library's catch.chip.field twin: the homepage's format filter and Explore's view, format and date choices.",
+      "comparedWith": [
+        "catch.option_card",
+        "catch.text"
+      ],
+      "comparisonReason": "Renders CatchChoiceTile for its described choices and CatchText for its legend; it is a choice group that arranges those parts, not an option card or a text style."
     }
   ]
 }
