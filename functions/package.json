@@ -1,7 +1,7 @@
 {
   "name": "functions",
   "scripts": {
-    "lint": "eslint --ext .js,.ts src",
+    "lint": "node --max-old-space-size=6144 node_modules/eslint/bin/eslint.js --ext .js,.ts src",
     "prebuild": "node scripts/clean-lib.cjs",
     "build": "tsc",
     "test": "npm run build && node scripts/run-tests.cjs",
@@ -48,6 +48,9 @@
     "typescript": "^6.0.3"
   },
   "overrides": {
+    "@firebase/firestore": {
+      "@grpc/grpc-js": "^1.14.5"
+    },
     "@google-cloud/firestore": "^8.6.0",
     "retry-request": "^8.0.3",
     "teeny-request": "^10.1.3",
