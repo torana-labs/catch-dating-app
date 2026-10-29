@@ -15,15 +15,6 @@ import {eventDetailCopy} from "../../content/events";
 import {eventDetailPath} from "../events/eventDetailModel";
 import type {HostListing, HostListingCatchEvent, HostListingExternalEvent} from "./types";
 
-export interface OrganizerEventHighlight {
-  id: string;
-  title: string;
-  kind: string;
-  detail: string;
-  href: string;
-  activityToken: string;
-}
-
 export function buildPublicEventSummaries(
   listings: HostListing[],
   options: {
@@ -106,97 +97,6 @@ export function buildPublicSearchSuggestions(
   ];
 }
 
-export function eventHighlightsForListing(
-  listing: HostListing,
-  queryTerms: string[]
-): OrganizerEventHighlight[] {
-  const highlights: Array<OrganizerEventHighlight & {searchText: string}> = [
-    ...(listing.catchEvents ?? []).map((event) => {
-      const activity = activityForKind(event.activityKind);
-      const isFuture = isFutureCatchEvent(event);
-      const detail = [
-        event.date,
-        event.location,
-        event.priceLabel,
-        event.capacityLimit ? `${event.bookedCount}/${event.capacityLimit} booked` : null,
-      ].filter(Boolean).join(" · ");
-      return {
-        id: `catch-${event.id}`,
-        title: event.title,
-        kind: isFuture ? "Future Catch event" : event.timeline === "past" ? "Past Catch event" : "Catch event",
-        detail,
-        href: eventDeepLinkForListing(listing, event),
-        activityToken: activity.token,
-        searchText: [
-          event.title,
-          event.role,
-          event.activityKind,
-          event.timeline,
-          event.date,
-          event.location,
-          event.summary,
-          event.priceLabel,
-        ].filter(Boolean).join(" ").toLowerCase(),
-      };
-    }),
-    ...(listing.externalEvents ?? []).map((event) => {
-      const activity = activityForKind(event.activityKind);
-      const isFuture = isFutureExternalEvent(event);
-      const detail = [
-        event.date,
-        event.location,
-        event.priceLabel,
-        event.sourceLabel,
-      ].filter(Boolean).join(" · ");
-      return {
-        id: `external-${event.id}`,
-        title: event.title,
-        kind: isFuture ? "Upcoming external event" : "Read-only external event",
-        detail,
-        href: externalEventDeepLinkForListing(listing, event),
-        activityToken: activity.token,
-        searchText: [
-          event.title,
-          event.activityKind,
-          event.date,
-          event.location,
-          event.summary,
-          event.priceLabel,
-          event.sourceLabel,
-          event.dedupeKey,
-        ].filter(Boolean).join(" ").toLowerCase(),
-      };
-    }),
-    ...(listing.eventEvidence ?? []).map((event, index) => {
-      const activity = activityForListing(listing);
-      const detail = [event.date, event.location, event.sourceLabel].filter(Boolean).join(" · ");
-      return {
-        id: `source-${listing.id}-${index}`,
-        title: event.title,
-        kind: "Source event",
-        detail,
-        href: listing.path,
-        activityToken: activity.token,
-        searchText: [
-          event.title,
-          event.date,
-          event.location,
-          event.summary,
-          event.sourceLabel,
-          ...(event.facts ?? []),
-        ].filter(Boolean).join(" ").toLowerCase(),
-      };
-    }),
-  ];
-
-  const matched = queryTerms.length
-    ? highlights.filter((event) => queryTerms.every((term) => event.searchText.includes(term)))
-    : [];
-  return (matched.length ? matched : highlights)
-    .slice(0, 2)
-    .map(({searchText: _searchText, ...event}) => event);
-}
-
 export function activityForListing(listing: HostListing): ActivityMeta {
   const text = [
     listing.category,
@@ -275,13 +175,6 @@ export function eventDeepLinkForListing(
 
 export function externalEventAnchorId(event: HostListingExternalEvent) {
   return `external-event-${event.id}`;
-}
-
-export function externalEventDeepLinkForListing(
-  _listing: HostListing,
-  event: HostListingExternalEvent
-) {
-  return eventDetailPath(event.id);
 }
 
 export function isFutureExternalEvent(event: HostListingExternalEvent) {

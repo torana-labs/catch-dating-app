@@ -3,23 +3,23 @@
   "version": 2,
   "generatedFrom": "design/features/marketing_home.feature.json",
   "generatedFor": "2026-10-29",
-  "sourceDigest": "sha256:77c4337569d82bc68dc55af3c76871bdc0e54df67281ebc2ff94e1c6b56c2a7b",
-  "resolvedDigest": "sha256:a78a1e807e97c1b04d3afdfc88b793c8ffd9bb693c2ac6ba33b1c79fd83241b6",
+  "sourceDigest": "sha256:5bd1684c63d45e5b1e982adebc14872cc389909d9117a4272648226f8a0d653d",
+  "resolvedDigest": "sha256:80669e471853c19e37b6e49a882ff22179161fdeb7b5040147dcf1a5b524a695",
   "feature": {
     "id": "feature.marketing_home",
     "name": "Marketing Home",
     "owner": "marketing_website",
     "status": "pilot",
-    "description": "Website v2 homepage and full event discovery: a city's plans from its cityPlans read model or its launching-soon state, format filters, the city picker, catalogue failure, and Explore's public city/format filters with explicit Catch Experience participation eligibility."
+    "description": "Website v2 homepage and Explore: a city's plans and organisers from its cityPlans read model or its launching-soon state, the homepage's format filters and city picker, Explore's URL-kept search, format, date and organiser filters, and catalogue failure."
   },
   "coverage": {
     "surfaces": 2,
     "states": 13,
     "scenarios": 13,
     "actionCases": 13,
-    "actions": 4,
+    "actions": 5,
     "captures": 0,
-    "previews": 2,
+    "previews": 4,
     "testFiles": 4,
     "evidenceExceptions": 0
   },
@@ -32,50 +32,64 @@
         "id": "visitor_discovery"
       },
       "actionScope": {
-        "included": "Public discovery filter selection and recovery; source availability, empty results and Catch Experience eligibility remain explicit.",
+        "included": "Explore and city-page search, format, date and plans/organisers choices kept in the URL, clearing them, and moving to another city's page with the filters kept; launching-soon, no-result and unavailable states remain distinct.",
         "excluded": [
-          "Event/profile/Host link navigation, native disclosure controls, catalogue retry and mobile-menu focus/navigation retain their existing link, presentation and shared-chrome owners."
+          "Plan, organiser, claim and live-city link navigation and the shared v2 header and footer retain their existing link and chrome owners. The /organizers/ redirect is owned by the route contract."
         ]
       },
       "bindings": {
         "previewSources": [
-          "website/src/stories/MarketingRoutes.stories.tsx"
+          "website/src/stories/ExplorePage.stories.tsx"
         ],
         "actionOwners": [
           {
-            "id": "discovery_controller",
+            "id": "explore_controller",
             "language": "typescript",
-            "file": "website/src/features/home/useExploreController.ts",
-            "symbol": "useExploreController"
+            "file": "website/src/features/home/useExplorePageController.ts",
+            "symbol": "useExplorePageController"
           }
         ],
         "componentContracts": [
-          "route_visitor_discovery"
+          "route_visitor_discovery",
+          "explore_page_sections",
+          "city_site_chrome"
         ],
         "dataContracts": [
-          "contracts/public/website_host_listing_projection.schema.json"
+          "contracts/firestore/city_plans.schema.json"
         ],
         "testEvidence": {
-          "default": [
-            "website/src/features/home/useExploreController.test.tsx"
+          "city-plans": [
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
           ],
-          "empty-city": [
-            "website/src/features/home/useExploreController.test.tsx"
+          "phone": [
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
+          ],
+          "search-and-filters": [
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
+          ],
+          "organisers": [
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
+          ],
+          "launching-soon": [
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
           ],
           "no-results": [
-            "website/src/features/home/useExploreController.test.tsx"
-          ],
-          "experience-filter": [
-            "website/src/features/home/useExploreController.test.tsx"
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
           ],
           "catalog-unavailable": [
-            "website/src/features/home/useExploreController.test.tsx"
-          ],
-          "search-and-date": [
-            "website/src/features/home/useExploreController.test.tsx"
-          ],
-          "mobile-menu": [
-            "website/src/shared/site/PublicSiteChrome.test.tsx"
+            "website/src/features/home/ExplorePage.test.tsx",
+            "website/src/features/home/useExplorePageController.test.tsx"
+          ]
+        },
+        "previewEvidence": {
+          "organisers": [
+            "city_site_chrome/Organisers"
           ]
         }
       },
@@ -83,18 +97,18 @@
         "states": 7,
         "scenarios": 7,
         "actionCases": 7,
-        "actions": 2,
+        "actions": 3,
         "captures": 0,
-        "previews": 1,
+        "previews": 3,
         "testFiles": 2,
         "evidenceExceptions": 0
       },
       "dimensions": {
         "content": {
-          "default": "populated",
+          "default": "live",
           "values": [
-            "populated",
-            "empty_city",
+            "live",
+            "launching_soon",
             "no_results"
           ]
         },
@@ -105,26 +119,32 @@
             "unavailable"
           ]
         },
-        "navigation": {
-          "default": "closed",
+        "view": {
+          "default": "plans",
           "values": [
-            "closed",
-            "mobile_menu"
+            "plans",
+            "organisers"
           ]
         },
         "filters": {
           "default": "default",
           "values": [
             "default",
-            "experience",
-            "search_date"
+            "active"
+          ]
+        },
+        "viewport": {
+          "default": "wide",
+          "values": [
+            "wide",
+            "phone"
           ]
         }
       },
       "actions": [
         {
-          "id": "update_discovery_filters",
-          "owner": "discovery_controller",
+          "id": "update_filters",
+          "owner": "explore_controller",
           "codeValue": "update",
           "cardinality": "unbounded",
           "scopeKeys": [
@@ -135,21 +155,19 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "default",
-                "empty-city",
-                "no-results",
-                "experience-filter",
-                "catalog-unavailable",
-                "search-and-date"
+                "city-plans",
+                "search-and-filters",
+                "organisers",
+                "no-results"
               ]
             }
           ],
-          "description": "Updates bounded city, format, search, date and Catch Experience filters through the URL-aware controller.",
+          "description": "Writes the search, format, date and plans/organisers choices to the URL in place, keeping other parameters such as attribution.",
           "implementationStatus": "implemented"
         },
         {
-          "id": "clear_discovery_filters",
-          "owner": "discovery_controller",
+          "id": "clear_filters",
+          "owner": "explore_controller",
           "codeValue": "clear",
           "cardinality": "unbounded",
           "scopeKeys": [
@@ -160,51 +178,76 @@
             {
               "kind": "surface_state",
               "stateIds": [
-                "default",
-                "empty-city",
+                "city-plans",
+                "organisers"
+              ]
+            }
+          ],
+          "description": "Clears search, format and date together, keeping the city and the plans/organisers view.",
+          "implementationStatus": "implemented"
+        },
+        {
+          "id": "select_city",
+          "owner": "explore_controller",
+          "codeValue": "chooseCity",
+          "cardinality": "unbounded",
+          "scopeKeys": [
+            "routeInstanceId",
+            "selectionVersion"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "city-plans",
+                "launching-soon",
                 "catalog-unavailable"
               ]
             }
           ],
-          "description": "Clears active filters while preserving the selected city.",
+          "description": "Loads the chosen city's page with the current filters kept.",
           "implementationStatus": "implemented"
         }
       ],
       "evidenceExceptions": [],
       "scenarios": [
         {
-          "id": "default",
-          "stateId": "default",
+          "id": "city_plans",
+          "stateId": "city-plans",
           "kind": "route_state",
           "status": "previewed",
           "dimensions": {
-            "content": "populated",
+            "content": "live",
             "load": "ready",
-            "navigation": "closed",
-            "filters": "default"
+            "view": "plans",
+            "filters": "default",
+            "viewport": "wide"
           },
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_visitor_discovery/VisitorDiscovery"
+              "route_visitor_discovery/CityPlans"
             ],
             "tests": [
-              "website/src/features/home/useExploreController.test.tsx"
+              "website/src/features/home/ExplorePage.test.tsx",
+              "website/src/features/home/useExplorePageController.test.tsx"
             ]
           },
           "actionCases": [
             {
               "id": "default",
               "dimensions": {
-                "content": "populated",
+                "content": "live",
                 "load": "ready",
-                "navigation": "closed",
-                "filters": "default"
+                "view": "plans",
+                "filters": "default",
+                "viewport": "wide"
               },
               "actions": {
                 "enabled": [
-                  "update_discovery_filters",
-                  "clear_discovery_filters"
+                  "update_filters",
+                  "clear_filters",
+                  "select_city"
                 ],
                 "disabled": [],
                 "notAllowed": []
@@ -213,38 +256,174 @@
           ]
         },
         {
-          "id": "empty_city",
-          "stateId": "empty-city",
+          "id": "phone",
+          "stateId": "phone",
           "kind": "route_state",
           "status": "previewed",
           "dimensions": {
-            "content": "empty_city",
+            "content": "live",
             "load": "ready",
-            "navigation": "closed",
-            "filters": "default"
+            "view": "plans",
+            "filters": "default",
+            "viewport": "phone"
           },
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_visitor_discovery/VisitorDiscovery"
+              "explore_page_sections/CityPlans390"
             ],
             "tests": [
-              "website/src/features/home/useExploreController.test.tsx"
+              "website/src/features/home/ExplorePage.test.tsx",
+              "website/src/features/home/useExplorePageController.test.tsx"
             ]
           },
           "actionCases": [
             {
               "id": "default",
               "dimensions": {
-                "content": "empty_city",
+                "content": "live",
                 "load": "ready",
-                "navigation": "closed",
-                "filters": "default"
+                "view": "plans",
+                "filters": "default",
+                "viewport": "phone"
               },
               "actions": {
                 "enabled": [
-                  "update_discovery_filters",
-                  "clear_discovery_filters"
+                  "update_filters",
+                  "clear_filters",
+                  "select_city"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "search_and_filters",
+          "stateId": "search-and-filters",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "content": "live",
+            "load": "ready",
+            "view": "plans",
+            "filters": "active",
+            "viewport": "wide"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_visitor_discovery/CityPlans"
+            ],
+            "tests": [
+              "website/src/features/home/ExplorePage.test.tsx",
+              "website/src/features/home/useExplorePageController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "live",
+                "load": "ready",
+                "view": "plans",
+                "filters": "active",
+                "viewport": "wide"
+              },
+              "actions": {
+                "enabled": [
+                  "update_filters",
+                  "clear_filters",
+                  "select_city"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "organisers",
+          "stateId": "organisers",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "content": "live",
+            "load": "ready",
+            "view": "organisers",
+            "filters": "default",
+            "viewport": "wide"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "city_site_chrome/Organisers"
+            ],
+            "tests": [
+              "website/src/features/home/ExplorePage.test.tsx",
+              "website/src/features/home/useExplorePageController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "live",
+                "load": "ready",
+                "view": "organisers",
+                "filters": "default",
+                "viewport": "wide"
+              },
+              "actions": {
+                "enabled": [
+                  "update_filters",
+                  "clear_filters",
+                  "select_city"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "launching_soon",
+          "stateId": "launching-soon",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "content": "launching_soon",
+            "load": "ready",
+            "view": "plans",
+            "filters": "default",
+            "viewport": "wide"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "route_visitor_discovery/CityPlans"
+            ],
+            "tests": [
+              "website/src/features/home/ExplorePage.test.tsx",
+              "website/src/features/home/useExplorePageController.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "default",
+              "dimensions": {
+                "content": "launching_soon",
+                "load": "ready",
+                "view": "plans",
+                "filters": "default",
+                "viewport": "wide"
+              },
+              "actions": {
+                "enabled": [
+                  "update_filters",
+                  "clear_filters",
+                  "select_city"
                 ],
                 "disabled": [],
                 "notAllowed": []
@@ -256,20 +435,22 @@
           "id": "no_results",
           "stateId": "no-results",
           "kind": "route_state",
-          "status": "manual",
+          "status": "previewed",
           "dimensions": {
             "content": "no_results",
             "load": "ready",
-            "navigation": "closed",
-            "filters": "default"
+            "view": "plans",
+            "filters": "active",
+            "viewport": "wide"
           },
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_visitor_discovery/VisitorDiscovery"
+              "route_visitor_discovery/CityPlans"
             ],
             "tests": [
-              "website/src/features/home/useExploreController.test.tsx"
+              "website/src/features/home/ExplorePage.test.tsx",
+              "website/src/features/home/useExplorePageController.test.tsx"
             ]
           },
           "actionCases": [
@@ -278,53 +459,15 @@
               "dimensions": {
                 "content": "no_results",
                 "load": "ready",
-                "navigation": "closed",
-                "filters": "default"
+                "view": "plans",
+                "filters": "active",
+                "viewport": "wide"
               },
               "actions": {
                 "enabled": [
-                  "update_discovery_filters",
-                  "clear_discovery_filters"
-                ],
-                "disabled": [],
-                "notAllowed": []
-              }
-            }
-          ]
-        },
-        {
-          "id": "experience_filter",
-          "stateId": "experience-filter",
-          "kind": "route_state",
-          "status": "manual",
-          "dimensions": {
-            "content": "populated",
-            "load": "ready",
-            "navigation": "closed",
-            "filters": "experience"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "route_visitor_discovery/VisitorDiscovery"
-            ],
-            "tests": [
-              "website/src/features/home/useExploreController.test.tsx"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "default",
-              "dimensions": {
-                "content": "populated",
-                "load": "ready",
-                "navigation": "closed",
-                "filters": "experience"
-              },
-              "actions": {
-                "enabled": [
-                  "update_discovery_filters",
-                  "clear_discovery_filters"
+                  "update_filters",
+                  "clear_filters",
+                  "select_city"
                 ],
                 "disabled": [],
                 "notAllowed": []
@@ -338,116 +481,40 @@
           "kind": "route_state",
           "status": "previewed",
           "dimensions": {
-            "content": "populated",
+            "content": "live",
             "load": "unavailable",
-            "navigation": "closed",
-            "filters": "default"
+            "view": "plans",
+            "filters": "default",
+            "viewport": "wide"
           },
           "evidence": {
             "captureIds": [],
             "previewIds": [
-              "route_visitor_discovery/VisitorDiscovery"
+              "route_visitor_discovery/CityPlans"
             ],
             "tests": [
-              "website/src/features/home/useExploreController.test.tsx"
+              "website/src/features/home/ExplorePage.test.tsx",
+              "website/src/features/home/useExplorePageController.test.tsx"
             ]
           },
           "actionCases": [
             {
               "id": "default",
               "dimensions": {
-                "content": "populated",
+                "content": "live",
                 "load": "unavailable",
-                "navigation": "closed",
-                "filters": "default"
+                "view": "plans",
+                "filters": "default",
+                "viewport": "wide"
               },
               "actions": {
                 "enabled": [
-                  "update_discovery_filters",
-                  "clear_discovery_filters"
+                  "update_filters",
+                  "clear_filters",
+                  "select_city"
                 ],
                 "disabled": [],
                 "notAllowed": []
-              }
-            }
-          ]
-        },
-        {
-          "id": "search_and_date",
-          "stateId": "search-and-date",
-          "kind": "route_state",
-          "status": "manual",
-          "dimensions": {
-            "content": "populated",
-            "load": "ready",
-            "navigation": "closed",
-            "filters": "search_date"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "route_visitor_discovery/VisitorDiscovery"
-            ],
-            "tests": [
-              "website/src/features/home/useExploreController.test.tsx"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "default",
-              "dimensions": {
-                "content": "populated",
-                "load": "ready",
-                "navigation": "closed",
-                "filters": "search_date"
-              },
-              "actions": {
-                "enabled": [
-                  "update_discovery_filters",
-                  "clear_discovery_filters"
-                ],
-                "disabled": [],
-                "notAllowed": []
-              }
-            }
-          ]
-        },
-        {
-          "id": "mobile_menu",
-          "stateId": "mobile-menu",
-          "kind": "route_state",
-          "status": "manual",
-          "dimensions": {
-            "content": "populated",
-            "load": "ready",
-            "navigation": "mobile_menu",
-            "filters": "default"
-          },
-          "evidence": {
-            "captureIds": [],
-            "previewIds": [
-              "route_visitor_discovery/VisitorDiscovery"
-            ],
-            "tests": [
-              "website/src/shared/site/PublicSiteChrome.test.tsx"
-            ]
-          },
-          "actionCases": [
-            {
-              "id": "default",
-              "dimensions": {
-                "content": "populated",
-                "load": "ready",
-                "navigation": "mobile_menu",
-                "filters": "default"
-              },
-              "actions": {
-                "enabled": [],
-                "disabled": [],
-                "notAllowed": [
-                  "update_discovery_filters",
-                  "clear_discovery_filters"
-                ]
               }
             }
           ]
@@ -463,26 +530,54 @@
           {
             "id": "route_visitor_discovery",
             "kind": "route",
-            "source": "website/src/features/home/HomePage.tsx",
-            "exportName": "VisitorDiscoveryPage",
+            "source": "website/src/features/home/ExplorePage.tsx",
+            "exportName": "ExplorePage",
             "storybook": {
               "status": "ready",
-              "story": "website/src/stories/MarketingRoutes.stories.tsx",
-              "exportName": "VisitorDiscovery",
+              "story": "website/src/stories/ExplorePage.stories.tsx",
+              "exportName": "CityPlans",
               "states": [
-                "default",
-                "empty-city",
+                "city-plans",
+                "search-and-filters",
+                "launching-soon",
                 "no-results",
-                "experience-filter",
-                "catalog-unavailable",
-                "search-and-date",
-                "mobile-menu"
+                "catalog-unavailable"
+              ]
+            }
+          },
+          {
+            "id": "explore_page_sections",
+            "kind": "supporting-component",
+            "source": "website/src/features/home/sections/explorePageSections.tsx",
+            "exportName": "ExplorePageSections",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/ExplorePage.stories.tsx",
+              "exportName": "CityPlans390",
+              "states": [
+                "phone"
+              ]
+            }
+          },
+          {
+            "id": "city_site_chrome",
+            "kind": "supporting-component",
+            "source": "website/src/features/home/sections/cityChrome.tsx",
+            "exportName": "CitySiteChrome",
+            "storybook": {
+              "status": "ready",
+              "story": "website/src/stories/ExplorePage.stories.tsx",
+              "exportName": "Organisers",
+              "states": [
+                "organisers-link"
               ]
             }
           }
         ],
         "previews": [
-          "route_visitor_discovery/VisitorDiscovery"
+          "city_site_chrome/Organisers",
+          "explore_page_sections/CityPlans390",
+          "route_visitor_discovery/CityPlans"
         ]
       }
     },

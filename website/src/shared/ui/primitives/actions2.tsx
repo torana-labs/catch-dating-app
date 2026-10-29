@@ -27,27 +27,6 @@ export function ClaimResultButton({
   );
 }
 
-export function ToggleChipButton({
-  children,
-  className,
-  selected,
-  ...props
-}: ButtonHTMLAttributes<HTMLButtonElement> & {
-  children: ReactNode;
-  selected: boolean;
-}) {
-  return (
-    <PlainButton
-      aria-pressed={selected}
-      className={classNames("filter-chip-button", selected && "is-on", className)}
-      type="button"
-      {...props}
-    >
-      {children}
-    </PlainButton>
-  );
-}
-
 export function DataTable({
   ariaLabel,
   children,

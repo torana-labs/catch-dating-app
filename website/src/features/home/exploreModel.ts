@@ -10,7 +10,6 @@ export interface ExploreFilters {
   view: ExploreView;
 }
 
-export const defaultExploreFilters: ExploreFilters = {query: "", format: "all", when: "any", view: "plans"};
 const whens: ExploreWhen[] = ["any", "today", "weekend", "week"];
 const formats = new Set<string>(homeFormats.map((item) => item.format));
 

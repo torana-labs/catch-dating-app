@@ -168,7 +168,7 @@
   },
   "src/shared/ui/primitives/actions2.tsx": {
     "react/forbid-component-props": {
-      "count": 4
+      "count": 3
     }
   },
   "src/shared/ui/primitives/consumerHome.tsx": {
@@ -206,10 +206,10 @@
       "count": 2
     },
     "react/forbid-dom-props": {
-      "count": 3
+      "count": 2
     },
     "react/forbid-elements": {
-      "count": 5
+      "count": 3
     }
   },
   "src/shared/ui/primitives/forms2.tsx": {
