@@ -19,7 +19,7 @@ import {marketForIdOrAlias} from "../locations/marketConfig";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {organizerSupplyCapabilitiesFor} from "../shared/organizerSupplyCapabilities";
 import {assertOrganizerPublicContent} from "../organizers/organizerPublicContent";
-import {requireAdminRole} from "./adminAuth";
+import {requireAdminRole, type AdminContext} from "./adminAuth";
 import {setAdminAuditLogInTransaction} from "./adminAudit";
 import {buildOrganizerAdminSearchProjection} from "./organizerAdminSearch";
 import {reserveOrganizerCanonicalRoute} from "./organizerPublishingGuards";
@@ -32,7 +32,7 @@ export const listingApprovalRoles = ["admin", "adminOwner"] as const;
 const curationCollection = "organizerIntakeCurationDecisions";
 const reviewDecisionCollection = "organizerIntakeReviewDecisions";
 
-interface ListingApprovalDeps {
+export interface ListingApprovalDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   now: () => Date;
@@ -40,7 +40,7 @@ interface ListingApprovalDeps {
   reserveCanonicalRoute?: typeof reserveOrganizerCanonicalRoute;
 }
 
-const defaultDeps: ListingApprovalDeps = {
+export const defaultListingApprovalDeps: ListingApprovalDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   now: () => new Date(),
@@ -70,6 +70,26 @@ export function listingApprovalId(listingId: string): string {
   return `listing-${crypto.createHash("sha256").update(listingId).digest("hex").slice(0, 40)}`;
 }
 
+/** The review checklist as stored with the decision. */
+export type ListingDecisionChecklist = OrganizerIntakeReviewDecisionDocument["checklist"];
+
+/** What approves a listing: the reviewer's choices, minus the callable's idempotency key. */
+export type ListingApprovalInput = Omit<AdminApproveOrganizerListingCallablePayload, "requestId" | "checklist">;
+
+/**
+ * Who approves a listing and how the decision is recorded: a staff member
+ * through the callable, or Supply Intake publishing a trusted nominator's
+ * listing (supplyIntake/autoPublish.ts).
+ */
+export interface ListingApprover {
+  adminContext: AdminContext;
+  request?: CallableRequest<unknown>;
+  auditAction: string;
+  checklist: ListingDecisionChecklist;
+  /** Opens the Sales activity note: "Listing approved", "Listing auto-published". */
+  activityLead: string;
+}
+
 /**
  * Approves a listing Supply Intake built. One transaction publishes the
  * organizer page claimable and noindex, hidden in the app; records the
@@ -81,7 +101,7 @@ export function listingApprovalId(listingId: string): string {
  */
 export async function adminApproveOrganizerListingHandler(
   request: CallableRequest<unknown>,
-  deps: ListingApprovalDeps = defaultDeps
+  deps: ListingApprovalDeps = defaultListingApprovalDeps
 ): Promise<AdminApproveOrganizerListingCallableResponse> {
   const adminContext = requireAdminRole(request, listingApprovalRoles);
   const data = validateCallableWithAjv<AdminApproveOrganizerListingCallablePayload>(request,
@@ -89,17 +109,35 @@ export async function adminApproveOrganizerListingHandler(
   // The same gate as an Organizer Intake decision to publish on the web.
   assertOrganizerVisibilityDecisionAllowed({decision: "approve_public", publishStatus: "published",
     indexStatus: "noindex", appVisibility: "hidden", checklist: data.checklist});
-  const market = marketForIdOrAlias(data.marketId);
-  if (!market || !market.hostCreatable || market.marketId !== data.marketId) {
+  if (!openMarket(data.marketId)) {
     throw new HttpsError("failed-precondition", "Choose an open organizer launch market for this listing.");
   }
-  const db = deps.firestore();
   await deps.checkRateLimit?.(
-    db,
+    deps.firestore(),
     adminContext.uid,
     "adminApproveOrganizerListing",
     {maxRequests: 10, windowMs: 60 * 1000}
   );
+  return approveListing(deps, {adminContext, request, auditAction: "adminApproveOrganizerListing",
+    checklist: data.checklist, activityLead: "Listing approved"}, data);
+}
+
+export const adminApproveOrganizerListing = onCall(appCheckCallableOptions,
+  (request) => adminApproveOrganizerListingHandler(request));
+
+/** The market a listing can be published in, or null when it is not open for organizers. */
+export function openMarket(marketId: string) {
+  const market = marketForIdOrAlias(marketId);
+  return market && market.hostCreatable && market.marketId === marketId ? market : null;
+}
+
+/** The approval transaction itself, shared by staff review and auto-publishing. */
+export async function approveListing(deps: ListingApprovalDeps, approver: ListingApprover,
+  data: ListingApprovalInput): Promise<AdminApproveOrganizerListingCallableResponse> {
+  const {adminContext, request} = approver;
+  const market = openMarket(data.marketId);
+  if (!market) throw new HttpsError("failed-precondition", "Choose an open organizer launch market for this listing.");
+  const db = deps.firestore();
   const workItemRef = db.collection("operationWorkItems").doc(data.listingWorkItemId);
   const allocatedOrganizerRef = db.collection("organizers").doc();
   const materialHash = crypto.createHash("sha256").update(JSON.stringify([data.listingWorkItemId,
@@ -174,7 +212,7 @@ export async function adminApproveOrganizerListingHandler(
     tx.create(receiptRef, receipt);
     const decision: OrganizerIntakeReviewDecisionDocument = {
       schemaVersion: 1, entityId: organizerId, decision: "approve_public", decisionStatus: "approved_public",
-      publishStatus: "published", indexStatus: "noindex", appVisibility: "hidden", checklist: data.checklist,
+      publishStatus: "published", indexStatus: "noindex", appVisibility: "hidden", checklist: approver.checklist,
       note: data.note, reviewedByUid: adminContext.uid, reviewedAt: timestamp as never, updatedAt: timestamp as never,
       projectionState: "pending_static_generation",
     };
@@ -188,9 +226,10 @@ export async function adminApproveOrganizerListingHandler(
         linkRequestId: approvalId, updatedAt: admin.firestore.Timestamp.fromDate(new Date(now))});
     }
     writeSalesRecords(tx, db, {approvalId, organizerId, organizer, ownerUid: salesOwnerUid,
-      actorUid: adminContext.uid, now, listing, origin: origin?.kind ?? "none", name: data.name});
+      actorUid: adminContext.uid, now, listing, origin: origin?.kind ?? "none", name: data.name,
+      activityLead: approver.activityLead});
     setAdminAuditLogInTransaction(tx, db, adminContext, {
-      action: "adminApproveOrganizerListing", targetPath: organizerRef.path, request, before: {},
+      action: approver.auditAction, targetPath: organizerRef.path, request, before: {},
       after: {organizerId, approvalId, listingId: listing.listingId, requestId: listing.requestId,
         publicSlug: data.publicSlug, publishStatus: "published", indexStatus: "noindex",
         appVisibility: "hidden", claimState: "unclaimed", salesOwnerUid},
@@ -203,12 +242,9 @@ export async function adminApproveOrganizerListingHandler(
     publishStatus: "published", indexStatus: "noindex", appVisibility: "hidden", claimState: "unclaimed", salesOwnerUid};
 }
 
-export const adminApproveOrganizerListing = onCall(appCheckCallableOptions,
-  (request) => adminApproveOrganizerListingHandler(request));
-
 function writeSalesRecords(tx: FirebaseFirestore.Transaction, db: FirebaseFirestore.Firestore, input: {
   approvalId: string; organizerId: string; organizer: OrganizerDocument; ownerUid: string; actorUid: string;
-  now: string; listing: ReviewedListing; origin: string; name: string;
+  now: string; listing: ReviewedListing; origin: string; name: string; activityLead: string;
 }): void {
   const {approvalId, organizerId, ownerUid, actorUid, now} = input;
   const account = {...newSalesAccount(organizerId, input.organizer as unknown as Record<string, unknown>,
@@ -231,10 +267,10 @@ function writeSalesRecords(tx: FirebaseFirestore.Transaction, db: FirebaseFirest
   const activityId = `${approvalId}_approved`;
   const activity: SalesActivity = {schemaVersion: 1, classification: "sales_private", activityId, organizerId,
     opportunityId, type: "listing_approved", channel: null, outcome: null, providerConfirmed: false, occurredAt: now,
-    recordedAt: now, note: `Listing approved from ${frontDoorLabel(input.listing)}. ` +
+    recordedAt: now, note: `${input.activityLead} from ${frontDoorLabel(input.listing)}. ` +
       "Published as an unclaimed page, not yet indexed.", actorUid,
     source: {kind: "supply_intake", requestId: input.listing.requestId, approvalId,
-      origin: input.origin as "admin_nomination" | "sales_inbound_intent" | "discovery_run" | "none"}};
+      origin: input.origin as "admin_nomination" | "sales_inbound_intent" | "message_nomination" | "discovery_run" | "none"}};
   tx.create(db.collection("salesActivities").doc(activityId), activity);
 }
 
@@ -245,7 +281,7 @@ function frontDoorLabel(listing: ReviewedListing): string {
 }
 
 function buildListingOrganizer({data, listing, market, adminUid, timestamp, checkedAt}: {
-  data: AdminApproveOrganizerListingCallablePayload; listing: ReviewedListing;
+  data: ListingApprovalInput; listing: ReviewedListing;
   market: NonNullable<ReturnType<typeof marketForIdOrAlias>>; adminUid: string;
   timestamp: FirebaseFirestore.FieldValue; checkedAt: FirebaseFirestore.Timestamp;
 }): OrganizerDocument {

@@ -156,4 +156,8 @@ export const replyCopy = Object.freeze({
   listingReady: (label: string, eventCount: number) => eventCount > 0 ?
     `${label} is ready: the listing is built with ${eventCount} upcoming ${eventCount === 1 ? "event" : "events"}. It goes live after a quick check.` :
     `${label} is ready: the listing is built. No upcoming events were found on the pages I could read. It goes live after a quick check.`,
+  listingLive: (label: string, eventCount: number, canonicalPath: string) =>
+    `${label} is live at catchdates.com${canonicalPath}${eventCount > 0 ?
+      ` with ${eventCount} upcoming ${eventCount === 1 ? "event" : "events"}` : ""}. ` +
+    "Search engines won't list it until the organizer claims and verifies it.",
 });

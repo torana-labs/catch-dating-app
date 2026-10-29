@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.37.1
-updated: 2026-10-29
+version: 1.38.0
+updated: 2026-10-30
 owner: operations_platform
 status: active
 ---
@@ -236,7 +236,8 @@ overwritten. Every request records its `origin`.
     Linktree or Beacons link came;
   - the 1-or-2 question, and a support acknowledgement after a "2";
   - a "listing ready" message per organizer when its request completes
-    (`onMessageNominationListingReady`).
+    (`onMessageNominationListingReady`): live with its link when the listing
+    auto-published, otherwise waiting for a check.
 
   Each reply is claimed once per message and purpose
   (`catchWhatsappAutoReplies`, no text kept), never goes to a number that
@@ -321,8 +322,37 @@ and a different approval of the same listing is refused. Indexing and app
 discovery remain later decisions, after the organizer is verified. Supply
 Intake can compare a listing with the organizers Catch already lists
 (`organizer-matching/`) and, given that inventory, records a `duplicateCheck`
-and a `possible_duplicate_organizer` gap. The worker does not pass the
-inventory yet, so matching stays the reviewer's check until it does.
+and a `possible_duplicate_organizer` gap. The worker passes the market's
+organizers as that inventory.
+
+##### Auto-publishing trusted nominations
+
+A listing nominated by WhatsApp publishes without staff review when a
+registered associate sent it and the adapters filled it completely (owner
+decision, 30 Oct 2026). `autoPublishNominatedListing`
+(`functions/src/operations/supplyIntake/autoPublish.ts`) runs from
+`onMessageNominationListingReady` before the "listing ready" reply and
+publishes only when all of these hold:
+
+- the request is a `message_nomination` from an associate, finished and not
+  yet approved;
+- the sender is still an active nominator and still holds a sales role;
+- the build recorded no gaps (a missing image doesn't count, since listing
+  images are never published) and needs no research;
+- the duplicate check compared the market's whole inventory and found nothing
+  alike;
+- the market is open, and the slug from the organizer's name is free.
+
+It then runs the approval transaction above, with organizer type `community`,
+as `supply-auto-publish`. The audit action is `autoPublishOrganizerListing`.
+The review decision is stored honestly: `identityReviewed` and
+`impersonationReviewed` are false, because the nominator vouched for those and
+staff did not check them. The other checklist items are ones the code itself
+enforces. The associate owns the Sales work, and the reply gives the page's
+link. Anything else waits in the review queue as before.
+
+Staff withdraw an auto-published page with a `suppress` decision. Partners'
+nominations always wait for staff, because staff then own the Sales work.
 
 #### Imported events
 

@@ -144,8 +144,8 @@ export interface SalesActivity {
     kind: "supply_intake";
     requestId: string;
     approvalId: string;
-    origin:
-      "admin_nomination" | "sales_inbound_intent" | "discovery_run" | "none";
+    origin: "admin_nomination" | "sales_inbound_intent" |
+      "message_nomination" | "discovery_run" | "none";
   };
   channel: "email" | "whatsapp" | "other" | null;
   outcome: "actor_attested_sent" | null;
