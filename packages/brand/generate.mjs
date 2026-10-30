@@ -41,13 +41,6 @@ export function renderWebsiteModule(record = brand) {
 
 export const brand = ${JSON.stringify(record, null, 2)} as const;
 
-export type Brand = typeof brand;
-
-/** An absolute URL on the public website. \`path\` starts with "/". */
-export function webUrl(path: \`/\${string}\` = "/"): string {
-  return brand.web.origin + path;
-}
-
 const tokenPattern = /\\{\\{\\s*brand\\.([A-Za-z0-9_.]+)\\s*\\}\\}/gu;
 
 function resolveBrandToken(path: string): string {

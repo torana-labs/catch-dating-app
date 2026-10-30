@@ -116,7 +116,8 @@ test("concurrent workers send one notice without applicant data",
     await Promise.all([f.deliver(), f.deliver()]);
     assert.equal(f.sent.length, 1);
     const mail = f.sent[0];
-    assert.equal(mail.to, "suvrat.garg@gmail.com"); // brand-literal-ok: owner inbox
+    // brand-literal-ok: the owner's review inbox, not the support address.
+    assert.equal(mail.to, "suvrat.garg@gmail.com"); // brand-literal-ok: inbox
     assert.equal(mail.from, `host@${BRAND.senders.emailDomain}`);
     assert.ok(mail.text.includes(`${BRAND.web.adminOrigin}/`));
     assert.equal(mail.html, undefined);
