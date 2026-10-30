@@ -1405,45 +1405,59 @@ provider activation and generates no Catch delivery receipt.
 ### Instagram claim verification activation
 
 Organisers prove a claim by sending a code from the listing's Instagram
-account to Catch's Instagram account. The method stays hidden, and
-`instagramClaimWebhook` stays out of every deploy plan as a dormant target in
-`tool/firebase/list_firebase_function_targets.mjs`, until the owner completes
-these steps:
+account to @catch_dates. `instagramClaimWebhook` uses the Instagram API with
+Instagram Login (`graph.instagram.com`) and deploys everywhere. Only prod
+names Catch's account, so only prod answers Meta. Dev and staging return 503.
+A Meta app has one callback URL, so @catch_dates's messages go to prod.
 
-1. Create three secrets in Secret Manager in every project that deploys from
-   main. Readiness blocks any deploy that includes `instagramClaimWebhook`
-   until they exist:
-   - `CATCH_INSTAGRAM_APP_SECRET`: the app secret that signs webhooks. For
-     Instagram Login, that is the Instagram app secret shown under API setup
-     with Instagram login.
-   - `CATCH_INSTAGRAM_ACCESS_TOKEN`: a long-lived Instagram user token for
-     Catch's account, with `instagram_business_basic` and
-     `instagram_business_manage_messages`.
-   - `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: a random string of at least 32
-     characters.
-2. Set these GitHub environment variables:
-   - `CATCH_INSTAGRAM_ACCOUNT_ID`: the professional account id.
-   - `CATCH_INSTAGRAM_HANDLE`: the username, without @.
-   - `CATCH_INSTAGRAM_GRAPH_VERSION`: optional; the default is `v26.0`.
-3. Remove `functions:instagramClaimWebhook` from
-   `dormantFirebaseFunctionTargets` in a PR. Its merge deploys the webhook.
-4. In the Meta app dashboard, under API setup with Instagram login:
-   - Configure webhooks with the callback URL
-     `https://asia-south1-<project>.cloudfunctions.net/instagramClaimWebhook`
-     and the same verify token.
-   - Subscribe the `messages` field.
-   - Turn on the webhook subscription for Catch's account.
-   A Meta app has one callback URL, so only one environment receives these
-   messages at a time.
-5. On Catch's Instagram account, turn on Allow access to messages under
-   Message controls, Connected tools.
-6. Send a test message from an account with a role on the app. Check that the
-   webhook answers it, then set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` and
-   deploy again.
+Fixed values:
 
-Until App Review grants Advanced Access, only accounts with a role on the
-Meta app can message through the API. With the method switched off, the
-webhook still answers the handshake and acknowledges signed deliveries.
+- Meta app: Catch, `1596668525274018`, in the Torana business portfolio
+  (`290587228549920`).
+- Instagram account: @catch_dates, id `17841476918450741`. This is the
+  `entry.id` in webhooks. The "Catch-IG" id `1404389366089349` is the
+  Instagram app id, not the account id.
+- GitHub variables in `prod` and `prod-backend`:
+  `CATCH_INSTAGRAM_ACCOUNT_ID=17841476918450741` and
+  `CATCH_INSTAGRAM_HANDLE=catch_dates`. Leave them unset in dev and staging.
+  `CATCH_INSTAGRAM_GRAPH_VERSION` is optional; the default is `v26.0`.
+
+Secrets in prod Secret Manager (`catch-dating-app-64e51`). Dev and staging
+keep their existing versions so readiness passes; those values are unused.
+
+- `CATCH_INSTAGRAM_ACCESS_TOKEN`: in the Meta app, Instagram, API setup with
+  Instagram login, Generate access tokens, Generate token on the @catch_dates
+  row. It is long-lived and lasts 60 days; a deploy is needed to pick up a new
+  version.
+- `CATCH_INSTAGRAM_APP_SECRET`: on the same page, Set up Instagram business
+  login, Business login settings, Instagram app secret.
+- `CATCH_INSTAGRAM_WEBHOOK_VERIFY_TOKEN`: `openssl rand -hex 32`.
+
+After a prod deploy that includes the webhook:
+
+1. In the Meta app, Instagram, API setup with Instagram login, Configure
+   webhooks: callback URL
+   `https://asia-south1-catch-dating-app-64e51.cloudfunctions.net/instagramClaimWebhook`
+   and the verify token, then Verify and save.
+2. Subscribe the `messages` field.
+3. On the @catch_dates row, turn on Webhook subscription.
+4. In the Instagram app as @catch_dates: Settings and activity, Messages and
+   story replies, Message controls, Connected tools, Allow access to messages.
+5. From an Instagram account with a role on the Meta app, send a message to
+   @catch_dates. The webhook acknowledges it and logs nothing on success.
+6. Set `CATCH_INSTAGRAM_CLAIMS_ENABLED=true` in `prod` and `prod-backend`,
+   then deploy prod again.
+
+Access level. Meta's App Review table says an app serving only a business you
+own needs Standard Access. Its webhook setup page lists Advanced Access for
+Instagram Login webhooks, and its messaging guide says testers need a role on
+the app. Test a message from an account without a role. If no webhook
+arrives, submit App Review for `instagram_business_basic` and
+`instagram_business_manage_messages` from Complete app review on the same
+page.
+
+With the method switched off, the webhook still answers the handshake and
+acknowledges signed deliveries.
 
 ### Protected Catch WhatsApp operator CLI
 

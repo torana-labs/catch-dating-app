@@ -117,7 +117,7 @@
     {
       "switch": "CATCH_INSTAGRAM_CLAIMS_ENABLED",
       "owner": "Suvrat Garg",
-      "reason": "Instagram claim verification goes live in dev first. Meta sends webhooks to one callback URL at a time, and until App Review only accounts with a role on the Meta app can message through the API, so dev is switched on for testing before staging and prod.",
+      "reason": "Instagram claim verification runs only in prod. A Meta app sends webhooks to one callback URL, and @catch_dates is a real account, so its messages go to prod. Dev and staging name no Instagram account, and their webhooks answer 503.",
       "ticket": "CAT-256",
       "expires": "2026-12-31"
     }

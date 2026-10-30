@@ -102,7 +102,7 @@ test("dormant Functions cannot enter logical or exact deploy plans", () => {
   const enabledTargets = listFirebaseFunctionTargets();
   const enabledTargetSet = new Set(enabledTargets);
 
-  assert.equal(dormantFirebaseFunctionTargets.length, 34);
+  assert.equal(dormantFirebaseFunctionTargets.length, 33);
   for (const target of dormantFirebaseFunctionTargets) {
     assert.equal(
       sourceExports.has(target), true, `${target} must remain implemented`,
