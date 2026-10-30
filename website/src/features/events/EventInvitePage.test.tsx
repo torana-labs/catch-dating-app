@@ -8,6 +8,7 @@ vi.mock("../../firebase", () => ({
   resolveEventInviteLanding,
 }));
 
+import {brand} from "../../content/brand";
 import {EventInvitePage} from "./EventInvitePage";
 
 const landing = {
@@ -62,9 +63,9 @@ describe("EventInvitePage", () => {
     await waitFor(() => expect(external).toHaveBeenCalledWith("https://lu.ma/event?catch_ref=link-1"));
     cleanup();
     resolveEventInviteLanding.mockResolvedValueOnce({...landing, destinationKind: "eventRuntime",
-      destinationUrl: "https://catchdates.com/join/runtime-1?il=v2_link_token"});
+      destinationUrl: `${brand.web.origin}/join/runtime-1?il=v2_link_token`});
     const runtime = renderInvite();
-    await waitFor(() => expect(runtime).toHaveBeenCalledWith("https://catchdates.com/join/runtime-1?il=v2_link_token"));
+    await waitFor(() => expect(runtime).toHaveBeenCalledWith(`${brand.web.origin}/join/runtime-1?il=v2_link_token`));
   });
 
   it("fails closed for an invalid or expired token, or one with nowhere to go", async () => {

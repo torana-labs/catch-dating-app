@@ -6,12 +6,13 @@ vi.mock("./publicEnvironment", () => ({validatePublicRuntimeEnvironment: () => u
 // A private family never reaches the public route resolver.
 const resolvePublicRoute = vi.hoisted(() => vi.fn());
 vi.mock("./publicRoute", () => ({resolvePublicRoute}));
+import {brand} from "../content/brand";
 import {proxy} from "../../proxy";
 
 const paymentId = `pp_${"a".repeat(32)}`;
 
 async function request(path: string) {
-  return proxy(new NextRequest(`https://catchdates.com${path}`, {headers: {host: "catchdates.com"}}));
+  return proxy(new NextRequest(`${brand.web.origin}${path}`, {headers: {host: brand.web.domain}}));
 }
 
 /**
