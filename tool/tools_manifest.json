@@ -1317,6 +1317,35 @@
       }
     },
     {
+      "id": "architecture:organizer-rename",
+      "category": "generator",
+      "path": "tool/architecture/rename_to_organizer.mjs",
+      "command": "node tool/architecture/rename_to_organizer.mjs --plan",
+      "safety": "local",
+      "status": "active",
+      "description": "Renames Club to Organizer in Flutter code: Dart file and folder names, identifiers, code references in comments, localization keys, and the registries and tools that name them. Names the generated schema contracts declare, string literals and the club subtype stay. --verify proves a rename commit is exactly the codemod's output for its parent.",
+      "checks": [
+        "node --test tool/architecture/rename_to_organizer.test.mjs",
+        "node --check tool/architecture/rename_to_organizer.mjs"
+      ],
+      "role": "generator",
+      "rules": [
+        "ORGANIZER-AUTHORITY-001"
+      ],
+      "impactPaths": [
+        "tool/architecture/rename_to_organizer.mjs",
+        "tool/architecture/rename_to_organizer.test.mjs",
+        "tool/architecture/move_to_contexts.mjs",
+        "tool/lib/dart_source.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
+    },
+    {
       "id": "audit:mutation-error-surfaces",
       "category": "audit",
       "path": "tool/architecture/check_mutation_error_surfaces.mjs",
