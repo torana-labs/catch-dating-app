@@ -377,8 +377,9 @@ export function backendDeployTargets({
   };
 }
 
-// --environment reads the base from that environment's deployed/<environment>
-// tag; in GitHub Actions the plan is also written to the step outputs.
+// --environment reads the base from the local deployed/<environment> tag, which
+// _backend-deploy.yml writes from the deploy:backend deployment record; in
+// GitHub Actions the plan is also written to the step outputs.
 function main() {
   const {values} = parseArgs({options: {
     base: {type: "string"}, head: {type: "string"}, environment: {type: "string"},

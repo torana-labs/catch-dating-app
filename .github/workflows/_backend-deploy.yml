@@ -1,10 +1,12 @@
 name: Backend deploy (one environment)
 
 # Deploys one environment's Firebase backend from the commit this run was
-# started on. The environment remembers the commit it last received in the tag
-# deployed/<environment>; only what changed since then is deployed
+# started on. The environment remembers the commit it last received as a GitHub
+# deployment (task deploy:backend); only what changed since then is deployed
 # (tool/firebase/affected_function_targets.mjs) through
-# tool/deploy_firebase_targets.sh, and the tag then moves forward.
+# tool/deploy_firebase_targets.sh, and a new deployment then records this commit.
+# GITHUB_TOKEN can't move a tag across workflow-file changes, which is why the
+# record is a deployment and the deployed/<environment> tag is only local.
 # Operator guide: docs/release_operations.md, "Deploy backend".
 
 on:
@@ -20,6 +22,7 @@ on:
 
 permissions:
   contents: write
+  deployments: write
   id-token: write
 
 jobs:
@@ -52,9 +55,30 @@ jobs:
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           FULL: ${{ inputs.full }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          git fetch --force origin "refs/tags/deployed/*:refs/tags/deployed/*"
+          # The newest successful deploy:backend deployment is the base. The
+          # deployed/<environment> tag on origin is only read until the first
+          # deployment exists. affected_function_targets reads the local tag.
+          base=""
+          for id in $(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=$DEPLOY_ENVIRONMENT&task=deploy:backend&per_page=20" -q '.[].id'); do
+            if [[ "$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=1" -q '.[0].state // ""')" == "success" ]]; then
+              base="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" -q .sha)"
+              break
+            fi
+          done
+          if [[ -z "$base" ]]; then
+            git fetch --force origin "refs/tags/deployed/$DEPLOY_ENVIRONMENT:refs/tags/deployed/$DEPLOY_ENVIRONMENT" 2>/dev/null || true
+          else
+            git tag -f "deployed/$DEPLOY_ENVIRONMENT" "$base" > /dev/null
+          fi
+          if base="$(git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT^{commit}")" &&
+              ! git merge-base --is-ancestor "$base" "$GITHUB_SHA"; then
+            echo "::notice::$DEPLOY_ENVIRONMENT already has $base, which $GITHUB_SHA does not contain; nothing to deploy."
+            echo "mode=no-op" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           # A first deploy is full and long, so only a manual run may start it.
           if [[ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]] &&
               ! git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT" > /dev/null; then
@@ -104,9 +128,30 @@ jobs:
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
           FULL: ${{ inputs.full }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          git fetch --force origin "refs/tags/deployed/*:refs/tags/deployed/*"
+          # The newest successful deploy:backend deployment is the base. The
+          # deployed/<environment> tag on origin is only read until the first
+          # deployment exists. affected_function_targets reads the local tag.
+          base=""
+          for id in $(gh api "repos/$GITHUB_REPOSITORY/deployments?environment=$DEPLOY_ENVIRONMENT&task=deploy:backend&per_page=20" -q '.[].id'); do
+            if [[ "$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id/statuses?per_page=1" -q '.[0].state // ""')" == "success" ]]; then
+              base="$(gh api "repos/$GITHUB_REPOSITORY/deployments/$id" -q .sha)"
+              break
+            fi
+          done
+          if [[ -z "$base" ]]; then
+            git fetch --force origin "refs/tags/deployed/$DEPLOY_ENVIRONMENT:refs/tags/deployed/$DEPLOY_ENVIRONMENT" 2>/dev/null || true
+          else
+            git tag -f "deployed/$DEPLOY_ENVIRONMENT" "$base" > /dev/null
+          fi
+          if base="$(git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT^{commit}")" &&
+              ! git merge-base --is-ancestor "$base" "$GITHUB_SHA"; then
+            echo "::notice::$DEPLOY_ENVIRONMENT already has $base, which $GITHUB_SHA does not contain; nothing to deploy."
+            echo "mode=no-op" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           # A first deploy is full and long, so only a manual run may start it.
           if [[ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]] &&
               ! git rev-parse -q --verify "refs/tags/deployed/$DEPLOY_ENVIRONMENT" > /dev/null; then
@@ -210,24 +255,20 @@ jobs:
           node tool/firebase/check_rules_deployment_drift.mjs
           --env "$DEPLOY_ENVIRONMENT" --wait-seconds 180 --poll-seconds 10
 
+      # A GitHub deployment, not a tag: GITHUB_TOKEN may create one for any
+      # commit, while GitHub refuses it a tag on a commit whose history changes
+      # workflow files. The plan above refuses a commit older than the record.
       - name: Record the deployed commit
+        if: ${{ steps.plan.outputs.mode != 'no-op' }}
         env:
           DEPLOY_ENVIRONMENT: ${{ inputs.environment }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          tag="deployed/$DEPLOY_ENVIRONMENT"
-          git fetch --force origin "refs/tags/$tag:refs/tags/$tag" 2>/dev/null || true
-          current="$(git rev-parse -q --verify "refs/tags/$tag^{commit}" || true)"
-          if [[ -n "$current" ]] && ! git merge-base --is-ancestor "$current" "$GITHUB_SHA"; then
-            echo "::error::$tag is at $current, which $GITHUB_SHA does not contain; refusing to move it backwards."
-            exit 1
-          fi
-          # GitHub refuses to move a ref across workflow-file changes for a
-          # token without the workflows permission, which GITHUB_TOKEN never
-          # has. Creating a tag on a commit main already holds is allowed, so
-          # delete it and create it again.
-          if [[ -n "$current" ]]; then
-            git push origin ":refs/tags/$tag"
-          fi
-          git push origin "$GITHUB_SHA:refs/tags/$tag"
-          echo "$tag -> $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          id="$(jq -n --arg ref "$GITHUB_SHA" --arg environment "$DEPLOY_ENVIRONMENT" \
+            '{ref: $ref, environment: $environment, task: "deploy:backend", auto_merge: false,
+              required_contexts: [], description: "Firebase backend deployed"}' |
+            gh api -X POST "repos/$GITHUB_REPOSITORY/deployments" --input - -q .id)"
+          gh api -X POST "repos/$GITHUB_REPOSITORY/deployments/$id/statuses" -f state=success \
+            -f log_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > /dev/null
+          echo "$DEPLOY_ENVIRONMENT deploy:backend -> $GITHUB_SHA (deployment $id)" >> "$GITHUB_STEP_SUMMARY"

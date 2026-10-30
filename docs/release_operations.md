@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 3.0.2
-updated: 2026-10-30
+version: 3.0.3
+updated: 2026-10-31
 owner: recursive_audit_loop
 status: active
 ---
@@ -308,7 +308,7 @@ absent, with the pinned Node version and only root npm dependencies. When Tools
 is selected alongside a workflow change, its check closure owns that suite;
 ordinary prose keeps its lightweight document checks.
 The graph selects validation only. No plan authorizes a Firebase deployment or
-a mobile release: `Deploy backend` plans from its own `deployed/<env>` tag, and
+a mobile release: `Deploy backend` plans from its own `deploy:backend` deployment record, and
 mobile builds run in `Mobile Beta` and `Mobile Production`.
 
 The packaged callable IAM helper is deployment tooling, not compiled Functions
@@ -545,7 +545,7 @@ The current workflows are:
 | `.github/workflows/operations-ci.yml` | Reusable Operations platform contracts, tests, boundaries, and CLI smoke lane, selected independently from general repository tooling. |
 | `.github/workflows/app-build-matrix.yml` | Reusable role/platform-selective dev web, Android debug APK, and parallel per-role iOS simulator build gates. Cheap app-structure ratchets run before any expensive compile. |
 | `.github/workflows/backend-deploy.yml` | The one backend path: dev on every backend-relevant merge, prod automatically after dev succeeds, staging monthly. See Deploy Backend. |
-| `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the `deployed/<env>` tag, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, rules drift check, then the tag moves forward. |
+| `.github/workflows/_backend-deploy.yml` | Reusable per-environment job: credential-free plan from the newest `deploy:backend` deployment, readiness check, index `READY` wait, `deploy_firebase_targets.sh`, rules drift check, then a new deployment records the commit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/_web-hosting-build.yml` | Builds one production Admin or Marketing Vite bundle or standalone Host Flutter web bundle, packages one lifecycle-hook-free Hosting target, and publishes workflow/run/source-bound bytes with an exact file inventory. |
 | `.github/workflows/_web-hosting-promote.yml` | Downloads one Hosting artifact by immutable id, installs the pinned Firebase CLI before credentials, verifies the GitHub digest and every packaged byte, then promotes without installing source dependencies, rebuilding frontend bytes, or rematerializing organizer data. |
@@ -1297,12 +1297,17 @@ Firestore rules and Storage rules. Hosting and app releases stay separate.
 
 How a run works:
 
-- Each environment records the commit it last received in the Git tag
-  `deployed/<environment>`. To see the tags, run
-  `git ls-remote origin 'refs/tags/deployed/*'`.
+- Each environment records the commit it last received as a successful GitHub
+  deployment with task `deploy:backend`. To see the newest, run
+  `gh api 'repos/torana-labs/catch-dating-app/deployments?environment=prod&task=deploy:backend&per_page=1' -q '.[0].sha'`.
+  It used to be the Git tag `deployed/<environment>`. GitHub refuses
+  `GITHUB_TOKEN` a tag on any commit whose history changes workflow files, so
+  the record moved to deployments on 31 October 2026. The plan still reads the
+  tag on origin while an environment has no `deploy:backend` deployment, and
+  it writes the base to a local `deployed/<environment>` tag for the planner.
 - A run deploys its own exact commit.
   `tool/firebase/affected_function_targets.mjs --environment <env>` plans the run
-  from the tagged commit:
+  from the recorded commit:
   - Functions whose transitive imports changed, plus the index, Firestore-rules
     or Storage-rules stage when its file changed.
   - A Function that loads modules dynamically redeploys whenever Functions
@@ -1319,12 +1324,15 @@ How a run works:
   which handles batches, retries, callable-invoker sync and the parity check.
   Firebase predeploy test hooks are skipped because required CI already ran them
   on that commit.
-- After a successful deploy the tag moves forward to that commit. It never moves
-  backwards, and a failed run leaves it unchanged.
-- Automatic runs never start a first deploy. An environment without a tag is
-  skipped until someone runs the workflow manually, which deploys everything.
-  An environment can also be seeded by pushing its tag at a commit it verifiably
-  matches. Functions changed after that commit then deploy on the next run.
+- After a successful deploy a new deployment records that commit. A run whose
+  commit doesn't contain the recorded one deploys nothing, so the record never
+  moves backwards, and a failed run leaves it unchanged.
+- Automatic runs never start a first deploy. An environment with neither a
+  record nor a tag is skipped until someone runs the workflow manually, which
+  deploys everything. An environment can also be seeded by pushing its
+  `deployed/<environment>` tag at a commit it verifiably matches, from an
+  account with the `workflow` scope. Functions changed after that commit then
+  deploy on the next run.
 
 When it runs:
 
@@ -1785,7 +1793,7 @@ applicable, backend package. Use **Re-run all jobs** so the successful attempt
 publishes a complete immutable artifact set.
 
 If a `Deploy backend` run fails, fix forward: merge the fix or re-run the
-workflow. The `deployed/<env>` tag only moves after success, so the next run
+workflow. The `deploy:backend` record only moves after success, so the next run
 redeploys everything since the last successful deploy.
 
 ### Website rollback to the static Vite build
