@@ -1,0 +1,49 @@
+{
+  "description": "Files another toolchain reads raw, so they keep literal brand values. generate.mjs rewrites them from applied.json to brand.json on a rebrand. 'distinctive' rewrites only the domain, origins, contacts and handle; 'all' also rewrites names. exceptKeys lists ARB messages where the word is the 'a catch' feature noun or a verb, not the brand.",
+  "surfaces": [
+    {"path": "lib/l10n/app_en.arb", "kind": "json-values", "then": "flutter gen-l10n",
+      "exceptKeys": [
+        "matchesMatchCelebrationDialogTitleItSACatch",
+        "swipesSwipeEmptyContentTitleCatchUnavailable",
+        "swipesSwipeEmptyContentTitleCatchWindowClosed",
+        "swipesEventRecapScreenStateVisiblecopyCatchWindowClosed",
+        "dashboardDashboardEmptyTitleCatchWithin24Hours",
+        "dashboardDashboardEmptyBodyYouGetTheRoster",
+        "coreCatchPrivacyBadgeLabelCatchPrivate"
+      ]},
+    {"path": "copy/native_en.json", "kind": "json-values", "then": "node tool/copy/sync_native_copy.mjs"},
+    {"path": "copy/structured_domain_copy_en.json", "kind": "json-values"},
+    {"path": "website/src/content/meta.json", "kind": "json-values", "then": "cd website && node scripts/renderPreviewCards.mjs --update"},
+    {"path": "apps/consumer/web/index.html", "kind": "text", "fields": "all"},
+    {"path": "apps/consumer/web/manifest.json", "kind": "text", "fields": "all"},
+    {"path": "apps/host/web/index.html", "kind": "text", "fields": "all"},
+    {"path": "apps/host/web/manifest.json", "kind": "text", "fields": "all"},
+    {"path": "tool/env/dart_defines/*.json", "kind": "text"},
+    {"path": "apps/consumer/android/app/src/consumer/AndroidManifest.xml", "kind": "text"},
+    {"path": "apps/consumer/ios/Runner/*.entitlements", "kind": "text"},
+    {"path": "apps/host/ios/Runner/*.entitlements", "kind": "text"},
+    {"path": "tool/app_targets.json", "kind": "text"},
+    {"path": "test/event_rehearsal/fixtures/*.json", "kind": "text"},
+    {"path": "docs/store/catch_host/asset_manifest.json", "kind": "text"},
+    {"path": "design/tokens/catch.icons.schema.json", "kind": "text"},
+    {"path": "operations/src/workflows/supply-intake/config/acquisition_policy.json", "kind": "text"},
+    {"path": "operations/test/page-fetcher.test.mjs", "kind": "text"},
+    {"path": "website/index.html", "kind": "text"},
+    {"path": "website/measurement-runtime/catch-acquisition-runtime.js", "kind": "text"},
+    {"path": "website/public/assets/app-screenshots/manifest.json", "kind": "text"},
+    {"path": "website/scripts/probeProduction.mjs", "kind": "text"},
+    {"path": "tool/marketing/app_screenshots_design_context.json", "kind": "text"},
+    {"path": "tool/marketing/capture_manifest.json", "kind": "text"},
+    {"path": "tool/firebase/environment_difference_policy.json", "kind": "text"},
+    {"path": "tool/remote_ops_manifest.json", "kind": "text"},
+    {"path": "tool/tools_manifest.json", "kind": "text"}
+  ],
+  "regenerated": [
+    "lib/l10n/generated/app_localizations_en.dart",
+    "lib/l10n/generated/structured_domain_copy.g.dart",
+    "apps/consumer/ios/Runner/Info.plist",
+    "apps/host/ios/Runner/Info.plist",
+    "apps/consumer/macos/Runner/Info.plist",
+    "website/src/content/previewCards.json"
+  ]
+}

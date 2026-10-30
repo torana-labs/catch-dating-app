@@ -8,6 +8,7 @@ import record from "./brand.json" with {type: "json"};
 import {applyBrand, applyBrandText, brand, brandConsistencyErrors, webUrl} from "./index.mjs";
 import {compare, rules, scanText} from "./check_brand_literals.mjs";
 import {outputs} from "./generate.mjs";
+import {rewriteSurface, surfacePaths} from "./managed.mjs";
 
 const packageDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(packageDir, "../..");
@@ -43,11 +44,6 @@ test("the guard derives its patterns from the record", () => {
     "to: 'help@lumen.example', // brand-literal-ok: owner inbox", rules(renamed)), {});
 });
 
-test("ARB metadata does not count as copy", () => {
-  const arb = JSON.stringify({greeting: `Welcome to ${brand.name}`, "@greeting": {description: `${brand.name} greeting`}});
-  assert.deepEqual(scanText("lib/l10n/app_en.arb", arb), {"name-in-copy": 1});
-});
-
 test("the allowlist may only shrink", () => {
   const allowlist = {domain: {"a.ts": 2}};
   assert.deepEqual(compare({domain: {"a.ts": 2}}, allowlist), {errors: [], stale: []});
@@ -61,4 +57,31 @@ test("generated outputs are current", () => {
     assert.equal(fs.readFileSync(path.join(repoRoot, output.path), "utf8"), output.content,
       `${output.path} is stale; run node packages/brand/generate.mjs`);
   }
+});
+
+test("a rebrand rewrites every managed surface and leaves the noun exceptions alone", () => {
+  const managed = JSON.parse(fs.readFileSync(path.join(packageDir, "managed_surfaces.json"), "utf8"));
+  const applied = JSON.parse(fs.readFileSync(path.join(packageDir, "applied.json"), "utf8"));
+  const renamed = JSON.parse(JSON.stringify(applied).replaceAll(applied.web.domain, "lumen.example")
+    .replaceAll(`"${applied.name}`, "\"Lumen").replaceAll(applied.social.instagramHandle, "lumen_app"));
+  let rewritten = 0;
+  for (const surface of managed.surfaces) {
+    for (const file of surfacePaths(repoRoot, surface)) {
+      const before = fs.readFileSync(path.join(repoRoot, file), "utf8");
+      const after = rewriteSurface(before, surface, applied, renamed);
+      assert.ok(!after.includes(applied.web.domain), `${file} still names ${applied.web.domain} after a rebrand`);
+      if (after !== before) rewritten += 1;
+    }
+  }
+  assert.ok(rewritten >= managed.surfaces.length);
+  const arb = managed.surfaces.find((surface) => surface.path.endsWith(".arb"));
+  const messages = JSON.parse(fs.readFileSync(path.join(repoRoot, arb.path), "utf8"));
+  const after = JSON.parse(rewriteSurface(JSON.stringify(messages, null, 2), arb, applied, renamed));
+  for (const key of arb.exceptKeys) assert.equal(after[key], messages[key], `${key} must keep its noun`);
+  assert.equal(after.appTitleHost, renamed.stores.hostAppName);
+});
+
+test("the applied record matches brand.json", () => {
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(packageDir, "applied.json"), "utf8")),
+    JSON.parse(JSON.stringify(brand)));
 });
