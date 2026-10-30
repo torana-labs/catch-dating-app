@@ -929,6 +929,20 @@ The production Firebase hosts (`catch-dating-app-64e51.web.app` and `.firebaseap
 
 **Rollback:** set the two records back to DNS-only in the dashboard (or `PATCH` `proxied: false`). The site then serves directly from Firebase Hosting again. The Bot Fight Mode and rule settings can stay; they only act on proxied traffic.
 
+### Release and monitoring checks behind the edge
+
+Bot Fight Mode answers GitHub-hosted runners with 403 on every catchdates.com path. Runners run on data-centre addresses, and on the free plan no WAF rule can let a request past Bot Fight Mode ([#1272](https://github.com/torana-labs/catch-dating-app/issues/1272)). Real visitors are not affected. So the automated checks don't read pages through the public domain. `website/scripts/next/liveOriginCheck.mjs` checks each leg of a visitor's path on its own:
+
+- **Origin:** `https://catch-dating-app-64e51.web.app/api/public-catalog` must answer 200, uncached, with the expected `x-catch-release`. That host skips its canonical redirect only for `/api/` and `/__/`, so this reads what live Hosting serves without passing through Cloudflare.
+- **Redirect:** every page on the Firebase host must still answer 301 to catchdates.com, so the host never becomes a way round Cloudflare.
+- **Edge:** catchdates.com must answer through Cloudflare (`server: cloudflare` and a `cf-ray`). A 200 must carry the same release; a Cloudflare 403 counts as "edge up".
+
+`Next Website Promotion` runs this check after cloning to live, with up to 18 attempts for the new release to reach the origin. It runs main's copy of the script, not the release's. The pages themselves are proven before that, on the `next-release` channel with the same Hosting version. `Website Production Observability` runs the same check every 15 minutes, accepting any release.
+
+These checks don't prove that a visitor at catchdates.com sees correct page content. Cloudflare passes HTML through uncached (`cf-cache-status: DYNAMIC`), so the origin and the edge serve the same pages, but nothing automated checks that end to end. To check it by hand, from a machine Cloudflare lets through, run `node website/scripts/probeProduction.mjs --json`.
+
+**Long-term fix: Cloudflare Pro.** Pro's Super Bot Fight Mode, unlike the free Bot Fight Mode, can be skipped by a WAF custom rule. A rule that skips it for requests carrying a secret probe header, with the secret held in GitHub, would let promotion and monitoring check the real public pages again while the bot protection stays on for everyone else.
+
 ## Custom form domain onboarding
 
 The trusted operator command is `node tool/firebase/form_domain_operator.mjs`.
@@ -1813,8 +1827,10 @@ decides; it changes production traffic. Run it from a shell signed in to
 2. Clone it to live:
    `firebase hosting:clone catch-dating-app-64e51@<version> catch-dating-app-64e51:live --project catch-dating-app-64e51`.
 3. Verify: `curl -sI https://catchdates.com/` has no `x-catch-release` header,
-   the page source has no `/_next/static/`, and a manual run of `Website
-   Production Observability` passes.
+   the page source has no `/_next/static/`, and
+   `node website/scripts/probeProduction.mjs --json` passes when run from your
+   own machine. `Website Production Observability` fails while the site is
+   rolled back, because the static site carries no release header.
 4. Hold the train. Add a required reviewer to the `prod` environment and
    reject `Website Release` approvals while rolled back, because a promotion
    moves live back to Next.
