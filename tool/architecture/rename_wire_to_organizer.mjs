@@ -199,9 +199,14 @@ export function wireNameFindings({files, read}) {
 
 // A string names a wire field when its whole value or one of its path
 // segments (event.clubId, #/definitions/clubHostProfile) is a wire name.
-export function renameWireSegments(value, wire) {
-  return value.replace(/[A-Za-z_][\w]*/gu, (word) => wire.get(word) ?? (isCamelClubWord(word) ? renameWord(word) : word));
+export function renameWireSegments(value, wire, {camel = true} = {}) {
+  return value.replace(/[A-Za-z_][\w]*/gu, (word) => wire.get(word) ??
+    (camel && isCamelClubWord(word) ? renameWord(word) : word));
 }
+
+// The contract generators' strings name contract titles and their own
+// per-contract settings, which follow the contracts, not every camelCase word.
+const titlesOnly = /^tool\/contracts\//u;
 
 // A path string follows a moved file, or names a generated output, which
 // follows the source its generator renames.
@@ -345,12 +350,13 @@ export function renameScript({file, source, plan}) {
       const plain = ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node);
       // A string spelling a renamed symbol (a key list, a property index)
       // follows it; the subtype's values never do.
-      const symbol = plain && !keptWireNames.has(node.text) ? plan.identifiers.get(node.text) : undefined;
+      const symbol = plain && !keptWireNames.has(node.text) && !titlesOnly.test(file)
+        ? plan.identifiers.get(node.text) : undefined;
       const path = symbol ?? (plain ? renamePathString(node.text, plan) : node.text);
       const next = isSpecifier(node)
         ? raw[0] + renameSpecifier(node.text, file, plan.moves) + raw[raw.length - 1]
         : path !== node.text ? raw[0] + path + raw[raw.length - 1]
-        : renameWireSegments(raw, plan.wire);
+        : renameWireSegments(raw, plan.wire, {camel: !titlesOnly.test(file)});
       if (next !== raw) edits.push({start: node.getStart(), end: node.getEnd(), text: next});
     }
     ts.forEachChild(node, visit);
