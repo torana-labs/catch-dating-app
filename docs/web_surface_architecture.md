@@ -153,8 +153,8 @@ promotion reads this exact index and refuses to proceed until it is ready.
 ### Exact-container production promotion
 
 After deployed preview and browser acceptance, `Next Website Promotion` runs
-with that successful preview run id; the release train dispatches it once a
-reviewer approves. The release is the preview's own source, which main may have
+with that successful preview run id; the release train dispatches it once the
+`prod` gate passes. The release is the preview's own source, which main may have
 moved past: it must still be on main, with successful CI, and not older than
 the live release, so live only moves forward. The workflow verifies GitHub artifact provenance and
 ZIP digest, bounded archive contents, source/run/attempt identity and the loaded
@@ -206,9 +206,8 @@ main's Explore). Main's checkout supplies every other promotion script.
 catchdates.com without hand dispatches. It runs when main CI (push, nightly or
 dispatched) completes and hourly as a fallback:
 
-1. **Plan** (no credentials). It refuses to run unless the `prod` environment
-   requires a reviewer. It skips when CI failed or main's head is already
-   live. It releases main's head when that head has successful same-source CI
+1. **Plan** (no credentials). It skips when CI failed or main's head is
+   already live. It releases main's head when that head has successful same-source CI
    with Marketing validation and captures.
    Whichever commit's CI completed, the train considers main's head. Its
    same-source CI is the merge queue run that tested the exact commit main
@@ -234,9 +233,11 @@ dispatched) completes and hourly as a fallback:
    releases the newer head.
 3. **Preview.** It dispatches `Next Website Preview`, follows that exact run,
    and publishes the preview channel URL.
-4. **Approve.** A job in the protected `prod` environment, whose required
-   reviewer approves in GitHub with the preview URL shown on the deployment.
-   The job holds no token and uses none of the environment's credentials.
+4. **Gate.** A job in the `prod` environment, with the preview URL shown on
+   the deployment. `prod` has had no required reviewer since 30 Oct 2026, so
+   it passes straight through; adding a reviewer makes it wait for approval
+   in GitHub again. The job holds no token and uses none of the environment's
+   credentials.
 5. **Promote.** It dispatches `Next Website Promotion` with the approved
    preview run and waits for it.
 
