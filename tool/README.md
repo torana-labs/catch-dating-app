@@ -636,10 +636,11 @@ not-ready prerequisite stops the run; one the probe cannot confirm only warns.
 
 The backend deploys from an exact `main` commit through `Deploy backend`.
 - **Dev** deploys on every backend-relevant merge.
-- **Prod** deploys after one protected approval.
+- **Prod** deploys automatically after dev succeeds.
 - **Staging** refreshes on the first day of each month at 02:17 UTC.
 
-Each environment's last deployed commit is the Git tag `deployed/<env>`; see
+Each environment's last deployed commit is its newest successful GitHub
+deployment with task `deploy:backend`; see
 `docs/release_operations.md`, "Deploy Backend".
 
 Admin, standalone Host, and Marketing Hosting keep exact-artifact promotion. `_web-hosting-build.yml` produces one environment-
